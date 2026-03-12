@@ -304,5 +304,61 @@ window.submitListing  = submitListing;
 window.showSection    = showSection;
 window.logout         = logout;
 
-/* ── INIT ───────────────────────────────────────────────────*/
+/* ── INIT ── */
 loadBikes();
+updateFilterCounts();
+
+/* ── OPDATER FILTER-TÆLLER FRA DATABASEN ───────────────────*/
+async function updateFilterCounts() {
+  const { data, error } = await supabase
+    .from('bikes')
+    .select('type, condition, profiles(seller_type)')
+    .eq('is_active', true);
+
+  if (error || !data) return;
+
+  // Tæl totaler
+  const total       = data.length;
+  const dealers     = data.filter(b => b.profiles?.seller_type === 'dealer').length;
+  const private_    = data.filter(b => b.profiles?.seller_type !== 'dealer').length;
+
+  // Cykeltyper
+  const counts = (type) => data.filter(b => b.type === type).length;
+
+  // Stand
+  const condCounts = (c) => data.filter(b => b.condition === c).length;
+
+  // Opdater sælgertype
+  setCount('Alle sælgere', total);
+  setCount('Forhandlere',  dealers);
+  setCount('Private',      private_);
+
+  // Opdater cykeltyper
+  setCount('Racercykel',   counts('Racercykel'));
+  setCount('Mountainbike', counts('Mountainbike'));
+  setCount('El-cykel',     counts('El-cykel'));
+  setCount('Citybike',     counts('Citybike'));
+  setCount('Ladcykel',     counts('Ladcykel'));
+  setCount('Børnecykel',   counts('Børnecykel'));
+  setCount('Gravel',       counts('Gravel'));
+
+  // Opdater stand
+  setCount('Ny',         condCounts('Ny'));
+  setCount('Som ny',     condCounts('Som ny'));
+  setCount('God stand',  condCounts('God stand'));
+  setCount('Brugt',      condCounts('Brugt'));
+
+  // Opdater listings-header tekst
+  const header = document.querySelector('.listings-header span');
+  if (header) header.textContent = `${total} cykler til salg`;
+}
+
+function setCount(label, count) {
+  // Find filter-option der indeholder label-teksten og opdater filter-count
+  document.querySelectorAll('.filter-option').forEach(el => {
+    if (el.textContent.trim().startsWith(label)) {
+      const countEl = el.querySelector('.filter-count');
+      if (countEl) countEl.textContent = count.toLocaleString('da-DK');
+    }
+  });
+}
