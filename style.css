@@ -1024,3 +1024,353 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 /* Sælger-type toggle i profil */
 #edit-seller-type { cursor: pointer; }
+
+/* ============================================================
+   ANNONCE DETALJE MODAL
+   ============================================================ */
+
+.modal-wide { max-width: 780px; }
+
+.bike-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.bike-detail-img {
+  background: var(--sand);
+  border-radius: 12px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  overflow: hidden;
+}
+.bike-detail-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.bike-detail-info { display: flex; flex-direction: column; gap: 14px; }
+
+.bike-detail-price {
+  font-family: 'Fraunces', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--rust);
+}
+
+.bike-detail-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.detail-tag {
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.bike-detail-seller {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--sand);
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+}
+.seller-avatar-large {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--sand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.seller-detail-name { font-weight: 600; font-size: 0.95rem; }
+.seller-detail-city { font-size: 0.8rem; color: var(--muted); }
+
+.bike-detail-description {
+  background: var(--sand);
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--charcoal);
+  border: 1px solid var(--border);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn-contact {
+  background: var(--forest);
+  color: var(--sand);
+  border: none;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+  text-align: center;
+}
+.btn-contact:hover { background: var(--forest-light); }
+
+.btn-bid {
+  background: var(--rust);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+  text-align: center;
+}
+.btn-bid:hover { background: var(--rust-light); }
+
+.btn-save-listing {
+  background: transparent;
+  color: var(--charcoal);
+  border: 1.5px solid var(--border);
+  padding: 11px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  text-align: center;
+}
+.btn-save-listing:hover { border-color: var(--rust); color: var(--rust); }
+
+/* Besked-felt i detalje-modal */
+.message-box {
+  display: none;
+  margin-top: 12px;
+}
+.message-box textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  resize: vertical;
+  min-height: 90px;
+  outline: none;
+  background: var(--cream);
+  transition: border-color 0.2s;
+}
+.message-box textarea:focus { border-color: var(--forest); }
+.message-box button {
+  margin-top: 8px;
+  background: var(--forest);
+  color: var(--sand);
+  border: none;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+  width: 100%;
+}
+.message-box button:hover { background: var(--forest-light); }
+
+/* Bud-felt */
+.bid-box {
+  display: none;
+  margin-top: 12px;
+}
+.bid-box-inner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.bid-box input {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  background: var(--cream);
+  transition: border-color 0.2s;
+}
+.bid-box input:focus { border-color: var(--rust); }
+.bid-box button {
+  background: var(--rust);
+  color: #fff;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.bid-box button:hover { background: var(--rust-light); }
+
+@media (max-width: 700px) {
+  .bike-detail-grid { grid-template-columns: 1fr; }
+  .modal-wide { max-width: 100%; }
+}
+
+/* ============================================================
+   INDBAKKE
+   ============================================================ */
+
+.inbox-badge {
+  background: var(--rust);
+  color: #fff;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.inbox-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: var(--sand);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.inbox-row:hover { background: var(--border); }
+.inbox-row.unread { border-left: 3px solid var(--rust); }
+
+.inbox-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--sand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.inbox-content { flex: 1; min-width: 0; }
+.inbox-from { font-weight: 600; font-size: 0.88rem; margin-bottom: 2px; }
+.inbox-bike { font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+.inbox-preview {
+  font-size: 0.82rem;
+  color: var(--charcoal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inbox-time { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+/* Besked tråd */
+.thread-header {
+  background: var(--sand);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+.thread-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px 0;
+  margin-bottom: 14px;
+}
+.message-bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.message-bubble.sent {
+  background: var(--forest);
+  color: var(--sand);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.message-bubble.received {
+  background: var(--sand);
+  color: var(--charcoal);
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+.message-bubble .msg-time {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+.thread-reply {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.thread-reply textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  resize: none;
+  height: 80px;
+  outline: none;
+  background: var(--cream);
+  transition: border-color 0.2s;
+}
+.thread-reply textarea:focus { border-color: var(--forest); }
+.thread-reply button {
+  background: var(--forest);
+  color: var(--sand);
+  border: none;
+  padding: 11px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+.thread-reply button:hover { background: var(--forest-light); }
