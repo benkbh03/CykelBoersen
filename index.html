@@ -18,6 +18,11 @@
       <a onclick="showSection('dealers')">Forhandlere</a>
       <a>Om os</a>
       <a class="btn-sell" onclick="openModal()">+ Sæt til salg</a>
+      <div class="nav-profile" id="nav-profile" style="display:none;">
+        <button class="profile-avatar-btn" id="profile-avatar-btn" onclick="openProfileModal()">
+          <span id="nav-initials">?</span>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -35,7 +40,7 @@
       <div class="stat-card">
         <div class="stat-icon">🚲</div>
         <div>
-          <div class="stat-number">4.800+</div>
+          <div class="stat-number" id="stat-total">–</div>
           <div class="stat-label">Aktive annoncer</div>
         </div>
       </div>
@@ -59,9 +64,9 @@
   <!-- ── SØGEBAR ── -->
   <div class="search-section">
     <div class="search-bar">
-      <input type="text" placeholder="Søg efter mærke, model, type...">
-      <select>
-        <option>Alle typer</option>
+      <input type="text" id="search-input" placeholder="Søg efter mærke, model, type...">
+      <select id="search-type">
+        <option value="">Alle typer</option>
         <option>Racercykel</option>
         <option>Mountainbike</option>
         <option>Citybike</option>
@@ -69,15 +74,14 @@
         <option>Ladcykel</option>
         <option>Børnecykel</option>
       </select>
-      <select>
-        <option>Alle steder</option>
+      <select id="search-city">
+        <option value="">Alle steder</option>
         <option>København</option>
         <option>Aarhus</option>
         <option>Odense</option>
         <option>Aalborg</option>
-        <option>Hele Danmark</option>
       </select>
-      <button>🔍 Søg</button>
+      <button onclick="searchBikes()">🔍 Søg</button>
     </div>
   </div>
 
@@ -96,26 +100,25 @@
   <!-- ── MAIN: SIDEBAR + ANNONCER ── -->
   <div class="main">
 
-    <!-- Sidebar filtre -->
     <aside class="sidebar">
       <div class="sidebar-box">
         <h3>Sælgertype</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox" checked> Alle sælgere <span class="filter-count">4.800</span></label>
-          <label class="filter-option"><input type="checkbox"> 🏪 Forhandlere <span class="filter-count">1.240</span></label>
-          <label class="filter-option"><input type="checkbox"> 👤 Private <span class="filter-count">3.560</span></label>
+          <label class="filter-option"><input type="checkbox" checked> Alle sælgere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> 🏪 Forhandlere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> 👤 Private <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
         <h3>Cykeltype</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox"> Racercykel <span class="filter-count">820</span></label>
-          <label class="filter-option"><input type="checkbox"> Mountainbike <span class="filter-count">640</span></label>
-          <label class="filter-option"><input type="checkbox"> El-cykel <span class="filter-count">1.140</span></label>
-          <label class="filter-option"><input type="checkbox"> Citybike <span class="filter-count">930</span></label>
-          <label class="filter-option"><input type="checkbox"> Ladcykel <span class="filter-count">280</span></label>
-          <label class="filter-option"><input type="checkbox"> Børnecykel <span class="filter-count">440</span></label>
-          <label class="filter-option"><input type="checkbox"> Gravel <span class="filter-count">210</span></label>
+          <label class="filter-option"><input type="checkbox"> Racercykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Mountainbike <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> El-cykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Citybike <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Ladcykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Børnecykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Gravel <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
@@ -132,40 +135,36 @@
       <div class="sidebar-box">
         <h3>Stand</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox"> Ny <span class="filter-count">340</span></label>
-          <label class="filter-option"><input type="checkbox"> Som ny <span class="filter-count">870</span></label>
-          <label class="filter-option"><input type="checkbox"> God stand <span class="filter-count">2.100</span></label>
-          <label class="filter-option"><input type="checkbox"> Brugt <span class="filter-count">1.490</span></label>
+          <label class="filter-option"><input type="checkbox"> Ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Som ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> God stand <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> Brugt <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
         <h3>Hjulstørrelse</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox"> 26" <span class="filter-count">480</span></label>
-          <label class="filter-option"><input type="checkbox"> 27.5" / 650b <span class="filter-count">620</span></label>
-          <label class="filter-option"><input type="checkbox"> 28" <span class="filter-count">1.840</span></label>
-          <label class="filter-option"><input type="checkbox"> 29" <span class="filter-count">730</span></label>
+          <label class="filter-option"><input type="checkbox"> 26" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> 27.5" / 650b <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> 28" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox"> 29" <span class="filter-count">–</span></label>
         </div>
       </div>
     </aside>
 
-    <!-- Annonceliste -->
     <div>
       <div class="listings-header">
         <div>
           <h2>Seneste annoncer</h2>
-          <span>4.823 cykler til salg</span>
+          <span id="listings-count">– cykler til salg</span>
         </div>
-        <select class="sort-select">
-          <option>Nyeste først</option>
-          <option>Pris: lav til høj</option>
-          <option>Pris: høj til lav</option>
-          <option>Tættest på dig</option>
+        <select class="sort-select" onchange="sortBikes(this.value)">
+          <option value="newest">Nyeste først</option>
+          <option value="price_asc">Pris: lav til høj</option>
+          <option value="price_desc">Pris: høj til lav</option>
         </select>
       </div>
-      <div class="listings-grid" id="listings-grid">
-        <!-- Annoncekort indsættes af JavaScript -->
-      </div>
+      <div class="listings-grid" id="listings-grid"></div>
     </div>
 
   </div>
@@ -175,30 +174,10 @@
     <h2>Autoriserede forhandlere</h2>
     <p>Køb med tryghed fra en af vores verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
     <div class="dealer-cards">
-      <div class="dealer-card">
-        <div class="dealer-logo">🏪</div>
-        <div class="dealer-name">VeloShop Kbh</div>
-        <div class="dealer-city">København NV</div>
-        <div class="dealer-count">84 aktive annoncer</div>
-      </div>
-      <div class="dealer-card">
-        <div class="dealer-logo">🚲</div>
-        <div class="dealer-name">Cykel Expert Aarhus</div>
-        <div class="dealer-city">Aarhus C</div>
-        <div class="dealer-count">62 aktive annoncer</div>
-      </div>
-      <div class="dealer-card">
-        <div class="dealer-logo">⚡</div>
-        <div class="dealer-name">ElCyklen.dk</div>
-        <div class="dealer-city">Odense</div>
-        <div class="dealer-count">128 aktive annoncer</div>
-      </div>
-      <div class="dealer-card">
-        <div class="dealer-logo">🏆</div>
-        <div class="dealer-name">Nordic Bikes</div>
-        <div class="dealer-city">Frederiksberg</div>
-        <div class="dealer-count">47 aktive annoncer</div>
-      </div>
+      <div class="dealer-card"><div class="dealer-logo">🏪</div><div class="dealer-name">VeloShop Kbh</div><div class="dealer-city">København NV</div><div class="dealer-count">84 aktive annoncer</div></div>
+      <div class="dealer-card"><div class="dealer-logo">🚲</div><div class="dealer-name">Cykel Expert Aarhus</div><div class="dealer-city">Aarhus C</div><div class="dealer-count">62 aktive annoncer</div></div>
+      <div class="dealer-card"><div class="dealer-logo">⚡</div><div class="dealer-name">ElCyklen.dk</div><div class="dealer-city">Odense</div><div class="dealer-count">128 aktive annoncer</div></div>
+      <div class="dealer-card"><div class="dealer-logo">🏆</div><div class="dealer-name">Nordic Bikes</div><div class="dealer-city">Frederiksberg</div><div class="dealer-count">47 aktive annoncer</div></div>
     </div>
   </section>
 
@@ -222,7 +201,6 @@
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
       <div class="modal-body">
-
         <p class="modal-seller-label">Hvem sælger du som?</p>
         <div class="seller-toggle">
           <div class="seller-type-btn selected" id="type-private" onclick="selectType('private')">
@@ -236,75 +214,31 @@
             <span class="type-sub">Jeg er cykelbutik / forhandler</span>
           </div>
         </div>
-
-        <!-- Kun synligt for forhandlere -->
         <div id="dealer-fields" class="dealer-fields-hidden">
           <div class="form-group">
             <label>Butiksnavn / CVR</label>
             <input type="text" placeholder="f.eks. VeloShop ApS eller 12345678">
           </div>
         </div>
-
-        <!-- Annonce-formular -->
         <div class="form-grid">
-          <div class="form-group">
-            <label>Mærke *</label>
-            <input type="text" placeholder="f.eks. Trek, Giant, Specialized">
-          </div>
-          <div class="form-group">
-            <label>Model *</label>
-            <input type="text" placeholder="f.eks. FX 3 Disc">
-          </div>
+          <div class="form-group"><label>Mærke *</label><input type="text" placeholder="f.eks. Trek, Giant, Specialized"></div>
+          <div class="form-group"><label>Model *</label><input type="text" placeholder="f.eks. FX 3 Disc"></div>
           <div class="form-group">
             <label>Cykeltype *</label>
-            <select>
-              <option value="">Vælg type</option>
-              <option>Racercykel</option>
-              <option>Mountainbike</option>
-              <option>Citybike</option>
-              <option>El-cykel</option>
-              <option>Ladcykel</option>
-              <option>Børnecykel</option>
-              <option>Gravel</option>
-            </select>
+            <select><option value="">Vælg type</option><option>Racercykel</option><option>Mountainbike</option><option>Citybike</option><option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option></select>
           </div>
           <div class="form-group">
             <label>Ramme / str.</label>
-            <select>
-              <option value="">Vælg</option>
-              <option>XS (44–48 cm)</option>
-              <option>S (49–52 cm)</option>
-              <option>M (53–56 cm)</option>
-              <option>L (57–60 cm)</option>
-              <option>XL (61+ cm)</option>
-            </select>
+            <select><option value="">Vælg</option><option>XS (44–48 cm)</option><option>S (49–52 cm)</option><option>M (53–56 cm)</option><option>L (57–60 cm)</option><option>XL (61+ cm)</option></select>
           </div>
-          <div class="form-group">
-            <label>Pris (kr.) *</label>
-            <input type="number" placeholder="f.eks. 4500">
-          </div>
-          <div class="form-group">
-            <label>Årstal</label>
-            <input type="number" placeholder="f.eks. 2021">
-          </div>
+          <div class="form-group"><label>Pris (kr.) *</label><input type="number" placeholder="f.eks. 4500"></div>
+          <div class="form-group"><label>Årstal</label><input type="number" placeholder="f.eks. 2021"></div>
           <div class="form-group">
             <label>Stand *</label>
-            <select>
-              <option value="">Vælg stand</option>
-              <option>Ny</option>
-              <option>Som ny</option>
-              <option>God stand</option>
-              <option>Brugt</option>
-            </select>
+            <select><option value="">Vælg stand</option><option>Ny</option><option>Som ny</option><option>God stand</option><option>Brugt</option></select>
           </div>
-          <div class="form-group">
-            <label>By *</label>
-            <input type="text" placeholder="f.eks. København">
-          </div>
-          <div class="form-group full">
-            <label>Beskrivelse</label>
-            <textarea placeholder="Beskriv din cykel — stand, udstyr, service, historik..."></textarea>
-          </div>
+          <div class="form-group"><label>By *</label><input type="text" placeholder="f.eks. København"></div>
+          <div class="form-group full"><label>Beskrivelse</label><textarea placeholder="Beskriv din cykel — stand, udstyr, service, historik..."></textarea></div>
           <div class="form-group full">
             <label>Billeder</label>
             <div class="img-upload" onclick="alert('Billedupload — tilslut til backend')">
@@ -313,7 +247,6 @@
             </div>
           </div>
         </div>
-
         <button class="form-submit" onclick="submitListing()">Opret annonce gratis</button>
       </div>
     </div>
@@ -323,7 +256,7 @@
   <div class="modal-overlay" id="login-modal">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="login-modal-title">Log ind</h2>
+        <h2>Log ind</h2>
         <button class="modal-close" onclick="closeLoginModal()">✕</button>
       </div>
       <div class="modal-body">
@@ -350,6 +283,72 @@
           </div>
           <button class="form-submit" onclick="handleRegister()">Opret konto</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROFIL MODAL ── -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Min profil</h2>
+        <button class="modal-close" onclick="closeProfileModal()">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Profil header -->
+        <div class="profile-header">
+          <div class="profile-big-avatar" id="profile-big-avatar">?</div>
+          <div>
+            <div class="profile-name" id="profile-display-name">Indlæser...</div>
+            <div class="profile-email" id="profile-display-email"></div>
+            <span class="badge badge-private" id="profile-type-badge">👤 Privat</span>
+          </div>
+        </div>
+
+        <!-- Faner -->
+        <div class="profile-tabs">
+          <button class="profile-tab active" id="ptab-info" onclick="switchProfileTab('info')">Oplysninger</button>
+          <button class="profile-tab" id="ptab-listings" onclick="switchProfileTab('listings')">Mine annoncer</button>
+          <button class="profile-tab" id="ptab-saved" onclick="switchProfileTab('saved')">Gemte</button>
+        </div>
+
+        <!-- Oplysninger -->
+        <div id="profile-info">
+          <div class="form-grid" style="grid-template-columns:1fr;">
+            <div class="form-group"><label>Navn</label><input type="text" id="edit-name" placeholder="Dit navn"></div>
+            <div class="form-group"><label>Telefon</label><input type="text" id="edit-phone" placeholder="f.eks. 12 34 56 78"></div>
+            <div class="form-group"><label>By</label><input type="text" id="edit-city" placeholder="f.eks. København"></div>
+            <div class="form-group">
+              <label>Sælgertype</label>
+              <select id="edit-seller-type">
+                <option value="private">👤 Privatperson</option>
+                <option value="dealer">🏪 Forhandler</option>
+              </select>
+            </div>
+            <div class="form-group" id="edit-shop-group" style="display:none;">
+              <label>Butiksnavn</label>
+              <input type="text" id="edit-shop-name" placeholder="f.eks. VeloShop ApS">
+            </div>
+          </div>
+          <button class="form-submit" onclick="saveProfile()">Gem ændringer</button>
+          <button class="btn-logout" onclick="logout()">Log ud</button>
+        </div>
+
+        <!-- Mine annoncer -->
+        <div id="profile-listings" style="display:none;">
+          <div id="my-listings-grid" class="my-listings-grid">
+            <p style="color:var(--muted)">Indlæser dine annoncer...</p>
+          </div>
+        </div>
+
+        <!-- Gemte annoncer -->
+        <div id="profile-saved" style="display:none;">
+          <div id="my-saved-grid" class="my-listings-grid">
+            <p style="color:var(--muted)">Indlæser gemte annoncer...</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
