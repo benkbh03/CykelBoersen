@@ -299,7 +299,9 @@ document.getElementById('profile-modal').addEventListener('click', e => {
 });
 
 async function loadProfileData() {
-  const { data: { user } } = await supabase.auth.getUser();
+  // Brug getSession for hurtigere adgang til bruger
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return;
 
   const { data: profile } = await supabase
@@ -519,9 +521,36 @@ window.logout            = logout;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 
+
 /* ============================================================
-   INIT
+   INIT – vent på session
    ============================================================ */
 
-loadBikes();
-updateFilterCounts();
+async function init() {
+  loadBikes();
+  updateFilterCounts();
+
+  const { data: { session } } = await supabase.auth.getSession();
+  const sellBtn    = document.querySelector('.btn-sell');
+  const navProfile = document.getElementById('nav-profile');
+
+  if (session) {
+    if (sellBtn) {
+      sellBtn.textContent = '+ Sæt til salg';
+      sellBtn.setAttribute('onclick', 'openModal()');
+    }
+    if (navProfile) navProfile.style.display = 'flex';
+    const { data: profile } = await supabase
+      .from('profiles').select('name').eq('id', session.user.id).single();
+    if (profile) updateNavAvatar(profile.name);
+  } else {
+    if (sellBtn) {
+      sellBtn.textContent = 'Log ind / Sælg';
+      sellBtn.setAttribute('onclick', 'openLoginModal()');
+    }
+    if (navProfile) navProfile.style.display = 'none';
+  }
+}
+
+// Fjern de gamle init-linjer og kør init i stedet
+init();
