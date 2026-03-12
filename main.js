@@ -9,6 +9,67 @@ const SUPABASE_KEY = 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Global bruger-cache — hentes én gang ved init
+let currentUser    = null;
+let currentProfile = null;
+
+/* ============================================================
+   INIT – hent session én gang og sæt alt op
+   ============================================================ */
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    currentUser = session.user;
+
+    const { data: profile } = await supabase
+      .from('profiles').select('*').eq('id', currentUser.id).single();
+    currentProfile = profile;
+
+    updateNav(true, profile?.name);
+  } else {
+    updateNav(false);
+  }
+
+  // Opdater nav når bruger logger ind/ud
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    if (session) {
+      currentUser = session.user;
+      const { data: profile } = await supabase
+        .from('profiles').select('*').eq('id', currentUser.id).single();
+      currentProfile = profile;
+      updateNav(true, profile?.name);
+    } else {
+      currentUser    = null;
+      currentProfile = null;
+      updateNav(false);
+    }
+  });
+
+  loadBikes();
+  updateFilterCounts();
+}
+
+function updateNav(loggedIn, name) {
+  const sellBtn    = document.querySelector('.btn-sell');
+  const navProfile = document.getElementById('nav-profile');
+
+  if (loggedIn) {
+    if (sellBtn) { sellBtn.textContent = '+ Sæt til salg'; sellBtn.setAttribute('onclick', 'openModal()'); }
+    if (navProfile) navProfile.style.display = 'flex';
+    updateNavAvatar(name);
+  } else {
+    if (sellBtn) { sellBtn.textContent = 'Log ind / Sælg'; sellBtn.setAttribute('onclick', 'openLoginModal()'); }
+    if (navProfile) navProfile.style.display = 'none';
+  }
+}
+
+function updateNavAvatar(name) {
+  const el = document.getElementById('nav-initials');
+  if (el) el.textContent = (name || '?').substring(0, 2).toUpperCase();
+}
+
 /* ============================================================
    ANNONCER
    ============================================================ */
@@ -24,24 +85,28 @@ async function loadBikes(filters = {}) {
     .order('created_at', { ascending: false });
 
   if (filters.type)       query = query.eq('type', filters.type);
-  if (filters.sellerType) query = query.eq('profiles.seller_type', filters.sellerType);
   if (filters.maxPrice)   query = query.lte('price', filters.maxPrice);
-  if (filters.search)     query = query.or(`brand.ilike.%${filters.search}%,model.ilike.%${filters.search}%,title.ilike.%${filters.search}%`);
+  if (filters.search)     query = query.or(`brand.ilike.%${filters.search}%,model.ilike.%${filters.search}%`);
 
   const { data, error } = await query;
+
   if (error) {
+    console.error('loadBikes fejl:', error);
     grid.innerHTML = '<p style="color:var(--rust);padding:20px">Kunne ikke hente annoncer.</p>';
     return;
   }
+
   renderBikes(data);
 }
 
 function renderBikes(bikes) {
   const grid = document.getElementById('listings-grid');
+
   if (!bikes || bikes.length === 0) {
     grid.innerHTML = '<p style="color:var(--muted);padding:20px">Ingen annoncer fundet.</p>';
     return;
   }
+
   grid.innerHTML = bikes.map((b, i) => {
     const profile    = b.profiles || {};
     const sellerType = profile.seller_type || 'private';
@@ -51,6 +116,7 @@ function renderBikes(bikes) {
     const imgContent = primaryImg
       ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:4rem">🚲</span>';
+
     return `
       <div class="bike-card" style="animation-delay:${i * 50}ms">
         <div class="bike-card-img">
@@ -90,13 +156,13 @@ function searchBikes() {
 }
 
 function sortBikes(value) {
-  const grid = document.getElementById('listings-grid');
+  const grid  = document.getElementById('listings-grid');
   const cards = [...grid.querySelectorAll('.bike-card')];
   cards.sort((a, b) => {
-    const priceA = parseInt(a.querySelector('.bike-price').textContent.replace(/\D/g, ''));
-    const priceB = parseInt(b.querySelector('.bike-price').textContent.replace(/\D/g, ''));
-    if (value === 'price_asc')  return priceA - priceB;
-    if (value === 'price_desc') return priceB - priceA;
+    const pA = parseInt(a.querySelector('.bike-price').textContent.replace(/\D/g, ''));
+    const pB = parseInt(b.querySelector('.bike-price').textContent.replace(/\D/g, ''));
+    if (value === 'price_asc')  return pA - pB;
+    if (value === 'price_desc') return pB - pA;
     return 0;
   });
   cards.forEach(c => grid.appendChild(c));
@@ -133,11 +199,10 @@ async function updateFilterCounts() {
   setCount('God stand',    data.filter(b => b.condition === 'God stand').length);
   setCount('Brugt',        data.filter(b => b.condition === 'Brugt').length);
 
-  const countEl = document.getElementById('listings-count');
-  if (countEl) countEl.textContent = `${total} cykler til salg`;
-
+  const countEl   = document.getElementById('listings-count');
   const statTotal = document.getElementById('stat-total');
-  if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') + '+' : '0';
+  if (countEl)   countEl.textContent   = `${total} cykler til salg`;
+  if (statTotal) statTotal.textContent = total.toLocaleString('da-DK') + '+';
 }
 
 function setCount(label, count) {
@@ -154,14 +219,13 @@ function setCount(label, count) {
    ============================================================ */
 
 async function toggleSave(btn, bikeId) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { showToast('⚠️ Log ind for at gemme annoncer'); return; }
+  if (!currentUser) { showToast('⚠️ Log ind for at gemme annoncer'); return; }
   const isSaved = btn.textContent === '❤️';
   if (isSaved) {
-    await supabase.from('saved_bikes').delete().eq('user_id', user.id).eq('bike_id', bikeId);
+    await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
     btn.textContent = '🤍';
   } else {
-    await supabase.from('saved_bikes').insert({ user_id: user.id, bike_id: bikeId });
+    await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
     btn.textContent = '❤️';
   }
 }
@@ -185,9 +249,8 @@ function togglePill(el) {
    OPRET ANNONCE MODAL
    ============================================================ */
 
-async function openModal() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
+function openModal() {
+  if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -207,11 +270,10 @@ function selectType(type) {
 }
 
 async function submitListing() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
 
   const bikeData = {
-    user_id:     user.id,
+    user_id:     currentUser.id,
     brand:       document.querySelector('[placeholder="f.eks. Trek, Giant, Specialized"]').value,
     model:       document.querySelector('[placeholder="f.eks. FX 3 Disc"]').value,
     price:       parseInt(document.querySelector('[placeholder="f.eks. 4500"]').value),
@@ -284,10 +346,11 @@ async function handleRegister() {
    PROFIL MODAL
    ============================================================ */
 
-async function openProfileModal() {
+function openProfileModal() {
+  if (!currentUser) return;
   document.getElementById('profile-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  await loadProfileData();
+  showProfileData();
   switchProfileTab('info');
 }
 function closeProfileModal() {
@@ -298,48 +361,37 @@ document.getElementById('profile-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeProfileModal();
 });
 
-async function loadProfileData() {
-  // Brug getSession for hurtigere adgang til bruger
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return;
-
-  const { data: profile } = await supabase
-    .from('profiles').select('*').eq('id', user.id).single();
-
-  if (!profile) return;
-
-  const name     = profile.name || 'Ukendt';
+function showProfileData() {
+  // Brug den cachede profil — ingen ekstra netværkskald
+  const profile = currentProfile || {};
+  const name    = profile.name || currentUser?.email?.split('@')[0] || 'Ukendt';
   const initials = name.substring(0, 2).toUpperCase();
 
-  // Opdater header
-  document.getElementById('profile-big-avatar').textContent  = initials;
-  document.getElementById('profile-display-name').textContent = name;
-  document.getElementById('profile-display-email').textContent = user.email;
+  document.getElementById('profile-big-avatar').textContent   = initials;
+  document.getElementById('profile-display-name').textContent  = name;
+  document.getElementById('profile-display-email').textContent = currentUser?.email || '';
 
   const badge = document.getElementById('profile-type-badge');
   if (profile.seller_type === 'dealer') {
     badge.textContent = '🏪 Forhandler';
-    badge.className = 'badge badge-dealer';
+    badge.className   = 'badge badge-dealer';
   } else {
     badge.textContent = '👤 Privat';
-    badge.className = 'badge badge-private';
+    badge.className   = 'badge badge-private';
   }
 
-  // Udfyld redigeringsfelter
   document.getElementById('edit-name').value        = profile.name || '';
   document.getElementById('edit-phone').value       = profile.phone || '';
   document.getElementById('edit-city').value        = profile.city || '';
   document.getElementById('edit-seller-type').value = profile.seller_type || 'private';
   document.getElementById('edit-shop-name').value   = profile.shop_name || '';
 
-  // Vis/skjul butiksnavnfelt
   const shopGroup = document.getElementById('edit-shop-group');
   shopGroup.style.display = profile.seller_type === 'dealer' ? 'flex' : 'none';
 
-  document.getElementById('edit-seller-type').addEventListener('change', function () {
+  document.getElementById('edit-seller-type').onchange = function () {
     shopGroup.style.display = this.value === 'dealer' ? 'flex' : 'none';
-  });
+  };
 }
 
 function switchProfileTab(tab) {
@@ -352,8 +404,7 @@ function switchProfileTab(tab) {
 }
 
 async function saveProfile() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!currentUser) return;
 
   const updates = {
     name:        document.getElementById('edit-name').value,
@@ -363,20 +414,21 @@ async function saveProfile() {
     shop_name:   document.getElementById('edit-shop-name').value,
   };
 
-  const { error } = await supabase.from('profiles').update(updates).eq('id', user.id);
+  const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
   if (error) { showToast('❌ Kunne ikke gemme profil'); return; }
 
-  showToast('✅ Profil opdateret!');
-  await loadProfileData();
+  // Opdater cache
+  currentProfile = { ...currentProfile, ...updates };
+  showProfileData();
   updateNavAvatar(updates.name);
+  showToast('✅ Profil opdateret!');
 }
 
 async function loadMyListings() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!currentUser) return;
 
   const { data, error } = await supabase
-    .from('bikes').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+    .from('bikes').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
 
   const grid = document.getElementById('my-listings-grid');
   if (error || !data || data.length === 0) {
@@ -392,8 +444,7 @@ async function loadMyListings() {
       </div>
       <div class="my-listing-price">${b.price.toLocaleString('da-DK')} kr.</div>
       <button class="btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 async function deleteListing(id) {
@@ -407,13 +458,12 @@ async function deleteListing(id) {
 }
 
 async function loadSavedListings() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!currentUser) return;
 
   const { data, error } = await supabase
     .from('saved_bikes')
     .select('bike_id, bikes(brand, model, price, type, city, condition)')
-    .eq('user_id', user.id);
+    .eq('user_id', currentUser.id);
 
   const grid = document.getElementById('my-saved-grid');
   if (error || !data || data.length === 0) {
@@ -436,52 +486,19 @@ async function loadSavedListings() {
 }
 
 /* ============================================================
-   AUTH STATE – opdater nav når bruger logger ind/ud
-   ============================================================ */
-
-function updateNavAvatar(name) {
-  const initials = (name || '?').substring(0, 2).toUpperCase();
-  const btn = document.getElementById('nav-initials');
-  if (btn) btn.textContent = initials;
-}
-
-supabase.auth.onAuthStateChange(async (_event, session) => {
-  const sellBtn    = document.querySelector('.btn-sell');
-  const navProfile = document.getElementById('nav-profile');
-
-  if (session) {
-    if (sellBtn) {
-      sellBtn.textContent = '+ Sæt til salg';
-      sellBtn.setAttribute('onclick', 'openModal()');
-    }
-    if (navProfile) navProfile.style.display = 'flex';
-
-    // Hent navn til avatar
-    const { data: profile } = await supabase
-      .from('profiles').select('name').eq('id', session.user.id).single();
-    if (profile) updateNavAvatar(profile.name);
-
-  } else {
-    if (sellBtn) {
-      sellBtn.textContent = 'Log ind / Sælg';
-      sellBtn.setAttribute('onclick', 'openLoginModal()');
-    }
-    if (navProfile) navProfile.style.display = 'none';
-  }
-});
-
-/* ============================================================
    LOGOUT
    ============================================================ */
 
 async function logout() {
   await supabase.auth.signOut();
+  currentUser    = null;
+  currentProfile = null;
   closeProfileModal();
   showToast('👋 Du er logget ud');
 }
 
 /* ============================================================
-   TOAST & NAVIGATION
+   TOAST & NAVIGATION SCROLL
    ============================================================ */
 
 function showToast(message) {
@@ -521,36 +538,8 @@ window.logout            = logout;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 
-
 /* ============================================================
-   INIT – vent på session
+   START
    ============================================================ */
 
-async function init() {
-  loadBikes();
-  updateFilterCounts();
-
-  const { data: { session } } = await supabase.auth.getSession();
-  const sellBtn    = document.querySelector('.btn-sell');
-  const navProfile = document.getElementById('nav-profile');
-
-  if (session) {
-    if (sellBtn) {
-      sellBtn.textContent = '+ Sæt til salg';
-      sellBtn.setAttribute('onclick', 'openModal()');
-    }
-    if (navProfile) navProfile.style.display = 'flex';
-    const { data: profile } = await supabase
-      .from('profiles').select('name').eq('id', session.user.id).single();
-    if (profile) updateNavAvatar(profile.name);
-  } else {
-    if (sellBtn) {
-      sellBtn.textContent = 'Log ind / Sælg';
-      sellBtn.setAttribute('onclick', 'openLoginModal()');
-    }
-    if (navProfile) navProfile.style.display = 'none';
-  }
-}
-
-// Fjern de gamle init-linjer og kør init i stedet
 init();
