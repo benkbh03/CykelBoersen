@@ -113,15 +113,22 @@ function togglePill(el) {
   document.querySelectorAll('.pill').forEach((p) => p.classList.remove('active'));
   el.classList.add('active');
   const text = el.textContent.trim();
-  if      (text === 'Alle')             loadBikes();
-  else if (text === 'El-cykler')        loadBikes({ type: 'El-cykel' });
-  else if (text === 'Kun forhandlere')  loadBikes({ sellerType: 'dealer' });
-  else if (text === 'Kun private')      loadBikes({ sellerType: 'private' });
-  else if (text === 'Under 3.000 kr')  loadBikes({ maxPrice: 3000 });
+  if      (text === 'Alle')            loadBikes();
+  else if (text === 'El-cykler')       loadBikes({ type: 'El-cykel' });
+  else if (text === 'Kun forhandlere') loadBikes({ sellerType: 'dealer' });
+  else if (text === 'Kun private')     loadBikes({ sellerType: 'private' });
+  else if (text === 'Under 3.000 kr') loadBikes({ maxPrice: 3000 });
 }
 
-/* ── MODAL: ÅBN / LUK ───────────────────────────────────────*/
-function openModal() {
+/* ── OPRET ANNONCE MODAL ────────────────────────────────────*/
+async function openModal() {
+  // Tjek om bruger er logget ind — hvis ikke, vis login i stedet
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    openLoginModal();
+    showToast('⚠️ Log ind for at oprette en annonce');
+    return;
+  }
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -132,6 +139,72 @@ function closeModal() {
 document.getElementById('modal').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeModal();
 });
+
+/* ── LOGIN MODAL ────────────────────────────────────────────*/
+function openLoginModal() {
+  document.getElementById('login-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLoginModal() {
+  document.getElementById('login-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('login-modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeLoginModal();
+});
+
+/* Skift mellem "Log ind" og "Opret konto" faner */
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tab-login').classList.toggle('selected', isLogin);
+  document.getElementById('tab-register').classList.toggle('selected', !isLogin);
+  document.getElementById('form-login').style.display    = isLogin ? 'block' : 'none';
+  document.getElementById('form-register').style.display = isLogin ? 'none'  : 'block';
+}
+
+/* ── HÅNDTER LOGIN ──────────────────────────────────────────*/
+async function handleLogin() {
+  const email    = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  if (!email || !password) {
+    showToast('⚠️ Udfyld email og adgangskode');
+    return;
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    showToast('❌ Forkert email eller adgangskode');
+  } else {
+    closeLoginModal();
+    showToast('✅ Du er nu logget ind');
+  }
+}
+
+/* ── HÅNDTER REGISTRERING ───────────────────────────────────*/
+async function handleRegister() {
+  const name     = document.getElementById('register-name').value;
+  const email    = document.getElementById('register-email').value;
+  const password = document.getElementById('register-password').value;
+
+  if (!name || !email || !password) {
+    showToast('⚠️ Udfyld alle felter');
+    return;
+  }
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } },
+  });
+
+  if (error) {
+    showToast('❌ ' + error.message);
+  } else {
+    closeLoginModal();
+    showToast('✅ Tjek din email for at bekræfte kontoen');
+  }
+}
 
 /* ── SÆLGER-TYPE TOGGLE ─────────────────────────────────────*/
 function selectType(type) {
@@ -180,30 +253,22 @@ async function submitListing() {
   loadBikes();
 }
 
-/* ── LOGIN / REGISTRERING / LOGOUT ─────────────────────────*/
-async function login(email, password) {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) showToast('❌ Forkert email eller adgangskode');
-  else       showToast('✅ Du er nu logget ind');
-}
-
-async function register(email, password, name) {
-  const { error } = await supabase.auth.signUp({
-    email, password, options: { data: { name } },
-  });
-  if (error) showToast('❌ Kunne ikke oprette bruger: ' + error.message);
-  else       showToast('✅ Tjek din email for at bekræfte kontoen');
-}
-
+/* ── LOGOUT ─────────────────────────────────────────────────*/
 async function logout() {
   await supabase.auth.signOut();
   showToast('👋 Du er logget ud');
 }
 
+/* ── OPDATER NAV VED LOGIN/LOGOUT ───────────────────────────*/
 supabase.auth.onAuthStateChange((_event, session) => {
   const sellBtn = document.querySelector('.btn-sell');
-  if (sellBtn) {
-    sellBtn.textContent = session ? '+ Sæt til salg' : 'Log ind / Sælg';
+  if (!sellBtn) return;
+  if (session) {
+    sellBtn.textContent = '+ Sæt til salg';
+    sellBtn.setAttribute('onclick', 'openModal()');
+  } else {
+    sellBtn.textContent = 'Log ind / Sælg';
+    sellBtn.setAttribute('onclick', 'openLoginModal()');
   }
 });
 
@@ -224,19 +289,20 @@ function showSection(section) {
   }
 }
 
-/* ── GØR FUNKTIONER GLOBALE ─────────────────────────────────
-   Nødvendigt når type="module" bruges, så onclick="" i HTML virker
-   ──────────────────────────────────────────────────────── */
-window.openModal     = openModal;
-window.closeModal    = closeModal;
-window.selectType    = selectType;
-window.togglePill    = togglePill;
-window.toggleSave    = toggleSave;
-window.submitListing = submitListing;
-window.showSection   = showSection;
-window.login         = login;
-window.register      = register;
-window.logout        = logout;
+/* ── GØR FUNKTIONER GLOBALE ─────────────────────────────────*/
+window.openModal      = openModal;
+window.closeModal     = closeModal;
+window.openLoginModal = openLoginModal;
+window.closeLoginModal= closeLoginModal;
+window.switchTab      = switchTab;
+window.handleLogin    = handleLogin;
+window.handleRegister = handleRegister;
+window.selectType     = selectType;
+window.togglePill     = togglePill;
+window.toggleSave     = toggleSave;
+window.submitListing  = submitListing;
+window.showSection    = showSection;
+window.logout         = logout;
 
 /* ── INIT ───────────────────────────────────────────────────*/
 loadBikes();
