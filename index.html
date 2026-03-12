@@ -311,6 +311,7 @@
           <button class="profile-tab active" id="ptab-info" onclick="switchProfileTab('info')">Oplysninger</button>
           <button class="profile-tab" id="ptab-listings" onclick="switchProfileTab('listings')">Mine annoncer</button>
           <button class="profile-tab" id="ptab-saved" onclick="switchProfileTab('saved')">Gemte</button>
+          <button class="profile-tab" id="ptab-inbox" onclick="switchProfileTab('inbox')">Indbakke <span id="inbox-badge" class="inbox-badge" style="display:none"></span></button>
         </div>
 
         <!-- Oplysninger -->
@@ -349,6 +350,37 @@
           </div>
         </div>
 
+        <!-- Indbakke -->
+        <div id="profile-inbox" style="display:none;">
+          <div id="inbox-list" class="my-listings-grid">
+            <p style="color:var(--muted)">Indlæser beskeder...</p>
+          </div>
+          <!-- Besked tråd -->
+          <div id="message-thread" style="display:none;margin-top:16px;">
+            <button onclick="closeThread()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;">← Tilbage til indbakke</button>
+            <div id="thread-header" class="thread-header"></div>
+            <div id="thread-messages" class="thread-messages"></div>
+            <div class="thread-reply">
+              <textarea id="reply-text" placeholder="Skriv et svar..."></textarea>
+              <button onclick="sendReply()">Send svar</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── ANNONCE DETALJE MODAL ── -->
+  <div class="modal-overlay" id="bike-modal">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2 id="bike-modal-title">Annonce</h2>
+        <button class="modal-close" onclick="closeBikeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="bike-modal-body">
+        <p style="color:var(--muted)">Indlæser...</p>
       </div>
     </div>
   </div>
