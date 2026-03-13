@@ -349,7 +349,7 @@ async function handleForgotPassword() {
   if (!email) { showToast('⚠️ Indtast din email'); return; }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.href,
+    redirectTo: 'https://benkbh03.github.io/cykelborsen/',
   });
 
   if (error) {
