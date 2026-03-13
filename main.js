@@ -331,11 +331,33 @@ document.getElementById('login-modal').addEventListener('click', e => {
 });
 
 function switchTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('tab-login').classList.toggle('selected', isLogin);
-  document.getElementById('tab-register').classList.toggle('selected', !isLogin);
-  document.getElementById('form-login').style.display    = isLogin ? 'block' : 'none';
-  document.getElementById('form-register').style.display = isLogin ? 'none'  : 'block';
+  // Fane-knapper kun for login/register
+  document.getElementById('tab-login').classList.toggle('selected', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('selected', tab === 'register');
+
+  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('form-forgot').style.display   = tab === 'forgot'   ? 'block' : 'none';
+
+  // Opdater modal-titel
+  const titles = { login: 'Log ind', register: 'Opret konto', forgot: 'Glemt adgangskode' };
+  document.querySelector('#login-modal .modal-header h2').textContent = titles[tab] || 'Log ind';
+}
+
+async function handleForgotPassword() {
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showToast('⚠️ Indtast din email'); return; }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.href,
+  });
+
+  if (error) {
+    showToast('❌ Kunne ikke sende link – tjek emailen');
+  } else {
+    closeLoginModal();
+    showToast('✅ Tjek din email for nulstillingslinket');
+  }
 }
 
 async function handleLogin() {
@@ -861,6 +883,7 @@ window.closeLoginModal   = closeLoginModal;
 window.switchTab         = switchTab;
 window.handleLogin       = handleLogin;
 window.handleRegister    = handleRegister;
+window.handleForgotPassword = handleForgotPassword;
 window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab  = switchProfileTab;
