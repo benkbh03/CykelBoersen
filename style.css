@@ -1374,3 +1374,31 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   transition: background 0.2s;
 }
 .thread-reply button:hover { background: var(--forest-light); }
+
+/* ── GLEMT ADGANGSKODE ── */
+.forgot-link {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--rust);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.forgot-link:hover { color: var(--rust-light); }
+
+.btn-back-login {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 12px;
+  padding: 0;
+  display: block;
+  width: 100%;
+  text-align: center;
+  transition: color 0.15s;
+}
+.btn-back-login:hover { color: var(--charcoal); }
