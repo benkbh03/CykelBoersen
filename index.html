@@ -271,13 +271,10 @@
         <div id="form-login">
           <div class="form-grid" style="grid-template-columns:1fr;">
             <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="din@email.dk"></div>
-            <div class="form-group">
-              <label>Adgangskode</label>
-              <input type="password" id="login-password" placeholder="••••••••">
-              <span class="forgot-link" onclick="switchTab('forgot')">Glemt adgangskode?</span>
-            </div>
+            <div class="form-group"><label>Adgangskode</label><input type="password" id="login-password" placeholder="••••••••"></div>
           </div>
           <button class="form-submit" onclick="handleLogin()">Log ind</button>
+          <button class="btn-back-login" onclick="switchTab('forgot')">Glemt adgangskode?</button>
         </div>
 
         <!-- Glemt adgangskode -->
