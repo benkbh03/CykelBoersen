@@ -870,6 +870,78 @@ async function sendReply() {
   openThread(activeThread.bikeId, activeThread.otherId, activeThread.otherName);
 }
 
+
+/* ============================================================
+   SIDEBAR FILTRE
+   ============================================================ */
+
+function applyFilters() {
+  // Sælgertype — hvis "alle" er checket, ignorer de andre
+  const sellerAll     = document.querySelector('[data-filter="seller"][data-value="all"]');
+  const sellerDealer  = document.querySelector('[data-filter="seller"][data-value="dealer"]');
+  const sellerPrivate = document.querySelector('[data-filter="seller"][data-value="private"]');
+
+  // Hvis "Alle sælgere" klikkes på, fjern de andre
+  if (sellerAll?.checked) {
+    if (sellerDealer)  sellerDealer.checked  = false;
+    if (sellerPrivate) sellerPrivate.checked = false;
+  }
+  // Hvis en specifik sælger vælges, fjern "alle"
+  if ((sellerDealer?.checked || sellerPrivate?.checked) && sellerAll?.checked) {
+    sellerAll.checked = false;
+  }
+
+  // Saml valgte typer
+  const types = [...document.querySelectorAll('[data-filter="type"]:checked')]
+    .map(el => el.dataset.value);
+
+  // Saml valgte stande
+  const conditions = [...document.querySelectorAll('[data-filter="condition"]:checked')]
+    .map(el => el.dataset.value);
+
+  // Pris
+  const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
+  const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
+
+  // Sælgertype
+  let sellerType = null;
+  if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
+  if (sellerPrivate?.checked && !sellerDealer?.checked) sellerType = 'private';
+
+  loadBikesWithFilters({ types, conditions, minPrice, maxPrice, sellerType });
+}
+
+async function loadBikesWithFilters({ types, conditions, minPrice, maxPrice, sellerType }) {
+  const grid = document.getElementById('listings-grid');
+  grid.innerHTML = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
+
+  let query = supabase
+    .from('bikes')
+    .select('*, profiles(name, seller_type, shop_name), bike_images(url, is_primary)')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+
+  if (types.length > 0)      query = query.in('type', types);
+  if (conditions.length > 0) query = query.in('condition', conditions);
+  if (minPrice)              query = query.gte('price', minPrice);
+  if (maxPrice)              query = query.lte('price', maxPrice);
+
+  const { data, error } = await query;
+  if (error) {
+    console.error('Filter fejl:', error);
+    grid.innerHTML = '<p style="color:var(--rust);padding:20px">Kunne ikke hente annoncer.</p>';
+    return;
+  }
+
+  // Filtrer sælgertype lokalt (da det er en join-kolonne)
+  let filtered = data;
+  if (sellerType) {
+    filtered = data.filter(b => b.profiles?.seller_type === sellerType);
+  }
+
+  renderBikes(filtered);
+}
+
 /* ============================================================
    GØR FUNKTIONER GLOBALE
    ============================================================ */
@@ -895,6 +967,7 @@ window.showSection       = showSection;
 window.logout            = logout;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
+window.applyFilters       = applyFilters;
 window.openBikeModal      = openBikeModal;
 window.closeBikeModal     = closeBikeModal;
 window.toggleBidBox       = toggleBidBox;
