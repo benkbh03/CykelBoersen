@@ -104,21 +104,21 @@
       <div class="sidebar-box">
         <h3>Sælgertype</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox" checked> Alle sælgere <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> 🏪 Forhandlere <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> 👤 Private <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="applyFilters()"> Alle sælgere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="applyFilters()"> 🏪 Forhandlere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="applyFilters()"> 👤 Private <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
         <h3>Cykeltype</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox"> Racercykel <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Mountainbike <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> El-cykel <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Citybike <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Ladcykel <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Børnecykel <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Gravel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Racercykel" onchange="applyFilters()"> Racercykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Mountainbike" onchange="applyFilters()"> Mountainbike <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="El-cykel" onchange="applyFilters()"> El-cykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Citybike" onchange="applyFilters()"> Citybike <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Ladcykel" onchange="applyFilters()"> Ladcykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Børnecykel" onchange="applyFilters()"> Børnecykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Gravel" onchange="applyFilters()"> Gravel <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
@@ -129,16 +129,16 @@
             <span>–</span>
             <input type="number" placeholder="Max kr." min="0">
           </div>
-          <button class="btn-apply">Anvend</button>
+          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
       <div class="sidebar-box">
         <h3>Stand</h3>
         <div class="filter-group">
-          <label class="filter-option"><input type="checkbox"> Ny <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Som ny <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> God stand <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox"> Brugt <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Som ny" onchange="applyFilters()"> Som ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="God stand" onchange="applyFilters()"> God stand <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Brugt" onchange="applyFilters()"> Brugt <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
