@@ -349,7 +349,7 @@ async function handleForgotPassword() {
   if (!email) { showToast('⚠️ Indtast din email'); return; }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://benkbh03.github.io/cykelborsen/',
+    redirectTo: 'https://benkbh03.github.io/CykelBoersen/',
   });
 
   if (error) {
@@ -959,6 +959,40 @@ function closeMobileFilter() {
   document.body.style.overflow = '';
 }
 
+
+/* ============================================================
+   NULSTIL ADGANGSKODE – håndter token fra email-link
+   ============================================================ */
+
+async function handleResetPassword() {
+  const password = document.getElementById('reset-password').value;
+  const confirm  = document.getElementById('reset-password-confirm').value;
+
+  if (!password || password.length < 6) {
+    showToast('⚠️ Adgangskoden skal være mindst 6 tegn'); return;
+  }
+  if (password !== confirm) {
+    showToast('⚠️ Adgangskoderne matcher ikke'); return;
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    showToast('❌ Kunne ikke opdatere adgangskode'); return;
+  }
+
+  document.getElementById('reset-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  showToast('✅ Din adgangskode er opdateret — du er nu logget ind');
+}
+
+// Lyt efter PASSWORD_RECOVERY event fra Supabase
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (_event === 'PASSWORD_RECOVERY') {
+    document.getElementById('reset-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+});
+
 /* ============================================================
    GØR FUNKTIONER GLOBALE
    ============================================================ */
@@ -987,6 +1021,7 @@ window.sortBikes         = sortBikes;
 window.applyFilters       = applyFilters;
 window.openMobileFilter   = openMobileFilter;
 window.closeMobileFilter  = closeMobileFilter;
+window.handleResetPassword = handleResetPassword;
 window.openBikeModal      = openBikeModal;
 window.closeBikeModal     = closeBikeModal;
 window.toggleBidBox       = toggleBidBox;
