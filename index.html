@@ -19,6 +19,10 @@
       <a>Om os</a>
       <a class="btn-sell" onclick="openModal()">+ Sæt til salg</a>
       <div class="nav-profile" id="nav-profile" style="display:none;">
+        <button class="nav-inbox-btn" id="nav-inbox-btn" onclick="openInboxModal()" title="Indbakke">
+          <span class="nav-inbox-icon">✉️</span>
+          <span class="nav-inbox-badge" id="nav-inbox-badge" style="display:none;">0</span>
+        </button>
         <button class="profile-avatar-btn" id="profile-avatar-btn" onclick="openProfileModal()">
           <span id="nav-initials">?</span>
         </button>
@@ -525,6 +529,35 @@
           </div>
         </div>
         <button class="form-submit" onclick="saveEditedListing()">Gem ændringer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── INDBAKKE MODAL ── -->
+  <div class="modal-overlay" id="inbox-modal">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-header">
+        <h2>Indbakke</h2>
+        <button class="modal-close" onclick="closeInboxModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding-top:16px;">
+
+        <!-- Tråd-liste -->
+        <div id="inbox-modal-list" class="my-listings-grid" style="max-height:500px;">
+          <p style="color:var(--muted)">Indlæser beskeder...</p>
+        </div>
+
+        <!-- Besked tråd -->
+        <div id="inbox-modal-thread" style="display:none;">
+          <button onclick="closeInboxThread()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;">← Tilbage til indbakke</button>
+          <div id="inbox-modal-thread-header" class="thread-header"></div>
+          <div id="inbox-modal-thread-messages" class="thread-messages"></div>
+          <div class="thread-reply">
+            <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..."></textarea>
+            <button onclick="sendInboxReply()">Send svar</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
