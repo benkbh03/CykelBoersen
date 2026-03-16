@@ -50,6 +50,11 @@ async function init() {
 
   loadBikes();
   updateFilterCounts();
+
+  // Klik uden for modal lukker den
+  document.getElementById('inbox-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeInboxModal();
+  });
 }
 
 function updateNav(loggedIn, name) {
@@ -1196,9 +1201,6 @@ function closeInboxModal() {
   document.getElementById('inbox-modal').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.getElementById('inbox-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeInboxModal();
-});
 
 async function loadInboxModal() {
   if (!currentUser) return;
