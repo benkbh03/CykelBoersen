@@ -12,7 +12,7 @@
 
   <!-- ── NAVIGATION ── -->
   <nav>
-    <div class="logo">Cykel<span>børsen</span></div>
+    <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
     <div class="nav-links">
       <a onclick="showSection('listings')">Annoncer</a>
       <a onclick="showSection('dealers')">Forhandlere</a>
@@ -175,19 +175,58 @@
 
   <!-- ── FORHANDLER-SEKTION ── -->
   <section class="dealer-strip">
-    <h2>Autoriserede forhandlere</h2>
-    <p>Køb med tryghed fra en af vores verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
-    <div class="dealer-cards">
-      <div class="dealer-card"><div class="dealer-logo">🏪</div><div class="dealer-name">VeloShop Kbh</div><div class="dealer-city">København NV</div><div class="dealer-count">84 aktive annoncer</div></div>
-      <div class="dealer-card"><div class="dealer-logo">🚲</div><div class="dealer-name">Cykel Expert Aarhus</div><div class="dealer-city">Aarhus C</div><div class="dealer-count">62 aktive annoncer</div></div>
-      <div class="dealer-card"><div class="dealer-logo">⚡</div><div class="dealer-name">ElCyklen.dk</div><div class="dealer-city">Odense</div><div class="dealer-count">128 aktive annoncer</div></div>
-      <div class="dealer-card"><div class="dealer-logo">🏆</div><div class="dealer-name">Nordic Bikes</div><div class="dealer-city">Frederiksberg</div><div class="dealer-count">47 aktive annoncer</div></div>
+    <div class="dealer-strip-header">
+      <div>
+        <h2>Autoriserede forhandlere</h2>
+        <p>Køb med tryghed fra verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
+      </div>
+      <button class="btn-become-dealer" onclick="openBecomeDealerModal()">🏪 Bliv forhandler</button>
+    </div>
+    <div class="dealer-cards dealer-empty-state">
+      <div class="dealer-empty-card">
+        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+        <h3>Ingen forhandlere endnu</h3>
+        <p>Vær den første forhandler på Cykelbørsen og nå tusindvis af cykelkøbere.</p>
+        <button class="btn-become-dealer-small" onclick="openBecomeDealerModal()">Tilmeld din butik →</button>
+      </div>
     </div>
   </section>
 
+  <!-- ── BLIV FORHANDLER MODAL ── -->
+  <div class="modal-overlay" id="dealer-modal">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-header">
+        <h2>Bliv forhandler</h2>
+        <button class="modal-close" onclick="closeBecomeDealerModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:.9rem;color:var(--muted);margin-bottom:22px;line-height:1.6;">
+          Få din cykelbutik på Danmarks voksende cykelmarked. Gratis at komme i gang — betal kun når det virker.
+        </p>
+        <div class="dealer-perks">
+          <div class="dealer-perk">✅ <span>Ubegrænset antal annoncer</span></div>
+          <div class="dealer-perk">✅ <span>Verificeret forhandler-badge</span></div>
+          <div class="dealer-perk">✅ <span>Direkte beskeder fra købere</span></div>
+          <div class="dealer-perk">✅ <span>Statistik og salgsdata</span></div>
+          <div class="dealer-perk">✅ <span>Prioriteret placering i søgning</span></div>
+        </div>
+        <div class="form-grid" style="grid-template-columns:1fr;margin-top:22px;">
+          <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS"></div>
+          <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678"></div>
+          <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk"></div>
+          <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78"></div>
+          <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København"></div>
+        </div>
+        <button class="form-submit" onclick="submitDealerApplication()">Send ansøgning</button>
+        <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:12px;">Vi kontakter dig inden for 2 hverdage.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── FOOTER ── -->
   <footer>
-    <div class="logo">Cykel<span>børsen</span></div>
+    <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
     <p>© 2024 Cykelbørsen · Alle rettigheder forbeholdes</p>
     <div class="footer-links">
       <a href="#">Vilkår</a>
