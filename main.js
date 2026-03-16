@@ -287,18 +287,26 @@ function selectType(type) {
 async function submitListing() {
   if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
 
+  // Hent felter specifikt fra opret-annonce modalen (#modal)
+  const modalEl = document.getElementById('modal');
+  const brand   = modalEl.querySelector('[placeholder="f.eks. Trek, Giant, Specialized"]').value.trim();
+  const model   = modalEl.querySelector('[placeholder="f.eks. FX 3 Disc"]').value.trim();
+  const price   = parseInt(modalEl.querySelector('[placeholder="f.eks. 4500"]').value);
+  const year    = parseInt(modalEl.querySelector('[placeholder="f.eks. 2021"]').value) || null;
+  const city    = modalEl.querySelector('[placeholder="f.eks. København"]').value.trim();
+  const desc    = modalEl.querySelector('textarea').value.trim();
+  const selects = modalEl.querySelectorAll('select');
+  const type      = selects[0].value;
+  const size      = selects[1].value;
+  const condition = selects[2].value;
+
   const bikeData = {
     user_id:     currentUser.id,
-    brand:       document.querySelector('[placeholder="f.eks. Trek, Giant, Specialized"]').value,
-    model:       document.querySelector('[placeholder="f.eks. FX 3 Disc"]').value,
-    price:       parseInt(document.querySelector('[placeholder="f.eks. 4500"]').value),
-    year:        parseInt(document.querySelector('[placeholder="f.eks. 2021"]').value) || null,
-    city:        document.querySelector('[placeholder="f.eks. København"]').value,
-    description: document.querySelector('textarea').value,
-    type:        document.querySelectorAll('.form-grid select')[0].value,
-    size:        document.querySelectorAll('.form-grid select')[1].value,
-    condition:   document.querySelectorAll('.form-grid select')[2].value,
-    title:       `${document.querySelector('[placeholder="f.eks. Trek, Giant, Specialized"]').value} ${document.querySelector('[placeholder="f.eks. FX 3 Disc"]').value}`,
+    brand, model, price, year, city,
+    description: desc,
+    type, size, condition,
+    title:       `${brand} ${model}`,
+    is_active:   true,
   };
 
   if (!bikeData.brand || !bikeData.model || !bikeData.price || !bikeData.city) {
