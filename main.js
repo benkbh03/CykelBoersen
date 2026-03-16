@@ -1444,6 +1444,7 @@ async function updateInboxBadge() {
 
 window.openInboxModal   = openInboxModal;
 window.startRealtimeNotifications = startRealtimeNotifications;
+window.updateInboxBadge = updateInboxBadge;
 window.closeInboxModal  = closeInboxModal;
 window.openInboxThread  = openInboxThread;
 window.closeInboxThread = closeInboxThread;
