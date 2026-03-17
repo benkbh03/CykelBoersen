@@ -140,7 +140,13 @@ function renderBikes(bikes) {
   const grid = document.getElementById('listings-grid');
 
   if (!bikes || bikes.length === 0) {
-    grid.innerHTML = '<p style="color:var(--muted);padding:20px">Ingen annoncer fundet.</p>';
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+        <div style="font-size:4rem;margin-bottom:16px;">🚲</div>
+        <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler her endnu</h3>
+        <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge din cykel på Cykelbørsen — det er gratis og tager kun 2 minutter.</p>
+        <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Sæt din cykel til salg</button>
+      </div>`;
     return;
   }
 
@@ -242,7 +248,7 @@ async function updateFilterCounts() {
   const countEl   = document.getElementById('listings-count');
   const statTotal = document.getElementById('stat-total');
   if (countEl)   countEl.textContent   = `${total} cykler til salg`;
-  if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') + '+' : '0';
+  if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
 
   // Hent antal verificerede forhandlere
   const { count: dealerCount } = await supabase
@@ -252,7 +258,7 @@ async function updateFilterCounts() {
     .eq('verified', true);
 
   const statDealers = document.getElementById('stat-dealers');
-  if (statDealers) statDealers.textContent = (dealerCount || 0).toLocaleString('da-DK');
+  if (statDealers) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
 
   // Hent antal solgte cykler (gennemførte handler)
   const { count: soldCount } = await supabase
