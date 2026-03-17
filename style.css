@@ -836,3 +836,54 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   white-space: nowrap;
 }
 .btn-unsold:hover { background: var(--forest-light); }
+
+/* ── SÅDAN VIRKER DET ── */
+.how-it-works {
+  background: var(--sand);
+  padding: 56px 48px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.how-it-works h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--charcoal); margin-bottom: 8px;
+}
+.how-subtitle {
+  color: var(--muted); font-size: 0.95rem;
+  margin-bottom: 40px;
+}
+.how-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  max-width: 800px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.how-step {
+  flex: 1; min-width: 180px; max-width: 220px;
+  padding: 24px 16px;
+  background: var(--cream);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.how-icon { font-size: 2.2rem; margin-bottom: 12px; }
+.how-step h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem; font-weight: 600;
+  margin-bottom: 8px; color: var(--charcoal);
+}
+.how-step p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+.how-step-arrow {
+  font-size: 1.5rem; color: var(--border);
+  padding: 0 12px; flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .how-it-works { padding: 36px 16px; }
+  .how-steps { gap: 12px; }
+  .how-step-arrow { display: none; }
+  .how-step { min-width: 140px; }
+}
