@@ -1893,6 +1893,7 @@ function openShareModal(bikeId, title) {
   var text = 'Tjek denne cykel på Cykelbørsen: ' + title;
 
   document.getElementById('share-link-input').value = url;
+  document.getElementById('share-modal').dataset.title = title;
   document.getElementById('share-whatsapp-btn').href  = 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + url);
   document.getElementById('share-facebook-btn').href  = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
 
@@ -1922,6 +1923,22 @@ function shareViaSMS() {
   window.location.href = 'sms:?body=' + encodeURIComponent(text);
 }
 
+function openNativeShare() {
+  var url   = document.getElementById('share-link-input').value;
+  var title = document.getElementById('share-modal').dataset.title || 'Cykel til salg';
+  var text  = 'Tjek denne cykel på Cykelbørsen: ' + title;
+
+  // Brug Web Share API hvis tilgængelig (mobil)
+  if (navigator.share) {
+    navigator.share({ title: title, text: text, url: url })
+      .then(function() { showToast('✅ Delt!'); })
+      .catch(function() {});
+  } else {
+    // Fallback: åbn en side der lader brugeren vælge
+    window.open('https://www.addtoany.com/share?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(text), '_blank', 'width=600,height=400');
+  }
+}
+
 window.searchAutocomplete = searchAutocomplete;
 window.selectAutocomplete = selectAutocomplete;
 window.handleSearchKey    = handleSearchKey;
@@ -1930,3 +1947,4 @@ window.openShareModal     = openShareModal;
 window.closeShareModal    = closeShareModal;
 window.copyShareLink      = copyShareLink;
 window.shareViaSMS        = shareViaSMS;
+window.openNativeShare     = openNativeShare;
