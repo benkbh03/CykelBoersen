@@ -1500,6 +1500,9 @@ window.openInboxModal   = openInboxModal;
 window.startRealtimeNotifications = startRealtimeNotifications;
 window.updateInboxBadge        = updateInboxBadge;
 window.openBecomeDealerModal   = openBecomeDealerModal;
+window.openFooterModal         = openFooterModal;
+window.closeFooterModal        = closeFooterModal;
+window.submitContactForm       = submitContactForm;
 window.closeBecomeDealerModal  = closeBecomeDealerModal;
 window.submitDealerApplication = submitDealerApplication;
 window.closeInboxModal  = closeInboxModal;
@@ -1613,7 +1616,3 @@ function submitContactForm() {
   closeFooterModal();
   showToast('✅ Tak! Vi vender tilbage inden for 1-2 hverdage.');
 }
-
-window.openFooterModal    = openFooterModal;
-window.closeFooterModal   = closeFooterModal;
-window.submitContactForm  = submitContactForm;
