@@ -107,7 +107,7 @@ nav {
 /* ── HERO ── */
 .hero {
   background: var(--forest);
-  padding: 80px 48px 70px;
+  padding: 56px 48px 48px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
@@ -156,7 +156,7 @@ nav {
 .stat-label { color: var(--sand); opacity: 0.6; font-size: 0.85rem; }
 
 /* ── SØGEBAR ── */
-.search-section { background: var(--sand); padding: 28px 48px; border-bottom: 1px solid var(--border); }
+.search-section { background: var(--sand); padding: 20px 48px; border-bottom: 1px solid var(--border); }
 .search-bar { display: flex; gap: 12px; max-width: 900px; margin: 0 auto; align-items: center; }
 .search-bar input, .search-bar select {
   padding: 13px 18px;
@@ -178,7 +178,7 @@ nav {
 
 /* ── HURTIGFILTER ── */
 .filters-row {
-  padding: 20px 48px; background: var(--cream);
+  padding: 14px 48px; background: var(--cream);
   border-bottom: 1px solid var(--border);
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
 }
