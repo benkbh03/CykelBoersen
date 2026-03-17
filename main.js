@@ -69,6 +69,9 @@ async function init() {
   document.getElementById('admin-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeAdminPanel();
   });
+  document.getElementById('share-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeShareModal();
+  });
 }
 
 function updateNav(loggedIn, name) {
@@ -116,7 +119,6 @@ async function loadBikes(filters = {}) {
   let query = supabase
     .from('bikes')
     .select('*, profiles(name, seller_type, shop_name), bike_images(url, is_primary)')
-    .eq('is_active', true)
     .order('created_at', { ascending: false });
 
   if (filters.type)       query = query.eq('type', filters.type);
@@ -152,12 +154,14 @@ function renderBikes(bikes) {
       ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:4rem">🚲</span>';
 
+    var isSold = !b.is_active;
     return `
-      <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="openBikeModal('${b.id}')">
+      <div class="bike-card" style="animation-delay:${i * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "openBikeModal('" + b.id + "')"}">
         <div class="bike-card-img">
           ${imgContent}
+          ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
           <span class="condition-tag">${b.condition}</span>
-          <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">🤍</button>
+          ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">🤍</button>` : ''}
         </div>
         <div class="bike-card-body">
           <div class="card-top">
@@ -509,18 +513,21 @@ async function loadMyListings() {
     return;
   }
 
-  grid.innerHTML = data.map(b => `
-    <div class="my-listing-row">
+  grid.innerHTML = data.map(b => {
+    var isSold = !b.is_active;
+    return `<div class="my-listing-row" style="${isSold ? 'opacity:0.65' : ''}">
       <div class="my-listing-info">
-        <div class="my-listing-title">${b.brand} ${b.model}</div>
+        <div class="my-listing-title">${b.brand} ${b.model} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
         <div class="my-listing-meta">${b.type} · ${b.city} · ${b.condition}</div>
       </div>
       <div class="my-listing-price">${b.price.toLocaleString('da-DK')} kr.</div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-edit" onclick="openEditModal('${b.id}')">✏️ Rediger</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${!isSold ? `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : `<button class="btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
+        <button class="btn-edit" onclick="openEditModal('${b.id}')">✏️</button>
         <button class="btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function deleteListing(id) {
@@ -664,6 +671,7 @@ async function openBikeModal(bikeId) {
             <button onclick="sendMessage('${b.id}', '${profile.id}')">Send besked</button>
           </div>
           <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
+          <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
         </div>
         ` : `<p style="color:var(--muted);font-size:.85rem">Dette er din egen annonce.</p>`}
       </div>
@@ -1746,3 +1754,153 @@ window.switchAdminTab       = switchAdminTab;
 window.approveDealer        = approveDealer;
 window.rejectDealer         = rejectDealer;
 window.revokeDealer         = revokeDealer;
+
+/* ============================================================
+   AUTOCOMPLETE SØGNING
+   ============================================================ */
+
+var autocompleteTimeout = null;
+var autocompleteIndex   = -1;
+
+async function searchAutocomplete(query) {
+  clearTimeout(autocompleteTimeout);
+  var list = document.getElementById('autocomplete-list');
+
+  if (!query || query.length < 2) { list.style.display = 'none'; return; }
+
+  autocompleteTimeout = setTimeout(async function() {
+    var result = await supabase
+      .from('bikes')
+      .select('brand, model, type, price')
+      .eq('is_active', true)
+      .or('brand.ilike.%' + query + '%,model.ilike.%' + query + '%,title.ilike.%' + query + '%')
+      .limit(8);
+
+    if (!result.data || result.data.length === 0) { list.style.display = 'none'; return; }
+
+    // Deduplikér brand+model kombinationer
+    var seen = {};
+    var items = result.data.filter(function(b) {
+      var key = b.brand + ' ' + b.model;
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+
+    autocompleteIndex = -1;
+    list.innerHTML = items.map(function(b, i) {
+      var display = b.brand + ' ' + b.model;
+      var highlighted = display.replace(new RegExp('(' + query + ')', 'gi'), '<strong>$1</strong>');
+      return '<div class="autocomplete-item" data-index="' + i + '" onclick="selectAutocomplete(\'' + (b.brand + ' ' + b.model).replace(/'/g, '') + '\')">'
+        + '🚲 ' + highlighted
+        + '<span class="autocomplete-meta">' + b.type + ' · ' + b.price.toLocaleString('da-DK') + ' kr.</span>'
+        + '</div>';
+    }).join('');
+
+    list.style.display = 'block';
+  }, 200);
+}
+
+function selectAutocomplete(value) {
+  document.getElementById('search-input').value = value;
+  document.getElementById('autocomplete-list').style.display = 'none';
+  searchBikes();
+}
+
+function handleSearchKey(e) {
+  var list  = document.getElementById('autocomplete-list');
+  var items = list.querySelectorAll('.autocomplete-item');
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown') {
+    autocompleteIndex = Math.min(autocompleteIndex + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    autocompleteIndex = Math.max(autocompleteIndex - 1, -1);
+  } else if (e.key === 'Enter') {
+    if (autocompleteIndex >= 0) {
+      items[autocompleteIndex].click();
+    } else {
+      list.style.display = 'none';
+      searchBikes();
+    }
+    return;
+  } else if (e.key === 'Escape') {
+    list.style.display = 'none'; return;
+  }
+
+  items.forEach(function(el, i) {
+    el.classList.toggle('active', i === autocompleteIndex);
+  });
+}
+
+// Luk autocomplete ved klik udenfor
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#search-input') && !e.target.closest('#autocomplete-list')) {
+    var list = document.getElementById('autocomplete-list');
+    if (list) list.style.display = 'none';
+  }
+});
+
+/* ============================================================
+   SÆT SOM SOLGT
+   ============================================================ */
+
+async function toggleSold(bikeId, currentlySold) {
+  var newStatus = !currentlySold;
+  var err = (await supabase.from('bikes').update({ is_active: !newStatus }).eq('id', bikeId)).error;
+  if (err) { showToast('❌ Kunne ikke opdatere status'); return; }
+  showToast(newStatus ? '🏷️ Annonce markeret som solgt' : '✅ Annonce aktiv igen');
+  loadMyListings();
+  loadBikes();
+  updateFilterCounts();
+}
+
+/* ============================================================
+   DEL ANNONCE
+   ============================================================ */
+
+var currentShareBikeId = null;
+
+function openShareModal(bikeId, title) {
+  currentShareBikeId = bikeId;
+  var url = window.location.origin + window.location.pathname + '?bike=' + bikeId;
+  var text = 'Tjek denne cykel på Cykelbørsen: ' + title;
+
+  document.getElementById('share-link-input').value = url;
+  document.getElementById('share-whatsapp-btn').href  = 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + url);
+  document.getElementById('share-facebook-btn').href  = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+
+  document.getElementById('share-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function copyShareLink() {
+  var input = document.getElementById('share-link-input');
+  navigator.clipboard.writeText(input.value).then(function() {
+    showToast('✅ Link kopieret!');
+  }).catch(function() {
+    input.select();
+    document.execCommand('copy');
+    showToast('✅ Link kopieret!');
+  });
+}
+
+function shareViaSMS() {
+  var url  = document.getElementById('share-link-input').value;
+  var text = 'Tjek denne cykel på Cykelbørsen: ' + url;
+  window.location.href = 'sms:?body=' + encodeURIComponent(text);
+}
+
+window.searchAutocomplete = searchAutocomplete;
+window.selectAutocomplete = selectAutocomplete;
+window.handleSearchKey    = handleSearchKey;
+window.toggleSold         = toggleSold;
+window.openShareModal     = openShareModal;
+window.closeShareModal    = closeShareModal;
+window.copyShareLink      = copyShareLink;
+window.shareViaSMS        = shareViaSMS;
