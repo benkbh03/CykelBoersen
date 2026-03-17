@@ -2087,7 +2087,7 @@ async function initMap() {
       + '<div class="map-popup-meta">' + b.type + ' · ' + b.condition + ' · ' + (sellerName || 'Ukendt')
       + ' <span style="background:' + (isDealer ? '#E8F0E8' : '#FBF0E8') + ';color:' + (isDealer ? '#2A3D2E' : '#8A4A20') + ';padding:2px 7px;border-radius:100px;font-size:.7rem;">'
       + (isDealer ? '🏪 Forhandler' : '👤 Privat') + '</span></div>'
-      + '<button class="map-popup-btn" onclick="window._getMap().closePopup();openBikeModal(\'' + b.id + '\')">Se annonce →</button>'
+      + '<button class="map-popup-btn" onclick="openFromMap(&quot;' + b.id + '&quot;)">Se annonce →</button>'
       + '</div>';
 
     marker.bindPopup(popupHtml, { maxWidth: 280, closeButton: false });
@@ -2147,6 +2147,21 @@ function locateUser() {
     showToast('⚠️ Kunne ikke hente din lokation');
   });
 }
+
+function openFromMap(bikeId) {
+  setView('list');
+  setTimeout(function() { openBikeModal(bikeId); }, 100);
+}
+window.openFromMap = openFromMap;
+
+function _openFromMap(bikeId) {
+  // Luk kortpopup
+  if (mapInstance) mapInstance.closePopup();
+  // Skift til listevisning bag ved
+  // Åbn bike modal direkte uden at skifte visning
+  setTimeout(function() { openBikeModal(bikeId); }, 100);
+}
+window._openFromMap = _openFromMap;
 
 window.setView    = setView;
 window.locateUser = locateUser;
