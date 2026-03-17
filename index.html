@@ -156,11 +156,7 @@
       </div>
     </aside>
 
-    <div class="listings-column">
-      <div class="mobile-filter-bar">
-        <button class="btn-mobile-filter" onclick="openMobileFilter()">⚙️ Filtre</button>
-      </div>
-
+    <div>
       <div class="listings-header">
         <div>
           <h2>Seneste annoncer</h2>
@@ -233,10 +229,10 @@
     <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
     <p>© 2024 Cykelbørsen · Alle rettigheder forbeholdes</p>
     <div class="footer-links">
-      <a href="#">Vilkår</a>
-      <a href="#">Privatlivspolitik</a>
-      <a href="#">Kontakt</a>
-      <a href="#">Bliv forhandler</a>
+      <a onclick="openFooterModal('terms')">Vilkår</a>
+      <a onclick="openFooterModal('privacy')">Privatlivspolitik</a>
+      <a onclick="openFooterModal('contact')">Kontakt</a>
+      <a onclick="openBecomeDealerModal()">Bliv forhandler</a>
     </div>
   </footer>
 
@@ -326,6 +322,7 @@
           <button class="btn-back-login" onclick="switchTab('forgot')">Glemt adgangskode?</button>
         </div>
 
+        <!-- Glemt adgangskode -->
         <div id="form-forgot" style="display:none;">
           <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Indtast din email — vi sender dig et link til at nulstille din adgangskode.</p>
           <div class="form-grid" style="grid-template-columns:1fr;">
@@ -355,6 +352,7 @@
       </div>
       <div class="modal-body">
 
+        <!-- Profil header -->
         <div class="profile-header">
           <div class="profile-big-avatar" id="profile-big-avatar">?</div>
           <div>
@@ -364,6 +362,7 @@
           </div>
         </div>
 
+        <!-- Faner -->
         <div class="profile-tabs">
           <button class="profile-tab active" id="ptab-info" onclick="switchProfileTab('info')">Oplysninger</button>
           <button class="profile-tab" id="ptab-listings" onclick="switchProfileTab('listings')">Mine annoncer</button>
@@ -371,6 +370,7 @@
           <button class="profile-tab" id="ptab-inbox" onclick="switchProfileTab('inbox')">Indbakke <span id="inbox-badge" class="inbox-badge" style="display:none"></span></button>
         </div>
 
+        <!-- Oplysninger -->
         <div id="profile-info">
           <div class="form-grid" style="grid-template-columns:1fr;">
             <div class="form-group"><label>Navn</label><input type="text" id="edit-name" placeholder="Dit navn"></div>
@@ -392,22 +392,26 @@
           <button class="btn-logout" onclick="logout()">Log ud</button>
         </div>
 
+        <!-- Mine annoncer -->
         <div id="profile-listings" style="display:none;">
           <div id="my-listings-grid" class="my-listings-grid">
             <p style="color:var(--muted)">Indlæser dine annoncer...</p>
           </div>
         </div>
 
+        <!-- Gemte annoncer -->
         <div id="profile-saved" style="display:none;">
           <div id="my-saved-grid" class="my-listings-grid">
             <p style="color:var(--muted)">Indlæser gemte annoncer...</p>
           </div>
         </div>
 
+        <!-- Indbakke -->
         <div id="profile-inbox" style="display:none;">
           <div id="inbox-list" class="my-listings-grid">
             <p style="color:var(--muted)">Indlæser beskeder...</p>
           </div>
+          <!-- Besked tråd -->
           <div id="message-thread" style="display:none;margin-top:16px;">
             <button onclick="closeThread()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;">← Tilbage til indbakke</button>
             <div id="thread-header" class="thread-header"></div>
@@ -422,6 +426,7 @@
       </div>
     </div>
   </div>
+
 
   <!-- ── ANNONCE DETALJE MODAL ── -->
   <div class="modal-overlay" id="bike-modal">
@@ -491,6 +496,7 @@
     <button class="form-submit" onclick="closeMobileFilter()" style="margin-top:8px;">Vis resultater</button>
   </div>
 
+  <!-- ── NY ADGANGSKODE MODAL ── -->
   <!-- ── NULSTIL ADGANGSKODE MODAL ── -->
   <div class="modal-overlay" id="reset-modal">
     <div class="modal" style="max-width:460px;">
@@ -575,10 +581,12 @@
       </div>
       <div class="modal-body" style="padding-top:16px;">
 
+        <!-- Tråd-liste -->
         <div id="inbox-modal-list" class="my-listings-grid" style="max-height:500px;">
           <p style="color:var(--muted)">Indlæser beskeder...</p>
         </div>
 
+        <!-- Besked tråd -->
         <div id="inbox-modal-thread" style="display:none;">
           <button onclick="closeInboxThread()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;">← Tilbage til indbakke</button>
           <div id="inbox-modal-thread-header" class="thread-header"></div>
@@ -590,6 +598,18 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+
+  <!-- ── FOOTER MODALER ── -->
+  <div class="modal-overlay" id="footer-modal">
+    <div class="modal" style="max-width:560px;">
+      <div class="modal-header">
+        <h2 id="footer-modal-title">–</h2>
+        <button class="modal-close" onclick="closeFooterModal()">✕</button>
+      </div>
+      <div class="modal-body" id="footer-modal-body" style="line-height:1.7;font-size:0.9rem;"></div>
     </div>
   </div>
 
