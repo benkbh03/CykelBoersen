@@ -212,6 +212,7 @@ function sortBikes(value) {
    ============================================================ */
 
 async function updateFilterCounts() {
+  // Hent aktive annoncer til filtre
   const { data, error } = await supabase
     .from('bikes')
     .select('type, condition, profiles(seller_type)')
@@ -241,7 +242,26 @@ async function updateFilterCounts() {
   const countEl   = document.getElementById('listings-count');
   const statTotal = document.getElementById('stat-total');
   if (countEl)   countEl.textContent   = `${total} cykler til salg`;
-  if (statTotal) statTotal.textContent = total.toLocaleString('da-DK') + '+';
+  if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') + '+' : '0';
+
+  // Hent antal verificerede forhandlere
+  const { count: dealerCount } = await supabase
+    .from('profiles')
+    .select('id', { count: 'exact', head: true })
+    .eq('seller_type', 'dealer')
+    .eq('verified', true);
+
+  const statDealers = document.getElementById('stat-dealers');
+  if (statDealers) statDealers.textContent = (dealerCount || 0).toLocaleString('da-DK');
+
+  // Hent antal solgte cykler (gennemførte handler)
+  const { count: soldCount } = await supabase
+    .from('bikes')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_active', false);
+
+  const statSold = document.getElementById('stat-sold');
+  if (statSold) statSold.textContent = (soldCount || 0).toLocaleString('da-DK') + (soldCount > 0 ? '+' : '');
 }
 
 function setCount(label, count) {
