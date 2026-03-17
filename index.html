@@ -71,7 +71,10 @@
   <!-- ── SØGEBAR ── -->
   <div class="search-section">
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Søg efter mærke, model, type...">
+      <div style="position:relative;flex:1;">
+        <input type="text" id="search-input" placeholder="Søg efter mærke, model, type..." oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off">
+        <div id="autocomplete-list" class="autocomplete-list" style="display:none;"></div>
+      </div>
       <select id="search-type">
         <option value="">Alle typer</option>
         <option>Racercykel</option>
@@ -637,6 +640,40 @@
           <div id="admin-users-list">
             <p style="color:var(--muted)">Indlæser...</p>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEL ANNONCE MODAL ── -->
+  <div class="modal-overlay" id="share-modal">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h2>Del annonce</h2>
+        <button class="modal-close" onclick="closeShareModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="share-buttons">
+          <button class="share-btn share-link" onclick="copyShareLink()">
+            <span class="share-icon">🔗</span>
+            <span>Kopier link</span>
+          </button>
+          <a class="share-btn share-whatsapp" id="share-whatsapp-btn" href="#" target="_blank">
+            <span class="share-icon">💬</span>
+            <span>Del på WhatsApp</span>
+          </a>
+          <a class="share-btn share-facebook" id="share-facebook-btn" href="#" target="_blank">
+            <span class="share-icon">📘</span>
+            <span>Del på Facebook</span>
+          </a>
+          <button class="share-btn share-sms" onclick="shareViaSMS()">
+            <span class="share-icon">📱</span>
+            <span>Send som SMS</span>
+          </button>
+        </div>
+        <div class="share-link-box">
+          <input type="text" id="share-link-input" readonly>
+          <button onclick="copyShareLink()">Kopiér</button>
         </div>
       </div>
     </div>
