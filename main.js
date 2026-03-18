@@ -118,7 +118,7 @@ async function loadBikes(filters = {}) {
 
   let query = supabase
     .from('bikes')
-    .select('*, profiles(name, seller_type, shop_name), bike_images(url, is_primary)')
+    .select('*, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
     .order('created_at', { ascending: false });
 
   if (filters.type)       query = query.eq('type', filters.type);
@@ -637,7 +637,7 @@ async function openBikeModal(bikeId) {
 
   const { data: b, error } = await supabase
     .from('bikes')
-    .select('*, profiles(id, name, seller_type, shop_name, phone, city), bike_images(url, is_primary)')
+    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified), bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
 
@@ -2240,7 +2240,12 @@ async function submitIdVerification() {
   showToast('✅ Dokument sendt til verificering!');
 }
 
-function updateIdVerifyUI() {
+async function updateIdVerifyUI() {
+  // Genindlæs profil fra database for at få seneste status
+  if (currentUser) {
+    var result = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (result.data) currentProfile = result.data;
+  }
   var profile = currentProfile || {};
   var box     = document.getElementById('id-verify-box');
   if (!box) return;
@@ -2309,6 +2314,12 @@ async function approveId(userId) {
   if (err) { showToast('❌ Fejl'); return; }
   showToast('✅ ID godkendt — bruger har nu et blåt badge');
   loadIdApplications();
+  // Hvis den godkendte bruger er den indloggede, opdater cache
+  if (currentUser && currentUser.id === userId) {
+    currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
+    updateIdVerifyUI();
+    loadBikes();
+  }
 }
 
 async function rejectId(userId) {
