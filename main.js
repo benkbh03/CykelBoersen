@@ -792,44 +792,27 @@ async function sendMessage(bikeId, receiverId) {
   const content = document.getElementById('message-text').value.trim();
   if (!content) { showToast('⚠️ Skriv en besked først'); return; }
 
-  // INSERT uden SELECT (undgår RLS-problemer med læsning)
-  const { error: insertError } = await supabase.from('messages').insert({
+  const { data: inserted, error: insertError } = await supabase.from('messages').insert({
     bike_id:     bikeId,
     sender_id:   currentUser.id,
     receiver_id: receiverId,
     content,
-  });
+  }).select('id').single();
 
   if (insertError) { showToast('❌ Kunne ikke sende besked'); console.error('Insert fejl:', insertError); return; }
 
-  // Ryd UI og vis toast med det samme
   const textEl = document.getElementById('message-text');
   const boxEl  = document.getElementById('message-box');
   if (textEl) textEl.value = '';
   if (boxEl)  boxEl.style.display = 'none';
   showToast('✅ Besked sendt!');
 
-  // Hent message id separat for at sende email-notifikation
-  const { data: msgData, error: selectError } = await supabase
-    .from('messages')
-    .select('id')
-    .eq('bike_id', bikeId)
-    .eq('sender_id', currentUser.id)
-    .eq('receiver_id', receiverId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
-
-  if (selectError) { console.warn('Kunne ikke hente message id:', selectError); return; }
-
-  console.log('message id:', msgData?.id);
-  if (msgData?.id) {
-    supabase.functions.invoke('notify-message', {
-      body: { message_id: msgData.id },
-    }).then(({ data: fnData, error: fnErr }) => {
-      console.log('notify-message svar:', fnData, fnErr);
-      if (fnErr) console.error('Email notifikation fejlede:', fnErr);
-    }).catch(err => console.error('Email notifikation fejlede:', err));
+  if (inserted?.id) {
+    supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
+      .then(({ data: fnData, error: fnErr }) => {
+        console.log('notify-message svar:', fnData, fnErr);
+        if (fnErr) console.error('Email notifikation fejlede:', fnErr);
+      }).catch(err => console.error('Email notifikation fejlede:', err));
   }
 }
 
@@ -1016,38 +999,27 @@ function closeThread() {
   loadInbox();
 }
 
-async function notifyMessageEmail(bikeId, senderId, receiverId) {
-  const { data, error } = await supabase
-    .from('messages')
-    .select('id')
-    .eq('bike_id', bikeId)
-    .eq('sender_id', senderId)
-    .eq('receiver_id', receiverId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
-  if (error || !data?.id) { console.warn('notifyMessageEmail: ingen id', error); return; }
-  supabase.functions.invoke('notify-message', { body: { message_id: data.id } })
-    .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); if (e) console.error(e); })
-    .catch(e => console.error(e));
-}
 
 async function sendReply() {
   if (!activeThread || !currentUser) return;
   const content = document.getElementById('reply-text').value.trim();
   if (!content) { showToast('⚠️ Skriv et svar først'); return; }
 
-  const { error } = await supabase.from('messages').insert({
+  const { data: inserted, error } = await supabase.from('messages').insert({
     bike_id:     activeThread.bikeId,
     sender_id:   currentUser.id,
     receiver_id: activeThread.otherId,
     content,
-  });
+  }).select('id').single();
 
   if (error) { showToast('❌ Kunne ikke sende svar'); return; }
   document.getElementById('reply-text').value = '';
   showToast('✅ Svar sendt!');
-  notifyMessageEmail(activeThread.bikeId, currentUser.id, activeThread.otherId);
+  if (inserted?.id) {
+    supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
+      .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
+      .catch(e => console.error(e));
+  }
   openThread(activeThread.bikeId, activeThread.otherId, activeThread.otherName);
 }
 
@@ -1617,17 +1589,21 @@ async function sendInboxReply() {
   const content = document.getElementById('inbox-modal-reply-text').value.trim();
   if (!content) { showToast('⚠️ Skriv et svar først'); return; }
 
-  const { error } = await supabase.from('messages').insert({
+  const { data: inserted, error } = await supabase.from('messages').insert({
     bike_id:     activeInboxThread.bikeId,
     sender_id:   currentUser.id,
     receiver_id: activeInboxThread.otherId,
     content:     content,
-  });
+  }).select('id').single();
 
   if (error) { showToast('❌ Kunne ikke sende svar'); return; }
   document.getElementById('inbox-modal-reply-text').value = '';
   showToast('✅ Svar sendt!');
-  notifyMessageEmail(activeInboxThread.bikeId, currentUser.id, activeInboxThread.otherId);
+  if (inserted?.id) {
+    supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
+      .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
+      .catch(e => console.error(e));
+  }
   openInboxThread(activeInboxThread.bikeId, activeInboxThread.otherId, activeInboxThread.otherName);
 }
 
