@@ -650,10 +650,34 @@ async function openBikeModal(bikeId) {
   const sellerType = profile.seller_type || 'private';
   const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
   const initials   = (sellerName || 'U').substring(0, 2).toUpperCase();
-  const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
-  const imgContent = primaryImg
-    ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}">`
-    : '<span>🚲</span>';
+
+  // Sorter billeder: primærbillede først
+  const allImages = (b.bike_images || []).slice().sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+  window._galleryImages = allImages.map(img => img.url);
+  window._galleryIndex  = 0;
+
+  // Byg galleri HTML
+  let galleryHtml;
+  if (allImages.length === 0) {
+    galleryHtml = `<div class="bike-detail-img"><span style="font-size:4rem">🚲</span></div>`;
+  } else if (allImages.length === 1) {
+    galleryHtml = `<div class="bike-detail-img"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}"></div>`;
+  } else {
+    const thumbsHtml = allImages.map((img, i) => `
+      <button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="Billede ${i + 1}">
+        <img src="${img.url}" alt="Billede ${i + 1}">
+      </button>`).join('');
+    galleryHtml = `
+      <div class="bike-gallery">
+        <div class="gallery-main">
+          <img id="gallery-main-img" src="${allImages[0].url}" alt="${b.brand} ${b.model}">
+          <button class="gallery-nav-btn gallery-prev" onclick="galleryNav(-1)" aria-label="Forrige billede">&#8249;</button>
+          <button class="gallery-nav-btn gallery-next" onclick="galleryNav(1)" aria-label="Næste billede">&#8250;</button>
+          <span class="gallery-counter" id="gallery-counter">1 / ${allImages.length}</span>
+        </div>
+        <div class="gallery-thumbs">${thumbsHtml}</div>
+      </div>`;
+  }
 
   const isOwner = currentUser && currentUser.id === profile.id;
 
@@ -662,7 +686,7 @@ async function openBikeModal(bikeId) {
   document.getElementById('bike-modal-body').innerHTML = `
     <div class="bike-detail-grid">
       <div>
-        <div class="bike-detail-img">${imgContent}</div>
+        ${galleryHtml}
       </div>
       <div class="bike-detail-info">
         <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
@@ -719,6 +743,34 @@ document.getElementById('bike-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeBikeModal();
 });
 
+/* ── Billedgalleri navigation ── */
+
+function galleryGoto(index) {
+  const images = window._galleryImages || [];
+  if (!images.length) return;
+  window._galleryIndex = (index + images.length) % images.length;
+  const mainImg = document.getElementById('gallery-main-img');
+  if (mainImg) {
+    mainImg.style.opacity = '0';
+    setTimeout(() => {
+      mainImg.src = images[window._galleryIndex];
+      mainImg.style.opacity = '1';
+    }, 150);
+  }
+  const counter = document.getElementById('gallery-counter');
+  if (counter) counter.textContent = `${window._galleryIndex + 1} / ${images.length}`;
+  document.querySelectorAll('.gallery-thumb').forEach((btn, i) => {
+    btn.classList.toggle('active', i === window._galleryIndex);
+  });
+}
+
+function galleryNav(dir) {
+  galleryGoto((window._galleryIndex || 0) + dir);
+}
+
+window.galleryNav  = galleryNav;
+window.galleryGoto = galleryGoto;
+
 function toggleBidBox() {
   const box = document.getElementById('bid-box');
   const msgBox = document.getElementById('message-box');
@@ -740,17 +792,24 @@ async function sendMessage(bikeId, receiverId) {
   const content = document.getElementById('message-text').value.trim();
   if (!content) { showToast('⚠️ Skriv en besked først'); return; }
 
-  const { error } = await supabase.from('messages').insert({
+  const { data: msgData, error } = await supabase.from('messages').insert({
     bike_id:     bikeId,
     sender_id:   currentUser.id,
     receiver_id: receiverId,
     content,
-  });
+  }).select('id').single();
 
   if (error) { showToast('❌ Kunne ikke sende besked'); console.error(error); return; }
   document.getElementById('message-text').value = '';
   document.getElementById('message-box').style.display = 'none';
   showToast('✅ Besked sendt!');
+
+  // Send email-notifikation til sælger via Edge Function
+  if (msgData?.id) {
+    supabase.functions.invoke('notify-message', {
+      body: { message_id: msgData.id },
+    }).catch(err => console.warn('Email notifikation fejlede:', err));
+  }
 }
 
 async function sendBid(bikeId, receiverId) {
@@ -760,17 +819,24 @@ async function sendBid(bikeId, receiverId) {
 
   const content = `💰 Bud: ${parseInt(amount).toLocaleString('da-DK')} kr.`;
 
-  const { error } = await supabase.from('messages').insert({
+  const { data: msgData, error } = await supabase.from('messages').insert({
     bike_id:     bikeId,
     sender_id:   currentUser.id,
     receiver_id: receiverId,
     content,
-  });
+  }).select('id').single();
 
   if (error) { showToast('❌ Kunne ikke sende bud'); return; }
   document.getElementById('bid-amount').value = '';
   document.getElementById('bid-box').style.display = 'none';
   showToast('✅ Bud sendt til sælgeren!');
+
+  // Send email-notifikation til sælger via Edge Function
+  if (msgData?.id) {
+    supabase.functions.invoke('notify-message', {
+      body: { message_id: msgData.id },
+    }).catch(err => console.warn('Email notifikation fejlede:', err));
+  }
 }
 
 async function toggleSaveFromModal(btn, bikeId) {
@@ -1957,11 +2023,66 @@ window.openNativeShare     = openNativeShare;
    KORTVISNING MED LEAFLET
    ============================================================ */
 
-var mapInstance       = null;
+var mapInstance        = null;
 window._getMap = function() { return mapInstance; };
-var mapMarkers        = [];
-var currentView       = 'list';
+var mapMarkers         = [];
+var currentView        = 'list';
 var userLocationMarker = null;
+
+/* ── Nominatim geocoding cache ── */
+var _geocodeCache = (function() {
+  try {
+    var stored = localStorage.getItem('_geocodeCache');
+    return stored ? JSON.parse(stored) : {};
+  } catch (e) { return {}; }
+})();
+
+function _saveGeocodeCache() {
+  try { localStorage.setItem('_geocodeCache', JSON.stringify(_geocodeCache)); } catch (e) {}
+}
+
+// Slå en dansk by/adresse op via Nominatim (med cache + rate-limit)
+var _geocodeQueue = Promise.resolve();
+var _lastGeocodeTime = 0;
+
+function geocodeCity(city) {
+  var key = city.toLowerCase().trim();
+  if (_geocodeCache[key]) return Promise.resolve(_geocodeCache[key]);
+
+  // Kø requests så vi max laver 1 kald per sekund (Nominatim rate limit)
+  _geocodeQueue = _geocodeQueue.then(function() {
+    // Tjek cache igen efter kø
+    if (_geocodeCache[key]) return _geocodeCache[key];
+
+    var now = Date.now();
+    var wait = Math.max(0, 1100 - (now - _lastGeocodeTime));
+
+    return new Promise(function(resolve) { setTimeout(resolve, wait); }).then(function() {
+      _lastGeocodeTime = Date.now();
+      var url = 'https://nominatim.openstreetmap.org/search?q='
+        + encodeURIComponent(city + ', Danmark')
+        + '&format=json&limit=1&countrycodes=dk';
+
+      return fetch(url, {
+        headers: { 'Accept-Language': 'da' }
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.length > 0) {
+            var coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            _geocodeCache[key] = coords;
+            _saveGeocodeCache();
+            return coords;
+          }
+          _geocodeCache[key] = null; // By ikke fundet — cache negativt svar
+          return null;
+        })
+        .catch(function() { return null; });
+    });
+  });
+
+  return _geocodeQueue;
+}
 
 function setView(view) {
   currentView = view;
@@ -2014,55 +2135,11 @@ async function initMap() {
 
   if (!result.data || result.data.length === 0) return;
 
-  // Geokod byer og sæt markører
-  var cityCoords = {
-    'København':    [55.6761, 12.5683],
-    'Kbh':          [55.6761, 12.5683],
-    'Aarhus':       [56.1629, 10.2039],
-    'Odense':       [55.4038, 10.4024],
-    'Aalborg':      [57.0488, 9.9217],
-    'Esbjerg':      [55.4761, 8.4594],
-    'Randers':      [56.4607, 10.0360],
-    'Horsens':      [55.8609, 9.8509],
-    'Kolding':      [55.4904, 9.4722],
-    'Vejle':        [55.7096, 9.5360],
-    'Roskilde':     [55.6415, 12.0803],
-    'Helsingør':    [56.0363, 12.6136],
-    'Fredericia':   [55.5651, 9.7522],
-    'Silkeborg':    [56.1720, 9.5517],
-    'Herning':      [56.1372, 8.9727],
-    'Holstebro':    [56.3601, 8.6177],
-    'Slagelse':     [55.4022, 11.3546],
-    'Næstved':      [55.2307, 11.7600],
-    'Viborg':       [56.4532, 9.4022],
-    'Frederiksberg':[55.6800, 12.5200],
-    'Hvidovre':     [55.6513, 12.4743],
-    'Glostrup':     [55.6667, 12.4000],
-    'Lyngby':       [55.7700, 12.5000],
-    'Hillerød':     [55.9293, 12.3101],
-    'Køge':         [55.4570, 12.1784],
-    'Greve':        [55.5908, 12.3000],
-    'Ballerup':     [55.7300, 12.3600],
-    'Herlev':       [55.7300, 12.4400],
-  };
-
-  result.data.forEach(function(b) {
-    if (!b.city) return;
-
-    // Find koordinater — prøv direkte match og delvist match
-    var coords = null;
-    var cityLower = b.city.toLowerCase();
-    for (var key in cityCoords) {
-      if (cityLower.includes(key.toLowerCase()) || key.toLowerCase().includes(cityLower)) {
-        coords = cityCoords[key];
-        break;
-      }
-    }
-    if (!coords) return; // Spring over hvis by ikke kendes
-
+  // Funktion til at tilføje en markør på kortet
+  function addBikeMarker(b, coords) {
     // Tilføj lille tilfældig offset så markører ikke overlapper
-    var lat = coords[0] + (Math.random() - 0.5) * 0.01;
-    var lng = coords[1] + (Math.random() - 0.5) * 0.01;
+    var lat = coords[0] + (Math.random() - 0.5) * 0.012;
+    var lng = coords[1] + (Math.random() - 0.5) * 0.012;
 
     var profile    = b.profiles || {};
     var sellerType = profile.seller_type || 'private';
@@ -2070,8 +2147,7 @@ async function initMap() {
     var isVerified = profile.verified;
     var isDealer   = sellerType === 'dealer';
 
-    // Farvet markør
-    var color  = isDealer ? '#2A3D2E' : '#C8502A';
+    var color = isDealer ? '#2A3D2E' : '#C8502A';
     var icon = L.divIcon({
       html: '<div style="background:' + color + ';color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">'
           + (isDealer ? '🏪' : '🚲') + '</div>',
@@ -2082,7 +2158,6 @@ async function initMap() {
 
     var marker = L.marker([lat, lng], { icon: icon }).addTo(mapInstance);
 
-    // Popup indhold
     var popupHtml = '<div class="map-popup">'
       + '<div class="map-popup-title">' + b.brand + ' ' + b.model
       + (isVerified ? ' <span style="background:#2A7D4F;color:white;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;margin-left:4px;">✓</span>' : '')
@@ -2095,11 +2170,20 @@ async function initMap() {
       + '</div>';
 
     marker.bindPopup(popupHtml, { maxWidth: 280, closeButton: false });
-
     marker.on('click', function() { marker.openPopup(); });
-
     mapMarkers.push(marker);
-  });
+  }
+
+  // Geokod alle byer via Nominatim (med cache) og tilføj markører
+  var geocodePromises = result.data
+    .filter(function(b) { return !!b.city; })
+    .map(function(b) {
+      return geocodeCity(b.city).then(function(coords) {
+        if (coords) addBikeMarker(b, coords);
+      });
+    });
+
+  await Promise.all(geocodePromises);
 
   // Zoom til markørerne hvis der er nogen
   if (mapMarkers.length > 0) {
