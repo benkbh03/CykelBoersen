@@ -805,10 +805,17 @@ async function sendMessage(bikeId, receiverId) {
   showToast('✅ Besked sendt!');
 
   // Send email-notifikation til sælger via Edge Function
+  console.log('msgData:', msgData);
   if (msgData?.id) {
+    console.log('Kalder notify-message med id:', msgData.id);
     supabase.functions.invoke('notify-message', {
       body: { message_id: msgData.id },
-    }).catch(err => console.warn('Email notifikation fejlede:', err));
+    }).then(({ data: fnData, error: fnErr }) => {
+      console.log('notify-message svar:', fnData, fnErr);
+      if (fnErr) console.error('Email notifikation fejlede:', fnErr);
+    }).catch(err => console.error('Email notifikation fejlede:', err));
+  } else {
+    console.warn('msgData.id mangler — invoke ikke kaldt');
   }
 }
 
@@ -835,7 +842,9 @@ async function sendBid(bikeId, receiverId) {
   if (msgData?.id) {
     supabase.functions.invoke('notify-message', {
       body: { message_id: msgData.id },
-    }).catch(err => console.warn('Email notifikation fejlede:', err));
+    }).then(({ error: fnErr }) => {
+      if (fnErr) console.error('Email notifikation fejlede:', fnErr);
+    }).catch(err => console.error('Email notifikation fejlede:', err));
   }
 }
 
