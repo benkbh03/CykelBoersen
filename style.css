@@ -517,6 +517,23 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .seller-detail-name { font-weight: 600; font-size: 0.95rem; }
 .seller-detail-city { font-size: 0.8rem; color: var(--muted); }
 .bike-detail-description { background: var(--sand); border-radius: 10px; padding: 16px; font-size: 0.88rem; line-height: 1.6; color: var(--charcoal); border: 1px solid var(--border); }
+
+/* ── Billedgalleri ── */
+.bike-gallery { display: flex; flex-direction: column; gap: 10px; }
+.gallery-main { position: relative; background: var(--sand); border-radius: 12px; height: 280px; overflow: hidden; }
+.gallery-main img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; transition: opacity 0.15s ease; }
+.gallery-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.3rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.15s; z-index: 2; }
+.gallery-nav-btn:hover { background: white; }
+.gallery-prev { left: 10px; }
+.gallery-next { right: 10px; }
+.gallery-counter { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.5); color: white; font-size: 0.72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; z-index: 2; font-family: 'DM Sans', sans-serif; }
+.gallery-thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scroll-snap-type: x mandatory; }
+.gallery-thumbs::-webkit-scrollbar { height: 4px; }
+.gallery-thumbs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.gallery-thumb { flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 2.5px solid transparent; cursor: pointer; padding: 0; background: none; transition: border-color 0.15s; scroll-snap-align: start; }
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-thumb.active { border-color: var(--rust); }
+.gallery-thumb:hover:not(.active) { border-color: var(--muted); }
 .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 .btn-contact { background: var(--forest); color: var(--sand); border: none; padding: 13px; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-align: center; }
 .btn-contact:hover { background: var(--forest-light); }
@@ -627,6 +644,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .bike-detail-grid { grid-template-columns: 1fr; gap: 16px; }
   .bike-detail-img { height: 220px; }
   .bike-detail-price { font-size: 1.8rem; }
+  .gallery-main { height: 220px; }
+  .gallery-thumb { width: 52px; height: 52px; }
   .profile-header { gap: 14px; }
   .profile-big-avatar { width: 52px; height: 52px; font-size: 1.1rem; }
   .seller-toggle { gap: 8px; }
