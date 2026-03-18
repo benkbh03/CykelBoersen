@@ -955,3 +955,67 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   transition: all 0.15s;
 }
 .locate-btn:hover { border-color: var(--forest); }
+
+/* ── ID VERIFICERING ── */
+.id-verify-box {
+  background: var(--sand);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.id-verify-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.id-verify-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.id-verify-sub { font-size: 0.78rem; color: var(--muted); }
+
+.id-status-pending {
+  background: #FBF0E8; color: #8A4A20;
+  border-radius: 100px; font-size: 0.72rem;
+  font-weight: 600; padding: 4px 10px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.id-status-waiting {
+  background: #FFF8E1; color: #B8860B;
+  border-radius: 100px; font-size: 0.72rem;
+  font-weight: 600; padding: 4px 10px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.id-status-verified {
+  background: #E8F0E8; color: #2A7D4F;
+  border-radius: 100px; font-size: 0.72rem;
+  font-weight: 600; padding: 4px 10px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* ID badge */
+.id-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #1877F2; color: #fff;
+  border-radius: 50%; width: 18px; height: 18px;
+  font-size: 0.6rem; font-weight: 700;
+  margin-left: 4px; vertical-align: middle;
+  border: 2px solid var(--cream);
+  title: 'ID verificeret';
+}
+
+/* Admin ID liste */
+.admin-id-img {
+  width: 80px; height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.admin-id-img:hover { transform: scale(1.05); }
