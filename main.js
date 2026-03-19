@@ -347,6 +347,7 @@ function closeDealerProfileModal() {
 
 async function openUserProfile(userId) {
   closeAllDealersModal();
+  closeBikeModal();
   const modal   = document.getElementById('user-profile-modal');
   const content = document.getElementById('user-profile-content');
   if (!modal || !content) { console.error('user-profile-modal eller user-profile-content ikke fundet i DOM'); return; }
