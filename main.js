@@ -193,7 +193,7 @@ function buildDealerCard(dealer, countMap, featured = false) {
   const cityText      = dealer.city || '';
   const featuredClass = featured ? ' dealer-card--featured' : '';
   return `
-    <div class="dealer-card${featuredClass}" onclick="filterByDealerCard('${dealer.id}')" style="cursor:pointer;" title="Se cykler fra ${displayName}">
+    <div class="dealer-card${featuredClass}" onclick="openUserProfile('${dealer.id}')" style="cursor:pointer;" title="Se ${displayName}s profil">
       <div class="dealer-logo-circle">${initials}</div>
       <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
       ${cityText ? `<div class="dealer-city">📍 ${cityText}</div>` : ''}
@@ -348,23 +348,30 @@ function closeDealerProfileModal() {
 async function openUserProfile(userId) {
   const modal   = document.getElementById('user-profile-modal');
   const content = document.getElementById('user-profile-content');
-  if (!modal) return;
+  if (!modal || !content) { console.error('user-profile-modal eller user-profile-content ikke fundet i DOM'); return; }
   content.innerHTML = '<p style="color:var(--muted);padding:60px 0;text-align:center;">Henter profil...</p>';
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
   // Hent parallelt: profil, aktive cykler, solgte cykler, anmeldelser
-  const [
-    { data: profile },
-    { data: activeBikes },
-    { data: soldBikes },
-    { data: reviews }
-  ] = await Promise.all([
-    supabase.from('profiles').select('id, name, shop_name, seller_type, city, verified, id_verified, created_at').eq('id', userId).single(),
-    supabase.from('bikes').select('*, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false }),
-    supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false }),
-    supabase.from('reviews').select('*, reviewer:profiles!reviews_reviewer_id_fkey(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false }),
-  ]);
+  let profile, activeBikes, soldBikes, reviews;
+  try {
+    const [r1, r2, r3, reviewsResult] = await Promise.all([
+      supabase.from('profiles').select('id, name, shop_name, seller_type, city, verified, id_verified, created_at').eq('id', userId).single(),
+      supabase.from('bikes').select('*, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false }),
+      supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false }),
+      supabase.from('reviews').select('*, reviewer:profiles!reviews_reviewer_id_fkey(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false }),
+    ]);
+    profile     = r1.data;
+    activeBikes = r2.data;
+    soldBikes   = r3.data;
+    reviews     = reviewsResult.error ? [] : (reviewsResult.data || []);
+    if (r1.error) console.warn('Profil-fejl:', r1.error);
+  } catch (err) {
+    console.error('openUserProfile fejlede:', err);
+    content.innerHTML = '<p style="color:var(--rust);padding:40px;text-align:center;">Fejl ved hentning af profil.</p>';
+    return;
+  }
 
   if (!profile) {
     content.innerHTML = '<p style="color:var(--rust);padding:40px;text-align:center;">Kunne ikke hente profil.</p>';
@@ -2895,3 +2902,13 @@ window.previewIdDoc       = previewIdDoc;
 window.submitIdVerification = submitIdVerification;
 window.approveId          = approveId;
 window.rejectId           = rejectId;
+window.openUserProfile       = openUserProfile;
+window.closeUserProfileModal = closeUserProfileModal;
+window.pickStar              = pickStar;
+window.submitReview          = submitReview;
+window.toggleRestDealers     = toggleRestDealers;
+window.closeAllDealersModal  = closeAllDealersModal;
+window.closeDealerProfileModal = closeDealerProfileModal;
+window.openAllDealersModal   = openAllDealersModal;
+window.openDealerProfile     = openDealerProfile;
+window.filterByDealerCard    = filterByDealerCard;
