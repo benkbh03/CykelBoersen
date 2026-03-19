@@ -54,7 +54,14 @@ async function init() {
   });
 
   loadBikes();
+  loadDealers();
   updateFilterCounts();
+
+  // Åbn indbakke automatisk hvis ?inbox=true er i URL'en
+  if (new URLSearchParams(window.location.search).get('inbox') === 'true' && currentUser) {
+    history.replaceState(null, '', window.location.pathname);
+    openInboxModal();
+  }
 
   // Klik uden for modal lukker den
   document.getElementById('inbox-modal').addEventListener('click', e => {
@@ -106,6 +113,72 @@ async function checkUnreadMessages() {
     badge.textContent = count;
     badge.style.display = 'inline';
   }
+}
+
+/* ============================================================
+   FORHANDLERE
+   ============================================================ */
+
+async function loadDealers() {
+  const container = document.getElementById('dealer-cards-container');
+  if (!container) return;
+
+  const { data: dealers, error } = await supabase
+    .from('profiles')
+    .select('id, shop_name, city, name')
+    .eq('seller_type', 'dealer')
+    .eq('verified', true)
+    .order('created_at', { ascending: true });
+
+  if (error || !dealers || dealers.length === 0) {
+    container.className = 'dealer-cards dealer-empty-state';
+    container.innerHTML = `
+      <div class="dealer-empty-card">
+        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+        <h3>Ingen forhandlere endnu</h3>
+        <p>Vær den første forhandler på Cykelbørsen og nå tusindvis af cykelkøbere.</p>
+        <button class="btn-become-dealer-small" onclick="openBecomeDealerModal()">Tilmeld din butik →</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Hent antal cykler per forhandler
+  const dealerIds = dealers.map(d => d.id);
+  const { data: bikeRows } = await supabase
+    .from('bikes')
+    .select('user_id')
+    .in('user_id', dealerIds);
+
+  const countMap = {};
+  if (bikeRows) {
+    for (const b of bikeRows) {
+      countMap[b.user_id] = (countMap[b.user_id] || 0) + 1;
+    }
+  }
+
+  container.className = 'dealer-cards';
+  container.innerHTML = dealers.map(dealer => {
+    const displayName = dealer.shop_name || dealer.name || 'Forhandler';
+    const initials = displayName.substring(0, 2).toUpperCase();
+    const bikeCount = countMap[dealer.id] || 0;
+    const cityText = dealer.city ? dealer.city : '';
+    return `
+      <div class="dealer-card" onclick="filterByDealerCard('${dealer.id}')" style="cursor:pointer;" title="Se cykler fra ${displayName}">
+        <div class="dealer-logo-circle">${initials}</div>
+        <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
+        ${cityText ? `<div class="dealer-city">📍 ${cityText}</div>` : ''}
+        <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterByDealerCard(dealerId) {
+  // Scroll til annoncer og filtrer
+  const grid = document.getElementById('listings-grid');
+  if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  loadBikesWithFilters({ sellerType: 'dealer', dealerId });
 }
 
 /* ============================================================
@@ -809,40 +882,27 @@ async function sendMessage(bikeId, receiverId) {
   const content = document.getElementById('message-text').value.trim();
   if (!content) { showToast('⚠️ Skriv en besked først'); return; }
 
-  const { data: msgData, error } = await supabase.from('messages').insert({
+  const { data: inserted, error: insertError } = await supabase.from('messages').insert({
     bike_id:     bikeId,
     sender_id:   currentUser.id,
     receiver_id: receiverId,
     content,
   }).select('id').single();
 
-  if (error) { showToast('❌ Kunne ikke sende besked'); console.error('Insert fejl:', error); return; }
+  if (insertError) { showToast('❌ Kunne ikke sende besked'); console.error('Insert fejl:', insertError); return; }
 
-  console.log('Insert OK, msgData:', msgData);
-
-  try {
-    const textEl = document.getElementById('message-text');
-    const boxEl  = document.getElementById('message-box');
-    console.log('textEl:', textEl, 'boxEl:', boxEl);
-    if (textEl) textEl.value = '';
-    if (boxEl)  boxEl.style.display = 'none';
-  } catch (domErr) {
-    console.error('DOM fejl efter insert:', domErr);
-  }
-
+  const textEl = document.getElementById('message-text');
+  const boxEl  = document.getElementById('message-box');
+  if (textEl) textEl.value = '';
+  if (boxEl)  boxEl.style.display = 'none';
   showToast('✅ Besked sendt!');
 
-  // Send email-notifikation til sælger via Edge Function
-  if (msgData?.id) {
-    console.log('Kalder notify-message med id:', msgData.id);
-    supabase.functions.invoke('notify-message', {
-      body: { message_id: msgData.id },
-    }).then(({ data: fnData, error: fnErr }) => {
-      console.log('notify-message svar:', fnData, fnErr);
-      if (fnErr) console.error('Email notifikation fejlede:', fnErr);
-    }).catch(err => console.error('Email notifikation fejlede:', err));
-  } else {
-    console.warn('msgData.id mangler — invoke ikke kaldt. msgData:', msgData);
+  if (inserted?.id) {
+    supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
+      .then(({ data: fnData, error: fnErr }) => {
+        console.log('notify-message svar:', fnData, fnErr);
+        if (fnErr) console.error('Email notifikation fejlede:', fnErr);
+      }).catch(err => console.error('Email notifikation fejlede:', err));
   }
 }
 
@@ -1029,21 +1089,27 @@ function closeThread() {
   loadInbox();
 }
 
+
 async function sendReply() {
   if (!activeThread || !currentUser) return;
   const content = document.getElementById('reply-text').value.trim();
   if (!content) { showToast('⚠️ Skriv et svar først'); return; }
 
-  const { error } = await supabase.from('messages').insert({
+  const { data: inserted, error } = await supabase.from('messages').insert({
     bike_id:     activeThread.bikeId,
     sender_id:   currentUser.id,
     receiver_id: activeThread.otherId,
     content,
-  });
+  }).select('id').single();
 
   if (error) { showToast('❌ Kunne ikke sende svar'); return; }
   document.getElementById('reply-text').value = '';
   showToast('✅ Svar sendt!');
+  if (inserted?.id) {
+    supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
+      .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
+      .catch(e => console.error(e));
+  }
   openThread(activeThread.bikeId, activeThread.otherId, activeThread.otherName);
 }
 
@@ -1088,7 +1154,7 @@ function applyFilters() {
   loadBikesWithFilters({ types, conditions, minPrice, maxPrice, sellerType });
 }
 
-async function loadBikesWithFilters({ types, conditions, minPrice, maxPrice, sellerType }) {
+async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId } = {}) {
   const grid = document.getElementById('listings-grid');
   grid.innerHTML = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
 
@@ -1102,6 +1168,7 @@ async function loadBikesWithFilters({ types, conditions, minPrice, maxPrice, sel
   if (conditions.length > 0) query = query.in('condition', conditions);
   if (minPrice)              query = query.gte('price', minPrice);
   if (maxPrice)              query = query.lte('price', maxPrice);
+  if (dealerId)              query = query.eq('user_id', dealerId);
 
   const { data, error } = await query;
   if (error) {
@@ -1112,7 +1179,7 @@ async function loadBikesWithFilters({ types, conditions, minPrice, maxPrice, sel
 
   // Filtrer sælgertype lokalt (da det er en join-kolonne)
   let filtered = data;
-  if (sellerType) {
+  if (sellerType && !dealerId) {
     filtered = data.filter(b => b.profiles?.seller_type === sellerType);
   }
 
@@ -1613,15 +1680,21 @@ async function sendInboxReply() {
   const content = document.getElementById('inbox-modal-reply-text').value.trim();
   if (!content) { showToast('⚠️ Skriv et svar først'); return; }
 
-  const { error } = await supabase.from('messages').insert({
+  const { data: inserted, error } = await supabase.from('messages').insert({
     bike_id:     activeInboxThread.bikeId,
     sender_id:   currentUser.id,
     receiver_id: activeInboxThread.otherId,
     content:     content,
-  });
+  }).select('id').single();
 
   if (error) { showToast('❌ Kunne ikke sende svar'); return; }
   document.getElementById('inbox-modal-reply-text').value = '';
+  showToast('✅ Svar sendt!');
+  if (inserted?.id) {
+    supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
+      .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
+      .catch(e => console.error(e));
+  }
   openInboxThread(activeInboxThread.bikeId, activeInboxThread.otherId, activeInboxThread.otherName);
 }
 
