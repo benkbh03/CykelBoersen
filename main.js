@@ -347,6 +347,7 @@ function closeDealerProfileModal() {
 
 async function openUserProfile(userId) {
   closeAllDealersModal();
+  closeDealerProfileModal();
   closeBikeModal();
   const modal   = document.getElementById('user-profile-modal');
   const content = document.getElementById('user-profile-content');
