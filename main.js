@@ -166,16 +166,19 @@ async function loadDealers() {
   container.className = 'dealer-cards';
   container.innerHTML = top3.map(dealer => buildDealerCard(dealer, countMap, true)).join('');
 
-  // Knap hvis der er flere end 3
+  // Resten vises inline under en "Se resten"-knap
   if (rest.length > 0) {
-    const btn = document.createElement('div');
-    btn.className = 'dealer-see-all-wrap';
-    btn.innerHTML = `
-      <button class="btn-see-all-dealers" onclick="openAllDealersModal()">
-        Se alle verificerede forhandlere (${dealers.length}) →
+    const restHtml = rest.map(d => buildDealerCard(d, countMap, false)).join('');
+    const restWrap = document.createElement('div');
+    restWrap.innerHTML = `
+      <button class="btn-see-all-dealers" id="toggle-rest-dealers" onclick="toggleRestDealers()">
+        Se resten (${rest.length} forhandlere) ↓
       </button>
+      <div class="dealer-cards dealer-rest-grid" id="rest-dealers-grid" style="display:none;margin-top:16px;">
+        ${restHtml}
+      </div>
     `;
-    container.after(btn);
+    container.after(restWrap);
   }
 
   // Gem alle forhandlere til modal brug
@@ -184,20 +187,30 @@ async function loadDealers() {
 }
 
 function buildDealerCard(dealer, countMap, featured = false) {
-  const displayName = dealer.shop_name || dealer.name || 'Forhandler';
-  const initials    = displayName.substring(0, 2).toUpperCase();
-  const bikeCount   = countMap[dealer.id] || 0;
-  const cityText    = dealer.city || '';
+  const displayName   = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials      = displayName.substring(0, 2).toUpperCase();
+  const bikeCount     = countMap[dealer.id] || 0;
+  const cityText      = dealer.city || '';
   const featuredClass = featured ? ' dealer-card--featured' : '';
   return `
     <div class="dealer-card${featuredClass}" onclick="filterByDealerCard('${dealer.id}')" style="cursor:pointer;" title="Se cykler fra ${displayName}">
-      ${featured ? '<div class="dealer-featured-label">Fremhævet</div>' : ''}
       <div class="dealer-logo-circle">${initials}</div>
       <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
       ${cityText ? `<div class="dealer-city">📍 ${cityText}</div>` : ''}
       <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
     </div>
   `;
+}
+
+function toggleRestDealers() {
+  const grid = document.getElementById('rest-dealers-grid');
+  const btn  = document.getElementById('toggle-rest-dealers');
+  if (!grid || !btn) return;
+  const open = grid.style.display === 'none';
+  grid.style.display  = open ? '' : 'none';
+  btn.textContent     = open
+    ? `Skjul resten ↑`
+    : `Se resten (${grid.querySelectorAll('.dealer-card').length} forhandlere) ↓`;
 }
 
 function openAllDealersModal() {
