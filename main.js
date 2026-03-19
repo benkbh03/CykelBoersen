@@ -157,28 +157,175 @@ async function loadDealers() {
     }
   }
 
+  // Sorter efter antal cykler (flest først)
+  dealers.sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
+
+  const top3    = dealers.slice(0, 3);
+  const rest    = dealers.slice(3);
+
   container.className = 'dealer-cards';
-  container.innerHTML = dealers.map(dealer => {
-    const displayName = dealer.shop_name || dealer.name || 'Forhandler';
-    const initials = displayName.substring(0, 2).toUpperCase();
-    const bikeCount = countMap[dealer.id] || 0;
-    const cityText = dealer.city ? dealer.city : '';
-    return `
-      <div class="dealer-card" onclick="filterByDealerCard('${dealer.id}')" style="cursor:pointer;" title="Se cykler fra ${displayName}">
-        <div class="dealer-logo-circle">${initials}</div>
-        <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
-        ${cityText ? `<div class="dealer-city">📍 ${cityText}</div>` : ''}
-        <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
-      </div>
+  container.innerHTML = top3.map(dealer => buildDealerCard(dealer, countMap, true)).join('');
+
+  // Knap hvis der er flere end 3
+  if (rest.length > 0) {
+    const btn = document.createElement('div');
+    btn.className = 'dealer-see-all-wrap';
+    btn.innerHTML = `
+      <button class="btn-see-all-dealers" onclick="openAllDealersModal()">
+        Se alle verificerede forhandlere (${dealers.length}) →
+      </button>
     `;
-  }).join('');
+    container.after(btn);
+  }
+
+  // Gem alle forhandlere til modal brug
+  window._allDealers    = dealers;
+  window._dealerCountMap = countMap;
+}
+
+function buildDealerCard(dealer, countMap, featured = false) {
+  const displayName = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials    = displayName.substring(0, 2).toUpperCase();
+  const bikeCount   = countMap[dealer.id] || 0;
+  const cityText    = dealer.city || '';
+  const featuredClass = featured ? ' dealer-card--featured' : '';
+  return `
+    <div class="dealer-card${featuredClass}" onclick="filterByDealerCard('${dealer.id}')" style="cursor:pointer;" title="Se cykler fra ${displayName}">
+      ${featured ? '<div class="dealer-featured-label">Fremhævet</div>' : ''}
+      <div class="dealer-logo-circle">${initials}</div>
+      <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
+      ${cityText ? `<div class="dealer-city">📍 ${cityText}</div>` : ''}
+      <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+    </div>
+  `;
+}
+
+function openAllDealersModal() {
+  const modal = document.getElementById('all-dealers-modal');
+  if (!modal) return;
+  const grid = document.getElementById('all-dealers-grid');
+  const dealers   = window._allDealers    || [];
+  const countMap  = window._dealerCountMap || {};
+  grid.innerHTML = dealers.map(d => buildDealerCard(d, countMap, false)).join('');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAllDealersModal() {
+  const modal = document.getElementById('all-dealers-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function filterByDealerCard(dealerId) {
-  // Scroll til annoncer og filtrer
-  const grid = document.getElementById('listings-grid');
-  if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  loadBikesWithFilters({ sellerType: 'dealer', dealerId });
+  openDealerProfile(dealerId);
+}
+
+async function openDealerProfile(dealerId) {
+  closeAllDealersModal();
+  const modal = document.getElementById('dealer-profile-modal');
+  const header = document.getElementById('dealer-profile-header');
+  const bikesGrid = document.getElementById('dealer-profile-bikes');
+  if (!modal) return;
+
+  header.innerHTML = '<p style="color:var(--muted);padding:20px 0">Henter forhandler...</p>';
+  bikesGrid.innerHTML = '';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Hent forhandlerens profil
+  const { data: dealer } = await supabase
+    .from('profiles')
+    .select('id, shop_name, name, city, verified')
+    .eq('id', dealerId)
+    .single();
+
+  if (!dealer) {
+    header.innerHTML = '<p style="color:var(--rust)">Kunne ikke hente forhandler.</p>';
+    return;
+  }
+
+  const displayName = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials    = displayName.substring(0, 2).toUpperCase();
+  const countMap    = window._dealerCountMap || {};
+  const bikeCount   = countMap[dealerId] ?? null;
+
+  header.innerHTML = `
+    <div class="dealer-profile-hero">
+      <div class="dealer-profile-logo">${initials}</div>
+      <div class="dealer-profile-info">
+        <h2 class="dealer-profile-name">
+          ${displayName}
+          ${dealer.verified ? '<span class="dealer-verified-tick" title="Verificeret forhandler">✓</span>' : ''}
+        </h2>
+        ${dealer.city ? `<div class="dealer-profile-city">📍 ${dealer.city}</div>` : ''}
+        ${bikeCount !== null ? `<div class="dealer-profile-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>` : ''}
+      </div>
+    </div>
+    <hr class="dealer-profile-divider">
+    <h3 class="dealer-profile-section-title">Cykler til salg</h3>
+  `;
+
+  // Hent forhandlerens cykler
+  const { data: bikes } = await supabase
+    .from('bikes')
+    .select('*, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
+    .eq('user_id', dealerId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+
+  if (!bikes || bikes.length === 0) {
+    bikesGrid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--muted);">
+        <div style="font-size:3rem;margin-bottom:12px;">🚲</div>
+        <p>Ingen aktive annoncer fra denne forhandler.</p>
+      </div>`;
+    return;
+  }
+
+  bikesGrid.innerHTML = bikes.map((b, i) => {
+    const profile    = b.profiles || {};
+    const sellerType = profile.seller_type || 'dealer';
+    const sellerName = profile.shop_name || profile.name || displayName;
+    const avatarInit = (sellerName).substring(0, 2).toUpperCase();
+    const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+    const imgContent = primaryImg
+      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" style="width:100%;height:100%;object-fit:cover;">`
+      : '<span style="font-size:4rem">🚲</span>';
+    return `
+      <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="openBikeModal('${b.id}')">
+        <div class="bike-card-img">
+          ${imgContent}
+          <span class="condition-tag">${b.condition}</span>
+          <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">🤍</button>
+        </div>
+        <div class="bike-card-body">
+          <div class="card-top">
+            <div class="bike-title">${b.brand} ${b.model}</div>
+            <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
+          </div>
+          <div class="bike-meta">
+            <span>${b.type}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
+          </div>
+          <div class="card-footer">
+            <div class="seller-info">
+              <div class="seller-avatar">${avatarInit}</div>
+              <div>
+                <div class="seller-name">${sellerName}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
+                <span class="badge badge-dealer">🏪 Forhandler</span>
+              </div>
+            </div>
+            <div class="card-location">📍 ${b.city}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function closeDealerProfileModal() {
+  const modal = document.getElementById('dealer-profile-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 /* ============================================================
