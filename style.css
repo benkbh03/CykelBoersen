@@ -362,6 +362,131 @@ nav {
 .dealer-city { font-size: 0.8rem; color: var(--sand); opacity: 0.55; }
 .dealer-count { font-size: 0.78rem; color: var(--rust-light); margin-top: 8px; font-weight: 500; }
 
+/* ── Bruger profil modal ── */
+.user-profile-modal-inner {
+  max-width: 860px; width: 100%;
+  max-height: 92vh; overflow-y: auto;
+  position: relative; padding: 40px 36px 36px;
+}
+.up-header { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+.up-avatar {
+  width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
+  background: var(--rust); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; font-weight: 700;
+}
+.up-name { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--charcoal); margin: 0 0 4px; }
+.up-city { color: var(--muted); font-size: 0.88rem; margin-bottom: 8px; }
+.up-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.up-member-since { color: var(--muted); font-size: 0.78rem; }
+
+.up-stats {
+  display: flex; gap: 0; border: 1px solid rgba(245,240,232,0.12);
+  border-radius: 10px; overflow: hidden; margin-bottom: 28px;
+}
+.up-stat {
+  flex: 1; padding: 16px; text-align: center;
+  border-right: 1px solid rgba(245,240,232,0.12);
+}
+.up-stat:last-child { border-right: none; }
+.up-stat-val { font-size: 1.4rem; font-weight: 700; color: var(--charcoal); font-family: 'Fraunces', serif; }
+.up-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+.up-divider { border: none; border-top: 1px solid rgba(245,240,232,0.12); margin: 24px 0; }
+.up-section-title { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--charcoal); margin: 0 0 16px; }
+.up-empty { color: var(--muted); font-size: 0.88rem; padding: 8px 0; }
+
+/* Aktive cykler grid */
+.up-bikes-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;
+  margin-bottom: 4px;
+}
+.up-bike-card {
+  background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.1);
+  border-radius: 10px; overflow: hidden; cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.up-bike-card:hover { transform: translateY(-2px); border-color: rgba(245,240,232,0.25); }
+.up-bike-img {
+  height: 130px; background: rgba(245,240,232,0.08);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.up-bike-info { padding: 10px 12px 12px; }
+.up-bike-title { font-weight: 600; font-size: 0.88rem; color: var(--charcoal); margin-bottom: 2px; }
+.up-bike-price { color: var(--rust); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.up-bike-meta { font-size: 0.75rem; color: var(--muted); }
+
+/* Solgte cykler liste */
+.up-sold-list { display: flex; flex-direction: column; gap: 8px; }
+.up-sold-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: 8px;
+  background: rgba(245,240,232,0.04); border: 1px solid rgba(245,240,232,0.08);
+  gap: 12px;
+}
+.up-sold-info { display: flex; flex-direction: column; gap: 2px; }
+.up-sold-title { font-size: 0.88rem; font-weight: 600; color: var(--charcoal); }
+.up-sold-meta  { font-size: 0.75rem; color: var(--muted); }
+.up-sold-price { font-size: 0.85rem; color: var(--muted); text-align: right; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+.sold-chip {
+  background: rgba(200,200,200,0.15); color: var(--muted);
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; font-weight: 600;
+}
+
+/* Anmeldelser */
+.up-reviews-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.up-review-card {
+  padding: 14px 16px; border-radius: 10px;
+  background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.1);
+}
+.up-review-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.up-review-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: var(--evergreen); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700;
+}
+.up-review-name { font-size: 0.88rem; font-weight: 600; color: var(--charcoal); }
+.up-review-date { font-size: 0.75rem; color: var(--muted); margin-left: auto; white-space: nowrap; }
+.up-review-comment { font-size: 0.85rem; color: var(--charcoal); opacity: 0.85; line-height: 1.55; margin: 0; }
+
+/* Stjerner */
+.star, .up-review-stars .star { color: rgba(245,240,232,0.2); font-size: 1rem; }
+.star.filled { color: #f5a623; }
+.up-review-stars { display: flex; gap: 2px; margin-top: 2px; }
+
+/* Stjerne-vælger */
+.up-write-review { margin-top: 8px; }
+.up-star-picker { display: flex; gap: 6px; margin-bottom: 12px; }
+.star-pick { font-size: 1.8rem; color: rgba(245,240,232,0.2); cursor: pointer; transition: color 0.1s; }
+.star-pick.active { color: #f5a623; }
+.up-review-textarea {
+  width: 100%; min-height: 80px; resize: vertical;
+  background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.2);
+  border-radius: 8px; padding: 10px 14px; color: var(--charcoal);
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  margin-bottom: 12px; box-sizing: border-box;
+}
+.up-review-textarea:focus { outline: none; border-color: var(--rust); }
+.btn-submit-review {
+  background: var(--rust); color: #fff; border: none;
+  padding: 11px 28px; border-radius: 8px; font-size: 0.88rem;
+  font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: opacity 0.15s;
+}
+.btn-submit-review:hover { opacity: 0.88; }
+
+/* Klikbar sælger-boks i cykelmodal */
+.bike-detail-seller:hover { background: rgba(245,240,232,0.07); }
+
+@media (max-width: 600px) {
+  .user-profile-modal-inner { padding: 24px 16px 20px; }
+  .up-header { gap: 14px; }
+  .up-avatar { width: 58px; height: 58px; font-size: 1.3rem; }
+  .up-bikes-grid { grid-template-columns: 1fr 1fr; }
+  .up-sold-row { flex-direction: column; align-items: flex-start; }
+}
+
 /* ── Forhandler profil modal ── */
 .dealer-profile-modal-inner {
   max-width: 900px; width: 100%;
@@ -411,19 +536,13 @@ nav {
   position: relative;
 }
 .dealer-card--featured:hover { background: rgba(200,130,42,0.2); }
-.dealer-featured-label {
-  position: absolute; top: 12px; right: 12px;
-  background: var(--rust); color: #fff;
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em;
-  padding: 2px 8px; border-radius: 20px;
-  text-transform: uppercase;
-}
-
-/* "Se alle forhandlere" knap under top-3 */
+/* "Se resten" knap under top-forhandlere */
 .dealer-see-all-wrap {
   display: flex; justify-content: center;
   margin-top: 20px;
 }
+.dealer-rest-grid { flex-wrap: wrap; }
+
 .btn-see-all-dealers {
   background: transparent; color: var(--sand);
   border: 1.5px solid rgba(245,240,232,0.3);

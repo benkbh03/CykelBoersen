@@ -230,6 +230,14 @@
     </div>
   </section>
 
+  <!-- ── BRUGER PROFIL MODAL ── -->
+  <div class="modal-overlay" id="user-profile-modal" style="display:none;" onclick="if(event.target===this)closeUserProfileModal()">
+    <div class="modal user-profile-modal-inner">
+      <button class="modal-close" onclick="closeUserProfileModal()" style="position:absolute;top:16px;right:16px;z-index:2;">✕</button>
+      <div id="user-profile-content"><p style="color:var(--muted);padding:40px 0;text-align:center;">Henter profil...</p></div>
+    </div>
+  </div>
+
   <!-- ── FORHANDLER PROFIL MODAL ── -->
   <div class="modal-overlay" id="dealer-profile-modal" style="display:none;" onclick="if(event.target===this)closeDealerProfileModal()">
     <div class="modal dealer-profile-modal-inner">

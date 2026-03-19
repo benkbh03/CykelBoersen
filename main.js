@@ -166,16 +166,19 @@ async function loadDealers() {
   container.className = 'dealer-cards';
   container.innerHTML = top3.map(dealer => buildDealerCard(dealer, countMap, true)).join('');
 
-  // Knap hvis der er flere end 3
+  // Resten vises inline under en "Se resten"-knap
   if (rest.length > 0) {
-    const btn = document.createElement('div');
-    btn.className = 'dealer-see-all-wrap';
-    btn.innerHTML = `
-      <button class="btn-see-all-dealers" onclick="openAllDealersModal()">
-        Se alle verificerede forhandlere (${dealers.length}) →
+    const restHtml = rest.map(d => buildDealerCard(d, countMap, false)).join('');
+    const restWrap = document.createElement('div');
+    restWrap.innerHTML = `
+      <button class="btn-see-all-dealers" id="toggle-rest-dealers" onclick="toggleRestDealers()">
+        Se resten (${rest.length} forhandlere) ↓
       </button>
+      <div class="dealer-cards dealer-rest-grid" id="rest-dealers-grid" style="display:none;margin-top:16px;">
+        ${restHtml}
+      </div>
     `;
-    container.after(btn);
+    container.after(restWrap);
   }
 
   // Gem alle forhandlere til modal brug
@@ -184,20 +187,30 @@ async function loadDealers() {
 }
 
 function buildDealerCard(dealer, countMap, featured = false) {
-  const displayName = dealer.shop_name || dealer.name || 'Forhandler';
-  const initials    = displayName.substring(0, 2).toUpperCase();
-  const bikeCount   = countMap[dealer.id] || 0;
-  const cityText    = dealer.city || '';
+  const displayName   = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials      = displayName.substring(0, 2).toUpperCase();
+  const bikeCount     = countMap[dealer.id] || 0;
+  const cityText      = dealer.city || '';
   const featuredClass = featured ? ' dealer-card--featured' : '';
   return `
     <div class="dealer-card${featuredClass}" onclick="filterByDealerCard('${dealer.id}')" style="cursor:pointer;" title="Se cykler fra ${displayName}">
-      ${featured ? '<div class="dealer-featured-label">Fremhævet</div>' : ''}
       <div class="dealer-logo-circle">${initials}</div>
       <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
       ${cityText ? `<div class="dealer-city">📍 ${cityText}</div>` : ''}
       <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
     </div>
   `;
+}
+
+function toggleRestDealers() {
+  const grid = document.getElementById('rest-dealers-grid');
+  const btn  = document.getElementById('toggle-rest-dealers');
+  if (!grid || !btn) return;
+  const open = grid.style.display === 'none';
+  grid.style.display  = open ? '' : 'none';
+  btn.textContent     = open
+    ? `Skjul resten ↑`
+    : `Se resten (${grid.querySelectorAll('.dealer-card').length} forhandlere) ↓`;
 }
 
 function openAllDealersModal() {
@@ -326,6 +339,210 @@ function closeDealerProfileModal() {
   const modal = document.getElementById('dealer-profile-modal');
   if (modal) modal.style.display = 'none';
   document.body.style.overflow = '';
+}
+
+/* ============================================================
+   BRUGER PROFIL
+   ============================================================ */
+
+async function openUserProfile(userId) {
+  const modal   = document.getElementById('user-profile-modal');
+  const content = document.getElementById('user-profile-content');
+  if (!modal) return;
+  content.innerHTML = '<p style="color:var(--muted);padding:60px 0;text-align:center;">Henter profil...</p>';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Hent parallelt: profil, aktive cykler, solgte cykler, anmeldelser
+  const [
+    { data: profile },
+    { data: activeBikes },
+    { data: soldBikes },
+    { data: reviews }
+  ] = await Promise.all([
+    supabase.from('profiles').select('id, name, shop_name, seller_type, city, verified, id_verified, created_at').eq('id', userId).single(),
+    supabase.from('bikes').select('*, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false }),
+    supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false }),
+    supabase.from('reviews').select('*, reviewer:profiles!reviews_reviewer_id_fkey(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false }),
+  ]);
+
+  if (!profile) {
+    content.innerHTML = '<p style="color:var(--rust);padding:40px;text-align:center;">Kunne ikke hente profil.</p>';
+    return;
+  }
+
+  const displayName  = profile.seller_type === 'dealer' ? (profile.shop_name || profile.name) : profile.name;
+  const initials     = (displayName || 'U').substring(0, 2).toUpperCase();
+  const isDealer     = profile.seller_type === 'dealer';
+  const memberYear   = profile.created_at ? new Date(profile.created_at).getFullYear() : null;
+  const isOwnProfile = currentUser && currentUser.id === userId;
+
+  // Gennemsnit og anmeldelsesantal
+  const reviewList   = reviews || [];
+  const avgRating    = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
+  const hasReviewed  = currentUser && reviewList.some(r => r.reviewer_id === currentUser.id);
+
+  // Stjerner helper
+  function stars(n) {
+    return [1,2,3,4,5].map(i => `<span class="star${i <= Math.round(n) ? ' filled' : ''}">★</span>`).join('');
+  }
+
+  // Aktive annoncer
+  const activeBikeCards = (activeBikes || []).map((b, i) => {
+    const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+    const imgContent = primaryImg
+      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" style="width:100%;height:100%;object-fit:cover;">`
+      : '<span style="font-size:2.5rem">🚲</span>';
+    return `
+      <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
+        <div class="up-bike-img">${imgContent}</div>
+        <div class="up-bike-info">
+          <div class="up-bike-title">${b.brand} ${b.model}</div>
+          <div class="up-bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
+          <div class="up-bike-meta">${b.type} · ${b.condition} · ${b.city || '–'}</div>
+        </div>
+      </div>`;
+  }).join('') || `<p class="up-empty">Ingen aktive annoncer.</p>`;
+
+  // Solgte cykler (kompakt liste)
+  const soldRows = (soldBikes || []).map(b => `
+    <div class="up-sold-row">
+      <div class="up-sold-info">
+        <span class="up-sold-title">${b.brand} ${b.model}</span>
+        <span class="up-sold-meta">${b.type} · ${b.condition}${b.year ? ' · ' + b.year : ''}</span>
+      </div>
+      <div class="up-sold-price">${b.price.toLocaleString('da-DK')} kr. <span class="sold-chip">Solgt</span></div>
+    </div>`).join('') || `<p class="up-empty">Ingen solgte cykler endnu.</p>`;
+
+  // Anmeldelser
+  const reviewCards = reviewList.map(r => {
+    const rName = r.reviewer?.seller_type === 'dealer' ? r.reviewer.shop_name : r.reviewer?.name;
+    const rInit = (rName || 'U').substring(0,2).toUpperCase();
+    const date  = new Date(r.created_at).toLocaleDateString('da-DK', { year:'numeric', month:'short', day:'numeric' });
+    return `
+      <div class="up-review-card">
+        <div class="up-review-top">
+          <div class="up-review-avatar">${rInit}</div>
+          <div>
+            <div class="up-review-name">${rName || 'Anonym'}</div>
+            <div class="up-review-stars">${stars(r.rating)}</div>
+          </div>
+          <div class="up-review-date">${date}</div>
+        </div>
+        ${r.comment ? `<p class="up-review-comment">${r.comment}</p>` : ''}
+      </div>`;
+  }).join('') || `<p class="up-empty">Ingen vurderinger endnu.</p>`;
+
+  // Skriv anmeldelse formular
+  const writeReviewHtml = (!isOwnProfile && currentUser && !hasReviewed) ? `
+    <div class="up-write-review" id="write-review-wrap">
+      <h4 class="up-section-title" style="margin-bottom:12px;">Giv en vurdering</h4>
+      <div class="up-star-picker" id="star-picker">
+        ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
+      </div>
+      <textarea id="review-comment" class="up-review-textarea" placeholder="Fortæl om din handel med ${displayName}... (valgfrit)"></textarea>
+      <button class="btn-submit-review" onclick="submitReview('${userId}')">Send vurdering</button>
+    </div>` : '';
+
+  content.innerHTML = `
+    <!-- Header -->
+    <div class="up-header">
+      <div class="up-avatar">${initials}</div>
+      <div class="up-meta">
+        <h2 class="up-name">
+          ${displayName}
+          ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
+          ${profile.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
+        </h2>
+        ${profile.city ? `<div class="up-city">📍 ${profile.city}</div>` : ''}
+        <div class="up-badges">
+          <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
+          ${memberYear ? `<span class="up-member-since">Medlem siden ${memberYear}</span>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistik -->
+    <div class="up-stats">
+      <div class="up-stat">
+        <div class="up-stat-val">${(activeBikes || []).length}</div>
+        <div class="up-stat-label">Til salg</div>
+      </div>
+      <div class="up-stat">
+        <div class="up-stat-val">${(soldBikes || []).length}</div>
+        <div class="up-stat-label">Solgt</div>
+      </div>
+      <div class="up-stat">
+        <div class="up-stat-val">${avgRating !== null ? avgRating.toFixed(1) + ' ★' : '–'}</div>
+        <div class="up-stat-label">${reviewList.length} ${reviewList.length === 1 ? 'vurdering' : 'vurderinger'}</div>
+      </div>
+    </div>
+
+    <hr class="up-divider">
+
+    <!-- Aktive annoncer -->
+    <h3 class="up-section-title">Til salg (${(activeBikes || []).length})</h3>
+    <div class="up-bikes-grid">${activeBikeCards}</div>
+
+    <hr class="up-divider">
+
+    <!-- Solgte cykler -->
+    <h3 class="up-section-title">Tidligere solgte cykler (${(soldBikes || []).length})</h3>
+    <div class="up-sold-list">${soldRows}</div>
+
+    <hr class="up-divider">
+
+    <!-- Vurderinger -->
+    <h3 class="up-section-title">Vurderinger${avgRating !== null ? ` <span style="font-size:0.9rem;font-weight:400;color:var(--rust);">${stars(avgRating)} ${avgRating.toFixed(1)}</span>` : ''}</h3>
+    <div class="up-reviews-list">${reviewCards}</div>
+    ${writeReviewHtml}
+  `;
+
+  // Aktivér stjerne-hover
+  document.querySelectorAll('.star-pick').forEach(s => {
+    s.addEventListener('mouseover', () => highlightStars(+s.dataset.val));
+    s.addEventListener('mouseout',  () => highlightStars(window._pickedStar || 0));
+  });
+  window._pickedStar = 0;
+}
+
+function pickStar(val) {
+  window._pickedStar = val;
+  highlightStars(val);
+}
+
+function highlightStars(val) {
+  document.querySelectorAll('.star-pick').forEach(s => {
+    s.classList.toggle('active', +s.dataset.val <= val);
+  });
+}
+
+async function submitReview(reviewedUserId) {
+  const rating  = window._pickedStar || 0;
+  const comment = document.getElementById('review-comment')?.value?.trim() || '';
+
+  if (!currentUser)       { showToast('⚠️ Log ind for at give en vurdering'); return; }
+  if (rating < 1)         { showToast('⚠️ Vælg et antal stjerner'); return; }
+
+  const { error } = await supabase.from('reviews').insert({
+    reviewer_id:      currentUser.id,
+    reviewed_user_id: reviewedUserId,
+    rating,
+    comment: comment || null,
+  });
+
+  if (error) { showToast('❌ Kunne ikke sende vurdering'); console.error(error); return; }
+
+  showToast('✅ Vurdering sendt!');
+  // Genindlæs profilen
+  openUserProfile(reviewedUserId);
+}
+
+function closeUserProfileModal() {
+  const modal = document.getElementById('user-profile-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+  window._pickedStar = 0;
 }
 
 /* ============================================================
@@ -917,15 +1134,16 @@ async function openBikeModal(bikeId) {
           ${b.condition ? `<span class="detail-tag">${b.condition}</span>` : ''}
           ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
         </div>
-        <div class="bike-detail-seller">
+        <div class="bike-detail-seller" onclick="openUserProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
           <div class="seller-avatar-large">${initials}</div>
-          <div>
+          <div style="flex:1">
             <div class="seller-detail-name">${sellerName || 'Ukendt'}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.id_verified ? ' <span class="id-badge" title="ID verificeret">🪪</span>' : ''}</div>
             <div class="seller-detail-city">${profile.city || ''}</div>
             <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
               ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
             </span>
           </div>
+          <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
         </div>
         ${!isOwner ? `
         <div class="action-buttons">
