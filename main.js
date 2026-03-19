@@ -56,6 +56,12 @@ async function init() {
   loadBikes();
   updateFilterCounts();
 
+  // Åbn indbakke automatisk hvis ?inbox=true er i URL'en
+  if (new URLSearchParams(window.location.search).get('inbox') === 'true' && currentUser) {
+    history.replaceState(null, '', window.location.pathname);
+    openInboxModal();
+  }
+
   // Klik uden for modal lukker den
   document.getElementById('inbox-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeInboxModal();
