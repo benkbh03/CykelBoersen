@@ -614,6 +614,8 @@ async function loadBikes(filters = {}) {
   if (filters.type)       query = query.eq('type', filters.type);
   if (filters.maxPrice)   query = query.lte('price', filters.maxPrice);
   if (filters.search)     query = query.or(`brand.ilike.%${filters.search}%,model.ilike.%${filters.search}%`);
+  if (filters.warranty)   query = query.not('warranty', 'is', null);
+  if (filters.newOnly)    query = query.gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
   const { data, error } = await query;
 
@@ -657,6 +659,7 @@ function renderBikes(bikes) {
           ${imgContent}
           ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
           <span class="condition-tag">${b.condition}</span>
+          ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">🤍</button>` : ''}
         </div>
         <div class="bike-card-body">
@@ -798,6 +801,8 @@ function togglePill(el) {
   else if (text === 'Kun forhandlere') loadBikes({ sellerType: 'dealer' });
   else if (text === 'Kun private')     loadBikes({ sellerType: 'private' });
   else if (text === 'Under 3.000 kr') loadBikes({ maxPrice: 3000 });
+  else if (text === 'Med garanti')     loadBikes({ warranty: true });
+  else if (text === 'Ny annonce')      loadBikes({ newOnly: true });
 }
 
 /* ============================================================
@@ -855,6 +860,7 @@ async function submitListing() {
   const condition = selects[3].value;
 
   const wheelSize = document.getElementById('modal-wheel-size')?.value || null;
+  const warranty  = document.getElementById('modal-warranty')?.value.trim() || null;
 
   const bikeData = {
     user_id:     currentUser.id,
@@ -862,6 +868,7 @@ async function submitListing() {
     description: desc,
     type, size, condition,
     wheel_size:  wheelSize || null,
+    warranty:    warranty || null,
     title:       `${brand} ${model}`,
     is_active:   true,
   };
@@ -1204,6 +1211,7 @@ async function openBikeModal(bikeId) {
           ${b.size ? `<span class="detail-tag">Str. ${b.size}</span>` : ''}
           ${b.condition ? `<span class="detail-tag">${b.condition}</span>` : ''}
           ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
+          ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${b.warranty}</span>` : ''}
         </div>
         <div class="bike-detail-seller" onclick="openUserProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
           <div class="seller-avatar-large">${initials}</div>
@@ -1691,6 +1699,11 @@ async function openEditModal(id) {
   document.getElementById('edit-condition').value     = b.condition || '';
   document.getElementById('edit-is-active').checked   = b.is_active;
 
+  // Vis garantifelt kun for forhandlere
+  const warrantyGroup = document.getElementById('edit-warranty-group');
+  if (warrantyGroup) warrantyGroup.style.display = currentProfile?.seller_type === 'dealer' ? '' : 'none';
+  document.getElementById('edit-warranty').value = b.warranty || '';
+
   // Indlæs eksisterende billeder
   editNewFiles     = [];
   editExistingImgs = (b.bike_images || []).map(img => ({ ...img, toDelete: false }));
@@ -1798,6 +1811,7 @@ async function saveEditedListing() {
     size:        document.getElementById('edit-size').value,
     condition:   document.getElementById('edit-condition').value,
     is_active:   document.getElementById('edit-is-active').checked,
+    warranty:    (currentProfile?.seller_type === 'dealer' ? document.getElementById('edit-warranty').value.trim() : null) || null,
   };
 
   if (!updates.brand || !updates.model || !updates.price || !updates.city) {

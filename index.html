@@ -331,6 +331,10 @@
             <label>Butiksnavn / CVR</label>
             <input type="text" placeholder="f.eks. VeloShop ApS eller 12345678">
           </div>
+          <div class="form-group">
+            <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
+            <input type="text" id="modal-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
+          </div>
         </div>
         <div class="form-grid">
           <div class="form-group"><label>Mærke *</label><input type="text" placeholder="f.eks. Trek, Giant, Specialized"></div>
@@ -676,6 +680,10 @@
           </div>
           <div class="form-group"><label>By *</label><input type="text" id="edit-city" placeholder="f.eks. København"></div>
           <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..."></textarea></div>
+          <div class="form-group full" id="edit-warranty-group" style="display:none;">
+            <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
+            <input type="text" id="edit-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
+          </div>
           <div class="form-group full">
             <label class="toggle-label">
               <input type="checkbox" id="edit-is-active">
