@@ -1100,6 +1100,17 @@ async function saveProfile() {
     const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
     if (error) { showToast('❌ Kunne ikke gemme profil'); return; }
 
+    // Sync ny by til alle brugerens cykelannoncer så kortet opdateres
+    if (updates.city && updates.city !== (currentProfile && currentProfile.city)) {
+      await supabase.from('bikes').update({ city: updates.city }).eq('user_id', currentUser.id);
+      // Ryd geocode-cache for gammel by så kortet henter nye koordinater
+      var oldKey = (currentProfile && currentProfile.city || '').toLowerCase().trim();
+      if (oldKey && _geocodeCache[oldKey]) {
+        delete _geocodeCache[oldKey];
+        _saveGeocodeCache();
+      }
+    }
+
     // Opdater cache
     currentProfile = { ...currentProfile, ...updates };
     showProfileData();
