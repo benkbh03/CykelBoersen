@@ -1103,12 +1103,14 @@ async function saveProfile() {
     // Sync ny by til alle brugerens cykelannoncer så kortet opdateres
     if (updates.city && updates.city !== (currentProfile && currentProfile.city)) {
       await supabase.from('bikes').update({ city: updates.city }).eq('user_id', currentUser.id);
-      // Ryd geocode-cache for gammel by så kortet henter nye koordinater
-      var oldKey = (currentProfile && currentProfile.city || '').toLowerCase().trim();
-      if (oldKey && _geocodeCache[oldKey]) {
-        delete _geocodeCache[oldKey];
-        _saveGeocodeCache();
-      }
+    }
+    // Ryd DAWA-cache for gammel adresse+by så kortet henter nye koordinater
+    var oldAddr = (currentProfile && currentProfile.address || '').toLowerCase().trim();
+    var oldCity = (currentProfile && currentProfile.city || '').toLowerCase().trim();
+    if (oldAddr && oldCity) {
+      var oldDawaKey = 'dawa:' + oldAddr + ', ' + oldCity;
+      delete _geocodeCache[oldDawaKey];
+      _saveGeocodeCache();
     }
 
     // Opdater cache
@@ -2811,7 +2813,7 @@ var mapMarkers         = [];
 var currentView        = 'list';
 var userLocationMarker = null;
 
-/* ── Nominatim geocoding cache ── */
+/* ── Geocoding cache ── */
 var _geocodeCache = (function() {
   try {
     var stored = localStorage.getItem('_geocodeCache');
@@ -2823,18 +2825,41 @@ function _saveGeocodeCache() {
   try { localStorage.setItem('_geocodeCache', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
-// Slå en dansk by/adresse op via Nominatim (med cache + rate-limit)
+// Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
+function geocodeAddress(address, city) {
+  var query = address.trim() + ', ' + city.trim();
+  var key = 'dawa:' + query.toLowerCase();
+  if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
+
+  var url = 'https://api.dataforsyningen.dk/adgangsadresser?q='
+    + encodeURIComponent(query) + '&per_side=1&format=json';
+
+  return fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.length > 0) {
+        var koord = data[0].adgangspunkt.koordinater; // [lng, lat]
+        var coords = [koord[1], koord[0]];
+        _geocodeCache[key] = coords;
+        _saveGeocodeCache();
+        return coords;
+      }
+      return null; // Ikke cachet — by-fallback prøves
+    })
+    .catch(function() { return null; });
+}
+
+// Slå dansk by op via Nominatim (med cache + rate-limit)
 var _geocodeQueue = Promise.resolve();
 var _lastGeocodeTime = 0;
 
 function geocodeCity(city) {
   var key = city.toLowerCase().trim();
-  if (_geocodeCache[key]) return Promise.resolve(_geocodeCache[key]);
+  if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
   // Kø requests så vi max laver 1 kald per sekund (Nominatim rate limit)
   _geocodeQueue = _geocodeQueue.then(function() {
-    // Tjek cache igen efter kø
-    if (_geocodeCache[key]) return _geocodeCache[key];
+    if (_geocodeCache[key] !== undefined) return _geocodeCache[key];
 
     var now = Date.now();
     var wait = Math.max(0, 1100 - (now - _lastGeocodeTime));
@@ -2845,9 +2870,7 @@ function geocodeCity(city) {
         + encodeURIComponent(city + ', Danmark')
         + '&format=json&limit=1&countrycodes=dk';
 
-      return fetch(url, {
-        headers: { 'Accept-Language': 'da' }
-      })
+      return fetch(url, { headers: { 'Accept-Language': 'da' } })
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data && data.length > 0) {
@@ -2856,10 +2879,7 @@ function geocodeCity(city) {
             _saveGeocodeCache();
             return coords;
           }
-          // Cache ikke null for adresse-opslag (kun by) så fallback kan virke
-          if (!key.match(/,/)) {
-            _geocodeCache[key] = null;
-          }
+          _geocodeCache[key] = null;
           return null;
         })
         .catch(function() { return null; });
@@ -2959,20 +2979,17 @@ async function initMap() {
     mapMarkers.push(marker);
   }
 
-  // Geokod via Nominatim (med cache) og tilføj markører
-  // Prøv præcis adresse først, fald tilbage til by hvis ikke fundet
+  // Geokod og tilføj markører
+  // DAWA til præcis adresse, Nominatim som by-fallback
   var geocodePromises = result.data
     .filter(function(b) { return !!b.city; })
     .map(function(b) {
       var profile = b.profiles || {};
-      var fullAddress = (profile.address && profile.address.trim())
-        ? profile.address.trim() + ', ' + b.city
-        : null;
+      var hasAddress = profile.address && profile.address.trim();
 
-      var lookup = fullAddress
-        ? geocodeCity(fullAddress).then(function(coords) {
-            if (coords) return coords;
-            return geocodeCity(b.city); // Fallback til by
+      var lookup = hasAddress
+        ? geocodeAddress(profile.address, b.city).then(function(coords) {
+            return coords || geocodeCity(b.city); // Fallback til by
           })
         : geocodeCity(b.city);
 
