@@ -1155,7 +1155,14 @@ async function handleRegister() {
   if (password.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
   const restore = btnLoading('register-btn', 'Opretter konto...');
   try {
-    const { error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name },
+        emailRedirectTo: window.location.origin,
+      },
+    });
     if (error) showToast('❌ ' + error.message);
     else { closeLoginModal(); showToast('✅ Tjek din email for at bekræfte kontoen'); }
   } finally { restore(); }
