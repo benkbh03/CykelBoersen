@@ -2845,17 +2845,17 @@ function _saveGeocodeCache() {
 // Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
 function geocodeAddress(address, city) {
   var query = address.trim() + ', ' + city.trim();
-  var key = 'dawa:' + query.toLowerCase();
+  var key = 'dawa2:' + query.toLowerCase();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  var url = 'https://api.dataforsyningen.dk/adgangsadresser?q='
+  var url = 'https://api.dataforsyningen.dk/adresser?q='
     + encodeURIComponent(query) + '&per_side=1&format=json';
 
   return fetch(url)
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data && data.length > 0) {
-        var koord = data[0].adgangspunkt.koordinater; // [lng, lat]
+        var koord = data[0].adgangsadresse.adgangspunkt.koordinater; // [lng, lat]
         var coords = [koord[1], koord[0]];
         _geocodeCache[key] = coords;
         _saveGeocodeCache();
