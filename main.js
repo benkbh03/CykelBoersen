@@ -1513,7 +1513,7 @@ async function openBikeModal(bikeId) {
     ${b.description ? `
     <div style="margin-top:20px;">
       <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
-      <div class="bike-detail-description">${b.description}</div>
+      <div class="bike-detail-description">${b.description.replace(/\n/g, '<br>')}</div>
     </div>` : ''}
   `;
 
