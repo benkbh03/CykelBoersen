@@ -2827,38 +2827,29 @@ function _saveGeocodeCache() {
 
 // Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
 function geocodeAddress(address, city) {
-  var query = address.trim() + ', ' + city.trim() + ', Danmark';
-  var key = 'nom:' + query.toLowerCase();
+  var query = address.trim() + ', ' + city.trim();
+  var key = 'dawa3:' + query.toLowerCase();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  _geocodeQueue = _geocodeQueue.then(function() {
-    if (_geocodeCache[key] !== undefined) return _geocodeCache[key];
+  var datavaskUrl = 'https://api.dataforsyningen.dk/datavask/adresser?betegnelse='
+    + encodeURIComponent(query);
 
-    var now = Date.now();
-    var wait = Math.max(0, 1100 - (now - _lastGeocodeTime));
-
-    return new Promise(function(resolve) { setTimeout(resolve, wait); }).then(function() {
-      _lastGeocodeTime = Date.now();
-      var url = 'https://nominatim.openstreetmap.org/search?q='
-        + encodeURIComponent(query)
-        + '&format=json&limit=1&countrycodes=dk';
-
-      return fetch(url, { headers: { 'Accept-Language': 'da' } })
+  return fetch(datavaskUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data || !data.resultater || data.resultater.length === 0) return null;
+      var id = data.resultater[0].adresse.id;
+      return fetch('https://api.dataforsyningen.dk/adresser/' + id)
         .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data && data.length > 0) {
-            var coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-            _geocodeCache[key] = coords;
-            _saveGeocodeCache();
-            return coords;
-          }
-          return null;
-        })
-        .catch(function() { return null; });
-    });
-  });
-
-  return _geocodeQueue;
+        .then(function(adresse) {
+          var koord = adresse.adgangsadresse.adgangspunkt.koordinater; // [lng, lat]
+          var coords = [koord[1], koord[0]];
+          _geocodeCache[key] = coords;
+          _saveGeocodeCache();
+          return coords;
+        });
+    })
+    .catch(function() { return null; });
 }
 
 // Slå dansk by op via Nominatim (med cache + rate-limit)
