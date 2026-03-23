@@ -2584,6 +2584,7 @@ window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab  = switchProfileTab;
 window.saveProfile       = saveProfile;
+window.uploadAvatar      = uploadAvatar;
 window.deleteListing     = deleteListing;
 window.togglePill        = togglePill;
 window.toggleSave        = toggleSave;
@@ -2863,6 +2864,25 @@ window.sendInboxReply   = sendInboxReply;
    ============================================================ */
 
 var footerContent = {
+  about: {
+    title: 'Om Cykelbørsen',
+    body: `
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet — hurtigt, nemt og gratis.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Vores mission</h3>
+      <p style="margin-bottom:16px;">Vi tror på, at en god brugt cykel fortjener en ny ejer. Ved at gøre det nemt at købe og sælge brugte cykler hjælper vi med at forlænge cyklernes levetid og reducere unødvendigt affald.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For private sælgere</h3>
+      <p style="margin-bottom:16px;">Det er helt gratis at oprette en annonce som privat sælger. Upload billeder, sæt din pris, og kom i kontakt med interesserede købere direkte via vores beskedsystem.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For forhandlere</h3>
+      <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer med et abonnement. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt os</h3>
+      <p>Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
+    `
+  },
   terms: {
     title: 'Vilkår og betingelser',
     body: `
