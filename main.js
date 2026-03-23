@@ -2827,26 +2827,38 @@ function _saveGeocodeCache() {
 
 // Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
 function geocodeAddress(address, city) {
-  var query = address.trim() + ', ' + city.trim();
-  var key = 'dawa2:' + query.toLowerCase();
+  var query = address.trim() + ', ' + city.trim() + ', Danmark';
+  var key = 'nom:' + query.toLowerCase();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  var url = 'https://api.dataforsyningen.dk/adresser?q='
-    + encodeURIComponent(query) + '&per_side=1&format=json';
+  _geocodeQueue = _geocodeQueue.then(function() {
+    if (_geocodeCache[key] !== undefined) return _geocodeCache[key];
 
-  return fetch(url)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data && data.length > 0) {
-        var koord = data[0].adgangsadresse.adgangspunkt.koordinater; // [lng, lat]
-        var coords = [koord[1], koord[0]];
-        _geocodeCache[key] = coords;
-        _saveGeocodeCache();
-        return coords;
-      }
-      return null; // Ikke cachet — by-fallback prøves
-    })
-    .catch(function() { return null; });
+    var now = Date.now();
+    var wait = Math.max(0, 1100 - (now - _lastGeocodeTime));
+
+    return new Promise(function(resolve) { setTimeout(resolve, wait); }).then(function() {
+      _lastGeocodeTime = Date.now();
+      var url = 'https://nominatim.openstreetmap.org/search?q='
+        + encodeURIComponent(query)
+        + '&format=json&limit=1&countrycodes=dk';
+
+      return fetch(url, { headers: { 'Accept-Language': 'da' } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.length > 0) {
+            var coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            _geocodeCache[key] = coords;
+            _saveGeocodeCache();
+            return coords;
+          }
+          return null;
+        })
+        .catch(function() { return null; });
+    });
+  });
+
+  return _geocodeQueue;
 }
 
 // Slå dansk by op via Nominatim (med cache + rate-limit)
