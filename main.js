@@ -1431,6 +1431,7 @@ window.galleryNav  = galleryNav;
 window.galleryGoto = galleryGoto;
 
 function toggleBidBox() {
+  if (!currentUser) { openLoginModal(); return; }
   const box = document.getElementById('bid-box');
   const msgBox = document.getElementById('message-box');
   if (msgBox) msgBox.style.display = 'none';
@@ -1439,6 +1440,7 @@ function toggleBidBox() {
 }
 
 function toggleMessageBox() {
+  if (!currentUser) { openLoginModal(); return; }
   const box = document.getElementById('message-box');
   const bidBox = document.getElementById('bid-box');
   if (bidBox) bidBox.style.display = 'none';
