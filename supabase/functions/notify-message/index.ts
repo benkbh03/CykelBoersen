@@ -125,7 +125,7 @@ serve(async (req) => {
             <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
               <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;">${message.content}</p>
             </div>
-            <a href="https://benkbh03.github.io/CykelBoersen?inbox=true"
+            <a href="https://cykelbørsen.dk?inbox=true"
                style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
               Svar på Cykelbørsen →
             </a>
@@ -135,7 +135,7 @@ serve(async (req) => {
           <td style="padding:16px 32px;background:#F5F0E8;border-top:1px solid #DDD8CE;">
             <p style="color:#8A8578;font-size:0.75rem;margin:0;">
               Du modtager denne email fordi du har en aktiv annonce på
-              <a href="https://benkbh03.github.io/CykelBoersen" style="color:#C8502A;">Cykelbørsen</a>
+              <a href="https://cykelbørsen.dk" style="color:#C8502A;">Cykelbørsen</a>
             </p>
           </td>
         </tr>

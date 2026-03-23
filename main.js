@@ -977,7 +977,7 @@ async function handleForgotPassword() {
   if (!email) { showToast('⚠️ Indtast din email'); return; }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://benkbh03.github.io/CykelBoersen/',
+    redirectTo: 'https://cykelbørsen.dk/',
   });
 
   if (error) {
