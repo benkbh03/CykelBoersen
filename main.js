@@ -790,16 +790,21 @@ async function loadBikes(filters = {}, append = false) {
 
   bikesOffset += data.length;
 
-  // Vis "Vis flere"-knap hvis der kan være flere
+  // Vis "Vis flere"-knap eller "Ingen flere"-besked
   const existing = document.getElementById('load-more-btn');
   if (existing) existing.remove();
 
+  const footer = document.createElement('div');
+  footer.id = 'load-more-btn';
   if (data.length === BIKES_PAGE_SIZE) {
-    const btn = document.createElement('div');
-    btn.id        = 'load-more-btn';
-    btn.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
-    grid.after(btn);
+    footer.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
+  } else if (append && bikesOffset > BIKES_PAGE_SIZE) {
+    footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
+  } else {
+    // Første side med færre end BIKES_PAGE_SIZE — intet footer element nødvendigt
+    return;
   }
+  grid.after(footer);
 }
 
 function renderBikes(bikes, append = false) {
@@ -1667,8 +1672,7 @@ async function sendMessage(bikeId, receiverId) {
 
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
-        .then(({ data: fnData, error: fnErr }) => {
-          console.log('notify-message svar:', fnData, fnErr);
+        .then(({ error: fnErr }) => {
           if (fnErr) console.error('Email notifikation fejlede:', fnErr);
         }).catch(err => console.error('Email notifikation fejlede:', err));
     }
@@ -1979,8 +1983,7 @@ async function sendReply() {
     showToast('✅ Svar sendt!');
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
-        .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
-        .catch(e => console.error(e));
+        .catch(e => console.error('Email notifikation fejlede:', e));
     }
     openThread(activeThread.bikeId, activeThread.otherId, activeThread.otherName);
   } finally { restore(); }
@@ -2461,9 +2464,7 @@ function startRealtimeNotifications() {
       }
     });
 
-  channel.subscribe(function(status) {
-    console.log('Realtime status:', status);
-  });
+  channel.subscribe(function(_status) {});
 }
 
 
@@ -2818,8 +2819,7 @@ async function sendInboxReply() {
     showToast('✅ Svar sendt!');
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
-        .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
-        .catch(e => console.error(e));
+        .catch(e => console.error('Email notifikation fejlede:', e));
     }
     openInboxThread(activeInboxThread.bikeId, activeInboxThread.otherId, activeInboxThread.otherName);
   } finally { restore(); }
@@ -2983,7 +2983,12 @@ async function submitContactForm() {
   if (!name || !email || !message) { showToast('⚠️ Udfyld alle felter'); return; }
 
   const { error } = await supabase.from('contact_messages').insert({ name, email, message });
-  if (error) { console.error('Kontaktformular fejl:', error); showToast('❌ Noget gik galt – prøv igen'); return; }
+  if (error) { showToast('❌ Noget gik galt – prøv igen'); return; }
+
+  // Send email-notifikation til admin
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'contact_form', name, email, message },
+  }).catch(() => {});
 
   document.getElementById('contact-name').value    = '';
   document.getElementById('contact-email').value   = '';
@@ -3716,6 +3721,10 @@ async function approveId(userId) {
   if (err) { showToast('❌ Fejl'); return; }
   showToast('✅ ID godkendt — bruger har nu et blåt badge');
   loadIdApplications();
+  // Send email til brugeren
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'id_approved', user_id: userId },
+  }).catch(() => {});
   // Hvis den godkendte bruger er den indloggede, opdater cache
   if (currentUser && currentUser.id === userId) {
     currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
@@ -3733,6 +3742,10 @@ async function rejectId(userId) {
   if (err) { showToast('❌ Fejl'); return; }
   showToast('ID-ansøgning afvist');
   loadIdApplications();
+  // Send email til brugeren
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'id_rejected', user_id: userId },
+  }).catch(() => {});
 }
 
 window.previewIdDoc       = previewIdDoc;
