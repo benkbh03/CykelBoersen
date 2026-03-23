@@ -2961,10 +2961,12 @@ async function initMap() {
   if (!result.data || result.data.length === 0) return;
 
   // Funktion til at tilføje en markør på kortet
-  function addBikeMarker(b, coords) {
-    // Tilføj lille tilfældig offset så markører ikke overlapper
-    var lat = coords[0] + (Math.random() - 0.5) * 0.012;
-    var lng = coords[1] + (Math.random() - 0.5) * 0.012;
+  function addBikeMarker(b, coords, isPrecise) {
+    // Forhandlere med præcis adresse: ingen offset
+    // Private sælgere: lille offset så markører på samme by ikke stacker
+    var jitter = isPrecise ? 0.0002 : 0.002;
+    var lat = coords[0] + (Math.random() - 0.5) * jitter;
+    var lng = coords[1] + (Math.random() - 0.5) * jitter;
 
     var profile    = b.profiles || {};
     var sellerType = profile.seller_type || 'private';
@@ -3000,21 +3002,23 @@ async function initMap() {
   }
 
   // Geokod og tilføj markører
-  // DAWA til præcis adresse, Nominatim som by-fallback
+  // Forhandlere: brug butiks-adresse fra profil (præcis geocoding via DAWA)
+  // Private sælgere: vis på by-centrum (ingen privatadresse)
   var geocodePromises = result.data
     .filter(function(b) { return !!b.city; })
     .map(function(b) {
       var profile = b.profiles || {};
-      var hasAddress = profile.address && profile.address.trim();
+      var isDealer = profile.seller_type === 'dealer';
+      var dealerAddress = isDealer && profile.address && profile.address.trim();
 
-      var lookup = hasAddress
+      var lookup = dealerAddress
         ? geocodeAddress(profile.address, b.city).then(function(coords) {
-            return coords || geocodeCity(b.city); // Fallback til by
+            return coords || geocodeCity(b.city); // Fallback til by hvis adresse fejler
           })
         : geocodeCity(b.city);
 
       return lookup.then(function(coords) {
-        if (coords) addBikeMarker(b, coords);
+        if (coords) addBikeMarker(b, coords, isDealer && !!dealerAddress);
       });
     });
 
