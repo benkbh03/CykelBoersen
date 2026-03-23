@@ -92,8 +92,7 @@ async function init() {
   // Start offentlig data med det samme – venter ikke på auth
   const sessionPromise = supabase.auth.getSession();
   loadBikes();
-  loadDealers();
-  updateFilterCounts();
+  loadInitialData(); // Erstatter loadDealers() + updateFilterCounts() med 2 parallelle queries
 
   const { data: { session } } = await sessionPromise;
 
@@ -243,15 +242,22 @@ async function checkUnreadMessages() {
    FORHANDLERE
    ============================================================ */
 
-async function loadDealers() {
+async function loadDealers(dealers, bikeRows) {
   const container = document.getElementById('dealer-cards-container');
   if (!container) return;
 
-  // Hent forhandlere og cykelantal parallelt
-  const [{ data: dealers, error }, { data: bikeRows }] = await Promise.all([
-    supabase.from('profiles').select('id, shop_name, city, address, name').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
-    supabase.from('bikes').select('user_id').eq('is_active', true)
-  ]);
+  let error;
+  if (!dealers || !bikeRows) {
+    // Standalone kald – hent data selv
+    let dealerRes, bikeRes;
+    [dealerRes, bikeRes] = await Promise.all([
+      supabase.from('profiles').select('id, shop_name, city, address, name').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+      supabase.from('bikes').select('user_id').eq('is_active', true)
+    ]);
+    dealers  = dealerRes.data;
+    bikeRows = bikeRes.data;
+    error    = dealerRes.error;
+  }
 
   if (error || !dealers || dealers.length === 0) {
     container.className = 'dealer-cards dealer-empty-state';
@@ -304,6 +310,21 @@ async function loadDealers() {
   // Gem alle forhandlere til modal brug
   window._allDealers    = dealers;
   window._dealerCountMap = countMap;
+}
+
+// Kombineret startup-fetch: 2 parallelle queries i stedet for 5
+async function loadInitialData() {
+  const [{ data: dealers, count: dealerCount }, { data: bikesData }] = await Promise.all([
+    supabase.from('profiles')
+      .select('id, shop_name, city, address, name', { count: 'exact' })
+      .eq('seller_type', 'dealer').eq('verified', true)
+      .order('created_at', { ascending: true }),
+    supabase.from('bikes')
+      .select('type, condition, user_id, profiles(seller_type)')
+      .eq('is_active', true)
+  ]);
+  updateFilterCounts(bikesData, dealerCount);
+  loadDealers(dealers, bikesData);
 }
 
 function buildDealerCard(dealer, countMap, featured = false) {
@@ -872,14 +893,17 @@ function sortBikes(value) {
    FILTER TÆLLER
    ============================================================ */
 
-async function updateFilterCounts() {
-  // Hent aktive annoncer til filtre
-  const { data, error } = await supabase
-    .from('bikes')
-    .select('type, condition, profiles(seller_type)')
-    .eq('is_active', true);
-
-  if (error || !data) return;
+async function updateFilterCounts(data, dealerCount) {
+  if (!data) {
+    // Standalone kald – hent data parallelt
+    const [bikesRes, dealerRes] = await Promise.all([
+      supabase.from('bikes').select('type, condition, profiles(seller_type)').eq('is_active', true),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
+    ]);
+    if (bikesRes.error || !bikesRes.data) return;
+    data        = bikesRes.data;
+    dealerCount = dealerRes.count;
+  }
 
   const total    = data.length;
   const dealers  = data.filter(b => b.profiles?.seller_type === 'dealer').length;
@@ -905,16 +929,8 @@ async function updateFilterCounts() {
   if (countEl)   countEl.textContent   = `${total} cykler til salg`;
   if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
 
-  // Hent antal verificerede forhandlere
-  const { count: dealerCount } = await supabase
-    .from('profiles')
-    .select('id', { count: 'exact', head: true })
-    .eq('seller_type', 'dealer')
-    .eq('verified', true);
-
   const statDealers = document.getElementById('stat-dealers');
-  if (statDealers) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
-
+  if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
 }
 
 function setCount(label, count) {
