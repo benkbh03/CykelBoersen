@@ -790,16 +790,21 @@ async function loadBikes(filters = {}, append = false) {
 
   bikesOffset += data.length;
 
-  // Vis "Vis flere"-knap hvis der kan være flere
+  // Vis "Vis flere"-knap eller "Ingen flere"-besked
   const existing = document.getElementById('load-more-btn');
   if (existing) existing.remove();
 
+  const footer = document.createElement('div');
+  footer.id = 'load-more-btn';
   if (data.length === BIKES_PAGE_SIZE) {
-    const btn = document.createElement('div');
-    btn.id        = 'load-more-btn';
-    btn.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
-    grid.after(btn);
+    footer.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
+  } else if (append && bikesOffset > BIKES_PAGE_SIZE) {
+    footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
+  } else {
+    // Første side med færre end BIKES_PAGE_SIZE — intet footer element nødvendigt
+    return;
   }
+  grid.after(footer);
 }
 
 function renderBikes(bikes, append = false) {
@@ -1150,7 +1155,14 @@ async function handleRegister() {
   if (password.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
   const restore = btnLoading('register-btn', 'Opretter konto...');
   try {
-    const { error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name },
+        emailRedirectTo: window.location.origin,
+      },
+    });
     if (error) showToast('❌ ' + error.message);
     else { closeLoginModal(); showToast('✅ Tjek din email for at bekræfte kontoen'); }
   } finally { restore(); }
@@ -1667,8 +1679,7 @@ async function sendMessage(bikeId, receiverId) {
 
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
-        .then(({ data: fnData, error: fnErr }) => {
-          console.log('notify-message svar:', fnData, fnErr);
+        .then(({ error: fnErr }) => {
           if (fnErr) console.error('Email notifikation fejlede:', fnErr);
         }).catch(err => console.error('Email notifikation fejlede:', err));
     }
@@ -1979,8 +1990,7 @@ async function sendReply() {
     showToast('✅ Svar sendt!');
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
-        .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
-        .catch(e => console.error(e));
+        .catch(e => console.error('Email notifikation fejlede:', e));
     }
     openThread(activeThread.bikeId, activeThread.otherId, activeThread.otherName);
   } finally { restore(); }
@@ -2461,9 +2471,7 @@ function startRealtimeNotifications() {
       }
     });
 
-  channel.subscribe(function(status) {
-    console.log('Realtime status:', status);
-  });
+  channel.subscribe(function(_status) {});
 }
 
 
@@ -2584,6 +2592,7 @@ window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab  = switchProfileTab;
 window.saveProfile       = saveProfile;
+window.uploadAvatar      = uploadAvatar;
 window.deleteListing     = deleteListing;
 window.togglePill        = togglePill;
 window.toggleSave        = toggleSave;
@@ -2817,8 +2826,7 @@ async function sendInboxReply() {
     showToast('✅ Svar sendt!');
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
-        .then(({ data: r, error: e }) => { console.log('notify-message:', r, e); })
-        .catch(e => console.error(e));
+        .catch(e => console.error('Email notifikation fejlede:', e));
     }
     openInboxThread(activeInboxThread.bikeId, activeInboxThread.otherId, activeInboxThread.otherName);
   } finally { restore(); }
@@ -2863,6 +2871,25 @@ window.sendInboxReply   = sendInboxReply;
    ============================================================ */
 
 var footerContent = {
+  about: {
+    title: 'Om Cykelbørsen',
+    body: `
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet — hurtigt, nemt og gratis.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Vores mission</h3>
+      <p style="margin-bottom:16px;">Vi tror på, at en god brugt cykel fortjener en ny ejer. Ved at gøre det nemt at købe og sælge brugte cykler hjælper vi med at forlænge cyklernes levetid og reducere unødvendigt affald.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For private sælgere</h3>
+      <p style="margin-bottom:16px;">Det er helt gratis at oprette en annonce som privat sælger. Upload billeder, sæt din pris, og kom i kontakt med interesserede købere direkte via vores beskedsystem.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For forhandlere</h3>
+      <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer med et abonnement. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt os</h3>
+      <p>Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
+    `
+  },
   terms: {
     title: 'Vilkår og betingelser',
     body: `
@@ -2963,7 +2990,12 @@ async function submitContactForm() {
   if (!name || !email || !message) { showToast('⚠️ Udfyld alle felter'); return; }
 
   const { error } = await supabase.from('contact_messages').insert({ name, email, message });
-  if (error) { console.error('Kontaktformular fejl:', error); showToast('❌ Noget gik galt – prøv igen'); return; }
+  if (error) { showToast('❌ Noget gik galt – prøv igen'); return; }
+
+  // Send email-notifikation til admin
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'contact_form', name, email, message },
+  }).catch(() => {});
 
   document.getElementById('contact-name').value    = '';
   document.getElementById('contact-email').value   = '';
@@ -3696,6 +3728,10 @@ async function approveId(userId) {
   if (err) { showToast('❌ Fejl'); return; }
   showToast('✅ ID godkendt — bruger har nu et blåt badge');
   loadIdApplications();
+  // Send email til brugeren
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'id_approved', user_id: userId },
+  }).catch(() => {});
   // Hvis den godkendte bruger er den indloggede, opdater cache
   if (currentUser && currentUser.id === userId) {
     currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
@@ -3713,6 +3749,10 @@ async function rejectId(userId) {
   if (err) { showToast('❌ Fejl'); return; }
   showToast('ID-ansøgning afvist');
   loadIdApplications();
+  // Send email til brugeren
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'id_rejected', user_id: userId },
+  }).catch(() => {});
 }
 
 window.previewIdDoc       = previewIdDoc;
