@@ -173,6 +173,35 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ── RAPPORTER ANNONCE ─────────────────────────────────────
+    if (payload.type === "report_listing") {
+      const { bike_id, bike_title, reason, details, reporter_name, reporter_email } = payload;
+      if (!bike_id || !reason) {
+        return new Response("Manglende felter", { status: 400, headers: corsHeaders });
+      }
+
+      const html = emailWrapper(`
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🚩 Annonce rapporteret</h2>
+        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;">
+          <strong style="color:#1A1A18;">Annonce:</strong> ${bike_title ?? bike_id}<br>
+          <strong style="color:#1A1A18;">Årsag:</strong> ${reason}<br>
+          ${reporter_name ? `<strong style="color:#1A1A18;">Rapporteret af:</strong> ${reporter_name} (${reporter_email ?? "ingen email"})` : "Rapporteret af: anonym"}
+        </p>
+        ${details ? `
+        <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0 24px;">
+          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${details}</p>
+        </div>` : ""}
+        <a href="https://cykelbørsen.dk?bike=${bike_id}"
+           style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Se annonce →
+        </a>
+      `);
+
+      const result = await sendEmail(ADMIN_EMAIL, `🚩 Annonce rapporteret: ${bike_title ?? bike_id} – Cykelbørsen`, html);
+      console.log("Rapport email sendt til admin | ID:", result.id);
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── NY BESKED / BUD (eksisterende logik) ─────────────────
     let message = payload.record ?? null;
 

@@ -947,6 +947,40 @@
     </div>
   </div>
 
+  <!-- Rapporter annonce modal -->
+  <div class="modal-overlay" id="report-modal" style="display:none;" onclick="if(event.target===this)closeReportModal()">
+    <div class="modal" style="max-width:440px;">
+      <div class="modal-header">
+        <h2>Rapporter annonce</h2>
+        <button class="modal-close" onclick="closeReportModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:24px;">
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">
+          Hjælp os med at holde Cykelbørsen tryg. Vi gennemgår alle rapporter manuelt.
+        </p>
+        <div class="form-group">
+          <label>Årsag</label>
+          <select id="report-reason">
+            <option value="">Vælg årsag...</option>
+            <option value="Mistænkelig annonce / mulig svindel">Mistænkelig annonce / mulig svindel</option>
+            <option value="Forkert eller vildledende beskrivelse">Forkert eller vildledende beskrivelse</option>
+            <option value="Stjålet cykel">Stjålet cykel</option>
+            <option value="Spam eller duplikat">Spam eller duplikat</option>
+            <option value="Upassende indhold">Upassende indhold</option>
+            <option value="Andet">Andet</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Yderligere detaljer (valgfrit)</label>
+          <textarea id="report-details" rows="3" placeholder="Beskriv hvad der er galt..."></textarea>
+        </div>
+        <button id="report-submit-btn" onclick="submitReport()" style="width:100%;padding:12px;border-radius:8px;border:none;background:var(--rust);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;">
+          Send rapport
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Slet konto bekræftelsesmodal -->
   <div class="modal-overlay" id="delete-account-modal" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
     <div class="modal" style="max-width:420px;">
