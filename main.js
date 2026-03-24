@@ -1418,6 +1418,38 @@ async function logout() {
   showToast('👋 Du er logget ud');
 }
 
+async function deleteAccount() {
+  if (!currentUser) return;
+
+  const confirmed = confirm(
+    'Er du sikker på at du vil slette din konto?\n\nDette sletter permanent:\n• Din profil\n• Alle dine annoncer\n• Alle dine beskeder\n\nHandlingen kan ikke fortrydes.'
+  );
+  if (!confirmed) return;
+
+  const btn = document.getElementById('delete-account-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sletter...'; }
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const { error } = await supabase.functions.invoke('delete-account', {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+
+    if (error) throw error;
+
+    currentUser    = null;
+    currentProfile = null;
+    closeProfileModal();
+    var adminBtn = document.getElementById('nav-admin');
+    if (adminBtn) adminBtn.style.display = 'none';
+    showToast('Din konto er slettet');
+  } catch (err) {
+    console.error('Sletning fejlede:', err);
+    if (btn) { btn.disabled = false; btn.textContent = 'Slet konto'; }
+    showToast('Noget gik galt – prøv igen');
+  }
+}
+
 /* ============================================================
    TOAST & NAVIGATION SCROLL
    ============================================================ */
@@ -2598,6 +2630,7 @@ window.togglePill        = togglePill;
 window.toggleSave        = toggleSave;
 window.showSection       = showSection;
 window.logout            = logout;
+window.deleteAccount     = deleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters       = applyFilters;
