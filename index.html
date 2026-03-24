@@ -947,6 +947,32 @@
     </div>
   </div>
 
+  <!-- Slet konto bekræftelsesmodal -->
+  <div class="modal-overlay" id="delete-account-modal" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h2>Slet konto</h2>
+        <button class="modal-close" onclick="closeDeleteAccountModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:24px;">
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;">
+          Dette sletter permanent din profil, alle dine annoncer og beskeder. Handlingen kan ikke fortrydes.
+        </p>
+        <div class="form-group">
+          <label style="font-size:0.85rem;">Skriv <strong>slet</strong> for at bekræfte</label>
+          <input type="text" id="delete-confirm-input" placeholder="slet" oninput="onDeleteConfirmInput()" autocomplete="off">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px;">
+          <button class="btn-logout" style="flex:1;margin-top:0;" onclick="closeDeleteAccountModal()">Annuller</button>
+          <button id="delete-account-confirm-btn" onclick="confirmDeleteAccount()" disabled
+            style="flex:1;padding:12px;border-radius:8px;border:none;background:#e0e0e0;color:#aaa;font-size:0.9rem;font-weight:600;cursor:not-allowed;font-family:'DM Sans',sans-serif;transition:background 0.2s,color 0.2s;">
+            Slet konto
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="main.js"></script>
 </body>

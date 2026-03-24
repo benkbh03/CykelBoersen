@@ -1423,34 +1423,57 @@ async function logout() {
   showToast('👋 Du er logget ud');
 }
 
-async function deleteAccount() {
+function deleteAccount() {
   if (!currentUser) return;
+  const modal = document.getElementById('delete-account-modal');
+  const input = document.getElementById('delete-confirm-input');
+  input.value = '';
+  onDeleteConfirmInput();
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => input.focus(), 100);
+}
 
-  const confirmed = confirm(
-    'Er du sikker på at du vil slette din konto?\n\nDette sletter permanent:\n• Din profil\n• Alle dine annoncer\n• Alle dine beskeder\n\nHandlingen kan ikke fortrydes.'
-  );
-  if (!confirmed) return;
+function closeDeleteAccountModal() {
+  document.getElementById('delete-account-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
 
-  const btn = document.getElementById('delete-account-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sletter...'; }
+function onDeleteConfirmInput() {
+  const val = document.getElementById('delete-confirm-input').value.trim().toLowerCase();
+  const btn = document.getElementById('delete-account-confirm-btn');
+  const active = val === 'slet';
+  btn.disabled = !active;
+  btn.style.background = active ? '#c0392b' : '#e0e0e0';
+  btn.style.color       = active ? '#fff'    : '#aaa';
+  btn.style.cursor      = active ? 'pointer' : 'not-allowed';
+}
+
+async function confirmDeleteAccount() {
+  if (!currentUser) return;
+  const btn = document.getElementById('delete-account-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sletter...';
 
   try {
     const { data: { session } } = await supabase.auth.getSession();
     const { error } = await supabase.functions.invoke('delete-account', {
       headers: { Authorization: `Bearer ${session.access_token}` },
     });
-
     if (error) throw error;
 
     currentUser    = null;
     currentProfile = null;
+    closeDeleteAccountModal();
     closeProfileModal();
     var adminBtn = document.getElementById('nav-admin');
     if (adminBtn) adminBtn.style.display = 'none';
+    updateNav(false);
     showToast('Din konto er slettet');
   } catch (err) {
     console.error('Sletning fejlede:', err);
-    if (btn) { btn.disabled = false; btn.textContent = 'Slet konto'; }
+    btn.disabled = false;
+    btn.textContent = 'Slet konto';
     showToast('Noget gik galt – prøv igen');
   }
 }
@@ -2635,7 +2658,10 @@ window.togglePill        = togglePill;
 window.toggleSave        = toggleSave;
 window.showSection       = showSection;
 window.logout            = logout;
-window.deleteAccount     = deleteAccount;
+window.deleteAccount          = deleteAccount;
+window.closeDeleteAccountModal = closeDeleteAccountModal;
+window.onDeleteConfirmInput   = onDeleteConfirmInput;
+window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters       = applyFilters;
