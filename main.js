@@ -1626,6 +1626,7 @@ async function openBikeModal(bikeId) {
           </div>
           <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
           <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
+          <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${b.brand} ${b.model}')">🚩 Rapporter annonce</button>
         </div>
         ` : `<p style="color:var(--muted);font-size:.85rem">Dette er din egen annonce.</p>`}
       </div>
@@ -1639,6 +1640,59 @@ async function openBikeModal(bikeId) {
 
   // Tilknyt swipe-navigation på mobil
   attachGallerySwipe();
+}
+
+/* ── Rapporter annonce ── */
+
+let _reportBikeId    = null;
+let _reportBikeTitle = null;
+
+function openReportModal(bikeId, bikeTitle) {
+  _reportBikeId    = bikeId;
+  _reportBikeTitle = bikeTitle;
+  document.getElementById('report-reason').value  = '';
+  document.getElementById('report-details').value = '';
+  const btn = document.getElementById('report-submit-btn');
+  btn.disabled    = false;
+  btn.textContent = 'Send rapport';
+  document.getElementById('report-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReportModal() {
+  document.getElementById('report-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function submitReport() {
+  const reason  = document.getElementById('report-reason').value.trim();
+  const details = document.getElementById('report-details').value.trim();
+  if (!reason) { showToast('Vælg venligst en årsag'); return; }
+
+  const btn = document.getElementById('report-submit-btn');
+  btn.disabled    = true;
+  btn.textContent = 'Sender...';
+
+  try {
+    await supabase.functions.invoke('notify-message', {
+      body: {
+        type:           'report_listing',
+        bike_id:        _reportBikeId,
+        bike_title:     _reportBikeTitle,
+        reason,
+        details:        details || null,
+        reporter_name:  currentProfile?.name  ?? null,
+        reporter_email: currentUser?.email    ?? null,
+      },
+    });
+    closeReportModal();
+    showToast('Tak – din rapport er modtaget');
+  } catch (err) {
+    console.error('Rapport fejlede:', err);
+    btn.disabled    = false;
+    btn.textContent = 'Send rapport';
+    showToast('Noget gik galt – prøv igen');
+  }
 }
 
 function closeBikeModal() {
@@ -2682,6 +2736,9 @@ window.setPrimary         = setPrimary;
 window.removeImage        = removeImage;
 window.openBikeModal      = openBikeModal;
 window.closeBikeModal     = closeBikeModal;
+window.openReportModal    = openReportModal;
+window.closeReportModal   = closeReportModal;
+window.submitReport       = submitReport;
 window.toggleBidBox       = toggleBidBox;
 window.toggleMessageBox   = toggleMessageBox;
 window.sendMessage        = sendMessage;
