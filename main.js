@@ -1409,12 +1409,17 @@ async function loadSavedListings() {
    ============================================================ */
 
 async function logout() {
-  await supabase.auth.signOut();
+  try {
+    await supabase.auth.signOut();
+  } catch (e) {
+    console.warn('signOut fejl (ignoreret):', e);
+  }
   currentUser    = null;
   currentProfile = null;
   closeProfileModal();
   var adminBtn = document.getElementById('nav-admin');
   if (adminBtn) adminBtn.style.display = 'none';
+  updateNav(false);
   showToast('👋 Du er logget ud');
 }
 
