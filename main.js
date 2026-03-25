@@ -1471,6 +1471,7 @@ async function logout() {
   if (adminBtn) adminBtn.style.display = 'none';
   updateNav(false);
   dismissEmailBanner();
+  loadBikes();
   showToast('👋 Du er logget ud');
 }
 
