@@ -1464,6 +1464,10 @@ async function logout() {
   } catch (e) {
     console.warn('signOut fejl (ignoreret):', e);
   }
+  // Ryd Supabase session fra localStorage så den ikke genindlæses ved reload
+  Object.keys(localStorage)
+    .filter(k => k.startsWith('sb-'))
+    .forEach(k => localStorage.removeItem(k));
   window.location.reload();
 }
 
