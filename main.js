@@ -123,6 +123,9 @@ async function init() {
         .from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = profile;
       updateNav(true, profile?.name, profile?.avatar_url);
+      var adminBtn = document.getElementById('nav-admin');
+      if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
+      checkEmailConfirmed();
     } else {
       currentUser    = null;
       currentProfile = null;
