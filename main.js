@@ -209,17 +209,20 @@ async function init() {
 }
 
 function updateNav(loggedIn, name, avatarUrl) {
-  const sellBtn    = document.querySelector('.btn-sell');
-  const navProfile = document.getElementById('nav-profile');
+  const sellBtn        = document.querySelector('.btn-sell');
+  const navProfile     = document.getElementById('nav-profile');
+  const becomeDealerBtn = document.getElementById('nav-become-dealer');
 
   if (loggedIn) {
     if (sellBtn) { sellBtn.textContent = '+ Sæt til salg'; sellBtn.setAttribute('onclick', 'openModal()'); }
     if (navProfile) navProfile.style.display = 'flex';
+    if (becomeDealerBtn) becomeDealerBtn.style.display = currentProfile?.seller_type === 'dealer' ? 'none' : '';
     updateNavAvatar(name, avatarUrl);
     checkUnreadMessages();
   } else {
     if (sellBtn) { sellBtn.textContent = 'Log ind / Sælg'; sellBtn.setAttribute('onclick', 'openLoginModal()'); }
     if (navProfile) navProfile.style.display = 'none';
+    if (becomeDealerBtn) becomeDealerBtn.style.display = '';
   }
 }
 
@@ -1223,6 +1226,15 @@ document.getElementById('profile-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeProfileModal();
 });
 
+function onSellerTypeChange(select) {
+  if (select.value === 'dealer' && currentProfile?.seller_type !== 'dealer') {
+    // Nulstil dropdown — forhandleransøgning sker via det officielle flow
+    select.value = currentProfile?.seller_type || 'private';
+    closeProfileModal();
+    openBecomeDealerModal();
+  }
+}
+
 function showProfileData() {
   // Brug den cachede profil — ingen ekstra netværkskald
   const profile = currentProfile || {};
@@ -1259,6 +1271,10 @@ function showProfileData() {
   const isDealer = profile.seller_type === 'dealer';
   shopGroup.style.display    = isDealer ? 'flex' : 'none';
   addressGroup.style.display = isDealer ? 'flex' : 'none';
+
+  // Vis sælgertype som tekst (ikke redigerbar dropdown)
+  const sellerDisplay = document.getElementById('edit-seller-type-display');
+  if (sellerDisplay) sellerDisplay.textContent = isDealer ? '🏪 Forhandler' : '👤 Privatperson';
 
   // Vis abonnementsboks for forhandlere med Stripe-kunde
   const subBox = document.getElementById('subscription-box');
@@ -1304,7 +1320,7 @@ async function saveProfile() {
     name:        document.getElementById('edit-name').value,
     phone:       document.getElementById('edit-phone').value,
     city:        document.getElementById('edit-city').value,
-    seller_type: document.getElementById('edit-seller-type').value,
+    seller_type: currentProfile?.seller_type || 'private', // sælgertype ændres kun via forhandler-flow
     shop_name:   document.getElementById('edit-shop-name').value,
     address:     document.getElementById('edit-address').value,
   };
@@ -2744,7 +2760,8 @@ window.handleForgotPassword = handleForgotPassword;
 window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab  = switchProfileTab;
-window.saveProfile       = saveProfile;
+window.saveProfile          = saveProfile;
+window.onSellerTypeChange   = onSellerTypeChange;
 window.uploadAvatar      = uploadAvatar;
 window.deleteListing     = deleteListing;
 window.togglePill        = togglePill;
