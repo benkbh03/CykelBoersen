@@ -359,13 +359,13 @@
 
         <!-- ── Ansøgningsformular ── -->
         <div class="form-grid" style="grid-template-columns:1fr;margin-top:20px;">
-          <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS"></div>
-          <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8"></div>
-          <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn"></div>
-          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk"></div>
-          <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78"></div>
-          <div class="form-group"><label>Adresse</label><input type="text" id="dealer-address" placeholder="f.eks. Vesterbrogade 42"></div>
-          <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København"></div>
+          <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Adresse</label><input type="text" id="dealer-address" placeholder="f.eks. Vesterbrogade 42" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
         </div>
         <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()">Fortsæt til betaling →</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;">
@@ -739,11 +739,11 @@
         <div class="form-grid" style="grid-template-columns:1fr;">
           <div class="form-group">
             <label>Ny adgangskode</label>
-            <input type="password" id="reset-pw1" placeholder="Mindst 6 tegn">
+            <input type="password" id="reset-pw1" placeholder="Mindst 6 tegn" onkeydown="if(event.key==='Enter')handleResetPassword()">
           </div>
           <div class="form-group">
             <label>Gentag adgangskode</label>
-            <input type="password" id="reset-pw2" placeholder="Gentag adgangskode">
+            <input type="password" id="reset-pw2" placeholder="Gentag adgangskode" onkeydown="if(event.key==='Enter')handleResetPassword()">
           </div>
         </div>
         <button class="form-submit" onclick="handleResetPassword()">Gem ny adgangskode</button>
@@ -1002,7 +1002,7 @@
         </p>
         <div class="form-group">
           <label style="font-size:0.85rem;">Skriv <strong>slet</strong> for at bekræfte</label>
-          <input type="text" id="delete-confirm-input" placeholder="slet" oninput="onDeleteConfirmInput()" autocomplete="off">
+          <input type="text" id="delete-confirm-input" placeholder="slet" oninput="onDeleteConfirmInput()" onkeydown="if(event.key==='Enter')confirmDeleteAccount()" autocomplete="off">
         </div>
         <div style="display:flex;gap:10px;margin-top:20px;">
           <button class="btn-logout" style="flex:1;margin-top:0;" onclick="closeDeleteAccountModal()">Annuller</button>

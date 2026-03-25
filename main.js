@@ -3133,11 +3133,11 @@ var footerContent = {
       <div style="display:flex;flex-direction:column;gap:10px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-size:0.82rem;font-weight:600;">Dit navn</label>
-          <input type="text" id="contact-name" placeholder="Dit fulde navn" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;">
+          <input type="text" id="contact-name" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-size:0.82rem;font-weight:600;">E-mail</label>
-          <input type="email" id="contact-email" placeholder="din@email.dk" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;">
+          <input type="email" id="contact-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-size:0.82rem;font-weight:600;">Besked</label>
