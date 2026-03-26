@@ -577,11 +577,15 @@ async function openUserProfile(userId) {
     if (r1.error) console.warn('Profil-fejl:', r1.error);
 
     if (currentUser) {
-      const [msgA, msgB] = await Promise.all([
-        safe(supabase.from('messages').select('id').eq('sender_id', currentUser.id).eq('receiver_id', userId).limit(1)),
-        safe(supabase.from('messages').select('id').eq('sender_id', userId).eq('receiver_id', currentUser.id).limit(1)),
-      ]);
-      messagesCount = (msgA.data?.length || 0) + (msgB.data?.length || 0);
+      // hasTraded = der findes en budaccepterings-besked mellem de to brugere
+      const { data: tradeMsg } = await safe(
+        supabase.from('messages')
+          .select('id')
+          .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`)
+          .ilike('content', '%accepteret%')
+          .limit(1)
+      );
+      messagesCount = tradeMsg?.length || 0;
     } else {
       messagesCount = 0;
     }
@@ -670,7 +674,7 @@ async function openUserProfile(userId) {
       <button class="btn-submit-review" onclick="submitReview('${userId}')">Send vurdering</button>
     </div>`
   : (!isOwnProfile && currentUser && !hasReviewed) ? `
-    <p class="up-empty" style="font-size:0.85rem;color:var(--muted);margin-top:8px;">Du kan kun vurdere brugere du har handlet med.</p>`
+    <p class="up-empty" style="font-size:0.85rem;color:var(--muted);margin-top:8px;">Du kan kun vurdere brugere du har handlet med via Cykelbørsen.</p>`
   : '';
 
   const upAvatarContent = profile.avatar_url
@@ -757,13 +761,14 @@ async function submitReview(reviewedUserId) {
   if (!currentUser)       { showToast('⚠️ Log ind for at give en vurdering'); return; }
   if (rating < 1)         { showToast('⚠️ Vælg et antal stjerner'); return; }
 
-  // Verificér at de to brugere har beskeder (= handlet) med hinanden
-  const [msgA, msgB] = await Promise.all([
-    supabase.from('messages').select('id').eq('sender_id', currentUser.id).eq('receiver_id', reviewedUserId).limit(1),
-    supabase.from('messages').select('id').eq('sender_id', reviewedUserId).eq('receiver_id', currentUser.id).limit(1),
-  ]);
-  const hasTraded = (msgA.data?.length || 0) + (msgB.data?.length || 0) > 0;
-  if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med'); return; }
+  // Verificér at der er en budaccepterings-besked mellem de to brugere (= reel handel)
+  const { data: tradeMsg } = await supabase.from('messages')
+    .select('id')
+    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${reviewedUserId}),and(sender_id.eq.${reviewedUserId},receiver_id.eq.${currentUser.id})`)
+    .ilike('content', '%accepteret%')
+    .limit(1);
+  const hasTraded = tradeMsg?.length > 0;
+  if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
 
   const { error } = await supabase.from('reviews').insert({
     reviewer_id:      currentUser.id,
@@ -3430,13 +3435,91 @@ document.addEventListener('click', function(e) {
    ============================================================ */
 
 async function toggleSold(bikeId, currentlySold) {
-  var newStatus = !currentlySold;
-  var err = (await supabase.from('bikes').update({ is_active: !newStatus }).eq('id', bikeId)).error;
-  if (err) { showToast('❌ Kunne ikke opdatere status'); return; }
-  showToast(newStatus ? '🏷️ Annonce markeret som solgt' : '✅ Annonce aktiv igen');
-  loadMyListings();
-  loadBikes();
-  updateFilterCounts();
+  if (currentlySold) {
+    // Genaktiver
+    const err = (await supabase.from('bikes').update({ is_active: true }).eq('id', bikeId)).error;
+    if (err) { showToast('❌ Kunne ikke opdatere status'); return; }
+    showToast('✅ Annonce aktiv igen');
+    loadMyListings(); loadBikes(); updateFilterCounts();
+    return;
+  }
+
+  // Hent brugere der har skrevet om denne cykel
+  const { data: threads } = await supabase.from('messages')
+    .select('sender_id, sender:profiles!messages_sender_id_fkey(name, shop_name, seller_type)')
+    .eq('bike_id', bikeId)
+    .eq('receiver_id', currentUser.id)
+    .neq('sender_id', currentUser.id);
+
+  // Deduplikér på sender_id
+  const seen = new Set();
+  const buyers = (threads || []).filter(m => {
+    if (seen.has(m.sender_id)) return false;
+    seen.add(m.sender_id);
+    return true;
+  });
+
+  if (buyers.length > 0) {
+    showBuyerPickerModal(bikeId, buyers);
+  } else {
+    await markBikeSold(bikeId, null, null);
+  }
+}
+
+function showBuyerPickerModal(bikeId, buyers) {
+  const existing = document.getElementById('buyer-picker-modal');
+  if (existing) existing.remove();
+
+  const options = buyers.map(m => {
+    const name = m.sender?.seller_type === 'dealer' ? (m.sender?.shop_name || m.sender?.name) : m.sender?.name;
+    const safe = (name || 'Ukendt').replace(/'/g, "\\'");
+    return `<button class="buyer-pick-btn" onclick="confirmBuyerSelection('${bikeId}','${m.sender_id}','${safe}')">
+      <span style="font-weight:600;">${name || 'Ukendt'}</span>
+    </button>`;
+  }).join('');
+
+  const el = document.createElement('div');
+  el.id = 'buyer-picker-modal';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:center;justify-content:center;padding:16px;';
+  el.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px;max-width:360px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+      <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;">Hvem købte cyklen?</h3>
+      <p style="color:var(--muted);font-size:0.88rem;margin:0 0 16px;">Vælg køber, så I begge kan vurdere hinanden.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${options}
+        <button class="buyer-pick-btn" style="color:var(--muted);border-color:var(--border);" onclick="confirmBuyerSelection('${bikeId}',null,null)">
+          Ingen af disse / ekstern handel
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  document.body.style.overflow = 'hidden';
+}
+
+async function confirmBuyerSelection(bikeId, buyerId, buyerName) {
+  const modal = document.getElementById('buyer-picker-modal');
+  if (modal) modal.remove();
+  document.body.style.overflow = '';
+  await markBikeSold(bikeId, buyerId, buyerName);
+}
+
+async function markBikeSold(bikeId, buyerId, buyerName) {
+  const err = (await supabase.from('bikes').update({ is_active: false }).eq('id', bikeId)).error;
+  if (err) { showToast('❌ Kunne ikke markere som solgt'); return; }
+
+  if (buyerId) {
+    // Send handelsbekræftelse i tråden — bruges som bevis for handel ved vurdering
+    await supabase.from('messages').insert({
+      bike_id:     bikeId,
+      sender_id:   currentUser.id,
+      receiver_id: buyerId,
+      content:     '✅ Handel bekræftet og accepteret! Tak for handlen – I kan nu vurdere hinanden.',
+    });
+    showToast(`🎉 Solgt til ${buyerName}! I kan nu begge give en vurdering.`);
+  } else {
+    showToast('🏷️ Annonce markeret som solgt');
+  }
+  loadMyListings(); loadBikes(); updateFilterCounts();
 }
 
 /* ============================================================
@@ -3500,7 +3583,8 @@ function openNativeShare() {
 window.searchAutocomplete = searchAutocomplete;
 window.selectAutocomplete = selectAutocomplete;
 window.handleSearchKey    = handleSearchKey;
-window.toggleSold         = toggleSold;
+window.toggleSold             = toggleSold;
+window.confirmBuyerSelection  = confirmBuyerSelection;
 window.openShareModal     = openShareModal;
 window.closeShareModal    = closeShareModal;
 window.copyShareLink      = copyShareLink;
