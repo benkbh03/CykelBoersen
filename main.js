@@ -1604,13 +1604,20 @@ async function openBikeModal(bikeId) {
   } else if (allImages.length === 1) {
     galleryHtml = `<div class="bike-detail-img"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}"></div>`;
   } else {
-    const thumbsHtml = allImages.map((img, i) => `
-      <button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="Billede ${i + 1}">
+    const maxThumbs = 5;
+    const visibleImages = allImages.slice(0, maxThumbs);
+    const extraCount = allImages.length > maxThumbs ? allImages.length - maxThumbs : 0;
+    const thumbsHtml = visibleImages.map((img, i) => {
+      const isLast = extraCount > 0 && i === maxThumbs - 1;
+      return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="Billede ${i + 1}" style="position:relative;">
         <img src="${img.url}" alt="Billede ${i + 1}" loading="lazy">
-      </button>`).join('');
+        ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:'DM Sans',sans-serif;border-radius:5px;">+${extraCount}</span>` : ''}
+      </button>`;
+    }).join('');
     galleryHtml = `
       <div class="bike-gallery">
         <div class="gallery-main">
+          <div class="gallery-main-bg" id="gallery-main-bg" style="background-image:url('${allImages[0].url}')"></div>
           <img id="gallery-main-img" src="${allImages[0].url}" alt="${b.brand} ${b.model}">
           <button class="gallery-nav-btn gallery-prev" onclick="galleryNav(-1)" aria-label="Forrige billede">&#8249;</button>
           <button class="gallery-nav-btn gallery-next" onclick="galleryNav(1)" aria-label="Næste billede">&#8250;</button>
@@ -1783,6 +1790,8 @@ function galleryGoto(index) {
     setTimeout(() => {
       mainImg.src = images[window._galleryIndex];
       mainImg.style.opacity = '1';
+      const bg = document.getElementById('gallery-main-bg');
+      if (bg) bg.style.backgroundImage = `url('${images[window._galleryIndex]}')`;
     }, 150);
   }
   const counter = document.getElementById('gallery-counter');
