@@ -946,7 +946,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 /* ── Billedgalleri ── */
 .bike-gallery { display: flex; flex-direction: column; gap: 10px; }
-.gallery-main { position: relative; background: var(--sand); border-radius: 12px; height: 280px; overflow: hidden; }
+.gallery-main { position: relative; background: var(--sand); border-radius: 12px; height: 260px; overflow: hidden; }
 .gallery-main-bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(18px) brightness(0.85); transform: scale(1.1); z-index: 0; }
 .gallery-main img { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; transition: opacity 0.15s ease; position: relative; z-index: 1; }
 .gallery-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.3rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.15s; z-index: 2; }
@@ -954,10 +954,10 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .gallery-prev { left: 10px; }
 .gallery-next { right: 10px; }
 .gallery-counter { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.5); color: white; font-size: 0.72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; z-index: 2; font-family: 'DM Sans', sans-serif; }
-.gallery-thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scroll-snap-type: x mandatory; }
+.gallery-thumbs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scroll-snap-type: x mandatory; }
 .gallery-thumbs::-webkit-scrollbar { height: 4px; }
 .gallery-thumbs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.gallery-thumb { flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 2.5px solid transparent; cursor: pointer; padding: 0; background: none; transition: border-color 0.15s; scroll-snap-align: start; }
+.gallery-thumb { flex-shrink: 0; width: 48px; height: 48px; border-radius: 7px; overflow: hidden; border: 2.5px solid transparent; cursor: pointer; padding: 0; background: none; transition: border-color 0.15s; scroll-snap-align: start; }
 .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .gallery-thumb.active { border-color: var(--rust); }
 .gallery-thumb:hover:not(.active) { border-color: var(--muted); }
