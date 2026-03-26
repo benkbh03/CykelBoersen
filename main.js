@@ -1661,6 +1661,7 @@ async function openBikeModal(bikeId) {
           ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
           ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${b.warranty}</span>` : ''}
         </div>
+        ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${b.description}</p>` : ''}
         <div class="bike-detail-seller" onclick="openUserProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
           <div class="seller-avatar-large">${initials}</div>
           <div style="flex:1">
