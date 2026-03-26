@@ -1604,10 +1604,16 @@ async function openBikeModal(bikeId) {
   } else if (allImages.length === 1) {
     galleryHtml = `<div class="bike-detail-img"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}"></div>`;
   } else {
-    const thumbsHtml = allImages.map((img, i) => `
-      <button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="Billede ${i + 1}">
+    const maxThumbs = 5;
+    const visibleImages = allImages.slice(0, maxThumbs);
+    const extraCount = allImages.length > maxThumbs ? allImages.length - maxThumbs : 0;
+    const thumbsHtml = visibleImages.map((img, i) => {
+      const isLast = extraCount > 0 && i === maxThumbs - 1;
+      return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="Billede ${i + 1}" style="position:relative;">
         <img src="${img.url}" alt="Billede ${i + 1}" loading="lazy">
-      </button>`).join('');
+        ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:'DM Sans',sans-serif;border-radius:5px;">+${extraCount}</span>` : ''}
+      </button>`;
+    }).join('');
     galleryHtml = `
       <div class="bike-gallery">
         <div class="gallery-main">
