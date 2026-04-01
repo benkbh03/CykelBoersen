@@ -3527,7 +3527,7 @@ var currentShareBikeId = null;
 
 function openShareModal(bikeId, title) {
   currentShareBikeId = bikeId;
-  var url = window.location.origin + window.location.pathname + '?bike=' + bikeId;
+  var url  = 'https://cykelbørsen.dk/?bike=' + bikeId;
   var text = 'Tjek denne cykel på Cykelbørsen: ' + title;
 
   document.getElementById('share-link-input').value = url;
