@@ -544,6 +544,48 @@ nav {
 }
 .btn-submit-review:hover { opacity: 0.88; }
 
+/* ── Profil tabs ── */
+.up-tabs {
+  display: flex; gap: 0; border-bottom: 2px solid rgba(245,240,232,0.12);
+  margin-bottom: 20px;
+}
+.up-tab {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; padding: 10px 18px; font-size: 0.88rem; font-weight: 600;
+  color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: color 0.15s, border-color 0.15s;
+}
+.up-tab:hover { color: var(--charcoal); }
+.up-tab.active { color: var(--rust); border-bottom-color: var(--rust); }
+.up-tab-panel { padding-bottom: 8px; }
+
+/* Klikbare stat-blokke */
+.up-stat-clickable { cursor: pointer; transition: background 0.15s; }
+.up-stat-clickable:hover { background: rgba(245,240,232,0.06); }
+
+/* ── Kontakt formular på profil ── */
+.up-contact-section { margin-top: 14px; }
+.up-contact-btn {
+  background: none; border: 1px solid rgba(245,240,232,0.25);
+  color: var(--charcoal); padding: 7px 16px; border-radius: 8px;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: background 0.15s, border-color 0.15s;
+}
+.up-contact-btn:hover { background: rgba(245,240,232,0.08); border-color: rgba(245,240,232,0.4); }
+.up-contact-form { margin-top: 12px; }
+.up-contact-bike-select {
+  width: 100%; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px;
+  background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.2);
+  color: var(--charcoal); font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+}
+.up-contact-send-btn {
+  background: var(--rust); color: #fff; border: none;
+  border-radius: 8px; padding: 9px 20px; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s;
+}
+.up-contact-send-btn:hover { opacity: 0.88; }
+.up-contact-send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
 /* Klikbar sælger-boks i cykelmodal */
 .bike-detail-seller:hover { background: rgba(245,240,232,0.07); }
 
