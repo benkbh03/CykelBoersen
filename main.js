@@ -2086,7 +2086,7 @@ async function openBikeModal(bikeId) {
       .single()));
   } catch (e) {
     error = e;
-    console.log(`[IDLE-DEBUG] openBikeModal: bike fetch EXCEPTION: ${e.message}`);
+    console.error(`[IDLE-DEBUG] openBikeModal: bike fetch EXCEPTION: ${e.message}`);
   }
 
   // Tæl visning (fire-and-forget, kun ikke-ejere)
