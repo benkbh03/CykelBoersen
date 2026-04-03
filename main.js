@@ -682,15 +682,15 @@ async function openUserProfile(userId) {
   const activeBikeCards = (activeBikes || []).map((b, i) => {
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:2.5rem">🚲</span>';
     return `
       <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
         <div class="up-bike-img">${imgContent}</div>
         <div class="up-bike-info">
-          <div class="up-bike-title">${b.brand} ${b.model}</div>
+          <div class="up-bike-title">${esc(b.brand)} ${esc(b.model)}</div>
           <div class="up-bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
-          <div class="up-bike-meta">${b.type} · ${b.condition} · ${b.city || '–'}</div>
+          <div class="up-bike-meta">${esc(b.type)} · ${esc(b.condition)} · ${esc(b.city || '–')}</div>
         </div>
       </div>`;
   }).join('') || `<p class="up-empty">Ingen aktive annoncer.</p>`;
@@ -699,8 +699,8 @@ async function openUserProfile(userId) {
   const soldRows = (soldBikes || []).map(b => `
     <div class="up-sold-row">
       <div class="up-sold-info">
-        <span class="up-sold-title">${b.brand} ${b.model}</span>
-        <span class="up-sold-meta">${b.type} · ${b.condition}${b.year ? ' · ' + b.year : ''}</span>
+        <span class="up-sold-title">${esc(b.brand)} ${esc(b.model)}</span>
+        <span class="up-sold-meta">${esc(b.type)} · ${esc(b.condition)}${b.year ? ' · ' + b.year : ''}</span>
       </div>
       <div class="up-sold-price">${b.price.toLocaleString('da-DK')} kr. <span class="sold-chip">Solgt</span></div>
     </div>`).join('') || `<p class="up-empty">Ingen solgte cykler endnu.</p>`;
@@ -715,7 +715,7 @@ async function openUserProfile(userId) {
         <div class="up-review-top">
           <div class="up-review-avatar">${rInit}</div>
           <div>
-            <div class="up-review-name">${rName || 'Anonym'}</div>
+            <div class="up-review-name">${esc(rName || 'Anonym')}</div>
             <div class="up-review-stars">${stars(r.rating)}</div>
           </div>
           <div class="up-review-date">${date}</div>
@@ -731,16 +731,35 @@ async function openUserProfile(userId) {
       <div class="up-star-picker" id="star-picker">
         ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
       </div>
-      <textarea id="review-comment" class="up-review-textarea" placeholder="Fortæl om din handel med ${displayName}... (valgfrit)"></textarea>
+      <textarea id="review-comment" class="up-review-textarea" placeholder="Fortæl om din handel med ${esc(displayName)}... (valgfrit)"></textarea>
       <button class="btn-submit-review" onclick="submitReview('${userId}')">Send vurdering</button>
     </div>`
   : (!isOwnProfile && currentUser && !hasReviewed) ? `
     <p class="up-empty" style="font-size:0.85rem;color:var(--muted);margin-top:8px;">Du kan kun vurdere brugere du har handlet med via Cykelbørsen.</p>`
   : '';
 
+  // Send besked sektion — kun for andre brugeres profiler med aktive annoncer
+  const numActive = (activeBikes || []).length;
+  const sendMsgHtml = (!isOwnProfile && currentUser && numActive > 0) ? `
+    <div class="up-contact-section" id="up-contact-section">
+      <button class="up-contact-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
+      <div class="up-contact-form" id="up-contact-form" style="display:none;">
+        ${numActive > 1 ? `
+        <select class="up-contact-bike-select" id="up-contact-bike-select">
+          ${(activeBikes || []).map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${b.price.toLocaleString('da-DK')} kr.</option>`).join('')}
+        </select>` : `<input type="hidden" id="up-contact-bike-select" value="${activeBikes[0].id}">`}
+        <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
+        <button class="up-contact-send-btn" onclick="sendProfileMessage('${userId}')">Send besked</button>
+      </div>
+    </div>` : '';
+
   const upAvatarContent = profile.avatar_url
     ? `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
+
+  const nActive  = (activeBikes || []).length;
+  const nSold    = (soldBikes || []).length;
+  const nReviews = reviewList.length;
 
   content.innerHTML = `
     <!-- Header -->
@@ -748,11 +767,11 @@ async function openUserProfile(userId) {
       <div class="up-avatar">${upAvatarContent}</div>
       <div class="up-meta">
         <h2 class="up-name">
-          ${displayName}
+          ${esc(displayName)}
           ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
           ${profile.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
         </h2>
-        ${isDealer && profile.address ? `<div class="up-city">📍 ${profile.address}${profile.city ? ', ' + profile.city : ''}</div>` : profile.city ? `<div class="up-city">📍 ${profile.city}</div>` : ''}
+        ${isDealer && profile.address ? `<div class="up-city">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">📍 ${esc(profile.city)}</div>` : ''}
         ${lastSeenText ? `<div class="up-last-seen">🕐 ${lastSeenText}</div>` : ''}
         <div class="up-badges">
           <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
@@ -760,43 +779,48 @@ async function openUserProfile(userId) {
         </div>
         <div class="up-achievements" id="user-achievements"></div>
         ${profile.bio ? `<p class="up-bio">${esc(profile.bio)}</p>` : ''}
+        ${sendMsgHtml}
       </div>
     </div>
 
     <!-- Statistik -->
     <div class="up-stats">
-      <div class="up-stat">
-        <div class="up-stat-val">${(activeBikes || []).length}</div>
+      <div class="up-stat up-stat-clickable" onclick="switchProfileTab('listings')">
+        <div class="up-stat-val">${nActive}</div>
         <div class="up-stat-label">Til salg</div>
       </div>
-      <div class="up-stat">
-        <div class="up-stat-val">${(soldBikes || []).length}</div>
+      <div class="up-stat up-stat-clickable" onclick="switchProfileTab('sold')">
+        <div class="up-stat-val">${nSold}</div>
         <div class="up-stat-label">Solgt</div>
       </div>
-      <div class="up-stat">
+      <div class="up-stat up-stat-clickable" onclick="switchProfileTab('reviews')">
         <div class="up-stat-val">${avgRating !== null ? avgRating.toFixed(1) + ' ★' : '–'}</div>
-        <div class="up-stat-label">${reviewList.length} ${reviewList.length === 1 ? 'vurdering' : 'vurderinger'}</div>
+        <div class="up-stat-label">${nReviews} ${nReviews === 1 ? 'vurdering' : 'vurderinger'}</div>
       </div>
     </div>
 
-    <hr class="up-divider">
+    <!-- Tabs -->
+    <div class="up-tabs">
+      <button class="up-tab active" data-tab="listings" onclick="switchProfileTab('listings')">Til salg (${nActive})</button>
+      <button class="up-tab" data-tab="sold" onclick="switchProfileTab('sold')">Solgt (${nSold})</button>
+      <button class="up-tab" data-tab="reviews" onclick="switchProfileTab('reviews')">Vurderinger${avgRating !== null ? ` ${avgRating.toFixed(1)} ★` : ` (${nReviews})`}</button>
+    </div>
 
-    <!-- Aktive annoncer -->
-    <h3 class="up-section-title">Til salg (${(activeBikes || []).length})</h3>
-    <div class="up-bikes-grid">${activeBikeCards}</div>
+    <!-- Tab: Til salg -->
+    <div id="up-tab-listings" class="up-tab-panel">
+      <div class="up-bikes-grid">${activeBikeCards}</div>
+    </div>
 
-    <hr class="up-divider">
+    <!-- Tab: Solgte cykler -->
+    <div id="up-tab-sold" class="up-tab-panel" style="display:none;">
+      <div class="up-sold-list">${soldRows}</div>
+    </div>
 
-    <!-- Solgte cykler -->
-    <h3 class="up-section-title">Tidligere solgte cykler (${(soldBikes || []).length})</h3>
-    <div class="up-sold-list">${soldRows}</div>
-
-    <hr class="up-divider">
-
-    <!-- Vurderinger -->
-    <h3 class="up-section-title">Vurderinger${avgRating !== null ? ` <span style="font-size:0.9rem;font-weight:400;color:var(--rust);">${stars(avgRating)} ${avgRating.toFixed(1)}</span>` : ''}</h3>
-    <div class="up-reviews-list">${reviewCards}</div>
-    ${writeReviewHtml}
+    <!-- Tab: Vurderinger -->
+    <div id="up-tab-reviews" class="up-tab-panel" style="display:none;">
+      <div class="up-reviews-list">${reviewCards}</div>
+      ${writeReviewHtml}
+    </div>
   `;
 
   // Aktivér stjerne-hover
@@ -808,6 +832,55 @@ async function openUserProfile(userId) {
 
   // Beregn og vis achievements asynkront
   loadUserAchievements(userId, activeBikes, soldBikes, reviewList, profile);
+}
+
+function switchProfileTab(tab) {
+  document.querySelectorAll('.up-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.up-tab-panel').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById('up-tab-' + tab);
+  if (panel) panel.style.display = '';
+}
+
+function toggleProfileContact() {
+  const form = document.getElementById('up-contact-form');
+  if (!form) return;
+  const isHidden = form.style.display === 'none';
+  form.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    const ta = document.getElementById('up-contact-message');
+    if (ta) ta.focus();
+  }
+}
+
+async function sendProfileMessage(receiverId) {
+  if (!currentUser) { showToast('⚠️ Log ind for at sende beskeder'); return; }
+  const bikeId  = document.getElementById('up-contact-bike-select')?.value;
+  const content = document.getElementById('up-contact-message')?.value?.trim();
+  if (!bikeId)  { showToast('⚠️ Vælg en annonce'); return; }
+  if (!content) { showToast('⚠️ Skriv en besked'); return; }
+
+  const btn = document.querySelector('#up-contact-form .up-contact-send-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sender...'; }
+  try {
+    const { data: inserted, error } = await supabase.from('messages').insert({
+      bike_id:     bikeId,
+      sender_id:   currentUser.id,
+      receiver_id: receiverId,
+      content,
+    }).select('id').single();
+
+    if (error) { showToast('❌ Kunne ikke sende besked'); console.error(error); return; }
+    showToast('✅ Besked sendt!');
+    document.getElementById('up-contact-form').style.display = 'none';
+    const ta = document.getElementById('up-contact-message');
+    if (ta) ta.value = '';
+
+    if (inserted?.id) {
+      supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } }).catch(() => {});
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send besked'; }
+  }
 }
 
 async function loadUserAchievements(userId, activeBikes, soldBikes, reviewList, profile) {
@@ -4555,6 +4628,8 @@ window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
 window.pickStar              = pickStar;
 window.submitReview          = submitReview;
+window.toggleProfileContact  = toggleProfileContact;
+window.sendProfileMessage    = sendProfileMessage;
 window.toggleRestDealers     = toggleRestDealers;
 window.closeAllDealersModal  = closeAllDealersModal;
 window.closeDealerProfileModal = closeDealerProfileModal;
