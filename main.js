@@ -359,7 +359,7 @@ function updateNavAvatar(name, avatarUrl) {
   const el = document.getElementById('nav-initials');
   if (!el) return;
   if (avatarUrl) {
-    el.innerHTML = `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    el.innerHTML = `<img src="${avatarUrl}" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:50%;display:block;">`;
   } else {
     el.textContent = (name || '?').substring(0, 2).toUpperCase();
   }
