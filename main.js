@@ -1110,7 +1110,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -2970,7 +2970,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .limit(96);
