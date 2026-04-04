@@ -3219,6 +3219,14 @@ async function openEditModal(id) {
   if (warrantyGroup) warrantyGroup.style.display = currentProfile?.seller_type === 'dealer' ? '' : 'none';
   document.getElementById('edit-warranty').value = b.warranty || '';
 
+  // [IMAGE-RUNTIME] Tjek om grid eksisterer før render
+  const gridCheck = document.getElementById('edit-img-existing-grid');
+  const dupeIds   = document.querySelectorAll('#edit-img-existing-grid');
+  console.log(`[IMAGE-RUNTIME] openEditModal: grid=${gridCheck ? 'FOUND' : 'MISSING'}`,
+    `duplicateGrids=${dupeIds.length}`,
+    `gridInDOM=${gridCheck ? document.body.contains(gridCheck) : 'n/a'}`
+  );
+
   // Indlæs eksisterende billeder
   editNewFiles     = [];
   editExistingImgs = (b.bike_images || []).map(img => ({ ...img, toDelete: false }));
@@ -3228,6 +3236,26 @@ async function openEditModal(id) {
 
   document.getElementById('edit-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // [IMAGE-RUNTIME] Tilføj capturing listener på document for at se ALLE klik under edit-modal
+  if (window._editModalCaptureHandler) {
+    document.removeEventListener('click', window._editModalCaptureHandler, true);
+  }
+  window._editModalCaptureHandler = function(e) {
+    const modal = document.getElementById('edit-modal');
+    if (!modal || !modal.classList.contains('open')) return;
+    const inGrid = document.getElementById('edit-img-existing-grid')?.contains(e.target);
+    const closestBtn = e.target.closest('button[data-action]');
+    console.log(`[IMAGE-RUNTIME] CAPTURE CLICK`,
+      `target.tag=${e.target.tagName}`,
+      `target.class="${e.target.className}"`,
+      `target.id="${e.target.id}"`,
+      `inExistingGrid=${inGrid}`,
+      `closest[data-action]=${closestBtn ? closestBtn.dataset.action : 'NONE'}`,
+      `e.defaultPrevented=${e.defaultPrevented}`
+    );
+  };
+  document.addEventListener('click', window._editModalCaptureHandler, true); // capturing phase
 }
 
 // Enforcer altid præcis 0 eller 1 primært billede på tværs af existing + new
@@ -3261,6 +3289,11 @@ function renderEditExistingImages() {
   const grid = document.getElementById('edit-img-existing-grid');
   if (!grid) return;
   const visible = editExistingImgs.filter(img => !img.toDelete);
+
+  // [IMAGE-RUNTIME] snapshot af grid-node identitet FØR innerHTML-skift
+  const nodeBeforeRender = grid;
+  const _renderId = ++renderEditExistingImages._renderId;
+
   // Render knapper med data-attributter — ingen inline onclick
   grid.innerHTML = visible.map(img => `
     <div class="img-preview-item ${img.is_primary ? 'primary' : ''}">
@@ -3270,21 +3303,42 @@ function renderEditExistingImages() {
         : `<button type="button" class="set-primary" data-action="set-existing-primary" data-img-id="${img.id}">★</button>`}
       <button type="button" class="remove-img" data-action="remove-existing" data-img-id="${img.id}">✕</button>
     </div>`).join('') || '';
+
+  // [IMAGE-RUNTIME] Verificér grid-node er SAMME reference efter innerHTML-skift
+  const gridAfter = document.getElementById('edit-img-existing-grid');
+  const sameNode  = gridAfter === nodeBeforeRender;
+  const removeBtns  = grid.querySelectorAll('button[data-action="remove-existing"]');
+  const primaryBtns = grid.querySelectorAll('button[data-action="set-existing-primary"]');
+  console.log(`[IMAGE-RUNTIME] renderEditExistingImages #${_renderId}`,
+    `sameNodeAfterRender=${sameNode}`,
+    `visible=${visible.length}`,
+    `removeBtns=${removeBtns.length}`, `primaryBtns=${primaryBtns.length}`
+  );
+  removeBtns.forEach((btn, i) => {
+    console.log(`[IMAGE-RUNTIME]  remove-btn[${i}] outerHTML="${btn.outerHTML}" inGrid=${grid.contains(btn)}`);
+  });
+
   // Event delegation — én listener, udskiftet ved hver render
   grid._editHandler && grid.removeEventListener('click', grid._editHandler);
   grid._editHandler = function(e) {
     const btn = e.target.closest('button[data-action]');
+    console.log(`[IMAGE-RUNTIME] GRID delegated-handler fired`,
+      `target.tag=${e.target.tagName}`, `target.class="${e.target.className}"`,
+      `closest[data-action]=${btn ? btn.dataset.action : 'NONE'}`
+    );
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
     const action = btn.dataset.action;
     const imgId  = btn.dataset.imgId;
     console.log(`[IMAGE-FIX] delegated click action=${action} imgId=${imgId}`);
-    if (action === 'remove-existing')       editRemoveExisting(imgId);
+    if (action === 'remove-existing')           editRemoveExisting(imgId);
     else if (action === 'set-existing-primary') editSetExistingPrimary(imgId);
   };
   grid.addEventListener('click', grid._editHandler);
+  console.log(`[IMAGE-RUNTIME] listener attached to grid (renderId=${_renderId}), grid===document.getElementById check: ${grid === document.getElementById('edit-img-existing-grid')}`);
 }
+renderEditExistingImages._renderId = 0;
 
 function editSetExistingPrimary(imgId) {
   const target = editExistingImgs.find(img => img.id == imgId);
@@ -3360,6 +3414,10 @@ function closeEditModal() {
   editExistingImgs = [];
   document.getElementById('edit-modal').classList.remove('open');
   document.body.style.overflow = '';
+  if (window._editModalCaptureHandler) {
+    document.removeEventListener('click', window._editModalCaptureHandler, true);
+    window._editModalCaptureHandler = null;
+  }
 }
 
 async function saveEditedListing() {
