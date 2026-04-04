@@ -3292,15 +3292,32 @@ function renderEditExistingImages() {
       <button class="remove-img" onclick="editRemoveExisting('${img.id}')">✕</button>
     </div>`).join('') || '';
   console.log(`[IMAGE-TRACE] renderEditExistingImages DOM updated, childCount=${grid.children.length}`);
-  // Log de faktiske onclick-attributter som de er renderet i DOM
-  Array.from(grid.querySelectorAll('.remove-img')).forEach((btn, idx) => {
-    console.log(`[IMAGE-TRACE] renderEditExistingImages DOM btn[${idx}] onclick="${btn.getAttribute('onclick')}"`);
+  // Log ALLE knapper (remove + set-primary) med fuld detalje
+  const allBtns = Array.from(grid.querySelectorAll('button'));
+  console.log(`[IMAGE-TRACE] renderEditExistingImages querySelectorAll('button') count=${allBtns.length}`);
+  allBtns.forEach((btn, idx) => {
+    const r = btn.getBoundingClientRect();
+    console.log(`[IMAGE-TRACE] DELETE-BTN[${idx}]`,
+      `outerHTML="${btn.outerHTML}"`,
+      `class="${btn.className}"`,
+      `onclick="${btn.getAttribute('onclick')}"`,
+      `size=${r.width}x${r.height}`, `pos=top${r.top.toFixed(0)},left${r.left.toFixed(0)}`
+    );
+    // Direkte click-listener på selve knappen (ikke bare grid-delegation)
+    btn.addEventListener('click', function _btnTrace(e) {
+      console.log(`[IMAGE-TRACE] DIRECT BUTTON CLICK class="${btn.className}" onclick="${btn.getAttribute('onclick')}"`,
+        `e.defaultPrevented=${e.defaultPrevented}`, `e.cancelBubble=${e.cancelBubble}`
+      );
+    });
   });
-  // Tilføj DOM-niveau click-lytter (én gang per render) for at bekræfte klik-events
+  // Tjek om window.editRemoveExisting er defineret
+  console.log(`[IMAGE-TRACE] window.editRemoveExisting type=${typeof window.editRemoveExisting}`);
+  // Grid-niveau click-lytter
   grid._imageTraceHandler && grid.removeEventListener('click', grid._imageTraceHandler);
   grid._imageTraceHandler = function(e) {
-    console.log(`[IMAGE-TRACE] GRID CLICK EVENT fired`, `target=${e.target.tagName}`, `class="${e.target.className}"`,
-      `onclick="${e.target.getAttribute('onclick')}"`,
+    console.log(`[IMAGE-TRACE] GRID CLICK EVENT fired`, `target.tag=${e.target.tagName}`, `target.class="${e.target.className}"`,
+      `target.onclick="${e.target.getAttribute('onclick')}"`,
+      `e.defaultPrevented=${e.defaultPrevented}`,
       `editExistingImgs.length=${editExistingImgs.length}`
     );
   };
