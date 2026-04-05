@@ -3326,6 +3326,7 @@ function renderEditExistingImages() {
       `target.tag=${e.target.tagName}`, `target.class="${e.target.className}"`,
       `closest[data-action]=${btn ? btn.dataset.action : 'NONE'}`
     );
+    console.log(`[IMAGE-FIX] click target after pointer-events fix: tag=${e.target.tagName} class="${e.target.className}" action=${btn?.dataset.action ?? 'NONE'}`);
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
