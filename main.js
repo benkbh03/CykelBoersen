@@ -3336,19 +3336,12 @@ function renderEditExistingImages() {
   grid._editHandler && grid.removeEventListener('click', grid._editHandler);
   grid._editHandler = function(e) {
     const btn = e.target.closest('button[data-action]');
-    console.log(`[IMAGE-RUNTIME] GRID delegated-handler fired`,
-      `target.tag=${e.target.tagName}`, `target.class="${e.target.className}"`,
-      `closest[data-action]=${btn ? btn.dataset.action : 'NONE'}`
-    );
-    console.log(`[IMAGE-FIX] click target after pointer-events fix: tag=${e.target.tagName} class="${e.target.className}" action=${btn?.dataset.action ?? 'NONE'}`);
     if (!btn) return;
-    e.preventDefault();
-    e.stopPropagation();
     const action = btn.dataset.action;
     const imgId  = btn.dataset.imgId;
     console.log(`[IMAGE-FIX] delegated click action=${action} imgId=${imgId}`);
-    if (action === 'remove-existing')           editRemoveExisting(imgId);
-    else if (action === 'set-existing-primary') editSetExistingPrimary(imgId);
+    if (action === 'remove-existing')        editRemoveExisting(imgId);
+    if (action === 'set-existing-primary')   editSetExistingPrimary(imgId);
   };
   grid.addEventListener('click', grid._editHandler);
   console.log(`[IMAGE-RUNTIME] listener attached to grid (renderId=${_renderId}), grid===document.getElementById check: ${grid === document.getElementById('edit-img-existing-grid')}`);
