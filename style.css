@@ -1649,6 +1649,14 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .admin-id-img:hover { transform: scale(1.05); }
 
+/* ============================================================
+   LAYOUT ZONES – landing-layout vs page-layout
+   ============================================================ */
+
+#page-layout {
+  min-height: calc(100vh - 64px);
+}
+
 
 /* ============================================================
    MIN PROFIL SIDE (.mp-*) – Konto-side #/me

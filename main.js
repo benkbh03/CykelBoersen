@@ -2422,29 +2422,17 @@ async function renderBikePage(bikeId) {
 }
 
 function showDetailView() {
-  const detailView  = document.getElementById('detail-view');
-  const howItWorks  = document.getElementById('how-it-works');
-  const mainEl      = document.querySelector('.main');
-  const heroEl      = document.querySelector('.hero');
-  const searchEl    = document.querySelector('.search-section');
-  if (mainEl)      mainEl.style.display      = 'none';
-  if (heroEl)      heroEl.style.display      = 'none';
-  if (searchEl)    searchEl.style.display    = 'none';
-  if (howItWorks)  howItWorks.style.display  = 'none';
-  if (detailView)  detailView.style.display  = 'block';
+  const landingLayout = document.getElementById('landing-layout');
+  const pageLayout    = document.getElementById('page-layout');
+  if (landingLayout) landingLayout.style.display = 'none';
+  if (pageLayout)    pageLayout.style.display    = 'block';
 }
 
 function showListingView() {
-  const detailView = document.getElementById('detail-view');
-  const howItWorks = document.getElementById('how-it-works');
-  const mainEl     = document.querySelector('.main');
-  const heroEl     = document.querySelector('.hero');
-  const searchEl   = document.querySelector('.search-section');
-  if (detailView)  detailView.style.display  = 'none';
-  if (mainEl)      mainEl.style.display      = '';
-  if (heroEl)      heroEl.style.display      = '';
-  if (searchEl)    searchEl.style.display    = '';
-  if (howItWorks)  howItWorks.style.display  = '';
+  const landingLayout = document.getElementById('landing-layout');
+  const pageLayout    = document.getElementById('page-layout');
+  if (pageLayout)    pageLayout.style.display    = 'none';
+  if (landingLayout) landingLayout.style.display = '';
   document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
 }
 
