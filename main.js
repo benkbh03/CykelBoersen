@@ -947,6 +947,14 @@ function switchUserProfileTab(tab) {
   if (panel) panel.style.display = '';
 }
 
+function switchDealerProfileTab(tab) {
+  document.querySelectorAll('.dp-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  ['listings', 'reviews'].forEach(t => {
+    const p = document.getElementById('dp-tab-' + t);
+    if (p) p.style.display = t === tab ? '' : 'none';
+  });
+}
+
 function toggleProfileContact() {
   const form = document.getElementById('up-contact-form');
   if (!form) return;
@@ -2553,13 +2561,22 @@ async function fetchDealerProfileData(dealerId) {
   const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
   const [r1, r2, r3] = await Promise.race([
     Promise.all([
-      safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, avatar_url, created_at, bio').eq('id', dealerId).single()),
+      safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, avatar_url, created_at, bio, last_seen').eq('id', dealerId).single()),
       safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', dealerId).order('created_at', { ascending: false })),
     ]),
     new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000)),
   ]);
-  return { dealer: r1.data, bikes: r2.data || [], reviews: r3.data || [] };
+  let messagesCount = 0;
+  if (currentUser) {
+    const { data: tradeMsg } = await safe(
+      supabase.from('messages').select('id')
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${dealerId}),and(sender_id.eq.${dealerId},receiver_id.eq.${currentUser.id})`)
+        .ilike('content', '%accepteret%').limit(1)
+    );
+    messagesCount = tradeMsg?.length || 0;
+  }
+  return { dealer: r1.data, bikes: r2.data || [], reviews: r3.data || [], messagesCount };
 }
 
 function buildProfileBikeCards(bikes) {
@@ -2730,18 +2747,23 @@ function buildUserProfilePageHTML(data) {
 }
 
 function buildDealerProfilePageHTML(data) {
-  const { dealer, bikes, reviews } = data;
-  const displayName = dealer.shop_name || dealer.name || 'Forhandler';
-  const initials    = displayName.substring(0, 2).toUpperCase();
-  const memberSince = dealer.created_at ? new Date(dealer.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' }) : null;
-  const reviewList  = reviews || [];
-  const avgRating   = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
+  const { dealer, bikes, reviews, messagesCount } = data;
+  const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials     = displayName.substring(0, 2).toUpperCase();
+  const memberSince  = dealer.created_at ? new Date(dealer.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' }) : null;
+  const isOwnProfile = currentUser && currentUser.id === dealer.id;
+  const reviewList   = reviews || [];
+  const avgRating    = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
+  const hasReviewed  = currentUser && reviewList.some(r => r.reviewer_id === currentUser.id);
+  const hasTraded    = currentUser && messagesCount > 0;
+  const nActive      = bikes.length;
+  const nReviews     = reviewList.length;
 
   const avatarContent = dealer.avatar_url
     ? `<img src="${dealer.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
 
-  const bikeCards = bikes.length > 0 ? buildProfileBikeCards(bikes)
+  const bikeCards = nActive > 0 ? buildProfileBikeCards(bikes)
     : `<div class="pp-empty-state"><div class="pp-empty-icon">🚲</div><p>Ingen aktive annoncer fra denne forhandler.</p></div>`;
 
   const reviewCards = reviewList.map(r => {
@@ -2762,18 +2784,42 @@ function buildDealerProfilePageHTML(data) {
       </div>`;
   }).join('') || `<div class="pp-empty-state"><p>Ingen vurderinger endnu.</p></div>`;
 
+  const writeReviewHtml = (!isOwnProfile && currentUser && !hasReviewed && hasTraded) ? `
+    <div class="up-write-review" id="write-review-wrap">
+      <h4 style="font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:12px;">Giv en vurdering</h4>
+      <div class="up-star-picker" id="star-picker">
+        ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
+      </div>
+      <textarea id="review-comment" class="up-review-textarea" placeholder="Fortæl om din handel med ${esc(displayName)}... (valgfrit)"></textarea>
+      <button class="btn-submit-review" onclick="submitReview('${dealer.id}')">Send vurdering</button>
+    </div>` : '';
+
+  const contactHtml = (!isOwnProfile && currentUser && nActive > 0) ? `
+    <div class="pp-cta-section">
+      <button class="pp-cta-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
+      <div class="up-contact-form" id="up-contact-form" style="display:none;">
+        ${nActive > 1 ? `
+        <select class="up-contact-bike-select" id="up-contact-bike-select">
+          ${bikes.map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${b.price.toLocaleString('da-DK')} kr.</option>`).join('')}
+        </select>` : `<input type="hidden" id="up-contact-bike-select" value="${bikes[0].id}">`}
+        <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
+        <button class="up-contact-send-btn" onclick="sendProfileMessage('${dealer.id}')">Send besked</button>
+      </div>
+    </div>` : '';
+
   const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
 
   return `
     <div class="pp-wrap">
       <button class="pp-back-btn" onclick="${backAction}">← Tilbage</button>
 
-      <div class="pp-header pp-header-dealer">
-        <div class="pp-avatar pp-avatar-dealer">${avatarContent}</div>
+      <div class="pp-header">
+        <div class="pp-avatar">${avatarContent}</div>
         <div class="pp-info">
           <h1 class="pp-name">
             ${esc(displayName)}
-            ${dealer.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
+            ${dealer.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
+            ${dealer.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
           </h1>
           <div class="pp-badges">
             <span class="badge badge-dealer">🏪 Forhandler</span>
@@ -2781,32 +2827,36 @@ function buildDealerProfilePageHTML(data) {
           </div>
           ${dealer.city ? `<div class="pp-location">📍 ${esc(dealer.address ? dealer.address + ', ' : '')}${esc(dealer.city)}</div>` : ''}
           ${dealer.bio ? `<p class="pp-bio">${esc(dealer.bio)}</p>` : ''}
+          ${contactHtml}
         </div>
       </div>
 
       <div class="pp-trust-bar">
-        <div class="pp-trust-item">
-          <div class="pp-trust-val">${bikes.length}</div>
+        <div class="pp-trust-item" onclick="switchDealerProfileTab('listings')">
+          <div class="pp-trust-val">${nActive}</div>
           <div class="pp-trust-label">Til salg</div>
         </div>
-        <div class="pp-trust-item">
+        <div class="pp-trust-item" onclick="switchDealerProfileTab('reviews')">
           <div class="pp-trust-val">${avgRating !== null ? avgRating.toFixed(1) + ' ★' : '–'}</div>
-          <div class="pp-trust-label">${reviewList.length} ${reviewList.length === 1 ? 'vurdering' : 'vurderinger'}</div>
+          <div class="pp-trust-label">${nReviews} ${nReviews === 1 ? 'vurdering' : 'vurderinger'}</div>
         </div>
       </div>
 
-      <div class="pp-section">
-        <h2 class="pp-section-title">Cykler til salg</h2>
-        <div class="pp-bikes-grid">${bikeCards}</div>
+      <div class="pp-achievements" id="dealer-achievements"></div>
+
+      <div class="up-tabs pp-tabs">
+        <button class="dp-tab up-tab active" data-tab="listings" onclick="switchDealerProfileTab('listings')">Til salg (${nActive})</button>
+        <button class="dp-tab up-tab" data-tab="reviews" onclick="switchDealerProfileTab('reviews')">Vurderinger${avgRating !== null ? ` ${avgRating.toFixed(1)} ★` : ` (${nReviews})`}</button>
       </div>
 
-      ${reviewList.length > 0 ? `
-      <div class="pp-section">
-        <h2 class="pp-section-title">Vurderinger</h2>
+      <div id="dp-tab-listings" class="up-tab-panel">
+        <div class="pp-bikes-grid">${bikeCards}</div>
+      </div>
+      <div id="dp-tab-reviews" class="up-tab-panel" style="display:none;">
         <div class="up-reviews-list">${reviewCards}</div>
-      </div>` : ''}
+        ${writeReviewHtml}
+      </div>
     </div>`;
-}
 
 async function renderUserProfilePage(userId) {
   showDetailView();
@@ -2862,6 +2912,14 @@ async function renderDealerProfilePage(dealerId) {
   const displayName = data.dealer.shop_name || data.dealer.name || 'Forhandler';
   document.title = `${displayName} – Forhandler | Cykelbørsen`;
   detailView.innerHTML = buildDealerProfilePageHTML(data);
+
+  // Star-hover for vurderingsform (samme som user profile)
+  document.querySelectorAll('.star-pick').forEach(s => {
+    s.addEventListener('mouseover', () => highlightStars(+s.dataset.val));
+    s.addEventListener('mouseout',  () => highlightStars(window._pickedStar || 0));
+  });
+  window._pickedStar = 0;
+  loadUserAchievements(dealerId, data.bikes, [], data.reviews, data.dealer);
 }
 
 function navigateToProfile(userId) {
@@ -4426,7 +4484,8 @@ window.handleForgotPassword = handleForgotPassword;
 window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
-window.switchUserProfileTab = switchUserProfileTab;
+window.switchUserProfileTab  = switchUserProfileTab;
+window.switchDealerProfileTab = switchDealerProfileTab;
 window.saveProfile          = saveProfile;
 window.onSellerTypeChange   = onSellerTypeChange;
 window.uploadAvatar      = uploadAvatar;
