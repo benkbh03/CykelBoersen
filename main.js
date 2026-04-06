@@ -2161,6 +2161,7 @@ async function fetchBikeById(bikeId) {
   const result = await Promise.race([fetchPromise, timeoutPromise]);
   if (result.data && !result.error) {
     bikeCache.set(bikeId, result.data);
+    console.log(`[POST-SAVE-VIEW] fetchBikeById MISS→DB bikeId=${bikeId} bike_images=${result.data.bike_images?.length ?? 'undef'}`);
   }
   return result;
 }
@@ -2312,6 +2313,7 @@ async function openBikeModal(bikeId) {
     return;
   }
 
+  console.log(`[POST-SAVE-VIEW] openBikeModal renderer bikeId=${b.id} bike_images=${b.bike_images?.length ?? 'undef'}`);
   try {
     const { html, profile, allImages } = buildBikeBodyHTML(b);
     document.getElementById('bike-modal-title').textContent = `${b.brand} ${b.model}`;
