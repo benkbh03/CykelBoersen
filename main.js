@@ -2378,14 +2378,8 @@ function renderBikeSkeleton() {
 }
 
 async function renderBikePage(bikeId) {
+  showDetailView();
   const detailView = document.getElementById('detail-view');
-  const mainEl     = document.querySelector('.main');
-  const heroEl     = document.querySelector('.hero');
-  const searchEl   = document.querySelector('.search-section');
-  if (mainEl)   mainEl.style.display   = 'none';
-  if (heroEl)   heroEl.style.display   = 'none';
-  if (searchEl) searchEl.style.display = 'none';
-  detailView.style.display = 'block';
   detailView.innerHTML = renderBikeSkeleton();
 
   let b, error;
@@ -2427,15 +2421,30 @@ async function renderBikePage(bikeId) {
   loadSimilarListings(b.type, b.id);
 }
 
+function showDetailView() {
+  const detailView  = document.getElementById('detail-view');
+  const howItWorks  = document.getElementById('how-it-works');
+  const mainEl      = document.querySelector('.main');
+  const heroEl      = document.querySelector('.hero');
+  const searchEl    = document.querySelector('.search-section');
+  if (mainEl)      mainEl.style.display      = 'none';
+  if (heroEl)      heroEl.style.display      = 'none';
+  if (searchEl)    searchEl.style.display    = 'none';
+  if (howItWorks)  howItWorks.style.display  = 'none';
+  if (detailView)  detailView.style.display  = 'block';
+}
+
 function showListingView() {
   const detailView = document.getElementById('detail-view');
+  const howItWorks = document.getElementById('how-it-works');
   const mainEl     = document.querySelector('.main');
   const heroEl     = document.querySelector('.hero');
   const searchEl   = document.querySelector('.search-section');
-  if (detailView) detailView.style.display = 'none';
-  if (mainEl)     mainEl.style.display     = '';
-  if (heroEl)     heroEl.style.display     = '';
-  if (searchEl)   searchEl.style.display   = '';
+  if (detailView)  detailView.style.display  = 'none';
+  if (mainEl)      mainEl.style.display      = '';
+  if (heroEl)      heroEl.style.display      = '';
+  if (searchEl)    searchEl.style.display    = '';
+  if (howItWorks)  howItWorks.style.display  = '';
   document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
 }
 
@@ -2752,14 +2761,8 @@ function buildDealerProfilePageHTML(data) {
 }
 
 async function renderUserProfilePage(userId) {
+  showDetailView();
   const detailView = document.getElementById('detail-view');
-  const mainEl     = document.querySelector('.main');
-  const heroEl     = document.querySelector('.hero');
-  const searchEl   = document.querySelector('.search-section');
-  if (mainEl)   mainEl.style.display   = 'none';
-  if (heroEl)   heroEl.style.display   = 'none';
-  if (searchEl) searchEl.style.display = 'none';
-  detailView.style.display = 'block';
   detailView.innerHTML = renderProfileSkeleton();
 
   let data;
@@ -2790,14 +2793,8 @@ async function renderUserProfilePage(userId) {
 }
 
 async function renderDealerProfilePage(dealerId) {
+  showDetailView();
   const detailView = document.getElementById('detail-view');
-  const mainEl     = document.querySelector('.main');
-  const heroEl     = document.querySelector('.hero');
-  const searchEl   = document.querySelector('.search-section');
-  if (mainEl)   mainEl.style.display   = 'none';
-  if (heroEl)   heroEl.style.display   = 'none';
-  if (searchEl) searchEl.style.display = 'none';
-  detailView.style.display = 'block';
   detailView.innerHTML = renderProfileSkeleton();
 
   let data;
@@ -2841,14 +2838,8 @@ async function renderMyProfilePage() {
     return;
   }
 
+  showDetailView();
   const detailView = document.getElementById('detail-view');
-  const mainEl     = document.querySelector('.main');
-  const heroEl     = document.querySelector('.hero');
-  const searchEl   = document.querySelector('.search-section');
-  if (mainEl)   mainEl.style.display   = 'none';
-  if (heroEl)   heroEl.style.display   = 'none';
-  if (searchEl) searchEl.style.display = 'none';
-  detailView.style.display = 'block';
   detailView.innerHTML     = renderProfileSkeleton();
 
   document.title = `Min profil | Cykelbørsen`;
@@ -4414,6 +4405,7 @@ window.switchMyProfileTab  = switchMyProfileTab;
 window.renderBikePage     = renderBikePage;
 window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
+window.showDetailView     = showDetailView;
 window.showListingView    = showListingView;
 window.closeBikeModal     = closeBikeModal;
 window.openReportModal    = openReportModal;
