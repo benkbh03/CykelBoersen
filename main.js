@@ -1779,9 +1779,9 @@ async function uploadAvatar(file) {
   showToast('✅ Profilbillede opdateret!');
 }
 
-async function loadMyListings() {
+async function loadMyListings(containerId = 'my-listings-grid') {
   if (!currentUser) return;
-  const grid = document.getElementById('my-listings-grid');
+  const grid = document.getElementById(containerId);
   let data, error;
   try {
     ({ data, error } = await supabase
@@ -1829,9 +1829,9 @@ async function deleteListing(id) {
   updateFilterCounts();
 }
 
-async function loadSavedListings() {
+async function loadSavedListings(containerId = 'my-saved-grid') {
   if (!currentUser) return;
-  const grid = document.getElementById('my-saved-grid');
+  const grid = document.getElementById(containerId);
   let data, error;
   try {
     ({ data, error } = await supabase
@@ -1906,9 +1906,9 @@ async function saveCurrentSearch() {
   if (btn) { btn.style.color = 'var(--rust)'; btn.style.borderColor = 'var(--rust)'; setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 2000); }
 }
 
-async function loadSavedSearches() {
+async function loadSavedSearches(containerId = 'my-searches-list') {
   if (!currentUser) return;
-  const list = document.getElementById('my-searches-list');
+  const list = document.getElementById(containerId);
   let data, error;
   try {
     ({ data, error } = await supabase
@@ -1978,9 +1978,9 @@ async function deleteSavedSearch(id, btn) {
    HANDELSHISTORIK
    ============================================================ */
 
-async function loadTradeHistory() {
+async function loadTradeHistory(containerId = 'trade-history-list') {
   if (!currentUser) return;
-  const list = document.getElementById('trade-history-list');
+  const list = document.getElementById(containerId);
 
   try {
     // Find alle beskeder med "accepteret" der involverer den aktuelle bruger
@@ -2826,12 +2826,122 @@ function navigateToDealer(dealerId) {
   window.location.hash = `#/dealer/${dealerId}`;
 }
 
+/* ============================================================
+   MIN PROFIL SIDE (#/me)
+   ============================================================ */
+
+function navigateToMyProfile() {
+  window.location.hash = '#/me';
+}
+
+async function renderMyProfilePage() {
+  if (!currentUser || !currentProfile) {
+    showListingView();
+    openLoginModal();
+    return;
+  }
+
+  const detailView = document.getElementById('detail-view');
+  const mainEl     = document.querySelector('.main');
+  const heroEl     = document.querySelector('.hero');
+  const searchEl   = document.querySelector('.search-section');
+  if (mainEl)   mainEl.style.display   = 'none';
+  if (heroEl)   heroEl.style.display   = 'none';
+  if (searchEl) searchEl.style.display = 'none';
+  detailView.style.display = 'block';
+  detailView.innerHTML     = renderProfileSkeleton();
+
+  document.title = `Min profil | Cykelbørsen`;
+  detailView.innerHTML = buildMyProfilePageHTML();
+  loadMyListings('mp-listings-grid');
+}
+
+function buildMyProfilePageHTML() {
+  const p           = currentProfile;
+  const u           = currentUser;
+  const isDealer    = p.seller_type === 'dealer';
+  const displayName = isDealer ? (p.shop_name || p.name) : (p.name || 'Min profil');
+  const initials    = (displayName || 'U').substring(0, 2).toUpperCase();
+  const memberSince = p.created_at
+    ? new Date(p.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' })
+    : null;
+
+  const avatarContent = p.avatar_url
+    ? `<img src="${p.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+    : initials;
+
+  return `
+    <div class="mp-wrap">
+      <div class="mp-header">
+        <div class="mp-avatar">${avatarContent}</div>
+        <div class="mp-info">
+          <h1 class="mp-name">
+            ${esc(displayName)}
+            ${p.verified   ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
+            ${p.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
+          </h1>
+          <div class="mp-meta">
+            <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
+            ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
+          </div>
+          ${p.city ? `<div class="mp-location">📍 ${esc(p.city)}</div>` : ''}
+          ${u?.email ? `<div class="mp-email">✉️ ${esc(u.email)}</div>` : ''}
+          ${p.bio ? `<p class="mp-bio">${esc(p.bio)}</p>` : ''}
+        </div>
+        <div class="mp-header-actions">
+          <button class="mp-action-btn" onclick="openProfileModal()">✏️ Redigér profil</button>
+          <button class="mp-action-btn mp-action-btn--secondary" onclick="openInboxModal()">✉️ Indbakke</button>
+        </div>
+      </div>
+
+      <div id="mp-achievements" class="mp-achievements"></div>
+
+      <div class="mp-tabs">
+        <button class="mp-tab active" data-tab="listings" onclick="switchMyProfileTab('listings')">Mine annoncer</button>
+        <button class="mp-tab" data-tab="saved"    onclick="switchMyProfileTab('saved')">Gemte</button>
+        <button class="mp-tab" data-tab="searches" onclick="switchMyProfileTab('searches')">Søgninger</button>
+        <button class="mp-tab" data-tab="trades"   onclick="switchMyProfileTab('trades')">Handler</button>
+      </div>
+
+      <div id="mp-panel-listings" class="mp-tab-panel">
+        <div id="mp-listings-grid"><p style="color:var(--muted)">Henter annoncer…</p></div>
+      </div>
+      <div id="mp-panel-saved" class="mp-tab-panel" style="display:none;">
+        <div id="mp-saved-grid"><p style="color:var(--muted)">Henter gemte…</p></div>
+      </div>
+      <div id="mp-panel-searches" class="mp-tab-panel" style="display:none;">
+        <div id="mp-searches-list"><p style="color:var(--muted)">Henter søgninger…</p></div>
+      </div>
+      <div id="mp-panel-trades" class="mp-tab-panel" style="display:none;">
+        <div id="mp-trades-list"><p style="color:var(--muted)">Henter handler…</p></div>
+      </div>
+    </div>`;
+}
+
+function switchMyProfileTab(tab) {
+  document.querySelectorAll('.mp-tab').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.tab === tab));
+  ['listings', 'saved', 'searches', 'trades'].forEach(t => {
+    const panel = document.getElementById(`mp-panel-${t}`);
+    if (panel) panel.style.display = t === tab ? '' : 'none';
+  });
+  if (tab === 'listings') loadMyListings('mp-listings-grid');
+  if (tab === 'saved')    loadSavedListings('mp-saved-grid');
+  if (tab === 'searches') loadSavedSearches('mp-searches-list');
+  if (tab === 'trades')   loadTradeHistory('mp-trades-list');
+}
+
 function handleRoute() {
   const hash = window.location.hash;
   const bikeMatch    = hash.match(/^#\/bike\/([^/]+)$/);
   const profileMatch = hash.match(/^#\/profile\/([^/]+)$/);
   const dealerMatch  = hash.match(/^#\/dealer\/([^/]+)$/);
-  if (bikeMatch) {
+  const meMatch = hash === '#/me';
+  if (meMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderMyProfilePage();
+  } else if (bikeMatch) {
     closeAllModals();
     console.log(`[SCROLL-FIX] route=bike scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -4298,6 +4408,9 @@ window.openBikeModal      = openBikeModal;
 window.navigateToBike     = navigateToBike;
 window.navigateToProfile  = navigateToProfile;
 window.navigateToDealer   = navigateToDealer;
+window.navigateToMyProfile = navigateToMyProfile;
+window.renderMyProfilePage = renderMyProfilePage;
+window.switchMyProfileTab  = switchMyProfileTab;
 window.renderBikePage     = renderBikePage;
 window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
