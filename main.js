@@ -1800,9 +1800,9 @@ async function loadMyListings(containerId = 'my-listings-grid') {
       var isSold = !b.is_active;
       var views  = b.views || 0;
       return `<div class="my-listing-row" style="${isSold ? 'opacity:0.65' : ''}">
-        <div class="my-listing-info">
-          <div class="my-listing-title">${b.brand} ${b.model} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
-          <div class="my-listing-meta">${b.type} · ${b.city} · ${b.condition}</div>
+        <div class="my-listing-info" onclick="window.location.hash='#/bike/${b.id}'" style="cursor:pointer;" title="Se annonce">
+          <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
+          <div class="my-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
           <div class="my-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
         </div>
         <div class="my-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
@@ -2136,6 +2136,16 @@ function showToast(message) {
 }
 
 function showSection(section) {
+  console.log(`[NAV] showSection section=${section} hash=${window.location.hash}`);
+  const onDetailPage = document.getElementById('page-layout')?.style.display !== 'none';
+  if (onDetailPage) {
+    // Vi er på en detail/profil-side — navigér hjem først, scroll derefter
+    window.location.hash = '#/';
+    if (section === 'dealers') {
+      setTimeout(() => document.querySelector('.dealer-strip')?.scrollIntoView({ behavior: 'smooth' }), 80);
+    }
+    return;
+  }
   if (section === 'dealers') document.querySelector('.dealer-strip').scrollIntoView({ behavior: 'smooth' });
   else document.querySelector('.main').scrollIntoView({ behavior: 'smooth' });
 }
@@ -2851,14 +2861,24 @@ function buildMyProfilePageHTML() {
 
   return `
     <div class="mp-wrap">
+      <nav class="mp-breadcrumb" aria-label="Brødkrumme">
+        <a onclick="window.location.hash='#/'">Forside</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Min konto</span>
+      </nav>
+      <div class="mp-page-title">
+        <h1>Min konto</h1>
+        <p class="mp-page-subtitle">Administrér dine annoncer, gemte søgninger og kontoindstillinger</p>
+      </div>
+
       <div class="mp-header">
         <div class="mp-avatar">${avatarContent}</div>
         <div class="mp-info">
-          <h1 class="mp-name">
+          <h2 class="mp-name">
             ${esc(displayName)}
             ${p.verified   ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
             ${p.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
-          </h1>
+          </h2>
           <div class="mp-meta">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
             ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
