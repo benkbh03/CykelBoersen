@@ -3647,6 +3647,7 @@ async function openEditModal(id) {
   editNewFiles     = [];
   editExistingImgs = (b.bike_images || []).map(img => ({ ...img, toDelete: false }));
   enforceSinglePrimaryImage();
+  console.log(`[DELETE-EXISTING] modal åbnet bikeId=${id} editExistingImgs=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
   renderEditExistingImages();
   renderEditNewImages();
 
@@ -3723,6 +3724,7 @@ function renderEditExistingImages() {
   const _renderId = ++renderEditExistingImages._renderId;
 
   // Render knapper med data-attributter — ingen inline onclick
+  console.log(`[DELETE-EXISTING] renderEditExistingImages visible=${visible.length} ids=[${visible.map(i=>i.id).join(',')}]`);
   grid.innerHTML = visible.map(img => `
     <div class="img-preview-item ${img.is_primary ? 'primary' : ''}">
       <img src="${img.url}" alt="Billede">
@@ -3750,10 +3752,10 @@ function renderEditExistingImages() {
   grid._editHandler && grid.removeEventListener('click', grid._editHandler);
   grid._editHandler = function(e) {
     const btn = e.target.closest('button[data-action]');
-    if (!btn) return;
+    if (!btn) { console.log(`[DELETE-EXISTING] klik i grid men ingen button[data-action] fundet, e.target=${e.target.tagName}.${e.target.className}`); return; }
     const action = btn.dataset.action;
     const imgId  = btn.dataset.imgId;
-    console.log(`[IMAGE-FIX] delegated click action=${action} imgId=${imgId}`);
+    console.log(`[DELETE-EXISTING] delegation klik action=${action} imgId=${imgId} type=${typeof imgId}`);
     if (action === 'remove-existing')        editRemoveExisting(imgId);
     if (action === 'set-existing-primary')   editSetExistingPrimary(imgId);
   };
@@ -3773,10 +3775,13 @@ function editSetExistingPrimary(imgId) {
 }
 
 function editRemoveExisting(imgId) {
+  console.log(`[DELETE-EXISTING] editRemoveExisting kaldt imgId=${imgId} type=${typeof imgId} editExistingImgs.length=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
   const target = editExistingImgs.find(img => img.id == imgId);
+  console.log(`[DELETE-EXISTING] find result: ${target ? `fundet id=${target.id}` : 'IKKE FUNDET — match fejlede'}`);
   if (!target) return;
   const wasPrimary = target.is_primary;
   editExistingImgs = editExistingImgs.map(img => img.id == imgId ? { ...img, toDelete: true, is_primary: false } : img);
+  console.log(`[DELETE-EXISTING] state efter mark: toDelete=[${editExistingImgs.filter(i=>i.toDelete).map(i=>i.id).join(',')}] visible=${editExistingImgs.filter(i=>!i.toDelete).length}`);
   if (wasPrimary) {
     const firstRemaining = editExistingImgs.find(img => !img.toDelete);
     if (firstRemaining) {
@@ -3890,6 +3895,7 @@ async function saveEditedListing() {
   // Slet fjernede billeder
   const toDelete = editExistingImgs.filter(img => img.toDelete);
   const toKeep   = editExistingImgs.filter(img => !img.toDelete);
+  console.log(`[DELETE-EXISTING] save start bikeId=${id} toDelete=${toDelete.length} ids=[${toDelete.map(i=>i.id).join(',')}] toKeep=${toKeep.length}`);
   console.log(`[IMAGE-SAVE] START bikeId=${id}`,
     `existing=${editExistingImgs.length}`,
     `toDelete=${toDelete.length} ids=[${toDelete.map(i=>i.id).join(',')}]`,
@@ -3899,14 +3905,15 @@ async function saveEditedListing() {
   );
   for (const img of toDelete) {
     const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id);
-    console.log(`[IMAGE-SAVE] DELETE bike_image id=${img.id} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
-    // Forsøg at slette fra storage (url format: .../bike-images/bikeId/filename)
+    console.log(`[DELETE-EXISTING] DB delete bike_image id=${img.id} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
     if (!delErr && img.url) {
       const match = img.url.match(/bike-images\/(.+)$/);
       if (match) {
         const storagePath = match[1];
         const { error: stErr } = await supabase.storage.from('bike-images').remove([storagePath]);
-        console.log(`[IMAGE-SAVE] STORAGE DELETE path=${storagePath} error=${stErr ? JSON.stringify(stErr) : 'null'}`);
+        console.log(`[DELETE-EXISTING] storage delete path=${storagePath} error=${stErr ? JSON.stringify(stErr) : 'null'}`);
+      } else {
+        console.log(`[DELETE-EXISTING] storage delete SKIP — url matcher ikke /bike-images/ pattern: ${img.url}`);
       }
     }
   }
