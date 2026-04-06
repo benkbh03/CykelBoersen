@@ -1665,38 +1665,36 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .mp-wrap {
   max-width: 960px;
   margin: 0 auto;
-  padding: 28px 20px 60px;
+  padding: 32px 20px 72px;
 }
 
-/* Brødkrumme */
-.mp-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 16px;
-  font-family: 'DM Sans', sans-serif;
+/* ── Top-sektion: let, ingen baggrund ── */
+.mp-top {
+  margin-bottom: 24px;
 }
-.mp-breadcrumb a {
+.mp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0 0 14px;
+  font-size: 0.82rem;
   color: var(--muted);
-  text-decoration: none;
   cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
   transition: color 0.15s;
 }
-.mp-breadcrumb a:hover { color: var(--rust); }
-
-/* Side-titel */
-.mp-page-title { margin-bottom: 28px; }
-.mp-page-title h1 {
+.mp-back-btn:hover { color: var(--charcoal); }
+.mp-title {
   font-family: 'Fraunces', serif;
   font-size: 2rem;
   font-weight: 900;
   color: var(--charcoal);
-  margin: 0 0 5px;
-  line-height: 1.1;
+  margin: 0 0 6px;
+  line-height: 1.05;
 }
-.mp-page-subtitle {
+.mp-subtitle {
   font-size: 0.87rem;
   color: var(--muted);
   margin: 0;
@@ -1704,20 +1702,21 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   font-family: 'DM Sans', sans-serif;
 }
 
-.mp-header {
+/* ── Account-kort: airy, hvid baggrund ── */
+.mp-account-card {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   align-items: flex-start;
-  padding: 28px;
-  background: var(--cream);
+  padding: 24px;
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 16px;
-  margin-bottom: 20px;
+  border-radius: 14px;
+  margin-bottom: 16px;
 }
 
 .mp-avatar {
-  width: 88px;
-  height: 88px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: var(--forest);
   color: var(--cream);
@@ -1725,7 +1724,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   align-items: center;
   justify-content: center;
   font-family: 'Fraunces', serif;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   flex-shrink: 0;
   overflow: hidden;
@@ -1736,16 +1735,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 .mp-name {
   font-family: 'Fraunces', serif;
-  font-size: 1.45rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--charcoal);
-  margin: 0 0 8px;
+  margin: 0 0 7px;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
-
 .mp-meta {
   display: flex;
   align-items: center;
@@ -1753,10 +1751,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   flex-wrap: wrap;
   margin-bottom: 6px;
 }
-
 .mp-member-since { font-size: 0.78rem; color: var(--muted); }
-.mp-location, .mp-email { font-size: 0.85rem; color: var(--muted); margin-bottom: 3px; }
-.mp-bio { font-size: 0.88rem; color: var(--charcoal); line-height: 1.55; margin: 8px 0 0; }
+.mp-location, .mp-email { font-size: 0.82rem; color: var(--muted); margin-bottom: 2px; }
 
 .mp-header-actions {
   display: flex;
@@ -1764,14 +1760,13 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   gap: 8px;
   flex-shrink: 0;
 }
-
 .mp-action-btn {
   background: var(--forest);
   color: var(--cream);
   border: none;
-  border-radius: 10px;
-  padding: 9px 18px;
-  font-size: 0.85rem;
+  border-radius: 9px;
+  padding: 8px 16px;
+  font-size: 0.83rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -1786,74 +1781,231 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .mp-action-btn--secondary:hover { background: var(--sand); }
 
+/* ── Stats-række ── */
+.mp-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.mp-stat-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.mp-stat-box:hover { border-color: #b0aaa0; }
+.mp-stat-num {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--charcoal);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.mp-stat-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .mp-achievements { margin-bottom: 4px; min-height: 0; }
 
+/* ── Tabs ── */
 .mp-tabs {
   display: flex;
   border-bottom: 2px solid var(--border);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  gap: 4px;
 }
-
 .mp-tab {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
-  padding: 13px 22px;
-  font-size: 0.88rem;
+  padding: 12px 20px;
+  font-size: 0.87rem;
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
   white-space: nowrap;
   font-family: 'DM Sans', sans-serif;
   transition: color 0.15s, border-color 0.15s;
-  letter-spacing: 0.01em;
 }
 .mp-tab:hover { color: var(--charcoal); }
-.mp-tab.active {
-  color: var(--rust);
-  border-bottom-color: var(--rust);
-}
+.mp-tab.active { color: var(--rust); border-bottom-color: var(--rust); }
 
 .mp-tab-panel { min-height: 160px; }
 
-/* Premium listing-rækker på #/me (scoped til page-kontekst) */
+/* ── Marketplace listing-kort ── */
 #mp-listings-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
-#mp-listings-grid .my-listing-row {
-  padding: 18px 20px;
+.mp-listing-card {
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid var(--border);
   border-radius: 12px;
+  overflow: hidden;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-#mp-listings-grid .my-listing-row:hover {
-  border-color: #b0aaa0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+.mp-listing-card:hover {
+  border-color: #b8b2a8;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
-#mp-listings-grid .my-listing-info:hover .my-listing-title {
-  color: var(--rust);
+.mp-listing-card--sold { opacity: 0.72; }
+
+.mp-listing-img {
+  width: 88px;
+  flex-shrink: 0;
+  cursor: pointer;
+  overflow: hidden;
+  background: var(--sand);
+}
+.mp-listing-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mp-listing-thumb--empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+.mp-listing-body {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.mp-listing-title {
+  font-family: 'Fraunces', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 3px;
+  transition: color 0.15s;
+}
+.mp-listing-card:hover .mp-listing-title { color: var(--rust); }
+.mp-listing-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 3px; }
+.mp-listing-views { font-size: 0.73rem; color: var(--muted); }
+.mp-sold-tag {
+  background: var(--charcoal);
+  color: #fff;
+  font-size: 0.62rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
+.mp-listing-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  min-width: 140px;
+}
+.mp-listing-price {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--rust);
+  white-space: nowrap;
+}
+.mp-listing-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Knapper: tydelig hierarki */
+.mp-btn-edit {
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: center;
+}
+.mp-btn-edit:hover { background: var(--forest-light); }
+
+.mp-btn-sold, .mp-btn-unsold {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s;
+  white-space: nowrap;
+  text-align: center;
+}
+.mp-btn-sold:hover, .mp-btn-unsold:hover { border-color: var(--charcoal); }
+
+.mp-btn-delete {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-size: 0.75rem;
+  color: #c0b8b0;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.15s;
+  text-align: center;
+}
+.mp-btn-delete:hover { color: var(--rust); }
+
 @media (max-width: 640px) {
-  .mp-wrap { padding: 16px 12px 48px; }
-  .mp-page-title h1 { font-size: 1.55rem; }
-  .mp-header {
+  .mp-wrap { padding: 20px 12px 56px; }
+  .mp-title { font-size: 1.55rem; }
+  .mp-account-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding: 20px 16px;
-    gap: 16px;
+    gap: 14px;
   }
-  .mp-name { justify-content: center; font-size: 1.2rem; }
+  .mp-name { justify-content: center; font-size: 1.15rem; }
   .mp-meta { justify-content: center; }
   .mp-header-actions { flex-direction: row; justify-content: center; width: 100%; }
+  .mp-stats-row { gap: 8px; }
+  .mp-stat-num { font-size: 1.35rem; }
   .mp-tab { padding: 10px 14px; font-size: 0.82rem; }
-  #mp-listings-grid .my-listing-row { padding: 14px 14px; }
+  .mp-listing-img { width: 70px; }
+  .mp-listing-aside { min-width: 110px; padding: 12px 10px; }
 }
 
 /* ============================================================
