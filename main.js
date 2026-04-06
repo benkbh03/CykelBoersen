@@ -2857,6 +2857,7 @@ function buildDealerProfilePageHTML(data) {
         ${writeReviewHtml}
       </div>
     </div>`;
+}
 
 async function renderUserProfilePage(userId) {
   showDetailView();
