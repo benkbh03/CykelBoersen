@@ -1651,6 +1651,142 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 
 /* ============================================================
+   MIN PROFIL SIDE (.mp-*) – Konto-side #/me
+   ============================================================ */
+
+.mp-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+.mp-header {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 28px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.mp-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 3px solid var(--border);
+}
+
+.mp-info { flex: 1; min-width: 0; }
+
+.mp-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mp-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.mp-member-since { font-size: 0.78rem; color: var(--muted); }
+.mp-location, .mp-email { font-size: 0.85rem; color: var(--muted); margin-bottom: 3px; }
+.mp-bio { font-size: 0.88rem; color: var(--charcoal); line-height: 1.55; margin: 8px 0 0; }
+
+.mp-header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mp-action-btn {
+  background: var(--forest);
+  color: var(--cream);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.mp-action-btn:hover { background: var(--forest-light); }
+.mp-action-btn--secondary {
+  background: transparent;
+  color: var(--charcoal);
+  border: 1.5px solid var(--border);
+}
+.mp-action-btn--secondary:hover { background: var(--sand); }
+
+.mp-achievements { margin-bottom: 4px; min-height: 0; }
+
+.mp-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mp-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 12px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.15s, border-color 0.15s;
+}
+.mp-tab:hover { color: var(--charcoal); }
+.mp-tab.active { color: var(--rust); border-bottom-color: var(--rust); }
+
+.mp-tab-panel { }
+
+@media (max-width: 640px) {
+  .mp-wrap { padding: 16px 12px 48px; }
+  .mp-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 16px;
+    gap: 16px;
+  }
+  .mp-name { justify-content: center; font-size: 1.2rem; }
+  .mp-meta { justify-content: center; }
+  .mp-header-actions { flex-direction: row; justify-content: center; width: 100%; }
+  .mp-tab { padding: 10px 14px; font-size: 0.82rem; }
+}
+
+/* ============================================================
    PROFILSIDE (.pp-*) – Marketplace-kvalitet profil-pages
    ============================================================ */
 
