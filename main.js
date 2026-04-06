@@ -3955,12 +3955,29 @@ async function saveEditedListing() {
   loadBikes();
   updateFilterCounts();
 
-  // Re-render detail-view hvis den aktuelle route viser denne annonce
-  const currentHash = window.location.hash;
-  console.log(`[POST-SAVE-VIEW] currentHash=${currentHash} bikeId=${id} match=${currentHash === '#/bike/' + id}`);
-  if (currentHash === `#/bike/${id}`) {
+  // Re-render det view brugeren faktisk ser efter save
+  const currentHash    = window.location.hash;
+  const bikeModalOpen  = document.getElementById('bike-modal')?.classList.contains('open');
+  const profileMatch   = currentHash.match(/^#\/profile\/([^/]+)$/);
+  const dealerMatch    = currentHash.match(/^#\/dealer\/([^/]+)$/);
+  const onBikePage     = currentHash === `#/bike/${id}`;
+  console.log(`[STALE-VIEW] after save bikeId=${id} currentHash="${currentHash}" bikeModalOpen=${bikeModalOpen} onBikePage=${onBikePage} profileRoute=${profileMatch?.[1]||'nej'} dealerRoute=${dealerMatch?.[1]||'nej'}`);
+
+  if (onBikePage) {
     console.log(`[POST-SAVE-VIEW] detail-view aktiv — re-renderer bike ${id} med friske data`);
     renderBikePage(id);
+  }
+  if (bikeModalOpen) {
+    console.log(`[STALE-VIEW] bike-modal er åben — re-renderer modal for bike ${id}`);
+  }
+  if (profileMatch) {
+    console.log(`[STALE-VIEW] profil-side er aktiv (${profileMatch[1]}) — bike-grid på siden er STALE, ingen re-render sker`);
+  }
+  if (dealerMatch) {
+    console.log(`[STALE-VIEW] forhandler-side er aktiv (${dealerMatch[1]}) — bike-grid på siden er STALE, ingen re-render sker`);
+  }
+  if (!onBikePage && !bikeModalOpen && !profileMatch && !dealerMatch) {
+    console.log(`[STALE-VIEW] ingen specifik detail-view åben — listing-grid opdateres via loadBikes() i baggrunden`);
   }
 }
 
