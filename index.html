@@ -92,6 +92,11 @@
     <button onclick="dismissEmailBanner()" style="background:none;color:rgba(255,255,255,0.7);border:none;padding:4px 8px;cursor:pointer;font-size:1rem;margin-left:4px;">✕</button>
   </div>
 
+  <!-- ══════════════════════════════════════════════════
+       LANDING LAYOUT – kun synlig på forsiden (#/)
+       ══════════════════════════════════════════════════ -->
+  <div id="landing-layout">
+
   <!-- ── HERO ── -->
   <section class="hero">
     <div class="hero-text">
@@ -241,9 +246,6 @@
 
   </div>
 
-  <!-- ── DETAIL VIEW (hash routing) ── -->
-  <section id="detail-view" style="display:none;"></section>
-
   <!-- ── SÅDAN VIRKER DET ── -->
   <section class="how-it-works" id="how-it-works">
     <h2>Sådan virker det</h2>
@@ -288,6 +290,16 @@
       </div>
     </div>
   </section>
+
+  </div><!-- #landing-layout -->
+
+  <!-- ══════════════════════════════════════════════════
+       PAGE LAYOUT – kun synlig på #/bike, #/profile, #/dealer, #/me
+       ══════════════════════════════════════════════════ -->
+  <div id="page-layout" style="display:none;">
+  <!-- ── DETAIL VIEW (hash routing) ── -->
+  <section id="detail-view"></section>
+  </div><!-- #page-layout -->
 
   <!-- ── BRUGER PROFIL MODAL ── -->
   <div class="modal-overlay" id="user-profile-modal" style="display:none;" onclick="if(event.target===this)closeUserProfileModal()">
