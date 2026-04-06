@@ -1779,28 +1779,73 @@ async function uploadAvatar(file) {
   showToast('✅ Profilbillede opdateret!');
 }
 
+// Reload listings i den rette kontekst (page vs modal)
+function reloadMyListings() {
+  if (document.getElementById('mp-listings-grid')) loadMyListings('mp-listings-grid');
+  else loadMyListings();
+}
+
 async function loadMyListings(containerId = 'my-listings-grid') {
   if (!currentUser) return;
   const grid = document.getElementById(containerId);
   let data, error;
   try {
     ({ data, error } = await supabase
-      .from('bikes').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }));
+      .from('bikes')
+      .select('*, bike_images(url, is_primary)')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false }));
   } catch (e) {
     grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'loadMyListings');
     return;
   }
+
+  // Opdatér annonce-tæller i stats-boksen (kun på #/me page)
+  const statEl = document.getElementById('mp-stat-listings');
+  if (statEl) statEl.textContent = data ? data.filter(b => b.is_active).length : 0;
+
   if (error || !data || data.length === 0) {
-    grid.innerHTML = '<p style="color:var(--muted)">Du har ingen aktive annoncer.</p>';
+    grid.innerHTML = '<p style="color:var(--muted);padding:16px 0;">Du har ingen annoncer endnu.</p>';
     return;
   }
 
+  // Brug marketplace-kortlayout på page, simpelt row-layout i modal
+  const isPage = containerId === 'mp-listings-grid';
+
   try {
     grid.innerHTML = data.map(b => {
-      var isSold = !b.is_active;
-      var views  = b.views || 0;
+      const isSold = !b.is_active;
+      const views  = b.views || 0;
+
+      if (isPage) {
+        const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
+        const thumb  = imgUrl
+          ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb">`
+          : `<div class="mp-listing-thumb mp-listing-thumb--empty">🚲</div>`;
+        return `
+          <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
+            <div class="mp-listing-img" onclick="window.location.hash='#/bike/${b.id}'" title="Se annonce">${thumb}</div>
+            <div class="mp-listing-body" onclick="window.location.hash='#/bike/${b.id}'" title="Se annonce">
+              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}</div>
+              <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
+              <div class="mp-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
+            </div>
+            <div class="mp-listing-aside">
+              <div class="mp-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
+              <div class="mp-listing-actions">
+                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">✏️ Redigér</button>
+                ${!isSold
+                  ? `<button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
+                  : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
+                <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      // Modal-layout (kompakt)
       return `<div class="my-listing-row" style="${isSold ? 'opacity:0.65' : ''}">
-        <div class="my-listing-info" onclick="window.location.hash='#/bike/${b.id}'" style="cursor:pointer;" title="Se annonce">
+        <div class="my-listing-info">
           <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
           <div class="my-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
           <div class="my-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
@@ -1824,7 +1869,7 @@ async function deleteListing(id) {
   const { error } = await supabase.from('bikes').delete().eq('id', id);
   if (error) { showToast('❌ Kunne ikke slette annonce'); return; }
   showToast('🗑️ Annonce slettet');
-  loadMyListings();
+  reloadMyListings();
   loadBikes();
   updateFilterCounts();
 }
@@ -1842,6 +1887,9 @@ async function loadSavedListings(containerId = 'my-saved-grid') {
     grid.innerHTML = retryHTML('Kunne ikke hente gemte annoncer.', 'loadSavedListings');
     return;
   }
+  const savedStat = document.getElementById('mp-stat-saved');
+  if (savedStat) savedStat.textContent = data ? data.length : 0;
+
   if (error || !data || data.length === 0) {
     grid.innerHTML = '<p style="color:var(--muted)">Du har ikke gemt nogen annoncer endnu.</p>';
     return;
@@ -1992,6 +2040,8 @@ async function loadTradeHistory(containerId = 'trade-history-list') {
       .order('created_at', { ascending: false });
 
     if (error) { list.innerHTML = retryHTML('Kunne ikke hente handelshistorik.', 'loadTradeHistory'); return; }
+    const tradesStat = document.getElementById('mp-stat-trades');
+    if (tradesStat) tradesStat.textContent = tradeMessages ? new Set(tradeMessages.map(m => m.bike_id)).size : 0;
     if (!tradeMessages || tradeMessages.length === 0) {
       list.innerHTML = '<p style="color:var(--muted)">Ingen gennemførte handler endnu.</p>';
       return;
@@ -2861,35 +2911,46 @@ function buildMyProfilePageHTML() {
 
   return `
     <div class="mp-wrap">
-      <nav class="mp-breadcrumb" aria-label="Brødkrumme">
-        <a onclick="window.location.hash='#/'">Forside</a>
-        <span aria-hidden="true">›</span>
-        <span aria-current="page">Min konto</span>
-      </nav>
-      <div class="mp-page-title">
-        <h1>Min konto</h1>
-        <p class="mp-page-subtitle">Administrér dine annoncer, gemte søgninger og kontoindstillinger</p>
+
+      <div class="mp-top">
+        <button class="mp-back-btn" onclick="window.location.hash='#/'">← Forside</button>
+        <h1 class="mp-title">Min konto</h1>
+        <p class="mp-subtitle">Administrér dine annoncer, gemte søgninger og kontooplysninger</p>
       </div>
 
-      <div class="mp-header">
+      <div class="mp-account-card">
         <div class="mp-avatar">${avatarContent}</div>
         <div class="mp-info">
           <h2 class="mp-name">
             ${esc(displayName)}
-            ${p.verified   ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
+            ${p.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
             ${p.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
           </h2>
           <div class="mp-meta">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
             ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
           </div>
-          ${p.city ? `<div class="mp-location">📍 ${esc(p.city)}</div>` : ''}
+          ${p.city   ? `<div class="mp-location">📍 ${esc(p.city)}</div>` : ''}
           ${u?.email ? `<div class="mp-email">✉️ ${esc(u.email)}</div>` : ''}
-          ${p.bio ? `<p class="mp-bio">${esc(p.bio)}</p>` : ''}
         </div>
         <div class="mp-header-actions">
           <button class="mp-action-btn" onclick="openProfileModal()">✏️ Redigér profil</button>
           <button class="mp-action-btn mp-action-btn--secondary" onclick="openInboxModal()">✉️ Indbakke</button>
+        </div>
+      </div>
+
+      <div class="mp-stats-row">
+        <div class="mp-stat-box" onclick="switchMyProfileTab('listings')" title="Mine annoncer">
+          <span class="mp-stat-num" id="mp-stat-listings">–</span>
+          <span class="mp-stat-label">Annoncer</span>
+        </div>
+        <div class="mp-stat-box" onclick="switchMyProfileTab('saved')" title="Gemte annoncer">
+          <span class="mp-stat-num" id="mp-stat-saved">–</span>
+          <span class="mp-stat-label">Gemte</span>
+        </div>
+        <div class="mp-stat-box" onclick="switchMyProfileTab('trades')" title="Handler">
+          <span class="mp-stat-num" id="mp-stat-trades">–</span>
+          <span class="mp-stat-label">Handler</span>
         </div>
       </div>
 
@@ -4060,7 +4121,7 @@ async function saveEditedListing() {
   console.log(`[IMAGE-SAVE] DONE bikeId=${id} — closing modal`);
   closeEditModal();
   showToast('✅ Annonce opdateret!');
-  loadMyListings();
+  reloadMyListings();
   loadBikes();
   updateFilterCounts();
 
@@ -5010,7 +5071,7 @@ async function toggleSold(bikeId, currentlySold) {
     const err = (await supabase.from('bikes').update({ is_active: true }).eq('id', bikeId)).error;
     if (err) { showToast('❌ Kunne ikke opdatere status'); return; }
     showToast('✅ Annonce aktiv igen');
-    loadMyListings(); loadBikes(); updateFilterCounts();
+    reloadMyListings(); loadBikes(); updateFilterCounts();
     return;
   }
 
@@ -5085,12 +5146,12 @@ async function markBikeSold(bikeId, buyerId, buyerName) {
       receiver_id: buyerId,
       content:     '✅ Handel bekræftet og accepteret! Tak for handlen – I kan nu vurdere hinanden.',
     });
-    loadMyListings(); loadBikes(); updateFilterCounts();
+    reloadMyListings(); loadBikes(); updateFilterCounts();
     // Åbn købers profil direkte med vurderingsformular
     openUserProfileWithReview(buyerId);
   } else {
     showToast('🏷️ Annonce markeret som solgt');
-    loadMyListings(); loadBikes(); updateFilterCounts();
+    reloadMyListings(); loadBikes(); updateFilterCounts();
   }
 }
 
