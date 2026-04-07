@@ -3835,6 +3835,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
 // Billede-state for redigér-modal (adskilt fra opret-modal)
 let editNewFiles      = [];  // { file, url, isPrimary }
 let editExistingImgs  = [];  // { id, url, is_primary, toDelete }
+const normalizeImageId = (id) => String(id ?? '').trim();
 
 async function openEditModal(id) {
   const { data: b, error } = await supabase
@@ -3878,7 +3879,11 @@ async function openEditModal(id) {
 
   // Indlæs eksisterende billeder
   editNewFiles     = [];
-  editExistingImgs = (b.bike_images || []).map(img => ({ ...img, toDelete: false }));
+  editExistingImgs = (b.bike_images || []).map(img => ({
+    ...img,
+    id: normalizeImageId(img.id),
+    toDelete: false
+  }));
   enforceSinglePrimaryImage();
   console.log(`[IMG-SAVE-TRACE] A openEditModal bikeId=${id} count=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] primary=[${editExistingImgs.filter(i=>i.is_primary).map(i=>i.id).join(',')}]`);
   console.log(`[DELETE-EXISTING] modal åbnet bikeId=${id} editExistingImgs=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
@@ -3941,7 +3946,8 @@ function enforceSinglePrimaryImage() {
     // Intet primært — tildel til første synlige billede
     const firstExisting = editExistingImgs.find(img => !img.toDelete);
     if (firstExisting) {
-      editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: img === firstExisting }));
+      const firstExistingId = normalizeImageId(firstExisting.id);
+      editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: normalizeImageId(img.id) === firstExistingId }));
     } else if (editNewFiles.length > 0) {
       editNewFiles = editNewFiles.map((f, i) => ({ ...f, isPrimary: i === 0 }));
     }
@@ -4004,11 +4010,12 @@ function renderEditExistingImages() {
 renderEditExistingImages._renderId = 0;
 
 function editSetExistingPrimary(imgId) {
+  const normalizedId = normalizeImageId(imgId);
   const prevPrimary = editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id);
-  console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary START imgId=${imgId} before primary=[${prevPrimary.join(',')}]`);
-  const target = editExistingImgs.find(img => img.id == imgId);
-  if (!target) { console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary ABORT — imgId=${imgId} not found in editExistingImgs`); return; }
-  editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: img.id == imgId }));
+  console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary START imgId=${normalizedId} before primary=[${prevPrimary.join(',')}]`);
+  const target = editExistingImgs.find(img => normalizeImageId(img.id) === normalizedId);
+  if (!target || target.toDelete) { console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary ABORT — imgId=${normalizedId} not found in visible editExistingImgs`); return; }
+  editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: !img.toDelete && normalizeImageId(img.id) === normalizedId }));
   editNewFiles     = editNewFiles.map(f => ({ ...f, isPrimary: false }));
   const afterPrimary = editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id);
   console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary AFTER primary=[${afterPrimary.join(',')}]`);
@@ -4018,18 +4025,20 @@ function editSetExistingPrimary(imgId) {
 }
 
 function editRemoveExisting(imgId) {
-  console.log(`[IMG-SAVE-TRACE] B editRemoveExisting START imgId=${imgId} before: count=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] primary=[${editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id).join(',')}]`);
-  console.log(`[DELETE-EXISTING] editRemoveExisting kaldt imgId=${imgId} type=${typeof imgId} editExistingImgs.length=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
-  const target = editExistingImgs.find(img => img.id == imgId);
+  const normalizedId = normalizeImageId(imgId);
+  console.log(`[IMG-SAVE-TRACE] B editRemoveExisting START imgId=${normalizedId} before: count=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] primary=[${editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id).join(',')}]`);
+  console.log(`[DELETE-EXISTING] editRemoveExisting kaldt imgId=${normalizedId} type=${typeof imgId} editExistingImgs.length=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
+  const target = editExistingImgs.find(img => normalizeImageId(img.id) === normalizedId);
   console.log(`[DELETE-EXISTING] find result: ${target ? `fundet id=${target.id}` : 'IKKE FUNDET — match fejlede'}`);
-  if (!target) return;
+  if (!target || target.toDelete) return;
   const wasPrimary = target.is_primary;
-  editExistingImgs = editExistingImgs.map(img => img.id == imgId ? { ...img, toDelete: true, is_primary: false } : img);
+  editExistingImgs = editExistingImgs.map(img => normalizeImageId(img.id) === normalizedId ? { ...img, toDelete: true, is_primary: false } : img);
   console.log(`[DELETE-EXISTING] state efter mark: toDelete=[${editExistingImgs.filter(i=>i.toDelete).map(i=>i.id).join(',')}] visible=${editExistingImgs.filter(i=>!i.toDelete).length}`);
   if (wasPrimary) {
     const firstRemaining = editExistingImgs.find(img => !img.toDelete);
     if (firstRemaining) {
-      editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: img === firstRemaining }));
+      const firstRemainingId = normalizeImageId(firstRemaining.id);
+      editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: !img.toDelete && normalizeImageId(img.id) === firstRemainingId }));
     } else if (editNewFiles.length > 0) {
       editNewFiles = editNewFiles.map((f, i) => ({ ...f, isPrimary: i === 0 }));
     }
@@ -4155,7 +4164,7 @@ async function saveEditedListing() {
     `newFiles=${editNewFiles.length}`
   );
   for (const img of toDelete) {
-    const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id);
+    const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id).eq('bike_id', id);
     console.log(`[IMG-SAVE-TRACE] E DB-DELETE bike_image id=${img.id} ok=${!delErr} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
     console.log(`[DELETE-EXISTING] DB delete bike_image id=${img.id} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
     if (delErr) {
@@ -4179,7 +4188,7 @@ async function saveEditedListing() {
 
   // Nulstil primær-status på eksisterende billeder først (undgår unique-konflikter)
   for (const img of toKeep) {
-    const { error: updErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('id', img.id);
+    const { error: updErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('id', img.id).eq('bike_id', id);
     console.log(`[IMG-SAVE-TRACE] E DB-UPDATE bike_image id=${img.id} is_primary=false ok=${!updErr} error=${updErr ? JSON.stringify(updErr) : 'null'}`);
     console.log(`[IMAGE-SAVE] UPDATE bike_image id=${img.id} is_primary=false error=${updErr ? JSON.stringify(updErr) : 'null'}`);
     if (updErr) {
@@ -4222,7 +4231,7 @@ async function saveEditedListing() {
     return;
   }
   if (intendedPrimaryId) {
-    const { error: setPrimaryErr } = await supabase.from('bike_images').update({ is_primary: true }).eq('id', intendedPrimaryId);
+    const { error: setPrimaryErr } = await supabase.from('bike_images').update({ is_primary: true }).eq('id', intendedPrimaryId).eq('bike_id', id);
     if (setPrimaryErr) {
       showToast('❌ Kunne ikke gemme valgt primærbillede');
       console.error(setPrimaryErr);
