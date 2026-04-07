@@ -3957,16 +3957,19 @@ function renderEditExistingImages() {
   const nodeBeforeRender = grid;
   const _renderId = ++renderEditExistingImages._renderId;
 
-  // Render knapper med data-attributter — ingen inline onclick
+  // Render knapper med data-attributter + inline fallback for robust klik-håndtering
   console.log(`[DELETE-EXISTING] renderEditExistingImages visible=${visible.length} ids=[${visible.map(i=>i.id).join(',')}]`);
-  grid.innerHTML = visible.map(img => `
+  grid.innerHTML = visible.map(img => {
+    const idArg = JSON.stringify(String(img.id));
+    return `
     <div class="img-preview-item ${img.is_primary ? 'primary' : ''}">
       <img src="${img.url}" alt="Billede">
       ${img.is_primary
         ? '<span class="primary-badge">Primær</span>'
-        : `<button type="button" class="set-primary" data-action="set-existing-primary" data-img-id="${img.id}">★</button>`}
-      <button type="button" class="remove-img" data-action="remove-existing" data-img-id="${img.id}">✕</button>
-    </div>`).join('') || '';
+        : `<button type="button" class="set-primary" data-action="set-existing-primary" data-img-id="${img.id}" onclick='editSetExistingPrimary(${idArg})'>★</button>`}
+      <button type="button" class="remove-img" data-action="remove-existing" data-img-id="${img.id}" onclick='editRemoveExisting(${idArg})'>✕</button>
+    </div>`;
+  }).join('') || '';
 
   // [IMAGE-RUNTIME] Verificér grid-node er SAMME reference efter innerHTML-skift
   const gridAfter = document.getElementById('edit-img-existing-grid');
