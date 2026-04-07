@@ -4115,6 +4115,7 @@ function closeEditModal() {
 
 async function saveEditedListing() {
   const id = document.getElementById('edit-bike-id').value;
+  enforceSinglePrimaryImage();
 
   const updates = {
     brand:       document.getElementById('edit-brand').value,
@@ -4151,9 +4152,18 @@ async function saveEditedListing() {
     `newFiles=${editNewFiles.length}`
   );
   for (const img of toDelete) {
-    const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id);
+    const { data: deletedRows, error: delErr } = await supabase
+      .from('bike_images')
+      .delete()
+      .eq('id', img.id)
+      .select('id');
     console.log(`[IMG-SAVE-TRACE] E DB-DELETE bike_image id=${img.id} ok=${!delErr} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
     console.log(`[DELETE-EXISTING] DB delete bike_image id=${img.id} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
+    if (delErr || !deletedRows?.length) {
+      showToast('❌ Kunne ikke slette et eksisterende billede');
+      console.error(delErr || new Error(`Delete ramte 0 rækker for bike_image id=${img.id}`));
+      return;
+    }
     if (!delErr && img.url) {
       const match = img.url.match(/bike-images\/(.+)$/);
       if (match) {
@@ -4168,23 +4178,82 @@ async function saveEditedListing() {
     }
   }
 
-  // Opdater primær-status på eksisterende billeder
+  // Nulstil primær-status på eksisterende billeder først (undgår unique-konflikter)
   for (const img of toKeep) {
-    const { error: updErr } = await supabase.from('bike_images').update({ is_primary: img.is_primary }).eq('id', img.id);
-    console.log(`[IMG-SAVE-TRACE] E DB-UPDATE bike_image id=${img.id} is_primary=${img.is_primary} ok=${!updErr} error=${updErr ? JSON.stringify(updErr) : 'null'}`);
-    console.log(`[IMAGE-SAVE] UPDATE bike_image id=${img.id} is_primary=${img.is_primary} error=${updErr ? JSON.stringify(updErr) : 'null'}`);
+    const { data: updatedRows, error: updErr } = await supabase
+      .from('bike_images')
+      .update({ is_primary: false })
+      .eq('id', img.id)
+      .select('id');
+    console.log(`[IMG-SAVE-TRACE] E DB-UPDATE bike_image id=${img.id} is_primary=false ok=${!updErr} error=${updErr ? JSON.stringify(updErr) : 'null'}`);
+    console.log(`[IMAGE-SAVE] UPDATE bike_image id=${img.id} is_primary=false error=${updErr ? JSON.stringify(updErr) : 'null'}`);
+    if (updErr || !updatedRows?.length) {
+      showToast('❌ Kunne ikke opdatere primærbillede');
+      console.error(updErr || new Error(`Update ramte 0 rækker for bike_image id=${img.id}`));
+      return;
+    }
   }
 
   // Upload nye billeder
+  let insertedPrimaryId = null;
   for (const item of editNewFiles) {
     const ext      = item.file.name.split('.').pop();
     const filename = `${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error: uploadErr } = await supabase.storage.from('bike-images').upload(filename, item.file, { contentType: item.file.type });
     console.log(`[IMG-SAVE-TRACE] E STORAGE-UPLOAD filename=${filename} isPrimary=${item.isPrimary} ok=${!uploadErr} error=${uploadErr ? JSON.stringify(uploadErr) : 'null'}`);
-    if (uploadErr) { console.error('Upload fejl:', uploadErr); continue; }
+    if (uploadErr) { showToast('❌ Kunne ikke uploade et billede'); console.error('Upload fejl:', uploadErr); return; }
     const { data: { publicUrl } } = supabase.storage.from('bike-images').getPublicUrl(filename);
-    const { error: insertErr } = await supabase.from('bike_images').insert({ bike_id: id, url: publicUrl, is_primary: item.isPrimary });
+    const { data: insertedRow, error: insertErr } = await supabase
+      .from('bike_images')
+      .insert({ bike_id: id, url: publicUrl, is_primary: item.isPrimary })
+      .select('id')
+      .single();
     console.log(`[IMG-SAVE-TRACE] E DB-INSERT bike_image filename=${filename} is_primary=${item.isPrimary} ok=${!insertErr} error=${insertErr ? JSON.stringify(insertErr) : 'null'}`);
+    if (insertErr) {
+      showToast('❌ Kunne ikke gemme uploadet billede');
+      console.error(insertErr);
+      return;
+    }
+    if (item.isPrimary) insertedPrimaryId = insertedRow?.id || null;
+  }
+
+  // Sæt primærbillede i to trin for at undgå unique-konflikter (kun ét primært pr. annonce)
+  const intendedPrimaryExisting = toKeep.find(img => img.is_primary)?.id || null;
+  const intendedPrimaryId = insertedPrimaryId || intendedPrimaryExisting;
+  const { error: resetPrimaryErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('bike_id', id);
+  if (resetPrimaryErr) {
+    showToast('❌ Kunne ikke nulstille primærbillede');
+    console.error(resetPrimaryErr);
+    return;
+  }
+  if (intendedPrimaryId) {
+    const { data: setPrimaryRows, error: setPrimaryErr } = await supabase
+      .from('bike_images')
+      .update({ is_primary: true })
+      .eq('id', intendedPrimaryId)
+      .select('id');
+    if (setPrimaryErr || !setPrimaryRows?.length) {
+      showToast('❌ Kunne ikke gemme valgt primærbillede');
+      console.error(setPrimaryErr || new Error(`Primary update ramte 0 rækker for bike_image id=${intendedPrimaryId}`));
+      return;
+    }
+  }
+
+  // Verificér at DB faktisk endte i forventet tilstand (fanger stille RLS/no-op problemer)
+  const { data: dbImages, error: verifyErr } = await supabase
+    .from('bike_images')
+    .select('id, is_primary')
+    .eq('bike_id', id);
+  if (verifyErr) {
+    showToast('❌ Kunne ikke verificere billeder efter gem');
+    console.error(verifyErr);
+    return;
+  }
+  const dbPrimary = (dbImages || []).find(i => i.is_primary)?.id || null;
+  if (String(dbPrimary || '') !== String(intendedPrimaryId || '')) {
+    showToast('❌ Primærbillede blev ikke gemt korrekt (manglende rettigheder i databasen)');
+    console.error('[IMAGE-VERIFY] mismatch', { intendedPrimaryId, dbPrimary, dbImages });
+    return;
   }
   editNewFiles.forEach(f => URL.revokeObjectURL(f.url));
   editNewFiles     = [];
