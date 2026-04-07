@@ -3984,6 +3984,8 @@ function renderEditExistingImages() {
   grid._editHandler = function(e) {
     const btn = e.target.closest('button[data-action]');
     if (!btn) { console.log(`[DELETE-EXISTING] klik i grid men ingen button[data-action] fundet, e.target=${e.target.tagName}.${e.target.className}`); return; }
+    e.preventDefault();
+    e.stopPropagation();
     const action = btn.dataset.action;
     const imgId  = btn.dataset.imgId;
     console.log(`[DELETE-EXISTING] delegation klik action=${action} imgId=${imgId} type=${typeof imgId}`);
@@ -4060,6 +4062,8 @@ function renderEditNewImages() {
   grid._editNewHandler = function(e) {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
     const index = parseInt(btn.dataset.index, 10);
     if (btn.dataset.action === 'set-new-primary') editSetNewPrimary(index);
     if (btn.dataset.action === 'remove-new')      editRemoveNew(index);
@@ -4199,11 +4203,11 @@ async function saveEditedListing() {
   if (bikeModalOpen) {
     console.log(`[STALE-VIEW] bike-modal er åben — re-renderer modal for bike ${id}`);
   }
-  if (profileMatch) {
-    console.log(`[STALE-VIEW] profil-side er aktiv (${profileMatch[1]}) — bike-grid på siden er STALE, ingen re-render sker`);
+  if (profileMatch && profileMatch[1] === currentUser?.id) {
+    renderUserProfilePage(profileMatch[1]);
   }
-  if (dealerMatch) {
-    console.log(`[STALE-VIEW] forhandler-side er aktiv (${dealerMatch[1]}) — bike-grid på siden er STALE, ingen re-render sker`);
+  if (dealerMatch && dealerMatch[1] === currentUser?.id) {
+    renderDealerProfilePage(dealerMatch[1]);
   }
   if (!onBikePage && !bikeModalOpen && !profileMatch && !dealerMatch) {
     console.log(`[STALE-VIEW] ingen specifik detail-view åben — listing-grid opdateres via loadBikes() i baggrunden`);
