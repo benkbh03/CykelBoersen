@@ -4261,8 +4261,9 @@ async function saveEditedListing() {
     renderBikePage(id);
   }
   if (bikeModalOpen) {
-    console.log(`[IMG-SAVE-TRACE] F → bike-modal er åben men ingen re-render sker`);
-    console.log(`[STALE-VIEW] bike-modal er åben — re-renderer modal for bike ${id}`);
+    console.log(`[IMG-SAVE-TRACE] F → bike-modal er åben — re-renderer modal med friske data (${id})`);
+    console.log(`[STALE-VIEW] bike-modal er åben — kalder openBikeModal(${id}) efter cache invalidation`);
+    openBikeModal(id);
   }
   if (profileMatch && profileMatch[1] === currentUser?.id) {
     console.log(`[IMG-SAVE-TRACE] F → calling renderUserProfilePage(${profileMatch[1]})`);
