@@ -3182,7 +3182,7 @@ async function loadSellerOtherListings(sellerId, currentBikeId) {
     const cards = data.map(bike => {
       const img = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
       return `
-        <div class="related-card" onclick="openBikeModal('${bike.id}')">
+        <div class="related-card" onclick="navigateToBike('${bike.id}')">
           <div class="related-card-img">
             ${img ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy">` : '<span style="font-size:2rem">🚲</span>'}
           </div>
@@ -3229,7 +3229,7 @@ async function loadSimilarListings(bikeType, currentBikeId) {
     const cards = data.map(bike => {
       const img = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
       return `
-        <div class="related-card" onclick="openBikeModal('${bike.id}')">
+        <div class="related-card" onclick="navigateToBike('${bike.id}')">
           <div class="related-card-img">
             ${img ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy">` : '<span style="font-size:2rem">🚲</span>'}
           </div>
