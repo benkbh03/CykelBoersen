@@ -4134,7 +4134,10 @@ async function saveEditedListing() {
   // Sæt primærbillede i to trin for at undgå unique-konflikter (kun ét primært pr. annonce)
   const intendedPrimaryExisting = toKeep.find(img => img.is_primary)?.id || null;
   const intendedPrimaryId = insertedPrimaryId || intendedPrimaryExisting;
+  console.log(`[IMG-SAVE-TRACE] E PRIMARY-CALC intendedPrimaryExisting=${intendedPrimaryExisting} insertedPrimaryId=${insertedPrimaryId} intendedPrimaryId=${intendedPrimaryId}`);
+
   const { error: resetPrimaryErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('bike_id', id);
+  console.log(`[IMG-SAVE-TRACE] E DB-RESET-ALL-PRIMARY ok=${!resetPrimaryErr} error=${resetPrimaryErr ? JSON.stringify(resetPrimaryErr) : 'null'}`);
   if (resetPrimaryErr) {
     showToast('❌ Kunne ikke nulstille primærbillede');
     console.error(resetPrimaryErr);
@@ -4142,10 +4145,19 @@ async function saveEditedListing() {
   }
   if (intendedPrimaryId) {
     const { error: setPrimaryErr } = await supabase.from('bike_images').update({ is_primary: true }).eq('id', intendedPrimaryId).eq('bike_id', id);
+    console.log(`[IMG-SAVE-TRACE] E DB-SET-PRIMARY id=${intendedPrimaryId} ok=${!setPrimaryErr} error=${setPrimaryErr ? JSON.stringify(setPrimaryErr) : 'null'}`);
     if (setPrimaryErr) {
       showToast('❌ Kunne ikke gemme valgt primærbillede');
       console.error(setPrimaryErr);
       return;
+    }
+  } else {
+    console.log(`[IMG-SAVE-TRACE] E DB-SET-PRIMARY SKIP — intendedPrimaryId er null, intet primærbillede sat`);
+    // Sæt første eksisterende billede som primær som fallback
+    const { data: firstImg } = await supabase.from('bike_images').select('id').eq('bike_id', id).limit(1).single();
+    if (firstImg) {
+      await supabase.from('bike_images').update({ is_primary: true }).eq('id', firstImg.id).eq('bike_id', id);
+      console.log(`[IMG-SAVE-TRACE] E DB-SET-PRIMARY FALLBACK id=${firstImg.id}`);
     }
   }
 
