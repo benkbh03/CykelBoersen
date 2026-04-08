@@ -3892,38 +3892,6 @@ async function openEditModal(id) {
 
   document.getElementById('edit-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // [IMAGE-RUNTIME] Tilføj capturing listener på document for at se ALLE klik under edit-modal
-  if (window._editModalCaptureHandler) {
-    document.removeEventListener('click', window._editModalCaptureHandler, true);
-  }
-  window._editModalCaptureHandler = function(e) {
-    const modal = document.getElementById('edit-modal');
-    if (!modal || !modal.classList.contains('open')) return;
-    const inGrid = document.getElementById('edit-img-existing-grid')?.contains(e.target);
-    const closestBtn = e.target.closest('button[data-action]');
-    console.log(`[IMAGE-RUNTIME] CAPTURE CLICK`,
-      `target.tag=${e.target.tagName}`,
-      `target.class="${e.target.className}"`,
-      `target.id="${e.target.id}"`,
-      `inExistingGrid=${inGrid}`,
-      `closest[data-action]=${closestBtn ? closestBtn.dataset.action : 'NONE'}`,
-      `e.defaultPrevented=${e.defaultPrevented}`
-    );
-  };
-  document.addEventListener('click', window._editModalCaptureHandler, true); // capturing phase
-
-  // [CLICK-TRACE] mousedown capturing — fires before click, can't be swallowed by preventDefault
-  if (window._editModalMousedownHandler) {
-    document.removeEventListener('mousedown', window._editModalMousedownHandler, true);
-  }
-  window._editModalMousedownHandler = function(e) {
-    const modal = document.getElementById('edit-modal');
-    if (!modal || !modal.classList.contains('open')) return;
-    const inGrid = document.getElementById('edit-img-existing-grid')?.contains(e.target);
-    console.log(`[CLICK-TRACE] MOUSEDOWN target.tag=${e.target.tagName} class="${e.target.className}" inGrid=${inGrid} closest-action=${e.target.closest('button[data-action]')?.dataset.action ?? 'NONE'}`);
-  };
-  document.addEventListener('mousedown', window._editModalMousedownHandler, true);
 }
 
 // Enforcer altid præcis 0 eller 1 primært billede på tværs af existing + new
@@ -3958,12 +3926,6 @@ function renderEditExistingImages() {
   const grid = document.getElementById('edit-img-existing-grid');
   if (!grid) return;
   const visible = editExistingImgs.filter(img => !img.toDelete);
-
-  // [IMAGE-RUNTIME] snapshot af grid-node identitet FØR innerHTML-skift
-  const nodeBeforeRender = grid;
-  const _renderId = ++renderEditExistingImages._renderId;
-
-  // Render knapper med data-attributter + inline fallback for robust klik-håndtering
   console.log(`[DELETE-EXISTING] renderEditExistingImages visible=${visible.length} ids=[${visible.map(i=>i.id).join(',')}]`);
   grid.innerHTML = visible.map(img => {
     const idArg = JSON.stringify(String(img.id));
@@ -3972,42 +3934,11 @@ function renderEditExistingImages() {
       <img src="${img.url}" alt="Billede">
       ${img.is_primary
         ? '<span class="primary-badge">Primær</span>'
-        : `<button type="button" class="set-primary" data-action="set-existing-primary" data-img-id="${img.id}" onclick='editSetExistingPrimary(${idArg})'>★</button>`}
-      <button type="button" class="remove-img" data-action="remove-existing" data-img-id="${img.id}" onclick='editRemoveExisting(${idArg})'>✕</button>
+        : `<button type="button" class="set-primary" onclick='editSetExistingPrimary(${idArg})'>★</button>`}
+      <button type="button" class="remove-img" onclick='editRemoveExisting(${idArg})'>✕</button>
     </div>`;
   }).join('') || '';
-
-  // [IMAGE-RUNTIME] Verificér grid-node er SAMME reference efter innerHTML-skift
-  const gridAfter = document.getElementById('edit-img-existing-grid');
-  const sameNode  = gridAfter === nodeBeforeRender;
-  const removeBtns  = grid.querySelectorAll('button[data-action="remove-existing"]');
-  const primaryBtns = grid.querySelectorAll('button[data-action="set-existing-primary"]');
-  console.log(`[IMAGE-RUNTIME] renderEditExistingImages #${_renderId}`,
-    `sameNodeAfterRender=${sameNode}`,
-    `visible=${visible.length}`,
-    `removeBtns=${removeBtns.length}`, `primaryBtns=${primaryBtns.length}`
-  );
-  removeBtns.forEach((btn, i) => {
-    console.log(`[IMAGE-RUNTIME]  remove-btn[${i}] outerHTML="${btn.outerHTML}" inGrid=${grid.contains(btn)}`);
-  });
-
-  // Event delegation — én listener, udskiftet ved hver render
-  grid._editHandler && grid.removeEventListener('click', grid._editHandler);
-  grid._editHandler = function(e) {
-    const btn = e.target.closest('button[data-action]');
-    if (!btn) { console.log(`[DELETE-EXISTING] klik i grid men ingen button[data-action] fundet, e.target=${e.target.tagName}.${e.target.className}`); return; }
-    e.preventDefault();
-    e.stopPropagation();
-    const action = btn.dataset.action;
-    const imgId  = btn.dataset.imgId;
-    console.log(`[DELETE-EXISTING] delegation klik action=${action} imgId=${imgId} type=${typeof imgId}`);
-    if (action === 'remove-existing')        editRemoveExisting(imgId);
-    if (action === 'set-existing-primary')   editSetExistingPrimary(imgId);
-  };
-  grid.addEventListener('click', grid._editHandler);
-  console.log(`[IMAGE-RUNTIME] listener attached to grid (renderId=${_renderId}), grid===document.getElementById check: ${grid === document.getElementById('edit-img-existing-grid')}`);
 }
-renderEditExistingImages._renderId = 0;
 
 function editSetExistingPrimary(imgId) {
   const normalizedId = normalizeImageId(imgId);
@@ -4072,26 +4003,13 @@ function renderEditNewImages() {
       <img src="${item.url}" alt="Nyt billede">
       ${item.isPrimary
         ? '<span class="primary-badge">Primær</span>'
-        : `<button type="button" class="set-primary" data-action="set-new-primary" data-index="${i}">★</button>`}
-      <button type="button" class="remove-img" data-action="remove-new" data-index="${i}">✕</button>
+        : `<button type="button" class="set-primary" onclick="editSetNewPrimary(${i})">★</button>`}
+      <button type="button" class="remove-img" onclick="editRemoveNew(${i})">✕</button>
     </div>`).join('');
   const label = document.getElementById('edit-upload-label');
   if (label) label.textContent = editNewFiles.length > 0
     ? `${editNewFiles.length} nye billede${editNewFiles.length !== 1 ? 'r' : ''} klar til upload`
     : 'Klik for at tilføje billeder';
-
-  // Event delegation — ingen inline onclick, index læses fra data-attribut ved klik-tid
-  grid._editNewHandler && grid.removeEventListener('click', grid._editNewHandler);
-  grid._editNewHandler = function(e) {
-    const btn = e.target.closest('button[data-action]');
-    if (!btn) return;
-    e.preventDefault();
-    e.stopPropagation();
-    const index = parseInt(btn.dataset.index, 10);
-    if (btn.dataset.action === 'set-new-primary') editSetNewPrimary(index);
-    if (btn.dataset.action === 'remove-new')      editRemoveNew(index);
-  };
-  grid.addEventListener('click', grid._editNewHandler);
 }
 
 function editSetNewPrimary(index) {
@@ -4115,14 +4033,6 @@ function closeEditModal() {
   editExistingImgs = [];
   document.getElementById('edit-modal').classList.remove('open');
   document.body.style.overflow = '';
-  if (window._editModalCaptureHandler) {
-    document.removeEventListener('click', window._editModalCaptureHandler, true);
-    window._editModalCaptureHandler = null;
-  }
-  if (window._editModalMousedownHandler) {
-    document.removeEventListener('mousedown', window._editModalMousedownHandler, true);
-    window._editModalMousedownHandler = null;
-  }
 }
 
 async function saveEditedListing() {
@@ -4238,9 +4148,6 @@ async function saveEditedListing() {
       return;
     }
   }
-  editNewFiles.forEach(f => URL.revokeObjectURL(f.url));
-  editNewFiles     = [];
-  editExistingImgs = [];
 
   // Invalider bikeCache så næste åbning af annonce/modal henter friske data
   if (bikeCache.has(id) || bikeCache.has(Number(id))) {
