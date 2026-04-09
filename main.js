@@ -60,6 +60,16 @@ function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Validér avatar-URL — tillad kun https Supabase storage URLs for at forhindre XSS
+function safeAvatarUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'https:') return null;
+    return esc(url);
+  } catch { return null; }
+}
+
 // Hjælper: focus trap — returnerer cleanup-funktion
 function trapFocus(modalEl) {
   const focusable = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -357,8 +367,9 @@ async function resendConfirmationEmail() {
 function updateNavAvatar(name, avatarUrl) {
   const el = document.getElementById('nav-initials');
   if (!el) return;
-  if (avatarUrl) {
-    el.innerHTML = `<img src="${avatarUrl}" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:50%;display:block;">`;
+  const safeUrl = safeAvatarUrl(avatarUrl);
+  if (safeUrl) {
+    el.innerHTML = `<img src="${safeUrl}" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:50%;display:block;">`;
   } else {
     el.textContent = (name || '?').substring(0, 2).toUpperCase();
   }
@@ -578,8 +589,8 @@ async function openDealerProfile(dealerId) {
   const countMap    = window._dealerCountMap || {};
   const bikeCount   = countMap[dealerId] ?? null;
 
-  const dealerLogoContent = dealer.avatar_url
-    ? `<img src="${dealer.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+  const dealerLogoContent = safeAvatarUrl(dealer.avatar_url)
+    ? `<img src="${safeAvatarUrl(dealer.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
 
   header.innerHTML = `
@@ -840,8 +851,8 @@ async function openUserProfile(userId) {
       </div>
     </div>` : '';
 
-  const upAvatarContent = profile.avatar_url
-    ? `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+  const upAvatarContent = safeAvatarUrl(profile.avatar_url)
+    ? `<img src="${safeAvatarUrl(profile.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
 
   const nActive  = (activeBikes || []).length;
@@ -1705,8 +1716,9 @@ function showProfileData() {
   const initials = name.substring(0, 2).toUpperCase();
 
   const avatarEl = document.getElementById('profile-big-avatar');
-  if (profile.avatar_url) {
-    avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  const _safeAv = safeAvatarUrl(profile.avatar_url);
+  if (_safeAv) {
+    avatarEl.innerHTML = `<img src="${_safeAv}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
   } else {
     avatarEl.textContent = initials;
   }
@@ -2919,8 +2931,8 @@ function buildUserProfilePageHTML(data) {
   const nSold        = (soldBikes || []).length;
   const nReviews     = reviewList.length;
 
-  const avatarContent = profile.avatar_url
-    ? `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+  const avatarContent = safeAvatarUrl(profile.avatar_url)
+    ? `<img src="${safeAvatarUrl(profile.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
 
   const bikeCards = nActive > 0 ? buildProfileBikeCards(activeBikes)
@@ -3050,8 +3062,8 @@ function buildDealerProfilePageHTML(data) {
   const nActive      = bikes.length;
   const nReviews     = reviewList.length;
 
-  const avatarContent = dealer.avatar_url
-    ? `<img src="${dealer.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+  const avatarContent = safeAvatarUrl(dealer.avatar_url)
+    ? `<img src="${safeAvatarUrl(dealer.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
 
   const bikeCards = nActive > 0 ? buildProfileBikeCards(bikes)
@@ -3255,8 +3267,8 @@ function buildMyProfilePageHTML() {
     ? new Date(p.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' })
     : null;
 
-  const avatarContent = p.avatar_url
-    ? `<img src="${p.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+  const avatarContent = safeAvatarUrl(p.avatar_url)
+    ? `<img src="${safeAvatarUrl(p.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
 
   return `
@@ -4049,18 +4061,26 @@ const debouncedLoadFilters = debounce(
   300
 );
 
-async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [] } = {}) {
+let filterOffset       = 0;
+let currentFilterArgs  = null;
+
+async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [] } = {}, append = false) {
   const grid = document.getElementById('listings-grid');
-  grid.innerHTML = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
-  const old = document.getElementById('load-more-btn');
-  if (old) old.remove();
+
+  if (!append) {
+    filterOffset      = 0;
+    currentFilterArgs = { types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes };
+    grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
+    const old = document.getElementById('load-more-btn');
+    if (old) old.remove();
+  }
 
   let query = supabase
     .from('bikes')
     .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
-    .limit(96);
+    .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
 
   if (types.length > 0)      query = query.in('type', types);
   if (conditions.length > 0) query = query.in('condition', conditions);
@@ -4068,21 +4088,32 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
   if (maxPrice)              query = query.lte('price', maxPrice);
   if (dealerId)              query = query.eq('user_id', dealerId);
   if (wheelSizes.length > 0) query = query.in('wheel_size', wheelSizes);
+  if (sellerType && !dealerId) query = query.eq('profiles.seller_type', sellerType);
 
   const { data, error } = await query;
   if (error) {
-    console.error('Filter fejl:', error);
-    grid.innerHTML = '<p style="color:var(--rust);padding:20px">Kunne ikke hente annoncer.</p>';
+    grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'applyFilters');
     return;
   }
 
-  // Filtrer sælgertype lokalt (da det er en join-kolonne)
-  let filtered = data;
-  if (sellerType && !dealerId) {
-    filtered = data.filter(b => b.profiles?.seller_type === sellerType);
-  }
+  renderBikes(data || [], append);
+  filterOffset += (data || []).length;
 
-  renderBikes(filtered);
+  // "Vis flere"-knap
+  const existing = document.getElementById('load-more-btn');
+  if (existing) existing.remove();
+
+  if ((data || []).length === BIKES_PAGE_SIZE) {
+    const btn = document.createElement('div');
+    btn.id = 'load-more-btn';
+    btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
+    grid.after(btn);
+  } else if (append && filterOffset > BIKES_PAGE_SIZE) {
+    const msg = document.createElement('div');
+    msg.id = 'load-more-btn';
+    msg.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
+    grid.after(msg);
+  }
 }
 
 
@@ -4743,7 +4774,9 @@ window.onDeleteConfirmInput   = onDeleteConfirmInput;
 window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
-window.applyFilters       = applyFilters;
+window.applyFilters           = applyFilters;
+window.loadBikesWithFilters   = loadBikesWithFilters;
+window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
 window.openMobileFilter   = openMobileFilter;
 window.closeMobileFilter  = closeMobileFilter;
 window.closeResetModal    = closeResetModal;
@@ -4937,8 +4970,9 @@ async function loadInboxPage() {
     const bikeImg   = t.bike?.bike_images?.find(i => i.is_primary)?.url || t.bike?.bike_images?.[0]?.url;
     const isBid     = lastMsg.content.indexOf('💰') === 0;
     const safeName  = (t.otherName || 'Ukendt').replace(/'/g, '');
-    const avatarHTML = t.otherAvatar
-      ? '<img src="' + t.otherAvatar + '" alt="" class="inbox-page-avatar-img">'
+    const _av = safeAvatarUrl(t.otherAvatar);
+    const avatarHTML = _av
+      ? '<img src="' + _av + '" alt="" class="inbox-page-avatar-img">'
       : initials;
 
     return '<div class="inbox-page-row' + (t.hasUnread ? ' unread' : '') + '" onclick="openInboxThread(\'' + t.bikeId + '\', \'' + t.otherId + '\', \'' + safeName + '\')" data-thread="' + t.bikeId + '_' + t.otherId + '">'
