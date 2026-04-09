@@ -1338,7 +1338,8 @@ async function updateFilterCounts(data, dealerCount) {
 }
 
 function setCount(filterAttr, filterValue, count) {
-  document.querySelectorAll(`[data-filter="${filterAttr}"][data-value="${filterValue}"]`).forEach(input => {
+  document.querySelectorAll(`[data-filter="${filterAttr}"]`).forEach(input => {
+    if (input.dataset.value !== filterValue) return;
     const countEl = input.closest('.filter-option')?.querySelector('.filter-count');
     if (countEl) countEl.textContent = count > 0 ? count.toLocaleString('da-DK') : '0';
   });
