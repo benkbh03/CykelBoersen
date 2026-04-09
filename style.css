@@ -119,60 +119,72 @@ nav {
 
 /* ── HERO ── */
 .hero {
-  background: var(--forest);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 540px;
-  overflow: hidden;
-}
-.hero-text {
-  padding: 64px 48px 64px 56px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.hero-eyebrow {
-  font-size: 0.78rem;
-  color: var(--sand);
-  opacity: 0.55;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-weight: 500;
-  margin-bottom: 18px;
-}
-.hero-text h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.8rem; font-weight: 900;
-  color: var(--sand); line-height: 1.08;
-  margin-bottom: 20px;
-}
-.hero-text h1 em { font-style: italic; color: var(--rust-light); font-weight: 700; }
-.hero-sub { color: var(--sand); opacity: 0.7; font-size: 1.05rem; line-height: 1.6; max-width: 380px; margin-bottom: 32px; }
-.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
-.hero-trust {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-top: 22px;
-}
-.hero-trust span {
-  font-size: 0.8rem;
-  color: var(--sand);
-  opacity: 0.55;
-  font-weight: 500;
-}
-
-/* Hero billede */
-.hero-img-side {
   position: relative;
+  min-height: 580px;
+  display: flex;
+  align-items: center;
   overflow: hidden;
+  background: var(--forest);
+}
+.hero-img-side {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 .hero-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 25%;
   display: block;
+}
+.hero-img-side::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(42,61,46,0.97) 0%,
+    rgba(42,61,46,0.88) 35%,
+    rgba(42,61,46,0.45) 62%,
+    rgba(42,61,46,0.05) 100%
+  );
+}
+.hero-text {
+  position: relative;
+  z-index: 1;
+  max-width: 580px;
+  padding: 80px 56px;
+}
+.hero-eyebrow {
+  font-size: 0.75rem;
+  color: var(--sand);
+  opacity: 0.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.hero-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 4.2rem; font-weight: 900;
+  color: var(--sand); line-height: 1.05;
+  margin-bottom: 20px;
+}
+.hero-text h1 em { font-style: italic; color: var(--rust-light); font-weight: 700; }
+.hero-sub { color: var(--sand); opacity: 0.75; font-size: 1.05rem; line-height: 1.6; max-width: 360px; margin-bottom: 34px; }
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+.hero-trust {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.hero-trust span {
+  font-size: 0.78rem;
+  color: var(--sand);
+  opacity: 0.5;
+  font-weight: 500;
 }
 
 /* Stats bar */
@@ -1261,15 +1273,14 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .nav-links a:not(.btn-sell) { display: none; }
   .btn-sell { font-size: 0.8rem; padding: 8px 14px; }
   .logo { font-size: 1.3rem; }
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-img-side { height: 220px; order: -1; }
-  .hero-text { padding: 28px 16px 32px; }
-  .hero-text h1 { font-size: 2.6rem; line-height: 1.1; }
-  .hero-sub { font-size: 0.92rem; }
+  .hero { min-height: 480px; }
+  .hero-text { padding: 48px 20px 48px; max-width: 100%; }
+  .hero-img-side::after { background: linear-gradient(to right, rgba(42,61,46,0.96) 0%, rgba(42,61,46,0.85) 50%, rgba(42,61,46,0.6) 100%); }
+  .hero-text h1 { font-size: 2.8rem; line-height: 1.08; }
+  .hero-sub { font-size: 0.95rem; max-width: 100%; }
   .hero-btns { flex-direction: column; gap: 10px; }
   .hero-btns button { width: 100%; }
-  .hero-trust { gap: 12px; }
-  .hero-trust span { font-size: 0.75rem; }
+  .hero-trust { gap: 10px; flex-direction: column; }
   .hero-stats-bar { padding: 14px 16px; gap: 0; overflow-x: auto; }
   .stat-bar-item { padding: 0 20px 0 0; flex-shrink: 0; }
   .stat-bar-divider { margin: 0 20px 0 0; }
@@ -1318,8 +1329,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .hero-text { padding: 48px 32px; }
-  .hero-text h1 { font-size: 3rem; }
+  .hero-text { padding: 64px 40px; }
+  .hero-text h1 { font-size: 3.2rem; }
   .hero-stats-bar { padding: 16px 32px; }
   .main { padding: 24px 32px; gap: 24px; }
   .listings-grid { grid-template-columns: repeat(2, 1fr); }
