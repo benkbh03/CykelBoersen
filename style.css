@@ -127,13 +127,14 @@ nav {
   align-items: center;
 }
 .hero-text h1 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 3.8rem; font-weight: 900;
   color: var(--sand); line-height: 1.08;
   margin-bottom: 18px;
+  text-align: center;
 }
-.hero-text h1 em { font-style: italic; color: var(--rust-light); font-weight: 300; }
-.hero-text p { color: var(--sand); opacity: 0.7; font-size: 1.05rem; line-height: 1.6; max-width: 420px; margin-bottom: 32px; }
+.hero-text h1 em { font-style: italic; color: var(--rust-light); font-weight: 700; }
+.hero-text p { color: var(--sand); opacity: 0.7; font-size: 1.05rem; line-height: 1.6; max-width: 420px; margin-bottom: 32px; text-align: center; }
 .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
 .btn-primary {
   background: var(--rust); color: #fff;
