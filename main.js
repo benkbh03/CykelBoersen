@@ -1362,6 +1362,22 @@ async function toggleSave(btn, bikeId) {
     btn.textContent = '❤️';
     _userSavedSet.add(bikeId);
     showToast('❤️ Gemt! Find den under Gemte i din profil.');
+
+    // Send email notification to bike owner (fire-and-forget)
+    const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
+    if (bike) {
+      supabase.functions.invoke('notify-message', {
+        body: {
+          type: 'listing_liked',
+          bike_id: bikeId,
+          bike_brand: bike.brand,
+          bike_model: bike.model,
+          bike_owner_id: bike.user_id,
+          liker_id: currentUser.id,
+          liker_name: currentProfile?.name || 'En bruger',
+        },
+      }).catch(() => {});
+    }
   }
 }
 
@@ -3734,6 +3750,22 @@ async function toggleSaveFromModal(btn, bikeId) {
   } else {
     await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
     btn.textContent = '❤️ Gemt';
+
+    // Send email notification to bike owner (fire-and-forget)
+    const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
+    if (bike) {
+      supabase.functions.invoke('notify-message', {
+        body: {
+          type: 'listing_liked',
+          bike_id: bikeId,
+          bike_brand: bike.brand,
+          bike_model: bike.model,
+          bike_owner_id: bike.user_id,
+          liker_id: currentUser.id,
+          liker_name: currentProfile?.name || 'En bruger',
+        },
+      }).catch(() => {});
+    }
   }
 }
 
