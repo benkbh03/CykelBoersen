@@ -1402,7 +1402,10 @@ document.querySelectorAll('.pill').forEach(pill => {
 
 function openModal() {
   if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  window.location.hash = '#/sell';
+}
 
+function _openModalLegacy() {
   const isDealer = currentProfile?.seller_type === 'dealer';
 
   // Vis kun den relevante selger-type knap baseret på brugerens profil
@@ -1523,6 +1526,58 @@ async function submitListing() {
     body: { bike: { id: newBike.id, brand: newBike.brand, model: newBike.model, type: newBike.type, city: newBike.city, price: newBike.price, condition: newBike.condition } },
   }).catch(() => {});
   } finally { restore(); }
+}
+
+async function submitSellPage() {
+  if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  const restore = btnLoading('sell-submit-btn', 'Opretter...');
+  try {
+    const brand     = document.getElementById('sell-brand')?.value.trim();
+    const model     = document.getElementById('sell-model')?.value.trim();
+    const price     = parseInt(document.getElementById('sell-price')?.value);
+    const year      = parseInt(document.getElementById('sell-year')?.value) || null;
+    const city      = document.getElementById('sell-city')?.value.trim();
+    const desc      = document.getElementById('sell-desc')?.value.trim();
+    const type      = document.getElementById('sell-type')?.value;
+    const size      = document.getElementById('sell-size')?.value;
+    const condition = document.getElementById('sell-condition')?.value;
+    const wheelSize = document.getElementById('sell-wheel-size')?.value || null;
+    const warranty  = document.getElementById('sell-warranty')?.value?.trim() || null;
+
+    if (!brand || !model || !price || !city || !type || !condition) {
+      showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
+    }
+
+    const bikeData = {
+      user_id: currentUser.id,
+      brand, model, price, year, city,
+      description: desc || null,
+      type, size: size || null, condition,
+      wheel_size: wheelSize || null,
+      warranty: warranty || null,
+      title: `${brand} ${model}`,
+      is_active: true,
+    };
+
+    const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
+    if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
+
+    if (selectedFiles.length > 0) {
+      showToast('⏳ Uploader billeder...');
+      await uploadImages(newBike.id);
+    }
+
+    loadBikes();
+    updateFilterCounts();
+
+    supabase.functions.invoke('notify-saved-searches', {
+      body: { bike: { id: newBike.id, brand: newBike.brand, model: newBike.model, type: newBike.type, city: newBike.city, price: newBike.price, condition: newBike.condition } },
+    }).catch(() => {});
+
+    showListingSuccessModal(newBike);
+  } finally {
+    restore();
+  }
 }
 
 /* ============================================================
@@ -2498,6 +2553,239 @@ function showListingView() {
 }
 
 /* ============================================================
+   OPRET ANNONCE SIDE (#/sell)
+   ============================================================ */
+
+function renderSellPage() {
+  if (!currentUser) {
+    openLoginModal();
+    showToast('⚠️ Log ind for at oprette en annonce');
+    window.location.hash = '';
+    return;
+  }
+  showDetailView();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  document.title = 'Opret annonce – Cykelbørsen';
+  selectedFiles = [];
+
+  const isDealer = currentProfile?.seller_type === 'dealer';
+  const dealerSection = isDealer ? `
+    <div class="sell-section">
+      <h3 class="sell-section-title">Forhandlerinfo</h3>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
+          <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
+        </div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('detail-view').innerHTML = `
+    <div class="sell-page">
+      <div class="sell-page-header">
+        <button class="back-btn" onclick="history.back()">← Tilbage</button>
+        <div>
+          <h1 class="sell-page-title">Sæt din cykel til salg</h1>
+          <p class="sell-page-subtitle">Gratis · Nemt · Under 2 minutter</p>
+        </div>
+      </div>
+
+      <div class="sell-page-body">
+        ${dealerSection}
+
+        <div class="sell-section">
+          <h3 class="sell-section-title">Om cyklen</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Mærke *</label>
+              <input type="text" id="sell-brand" placeholder="f.eks. Trek, Giant, Specialized">
+            </div>
+            <div class="form-group">
+              <label>Model *</label>
+              <input type="text" id="sell-model" placeholder="f.eks. FX 3 Disc">
+            </div>
+            <div class="form-group">
+              <label>Cykeltype *</label>
+              <select id="sell-type">
+                <option value="">Vælg type</option>
+                <option>Racercykel</option>
+                <option>Mountainbike</option>
+                <option>Citybike</option>
+                <option>El-cykel</option>
+                <option>Ladcykel</option>
+                <option>Børnecykel</option>
+                <option>Gravel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Ramme / str.</label>
+              <select id="sell-size">
+                <option value="">Vælg</option>
+                <option>XS (44–48 cm)</option>
+                <option>S (49–52 cm)</option>
+                <option>M (53–56 cm)</option>
+                <option>L (57–60 cm)</option>
+                <option>XL (61+ cm)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Hjulstørrelse</label>
+              <select id="sell-wheel-size">
+                <option value="">Vælg</option>
+                <option>26"</option>
+                <option>27.5" / 650b</option>
+                <option>28"</option>
+                <option>29"</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Årstal</label>
+              <input type="number" id="sell-year" placeholder="f.eks. 2021" min="1950" max="2030">
+            </div>
+            <div class="form-group">
+              <label>Stand *</label>
+              <select id="sell-condition">
+                <option value="">Vælg stand</option>
+                <option>Ny</option>
+                <option>Som ny</option>
+                <option>God stand</option>
+                <option>Brugt</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>By *</label>
+              <input type="text" id="sell-city" placeholder="f.eks. København">
+            </div>
+            <div class="form-group full">
+              <label>Beskrivelse</label>
+              <textarea id="sell-desc" placeholder="Beskriv din cykel — stand, udstyr, service, historik..." rows="5"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="sell-section">
+          <h3 class="sell-section-title">Pris</h3>
+          <div class="form-group" style="max-width:260px;">
+            <label>Pris (kr.) *</label>
+            <input type="number" id="sell-price" placeholder="f.eks. 4500" min="0">
+            <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
+          </div>
+        </div>
+
+        <div class="sell-section">
+          <h3 class="sell-section-title">Billeder</h3>
+          <p class="sell-section-desc">Annoncer med billeder sælger hurtigere — upload op til 8 billeder (JPG, PNG).</p>
+          <div class="img-upload" onclick="document.getElementById('sell-file-input').click()">
+            <div class="upload-icon">📷</div>
+            <p id="sell-upload-label">Klik for at vælge billeder</p>
+          </div>
+          <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
+          <div id="sell-preview-grid" class="img-preview-grid"></div>
+        </div>
+
+        <div class="sell-page-actions">
+          <button id="sell-submit-btn" class="form-submit sell-submit" onclick="submitSellPage()">Opret annonce gratis →</button>
+          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="openFooterModal('terms')" class="sell-terms-link">vilkår og betingelser</span>.</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Prisforslag ved type-valg
+  const typeSelect = document.getElementById('sell-type');
+  if (typeSelect) {
+    typeSelect.addEventListener('change', () => updateSellPriceSuggestion(typeSelect.value));
+  }
+}
+
+async function updateSellPriceSuggestion(bikeType) {
+  const wrap = document.getElementById('sell-price-suggestion');
+  if (!wrap || !bikeType) { if (wrap) wrap.style.display = 'none'; return; }
+
+  const { data } = await supabase
+    .from('bikes')
+    .select('price')
+    .eq('type', bikeType)
+    .eq('is_active', true)
+    .limit(50);
+
+  if (!data || data.length < 3) { wrap.style.display = 'none'; return; }
+
+  const prices = data.map(b => b.price).sort((a, b) => a - b);
+  const avg    = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
+  const low    = prices[Math.floor(prices.length * 0.25)];
+  const high   = prices[Math.floor(prices.length * 0.75)];
+
+  wrap.innerHTML = `💡 Andre ${esc(bikeType).toLowerCase()}er sælges typisk for <strong>${low.toLocaleString('da-DK')}–${high.toLocaleString('da-DK')} kr.</strong> (gns. ${avg.toLocaleString('da-DK')} kr.)`;
+  wrap.style.display = 'block';
+}
+
+function previewSellImages(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+
+  const remaining = 8 - selectedFiles.length;
+  const toAdd = files.filter(validateImageFile).slice(0, remaining);
+
+  toAdd.forEach((file, i) => {
+    const url = URL.createObjectURL(file);
+    selectedFiles.push({ file, url, isPrimary: selectedFiles.length === 0 && i === 0 });
+  });
+
+  renderSellImagePreviews();
+  const label = document.getElementById('sell-upload-label');
+  if (label) label.textContent = `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
+}
+
+function renderSellImagePreviews() {
+  const grid = document.getElementById('sell-preview-grid');
+  if (!grid) return;
+  grid.innerHTML = selectedFiles.map((item, i) => `
+    <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
+      <img src="${item.url}" alt="Billede ${i + 1}">
+      ${item.isPrimary ? '<span class="primary-badge">Primær</span>' : `<button class="set-primary" onclick="setSellPrimary(${i})">★</button>`}
+      <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
+    </div>`).join('');
+}
+
+function setSellPrimary(index) {
+  selectedFiles = selectedFiles.map((item, i) => ({ ...item, isPrimary: i === index }));
+  renderSellImagePreviews();
+}
+
+function removeSellImage(index) {
+  URL.revokeObjectURL(selectedFiles[index].url);
+  selectedFiles.splice(index, 1);
+  if (selectedFiles.length > 0 && !selectedFiles.some(f => f.isPrimary)) selectedFiles[0].isPrimary = true;
+  renderSellImagePreviews();
+  const label = document.getElementById('sell-upload-label');
+  if (label) label.textContent = selectedFiles.length > 0
+    ? `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`
+    : 'Klik for at vælge billeder';
+}
+
+function showListingSuccessModal(bike) {
+  const modal = document.getElementById('listing-success-modal');
+  if (!modal) return;
+  const titleEl = document.getElementById('success-bike-title');
+  const priceEl = document.getElementById('success-bike-price');
+  const viewBtn = document.getElementById('success-view-btn');
+  const newBtn  = document.getElementById('success-new-btn');
+  if (titleEl) titleEl.textContent = `${bike.brand} ${bike.model}`;
+  if (priceEl) priceEl.textContent = bike.price ? `${bike.price.toLocaleString('da-DK')} kr.` : '';
+  if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); window.location.hash = `#/bike/${bike.id}`; };
+  if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellPage(); };
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeListingSuccessModal() {
+  const modal = document.getElementById('listing-success-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+/* ============================================================
    PROFIL SIDER (hash routing)
    ============================================================ */
 
@@ -3048,28 +3336,27 @@ function handleRoute() {
   const bikeMatch    = hash.match(/^#\/bike\/([^/]+)$/);
   const profileMatch = hash.match(/^#\/profile\/([^/]+)$/);
   const dealerMatch  = hash.match(/^#\/dealer\/([^/]+)$/);
-  const meMatch = hash === '#/me';
+  const meMatch   = hash === '#/me';
+  const sellMatch = hash === '#/sell';
   if (meMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     renderMyProfilePage();
+  } else if (sellMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderSellPage();
   } else if (bikeMatch) {
     closeAllModals();
-    console.log(`[SCROLL-FIX] route=bike scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
-    console.log(`[SCROLL-FIX] after reset scrollY=${window.scrollY}`);
     renderBikePage(bikeMatch[1]);
   } else if (profileMatch) {
     closeAllModals();
-    console.log(`[SCROLL-FIX] route=profile scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
-    console.log(`[SCROLL-FIX] after reset scrollY=${window.scrollY}`);
     renderUserProfilePage(profileMatch[1]);
   } else if (dealerMatch) {
     closeAllModals();
-    console.log(`[SCROLL-FIX] route=dealer scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
-    console.log(`[SCROLL-FIX] after reset scrollY=${window.scrollY}`);
     renderDealerProfilePage(dealerMatch[1]);
   } else {
     showListingView();
@@ -4430,6 +4717,12 @@ window.editRemoveNew          = editRemoveNew;
 window.previewImages      = previewImages;
 window.setPrimary         = setPrimary;
 window.removeImage        = removeImage;
+window.renderSellPage            = renderSellPage;
+window.submitSellPage            = submitSellPage;
+window.previewSellImages         = previewSellImages;
+window.setSellPrimary            = setSellPrimary;
+window.removeSellImage           = removeSellImage;
+window.closeListingSuccessModal  = closeListingSuccessModal;
 window.openBikeModal      = openBikeModal;
 window.navigateToBike     = navigateToBike;
 window.navigateToProfile  = navigateToProfile;
