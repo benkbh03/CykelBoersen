@@ -7,6 +7,7 @@
   <title>Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark</title>
   <meta name="description" content="Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2A3D2E">
   <link rel="canonical" href="https://xn--cykelbrsen-5cb.dk/">
 
   <!-- Open Graph / Facebook -->
@@ -23,7 +24,7 @@
   <meta name="twitter:description" content="Danmarks markedsplads for brugte cykler. Gratis at oprette annonce.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
@@ -302,7 +303,7 @@
   </div><!-- #page-layout -->
 
   <!-- ── BRUGER PROFIL MODAL ── -->
-  <div class="modal-overlay" id="user-profile-modal" style="display:none;" onclick="if(event.target===this)closeUserProfileModal()">
+  <div class="modal-overlay" id="user-profile-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeUserProfileModal()">
     <div class="modal user-profile-modal-inner">
       <button class="modal-close" onclick="closeUserProfileModal()" style="position:absolute;top:16px;right:16px;z-index:2;">✕</button>
       <div id="user-profile-content"><p style="color:var(--muted);padding:40px 0;text-align:center;">Henter profil...</p></div>
@@ -310,7 +311,7 @@
   </div>
 
   <!-- ── FORHANDLER PROFIL MODAL ── -->
-  <div class="modal-overlay" id="dealer-profile-modal" style="display:none;" onclick="if(event.target===this)closeDealerProfileModal()">
+  <div class="modal-overlay" id="dealer-profile-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDealerProfileModal()">
     <div class="modal dealer-profile-modal-inner">
       <button class="modal-close" onclick="closeDealerProfileModal()" style="position:absolute;top:16px;right:16px;">✕</button>
       <div id="dealer-profile-header"></div>
@@ -319,7 +320,7 @@
   </div>
 
   <!-- ── ALLE FORHANDLERE MODAL ── -->
-  <div class="modal-overlay" id="all-dealers-modal" style="display:none;" onclick="if(event.target===this)closeAllDealersModal()">
+  <div class="modal-overlay" id="all-dealers-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeAllDealersModal()">
     <div class="modal" style="max-width:760px;width:100%;">
       <div class="modal-header">
         <h2>Alle verificerede forhandlere</h2>
@@ -333,7 +334,7 @@
   </div>
 
   <!-- ── BLIV FORHANDLER MODAL ── -->
-  <div class="modal-overlay" id="dealer-modal">
+  <div class="modal-overlay" id="dealer-modal" role="dialog" aria-modal="true"
     <div class="modal" style="max-width:560px;">
       <div class="modal-header">
         <h2>Bliv forhandler</h2>
@@ -404,7 +405,7 @@
   </footer>
 
   <!-- ── OPRET ANNONCE MODAL ── -->
-  <div class="modal-overlay" id="modal">
+  <div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
         <h2>Sæt din cykel til salg</h2>
@@ -473,7 +474,7 @@
   </div>
 
   <!-- ── LOGIN / REGISTRERING MODAL ── -->
-  <div class="modal-overlay" id="login-modal">
+  <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
         <h2>Log ind</h2>
@@ -519,7 +520,7 @@
   </div>
 
   <!-- ── PROFIL MODAL ── -->
-  <div class="modal-overlay" id="profile-modal">
+  <div class="modal-overlay" id="profile-modal" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
         <h2>Min profil</h2>
@@ -685,7 +686,7 @@
 
 
   <!-- ── ANNONCE DETALJE MODAL ── -->
-  <div class="modal-overlay" id="bike-modal">
+  <div class="modal-overlay" id="bike-modal" role="dialog" aria-modal="true">
     <div class="modal modal-wide">
       <div class="modal-header">
         <h2 id="bike-modal-title">Annonce</h2>
@@ -764,7 +765,7 @@
 
   <!-- ── NY ADGANGSKODE MODAL ── -->
   <!-- ── NULSTIL ADGANGSKODE MODAL ── -->
-  <div class="modal-overlay" id="reset-modal">
+  <div class="modal-overlay" id="reset-modal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:460px;">
       <div class="modal-header">
         <h2>Vælg ny adgangskode</h2>
@@ -788,7 +789,7 @@
   </div>
 
   <!-- ── REDIGER ANNONCE MODAL ── -->
-  <div class="modal-overlay" id="edit-modal">
+  <div class="modal-overlay" id="edit-modal" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
         <h2>Rediger annonce</h2>
@@ -853,7 +854,7 @@
   </div>
 
   <!-- ── INDBAKKE MODAL ── -->
-  <div class="modal-overlay" id="inbox-modal">
+  <div class="modal-overlay" id="inbox-modal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:520px;">
       <div class="modal-header">
         <h2>Indbakke</h2>
@@ -883,7 +884,7 @@
 
 
   <!-- ── FOOTER MODALER ── -->
-  <div class="modal-overlay" id="footer-modal">
+  <div class="modal-overlay" id="footer-modal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:560px;">
       <div class="modal-header">
         <h2 id="footer-modal-title">–</h2>
@@ -894,7 +895,7 @@
   </div>
 
   <!-- ── ADMIN PANEL ── -->
-  <div class="modal-overlay" id="admin-modal">
+  <div class="modal-overlay" id="admin-modal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:680px;">
       <div class="modal-header">
         <h2>⚙️ Admin panel</h2>
@@ -926,7 +927,7 @@
   </div>
 
   <!-- ── DEL ANNONCE MODAL ── -->
-  <div class="modal-overlay" id="share-modal">
+  <div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:420px;">
       <div class="modal-header">
         <h2>Del annonce</h2>
@@ -953,7 +954,7 @@
   </div>
 
   <!-- ── KORT ANNONCE POPUP ── -->
-  <div class="modal-overlay" id="map-bike-modal">
+  <div class="modal-overlay" id="map-bike-modal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:420px;">
       <div class="modal-header">
         <h2 id="map-bike-title">–</h2>
@@ -964,7 +965,7 @@
   </div>
 
   <!-- ── ANNONCE OPRETTET SUCCESS MODAL ── -->
-  <div class="modal-overlay" id="listing-success-modal" style="display:none;z-index:6000;" onclick="if(event.target===this)closeListingSuccessModal()">
+  <div class="modal-overlay" id="listing-success-modal" role="dialog" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeListingSuccessModal()">
     <div class="modal listing-success-inner">
       <div class="success-icon-wrap">
         <div class="success-icon">✓</div>
@@ -1011,7 +1012,7 @@
   </div>
 
   <!-- Rapporter annonce modal -->
-  <div class="modal-overlay" id="report-modal" style="display:none;" onclick="if(event.target===this)closeReportModal()">
+  <div class="modal-overlay" id="report-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeReportModal()">
     <div class="modal" style="max-width:440px;">
       <div class="modal-header">
         <h2>Rapporter annonce</h2>
@@ -1045,7 +1046,7 @@
   </div>
 
   <!-- Slet konto bekræftelsesmodal -->
-  <div class="modal-overlay" id="delete-account-modal" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
+  <div class="modal-overlay" id="delete-account-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
     <div class="modal" style="max-width:420px;">
       <div class="modal-header">
         <h2>Slet konto</h2>

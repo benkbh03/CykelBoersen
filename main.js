@@ -150,27 +150,26 @@ async function init() {
 
       if (_event === 'SIGNED_IN' && !isNewLogin) {
         // Token-refresh pseudo-SIGNED_IN: opdater kun currentUser (har nyt token) — ingen sideeffekter
-        console.log(`[IDLE-DEBUG] onAuthStateChange: SIGNED_IN from token-refresh, SKIPPING profile fetch + loadBikes`);
         return;
       }
 
       // Ægte login eller TOKEN_REFRESHED/andre events: hent profil og opdater UI
       const { data: profile, error: profileErr } = await supabase
         .from('profiles').select('*').eq('id', currentUser.id).single();
-      if (profileErr) console.warn('[IDLE-DEBUG] onAuthStateChange profile fetch FAIL:', profileErr.message);
+      if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
       currentProfile = profile;
       updateNav(true, profile?.name, profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
       checkEmailConfirmed();
       if (_event === 'SIGNED_IN' && isNewLogin) {
-        console.log(`[IDLE-DEBUG] onAuthStateChange: genuine SIGNED_IN, calling loadBikes()`);
         loadBikes();
       }
     } else {
       _hasHadSession = false;
       currentUser    = null;
       currentProfile = null;
+      stopRealtimeNotifications();
       updateNav(false);
       // Session udløbet — reload siden for at rydde stale state
       if (_event === 'SIGNED_OUT') {
@@ -206,21 +205,12 @@ async function init() {
     clearTimeout(_visibilityTimeout);
     _visibilityTimeout = setTimeout(async () => {
       // Guard: skip if a modal is open
-      if (_isAnyModalOpen()) {
-        console.log(`[IDLE-DEBUG] visibilitychange: SKIPPED — modal is open`);
-        return;
-      }
+      if (_isAnyModalOpen()) return;
       // Guard: throttle
       const now = Date.now();
-      if (now - _lastRefreshTime < REFRESH_THROTTLE_MS) {
-        console.log(`[IDLE-DEBUG] visibilitychange: SKIPPED — throttled (${now - _lastRefreshTime}ms since last)`);
-        return;
-      }
+      if (now - _lastRefreshTime < REFRESH_THROTTLE_MS) return;
       // Guard: concurrent refresh
-      if (_refreshInProgress) {
-        console.log(`[IDLE-DEBUG] visibilitychange: SKIPPED — refresh already in progress`);
-        return;
-      }
+      if (_refreshInProgress) return;
       _refreshInProgress = true;
       _lastRefreshTime = now;
       try {
@@ -382,9 +372,14 @@ async function checkUnreadMessages() {
     .eq('receiver_id', currentUser.id)
     .eq('read', false);
   const badge = document.getElementById('inbox-badge');
-  if (badge && count > 0) {
-    badge.textContent = count;
-    badge.style.display = 'inline';
+  if (badge) {
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline'; }
+    else { badge.style.display = 'none'; }
+  }
+  const navBadge = document.getElementById('nav-inbox-badge');
+  if (navBadge) {
+    if (count > 0) { navBadge.textContent = count; navBadge.style.display = 'flex'; }
+    else { navBadge.style.display = 'none'; }
   }
 }
 
@@ -545,7 +540,6 @@ function filterByDealerCard(dealerId) {
 
 async function openDealerProfile(dealerId) {
   const myToken = ++_dealerProfileToken;
-  console.log(`[IDLE-DEBUG] openDealerProfile START: dealerId=${dealerId}, token=${myToken}, currentUser.id=${currentUser?.id || 'none'}, hidden=${document.hidden}`);
   closeAllDealersModal();
   const modal = document.getElementById('dealer-profile-modal');
   const header = document.getElementById('dealer-profile-header');
@@ -569,14 +563,10 @@ async function openDealerProfile(dealerId) {
     ({ data: dealer, error: dealerErr } = await Promise.race([fetchPromise, timeoutPromise]));
   } catch (e) {
     dealerErr = e;
-    console.error(`[IDLE-DEBUG] openDealerProfile: dealer fetch EXCEPTION/TIMEOUT: ${e.message}`);
+    console.error('openDealerProfile fetch error:', e.message);
   }
 
-  // Stale-guard: en nyere åbning er startet — ignorer dette response
-  if (myToken !== _dealerProfileToken) {
-    console.log(`[IDLE-DEBUG] openDealerProfile: STALE response ignored (token ${myToken} !== ${_dealerProfileToken})`);
-    return;
-  }
+  if (myToken !== _dealerProfileToken) return;
 
   if (!dealer) {
     header.innerHTML = retryHTML('Kunne ikke hente forhandler.', `() => openDealerProfile('${dealerId}')`);
@@ -608,11 +598,7 @@ async function openDealerProfile(dealerId) {
     <h3 class="dealer-profile-section-title">Cykler til salg</h3>
   `;
 
-  // Stale-guard før bikes-fetch
-  if (myToken !== _dealerProfileToken) {
-    console.log(`[IDLE-DEBUG] openDealerProfile: STALE before bikes fetch (token ${myToken} !== ${_dealerProfileToken})`);
-    return;
-  }
+  if (myToken !== _dealerProfileToken) return;
 
   // Hent forhandlerens cykler
   let bikes, bikesErr;
@@ -627,7 +613,7 @@ async function openDealerProfile(dealerId) {
     ({ data: bikes, error: bikesErr } = await Promise.race([bikesFetch, bikesTimeout]));
   } catch (e) {
     bikesErr = e;
-    console.error(`[IDLE-DEBUG] openDealerProfile: bikes fetch EXCEPTION/TIMEOUT: ${e.message}`);
+    console.error('openDealerProfile bikes fetch error:', e.message);
   }
 
   if (bikesErr || !bikes) {
@@ -708,7 +694,6 @@ async function openUserProfileWithReview(userId) {
 
 async function openUserProfile(userId) {
   const myToken = ++_userProfileToken;
-  console.log(`[IDLE-DEBUG] openUserProfile START: userId=${userId}, token=${myToken}, currentUser.id=${currentUser?.id || 'none'}, hidden=${document.hidden}`);
   closeAllModals();
   const modal   = document.getElementById('user-profile-modal');
   const content = document.getElementById('user-profile-content');
@@ -750,16 +735,12 @@ async function openUserProfile(userId) {
       messagesCount = 0;
     }
   } catch (err) {
-    console.error(`[IDLE-DEBUG] openUserProfile EXCEPTION/TIMEOUT: ${err.message}`);
+    console.error('openUserProfile error:', err.message);
     content.innerHTML = retryHTML('Kunne ikke hente profil.', `() => openUserProfile('${userId}')`);
     return;
   }
 
-  // Stale-guard: en nyere åbning er startet — ignorer dette response
-  if (myToken !== _userProfileToken) {
-    console.log(`[IDLE-DEBUG] openUserProfile: STALE response ignored (token ${myToken} !== ${_userProfileToken})`);
-    return;
-  }
+  if (myToken !== _userProfileToken) return;
 
   if (!profile) {
     content.innerHTML = retryHTML('Kunne ikke hente profil.', `() => openUserProfile('${userId}')`);
@@ -1138,7 +1119,10 @@ async function loadBikes(filters = {}, append = false) {
   if (filters.type)       query = query.eq('type', filters.type);
   if (filters.city)       query = query.ilike('city', `%${filters.city}%`);
   if (filters.maxPrice)   query = query.lte('price', filters.maxPrice);
-  if (filters.search)     query = query.or(`brand.ilike.%${filters.search}%,model.ilike.%${filters.search}%`);
+  if (filters.search) {
+    const s = filters.search.replace(/[%_\\,.()"']/g, '');
+    if (s) query = query.or(`brand.ilike.%${s}%,model.ilike.%${s}%`);
+  }
   if (filters.warranty)   query = query.not('warranty', 'is', null);
   if (filters.newOnly)    query = query.gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
@@ -1224,7 +1208,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
     const initials   = (sellerName || 'U').substring(0, 2).toUpperCase();
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:4rem">🚲</span>';
 
     var isSold = !b.is_active;
@@ -1234,30 +1218,30 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
         <div class="bike-card-img">
           ${imgContent}
           ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
-          <span class="condition-tag">${b.condition}</span>
+          <span class="condition-tag">${esc(b.condition)}</span>
           ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
         </div>
         <div class="bike-card-body">
           <div class="card-top">
-            <div class="bike-title">${b.brand} ${b.model}</div>
+            <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
             <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
           </div>
           <div class="bike-meta">
-            <span>${b.type}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
+            <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${esc(b.size) || '–'}</span>
           </div>
           <div class="card-footer">
             <div class="seller-info">
-              <div class="seller-avatar">${initials}</div>
+              <div class="seller-avatar">${esc(initials)}</div>
               <div>
-                <div class="seller-name">${sellerName || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}${profile.id_verified ? ' <span class="id-badge" title="ID verificeret">🪪</span>' : ''}</div>
+                <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}${profile.id_verified ? ' <span class="id-badge" title="ID verificeret">🪪</span>' : ''}</div>
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
                 </span>
               </div>
             </div>
-            <div class="card-location">📍 ${b.city}</div>
+            <div class="card-location">📍 ${esc(b.city)}</div>
           </div>
         </div>
       </div>`;
@@ -2281,7 +2265,6 @@ function showToast(message) {
 }
 
 function showSection(section) {
-  console.log(`[NAV] showSection section=${section} hash=${window.location.hash}`);
   const onDetailPage = document.getElementById('page-layout')?.style.display !== 'none';
   if (onDetailPage) {
     // Vi er på en detail/profil-side — navigér hjem først, scroll derefter
@@ -2430,7 +2413,6 @@ function buildBikeBodyHTML(b) {
 
 async function openBikeModal(bikeId) {
   const myToken = ++_bikeModalToken;
-  console.log(`[IDLE-DEBUG] openBikeModal START: bikeId=${bikeId}, token=${myToken}, currentUser.id=${currentUser?.id || 'none'}, hidden=${document.hidden}`);
   closeAllModals();
   document.getElementById('bike-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -2442,14 +2424,10 @@ async function openBikeModal(bikeId) {
     ({ data: b, error } = await fetchBikeById(bikeId));
   } catch (e) {
     error = e;
-    console.error(`[IDLE-DEBUG] openBikeModal: bike fetch EXCEPTION/TIMEOUT: ${e.message}`);
+    console.error('openBikeModal fetch error:', e.message);
   }
 
-  // Stale-guard: en nyere åbning er startet — ignorer dette response
-  if (myToken !== _bikeModalToken) {
-    console.log(`[IDLE-DEBUG] openBikeModal: STALE response ignored (token ${myToken} !== ${_bikeModalToken})`);
-    return;
-  }
+  if (myToken !== _bikeModalToken) return;
 
   // Tæl visning (fire-and-forget, kun ikke-ejere)
   if (b && (!currentUser || currentUser.id !== b.user_id)) {
@@ -2494,7 +2472,7 @@ async function openBikeModal(bikeId) {
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
   } catch (renderErr) {
-    console.error(`[IDLE-DEBUG] openBikeModal RENDER EXCEPTION: ${renderErr.message}`);
+    console.error('openBikeModal render error:', renderErr.message);
     document.getElementById('bike-modal-body').innerHTML = retryHTML('Kunne ikke vise annonce.', `() => openBikeModal('${bikeId}')`);
   }
 }
@@ -3464,7 +3442,7 @@ async function loadResponseTime(sellerId) {
 
     badge.textContent = `⏱ ${label}`;
   } catch (e) {
-    console.error(`[IDLE-DEBUG] loadResponseTime EXCEPTION: ${e.message}`);
+    console.error('loadResponseTime error:', e.message);
     badge.textContent = '';
   }
 }
@@ -3511,7 +3489,7 @@ async function loadSellerOtherListings(sellerId, currentBikeId) {
       <h3 class="related-section-title">Sælgerens andre annoncer</h3>
       <div class="related-grid">${cards}</div>`;
   } catch (e) {
-    console.error(`[IDLE-DEBUG] loadSellerOtherListings EXCEPTION: ${e.message}`);
+    console.error('loadSellerOtherListings error:', e.message);
     console.error('loadSellerOtherListings fejl:', e);
   }
 }
@@ -3558,7 +3536,7 @@ async function loadSimilarListings(bikeType, currentBikeId) {
       <h3 class="related-section-title">Lignende annoncer</h3>
       <div class="related-grid">${cards}</div>`;
   } catch (e) {
-    console.error(`[IDLE-DEBUG] loadSimilarListings EXCEPTION: ${e.message}`);
+    console.error('loadSimilarListings error:', e.message);
   }
 }
 
@@ -4579,13 +4557,23 @@ function resetImageUpload() {
    REAL-TIME NOTIFIKATIONER
    ============================================================ */
 
+let _realtimeChannel = null;
+
+function stopRealtimeNotifications() {
+  if (_realtimeChannel) {
+    supabase.removeChannel(_realtimeChannel);
+    _realtimeChannel = null;
+  }
+}
+
 function startRealtimeNotifications() {
   if (!currentUser) return;
+  stopRealtimeNotifications();
 
   // Tjek badge med det samme ved opstart
   updateInboxBadge();
 
-  const channel = supabase
+  _realtimeChannel = supabase
     .channel('new-messages-' + currentUser.id)
     .on('postgres_changes', {
       event:  'INSERT',
@@ -4607,7 +4595,7 @@ function startRealtimeNotifications() {
       }
     });
 
-  channel.subscribe();
+  _realtimeChannel.subscribe();
 }
 
 
@@ -4982,7 +4970,6 @@ async function updateInboxBadge() {
   }
 }
 
-window.openInboxModal   = openInboxModal;
 window.startRealtimeNotifications = startRealtimeNotifications;
 window.updateInboxBadge        = updateInboxBadge;
 window.openBecomeDealerModal   = openBecomeDealerModal;
@@ -4993,9 +4980,6 @@ window.closeBecomeDealerModal  = closeBecomeDealerModal;
 window.submitDealerApplication = submitDealerApplication;
 window.selectDealerPlan        = selectDealerPlan;
 window.openSubscriptionPortal  = openSubscriptionPortal;
-window.closeInboxModal  = closeInboxModal;
-window.openInboxThread  = openInboxThread;
-window.closeInboxThread = closeInboxThread;
 
 /* ============================================================
    FOOTER MODALER
@@ -5424,7 +5408,7 @@ async function searchAutocomplete(query) {
       .from('bikes')
       .select('brand, model, type, price')
       .eq('is_active', true)
-      .or('brand.ilike.%' + query + '%,model.ilike.%' + query + '%,title.ilike.%' + query + '%')
+      .or('brand.ilike.%' + query.replace(/[%_\\,.()"']/g, '') + '%,model.ilike.%' + query.replace(/[%_\\,.()"']/g, '') + '%')
       .limit(8);
 
     if (!result.data || result.data.length === 0) {
@@ -5939,7 +5923,6 @@ window._openFromMap = _openFromMap;
 
 window.setView    = setView;
 window.locateUser = locateUser;
-window.openBikeModal = openBikeModal; // allerede defineret
 
 /* ============================================================
    ID VERIFICERING
