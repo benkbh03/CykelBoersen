@@ -5907,8 +5907,7 @@ function locateUser() {
 }
 
 function openFromMap(bikeId) {
-  setView('list');
-  setTimeout(function() { openBikeModal(bikeId); }, 100);
+  window.location.hash = `#/bike/${bikeId}`;
 }
 window.openFromMap = openFromMap;
 
