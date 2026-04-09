@@ -101,30 +101,50 @@
   <!-- ── HERO ── -->
   <section class="hero">
     <div class="hero-text">
+      <p class="hero-eyebrow">🇩🇰 Danmarks cykelmarked</p>
       <h1>Find din<br>næste<br><em>to-hjuler</em></h1>
-      <p>Køb og sælg brugte cykler direkte — fra private sælgere og autoriserede forhandlere. Gratis at oprette annonce.</p>
+      <p class="hero-sub">Køb og sælg brugte cykler direkte — fra private sælgere og autoriserede forhandlere.</p>
       <div class="hero-btns">
-        <button class="btn-outline" onclick="document.querySelector('.main').scrollIntoView({behavior:'smooth'})">Udforsk cykler</button>
         <button class="btn-primary" onclick="openModal()">Sælg din cykel</button>
+        <button class="btn-outline" onclick="document.querySelector('.main').scrollIntoView({behavior:'smooth'})">Udforsk cykler</button>
+      </div>
+      <div class="hero-trust">
+        <span>✓ Gratis at oprette annonce</span>
+        <span>✓ Verificerede forhandlere</span>
+        <span>✓ Sikker handel</span>
       </div>
     </div>
-    <div class="hero-stats">
-      <div class="stat-card">
-        <div class="stat-icon">🚲</div>
-        <div>
-          <div class="stat-number" id="stat-total">–</div>
-          <div class="stat-label">Aktive annoncer</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🏪</div>
-        <div>
-          <div class="stat-number" id="stat-dealers">–</div>
-          <div class="stat-label">Verificerede forhandlere</div>
-        </div>
-      </div>
+    <div class="hero-img-side">
+      <img src="hero.jpg" alt="Cyklister i København" class="hero-photo">
     </div>
   </section>
+
+  <!-- ── STATS BAR ── -->
+  <div class="hero-stats-bar">
+    <div class="stat-bar-item">
+      <span class="stat-bar-icon">🚲</span>
+      <div>
+        <div class="stat-bar-num" id="stat-total">–</div>
+        <div class="stat-bar-label">Aktive annoncer</div>
+      </div>
+    </div>
+    <div class="stat-bar-divider"></div>
+    <div class="stat-bar-item">
+      <span class="stat-bar-icon">🏪</span>
+      <div>
+        <div class="stat-bar-num" id="stat-dealers">–</div>
+        <div class="stat-bar-label">Verificerede forhandlere</div>
+      </div>
+    </div>
+    <div class="stat-bar-divider"></div>
+    <div class="stat-bar-item">
+      <span class="stat-bar-icon">🤝</span>
+      <div>
+        <div class="stat-bar-num">100%</div>
+        <div class="stat-bar-label">Gratis at sælge</div>
+      </div>
+    </div>
+  </div>
 
   <!-- ── SØGEBAR ── -->
   <div class="search-section" role="search" aria-label="Søg efter cykler">
