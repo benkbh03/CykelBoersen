@@ -131,11 +131,10 @@ nav {
   font-size: 3.8rem; font-weight: 900;
   color: var(--sand); line-height: 1.08;
   margin-bottom: 18px;
-  text-align: center;
 }
 .hero-text h1 em { font-style: italic; color: var(--rust-light); font-weight: 700; }
-.hero-text p { color: var(--sand); opacity: 0.7; font-size: 1.05rem; line-height: 1.6; max-width: 420px; margin: 0 auto 32px; text-align: center; }
-.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.hero-text p { color: var(--sand); opacity: 0.7; font-size: 1.05rem; line-height: 1.6; max-width: 420px; margin-bottom: 32px; }
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
 .btn-primary {
   background: var(--rust); color: #fff;
   padding: 14px 28px; border-radius: 4px;
@@ -2299,12 +2298,14 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   color: var(--charcoal);
   margin: 0 0 4px;
   line-height: 1.2;
+  text-align: center;
 }
 
 .sell-page-subtitle {
   color: var(--muted);
   font-size: 0.9rem;
   margin: 0;
+  text-align: center;
 }
 
 .sell-back-btn {
