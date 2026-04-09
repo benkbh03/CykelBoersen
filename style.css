@@ -2497,3 +2497,135 @@ footer p { color: var(--muted); font-size: 0.82rem; }
     font-size: 1.6rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   GEMTE ANNONCER — KORTVISNING
+   ═══════════════════════════════════════════════════════════ */
+
+.saved-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.saved-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.saved-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+}
+
+.saved-card--sold {
+  opacity: 0.6;
+}
+
+.saved-card-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--sand);
+  overflow: hidden;
+}
+
+.saved-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.saved-card:hover .saved-card-img {
+  transform: scale(1.04);
+}
+
+.saved-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: var(--muted);
+}
+
+.saved-card-sold-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+.saved-card-remove {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  background: rgba(255,255,255,0.92);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--rust);
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, transform 0.1s;
+  line-height: 1;
+}
+
+.saved-card-remove:hover {
+  background: #fff;
+  transform: scale(1.15);
+}
+
+.saved-card-body {
+  padding: 12px 14px 14px;
+}
+
+.saved-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.saved-card-meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 8px;
+}
+
+.saved-card-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--rust);
+}
+
+@media (max-width: 600px) {
+  .saved-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
