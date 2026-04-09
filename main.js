@@ -470,7 +470,7 @@ async function loadInitialData() {
       .eq('seller_type', 'dealer').eq('verified', true)
       .order('created_at', { ascending: true }),
     supabase.from('bikes')
-      .select('type, condition, user_id, profiles(seller_type)')
+      .select('type, condition, wheel_size, user_id, profiles(seller_type)')
       .eq('is_active', true)
   ]);
   updateFilterCounts(bikesData, dealerCount);
@@ -1300,9 +1300,14 @@ async function updateFilterCounts(data, dealerCount) {
       supabase.from('bikes').select('type, condition, wheel_size, profiles(seller_type)').eq('is_active', true),
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
     ]);
-    if (bikesRes.error || !bikesRes.data) return;
-    data        = bikesRes.data;
-    dealerCount = dealerRes.count;
+    if (bikesRes.error || !bikesRes.data) {
+      const { data: fallback } = await supabase.from('bikes').select('type, condition, profiles(seller_type)').eq('is_active', true);
+      if (!fallback) return;
+      data = fallback;
+    } else {
+      data = bikesRes.data;
+    }
+    dealerCount = dealerRes?.count ?? null;
   }
 
   const total    = data.length;
