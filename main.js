@@ -1296,9 +1296,8 @@ function sortBikes(value) {
 
 async function updateFilterCounts(data, dealerCount) {
   if (!data) {
-    // Standalone kald – hent data parallelt
     const [bikesRes, dealerRes] = await Promise.all([
-      supabase.from('bikes').select('type, condition, profiles(seller_type)').eq('is_active', true),
+      supabase.from('bikes').select('type, condition, wheel_size, profiles(seller_type)').eq('is_active', true),
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
     ]);
     if (bikesRes.error || !bikesRes.data) return;
@@ -1310,20 +1309,24 @@ async function updateFilterCounts(data, dealerCount) {
   const dealers  = data.filter(b => b.profiles?.seller_type === 'dealer').length;
   const privates = data.filter(b => b.profiles?.seller_type !== 'dealer').length;
 
-  setCount('Alle sælgere', total);
-  setCount('Forhandlere',  dealers);
-  setCount('Private',      privates);
-  setCount('Racercykel',   data.filter(b => b.type === 'Racercykel').length);
-  setCount('Mountainbike', data.filter(b => b.type === 'Mountainbike').length);
-  setCount('El-cykel',     data.filter(b => b.type === 'El-cykel').length);
-  setCount('Citybike',     data.filter(b => b.type === 'Citybike').length);
-  setCount('Ladcykel',     data.filter(b => b.type === 'Ladcykel').length);
-  setCount('Børnecykel',   data.filter(b => b.type === 'Børnecykel').length);
-  setCount('Gravel',       data.filter(b => b.type === 'Gravel').length);
-  setCount('Ny',           data.filter(b => b.condition === 'Ny').length);
-  setCount('Som ny',       data.filter(b => b.condition === 'Som ny').length);
-  setCount('God stand',    data.filter(b => b.condition === 'God stand').length);
-  setCount('Brugt',        data.filter(b => b.condition === 'Brugt').length);
+  setCount('seller', 'all',           total);
+  setCount('seller', 'dealer',        dealers);
+  setCount('seller', 'private',       privates);
+  setCount('type',   'Racercykel',    data.filter(b => b.type === 'Racercykel').length);
+  setCount('type',   'Mountainbike',  data.filter(b => b.type === 'Mountainbike').length);
+  setCount('type',   'El-cykel',      data.filter(b => b.type === 'El-cykel').length);
+  setCount('type',   'Citybike',      data.filter(b => b.type === 'Citybike').length);
+  setCount('type',   'Ladcykel',      data.filter(b => b.type === 'Ladcykel').length);
+  setCount('type',   'Børnecykel',    data.filter(b => b.type === 'Børnecykel').length);
+  setCount('type',   'Gravel',        data.filter(b => b.type === 'Gravel').length);
+  setCount('condition', 'Ny',         data.filter(b => b.condition === 'Ny').length);
+  setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
+  setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
+  setCount('condition', 'Brugt',      data.filter(b => b.condition === 'Brugt').length);
+  setCount('wheel',  '26"',           data.filter(b => b.wheel_size === '26"').length);
+  setCount('wheel',  '27.5" / 650b',  data.filter(b => b.wheel_size === '27.5" / 650b').length);
+  setCount('wheel',  '28"',           data.filter(b => b.wheel_size === '28"').length);
+  setCount('wheel',  '29"',           data.filter(b => b.wheel_size === '29"').length);
 
   const countEl   = document.getElementById('listings-count');
   const statTotal = document.getElementById('stat-total');
@@ -1334,12 +1337,10 @@ async function updateFilterCounts(data, dealerCount) {
   if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
 }
 
-function setCount(label, count) {
-  document.querySelectorAll('.filter-option').forEach(el => {
-    if (el.textContent.trim().startsWith(label)) {
-      const countEl = el.querySelector('.filter-count');
-      if (countEl) countEl.textContent = count.toLocaleString('da-DK');
-    }
+function setCount(filterAttr, filterValue, count) {
+  document.querySelectorAll(`[data-filter="${filterAttr}"][data-value="${filterValue}"]`).forEach(input => {
+    const countEl = input.closest('.filter-option')?.querySelector('.filter-count');
+    if (countEl) countEl.textContent = count > 0 ? count.toLocaleString('da-DK') : '0';
   });
 }
 
