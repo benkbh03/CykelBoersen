@@ -3274,6 +3274,7 @@ function buildMyProfilePageHTML() {
         <div class="mp-header-actions">
           <button class="mp-action-btn" onclick="openProfileModal()">✏️ Redigér profil</button>
           <button class="mp-action-btn mp-action-btn--secondary" onclick="openInboxModal()">✉️ Indbakke</button>
+          <button class="mp-action-btn mp-action-btn--logout" onclick="logout()">Log ud</button>
         </div>
       </div>
 
