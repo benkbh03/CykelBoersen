@@ -169,6 +169,7 @@ async function init() {
       _hasHadSession = false;
       currentUser    = null;
       currentProfile = null;
+      stopRealtimeNotifications();
       updateNav(false);
       // Session udløbet — reload siden for at rydde stale state
       if (_event === 'SIGNED_OUT') {
@@ -371,9 +372,14 @@ async function checkUnreadMessages() {
     .eq('receiver_id', currentUser.id)
     .eq('read', false);
   const badge = document.getElementById('inbox-badge');
-  if (badge && count > 0) {
-    badge.textContent = count;
-    badge.style.display = 'inline';
+  if (badge) {
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline'; }
+    else { badge.style.display = 'none'; }
+  }
+  const navBadge = document.getElementById('nav-inbox-badge');
+  if (navBadge) {
+    if (count > 0) { navBadge.textContent = count; navBadge.style.display = 'flex'; }
+    else { navBadge.style.display = 'none'; }
   }
 }
 
@@ -4551,13 +4557,23 @@ function resetImageUpload() {
    REAL-TIME NOTIFIKATIONER
    ============================================================ */
 
+let _realtimeChannel = null;
+
+function stopRealtimeNotifications() {
+  if (_realtimeChannel) {
+    supabase.removeChannel(_realtimeChannel);
+    _realtimeChannel = null;
+  }
+}
+
 function startRealtimeNotifications() {
   if (!currentUser) return;
+  stopRealtimeNotifications();
 
   // Tjek badge med det samme ved opstart
   updateInboxBadge();
 
-  const channel = supabase
+  _realtimeChannel = supabase
     .channel('new-messages-' + currentUser.id)
     .on('postgres_changes', {
       event:  'INSERT',
@@ -4579,7 +4595,7 @@ function startRealtimeNotifications() {
       }
     });
 
-  channel.subscribe();
+  _realtimeChannel.subscribe();
 }
 
 
