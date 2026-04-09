@@ -1780,6 +1780,13 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   border: 1.5px solid var(--border);
 }
 .mp-action-btn--secondary:hover { background: var(--sand); }
+.mp-action-btn--logout {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  font-weight: 500;
+}
+.mp-action-btn--logout:hover { color: var(--charcoal); background: #f5f5f5; }
 
 /* ── Stats-række ── */
 .mp-stats-row {
