@@ -5006,39 +5006,175 @@ var footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Generelt</h3>
-      <p style="margin-bottom:16px;">Disse vilkår gælder for alle brugere af Cykelbørsen. Ved at benytte platformen accepterer du nedenstående betingelser. Cykelbørsen er en formidlingsplatform mellem køber og sælger — vi er ikke part i selve handlen.</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 9. april 2026</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Oprettelse af annonce</h3>
-      <p style="margin-bottom:16px;">Det er gratis at oprette annoncer på Cykelbørsen. Du er selv ansvarlig for at dine annoncer er korrekte og ikke krænker andres rettigheder. Vildledende eller falske annoncer vil blive slettet uden varsel.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Handel og betaling</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen formidler kontakt mellem køber og sælger men er ikke ansvarlig for gennemførelsen af handlen, betaling eller levering. Vi anbefaler altid at mødes på et offentligt sted og inspicere cyklen inden køb.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
+      <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li>At de oplysninger du angiver er korrekte og opdaterede.</li>
+        <li>At holde dine loginoplysninger fortrolige.</li>
+        <li>Al aktivitet der foregår under din konto.</li>
+      </ul>
+      <p style="margin-bottom:16px;">Du skal være mindst 18 år for at oprette en konto. Hver person må kun have én aktiv konto.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Misbrug og rapportering</h3>
-      <p style="margin-bottom:16px;">Svindel, spam eller chikane tolereres ikke. Mistænkelige annoncer kan rapporteres via kontaktformularen. Vi forbeholder os ret til at slette konti der misbruger platformen.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Platformens rolle</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Ansvarsbegrænsning</h3>
-      <p>Cykelbørsen er ikke ansvarlig for tab opstået i forbindelse med handler formidlet via platformen. Vi garanterer ikke for ægtheden af annoncer eller brugeres identitet.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
+      <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li>Annoncen er retvisende og ikke vildledende mht. stand, pris, billeder og beskrivelse.</li>
+        <li>Du har lovlig ret til at sælge den annoncerede vare.</li>
+        <li>Annonceindholdet ikke krænker tredjemands rettigheder (ophavsret, varemærker mv.).</li>
+        <li>Annoncen overholder gældende dansk lovgivning, herunder markedsføringsloven og købeloven.</li>
+      </ul>
+      <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerabonnement</h3>
+      <p style="margin-bottom:16px;">Forhandlere kan tegne et betalt abonnement via Stripe. Abonnementet fornyes automatisk ved periodens udløb med mindre det opsiges. Opsigelse sker via Stripe-portalen. Ved opsigelse har forhandleren adgang til resten af den betalte periode. Der tilbydes 3 måneders gratis prøveperiode for nye forhandlere. Alle priser er inkl. moms.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
+      <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li>Oprette annoncer for stjålne varer eller varer du ikke ejer.</li>
+        <li>Anvende platformen til svindel, spam, phishing eller chikane.</li>
+        <li>Uploade stødende, ulovligt eller krænkende indhold.</li>
+        <li>Manipulere priser, anmeldelser eller andre brugeres data.</li>
+        <li>Systematisk indsamle data fra platformen (scraping).</li>
+      </ul>
+      <p style="margin-bottom:16px;">Overtrædelse kan medføre øjeblikkelig sletning af konto og annoncer samt eventuelt politianmeldelse.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Immaterielle rettigheder</h3>
+      <p style="margin-bottom:16px;">Alt indhold på platformen (design, kode, logo, tekster) tilhører Cykelbørsen. Ved at uploade billeder og tekst til en annonce giver du os en ikke-eksklusiv, vederlagsfri ret til at vise indholdet på platformen. Du bevarer selv ophavsretten til dit indhold.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Ansvarsfraskrivelse</h3>
+      <p style="margin-bottom:8px;">Cykelbørsen:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li>Garanterer ikke for rigtigheden, fuldstændigheden eller kvaliteten af annoncer.</li>
+        <li>Er ikke ansvarlig for direkte eller indirekte tab som følge af handler indgået via platformen.</li>
+        <li>Garanterer ikke for brugeres identitet, selv om ID-verificering tilbydes.</li>
+        <li>Er ikke ansvarlig for nedetid, tekniske fejl eller tab af data.</li>
+      </ul>
+      <p style="margin-bottom:16px;">Platformen stilles til rådighed "som den er" uden garantier af nogen art, i det omfang gældende lovgivning tillader det.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Sletning af konto</h3>
+      <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent. Eventuelle aktive forhandlerabonnementer skal opsiges separat via Stripe.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Ændringer af vilkår</h3>
+      <p style="margin-bottom:16px;">Vi kan opdatere disse vilkår fra tid til anden. Væsentlige ændringer vil blive meddelt via e-mail eller en meddelelse på platformen. Fortsat brug af platformen efter ændringer udgør accept af de opdaterede vilkår.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Lovvalg og tvistløsning</h3>
+      <p style="margin-bottom:16px;">Disse vilkår er underlagt dansk ret. Eventuelle tvister skal forsøges løst i mindelighed. Hvis dette ikke er muligt, afgøres tvisten ved de danske domstole. Som forbruger kan du også klage til <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a> eller <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">EU's online klageportal</a>.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">12. Kontakt</h3>
+      <p>Ved spørgsmål til disse vilkår kan du kontakte os på: <strong>kontakt@cykelborsen.dk</strong></p>
     `
   },
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvilke data indsamler vi?</h3>
-      <p style="margin-bottom:16px;">Når du opretter en konto indsamler vi dit navn, e-mail og eventuelle profiloplysninger du selv vælger at tilføje. Annoncedata som beskrivelser, billeder og priser gemmes i vores database.</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 9. april 2026</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvordan bruger vi dine data?</h3>
-      <p style="margin-bottom:16px;">Dine data bruges udelukkende til at drive platformen — herunder at vise dine annoncer, sende beskeder og forbedre brugeroplevelsen. Vi sælger aldrig dine data til tredjepart.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen er dataansvarlig for behandlingen af dine personoplysninger. Kontakt os på <strong>kontakt@cykelborsen.dk</strong> ved spørgsmål om persondata.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Cookies</h3>
-      <p style="margin-bottom:16px;">Vi bruger tekniske cookies der er nødvendige for at siden fungerer korrekt, herunder at holde dig logget ind. Vi bruger ikke tracking-cookies til reklameformål.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
+      <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Kontooplysninger:</strong> Navn, e-mailadresse, adgangskode (krypteret), profilbillede (valgfrit).</li>
+        <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere).</li>
+        <li><strong>Annoncedata:</strong> Cykelbeskrivelser, billeder, priser, kontaktoplysninger i annoncer.</li>
+        <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
+        <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>
+        <li><strong>Betalingsdata:</strong> Forhandlerabonnementer håndteres af Stripe — vi gemmer ikke kortnumre eller betalingsoplysninger.</li>
+        <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
+      </ul>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Dine rettigheder</h3>
-      <p style="margin-bottom:16px;">Du har ret til indsigt i, rettelse af og sletning af dine persondata. Kontakt os på kontakt@cykelborsen.dk for at udøve dine rettigheder.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
+      <p style="margin-bottom:8px;">Vi behandler dine personoplysninger til følgende formål:</p>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;font-weight:600;">Formål</td>
+          <td style="padding:8px 0;">Retsgrundlag (GDPR)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Oprettelse og drift af din konto</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Visning af dine annoncer</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Beskedsystem mellem brugere</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">E-mail-notifikationer (beskeder, bud, likes)</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Håndtering af forhandlerabonnement</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Forebyggelse af misbrug og svindel</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Henvendelser via kontaktformular</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+      </table>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt</h3>
-      <p>Spørgsmål om privatlivspolitikken kan rettes til: <strong>kontakt@cykelborsen.dk</strong></p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Databehandlere og tredjeparter</h3>
+      <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Supabase (USA)</strong> — Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
+        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for forhandlerabonnementer. Stripe er selvstændig dataansvarlig for betalingsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
+        <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
+        <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
+      </ul>
+      <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Overførsel til tredjelande</h3>
+      <p style="margin-bottom:16px;">Dine data kan overføres til USA via vores databehandlere (Supabase, Stripe, Resend). Overførslen sker på baggrund af EU-US Data Privacy Framework eller EU-Kommissionens standardkontraktbestemmelser (SCC'er), jf. GDPR art. 46(2)(c).</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Opbevaringsperiode</h3>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Kontodata:</strong> Opbevares så længe din konto er aktiv. Ved sletning af konto fjernes data permanent.</li>
+        <li><strong>Annoncer:</strong> Aktive annoncer vises på platformen. Solgte/slettede annoncer fjernes fra databasen.</li>
+        <li><strong>Beskeder:</strong> Opbevares så længe kontoen eksisterer og slettes ved kontosletning.</li>
+        <li><strong>ID-dokumenter:</strong> Slettes efter verificeringsprocessen er afsluttet.</li>
+        <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
+      </ul>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies</h3>
+      <p style="margin-bottom:16px;">Vi bruger udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage) til autentificering og sessionshåndtering. Vi anvender <strong>ikke</strong> tracking-cookies, analyse-cookies eller tredjeparts markedsføringscookies. Da vi kun bruger nødvendige cookies, kræves der ikke samtykke jf. cookiebekendtgørelsen § 4, stk. 2.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Dine rettigheder</h3>
+      <p style="margin-bottom:8px;">I henhold til GDPR har du følgende rettigheder:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Ret til indsigt</strong> (art. 15) — Du kan anmode om at se hvilke data vi har om dig.</li>
+        <li><strong>Ret til berigtigelse</strong> (art. 16) — Du kan rette forkerte oplysninger i din profil.</li>
+        <li><strong>Ret til sletning</strong> (art. 17) — Du kan slette din konto og alle tilknyttede data via profilindstillingerne eller ved at kontakte os.</li>
+        <li><strong>Ret til begrænsning</strong> (art. 18) — Du kan anmode om begrænsning af behandlingen.</li>
+        <li><strong>Ret til dataportabilitet</strong> (art. 20) — Du kan anmode om at modtage dine data i et struktureret, maskinlæsbart format.</li>
+        <li><strong>Ret til indsigelse</strong> (art. 21) — Du kan gøre indsigelse mod behandling baseret på legitim interesse.</li>
+      </ul>
+      <p style="margin-bottom:16px;">For at udøve dine rettigheder, kontakt os på <strong>kontakt@cykelborsen.dk</strong>. Vi svarer inden for 30 dage.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Klage til tilsynsmyndighed</h3>
+      <p style="margin-bottom:16px;">Hvis du mener at vi behandler dine personoplysninger i strid med GDPR, har du ret til at klage til <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Datatilsynet</a> (datatilsynet.dk), Carl Jacobsens Vej 35, 2500 Valby, tlf. 33 19 32 00.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Ændringer</h3>
+      <p style="margin-bottom:16px;">Vi kan opdatere denne privatlivspolitik. Væsentlige ændringer meddeles via e-mail til registrerede brugere. Den gældende version er altid tilgængelig her på platformen.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Kontakt</h3>
+      <p>Spørgsmål om persondata og privatlivspolitikken rettes til:<br><strong>kontakt@cykelborsen.dk</strong></p>
     `
   },
   contact: {
