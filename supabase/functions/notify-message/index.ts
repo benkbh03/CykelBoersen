@@ -202,6 +202,46 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ── ANNONCE LIKED ────────────────────────────────────────
+    if (payload.type === "listing_liked") {
+      const { bike_id, bike_brand, bike_model, bike_owner_id, liker_id, liker_name } = payload;
+      if (!bike_id || !bike_owner_id || !liker_id) {
+        return new Response("Manglende felter", { status: 400, headers: corsHeaders });
+      }
+
+      // Sælger og liker må ikke være samme person
+      if (bike_owner_id === liker_id) {
+        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      const { data: { user: ownerUser }, error: authErr } = await supabase.auth.admin.getUserById(bike_owner_id);
+      if (authErr || !ownerUser?.email) {
+        console.error("Bike owner email not found:", authErr?.message ?? "ukendt fejl");
+        return new Response("Owner email not found", { status: 400, headers: corsHeaders });
+      }
+
+      const { data: ownerProfile } = await supabase.from("profiles").select("name").eq("id", bike_owner_id).single();
+      const ownerName = ownerProfile?.name ?? "sælger";
+      const bikeName = `${bike_brand || "Din cykel"} ${bike_model || ""}`.trim();
+
+      const html = emailWrapper(`
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">❤️ Din annonce er blevet gemt!</h2>
+        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
+          Hej ${ownerName},<br><br>
+          <strong style="color:#1A1A18;">${liker_name || "En bruger"}</strong> har gemt din annonce: <strong style="color:#1A1A18;">${bikeName}</strong><br>
+          Det er en god tegn – interesserede købere følger annoncerne tæt!
+        </p>
+        <a href="https://cykelbørsen.dk/#/bike/${bike_id}"
+           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Se din annonce →
+        </a>
+      `);
+
+      const result = await sendEmail(ownerUser.email, `❤️ ${liker_name || "En bruger"} har gemt din annonce – Cykelbørsen`, html);
+      console.log("Listing liked email sendt til:", ownerUser.email, "| ID:", result.id);
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── NY BESKED / BUD (eksisterende logik) ─────────────────
     let message = payload.record ?? null;
 
