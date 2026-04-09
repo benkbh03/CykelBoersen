@@ -2583,11 +2583,9 @@ function renderSellPage() {
   document.getElementById('detail-view').innerHTML = `
     <div class="sell-page">
       <div class="sell-page-header">
-        <button class="back-btn" onclick="history.back()">← Tilbage</button>
-        <div>
-          <h1 class="sell-page-title">Sæt din cykel til salg</h1>
-          <p class="sell-page-subtitle">Gratis · Nemt · Under 2 minutter</p>
-        </div>
+        <button class="sell-back-btn" onclick="window.location.hash=''">← Tilbage</button>
+        <h1 class="sell-page-title">Sæt din cykel til salg</h1>
+        <p class="sell-page-subtitle">Gratis · Nemt · Under 2 minutter</p>
       </div>
 
       <div class="sell-page-body">
