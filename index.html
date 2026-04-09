@@ -963,6 +963,25 @@
     </div>
   </div>
 
+  <!-- ── ANNONCE OPRETTET SUCCESS MODAL ── -->
+  <div class="modal-overlay" id="listing-success-modal" style="display:none;z-index:6000;" onclick="if(event.target===this)closeListingSuccessModal()">
+    <div class="modal listing-success-inner">
+      <div class="success-icon-wrap">
+        <div class="success-icon">✓</div>
+      </div>
+      <h2 class="success-title">Tillykke!</h2>
+      <p class="success-subtitle">Din annonce er nu live på Cykelbørsen</p>
+      <div class="success-bike-card">
+        <div class="success-bike-name" id="success-bike-title"></div>
+        <div class="success-bike-price" id="success-bike-price"></div>
+      </div>
+      <div class="success-actions">
+        <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce →</button>
+        <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── TOAST BESKED ── -->
   <div class="toast" id="toast">✅ Din annonce er oprettet!</div>
 

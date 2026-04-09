@@ -788,7 +788,7 @@ async function openUserProfile(userId) {
   const activeBikeCards = (activeBikes || []).map((b, i) => {
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:2.5rem">🚲</span>';
     return `
       <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
@@ -1402,7 +1402,10 @@ document.querySelectorAll('.pill').forEach(pill => {
 
 function openModal() {
   if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  window.location.hash = '#/sell';
+}
 
+function _openModalLegacy() {
   const isDealer = currentProfile?.seller_type === 'dealer';
 
   // Vis kun den relevante selger-type knap baseret på brugerens profil
@@ -1525,6 +1528,58 @@ async function submitListing() {
   } finally { restore(); }
 }
 
+async function submitSellPage() {
+  if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  const restore = btnLoading('sell-submit-btn', 'Opretter...');
+  try {
+    const brand     = document.getElementById('sell-brand')?.value.trim();
+    const model     = document.getElementById('sell-model')?.value.trim();
+    const price     = parseInt(document.getElementById('sell-price')?.value);
+    const year      = parseInt(document.getElementById('sell-year')?.value) || null;
+    const city      = document.getElementById('sell-city')?.value.trim();
+    const desc      = document.getElementById('sell-desc')?.value.trim();
+    const type      = document.getElementById('sell-type')?.value;
+    const size      = document.getElementById('sell-size')?.value;
+    const condition = document.getElementById('sell-condition')?.value;
+    const wheelSize = document.getElementById('sell-wheel-size')?.value || null;
+    const warranty  = document.getElementById('sell-warranty')?.value?.trim() || null;
+
+    if (!brand || !model || !price || !city || !type || !condition) {
+      showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
+    }
+
+    const bikeData = {
+      user_id: currentUser.id,
+      brand, model, price, year, city,
+      description: desc || null,
+      type, size: size || null, condition,
+      wheel_size: wheelSize || null,
+      warranty: warranty || null,
+      title: `${brand} ${model}`,
+      is_active: true,
+    };
+
+    const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
+    if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
+
+    if (selectedFiles.length > 0) {
+      showToast('⏳ Uploader billeder...');
+      await uploadImages(newBike.id);
+    }
+
+    loadBikes();
+    updateFilterCounts();
+
+    supabase.functions.invoke('notify-saved-searches', {
+      body: { bike: { id: newBike.id, brand: newBike.brand, model: newBike.model, type: newBike.type, city: newBike.city, price: newBike.price, condition: newBike.condition } },
+    }).catch(() => {});
+
+    showListingSuccessModal(newBike);
+  } finally {
+    restore();
+  }
+}
+
 /* ============================================================
    LOGIN MODAL
    ============================================================ */
@@ -1624,8 +1679,6 @@ function closeProfileModal() {
   disableFocusTrap('profile-modal');
 }
 document.getElementById('profile-modal').addEventListener('click', e => {
-  const inEditGrid = document.getElementById('edit-img-existing-grid')?.contains(e.target);
-  if (inEditGrid) console.log(`[CLICK-TRACE] profile-modal handler fired for click INSIDE edit-grid! target=${e.target.tagName} class="${e.target.className}"`);
   if (e.target === e.currentTarget) closeProfileModal();
 });
 
@@ -1828,7 +1881,7 @@ async function loadMyListings(containerId = 'my-listings-grid') {
       if (isPage) {
         const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
         const thumb  = imgUrl
-          ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb">`
+          ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
           : `<div class="mp-listing-thumb mp-listing-thumb--empty">🚲</div>`;
         return `
           <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
@@ -2215,10 +2268,8 @@ function showSection(section) {
 
 async function fetchBikeById(bikeId) {
   if (bikeCache.has(bikeId)) {
-    console.log(`[CACHE-FIX] fetchBikeById HIT cache bikeId=${bikeId}`);
     return { data: bikeCache.get(bikeId), error: null };
   }
-  console.log(`[CACHE-FIX] fetchBikeById MISS — fetching from DB bikeId=${bikeId}`);
   const fetchPromise = supabase
     .from('bikes')
     .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified), bike_images(url, is_primary)')
@@ -2229,9 +2280,6 @@ async function fetchBikeById(bikeId) {
   const result = await Promise.race([fetchPromise, timeoutPromise]);
   if (result.data && !result.error) {
     bikeCache.set(bikeId, result.data);
-    const imgs = result.data.bike_images || [];
-    console.log(`[IMG-SAVE-TRACE] F fetchBikeById FRESH-DB bikeId=${bikeId} count=${imgs.length} ids=[${imgs.map(i=>i.url?.split('/').pop()?.slice(0,12)||'?').join(',')}] primary=[${imgs.filter(i=>i.is_primary).map(i=>i.url?.split('/').pop()?.slice(0,12)||'?').join(',')}]`);
-    console.log(`[POST-SAVE-VIEW] fetchBikeById MISS→DB bikeId=${bikeId} bike_images=${imgs.length}`);
   }
   return result;
 }
@@ -2252,7 +2300,7 @@ function buildBikeBodyHTML(b) {
   if (allImages.length === 0) {
     galleryHtml = `<div class="bike-detail-img"><span style="font-size:4rem">🚲</span></div>`;
   } else if (allImages.length === 1) {
-    galleryHtml = `<div class="bike-detail-img"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}"></div>`;
+    galleryHtml = `<div class="bike-detail-img"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}" loading="lazy"></div>`;
   } else {
     const maxThumbs = 5;
     const visibleImages = allImages.slice(0, maxThumbs);
@@ -2383,7 +2431,6 @@ async function openBikeModal(bikeId) {
     return;
   }
 
-  console.log(`[POST-SAVE-VIEW] openBikeModal renderer bikeId=${b.id} bike_images=${b.bike_images?.length ?? 'undef'}`);
   try {
     const { html, profile, allImages } = buildBikeBodyHTML(b);
     document.getElementById('bike-modal-title').textContent = `${b.brand} ${b.model}`;
@@ -2475,7 +2522,6 @@ async function renderBikePage(bikeId) {
 
   document.title = `${b.brand} ${b.model} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
 
-  console.log(`[POST-SAVE-VIEW] renderBikePage renderer bikeId=${b.id} bike_images=${b.bike_images?.length ?? 'undef'}`);
   const { html, profile } = buildBikeBodyHTML(b);
   const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
   detailView.innerHTML = `
@@ -2504,6 +2550,239 @@ function showListingView() {
   if (pageLayout)    pageLayout.style.display    = 'none';
   if (landingLayout) landingLayout.style.display = '';
   document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
+}
+
+/* ============================================================
+   OPRET ANNONCE SIDE (#/sell)
+   ============================================================ */
+
+function renderSellPage() {
+  if (!currentUser) {
+    openLoginModal();
+    showToast('⚠️ Log ind for at oprette en annonce');
+    window.location.hash = '';
+    return;
+  }
+  showDetailView();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  document.title = 'Opret annonce – Cykelbørsen';
+  selectedFiles = [];
+
+  const isDealer = currentProfile?.seller_type === 'dealer';
+  const dealerSection = isDealer ? `
+    <div class="sell-section">
+      <h3 class="sell-section-title">Forhandlerinfo</h3>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
+          <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
+        </div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('detail-view').innerHTML = `
+    <div class="sell-page">
+      <div class="sell-page-header">
+        <button class="back-btn" onclick="history.back()">← Tilbage</button>
+        <div>
+          <h1 class="sell-page-title">Sæt din cykel til salg</h1>
+          <p class="sell-page-subtitle">Gratis · Nemt · Under 2 minutter</p>
+        </div>
+      </div>
+
+      <div class="sell-page-body">
+        ${dealerSection}
+
+        <div class="sell-section">
+          <h3 class="sell-section-title">Om cyklen</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Mærke *</label>
+              <input type="text" id="sell-brand" placeholder="f.eks. Trek, Giant, Specialized">
+            </div>
+            <div class="form-group">
+              <label>Model *</label>
+              <input type="text" id="sell-model" placeholder="f.eks. FX 3 Disc">
+            </div>
+            <div class="form-group">
+              <label>Cykeltype *</label>
+              <select id="sell-type">
+                <option value="">Vælg type</option>
+                <option>Racercykel</option>
+                <option>Mountainbike</option>
+                <option>Citybike</option>
+                <option>El-cykel</option>
+                <option>Ladcykel</option>
+                <option>Børnecykel</option>
+                <option>Gravel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Ramme / str.</label>
+              <select id="sell-size">
+                <option value="">Vælg</option>
+                <option>XS (44–48 cm)</option>
+                <option>S (49–52 cm)</option>
+                <option>M (53–56 cm)</option>
+                <option>L (57–60 cm)</option>
+                <option>XL (61+ cm)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Hjulstørrelse</label>
+              <select id="sell-wheel-size">
+                <option value="">Vælg</option>
+                <option>26"</option>
+                <option>27.5" / 650b</option>
+                <option>28"</option>
+                <option>29"</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Årstal</label>
+              <input type="number" id="sell-year" placeholder="f.eks. 2021" min="1950" max="2030">
+            </div>
+            <div class="form-group">
+              <label>Stand *</label>
+              <select id="sell-condition">
+                <option value="">Vælg stand</option>
+                <option>Ny</option>
+                <option>Som ny</option>
+                <option>God stand</option>
+                <option>Brugt</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>By *</label>
+              <input type="text" id="sell-city" placeholder="f.eks. København">
+            </div>
+            <div class="form-group full">
+              <label>Beskrivelse</label>
+              <textarea id="sell-desc" placeholder="Beskriv din cykel — stand, udstyr, service, historik..." rows="5"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="sell-section">
+          <h3 class="sell-section-title">Pris</h3>
+          <div class="form-group" style="max-width:260px;">
+            <label>Pris (kr.) *</label>
+            <input type="number" id="sell-price" placeholder="f.eks. 4500" min="0">
+            <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
+          </div>
+        </div>
+
+        <div class="sell-section">
+          <h3 class="sell-section-title">Billeder</h3>
+          <p class="sell-section-desc">Annoncer med billeder sælger hurtigere — upload op til 8 billeder (JPG, PNG).</p>
+          <div class="img-upload" onclick="document.getElementById('sell-file-input').click()">
+            <div class="upload-icon">📷</div>
+            <p id="sell-upload-label">Klik for at vælge billeder</p>
+          </div>
+          <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
+          <div id="sell-preview-grid" class="img-preview-grid"></div>
+        </div>
+
+        <div class="sell-page-actions">
+          <button id="sell-submit-btn" class="form-submit sell-submit" onclick="submitSellPage()">Opret annonce gratis →</button>
+          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="openFooterModal('terms')" class="sell-terms-link">vilkår og betingelser</span>.</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Prisforslag ved type-valg
+  const typeSelect = document.getElementById('sell-type');
+  if (typeSelect) {
+    typeSelect.addEventListener('change', () => updateSellPriceSuggestion(typeSelect.value));
+  }
+}
+
+async function updateSellPriceSuggestion(bikeType) {
+  const wrap = document.getElementById('sell-price-suggestion');
+  if (!wrap || !bikeType) { if (wrap) wrap.style.display = 'none'; return; }
+
+  const { data } = await supabase
+    .from('bikes')
+    .select('price')
+    .eq('type', bikeType)
+    .eq('is_active', true)
+    .limit(50);
+
+  if (!data || data.length < 3) { wrap.style.display = 'none'; return; }
+
+  const prices = data.map(b => b.price).sort((a, b) => a - b);
+  const avg    = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
+  const low    = prices[Math.floor(prices.length * 0.25)];
+  const high   = prices[Math.floor(prices.length * 0.75)];
+
+  wrap.innerHTML = `💡 Andre ${esc(bikeType).toLowerCase()}er sælges typisk for <strong>${low.toLocaleString('da-DK')}–${high.toLocaleString('da-DK')} kr.</strong> (gns. ${avg.toLocaleString('da-DK')} kr.)`;
+  wrap.style.display = 'block';
+}
+
+function previewSellImages(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+
+  const remaining = 8 - selectedFiles.length;
+  const toAdd = files.filter(validateImageFile).slice(0, remaining);
+
+  toAdd.forEach((file, i) => {
+    const url = URL.createObjectURL(file);
+    selectedFiles.push({ file, url, isPrimary: selectedFiles.length === 0 && i === 0 });
+  });
+
+  renderSellImagePreviews();
+  const label = document.getElementById('sell-upload-label');
+  if (label) label.textContent = `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
+}
+
+function renderSellImagePreviews() {
+  const grid = document.getElementById('sell-preview-grid');
+  if (!grid) return;
+  grid.innerHTML = selectedFiles.map((item, i) => `
+    <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
+      <img src="${item.url}" alt="Billede ${i + 1}">
+      ${item.isPrimary ? '<span class="primary-badge">Primær</span>' : `<button class="set-primary" onclick="setSellPrimary(${i})">★</button>`}
+      <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
+    </div>`).join('');
+}
+
+function setSellPrimary(index) {
+  selectedFiles = selectedFiles.map((item, i) => ({ ...item, isPrimary: i === index }));
+  renderSellImagePreviews();
+}
+
+function removeSellImage(index) {
+  URL.revokeObjectURL(selectedFiles[index].url);
+  selectedFiles.splice(index, 1);
+  if (selectedFiles.length > 0 && !selectedFiles.some(f => f.isPrimary)) selectedFiles[0].isPrimary = true;
+  renderSellImagePreviews();
+  const label = document.getElementById('sell-upload-label');
+  if (label) label.textContent = selectedFiles.length > 0
+    ? `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`
+    : 'Klik for at vælge billeder';
+}
+
+function showListingSuccessModal(bike) {
+  const modal = document.getElementById('listing-success-modal');
+  if (!modal) return;
+  const titleEl = document.getElementById('success-bike-title');
+  const priceEl = document.getElementById('success-bike-price');
+  const viewBtn = document.getElementById('success-view-btn');
+  const newBtn  = document.getElementById('success-new-btn');
+  if (titleEl) titleEl.textContent = `${bike.brand} ${bike.model}`;
+  if (priceEl) priceEl.textContent = bike.price ? `${bike.price.toLocaleString('da-DK')} kr.` : '';
+  if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); window.location.hash = `#/bike/${bike.id}`; };
+  if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellPage(); };
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeListingSuccessModal() {
+  const modal = document.getElementById('listing-success-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 /* ============================================================
@@ -3057,28 +3336,27 @@ function handleRoute() {
   const bikeMatch    = hash.match(/^#\/bike\/([^/]+)$/);
   const profileMatch = hash.match(/^#\/profile\/([^/]+)$/);
   const dealerMatch  = hash.match(/^#\/dealer\/([^/]+)$/);
-  const meMatch = hash === '#/me';
+  const meMatch   = hash === '#/me';
+  const sellMatch = hash === '#/sell';
   if (meMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     renderMyProfilePage();
+  } else if (sellMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderSellPage();
   } else if (bikeMatch) {
     closeAllModals();
-    console.log(`[SCROLL-FIX] route=bike scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
-    console.log(`[SCROLL-FIX] after reset scrollY=${window.scrollY}`);
     renderBikePage(bikeMatch[1]);
   } else if (profileMatch) {
     closeAllModals();
-    console.log(`[SCROLL-FIX] route=profile scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
-    console.log(`[SCROLL-FIX] after reset scrollY=${window.scrollY}`);
     renderUserProfilePage(profileMatch[1]);
   } else if (dealerMatch) {
     closeAllModals();
-    console.log(`[SCROLL-FIX] route=dealer scrollY=${window.scrollY} → reset`);
     window.scrollTo({ top: 0, behavior: 'auto' });
-    console.log(`[SCROLL-FIX] after reset scrollY=${window.scrollY}`);
     renderDealerProfilePage(dealerMatch[1]);
   } else {
     showListingView();
@@ -3862,21 +4140,6 @@ async function openEditModal(id) {
   if (warrantyGroup) warrantyGroup.style.display = currentProfile?.seller_type === 'dealer' ? '' : 'none';
   document.getElementById('edit-warranty').value = b.warranty || '';
 
-  // [IMAGE-SAVE] Log hvad DB returnerer ved reload
-  console.log(`[IMAGE-SAVE] openEditModal LOADED bikeId=${id}`,
-    `bike_images=${(b.bike_images||[]).length}`,
-    `ids=[${(b.bike_images||[]).map(i=>i.id).join(',')}]`,
-    `primaries=[${(b.bike_images||[]).filter(i=>i.is_primary).map(i=>i.id).join(',')}]`
-  );
-
-  // [IMAGE-RUNTIME] Tjek om grid eksisterer før render
-  const gridCheck = document.getElementById('edit-img-existing-grid');
-  const dupeIds   = document.querySelectorAll('#edit-img-existing-grid');
-  console.log(`[IMAGE-RUNTIME] openEditModal: grid=${gridCheck ? 'FOUND' : 'MISSING'}`,
-    `duplicateGrids=${dupeIds.length}`,
-    `gridInDOM=${gridCheck ? document.body.contains(gridCheck) : 'n/a'}`
-  );
-
   // Indlæs eksisterende billeder
   editNewFiles     = [];
   editExistingImgs = (b.bike_images || []).map(img => ({
@@ -3885,8 +4148,6 @@ async function openEditModal(id) {
     toDelete: false
   }));
   enforceSinglePrimaryImage();
-  console.log(`[IMG-SAVE-TRACE] A openEditModal bikeId=${id} count=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] primary=[${editExistingImgs.filter(i=>i.is_primary).map(i=>i.id).join(',')}]`);
-  console.log(`[DELETE-EXISTING] modal åbnet bikeId=${id} editExistingImgs=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
   renderEditExistingImages();
   renderEditNewImages();
 
@@ -3926,7 +4187,6 @@ function renderEditExistingImages() {
   const grid = document.getElementById('edit-img-existing-grid');
   if (!grid) return;
   const visible = editExistingImgs.filter(img => !img.toDelete);
-  console.log(`[DELETE-EXISTING] renderEditExistingImages visible=${visible.length} ids=[${visible.map(i=>i.id).join(',')}]`);
   grid.innerHTML = visible.map(img => {
     const idArg = JSON.stringify(String(img.id));
     return `
@@ -3942,29 +4202,20 @@ function renderEditExistingImages() {
 
 function editSetExistingPrimary(imgId) {
   const normalizedId = normalizeImageId(imgId);
-  const prevPrimary = editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id);
-  console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary START imgId=${normalizedId} before primary=[${prevPrimary.join(',')}]`);
   const target = editExistingImgs.find(img => normalizeImageId(img.id) === normalizedId);
-  if (!target || target.toDelete) { console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary ABORT — imgId=${normalizedId} not found in visible editExistingImgs`); return; }
+  if (!target || target.toDelete) return;
   editExistingImgs = editExistingImgs.map(img => ({ ...img, is_primary: !img.toDelete && normalizeImageId(img.id) === normalizedId }));
   editNewFiles     = editNewFiles.map(f => ({ ...f, isPrimary: false }));
-  const afterPrimary = editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id);
-  console.log(`[IMG-SAVE-TRACE] C editSetExistingPrimary AFTER primary=[${afterPrimary.join(',')}]`);
-  console.log(`[IMAGE-FIX] set-existing-primary state after`, editExistingImgs.map(i => ({ id: i.id, is_primary: i.is_primary })));
   renderEditExistingImages();
   renderEditNewImages();
 }
 
 function editRemoveExisting(imgId) {
   const normalizedId = normalizeImageId(imgId);
-  console.log(`[IMG-SAVE-TRACE] B editRemoveExisting START imgId=${normalizedId} before: count=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] primary=[${editExistingImgs.filter(i=>i.is_primary&&!i.toDelete).map(i=>i.id).join(',')}]`);
-  console.log(`[DELETE-EXISTING] editRemoveExisting kaldt imgId=${normalizedId} type=${typeof imgId} editExistingImgs.length=${editExistingImgs.length} ids=[${editExistingImgs.map(i=>i.id).join(',')}] types=[${editExistingImgs.map(i=>typeof i.id).join(',')}]`);
   const target = editExistingImgs.find(img => normalizeImageId(img.id) === normalizedId);
-  console.log(`[DELETE-EXISTING] find result: ${target ? `fundet id=${target.id}` : 'IKKE FUNDET — match fejlede'}`);
   if (!target || target.toDelete) return;
   const wasPrimary = target.is_primary;
   editExistingImgs = editExistingImgs.map(img => normalizeImageId(img.id) === normalizedId ? { ...img, toDelete: true, is_primary: false } : img);
-  console.log(`[DELETE-EXISTING] state efter mark: toDelete=[${editExistingImgs.filter(i=>i.toDelete).map(i=>i.id).join(',')}] visible=${editExistingImgs.filter(i=>!i.toDelete).length}`);
   if (wasPrimary) {
     const firstRemaining = editExistingImgs.find(img => !img.toDelete);
     if (firstRemaining) {
@@ -3974,13 +4225,6 @@ function editRemoveExisting(imgId) {
       editNewFiles = editNewFiles.map((f, i) => ({ ...f, isPrimary: i === 0 }));
     }
   }
-  const visibleAfter  = editExistingImgs.filter(i => !i.toDelete);
-  const newPrimaryAfter = visibleAfter.find(i => i.is_primary);
-  console.log(`[IMG-SAVE-TRACE] B editRemoveExisting AFTER: visible=${visibleAfter.length} ids=[${visibleAfter.map(i=>i.id).join(',')}] newPrimary=${newPrimaryAfter ? newPrimaryAfter.id : 'NONE'}`);
-  console.log(`[IMAGE-FIX] remove-existing state after`,
-    `visible=${visibleAfter.length}`,
-    editExistingImgs.map(i => ({ id: i.id, toDelete: i.toDelete, is_primary: i.is_primary }))
-  );
   renderEditExistingImages();
   renderEditNewImages();
 }
@@ -4064,19 +4308,8 @@ async function saveEditedListing() {
   // Slet fjernede billeder
   const toDelete = editExistingImgs.filter(img => img.toDelete);
   const toKeep   = editExistingImgs.filter(img => !img.toDelete);
-  console.log(`[IMG-SAVE-TRACE] D saveEditedListing ENTRY bikeId=${id} existingTotal=${editExistingImgs.length} toDelete=${toDelete.length} deleteIds=[${toDelete.map(i=>i.id).join(',')}] toKeep=${toKeep.length} keepIds=[${toKeep.map(i=>i.id).join(',')}] keepPrimary=[${toKeep.filter(i=>i.is_primary).map(i=>i.id).join(',')}] newFiles=${editNewFiles.length}`);
-  console.log(`[DELETE-EXISTING] save start bikeId=${id} toDelete=${toDelete.length} ids=[${toDelete.map(i=>i.id).join(',')}] toKeep=${toKeep.length}`);
-  console.log(`[IMAGE-SAVE] START bikeId=${id}`,
-    `existing=${editExistingImgs.length}`,
-    `toDelete=${toDelete.length} ids=[${toDelete.map(i=>i.id).join(',')}]`,
-    `toKeep=${toKeep.length} ids=[${toKeep.map(i=>i.id).join(',')}]`,
-    `primary=${toKeep.filter(i=>i.is_primary).map(i=>i.id)}`,
-    `newFiles=${editNewFiles.length}`
-  );
   for (const img of toDelete) {
     const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id).eq('bike_id', id);
-    console.log(`[IMG-SAVE-TRACE] E DB-DELETE bike_image id=${img.id} ok=${!delErr} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
-    console.log(`[DELETE-EXISTING] DB delete bike_image id=${img.id} error=${delErr ? JSON.stringify(delErr) : 'null'}`);
     if (delErr) {
       showToast('❌ Kunne ikke slette et eksisterende billede');
       console.error(delErr);
@@ -4086,12 +4319,7 @@ async function saveEditedListing() {
       const match = img.url.match(/bike-images\/(.+)$/);
       if (match) {
         const storagePath = match[1];
-        const { error: stErr } = await supabase.storage.from('bike-images').remove([storagePath]);
-        console.log(`[IMG-SAVE-TRACE] E STORAGE-DELETE path=${storagePath} ok=${!stErr} error=${stErr ? JSON.stringify(stErr) : 'null'}`);
-        console.log(`[DELETE-EXISTING] storage delete path=${storagePath} error=${stErr ? JSON.stringify(stErr) : 'null'}`);
-      } else {
-        console.log(`[IMG-SAVE-TRACE] E STORAGE-DELETE SKIP url did not match bike-images pattern: ${img.url}`);
-        console.log(`[DELETE-EXISTING] storage delete SKIP — url matcher ikke /bike-images/ pattern: ${img.url}`);
+        await supabase.storage.from('bike-images').remove([storagePath]);
       }
     }
   }
@@ -4099,8 +4327,6 @@ async function saveEditedListing() {
   // Nulstil primær-status på eksisterende billeder først (undgår unique-konflikter)
   for (const img of toKeep) {
     const { error: updErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('id', img.id).eq('bike_id', id);
-    console.log(`[IMG-SAVE-TRACE] E DB-UPDATE bike_image id=${img.id} is_primary=false ok=${!updErr} error=${updErr ? JSON.stringify(updErr) : 'null'}`);
-    console.log(`[IMAGE-SAVE] UPDATE bike_image id=${img.id} is_primary=false error=${updErr ? JSON.stringify(updErr) : 'null'}`);
     if (updErr) {
       showToast('❌ Kunne ikke opdatere primærbillede');
       console.error(updErr);
@@ -4114,15 +4340,13 @@ async function saveEditedListing() {
     const ext      = item.file.name.split('.').pop();
     const filename = `${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error: uploadErr } = await supabase.storage.from('bike-images').upload(filename, item.file, { contentType: item.file.type });
-    console.log(`[IMG-SAVE-TRACE] E STORAGE-UPLOAD filename=${filename} isPrimary=${item.isPrimary} ok=${!uploadErr} error=${uploadErr ? JSON.stringify(uploadErr) : 'null'}`);
-    if (uploadErr) { showToast('❌ Kunne ikke uploade et billede'); console.error('Upload fejl:', uploadErr); return; }
+    if (uploadErr) { showToast('❌ Kunne ikke uploade et billede'); console.error(uploadErr); return; }
     const { data: { publicUrl } } = supabase.storage.from('bike-images').getPublicUrl(filename);
     const { data: insertedRow, error: insertErr } = await supabase
       .from('bike_images')
       .insert({ bike_id: id, url: publicUrl, is_primary: item.isPrimary })
       .select('id')
       .single();
-    console.log(`[IMG-SAVE-TRACE] E DB-INSERT bike_image filename=${filename} is_primary=${item.isPrimary} ok=${!insertErr} error=${insertErr ? JSON.stringify(insertErr) : 'null'}`);
     if (insertErr) {
       showToast('❌ Kunne ikke gemme uploadet billede');
       console.error(insertErr);
@@ -4134,10 +4358,8 @@ async function saveEditedListing() {
   // Sæt primærbillede i to trin for at undgå unique-konflikter (kun ét primært pr. annonce)
   const intendedPrimaryExisting = toKeep.find(img => img.is_primary)?.id || null;
   const intendedPrimaryId = insertedPrimaryId || intendedPrimaryExisting;
-  console.log(`[IMG-SAVE-TRACE] E PRIMARY-CALC intendedPrimaryExisting=${intendedPrimaryExisting} insertedPrimaryId=${insertedPrimaryId} intendedPrimaryId=${intendedPrimaryId}`);
 
   const { error: resetPrimaryErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('bike_id', id);
-  console.log(`[IMG-SAVE-TRACE] E DB-RESET-ALL-PRIMARY ok=${!resetPrimaryErr} error=${resetPrimaryErr ? JSON.stringify(resetPrimaryErr) : 'null'}`);
   if (resetPrimaryErr) {
     showToast('❌ Kunne ikke nulstille primærbillede');
     console.error(resetPrimaryErr);
@@ -4145,32 +4367,23 @@ async function saveEditedListing() {
   }
   if (intendedPrimaryId) {
     const { error: setPrimaryErr } = await supabase.from('bike_images').update({ is_primary: true }).eq('id', intendedPrimaryId).eq('bike_id', id);
-    console.log(`[IMG-SAVE-TRACE] E DB-SET-PRIMARY id=${intendedPrimaryId} ok=${!setPrimaryErr} error=${setPrimaryErr ? JSON.stringify(setPrimaryErr) : 'null'}`);
     if (setPrimaryErr) {
       showToast('❌ Kunne ikke gemme valgt primærbillede');
       console.error(setPrimaryErr);
       return;
     }
   } else {
-    console.log(`[IMG-SAVE-TRACE] E DB-SET-PRIMARY SKIP — intendedPrimaryId er null, intet primærbillede sat`);
-    // Sæt første eksisterende billede som primær som fallback
+    // Fallback: sæt første eksisterende billede som primær
     const { data: firstImg } = await supabase.from('bike_images').select('id').eq('bike_id', id).limit(1).single();
     if (firstImg) {
       await supabase.from('bike_images').update({ is_primary: true }).eq('id', firstImg.id).eq('bike_id', id);
-      console.log(`[IMG-SAVE-TRACE] E DB-SET-PRIMARY FALLBACK id=${firstImg.id}`);
     }
   }
 
   // Invalider bikeCache så næste åbning af annonce/modal henter friske data
-  if (bikeCache.has(id) || bikeCache.has(Number(id))) {
-    bikeCache.delete(id);
-    bikeCache.delete(Number(id));
-    console.log(`[CACHE-FIX] bikeCache invalidated for bikeId=${id}`);
-  } else {
-    console.log(`[CACHE-FIX] bikeCache had no entry for bikeId=${id} (keys: [${[...bikeCache.keys()].join(',')}])`);
-  }
+  bikeCache.delete(id);
+  bikeCache.delete(Number(id));
 
-  console.log(`[IMAGE-SAVE] DONE bikeId=${id} — closing modal`);
   closeEditModal();
   showToast('✅ Annonce opdateret!');
   reloadMyListings();
@@ -4183,31 +4396,11 @@ async function saveEditedListing() {
   const profileMatch   = currentHash.match(/^#\/profile\/([^/]+)$/);
   const dealerMatch    = currentHash.match(/^#\/dealer\/([^/]+)$/);
   const onBikePage     = currentHash === `#/bike/${id}`;
-  console.log(`[IMG-SAVE-TRACE] F POST-SAVE route="${currentHash}" onBikePage=${onBikePage} bikeModalOpen=${bikeModalOpen} profileMatch=${profileMatch?.[1]||'nej'} dealerMatch=${dealerMatch?.[1]||'nej'}`);
-  console.log(`[STALE-VIEW] after save bikeId=${id} currentHash="${currentHash}" bikeModalOpen=${bikeModalOpen} onBikePage=${onBikePage} profileRoute=${profileMatch?.[1]||'nej'} dealerRoute=${dealerMatch?.[1]||'nej'}`);
 
-  if (onBikePage) {
-    console.log(`[IMG-SAVE-TRACE] F → calling renderBikePage(${id})`);
-    console.log(`[POST-SAVE-VIEW] detail-view aktiv — re-renderer bike ${id} med friske data`);
-    renderBikePage(id);
-  }
-  if (bikeModalOpen) {
-    console.log(`[IMG-SAVE-TRACE] F → bike-modal er åben — re-renderer modal med friske data (${id})`);
-    console.log(`[STALE-VIEW] bike-modal er åben — kalder openBikeModal(${id}) efter cache invalidation`);
-    openBikeModal(id);
-  }
-  if (profileMatch && profileMatch[1] === currentUser?.id) {
-    console.log(`[IMG-SAVE-TRACE] F → calling renderUserProfilePage(${profileMatch[1]})`);
-    renderUserProfilePage(profileMatch[1]);
-  }
-  if (dealerMatch && dealerMatch[1] === currentUser?.id) {
-    console.log(`[IMG-SAVE-TRACE] F → calling renderDealerProfilePage(${dealerMatch[1]})`);
-    renderDealerProfilePage(dealerMatch[1]);
-  }
-  if (!onBikePage && !bikeModalOpen && !profileMatch && !dealerMatch) {
-    console.log(`[IMG-SAVE-TRACE] F → ingen detail-view åben — ingen re-render`);
-    console.log(`[STALE-VIEW] ingen specifik detail-view åben — listing-grid opdateres via loadBikes() i baggrunden`);
-  }
+  if (onBikePage) renderBikePage(id);
+  if (bikeModalOpen) openBikeModal(id);
+  if (profileMatch && profileMatch[1] === currentUser?.id) renderUserProfilePage(profileMatch[1]);
+  if (dealerMatch && dealerMatch[1] === currentUser?.id) renderDealerProfilePage(dealerMatch[1]);
 }
 
 
@@ -4524,6 +4717,12 @@ window.editRemoveNew          = editRemoveNew;
 window.previewImages      = previewImages;
 window.setPrimary         = setPrimary;
 window.removeImage        = removeImage;
+window.renderSellPage            = renderSellPage;
+window.submitSellPage            = submitSellPage;
+window.previewSellImages         = previewSellImages;
+window.setSellPrimary            = setSellPrimary;
+window.removeSellImage           = removeSellImage;
+window.closeListingSuccessModal  = closeListingSuccessModal;
 window.openBikeModal      = openBikeModal;
 window.navigateToBike     = navigateToBike;
 window.navigateToProfile  = navigateToProfile;
@@ -5112,8 +5311,7 @@ function handleSearchKey(e) {
 document.addEventListener('click', function(e) {
   const editOpen = document.getElementById('edit-modal')?.classList.contains('open');
   if (editOpen) {
-    const inGrid = document.getElementById('edit-img-existing-grid')?.contains(e.target);
-    console.log(`[CLICK-TRACE] autocomplete-handler fired while edit-modal open: target=${e.target.tagName} class="${e.target.className}" inGrid=${inGrid}`);
+    // Skip autocomplete handling when edit modal is open
   }
   if (!e.target.closest('#search-input') && !e.target.closest('#autocomplete-list')) {
     var list = document.getElementById('autocomplete-list');
