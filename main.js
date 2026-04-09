@@ -1958,7 +1958,7 @@ async function loadSavedListings(containerId = 'my-saved-grid') {
   try {
     ({ data, error } = await supabase
       .from('saved_bikes')
-      .select('bike_id, bikes(brand, model, price, type, city, condition)')
+      .select('bike_id, bikes(brand, model, price, type, city, condition, is_active, bike_images(url, is_primary))')
       .eq('user_id', currentUser.id));
   } catch (e) {
     grid.innerHTML = retryHTML('Kunne ikke hente gemte annoncer.', 'loadSavedListings');
@@ -1972,17 +1972,28 @@ async function loadSavedListings(containerId = 'my-saved-grid') {
     return;
   }
 
+  grid.className = 'saved-cards-grid';
   grid.innerHTML = data.map(s => {
     const b = s.bikes;
     if (!b) return '';
+    const imgs    = b.bike_images || [];
+    const primary = imgs.find(i => i.is_primary) || imgs[0];
+    const imgHtml = primary
+      ? `<img src="${primary.url}" alt="${esc(b.brand)} ${esc(b.model)}" class="saved-card-img" loading="lazy">`
+      : `<div class="saved-card-img-placeholder">🚲</div>`;
+    const isSold = b.is_active === false;
     return `
-      <div class="my-listing-row" style="cursor:pointer;" onclick="openBikeModal('${s.bike_id}')">
-        <div class="my-listing-info">
-          <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)}</div>
-          <div class="my-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
+      <div class="saved-card${isSold ? ' saved-card--sold' : ''}" onclick="navigateToBike('${s.bike_id}')">
+        <div class="saved-card-thumb">
+          ${imgHtml}
+          ${isSold ? '<span class="saved-card-sold-badge">Solgt</span>' : ''}
+          <button class="saved-card-remove" onclick="event.stopPropagation();removeSaved('${s.bike_id}',this)" title="Fjern fra gemte">♡</button>
         </div>
-        <div class="my-listing-price">${b.price.toLocaleString('da-DK')} kr.</div>
-        <button class="btn-delete" onclick="event.stopPropagation();removeSaved('${s.bike_id}',this)" title="Fjern fra gemte">🗑️</button>
+        <div class="saved-card-body">
+          <div class="saved-card-title">${esc(b.brand)} ${esc(b.model)}</div>
+          <div class="saved-card-meta">${esc(b.type)} · ${esc(b.city)}</div>
+          <div class="saved-card-price">${b.price ? b.price.toLocaleString('da-DK') + ' kr.' : '–'}</div>
+        </div>
       </div>`;
   }).join('');
 }
@@ -1992,10 +2003,10 @@ async function removeSaved(bikeId, btn) {
   const { error } = await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
   if (error) { showToast('❌ Kunne ikke fjerne annonce'); return; }
   showToast('Fjernet fra gemte');
-  btn.closest('.my-listing-row').remove();
-  // Vis tom-tekst hvis ingen tilbage
-  const grid = document.getElementById('my-saved-grid');
-  if (grid && !grid.querySelector('.my-listing-row')) {
+  const card = btn.closest('.saved-card');
+  if (card) card.remove();
+  const grid = document.getElementById('mp-saved-grid') || document.getElementById('my-saved-grid');
+  if (grid && !grid.querySelector('.saved-card')) {
     grid.innerHTML = '<p style="color:var(--muted)">Du har ikke gemt nogen annoncer endnu.</p>';
   }
 }
