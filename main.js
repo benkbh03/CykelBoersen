@@ -290,9 +290,6 @@ async function init() {
   document.getElementById('inbox-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeInboxModal();
   });
-  document.getElementById('footer-modal').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeFooterModal();
-  });
   document.getElementById('admin-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeAdminPanel();
   });
@@ -319,7 +316,6 @@ async function init() {
     if (document.getElementById('profile-modal')?.classList.contains('open'))    { closeProfileModal(); return; }
     if (document.getElementById('modal')?.classList.contains('open'))            { closeModal(); return; }
     if (document.getElementById('login-modal')?.classList.contains('open'))      { closeLoginModal(); return; }
-    if (document.getElementById('footer-modal')?.classList.contains('open'))     { closeFooterModal(); return; }
     // display:flex-baserede modaler
     if (document.getElementById('user-profile-modal')?.style.display === 'flex')   { closeUserProfileModal(); return; }
     if (document.getElementById('dealer-profile-modal')?.style.display === 'flex') { closeDealerProfileModal(); return; }
@@ -2722,7 +2718,7 @@ function renderSellPage() {
 
         <div class="sell-page-actions">
           <button id="sell-submit-btn" class="form-submit sell-submit" onclick="submitSellPage()">Opret annonce gratis →</button>
-          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="openFooterModal('terms')" class="sell-terms-link">vilkår og betingelser</span>.</p>
+          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="window.location.hash='#/vilkaar'" class="sell-terms-link">vilkår og betingelser</span>.</p>
         </div>
       </div>
     </div>
@@ -3390,7 +3386,12 @@ function handleRoute() {
   const sellMatch    = hash === '#/sell';
   const inboxMatch   = hash === '#/inbox';
   const dealerApply  = hash === '#/bliv-forhandler';
-  if (dealerApply) {
+  const staticMatch  = { '#/om-os': 'about', '#/vilkaar': 'terms', '#/privatlivspolitik': 'privacy', '#/kontakt': 'contact' }[hash];
+  if (staticMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderStaticPage(staticMatch);
+  } else if (dealerApply) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     renderBecomeDealerPage();
@@ -5449,18 +5450,29 @@ var footerContent = {
   }
 };
 
+function renderStaticPage(type) {
+  const data = footerContent[type];
+  if (!data) { showListingView(); return; }
+  showDetailView();
+  document.title = `${data.title} – Cykelbørsen`;
+  const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+  // Fix internal link from Om os → Kontakt
+  const body = data.body.replace(/closeFooterModal\(\);openFooterModal\('contact'\)/g, "window.location.hash='#/kontakt'");
+  document.getElementById('detail-view').innerHTML = `
+    <div class="static-page">
+      <button class="sell-back-btn" onclick="${backAction}">← Tilbage</button>
+      <h1 class="static-page-title">${data.title}</h1>
+      <div class="static-page-body">${body}</div>
+    </div>`;
+}
+
 function openFooterModal(type) {
-  var data = footerContent[type];
-  if (!data) return;
-  document.getElementById('footer-modal-title').textContent = data.title;
-  document.getElementById('footer-modal-body').innerHTML = data.body;
-  document.getElementById('footer-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  const routes = { about: '#/om-os', terms: '#/vilkaar', privacy: '#/privatlivspolitik', contact: '#/kontakt' };
+  if (routes[type]) window.location.hash = routes[type];
 }
 
 function closeFooterModal() {
-  document.getElementById('footer-modal').classList.remove('open');
-  document.body.style.overflow = '';
+  // Noop — bruges ikke mere, holdes for kompatibilitet
 }
 
 async function submitContactForm() {
@@ -5472,7 +5484,6 @@ async function submitContactForm() {
   const { error } = await supabase.from('contact_messages').insert({ name, email, message });
   if (error) { showToast('❌ Noget gik galt – prøv igen'); return; }
 
-  // Send email-notifikation til admin
   supabase.functions.invoke('notify-message', {
     body: { type: 'contact_form', name, email, message },
   }).catch(() => {});
@@ -5480,7 +5491,6 @@ async function submitContactForm() {
   document.getElementById('contact-name').value    = '';
   document.getElementById('contact-email').value   = '';
   document.getElementById('contact-message').value = '';
-  closeFooterModal();
   showToast('✅ Tak! Vi vender tilbage inden for 1-2 hverdage.');
 }
 

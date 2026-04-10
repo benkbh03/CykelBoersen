@@ -74,7 +74,7 @@
     <div class="nav-links">
       <a onclick="showSection('listings');document.querySelector('.hero-stats-bar').scrollIntoView({behavior:'smooth'})" role="button" aria-label="Se alle annoncer">Annoncer</a>
       <a onclick="showSection('dealers')" role="button" aria-label="Se forhandlere">Forhandlere</a>
-      <a onclick="openFooterModal('about')" role="button" aria-label="Om Cykelbørsen">Om os</a>
+      <a onclick="window.location.hash='#/om-os'" role="button" aria-label="Om Cykelbørsen">Om os</a>
 <a class="btn-sell" onclick="openModal()" aria-label="Opret annonce og sæt din cykel til salg">+ Sæt til salg</a>
       <div class="nav-admin" id="nav-admin" style="display:none;">
         <button class="nav-admin-btn" onclick="openAdminPanel()" aria-label="Åbn admin panel">⚙️</button>
@@ -363,9 +363,9 @@
     <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
     <p>© 2025–2026 Cykelbørsen · Alle rettigheder forbeholdes</p>
     <div class="footer-links">
-      <a onclick="openFooterModal('terms')">Vilkår</a>
-      <a onclick="openFooterModal('privacy')">Privatlivspolitik</a>
-      <a onclick="openFooterModal('contact')">Kontakt</a>
+      <a onclick="window.location.hash='#/vilkaar'">Vilkår</a>
+      <a onclick="window.location.hash='#/privatlivspolitik'">Privatlivspolitik</a>
+      <a onclick="window.location.hash='#/kontakt'">Kontakt</a>
       <a onclick="window.location.hash='#/bliv-forhandler'">Bliv forhandler</a>
     </div>
   </footer>
@@ -832,17 +832,6 @@
     </div>
   </div>
 
-
-  <!-- ── FOOTER MODALER ── -->
-  <div class="modal-overlay" id="footer-modal" role="dialog" aria-modal="true">
-    <div class="modal" style="max-width:560px;">
-      <div class="modal-header">
-        <h2 id="footer-modal-title">–</h2>
-        <button class="modal-close" onclick="closeFooterModal()">✕</button>
-      </div>
-      <div class="modal-body" id="footer-modal-body" style="line-height:1.7;font-size:0.9rem;"></div>
-    </div>
-  </div>
 
   <!-- ── ADMIN PANEL ── -->
   <div class="modal-overlay" id="admin-modal" role="dialog" aria-modal="true">
