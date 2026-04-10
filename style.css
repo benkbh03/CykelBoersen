@@ -1582,11 +1582,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  nav { padding: 14px 16px; }
-  .nav-links { gap: 0; }
+  nav { padding: 12px 14px; }
+  .nav-links { gap: 6px; }
   .nav-links a:not(.btn-sell) { display: none; }
-  .btn-sell { font-size: 0.8rem; padding: 8px 14px; }
-  .logo { font-size: 1.3rem; }
+  .btn-sell { font-size: 0.8rem; padding: 8px 14px; white-space: nowrap; }
+  .logo { font-size: 1.2rem; }
+  .nav-profile { gap: 4px; }
+  .profile-avatar-btn { width: 34px; height: 34px; }
+  .nav-inbox-btn { width: 34px; height: 34px; }
+  .nav-admin-btn { width: 34px; height: 34px; }
   .hero { min-height: 480px; }
   .hero-text { padding: 48px 20px 48px; max-width: 100%; }
   .hero-img-side::after { background: linear-gradient(to right, rgba(42,61,46,0.96) 0%, rgba(42,61,46,0.85) 50%, rgba(42,61,46,0.6) 100%); }
@@ -1644,6 +1648,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .form-grid { grid-template-columns: 1fr !important; }
   .form-group.full { grid-column: 1; }
   .dealer-strip-header { flex-direction: column; }
+}
+
+@media (max-width: 420px) {
+  nav { padding: 10px 12px; }
+  .btn-sell { font-size: 0.76rem; padding: 7px 11px; }
+  .logo { font-size: 1.1rem; }
+  .nav-links { gap: 4px; }
+  .profile-avatar-btn, .nav-inbox-btn, .nav-admin-btn { width: 32px; height: 32px; }
+  .nav-inbox-btn { font-size: 1rem; }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
