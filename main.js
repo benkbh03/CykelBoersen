@@ -290,9 +290,6 @@ async function init() {
   document.getElementById('inbox-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeInboxModal();
   });
-  document.getElementById('dealer-modal').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeBecomeDealerModal();
-  });
   document.getElementById('footer-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeFooterModal();
   });
@@ -322,7 +319,6 @@ async function init() {
     if (document.getElementById('profile-modal')?.classList.contains('open'))    { closeProfileModal(); return; }
     if (document.getElementById('modal')?.classList.contains('open'))            { closeModal(); return; }
     if (document.getElementById('login-modal')?.classList.contains('open'))      { closeLoginModal(); return; }
-    if (document.getElementById('dealer-modal')?.classList.contains('open'))     { closeBecomeDealerModal(); return; }
     if (document.getElementById('footer-modal')?.classList.contains('open'))     { closeFooterModal(); return; }
     // display:flex-baserede modaler
     if (document.getElementById('user-profile-modal')?.style.display === 'flex')   { closeUserProfileModal(); return; }
@@ -434,7 +430,7 @@ async function loadDealers(dealers, bikeRows) {
         <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
         <h3>Ingen forhandlere endnu</h3>
         <p>Vær den første forhandler på Cykelbørsen og nå tusindvis af cykelkøbere.</p>
-        <button class="btn-become-dealer-small" onclick="openBecomeDealerModal()">Tilmeld din butik →</button>
+        <button class="btn-become-dealer-small" onclick="window.location.hash='#/bliv-forhandler'">Tilmeld din butik →</button>
       </div>
     `;
     return;
@@ -1717,7 +1713,7 @@ function onSellerTypeChange(select) {
     // Nulstil dropdown — forhandleransøgning sker via det officielle flow
     select.value = currentProfile?.seller_type || 'private';
     closeProfileModal();
-    openBecomeDealerModal();
+    window.location.hash = '#/bliv-forhandler';
   }
 }
 
@@ -3383,10 +3379,15 @@ function handleRoute() {
   const bikeMatch    = hash.match(/^#\/bike\/([^/]+)$/);
   const profileMatch = hash.match(/^#\/profile\/([^/]+)$/);
   const dealerMatch  = hash.match(/^#\/dealer\/([^/]+)$/);
-  const meMatch    = hash === '#/me';
-  const sellMatch  = hash === '#/sell';
-  const inboxMatch = hash === '#/inbox';
-  if (inboxMatch) {
+  const meMatch      = hash === '#/me';
+  const sellMatch    = hash === '#/sell';
+  const inboxMatch   = hash === '#/inbox';
+  const dealerApply  = hash === '#/bliv-forhandler';
+  if (dealerApply) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderBecomeDealerPage();
+  } else if (inboxMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     renderInboxPage();
@@ -4664,15 +4665,11 @@ function startRealtimeNotifications() {
    ============================================================ */
 
 function openBecomeDealerModal() {
-  document.getElementById('dealer-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  enableFocusTrap('dealer-modal');
+  window.location.hash = '#/bliv-forhandler';
 }
 
 function closeBecomeDealerModal() {
-  document.getElementById('dealer-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  disableFocusTrap('dealer-modal');
+  // Noop — bruges ikke mere, men holdes for kompatibilitet
 }
 
 function selectDealerPlan(btn) {
@@ -4680,9 +4677,66 @@ function selectDealerPlan(btn) {
   btn.classList.add('selected');
 }
 
+function renderBecomeDealerPage() {
+  showDetailView();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  document.title = 'Bliv forhandler – Cykelbørsen';
+
+  document.getElementById('detail-view').innerHTML = `
+    <div class="bd-page">
+      <div class="bd-page-header">
+        <button class="sell-back-btn" onclick="window.location.hash=''">← Tilbage</button>
+        <h1 class="bd-page-title">Bliv forhandler</h1>
+        <p class="bd-page-subtitle">Få din cykelbutik på Danmarks voksende cykelmarked</p>
+      </div>
+
+      <div class="bd-trial-banner">
+        🎉 <strong>Tilbud til nye forhandlere:</strong> 3 måneder gratis — ingen binding, annuller når som helst.
+      </div>
+
+      <div class="bd-perks">
+        <div class="bd-perk">✅ <span>Ubegrænset antal annoncer</span></div>
+        <div class="bd-perk">✅ <span>Verificeret forhandler-badge</span></div>
+        <div class="bd-perk">✅ <span>Direkte beskeder fra købere</span></div>
+        <div class="bd-perk">✅ <span>Statistik og salgsdata</span></div>
+        <div class="bd-perk">✅ <span>Prioriteret placering i søgning</span></div>
+      </div>
+
+      <div class="bd-plans" role="group" aria-label="Vælg abonnementsplan">
+        <button class="dealer-plan-btn selected" data-plan="monthly" onclick="selectDealerPlan(this)" type="button">
+          <div class="plan-name">Månedlig</div>
+          <div class="plan-price">199 <span class="plan-unit">kr./md</span></div>
+          <div class="plan-note">3 mdr. gratis herefter</div>
+        </button>
+        <button class="dealer-plan-btn" data-plan="yearly" onclick="selectDealerPlan(this)" type="button">
+          <div class="plan-badge">Spar 37%</div>
+          <div class="plan-name">Årlig</div>
+          <div class="plan-price">1.499 <span class="plan-unit">kr./år</span></div>
+          <div class="plan-note">svarende til 125 kr./md</div>
+        </button>
+      </div>
+
+      <div class="bd-form">
+        <h3 class="bd-form-title">Butiksinformation</h3>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Adresse</label><input type="text" id="dealer-address" placeholder="f.eks. Vesterbrogade 42" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group full"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+        </div>
+        <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Fortsæt til betaling →</button>
+        <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;">
+          Betaling via Stripe — kort og MobilePay accepteres. Ingen binding.
+        </p>
+      </div>
+    </div>`;
+}
+
 async function submitDealerApplication() {
   if (!currentUser) {
-    closeBecomeDealerModal();
     openLoginModal();
     showToast('⚠️ Log ind for at blive forhandler');
     return;
