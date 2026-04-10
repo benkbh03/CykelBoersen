@@ -957,6 +957,47 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .modal-wide { max-width: 780px; }
 .modal-seller-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; font-weight: 500; }
 
+/* Rating modal */
+.rate-modal { max-width: 480px; }
+.rate-modal-section {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--sand);
+  border-radius: 12px;
+}
+.rate-modal-person {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--charcoal);
+}
+.rate-modal-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: block;
+}
+.rate-stars {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.rate-stars .star-pick {
+  font-size: 2rem;
+}
+.rate-comment {
+  width: 100%;
+  min-height: 70px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  resize: vertical;
+  background: #fff;
+}
+.rate-comment:focus { outline: none; border-color: var(--rust); }
+
 /* Seller toggle */
 .seller-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
 .seller-type-btn {
