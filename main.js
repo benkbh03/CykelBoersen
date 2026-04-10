@@ -728,7 +728,7 @@ async function openUserProfile(userId) {
 
     const dataPromise = Promise.all([
       safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
-      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
       safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
     ]);
@@ -1130,7 +1130,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -1569,6 +1569,7 @@ async function submitSellPage() {
     const condition = document.getElementById('sell-condition')?.value;
     const wheelSize = document.getElementById('sell-wheel-size')?.value || null;
     const warranty  = document.getElementById('sell-warranty')?.value?.trim() || null;
+    const color     = document.getElementById('sell-color')?.value?.trim() || null;
 
     if (!brand || !model || !price || !city || !type || !condition) {
       showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
@@ -1581,6 +1582,7 @@ async function submitSellPage() {
       type, size: size || null, condition,
       wheel_size: wheelSize || null,
       warranty: warranty || null,
+      color: color || null,
       title: `${brand} ${model}`,
       is_active: true,
     };
@@ -2375,8 +2377,9 @@ function buildBikeBodyHTML(b) {
           ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
           ${b.size ? `<span class="detail-tag">Str. ${b.size}</span>` : ''}
           ${b.condition ? `<span class="detail-tag">${b.condition}</span>` : ''}
+          ${b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : ''}
           ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
-          ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${b.warranty}</span>` : ''}
+          ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${esc(b.warranty)}</span>` : ''}
         </div>
         ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>` : ''}
         <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
@@ -2686,6 +2689,10 @@ function renderSellPage() {
               <label>By *</label>
               <input type="text" id="sell-city" placeholder="f.eks. København">
             </div>
+            <div class="form-group">
+              <label>Farve</label>
+              <input type="text" id="sell-color" placeholder="f.eks. Sort, Hvid/Rød">
+            </div>
             <div class="form-group full">
               <label>Beskrivelse</label>
               <textarea id="sell-desc" placeholder="Beskriv din cykel — stand, udstyr, service, historik..." rows="5"></textarea>
@@ -2850,7 +2857,7 @@ async function fetchUserProfileData(userId) {
   const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
   const dataPromise = Promise.all([
     safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
-    safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+    safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
     safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
     safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
   ]);
@@ -2873,7 +2880,7 @@ async function fetchDealerProfileData(dealerId) {
   const [r1, r2, r3] = await Promise.race([
     Promise.all([
       safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, avatar_url, created_at, bio, last_seen').eq('id', dealerId).single()),
-      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
+      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', dealerId).order('created_at', { ascending: false })),
     ]),
     new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000)),
@@ -4102,7 +4109,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
@@ -4217,6 +4224,7 @@ async function openEditModal(id) {
   document.getElementById('edit-price').value         = b.price || '';
   document.getElementById('edit-year').value          = b.year || '';
   document.getElementById('edit-city').value          = b.city || '';
+  document.getElementById('edit-color').value         = b.color || '';
   document.getElementById('edit-description').value   = b.description || '';
   document.getElementById('edit-type').value          = b.type || '';
   document.getElementById('edit-size').value          = b.size || '';
@@ -4378,6 +4386,7 @@ async function saveEditedListing() {
     price:       parseInt(document.getElementById('edit-price').value),
     year:        parseInt(document.getElementById('edit-year').value) || null,
     city:        document.getElementById('edit-city').value,
+    color:       document.getElementById('edit-color').value.trim() || null,
     description: document.getElementById('edit-description').value,
     type:        document.getElementById('edit-type').value,
     size:        document.getElementById('edit-size').value,
