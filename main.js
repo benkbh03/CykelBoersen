@@ -4178,13 +4178,33 @@ async function handleResetPassword() {
   if (!pw1 || pw1.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
   if (pw1 !== pw2)             { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
 
-  const { error } = await supabase.auth.updateUser({ password: pw1 });
-  if (error) { showToast('❌ Kunne ikke opdatere adgangskode'); console.error(error); return; }
+  const btn = document.querySelector('[onclick="handleResetPassword()"]');
+  const originalText = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = 'Opdaterer...'; }
 
-  document.getElementById('reset-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  history.replaceState(null, '', window.location.pathname);
-  showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
+  try {
+    // Luk modal omgående for at vise fraktion
+    document.getElementById('reset-modal').classList.remove('open');
+    document.body.style.overflow = '';
+
+    // Opdater password med timeout (10 sec)
+    const updatePromise = supabase.auth.updateUser({ password: pw1 });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), 10000)
+    );
+
+    await Promise.race([updatePromise, timeoutPromise]);
+
+    history.replaceState(null, '', window.location.pathname);
+    showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
+  } catch (error) {
+    // Åben modal igen hvis der var fejl
+    document.getElementById('reset-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (btn) { btn.textContent = originalText; btn.disabled = false; }
+    showToast('❌ Kunne ikke opdatere adgangskode');
+    console.error(error);
+  }
 }
 
 function closeResetModal() {
