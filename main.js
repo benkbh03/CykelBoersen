@@ -255,6 +255,12 @@ async function init() {
   if (hashParams.get('type') === 'signup') {
     history.replaceState(null, '', window.location.pathname);
     dismissEmailBanner();
+    // Synk email_verified til profil for at vise badge til andre brugere
+    if (currentUser) {
+      supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
+        if (currentProfile) currentProfile.email_verified = true;
+      });
+    }
     showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
   } else if (hashParams.get('type') === 'recovery') {
     history.replaceState(null, '', window.location.pathname);
@@ -344,6 +350,12 @@ function checkEmailConfirmed() {
   if (!banner || !currentUser) return;
   if (currentUser.email_confirmed_at) {
     banner.style.display = 'none';
+    // Synk email_verified til profil hvis ikke allerede sat
+    if (currentProfile && !currentProfile.email_verified) {
+      supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
+        if (currentProfile) currentProfile.email_verified = true;
+      });
+    }
   } else {
     banner.style.display = 'block';
   }
@@ -616,7 +628,7 @@ async function openDealerProfile(dealerId) {
   try {
     const bikesFetch = supabase
       .from('bikes')
-      .select('*, profiles(name, seller_type, shop_name, verified, id_verified, phone_verified), bike_images(url, is_primary)')
+      .select('*, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
       .eq('user_id', dealerId)
       .eq('is_active', true)
       .order('created_at', { ascending: false });
@@ -867,7 +879,7 @@ async function openUserProfile(userId) {
         <h2 class="up-name">
           ${esc(displayName)}
           ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-          ${profile.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
+          ${profile.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
         </h2>
         ${isDealer && profile.address ? `<div class="up-city">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">📍 ${esc(profile.city)}</div>` : ''}
         ${lastSeenText ? `<div class="up-last-seen">🕐 ${lastSeenText}</div>` : ''}
@@ -1008,8 +1020,8 @@ async function loadUserAchievements(userId, activeBikes, soldBikes, reviewList, 
     // Top-rated: 4.5+ gennemsnit med mindst 3 vurderinger
     if (reviewList.length >= 3 && avgRating >= 4.5) badges.push({ icon: '⭐', label: 'Topvurderet', title: `${avgRating.toFixed(1)} gns. fra ${reviewList.length} vurderinger` });
 
-    // Verificeret: telefon
-    if (profile.phone_verified) badges.push({ icon: '📱', label: 'Telefon verificeret', title: 'Har verificeret sit telefonnummer' });
+    // Verificeret: e-mail
+    if (profile.email_verified) badges.push({ icon: '✉️', label: 'E-mail verificeret', title: 'Har verificeret sin e-mail' });
 
     // Veteranmedlem: 1+ år
     if (profile.created_at) {
@@ -1122,7 +1134,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, phone_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -1246,7 +1258,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
             <div class="seller-info">
               <div class="seller-avatar">${esc(initials)}</div>
               <div>
-                <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}${profile.id_verified ? ' <span class="id-badge" title="ID verificeret">🪪</span>' : ''}</div>
+                <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
                 </span>
@@ -2301,7 +2313,7 @@ async function fetchBikeById(bikeId) {
   }
   const fetchPromise = supabase
     .from('bikes')
-    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified, phone_verified), bike_images(url, is_primary)')
+    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified, email_verified), bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
   const timeoutPromise = new Promise((_, reject) =>
@@ -2374,7 +2386,7 @@ function buildBikeBodyHTML(b) {
         <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
           <div class="seller-avatar-large">${initials}</div>
           <div style="flex:1">
-            <div class="seller-detail-name">${sellerName || 'Ukendt'}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.id_verified ? ' <span class="id-badge" title="ID verificeret">🪪</span>' : ''}</div>
+            <div class="seller-detail-name">${sellerName || 'Ukendt'}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
             <div class="seller-detail-city">${profile.city || ''}</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;">
               <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
@@ -3000,7 +3012,7 @@ function buildUserProfilePageHTML(data) {
           <h1 class="pp-name">
             ${esc(displayName)}
             ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${profile.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
+            ${profile.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
           </h1>
           <div class="pp-badges">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
@@ -3122,7 +3134,7 @@ function buildDealerProfilePageHTML(data) {
           <h1 class="pp-name">
             ${esc(displayName)}
             ${dealer.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${dealer.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
+            ${dealer.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
           </h1>
           <div class="pp-badges">
             <span class="badge badge-dealer">🏪 Forhandler</span>
@@ -3286,7 +3298,7 @@ function buildMyProfilePageHTML() {
           <h2 class="mp-name">
             ${esc(displayName)}
             ${p.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${p.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
+            ${p.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
           </h2>
           <div class="mp-meta">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
@@ -3325,13 +3337,8 @@ function buildMyProfilePageHTML() {
             <span class="mp-verify-label">E-mail</span>
             <span class="mp-verify-check">${u?.email_confirmed_at ? '✓' : '–'}</span>
           </div>
-          <div class="mp-verify-item ${p.phone_verified ? 'verified' : ''}">
-            <span class="mp-verify-icon">📱</span>
-            <span class="mp-verify-label">Telefon</span>
-            <span class="mp-verify-check">${p.phone_verified ? '✓' : '–'}</span>
-          </div>
         </div>
-        ${(!u?.email_confirmed_at || !p.phone_verified) ? '<button class="mp-verify-cta" onclick="openProfileModal()">Verificér nu →</button>' : ''}
+        ${!u?.email_confirmed_at ? '<button class="mp-verify-cta" onclick="openProfileModal()">Bekræft e-mail →</button>' : ''}
       </div>` : ''}
 
       <div id="mp-achievements" class="mp-achievements"></div>
@@ -4094,7 +4101,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, phone_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
@@ -6083,7 +6090,7 @@ window.setView    = setView;
 window.locateUser = locateUser;
 
 /* ============================================================
-   VERIFICERING – E-MAIL & TELEFON
+   VERIFICERING – E-MAIL
    ============================================================ */
 
 function updateVerifyUI() {
@@ -6107,131 +6114,6 @@ function updateVerifyUI() {
       emailStatus.className   = 'verify-row-status';
     }
   }
-
-  // Telefon status
-  const phoneValue  = document.getElementById('verify-phone-value');
-  const phoneStatus = document.getElementById('verify-phone-status');
-  const phoneFlow   = document.getElementById('phone-verify-flow');
-
-  if (phoneValue) {
-    phoneValue.textContent = p.phone_verified && u?.phone
-      ? formatDanishPhone(u.phone)
-      : p.phone ? esc(p.phone) + ' (ikke verificeret)' : 'Ikke tilføjet';
-  }
-
-  if (phoneStatus) {
-    if (p.phone_verified) {
-      phoneStatus.textContent = 'Verificeret';
-      phoneStatus.className   = 'verify-row-status verify-status-ok';
-      if (phoneFlow) phoneFlow.style.display = 'none';
-    } else {
-      phoneStatus.innerHTML   = '<button class="verify-action-btn" onclick="startPhoneVerify()">Verificér</button>';
-      phoneStatus.className   = 'verify-row-status';
-    }
-  }
-}
-
-function formatDanishPhone(phone) {
-  if (!phone) return '';
-  // Fjern +45 prefix for visning
-  const num = phone.replace('+45', '').replace(/\s/g, '');
-  if (num.length === 8) return num.slice(0,2) + ' ' + num.slice(2,4) + ' ' + num.slice(4,6) + ' ' + num.slice(6,8);
-  return phone;
-}
-
-function startPhoneVerify() {
-  const flow = document.getElementById('phone-verify-flow');
-  if (flow) flow.style.display = 'block';
-  document.getElementById('phone-step-input').style.display = 'block';
-  document.getElementById('phone-step-otp').style.display   = 'none';
-  const input = document.getElementById('phone-verify-input');
-  if (input) {
-    // Forindstil med nuværende telefon hvis det findes
-    const existing = (currentProfile?.phone || '').replace('+45', '').replace(/\s/g, '');
-    if (existing) input.value = existing;
-    input.focus();
-  }
-}
-
-var _phoneToVerify = null;
-
-async function sendPhoneOTP() {
-  const raw   = (document.getElementById('phone-verify-input')?.value || '').replace(/\s/g, '');
-  if (!raw || raw.length < 8) { showToast('⚠️ Indtast et gyldigt 8-cifret mobilnummer'); return; }
-
-  const phone = '+45' + raw;
-  _phoneToVerify = phone;
-
-  const btn = document.getElementById('phone-send-otp-btn');
-  const origText = btn.textContent;
-  btn.disabled    = true;
-  btn.textContent = 'Sender...';
-
-  try {
-    const { error } = await supabase.auth.updateUser({ phone });
-    if (error) {
-      showToast('❌ Kunne ikke sende kode: ' + (error.message || 'Ukendt fejl'));
-      return;
-    }
-    showToast('✅ Bekræftelseskode sendt via SMS');
-    document.getElementById('phone-step-input').style.display = 'none';
-    document.getElementById('phone-step-otp').style.display   = 'block';
-    document.getElementById('phone-otp-input')?.focus();
-  } finally {
-    btn.disabled    = false;
-    btn.textContent = origText;
-  }
-}
-
-async function verifyPhoneOTP() {
-  const token = (document.getElementById('phone-otp-input')?.value || '').replace(/\s/g, '');
-  if (!token || token.length !== 6) { showToast('⚠️ Indtast den 6-cifrede kode'); return; }
-  if (!_phoneToVerify) { showToast('⚠️ Prøv igen — tryk "Send bekræftelseskode" først'); return; }
-
-  const btn = document.getElementById('phone-verify-otp-btn');
-  const origText = btn.textContent;
-  btn.disabled    = true;
-  btn.textContent = 'Bekræfter...';
-
-  try {
-    const { error } = await supabase.auth.verifyOtp({
-      phone: _phoneToVerify,
-      token,
-      type: 'phone_change',
-    });
-
-    if (error) {
-      showToast('❌ Forkert kode — prøv igen');
-      return;
-    }
-
-    // Opdater profil med verificeret telefon
-    await supabase.from('profiles').update({
-      phone:          _phoneToVerify,
-      phone_verified: true,
-    }).eq('id', currentUser.id);
-
-    currentProfile = { ...currentProfile, phone: _phoneToVerify, phone_verified: true };
-
-    // Refresh auth user data
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) currentUser = user;
-
-    showToast('✅ Telefonnummer verificeret!');
-    document.getElementById('phone-verify-flow').style.display = 'none';
-    updateVerifyUI();
-  } finally {
-    btn.disabled    = false;
-    btn.textContent = origText;
-  }
-}
-
-function resetPhoneVerifyFlow() {
-  _phoneToVerify = null;
-  document.getElementById('phone-step-input').style.display = 'block';
-  document.getElementById('phone-step-otp').style.display   = 'none';
-  document.getElementById('phone-otp-input').value = '';
-  document.getElementById('phone-verify-input')?.focus();
 }
 
 /* ── ADMIN: ID ANSØGNINGER ── */
@@ -6304,10 +6186,6 @@ async function rejectId(userId) {
   }).catch(() => {});
 }
 
-window.sendPhoneOTP         = sendPhoneOTP;
-window.verifyPhoneOTP       = verifyPhoneOTP;
-window.startPhoneVerify     = startPhoneVerify;
-window.resetPhoneVerifyFlow = resetPhoneVerifyFlow;
 window.updateVerifyUI       = updateVerifyUI;
 window.approveId          = approveId;
 window.rejectId           = rejectId;

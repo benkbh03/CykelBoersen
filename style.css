@@ -2026,45 +2026,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .verify-action-btn:hover { background: var(--forest-light); }
 
-/* Telefon OTP flow */
-.phone-verify-label {
-  font-size: 0.82rem; color: var(--charcoal);
-  font-weight: 500; margin-bottom: 8px; display: block;
-  margin-top: 14px;
-}
-.phone-verify-input-row {
-  display: flex; align-items: center; gap: 0;
-  border: 1.5px solid var(--border); border-radius: 10px;
-  overflow: hidden; background: var(--cream);
-  margin-bottom: 12px;
-}
-.phone-prefix {
-  padding: 10px 12px; background: var(--sand);
-  font-size: 0.9rem; font-weight: 600;
-  color: var(--muted); border-right: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.phone-verify-input-row input {
-  flex: 1; border: none; outline: none;
-  padding: 10px 14px; font-size: 0.95rem;
-  font-family: 'DM Sans', sans-serif;
-  background: transparent; color: var(--charcoal);
-}
-.otp-input {
-  width: 100%; padding: 12px 14px;
-  border: 1.5px solid var(--border); border-radius: 10px;
-  font-size: 1.4rem; font-weight: 700;
-  text-align: center; letter-spacing: 0.3em;
-  font-family: 'DM Sans', sans-serif;
-  background: var(--cream); color: var(--charcoal);
-  outline: none; margin-bottom: 12px;
-  transition: border-color 0.2s;
-}
-.otp-input:focus { border-color: var(--forest); }
-.otp-input::placeholder { font-size: 1rem; letter-spacing: 0.15em; font-weight: 400; }
-
-/* Phone badge (inline) */
-.phone-badge {
+/* Email badge (inline) */
+.email-badge {
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 0.7rem;
   margin-left: 4px; vertical-align: middle;
