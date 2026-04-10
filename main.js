@@ -1905,7 +1905,7 @@ async function saveProfile() {
     var oldAddr = (currentProfile && currentProfile.address || '').toLowerCase().trim();
     var oldCity = (currentProfile && currentProfile.city || '').toLowerCase().trim();
     if (oldAddr && oldCity) {
-      var oldDawaKey = 'dawa:' + oldAddr + ', ' + oldCity;
+      var oldDawaKey = 'dawa3:' + oldAddr + ', ' + oldCity;
       delete _geocodeCache[oldDawaKey];
       _saveGeocodeCache();
     }
