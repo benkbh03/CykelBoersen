@@ -1984,31 +1984,31 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .verify-box {
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  margin: 16px 0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 0;
 }
 .verify-box-title {
   font-family: 'Fraunces', serif;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
-.verify-box-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 16px; }
+.verify-box-sub { font-size: 0.74rem; color: var(--muted); margin-bottom: 10px; }
 .verify-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 10px;
+  padding: 8px 10px;
   background: var(--cream);
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--border);
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
-.verify-row-icon { font-size: 1.2rem; flex-shrink: 0; }
+.verify-row-icon { font-size: 1rem; flex-shrink: 0; }
 .verify-row-body { flex: 1; min-width: 0; }
-.verify-row-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
-.verify-row-value { font-size: 0.88rem; font-weight: 500; color: var(--charcoal); }
+.verify-row-label { font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+.verify-row-value { font-size: 0.82rem; font-weight: 500; color: var(--charcoal); }
 .verify-row-status { flex-shrink: 0; }
 .verify-status-ok {
   background: #E8F0E8; color: #2A7D4F;
