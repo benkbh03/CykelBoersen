@@ -241,6 +241,53 @@ nav {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── CTA SEKTION ── */
+.cta-hero {
+  background: var(--sand);
+  padding: 64px 48px;
+  text-align: center;
+}
+.cta-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.cta-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  margin: 0 0 20px 0;
+  text-wrap: balance;
+}
+.cta-subheading {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  margin: 0 0 32px 0;
+}
+.cta-button {
+  background: var(--rust);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 16px 40px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  letter-spacing: 0.01em;
+}
+.cta-button:hover {
+  background: var(--rust-light);
+  transform: translateY(-2px);
+}
+
 /* ── SØGEBAR ── */
 .search-section { background: var(--sand); padding: 20px 48px; border-bottom: 1px solid var(--border); }
 .search-bar { display: flex; gap: 12px; max-width: 900px; margin: 0 auto; align-items: center; }
@@ -1556,6 +1603,10 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .search-bar { flex-direction: column; gap: 10px; border-radius: 12px; padding: 14px; }
   .search-bar input, .search-bar select, .search-bar button { width: 100%; border-radius: 8px; font-size: 0.9rem; }
   .search-bar button { padding: 12px; }
+  .cta-hero { padding: 48px 24px; }
+  .cta-headline { font-size: 2rem; letter-spacing: -0.01em; }
+  .cta-subheading { font-size: 0.9rem; }
+  .cta-button { width: 100%; padding: 14px 32px; }
   .filters-row { padding: 12px 16px; gap: 8px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .filters-row::-webkit-scrollbar { display: none; }
   .filters-label { display: none; }
