@@ -242,6 +242,42 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ── BUD ACCEPTERET ──────────────────────────────────────
+    if (payload.type === "bid_accepted") {
+      const { bike_id, bike_brand, bike_model, bid_amount, bidder_id, seller_name } = payload;
+      if (!bike_id || !bidder_id) {
+        return new Response("Manglende felter", { status: 400, headers: corsHeaders });
+      }
+
+      const { data: { user: bidderUser }, error: authErr } = await supabase.auth.admin.getUserById(bidder_id);
+      if (authErr || !bidderUser?.email) {
+        console.error("Byder email ikke fundet:", authErr?.message ?? "ukendt fejl");
+        return new Response("Bidder email not found", { status: 400, headers: corsHeaders });
+      }
+
+      const { data: bidderProfile } = await supabase.from("profiles").select("name").eq("id", bidder_id).single();
+      const bidderName = bidderProfile?.name ?? "køber";
+      const bikeName = `${bike_brand || "cykel"} ${bike_model || ""}`.trim();
+
+      const html = emailWrapper(`
+        <h2 style="color:#2A7D4F;font-size:1.1rem;margin:0 0 12px;">✅ Dit bud blev accepteret! 🎉</h2>
+        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
+          Hej ${bidderName},<br><br>
+          <strong style="color:#1A1A18;">${seller_name || "Sælger"}</strong> har accepteret dit bud på
+          <strong style="color:#1A1A18;">${bikeName}</strong> for <strong style="color:#2A7D4F;">${bid_amount}</strong>!<br><br>
+          Nu er det tid til at kontakte hinanden og aftale overdragelsen.
+        </p>
+        <a href="https://cykelbørsen.dk/#/inbox"
+           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Gå til din indbakke →
+        </a>
+      `);
+
+      const result = await sendEmail(bidderUser.email, `✅ Dit bud blev accepteret – ${bikeName} – Cykelbørsen`, html);
+      console.log("Bud accepteret email sendt til:", bidderUser.email, "| ID:", result.id);
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── NY BESKED / BUD (eksisterende logik) ─────────────────
     let message = payload.record ?? null;
 

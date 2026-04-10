@@ -3979,6 +3979,12 @@ async function acceptBid(content, isInbox = false) {
 
   if (!confirm(`Vil du acceptere ${amount}?\nAnnoncen markeres som solgt og køber får besked.`)) return;
 
+  // Hent cykel-info for notifikation
+  const { data: bikeData } = await supabase.from('bikes')
+    .select('brand, model')
+    .eq('id', thread.bikeId)
+    .single();
+
   const { error: soldErr } = await supabase.from('bikes')
     .update({ is_active: false })
     .eq('id', thread.bikeId)
@@ -3995,7 +4001,23 @@ async function acceptBid(content, isInbox = false) {
   }).select('id').single();
 
   if (inserted?.id) {
+    // Send besked-notifikation
     supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } }).catch(() => {});
+
+    // Send dedikeret "bud accepteret" email til budgiver
+    const bidMatch = content.match(/💰 Bud: (.+) kr\./);
+    const bidAmount = bidMatch ? bidMatch[1] + ' kr.' : 'buddet';
+    supabase.functions.invoke('notify-message', {
+      body: {
+        type: 'bid_accepted',
+        bike_id: thread.bikeId,
+        bike_brand: bikeData?.brand,
+        bike_model: bikeData?.model,
+        bid_amount: bidAmount,
+        bidder_id: thread.otherId,
+        seller_name: currentProfile?.shop_name || currentProfile?.name,
+      }
+    }).catch(() => {});
   }
 
   thread.bikeActive = false;
