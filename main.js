@@ -6155,6 +6155,9 @@ async function initMap() {
 
   if (!result.data || result.data.length === 0) return;
 
+  // Spor forhandler-IDs der allerede har en markør fra deres annoncer
+  var dealersWithMarkers = new Set();
+
   // Funktion til at tilføje en markør på kortet
   function addBikeMarker(b, coords, isPrecise) {
     // Forhandlere med præcis adresse: ingen offset
@@ -6168,6 +6171,8 @@ async function initMap() {
     var sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
     var isVerified = profile.verified;
     var isDealer   = sellerType === 'dealer';
+
+    if (isDealer) dealersWithMarkers.add(b.user_id);
 
     var color = isDealer ? '#2A3D2E' : '#C8502A';
     var icon = L.divIcon({
@@ -6218,6 +6223,47 @@ async function initMap() {
     });
 
   await Promise.all(geocodePromises);
+
+  // Tilføj markører for verificerede forhandlere med adresse der IKKE allerede har en annonce-markør
+  var dealerProfileResult = await supabase
+    .from('profiles')
+    .select('id, shop_name, name, city, address')
+    .eq('seller_type', 'dealer')
+    .eq('verified', true)
+    .not('address', 'is', null)
+    .not('address', 'eq', '');
+
+  if (dealerProfileResult.data) {
+    var dealerOnlyPromises = dealerProfileResult.data
+      .filter(function(d) { return !dealersWithMarkers.has(d.id) && d.address && d.city; })
+      .map(function(d) {
+        return geocodeAddress(d.address, d.city)
+          .then(function(coords) { return coords || geocodeCity(d.city); })
+          .then(function(coords) {
+            if (!coords) return;
+            var displayName = d.shop_name || d.name || 'Forhandler';
+            var lat = coords[0] + (Math.random() - 0.5) * 0.0002;
+            var lng = coords[1] + (Math.random() - 0.5) * 0.0002;
+            var icon = L.divIcon({
+              html: '<div style="background:#2A3D2E;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏪</div>',
+              className: '',
+              iconSize: [32, 32],
+              iconAnchor: [16, 16],
+            });
+            var marker = L.marker([lat, lng], { icon: icon }).addTo(mapInstance);
+            var popupHtml = '<div class="map-popup">'
+              + '<div class="map-popup-title">' + esc(displayName)
+              + ' <span style="background:#2A7D4F;color:white;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;margin-left:4px;">✓</span></div>'
+              + '<div class="map-popup-meta" style="color:#8A8578;">Ingen aktive annoncer</div>'
+              + '<button class="map-popup-btn" onclick="navigateToDealer(\'' + d.id + '\')">Se forhandler →</button>'
+              + '</div>';
+            marker.bindPopup(popupHtml, { maxWidth: 280, closeButton: false });
+            marker.on('click', function() { marker.openPopup(); });
+            mapMarkers.push(marker);
+          });
+      });
+    await Promise.all(dealerOnlyPromises);
+  }
 
   // Zoom til markørerne hvis der er nogen
   if (mapMarkers.length > 0) {
