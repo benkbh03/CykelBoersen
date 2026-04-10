@@ -1010,6 +1010,32 @@
     </div>
   </div>
 
+  <!-- Rating modal - pops up after bid acceptance -->
+  <div class="modal-overlay" id="rate-now-modal" role="dialog" aria-modal="true" style="display:none;z-index:5500;" onclick="if(event.target===this)closeRateModal()">
+    <div class="modal rate-modal" style="max-width:480px;">
+      <div class="modal-header">
+        <h2>Giv en vurdering</h2>
+        <button class="modal-close" onclick="closeRateModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:24px;">
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">
+          Nu kan I begge vurdere hinanden for denne handel. Det hjælper os med at opbygge en troværdig community.
+        </p>
+        <div id="rate-modal-content">
+          <!-- Dynamically filled: buyer/seller names and rating form -->
+        </div>
+        <div style="display:flex;gap:12px;margin-top:24px;">
+          <button class="btn-secondary" style="flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--charcoal);font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;" onclick="closeRateModal()">
+            Skip for nu
+          </button>
+          <button id="rate-submit-btn" style="flex:1;padding:12px;border-radius:8px;border:none;background:var(--rust);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;" onclick="submitRatingFromModal()">
+            Send vurdering
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="main.js"></script>
 </body>

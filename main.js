@@ -1101,6 +1101,87 @@ async function submitReview(reviewedUserId) {
   openUserProfile(reviewedUserId);
 }
 
+// Global state for rating modal
+let _ratingModalUserId = null;
+let _ratingModalUserName = null;
+
+function openRateModal(otherId, otherName, bikeInfo) {
+  // Store the user we're about to rate
+  _ratingModalUserId = otherId;
+  _ratingModalUserName = otherName;
+
+  // Build and insert the modal content
+  const content = `
+    <div class="rate-modal-section">
+      <div class="rate-modal-person">Vurder ${esc(otherName)}</div>
+      <label class="rate-modal-label">Hvordan var din handel?</label>
+      <div class="rate-stars" id="rate-stars">
+        ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
+      </div>
+      <label class="rate-modal-label">Kommentar (valgfrit)</label>
+      <textarea id="rate-modal-comment" class="rate-comment" placeholder="Fortæl om din handel..."></textarea>
+    </div>
+  `;
+
+  document.getElementById('rate-modal-content').innerHTML = content;
+
+  // Set up star hover listeners
+  document.querySelectorAll('#rate-stars .star-pick').forEach(s => {
+    s.addEventListener('mouseover', () => highlightStars(+s.dataset.val));
+    s.addEventListener('mouseout',  () => highlightStars(window._pickedStar || 0));
+  });
+
+  // Reset star picker state
+  window._pickedStar = 0;
+  document.querySelectorAll('#rate-stars .star-pick').forEach(s => s.classList.remove('active'));
+
+  // Show the modal
+  const modal = document.getElementById('rate-now-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  enableFocusTrap('rate-now-modal');
+}
+
+function closeRateModal() {
+  const modal = document.getElementById('rate-now-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+  _ratingModalUserId = null;
+  _ratingModalUserName = null;
+  window._pickedStar = 0;
+}
+
+async function submitRatingFromModal() {
+  if (!_ratingModalUserId) return;
+
+  const rating  = window._pickedStar || 0;
+  const comment = document.getElementById('rate-modal-comment')?.value?.trim() || '';
+
+  if (!currentUser) { showToast('⚠️ Log ind for at give en vurdering'); return; }
+  if (rating < 1)   { showToast('⚠️ Vælg et antal stjerner'); return; }
+
+  // Verificér at der er en budaccepterings-besked mellem de to brugere
+  const { data: tradeMsg } = await supabase.from('messages')
+    .select('id')
+    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${_ratingModalUserId}),and(sender_id.eq.${_ratingModalUserId},receiver_id.eq.${currentUser.id})`)
+    .ilike('content', '%accepteret%')
+    .limit(1);
+  const hasTraded = tradeMsg?.length > 0;
+  if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
+
+  const { error } = await supabase.from('reviews').insert({
+    reviewer_id:      currentUser.id,
+    reviewed_user_id: _ratingModalUserId,
+    rating,
+    comment: comment || null,
+  });
+
+  if (error) { showToast('❌ Kunne ikke sende vurdering'); console.error(error); return; }
+
+  showToast('✅ Vurdering sendt!');
+  closeRateModal();
+}
+
 function closeUserProfileModal() {
   const modal = document.getElementById('user-profile-modal');
   if (modal) modal.style.display = 'none';
@@ -3979,6 +4060,12 @@ async function acceptBid(content, isInbox = false) {
 
   if (!confirm(`Vil du acceptere ${amount}?\nAnnoncen markeres som solgt og køber får besked.`)) return;
 
+  // Hent cykel-info for notifikation
+  const { data: bikeData } = await supabase.from('bikes')
+    .select('brand, model')
+    .eq('id', thread.bikeId)
+    .single();
+
   const { error: soldErr } = await supabase.from('bikes')
     .update({ is_active: false })
     .eq('id', thread.bikeId)
@@ -3995,13 +4082,31 @@ async function acceptBid(content, isInbox = false) {
   }).select('id').single();
 
   if (inserted?.id) {
+    // Send besked-notifikation
     supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } }).catch(() => {});
+
+    // Send dedikeret "bud accepteret" email til budgiver
+    const bidMatch = content.match(/💰 Bud: (.+) kr\./);
+    const bidAmount = bidMatch ? bidMatch[1] + ' kr.' : 'buddet';
+    supabase.functions.invoke('notify-message', {
+      body: {
+        type: 'bid_accepted',
+        bike_id: thread.bikeId,
+        bike_brand: bikeData?.brand,
+        bike_model: bikeData?.model,
+        bid_amount: bidAmount,
+        bidder_id: thread.otherId,
+        seller_name: currentProfile?.shop_name || currentProfile?.name,
+      }
+    }).catch(() => {});
   }
 
   thread.bikeActive = false;
   loadBikes();
   updateFilterCounts();
-  openUserProfileWithReview(thread.otherId);
+  // Open rating modal immediately after bid is accepted
+  const bikeInfo = bikeData ? `${bikeData.brand} ${bikeData.model}` : 'annonce';
+  openRateModal(thread.otherId, thread.otherName, bikeInfo);
 }
 
 function closeThread() {
@@ -4178,13 +4283,33 @@ async function handleResetPassword() {
   if (!pw1 || pw1.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
   if (pw1 !== pw2)             { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
 
-  const { error } = await supabase.auth.updateUser({ password: pw1 });
-  if (error) { showToast('❌ Kunne ikke opdatere adgangskode'); console.error(error); return; }
+  const btn = document.querySelector('[onclick="handleResetPassword()"]');
+  const originalText = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = 'Opdaterer...'; }
 
-  document.getElementById('reset-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  history.replaceState(null, '', window.location.pathname);
-  showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
+  try {
+    // Luk modal omgående for at vise fraktion
+    document.getElementById('reset-modal').classList.remove('open');
+    document.body.style.overflow = '';
+
+    // Opdater password med timeout (10 sec)
+    const updatePromise = supabase.auth.updateUser({ password: pw1 });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), 10000)
+    );
+
+    await Promise.race([updatePromise, timeoutPromise]);
+
+    history.replaceState(null, '', window.location.pathname);
+    showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
+  } catch (error) {
+    // Åben modal igen hvis der var fejl
+    document.getElementById('reset-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (btn) { btn.textContent = originalText; btn.disabled = false; }
+    showToast('❌ Kunne ikke opdatere adgangskode');
+    console.error(error);
+  }
 }
 
 function closeResetModal() {
@@ -6266,6 +6391,9 @@ window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
 window.pickStar              = pickStar;
 window.submitReview          = submitReview;
+window.openRateModal         = openRateModal;
+window.closeRateModal        = closeRateModal;
+window.submitRatingFromModal = submitRatingFromModal;
 window.toggleProfileContact  = toggleProfileContact;
 window.sendProfileMessage    = sendProfileMessage;
 window.toggleRestDealers     = toggleRestDealers;
