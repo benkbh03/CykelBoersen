@@ -616,7 +616,7 @@ async function openDealerProfile(dealerId) {
   try {
     const bikesFetch = supabase
       .from('bikes')
-      .select('*, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
+      .select('*, profiles(name, seller_type, shop_name, verified, id_verified, phone_verified), bike_images(url, is_primary)')
       .eq('user_id', dealerId)
       .eq('is_active', true)
       .order('created_at', { ascending: false });
@@ -867,7 +867,7 @@ async function openUserProfile(userId) {
         <h2 class="up-name">
           ${esc(displayName)}
           ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-          ${profile.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
+          ${profile.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
         </h2>
         ${isDealer && profile.address ? `<div class="up-city">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">📍 ${esc(profile.city)}</div>` : ''}
         ${lastSeenText ? `<div class="up-last-seen">🕐 ${lastSeenText}</div>` : ''}
@@ -1008,8 +1008,8 @@ async function loadUserAchievements(userId, activeBikes, soldBikes, reviewList, 
     // Top-rated: 4.5+ gennemsnit med mindst 3 vurderinger
     if (reviewList.length >= 3 && avgRating >= 4.5) badges.push({ icon: '⭐', label: 'Topvurderet', title: `${avgRating.toFixed(1)} gns. fra ${reviewList.length} vurderinger` });
 
-    // Verificeret: ID-verificeret
-    if (profile.id_verified) badges.push({ icon: '🪪', label: 'ID-verificeret', title: 'Har verificeret sin identitet' });
+    // Verificeret: telefon
+    if (profile.phone_verified) badges.push({ icon: '📱', label: 'Telefon verificeret', title: 'Har verificeret sit telefonnummer' });
 
     // Veteranmedlem: 1+ år
     if (profile.created_at) {
@@ -1122,7 +1122,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, phone_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -1777,7 +1777,7 @@ function showProfileData() {
     shopGroup.style.display    = dealer ? 'flex' : 'none';
     addressGroup.style.display = dealer ? 'flex' : 'none';
   };
-  updateIdVerifyUI();
+  updateVerifyUI();
 }
 
 function switchProfileTab(tab) {
@@ -2301,7 +2301,7 @@ async function fetchBikeById(bikeId) {
   }
   const fetchPromise = supabase
     .from('bikes')
-    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified), bike_images(url, is_primary)')
+    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified, phone_verified), bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
   const timeoutPromise = new Promise((_, reject) =>
@@ -3000,7 +3000,7 @@ function buildUserProfilePageHTML(data) {
           <h1 class="pp-name">
             ${esc(displayName)}
             ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${profile.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
+            ${profile.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
           </h1>
           <div class="pp-badges">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
@@ -3122,7 +3122,7 @@ function buildDealerProfilePageHTML(data) {
           <h1 class="pp-name">
             ${esc(displayName)}
             ${dealer.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${dealer.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
+            ${dealer.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
           </h1>
           <div class="pp-badges">
             <span class="badge badge-dealer">🏪 Forhandler</span>
@@ -3286,7 +3286,7 @@ function buildMyProfilePageHTML() {
           <h2 class="mp-name">
             ${esc(displayName)}
             ${p.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${p.id_verified ? '<span class="id-badge" title="ID verificeret">🪪</span>' : ''}
+            ${p.phone_verified ? '<span class="phone-badge" title="Telefon verificeret">📱</span>' : ''}
           </h2>
           <div class="mp-meta">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
@@ -3316,6 +3316,23 @@ function buildMyProfilePageHTML() {
           <span class="mp-stat-label">Handler</span>
         </div>
       </div>
+
+      ${!isDealer ? `<div class="mp-verify-card">
+        <div class="mp-verify-title">Verificering</div>
+        <div class="mp-verify-items">
+          <div class="mp-verify-item ${u?.email_confirmed_at ? 'verified' : ''}">
+            <span class="mp-verify-icon">✉️</span>
+            <span class="mp-verify-label">E-mail</span>
+            <span class="mp-verify-check">${u?.email_confirmed_at ? '✓' : '–'}</span>
+          </div>
+          <div class="mp-verify-item ${p.phone_verified ? 'verified' : ''}">
+            <span class="mp-verify-icon">📱</span>
+            <span class="mp-verify-label">Telefon</span>
+            <span class="mp-verify-check">${p.phone_verified ? '✓' : '–'}</span>
+          </div>
+        </div>
+        ${(!u?.email_confirmed_at || !p.phone_verified) ? '<button class="mp-verify-cta" onclick="openProfileModal()">Verificér nu →</button>' : ''}
+      </div>` : ''}
 
       <div id="mp-achievements" class="mp-achievements"></div>
 
@@ -4077,7 +4094,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, phone_verified), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
@@ -6066,120 +6083,156 @@ window.setView    = setView;
 window.locateUser = locateUser;
 
 /* ============================================================
-   ID VERIFICERING
+   VERIFICERING – E-MAIL & TELEFON
    ============================================================ */
 
-var idDocFile = null;
+function updateVerifyUI() {
+  const u = currentUser;
+  const p = currentProfile || {};
 
-function previewIdDoc(input) {
-  if (!input.files || !input.files[0]) return;
-  const file = input.files[0];
-  const allowedIdTypes = [...ALLOWED_IMAGE_TYPES, 'application/pdf'];
-  if (!allowedIdTypes.includes(file.type)) {
-    showToast('⚠️ Kun billeder (JPG, PNG, WebP) og PDF er tilladt som ID-dokument');
-    input.value = '';
-    return;
-  }
-  if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-    showToast(`⚠️ Filen er for stor (maks ${MAX_IMAGE_SIZE_MB} MB)`);
-    input.value = '';
-    return;
-  }
-  idDocFile = file;
+  // Skjul for forhandlere
+  const verifyBox = document.getElementById('verify-box');
+  if (verifyBox) verifyBox.style.display = p.seller_type === 'dealer' ? 'none' : 'block';
 
-  var label = document.getElementById('id-upload-label');
-  if (label) label.textContent = idDocFile.name;
-
-  // Vis preview hvis billede
-  if (idDocFile.type.startsWith('image/')) {
-    var preview = document.getElementById('id-preview');
-    var img     = document.getElementById('id-preview-img');
-    if (preview && img) {
-      img.src = URL.createObjectURL(idDocFile);
-      preview.style.display = 'block';
+  // E-mail status
+  const emailValue  = document.getElementById('verify-email-value');
+  const emailStatus = document.getElementById('verify-email-status');
+  if (emailValue && u?.email) emailValue.textContent = u.email;
+  if (emailStatus) {
+    if (u?.email_confirmed_at) {
+      emailStatus.textContent = 'Verificeret';
+      emailStatus.className   = 'verify-row-status verify-status-ok';
+    } else {
+      emailStatus.innerHTML   = '<button class="verify-action-btn" onclick="resendConfirmationEmail()">Bekræft</button>';
+      emailStatus.className   = 'verify-row-status';
     }
   }
 
-  var submitBtn = document.getElementById('id-submit-btn');
-  if (submitBtn) submitBtn.style.display = 'block';
-}
+  // Telefon status
+  const phoneValue  = document.getElementById('verify-phone-value');
+  const phoneStatus = document.getElementById('verify-phone-status');
+  const phoneFlow   = document.getElementById('phone-verify-flow');
 
-async function submitIdVerification() {
-  if (!currentUser || !idDocFile) { showToast('⚠️ Vælg et dokument først'); return; }
-
-  showToast('⏳ Uploader dokument...');
-
-  var ext      = idDocFile.name.split('.').pop();
-  var filename = 'id-docs/' + currentUser.id + '/id-' + Date.now() + '.' + ext;
-
-  var uploadResult = await supabase.storage
-    .from('id-documents')
-    .upload(filename, idDocFile, { contentType: idDocFile.type, upsert: true });
-
-  if (uploadResult.error) {
-    showToast('❌ Upload fejlede — prøv igen');
-    console.error(uploadResult.error);
-    return;
+  if (phoneValue) {
+    phoneValue.textContent = p.phone_verified && u?.phone
+      ? formatDanishPhone(u.phone)
+      : p.phone ? esc(p.phone) + ' (ikke verificeret)' : 'Ikke tilføjet';
   }
 
-  var publicUrl = supabase.storage.from('id-documents').getPublicUrl(filename).data.publicUrl;
-
-  // Gem URL og status i profil
-  var updateResult = await supabase.from('profiles').update({
-    id_doc_url:    publicUrl,
-    id_verified:   false,
-    id_pending:    true,
-  }).eq('id', currentUser.id);
-
-  if (updateResult.error) {
-    showToast('❌ Noget gik galt — prøv igen');
-    return;
-  }
-
-  // Opdater UI
-  document.getElementById('id-verify-upload-section').style.display = 'none';
-  document.getElementById('id-verify-pending').style.display        = 'block';
-  var statusEl = document.getElementById('id-verify-status');
-  if (statusEl) { statusEl.textContent = '⏳ Afventer'; statusEl.className = 'id-status-waiting'; }
-
-  currentProfile = { ...currentProfile, id_pending: true, id_doc_url: publicUrl };
-  showToast('✅ Dokument sendt til verificering!');
-}
-
-async function updateIdVerifyUI() {
-  // Genindlæs profil fra database for at få seneste status
-  if (currentUser) {
-    var result = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-    if (result.data) currentProfile = result.data;
-  }
-  var profile = currentProfile || {};
-  var box     = document.getElementById('id-verify-box');
-  if (!box) return;
-
-  var statusEl     = document.getElementById('id-verify-status');
-  var uploadSection = document.getElementById('id-verify-upload-section');
-  var pendingSection = document.getElementById('id-verify-pending');
-
-  if (profile.id_verified) {
-    if (statusEl) { statusEl.textContent = '✓ Verificeret'; statusEl.className = 'id-status-verified'; }
-    if (uploadSection)  uploadSection.style.display  = 'none';
-    if (pendingSection) pendingSection.style.display = 'none';
-    // Vis bekræftelse
-    var done = document.createElement('p');
-    done.style.cssText = 'font-size:.85rem;color:#2A7D4F;background:#E8F0E8;padding:12px 16px;border-radius:8px;';
-    done.textContent   = '✓ Din identitet er bekræftet. Du optræder med et blåt ID-badge på dine annoncer.';
-    box.appendChild(done);
-  } else if (profile.id_pending) {
-    if (statusEl) { statusEl.textContent = '⏳ Afventer'; statusEl.className = 'id-status-waiting'; }
-    if (uploadSection)  uploadSection.style.display  = 'none';
-    if (pendingSection) pendingSection.style.display = 'block';
-  } else {
-    if (statusEl) { statusEl.textContent = 'Ikke verificeret'; statusEl.className = 'id-status-pending'; }
+  if (phoneStatus) {
+    if (p.phone_verified) {
+      phoneStatus.textContent = 'Verificeret';
+      phoneStatus.className   = 'verify-row-status verify-status-ok';
+      if (phoneFlow) phoneFlow.style.display = 'none';
+    } else {
+      phoneStatus.innerHTML   = '<button class="verify-action-btn" onclick="startPhoneVerify()">Verificér</button>';
+      phoneStatus.className   = 'verify-row-status';
+    }
   }
 }
 
-// Tilføj ID badge på annoncekort
-// (kaldes fra renderBikes via profile.id_verified check)
+function formatDanishPhone(phone) {
+  if (!phone) return '';
+  // Fjern +45 prefix for visning
+  const num = phone.replace('+45', '').replace(/\s/g, '');
+  if (num.length === 8) return num.slice(0,2) + ' ' + num.slice(2,4) + ' ' + num.slice(4,6) + ' ' + num.slice(6,8);
+  return phone;
+}
+
+function startPhoneVerify() {
+  const flow = document.getElementById('phone-verify-flow');
+  if (flow) flow.style.display = 'block';
+  document.getElementById('phone-step-input').style.display = 'block';
+  document.getElementById('phone-step-otp').style.display   = 'none';
+  const input = document.getElementById('phone-verify-input');
+  if (input) {
+    // Forindstil med nuværende telefon hvis det findes
+    const existing = (currentProfile?.phone || '').replace('+45', '').replace(/\s/g, '');
+    if (existing) input.value = existing;
+    input.focus();
+  }
+}
+
+var _phoneToVerify = null;
+
+async function sendPhoneOTP() {
+  const raw   = (document.getElementById('phone-verify-input')?.value || '').replace(/\s/g, '');
+  if (!raw || raw.length < 8) { showToast('⚠️ Indtast et gyldigt 8-cifret mobilnummer'); return; }
+
+  const phone = '+45' + raw;
+  _phoneToVerify = phone;
+
+  const btn = document.getElementById('phone-send-otp-btn');
+  const origText = btn.textContent;
+  btn.disabled    = true;
+  btn.textContent = 'Sender...';
+
+  try {
+    const { error } = await supabase.auth.updateUser({ phone });
+    if (error) {
+      showToast('❌ Kunne ikke sende kode: ' + (error.message || 'Ukendt fejl'));
+      return;
+    }
+    showToast('✅ Bekræftelseskode sendt via SMS');
+    document.getElementById('phone-step-input').style.display = 'none';
+    document.getElementById('phone-step-otp').style.display   = 'block';
+    document.getElementById('phone-otp-input')?.focus();
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = origText;
+  }
+}
+
+async function verifyPhoneOTP() {
+  const token = (document.getElementById('phone-otp-input')?.value || '').replace(/\s/g, '');
+  if (!token || token.length !== 6) { showToast('⚠️ Indtast den 6-cifrede kode'); return; }
+  if (!_phoneToVerify) { showToast('⚠️ Prøv igen — tryk "Send bekræftelseskode" først'); return; }
+
+  const btn = document.getElementById('phone-verify-otp-btn');
+  const origText = btn.textContent;
+  btn.disabled    = true;
+  btn.textContent = 'Bekræfter...';
+
+  try {
+    const { error } = await supabase.auth.verifyOtp({
+      phone: _phoneToVerify,
+      token,
+      type: 'phone_change',
+    });
+
+    if (error) {
+      showToast('❌ Forkert kode — prøv igen');
+      return;
+    }
+
+    // Opdater profil med verificeret telefon
+    await supabase.from('profiles').update({
+      phone:          _phoneToVerify,
+      phone_verified: true,
+    }).eq('id', currentUser.id);
+
+    currentProfile = { ...currentProfile, phone: _phoneToVerify, phone_verified: true };
+
+    // Refresh auth user data
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) currentUser = user;
+
+    showToast('✅ Telefonnummer verificeret!');
+    document.getElementById('phone-verify-flow').style.display = 'none';
+    updateVerifyUI();
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = origText;
+  }
+}
+
+function resetPhoneVerifyFlow() {
+  _phoneToVerify = null;
+  document.getElementById('phone-step-input').style.display = 'block';
+  document.getElementById('phone-step-otp').style.display   = 'none';
+  document.getElementById('phone-otp-input').value = '';
+  document.getElementById('phone-verify-input')?.focus();
+}
 
 /* ── ADMIN: ID ANSØGNINGER ── */
 
@@ -6232,7 +6285,7 @@ async function approveId(userId) {
   // Hvis den godkendte bruger er den indloggede, opdater cache
   if (currentUser && currentUser.id === userId) {
     currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
-    updateIdVerifyUI();
+    updateVerifyUI();
     loadBikes();
   }
 }
@@ -6251,8 +6304,11 @@ async function rejectId(userId) {
   }).catch(() => {});
 }
 
-window.previewIdDoc       = previewIdDoc;
-window.submitIdVerification = submitIdVerification;
+window.sendPhoneOTP         = sendPhoneOTP;
+window.verifyPhoneOTP       = verifyPhoneOTP;
+window.startPhoneVerify     = startPhoneVerify;
+window.resetPhoneVerifyFlow = resetPhoneVerifyFlow;
+window.updateVerifyUI       = updateVerifyUI;
 window.approveId          = approveId;
 window.rejectId           = rejectId;
 window.openUserProfile       = openUserProfile;

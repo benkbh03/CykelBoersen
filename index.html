@@ -620,35 +620,47 @@
             </button>
           </div>
 
-          <!-- ID Verificering -->
-          <div class="id-verify-box" id="id-verify-box">
-            <div class="id-verify-header">
-              <div>
-                <div class="id-verify-title">🪪 ID-verificering</div>
-                <div class="id-verify-sub">Bliv verificeret og optræd med et ✓ badge på dine annoncer</div>
+          <!-- Verificering: E-mail & Telefon -->
+          <div class="verify-box" id="verify-box">
+            <div class="verify-box-title">Verificering</div>
+            <div class="verify-box-sub">Verificerede brugere skaber tillid og handler hurtigere</div>
+
+            <!-- E-mail status -->
+            <div class="verify-row" id="verify-email-row">
+              <div class="verify-row-icon">✉️</div>
+              <div class="verify-row-body">
+                <div class="verify-row-label">E-mail</div>
+                <div class="verify-row-value" id="verify-email-value">–</div>
               </div>
-              <span id="id-verify-status" class="id-status-pending">Ikke verificeret</span>
+              <span class="verify-row-status" id="verify-email-status"></span>
             </div>
-            <div id="id-verify-upload-section">
-              <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">
-                Upload et billede af dit pas, kørekort eller NemID. Billedet behandles fortroligt og bruges kun til at bekræfte din identitet.
-              </p>
-              <div class="img-upload" onclick="document.getElementById('id-doc-input').click()" id="id-upload-area">
-                <div class="upload-icon">🪪</div>
-                <p id="id-upload-label">Klik for at uploade ID-dokument</p>
+
+            <!-- Telefon verificering -->
+            <div class="verify-row" id="verify-phone-row">
+              <div class="verify-row-icon">📱</div>
+              <div class="verify-row-body">
+                <div class="verify-row-label">Telefon</div>
+                <div class="verify-row-value" id="verify-phone-value">Ikke tilføjet</div>
               </div>
-              <input type="file" id="id-doc-input" accept="image/*,.pdf" style="display:none" onchange="previewIdDoc(this)">
-              <div id="id-preview" style="display:none;margin-top:10px;">
-                <img id="id-preview-img" style="max-width:100%;border-radius:8px;border:1.5px solid var(--border);">
-              </div>
-              <button class="form-submit" onclick="submitIdVerification()" id="id-submit-btn" style="display:none;margin-top:12px;">
-                Send til verificering
-              </button>
+              <span class="verify-row-status" id="verify-phone-status"></span>
             </div>
-            <div id="id-verify-pending" style="display:none;">
-              <p style="font-size:.85rem;color:var(--muted);background:var(--sand);padding:12px 16px;border-radius:8px;border:1px solid var(--border);">
-                ⏳ Din ansøgning er modtaget og behandles inden for 1-2 hverdage.
-              </p>
+
+            <!-- Telefon-input (skjult til start) -->
+            <div id="phone-verify-flow" style="display:none;">
+              <div class="phone-verify-step" id="phone-step-input">
+                <label class="phone-verify-label">Indtast dit mobilnummer</label>
+                <div class="phone-verify-input-row">
+                  <span class="phone-prefix">+45</span>
+                  <input type="tel" id="phone-verify-input" placeholder="12 34 56 78" maxlength="11" autocomplete="tel">
+                </div>
+                <button class="form-submit" id="phone-send-otp-btn" onclick="sendPhoneOTP()">Send bekræftelseskode</button>
+              </div>
+              <div class="phone-verify-step" id="phone-step-otp" style="display:none;">
+                <label class="phone-verify-label">Indtast den 6-cifrede kode sendt til dit nummer</label>
+                <input type="text" id="phone-otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" class="otp-input">
+                <button class="form-submit" id="phone-verify-otp-btn" onclick="verifyPhoneOTP()">Bekræft kode</button>
+                <button class="btn-back-login" onclick="resetPhoneVerifyFlow()">Prøv et andet nummer</button>
+              </div>
             </div>
           </div>
 
