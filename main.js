@@ -60,6 +60,27 @@ function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// SEO-hjælper: opdater meta description + canonical URL + OG tags ved sidenavigation
+const BASE_URL = 'https://xn--cykelbrsen-5cb.dk';
+const DEFAULT_DESC = 'Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
+
+function removeBikeJsonLd() {
+  const old = document.getElementById('bike-jsonld');
+  if (old) old.remove();
+}
+
+function updateSEOMeta(description, canonicalPath) {
+  const desc = description || DEFAULT_DESC;
+  const metaDesc = document.getElementById('meta-description');
+  if (metaDesc) metaDesc.setAttribute('content', desc);
+  const canonical = document.getElementById('canonical-link');
+  if (canonical) canonical.setAttribute('href', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.setAttribute('content', desc);
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) ogUrl.setAttribute('content', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
+}
+
 // Validér avatar-URL — tillad kun https Supabase storage URLs for at forhindre XSS
 function safeAvatarUrl(url) {
   if (!url || typeof url !== 'string') return null;
@@ -2633,6 +2654,33 @@ async function renderBikePage(bikeId) {
   }
 
   document.title = `${b.brand} ${b.model} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
+  updateSEOMeta(`${b.brand} ${b.model} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`, `/#/bike/${bikeId}`);
+
+  // Inject Product JSON-LD for rich search results
+  removeBikeJsonLd();
+  const primaryImg = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
+  const jsonLd = document.createElement('script');
+  jsonLd.type = 'application/ld+json';
+  jsonLd.id = 'bike-jsonld';
+  jsonLd.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    'name': `${b.brand} ${b.model}`,
+    'description': b.description || `${b.type} – ${b.condition}`,
+    'image': primaryImg,
+    'brand': { '@type': 'Brand', 'name': b.brand },
+    'offers': {
+      '@type': 'Offer',
+      'price': b.price,
+      'priceCurrency': 'DKK',
+      'availability': 'https://schema.org/InStock',
+      'itemCondition': b.condition === 'Ny' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+      'seller': { '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person', 'name': b.profiles?.shop_name || b.profiles?.name || 'Sælger' }
+    },
+    'category': b.type,
+    'url': `${BASE_URL}/#/bike/${bikeId}`
+  });
+  document.head.appendChild(jsonLd);
 
   const { html, profile } = buildBikeBodyHTML(b);
   const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
@@ -2662,6 +2710,8 @@ function showListingView() {
   if (pageLayout)    pageLayout.style.display    = 'none';
   if (landingLayout) landingLayout.style.display = '';
   document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
+  updateSEOMeta(DEFAULT_DESC, '/');
+  removeBikeJsonLd();
 }
 
 /* ============================================================
@@ -2678,6 +2728,7 @@ function renderSellPage() {
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Opret annonce – Cykelbørsen';
+  updateSEOMeta('Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.', '/#/sell');
   selectedFiles = [];
 
   const isDealer = currentProfile?.seller_type === 'dealer';
@@ -3275,6 +3326,7 @@ async function renderUserProfilePage(userId) {
 
   const displayName = data.profile.seller_type === 'dealer' ? (data.profile.shop_name || data.profile.name) : data.profile.name;
   document.title = `${displayName} – Profil | Cykelbørsen`;
+  updateSEOMeta(`Se ${displayName}s profil og cykler til salg på Cykelbørsen.`, `/#/user/${userId}`);
   detailView.innerHTML = buildUserProfilePageHTML(data);
 
   // Aktivér stjerne-hover for anmeldelses-form
@@ -3307,6 +3359,7 @@ async function renderDealerProfilePage(dealerId) {
 
   const displayName = data.dealer.shop_name || data.dealer.name || 'Forhandler';
   document.title = `${displayName} – Forhandler | Cykelbørsen`;
+  updateSEOMeta(`${displayName} – Autoriseret cykelforhandler på Cykelbørsen. Se udvalg og anmeldelser.`, `/#/dealer/${dealerId}`);
   detailView.innerHTML = buildDealerProfilePageHTML(data);
 
   // Star-hover for vurderingsform (samme som user profile)
@@ -4816,6 +4869,7 @@ function renderBecomeDealerPage() {
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Bliv forhandler – Cykelbørsen';
+  updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå tusindvis af cykellkøbere i hele Danmark. 3 måneders gratis prøveperiode, fra kun 199 kr./md.', '/#/bliv-forhandler');
 
   document.getElementById('detail-view').innerHTML = `
     <div class="bd-page">
@@ -5080,6 +5134,7 @@ async function renderInboxPage() {
 
   showDetailView();
   document.title = 'Indbakke | Cykelbørsen';
+  updateSEOMeta('Din indbakke på Cykelbørsen.', '/#/inbox');
   const detailView = document.getElementById('detail-view');
 
   detailView.innerHTML = `
@@ -5575,11 +5630,14 @@ var footerContent = {
   }
 };
 
+const staticPageRoutes = { about: '/#/om-os', terms: '/#/vilkaar', privacy: '/#/privatlivspolitik', contact: '/#/kontakt' };
+
 function renderStaticPage(type) {
   const data = footerContent[type];
   if (!data) { showListingView(); return; }
   showDetailView();
   document.title = `${data.title} – Cykelbørsen`;
+  updateSEOMeta(`${data.title} – Cykelbørsen. Danmarks markedsplads for brugte cykler.`, staticPageRoutes[type] || '/');
   const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
   // Fix internal link from Om os → Kontakt
   const body = data.body.replace(/closeFooterModal\(\);openFooterModal\('contact'\)/g, "window.location.hash='#/kontakt'");

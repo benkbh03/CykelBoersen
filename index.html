@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚲</text></svg>">
   <title>Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark</title>
-  <meta name="description" content="Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.">
+  <meta name="description" content="Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere." id="meta-description">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#2A3D2E">
-  <link rel="canonical" href="https://xn--cykelbrsen-5cb.dk/">
+  <meta name="keywords" content="brugte cykler, køb cykel, sælg cykel, racercykel, mountainbike, el-cykel, citybike, Danmark, København, cykelmarkedsplads">
+  <meta name="author" content="Cykelbørsen">
+  <meta name="geo.region" content="DK">
+  <meta name="geo.placename" content="Danmark">
+  <link rel="canonical" href="https://xn--cykelbrsen-5cb.dk/" id="canonical-link">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -29,6 +33,9 @@
   <meta name="twitter:image" content="https://xn--cykelbrsen-5cb.dk/hero.jpg.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -58,11 +65,53 @@
     "@type": "Organization",
     "name": "Cykelbørsen",
     "url": "https://xn--cykelbrsen-5cb.dk/",
-    "description": "Danmarks markedsplads for køb og salg af brugte cykler.",
+    "logo": "https://xn--cykelbrsen-5cb.dk/hero.jpg.png",
+    "description": "Danmarks markedsplads for køb og salg af brugte cykler. Racercykler, mountainbikes, el-cykler og mere.",
     "foundingLocation": {
       "@type": "Place",
-      "addressCountry": "DK"
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "DK"
+      }
+    },
+    "sameAs": [],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": "da"
     }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Hvordan sælger jeg min cykel på Cykelbørsen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Opret en gratis konto, klik på 'Sæt til salg', udfyld oplysninger om din cykel med billeder, og din annonce er live med det samme. Det er helt gratis for private sælgere."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Er det gratis at oprette en annonce?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, det er helt gratis at oprette annoncer som privat sælger. Forhandlere kan tegne et abonnement fra 199 kr./md med 3 måneders gratis prøveperiode."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Hvilke typer cykler kan jeg finde på Cykelbørsen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Du kan finde alle typer brugte cykler: racercykler, mountainbikes, el-cykler, bycykler, børnecykler, ladcykler og meget mere. Både fra private sælgere og autoriserede forhandlere i hele Danmark."
+        }
+      }
+    ]
   }
   </script>
 </head>
@@ -101,7 +150,7 @@
   <!-- ══════════════════════════════════════════════════
        LANDING LAYOUT – kun synlig på forsiden (#/)
        ══════════════════════════════════════════════════ -->
-  <div id="landing-layout">
+  <main id="landing-layout">
 
   <!-- ── HERO ── -->
   <section class="hero">
@@ -317,7 +366,7 @@
     </div>
   </section>
 
-  </div><!-- #landing-layout -->
+  </main><!-- #landing-layout -->
 
   <!-- ══════════════════════════════════════════════════
        PAGE LAYOUT – kun synlig på #/bike, #/profile, #/dealer, #/me, #/bliv-forhandler
@@ -359,15 +408,15 @@
   </div>
 
   <!-- ── FOOTER ── -->
-  <footer>
+  <footer role="contentinfo">
     <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
     <p>© 2025–2026 Cykelbørsen · Alle rettigheder forbeholdes</p>
-    <div class="footer-links">
+    <nav class="footer-links" aria-label="Footernavigation">
       <a onclick="window.location.hash='#/vilkaar'">Vilkår</a>
       <a onclick="window.location.hash='#/privatlivspolitik'">Privatlivspolitik</a>
       <a onclick="window.location.hash='#/kontakt'">Kontakt</a>
       <a onclick="window.location.hash='#/bliv-forhandler'">Bliv forhandler</a>
-    </div>
+    </nav>
   </footer>
 
   <!-- ── OPRET ANNONCE MODAL ── -->
