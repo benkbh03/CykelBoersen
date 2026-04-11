@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://xn--cykelbrsen-5cb.dk/sitemap.xml
