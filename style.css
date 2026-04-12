@@ -2092,15 +2092,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   background: var(--sand);
   border: 1.5px solid var(--border);
   border-radius: 14px;
-  padding: 20px 24px;
-  margin-bottom: 20px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
 }
 .mp-verify-title {
   font-family: 'Fraunces', serif;
-  font-size: 1rem; font-weight: 700;
-  margin-bottom: 14px;
+  font-size: 0.9rem; font-weight: 700;
+  margin-bottom: 8px;
 }
-.mp-verify-items { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.mp-verify-items { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
 .mp-verify-item {
   display: flex; align-items: center; gap: 8px;
   padding: 10px 16px;
