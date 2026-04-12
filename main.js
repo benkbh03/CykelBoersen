@@ -136,6 +136,14 @@ function disableFocusTrap(modalId) {
 const BIKES_PAGE_SIZE = 24;
 let bikesOffset       = 0;
 let currentFilters    = {};
+let userGeoCoords     = null; // [lat, lng] fra GPS
+let activeRadius      = null; // km radius filter
+
+function haversineKm([lat1, lon1], [lat2, lon2]) {
+  const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
 /* ============================================================
    INIT – hent session én gang og sæt alt op
@@ -196,6 +204,7 @@ async function init() {
       if (_event === 'SIGNED_IN' && isNewLogin) {
         loadBikes();
         if (!localStorage.getItem('onboarded')) showOnboardingBanner();
+        checkSavedSearchNotifications();
       }
     } else {
       _hasHadSession = false;
@@ -1359,6 +1368,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
           ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
+          ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}')" title="Er den stadig til salg?">💬</button>` : ''}
         </div>
         <div class="bike-card-body">
           <div class="card-top">
@@ -1378,7 +1388,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
                 </span>
               </div>
             </div>
-            <div class="card-location">📍 ${esc(b.city)}</div>
+            <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
           </div>
         </div>
       </div>`;
@@ -1396,6 +1406,78 @@ function searchBikes() {
   const type   = document.getElementById('search-type').value;
   const city   = document.getElementById('search-city').value;
   loadBikes({ search, type, city });
+}
+
+async function askIfAvailable(bikeId, sellerId) {
+  if (!currentUser) { openLoginModal(); return; }
+  if (sellerId === currentUser.id) return;
+  const { error } = await supabase.from('messages').insert({
+    bike_id: bikeId, sender_id: currentUser.id, receiver_id: sellerId,
+    content: '👋 Er cyklen stadig til salg?',
+  });
+  if (error) { showToast('❌ Kunne ikke sende besked'); return; }
+  showToast('✅ Besked sendt til sælgeren!');
+}
+
+function toggleNearMe(pill) {
+  const isActive = pill.classList.contains('active');
+  const radiusSel = document.getElementById('nearme-radius');
+  if (isActive) {
+    pill.classList.remove('active');
+    if (radiusSel) radiusSel.style.display = 'none';
+    userGeoCoords = null;
+    activeRadius  = null;
+    loadBikes(currentFilters);
+    return;
+  }
+  if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt i din browser'); return; }
+  showToast('📍 Henter din position...');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userGeoCoords = [pos.coords.latitude, pos.coords.longitude];
+      activeRadius  = parseInt(document.getElementById('nearme-radius').value || 20);
+      pill.classList.add('active');
+      if (radiusSel) radiusSel.style.display = 'inline-block';
+      // Deaktiver andre pills
+      document.querySelectorAll('.filters-row .pill.active:not(#pill-nearme)').forEach(p => p.classList.remove('active'));
+      applyNearMeFilter();
+    },
+    () => showToast('❌ Kunne ikke hente din position — tjek GPS-tilladelser')
+  );
+}
+
+function updateNearMeRadius(val) {
+  activeRadius = parseInt(val);
+  if (userGeoCoords) applyNearMeFilter();
+}
+
+async function applyNearMeFilter() {
+  if (!userGeoCoords || !activeRadius) return;
+  const grid = document.getElementById('listings-grid');
+  const cards = [...grid.querySelectorAll('.bike-card:not(.skeleton-card)')];
+  let shown = 0;
+  const promises = cards.map(async card => {
+    const cityEl = card.querySelector('.bike-city');
+    const city   = cityEl ? cityEl.textContent.trim() : '';
+    if (!city) { card.style.display = 'none'; return; }
+    const coords = await geocodeCity(city);
+    if (!coords) { card.style.display = 'none'; return; }
+    const km = haversineKm(userGeoCoords, coords);
+    if (km <= activeRadius) { card.style.display = ''; shown++; }
+    else                    { card.style.display = 'none'; }
+  });
+  await Promise.all(promises);
+  if (shown === 0) {
+    const existing = grid.querySelector('.nearme-empty');
+    if (!existing) {
+      const el = document.createElement('div');
+      el.className = 'nearme-empty empty-state-box';
+      el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
+      grid.appendChild(el);
+    }
+  } else {
+    grid.querySelector('.nearme-empty')?.remove();
+  }
 }
 
 function sortBikes(value) {
@@ -2432,6 +2514,43 @@ function showOnboardingBanner() {
   requestAnimationFrame(() => banner.classList.add('onboarding-visible'));
 }
 
+async function checkSavedSearchNotifications() {
+  if (!currentUser) return;
+  const key = `ss_checked_${currentUser.id}`;
+  const lastChecked = localStorage.getItem(key) || new Date(0).toISOString();
+
+  const { data: searches } = await supabase
+    .from('saved_searches').select('id, name, filters').eq('user_id', currentUser.id);
+  if (!searches?.length) return;
+
+  // Tjek om der er nye annoncer siden sidst checked
+  const { count } = await supabase.from('bikes')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_active', true)
+    .gt('created_at', lastChecked);
+
+  localStorage.setItem(key, new Date().toISOString());
+  if (!count || count === 0) return;
+
+  // Find søgninger der matcher
+  const matchingSearches = searches.filter(s => s.filters && (s.filters.search || s.filters.type || s.filters.city));
+  if (!matchingSearches.length) return;
+
+  // Vis notifikation
+  const banner = document.createElement('div');
+  banner.id = 'ss-notification';
+  banner.innerHTML = `
+    <div class="ss-notif-content">
+      <span class="ss-notif-icon">🔔</span>
+      <span class="ss-notif-text">${count} nye cykler siden dit sidste besøg — <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Tjek dine søgninger →</a></span>
+      <button onclick="this.closest('#ss-notification').remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px;">✕</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.classList.add('ss-notif-visible'), 100);
+  setTimeout(() => { banner.classList.remove('ss-notif-visible'); setTimeout(() => banner.remove(), 400); }, 8000);
+}
+
 function dismissOnboarding() {
   localStorage.setItem('onboarded', '1');
   const banner = document.getElementById('onboarding-banner');
@@ -3112,7 +3231,7 @@ function buildProfileBikeCards(bikes) {
             <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
           </div>
           <div class="card-footer">
-            <div class="card-location">📍 ${esc(b.city)}</div>
+            <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
           </div>
         </div>
       </div>`;
@@ -5127,6 +5246,9 @@ window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
 window.dismissOnboarding    = dismissOnboarding;
+window.toggleNearMe         = toggleNearMe;
+window.updateNearMeRadius   = updateNearMeRadius;
+window.askIfAvailable       = askIfAvailable;
 window.switchDealerProfileTab = switchDealerProfileTab;
 window.saveProfile          = saveProfile;
 window.onSellerTypeChange   = onSellerTypeChange;
