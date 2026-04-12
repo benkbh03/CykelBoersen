@@ -707,6 +707,13 @@
             <div id="thread-header" class="thread-header"></div>
             <div id="thread-messages" class="thread-messages"></div>
             <div class="thread-reply">
+              <div class="quick-replies" id="quick-replies-modal">
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Stadig til salg 👍</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Prisen er fast</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Kan mødes i weekenden</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Er du stadig interesseret?</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Tak for interessen!</button>
+              </div>
               <textarea id="reply-text" placeholder="Skriv et svar..."></textarea>
               <button id="send-reply-btn" onclick="sendReply()">Send svar</button>
             </div>
@@ -907,6 +914,13 @@
           <div id="inbox-modal-thread-header" class="thread-header"></div>
           <div id="inbox-modal-thread-messages" class="thread-messages"></div>
           <div class="thread-reply">
+              <div class="quick-replies" id="quick-replies-inbox">
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg 👍</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Prisen er fast</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Kan mødes i weekenden</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
+              </div>
             <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..."></textarea>
             <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send svar</button>
           </div>

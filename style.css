@@ -3438,3 +3438,18 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   white-space: nowrap;
 }
 .ss-notif-icon { font-size: 1.1rem; }
+
+/* ── HURTIG-SVAR SKABELONER ── */
+.quick-replies {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 8px 0 6px;
+}
+.qr-btn {
+  background: var(--sand); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.75rem; font-weight: 500; color: var(--charcoal);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.qr-btn:hover { border-color: var(--forest); background: #f0f4f0; }

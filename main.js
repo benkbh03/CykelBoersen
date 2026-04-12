@@ -2551,6 +2551,13 @@ async function checkSavedSearchNotifications() {
   setTimeout(() => { banner.classList.remove('ss-notif-visible'); setTimeout(() => banner.remove(), 400); }, 8000);
 }
 
+function useQuickReply(textareaId, btn) {
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
+  ta.value = btn.textContent.replace(/\s*👍$/, ' 👍').trim();
+  ta.focus();
+}
+
 function dismissOnboarding() {
   localStorage.setItem('onboarded', '1');
   const banner = document.getElementById('onboarding-banner');
@@ -5246,6 +5253,7 @@ window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
 window.dismissOnboarding    = dismissOnboarding;
+window.useQuickReply        = useQuickReply;
 window.toggleNearMe         = toggleNearMe;
 window.updateNearMeRadius   = updateNearMeRadius;
 window.askIfAvailable       = askIfAvailable;
@@ -5390,6 +5398,13 @@ async function renderInboxPage() {
           <div class="inbox-chat-header" id="inbox-page-chat-header"></div>
           <div class="inbox-chat-messages" id="inbox-page-chat-messages"></div>
           <div class="inbox-chat-reply">
+            <div class="quick-replies">
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg 👍</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Prisen er fast</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Kan mødes i weekenden</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
+            </div>
             <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
             <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
           </div>
