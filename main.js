@@ -136,6 +136,14 @@ function disableFocusTrap(modalId) {
 const BIKES_PAGE_SIZE = 24;
 let bikesOffset       = 0;
 let currentFilters    = {};
+let userGeoCoords     = null; // [lat, lng] fra GPS
+let activeRadius      = null; // km radius filter
+
+function haversineKm([lat1, lon1], [lat2, lon2]) {
+  const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
 /* ============================================================
    INIT – hent session én gang og sæt alt op
@@ -196,6 +204,7 @@ async function init() {
       if (_event === 'SIGNED_IN' && isNewLogin) {
         loadBikes();
         if (!localStorage.getItem('onboarded')) showOnboardingBanner();
+        checkSavedSearchNotifications();
       }
     } else {
       _hasHadSession = false;
@@ -353,14 +362,20 @@ async function init() {
 function updateNav(loggedIn, name, avatarUrl) {
   const sellBtn        = document.querySelector('.btn-sell');
   const navProfile     = document.getElementById('nav-profile');
+  const mbnProfile     = document.getElementById('mbn-profile-btn');
+  const mbnLogin       = document.getElementById('mbn-login-btn');
   if (loggedIn) {
     if (sellBtn) { sellBtn.textContent = '+ Sæt til salg'; sellBtn.setAttribute('onclick', 'openModal()'); }
     if (navProfile) navProfile.style.display = 'flex';
+    if (mbnProfile) mbnProfile.style.display = 'flex';
+    if (mbnLogin)   mbnLogin.style.display = 'none';
     updateNavAvatar(name, avatarUrl);
     checkUnreadMessages();
   } else {
     if (sellBtn) { sellBtn.textContent = 'Log ind / Sælg'; sellBtn.setAttribute('onclick', 'openLoginModal()'); }
     if (navProfile) navProfile.style.display = 'none';
+    if (mbnProfile) mbnProfile.style.display = 'none';
+    if (mbnLogin)   mbnLogin.style.display = 'flex';
   }
 }
 
@@ -1353,6 +1368,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
           ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
+          ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}')" title="Er den stadig til salg?">💬</button>` : ''}
         </div>
         <div class="bike-card-body">
           <div class="card-top">
@@ -1372,7 +1388,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
                 </span>
               </div>
             </div>
-            <div class="card-location">📍 ${esc(b.city)}</div>
+            <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
           </div>
         </div>
       </div>`;
@@ -1390,6 +1406,78 @@ function searchBikes() {
   const type   = document.getElementById('search-type').value;
   const city   = document.getElementById('search-city').value;
   loadBikes({ search, type, city });
+}
+
+async function askIfAvailable(bikeId, sellerId) {
+  if (!currentUser) { openLoginModal(); return; }
+  if (sellerId === currentUser.id) return;
+  const { error } = await supabase.from('messages').insert({
+    bike_id: bikeId, sender_id: currentUser.id, receiver_id: sellerId,
+    content: '👋 Er cyklen stadig til salg?',
+  });
+  if (error) { showToast('❌ Kunne ikke sende besked'); return; }
+  showToast('✅ Besked sendt til sælgeren!');
+}
+
+function toggleNearMe(pill) {
+  const isActive = pill.classList.contains('active');
+  const radiusSel = document.getElementById('nearme-radius');
+  if (isActive) {
+    pill.classList.remove('active');
+    if (radiusSel) radiusSel.style.display = 'none';
+    userGeoCoords = null;
+    activeRadius  = null;
+    loadBikes(currentFilters);
+    return;
+  }
+  if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt i din browser'); return; }
+  showToast('📍 Henter din position...');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userGeoCoords = [pos.coords.latitude, pos.coords.longitude];
+      activeRadius  = parseInt(document.getElementById('nearme-radius').value || 20);
+      pill.classList.add('active');
+      if (radiusSel) radiusSel.style.display = 'inline-block';
+      // Deaktiver andre pills
+      document.querySelectorAll('.filters-row .pill.active:not(#pill-nearme)').forEach(p => p.classList.remove('active'));
+      applyNearMeFilter();
+    },
+    () => showToast('❌ Kunne ikke hente din position — tjek GPS-tilladelser')
+  );
+}
+
+function updateNearMeRadius(val) {
+  activeRadius = parseInt(val);
+  if (userGeoCoords) applyNearMeFilter();
+}
+
+async function applyNearMeFilter() {
+  if (!userGeoCoords || !activeRadius) return;
+  const grid = document.getElementById('listings-grid');
+  const cards = [...grid.querySelectorAll('.bike-card:not(.skeleton-card)')];
+  let shown = 0;
+  const promises = cards.map(async card => {
+    const cityEl = card.querySelector('.bike-city');
+    const city   = cityEl ? cityEl.textContent.trim() : '';
+    if (!city) { card.style.display = 'none'; return; }
+    const coords = await geocodeCity(city);
+    if (!coords) { card.style.display = 'none'; return; }
+    const km = haversineKm(userGeoCoords, coords);
+    if (km <= activeRadius) { card.style.display = ''; shown++; }
+    else                    { card.style.display = 'none'; }
+  });
+  await Promise.all(promises);
+  if (shown === 0) {
+    const existing = grid.querySelector('.nearme-empty');
+    if (!existing) {
+      const el = document.createElement('div');
+      el.className = 'nearme-empty empty-state-box';
+      el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
+      grid.appendChild(el);
+    }
+  } else {
+    grid.querySelector('.nearme-empty')?.remove();
+  }
 }
 
 function sortBikes(value) {
@@ -2023,6 +2111,8 @@ async function loadMyListings(containerId = 'my-listings-grid') {
     grid.innerHTML = data.map(b => {
       const isSold = !b.is_active;
       const views  = b.views || 0;
+      const daysOld = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
+      const isOld  = !isSold && daysOld >= 30;
 
       if (isPage) {
         const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
@@ -2033,7 +2123,7 @@ async function loadMyListings(containerId = 'my-listings-grid') {
           <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
             <div class="mp-listing-img" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">${thumb}</div>
             <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
-              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}</div>
+              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}${isOld ? ` <span class="mp-old-tag" title="Annoncen er ${daysOld} dage gammel — overvej at opdatere prisen">⚠️ ${daysOld}d</span>` : ''}</div>
               <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
               <div class="mp-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
             </div>
@@ -2424,6 +2514,50 @@ function showOnboardingBanner() {
   requestAnimationFrame(() => banner.classList.add('onboarding-visible'));
 }
 
+async function checkSavedSearchNotifications() {
+  if (!currentUser) return;
+  const key = `ss_checked_${currentUser.id}`;
+  const lastChecked = localStorage.getItem(key) || new Date(0).toISOString();
+
+  const { data: searches } = await supabase
+    .from('saved_searches').select('id, name, filters').eq('user_id', currentUser.id);
+  if (!searches?.length) return;
+
+  // Tjek om der er nye annoncer siden sidst checked
+  const { count } = await supabase.from('bikes')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_active', true)
+    .gt('created_at', lastChecked);
+
+  localStorage.setItem(key, new Date().toISOString());
+  if (!count || count === 0) return;
+
+  // Find søgninger der matcher
+  const matchingSearches = searches.filter(s => s.filters && (s.filters.search || s.filters.type || s.filters.city));
+  if (!matchingSearches.length) return;
+
+  // Vis notifikation
+  const banner = document.createElement('div');
+  banner.id = 'ss-notification';
+  banner.innerHTML = `
+    <div class="ss-notif-content">
+      <span class="ss-notif-icon">🔔</span>
+      <span class="ss-notif-text">${count} nye cykler siden dit sidste besøg — <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Tjek dine søgninger →</a></span>
+      <button onclick="this.closest('#ss-notification').remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px;">✕</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.classList.add('ss-notif-visible'), 100);
+  setTimeout(() => { banner.classList.remove('ss-notif-visible'); setTimeout(() => banner.remove(), 400); }, 8000);
+}
+
+function useQuickReply(textareaId, btn) {
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
+  ta.value = btn.textContent.replace(/\s*👍$/, ' 👍').trim();
+  ta.focus();
+}
+
 function dismissOnboarding() {
   localStorage.setItem('onboarded', '1');
   const banner = document.getElementById('onboarding-banner');
@@ -2547,8 +2681,12 @@ function buildBikeBodyHTML(b) {
           <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
           <div class="bid-box" id="bid-box">
             <div class="bid-box-inner">
-              <input type="number" id="bid-amount" placeholder="Dit bud i kr.">
+              <input type="number" id="bid-amount" placeholder="Dit bud i kr." oninput="updateMeetMiddle(${b.price})">
               <button onclick="sendBid('${b.id}', '${profile.id}')">Send bud</button>
+            </div>
+            <div class="meet-middle" id="meet-middle" style="display:none">
+              Mød i midten: <strong id="meet-middle-price"></strong>
+              <button class="meet-middle-btn" onclick="useMeetMiddle()">Brug dette bud</button>
             </div>
           </div>
           <button class="btn-contact" onclick="toggleMessageBox()">✉️ Kontakt sælger</button>
@@ -2894,6 +3032,7 @@ function renderSellPage() {
           </div>
           <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
           <div id="sell-preview-grid" class="img-preview-grid"></div>
+          <p class="img-upload-hint" id="sell-img-hint" style="display:none">Klik ★ på et billede for at gøre det til forsidebillede</p>
         </div>
 
         <div class="sell-page-actions">
@@ -2956,9 +3095,13 @@ function renderSellImagePreviews() {
   grid.innerHTML = selectedFiles.map((item, i) => `
     <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
       <img src="${item.url}" alt="Billede ${i + 1}">
-      ${item.isPrimary ? '<span class="primary-badge">Primær</span>' : `<button class="set-primary" onclick="setSellPrimary(${i})">★</button>`}
+      ${item.isPrimary
+        ? '<span class="primary-badge">⭐ Forsidebillede</span>'
+        : `<button class="set-primary" title="Sæt som forsidebillede" onclick="setSellPrimary(${i})">★</button>`}
       <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
     </div>`).join('');
+  const hint = document.getElementById('sell-img-hint');
+  if (hint) hint.style.display = selectedFiles.length > 1 ? 'block' : 'none';
 }
 
 function setSellPrimary(index) {
@@ -3095,7 +3238,7 @@ function buildProfileBikeCards(bikes) {
             <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
           </div>
           <div class="card-footer">
-            <div class="card-location">📍 ${esc(b.city)}</div>
+            <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
           </div>
         </div>
       </div>`;
@@ -3888,6 +4031,27 @@ function attachGallerySwipe() {
 window.galleryNav  = galleryNav;
 window.galleryGoto = galleryGoto;
 
+function updateMeetMiddle(listingPrice) {
+  const input = document.getElementById('bid-amount');
+  const el    = document.getElementById('meet-middle');
+  const priceEl = document.getElementById('meet-middle-price');
+  if (!input || !el || !priceEl) return;
+  const bid = parseInt(input.value);
+  if (!bid || bid <= 0 || bid >= listingPrice) { el.style.display = 'none'; return; }
+  const middle = Math.round((bid + listingPrice) / 2 / 50) * 50; // rund til nærmeste 50
+  priceEl.textContent = middle.toLocaleString('da-DK') + ' kr.';
+  el.style.display = 'flex';
+}
+
+function useMeetMiddle() {
+  const priceEl = document.getElementById('meet-middle-price');
+  const input   = document.getElementById('bid-amount');
+  if (!priceEl || !input) return;
+  const val = priceEl.textContent.replace(/[^\d]/g, '');
+  input.value = val;
+  document.getElementById('meet-middle').style.display = 'none';
+}
+
 function toggleBidBox() {
   if (!currentUser) { openLoginModal(); return; }
   const box = document.getElementById('bid-box');
@@ -3926,8 +4090,13 @@ async function sendMessage(bikeId, receiverId) {
     const textEl = document.getElementById('message-text');
     const boxEl  = document.getElementById('message-box');
     if (textEl) textEl.value = '';
-    if (boxEl)  boxEl.style.display = 'none';
-    showToast('✅ Besked sendt!');
+    if (boxEl) {
+      boxEl.innerHTML = `<div class="bid-sent-confirm">
+        <div class="bid-sent-icon">✅</div>
+        <p class="bid-sent-title">Besked sendt!</p>
+        <p class="bid-sent-sub">Sælgeren modtager en e-mail. Se svar i din <a onclick="openInboxModal()" style="color:var(--forest);cursor:pointer;font-weight:600;">Indbakke →</a></p>
+      </div>`;
+    }
 
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
@@ -3959,8 +4128,14 @@ async function sendBid(bikeId, receiverId) {
 
     if (error) { showToast('❌ Kunne ikke sende bud'); return; }
     document.getElementById('bid-amount').value = '';
-    document.getElementById('bid-box').style.display = 'none';
-    showToast('✅ Bud sendt til sælgeren!');
+    const bidBox = document.getElementById('bid-box');
+    if (bidBox) {
+      bidBox.innerHTML = `<div class="bid-sent-confirm">
+        <div class="bid-sent-icon">✅</div>
+        <p class="bid-sent-title">Bud sendt!</p>
+        <p class="bid-sent-sub">Sælgeren modtager en e-mail. Følg svaret i din <a onclick="openInboxModal()" style="color:var(--forest);cursor:pointer;font-weight:600;">Indbakke →</a></p>
+      </div>`;
+    }
 
     // Send email-notifikation til sælger via Edge Function
     if (msgData?.id) {
@@ -5078,6 +5253,10 @@ window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
 window.dismissOnboarding    = dismissOnboarding;
+window.useQuickReply        = useQuickReply;
+window.toggleNearMe         = toggleNearMe;
+window.updateNearMeRadius   = updateNearMeRadius;
+window.askIfAvailable       = askIfAvailable;
 window.switchDealerProfileTab = switchDealerProfileTab;
 window.saveProfile          = saveProfile;
 window.onSellerTypeChange   = onSellerTypeChange;
@@ -5142,6 +5321,8 @@ window.openReportModal    = openReportModal;
 window.closeReportModal   = closeReportModal;
 window.submitReport       = submitReport;
 window.toggleBidBox       = toggleBidBox;
+window.updateMeetMiddle   = updateMeetMiddle;
+window.useMeetMiddle      = useMeetMiddle;
 window.toggleMessageBox   = toggleMessageBox;
 window.sendMessage        = sendMessage;
 window.sendBid            = sendBid;
@@ -5217,6 +5398,13 @@ async function renderInboxPage() {
           <div class="inbox-chat-header" id="inbox-page-chat-header"></div>
           <div class="inbox-chat-messages" id="inbox-page-chat-messages"></div>
           <div class="inbox-chat-reply">
+            <div class="quick-replies">
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg 👍</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Prisen er fast</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Kan mødes i weekenden</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
+              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
+            </div>
             <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
             <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
           </div>
@@ -5430,13 +5618,14 @@ async function updateInboxBadge() {
     .eq('receiver_id', currentUser.id)
     .eq('read', false);
 
-  const badge = document.getElementById('nav-inbox-badge');
-  if (!badge) return;
+  const badge    = document.getElementById('nav-inbox-badge');
+  const mbnBadge = document.getElementById('mbn-badge');
   if (count > 0) {
-    badge.textContent = count;
-    badge.style.display = 'flex';
+    if (badge)    { badge.textContent = count; badge.style.display = 'flex'; }
+    if (mbnBadge) { mbnBadge.textContent = count; mbnBadge.style.display = 'flex'; }
   } else {
-    badge.style.display = 'none';
+    if (badge)    badge.style.display = 'none';
+    if (mbnBadge) mbnBadge.style.display = 'none';
   }
 }
 

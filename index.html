@@ -235,6 +235,12 @@
   <div class="filters-row" role="group" aria-label="Hurtigfiltre">
     <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
     <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
+    <span class="pill pill--nearme" id="pill-nearme" onclick="toggleNearMe(this)" role="button" tabindex="0" aria-pressed="false">📍 Nær mig</span>
+    <select id="nearme-radius" onchange="updateNearMeRadius(this.value)" style="display:none;font-size:0.8rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--sand);cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <option value="10">10 km</option>
+      <option value="20" selected>20 km</option>
+      <option value="50">50 km</option>
+    </select>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Under 3.000 kr</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">El-cykler</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun forhandlere</span>
@@ -407,6 +413,35 @@
     </div>
   </div>
 
+  <!-- ── MOBIL BOTTOM NAV ── -->
+  <nav id="mobile-bottom-nav" aria-label="Mobilnavigation">
+    <button class="mbn-btn" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" aria-label="Forside">
+      <span class="mbn-icon">🏠</span>
+      <span class="mbn-label">Hjem</span>
+    </button>
+    <button class="mbn-btn" onclick="showSection('listings');document.querySelector('.hero-stats-bar')?.scrollIntoView({behavior:'smooth'})" aria-label="Annoncer">
+      <span class="mbn-icon">🔍</span>
+      <span class="mbn-label">Søg</span>
+    </button>
+    <button class="mbn-btn mbn-btn--sell" onclick="openModal()" aria-label="Sæt til salg">
+      <span class="mbn-icon">＋</span>
+      <span class="mbn-label">Sælg</span>
+    </button>
+    <button class="mbn-btn" id="mbn-inbox-btn" onclick="openInboxModal()" aria-label="Indbakke">
+      <span class="mbn-icon">✉️</span>
+      <span class="mbn-label">Indbakke</span>
+      <span class="mbn-badge" id="mbn-badge" style="display:none"></span>
+    </button>
+    <button class="mbn-btn" id="mbn-profile-btn" onclick="navigateToMyProfile()" aria-label="Min profil" style="display:none">
+      <span class="mbn-icon">👤</span>
+      <span class="mbn-label">Profil</span>
+    </button>
+    <button class="mbn-btn" id="mbn-login-btn" onclick="openLoginModal()" aria-label="Log ind">
+      <span class="mbn-icon">👤</span>
+      <span class="mbn-label">Log ind</span>
+    </button>
+  </nav>
+
   <!-- ── FOOTER ── -->
   <footer role="contentinfo">
     <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
@@ -549,7 +584,7 @@
             <div class="profile-big-avatar" id="profile-big-avatar">?</div>
             <div class="avatar-upload-overlay">📷</div>
           </div>
-          <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="uploadAvatar(this.files[0])">
+          <input type="file" id="avatar-file-input" accept="image/*" capture="user" style="display:none" onchange="uploadAvatar(this.files[0])">
           <div>
             <div class="profile-name" id="profile-display-name">Indlæser...</div>
             <div class="profile-email" id="profile-display-email"></div>
@@ -672,6 +707,13 @@
             <div id="thread-header" class="thread-header"></div>
             <div id="thread-messages" class="thread-messages"></div>
             <div class="thread-reply">
+              <div class="quick-replies" id="quick-replies-modal">
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Stadig til salg 👍</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Prisen er fast</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Kan mødes i weekenden</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Er du stadig interesseret?</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Tak for interessen!</button>
+              </div>
               <textarea id="reply-text" placeholder="Skriv et svar..."></textarea>
               <button id="send-reply-btn" onclick="sendReply()">Send svar</button>
             </div>
@@ -872,6 +914,13 @@
           <div id="inbox-modal-thread-header" class="thread-header"></div>
           <div id="inbox-modal-thread-messages" class="thread-messages"></div>
           <div class="thread-reply">
+              <div class="quick-replies" id="quick-replies-inbox">
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg 👍</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Prisen er fast</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Kan mødes i weekenden</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
+              </div>
             <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..."></textarea>
             <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send svar</button>
           </div>

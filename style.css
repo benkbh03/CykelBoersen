@@ -3330,3 +3330,126 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
 }
 .empty-state-cta:hover { background: var(--forest-light); }
+
+/* ── MOBIL BOTTOM NAV ── */
+#mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--cream); border-top: 1px solid var(--border);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 2000;
+  justify-content: space-around; align-items: center;
+}
+@media (max-width: 768px) {
+  #mobile-bottom-nav { display: flex; }
+  body { padding-bottom: 68px; }
+}
+.mbn-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; color: var(--muted);
+  padding: 4px 12px; border-radius: 10px; transition: color 0.15s;
+  position: relative; min-width: 52px;
+}
+.mbn-btn:hover { color: var(--charcoal); }
+.mbn-icon { font-size: 1.3rem; line-height: 1; }
+.mbn-label { font-size: 0.68rem; font-weight: 500; }
+.mbn-btn--sell {
+  background: var(--forest); color: var(--sand) !important;
+  border-radius: 50%; width: 52px; height: 52px;
+  padding: 0; margin-top: -16px;
+  box-shadow: 0 4px 14px rgba(42,61,46,0.35);
+  justify-content: center;
+}
+.mbn-btn--sell .mbn-icon { font-size: 1.6rem; }
+.mbn-btn--sell .mbn-label { display: none; }
+.mbn-badge {
+  position: absolute; top: 2px; right: 6px;
+  background: var(--rust); color: #fff;
+  border-radius: 50%; width: 16px; height: 16px;
+  font-size: 0.65rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── BUDFLOW BEKRÆFTELSE ── */
+.bid-sent-confirm {
+  text-align: center; padding: 20px 16px;
+  background: var(--sand); border-radius: 12px;
+  border: 1.5px solid var(--border);
+}
+.bid-sent-icon { font-size: 2rem; margin-bottom: 8px; }
+.bid-sent-title { font-weight: 700; font-size: 1rem; color: var(--charcoal); margin: 0 0 6px; }
+.bid-sent-sub { font-size: 0.85rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+/* ── BILLEDUPLOAD HINT ── */
+.img-upload-hint {
+  font-size: 0.78rem; color: var(--muted); margin-top: 8px;
+  text-align: center;
+}
+
+/* ── MØD I MIDTEN ── */
+.meet-middle {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: #f0f4f0; border: 1px solid #c8d8c8; border-radius: 8px;
+  padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; color: var(--charcoal);
+}
+.meet-middle-btn {
+  background: var(--forest); color: var(--sand); border: none;
+  border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  white-space: nowrap;
+}
+.meet-middle-btn:hover { background: var(--forest-light); }
+
+/* ── GAMMEL ANNONCE TAG ── */
+.mp-old-tag {
+  display: inline-block; background: #FFF3CD; color: #856404;
+  border: 1px solid #FFECB5; border-radius: 4px;
+  font-size: 0.68rem; font-weight: 600; padding: 1px 5px;
+  vertical-align: middle; margin-left: 4px; cursor: help;
+}
+
+/* ── NÆR MIG PILL ── */
+.pill--nearme.active { background: var(--forest); color: var(--sand); border-color: var(--forest); }
+
+/* ── ER DEN STADIG TIL SALG KNAP ── */
+.ask-available-btn {
+  position: absolute; bottom: 8px; left: 8px;
+  background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; cursor: pointer; opacity: 0;
+  transition: opacity 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.bike-card:hover .ask-available-btn { opacity: 1; }
+
+/* ── SAVED SEARCH NOTIFIKATION ── */
+#ss-notification {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+  z-index: 9500; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+#ss-notification.ss-notif-visible { opacity: 1; pointer-events: auto; }
+.ss-notif-content {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--cream); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 12px 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  font-size: 0.88rem; color: var(--charcoal);
+  white-space: nowrap;
+}
+.ss-notif-icon { font-size: 1.1rem; }
+
+/* ── HURTIG-SVAR SKABELONER ── */
+.quick-replies {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 8px 0 6px;
+}
+.qr-btn {
+  background: var(--sand); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.75rem; font-weight: 500; color: var(--charcoal);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.qr-btn:hover { border-color: var(--forest); background: #f0f4f0; }
