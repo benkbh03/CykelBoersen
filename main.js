@@ -318,8 +318,13 @@ async function init() {
     if (e.target === e.currentTarget) closeShareModal();
   });
 
-  // Hash routing: håndter initial route (køres efter Supabase hash-params er tjekket)
+  // Backward compat: omstil gamle hash-URLs (#/bike/123 → /bike/123)
   const _initHash = window.location.hash;
+  if (_initHash.startsWith('#/') && !_initHash.includes('type=')) {
+    history.replaceState({}, '', _initHash.slice(1));
+  }
+
+  // Pathname routing: håndter initial route (køres efter Supabase hash-params er tjekket)
   if (!_initHash.includes('type=signup') && !_initHash.includes('type=recovery')) {
     handleRoute();
   }
@@ -447,7 +452,7 @@ async function loadDealers(dealers, bikeRows) {
         <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
         <h3>Ingen forhandlere endnu</h3>
         <p>Vær den første forhandler på Cykelbørsen og nå tusindvis af cykelkøbere.</p>
-        <button class="btn-become-dealer-small" onclick="window.location.hash='#/bliv-forhandler'">Tilmeld din butik →</button>
+        <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik →</button>
       </div>
     `;
     return;
@@ -1526,7 +1531,7 @@ document.querySelectorAll('.pill').forEach(pill => {
 
 function openModal() {
   if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
-  window.location.hash = '#/sell';
+  navigateTo('/sell');
 }
 
 function _openModalLegacy() {
@@ -1813,7 +1818,7 @@ function onSellerTypeChange(select) {
     // Nulstil dropdown — forhandleransøgning sker via det officielle flow
     select.value = currentProfile?.seller_type || 'private';
     closeProfileModal();
-    window.location.hash = '#/bliv-forhandler';
+    navigateTo('/bliv-forhandler');
   }
 }
 
@@ -2012,8 +2017,8 @@ async function loadMyListings(containerId = 'my-listings-grid') {
           : `<div class="mp-listing-thumb mp-listing-thumb--empty">🚲</div>`;
         return `
           <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
-            <div class="mp-listing-img" onclick="window.location.hash='#/bike/${b.id}'" title="Se annonce">${thumb}</div>
-            <div class="mp-listing-body" onclick="window.location.hash='#/bike/${b.id}'" title="Se annonce">
+            <div class="mp-listing-img" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">${thumb}</div>
+            <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
               <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}</div>
               <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
               <div class="mp-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
@@ -2388,7 +2393,7 @@ function showSection(section) {
   const onDetailPage = document.getElementById('page-layout')?.style.display !== 'none';
   if (onDetailPage) {
     // Vi er på en detail/profil-side — navigér hjem først, scroll derefter
-    window.location.hash = '#/';
+    navigateTo('/');
     if (section === 'dealers') {
       setTimeout(() => document.querySelector('.dealer-strip')?.scrollIntoView({ behavior: 'smooth' }), 80);
     }
@@ -2640,7 +2645,7 @@ async function renderBikePage(bikeId) {
   }
 
   if (error || !b) {
-    const errBackAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+    const errBackAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `
       <div style="padding:60px 24px;text-align:center;">
         <p style="color:var(--rust);margin-bottom:16px;">Kunne ikke hente annonce.</p>
@@ -2654,7 +2659,7 @@ async function renderBikePage(bikeId) {
   }
 
   document.title = `${b.brand} ${b.model} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
-  updateSEOMeta(`${b.brand} ${b.model} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`, `/#/bike/${bikeId}`);
+  updateSEOMeta(`${b.brand} ${b.model} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`, `/bike/${bikeId}`);
 
   // Inject Product JSON-LD for rich search results
   removeBikeJsonLd();
@@ -2678,12 +2683,12 @@ async function renderBikePage(bikeId) {
       'seller': { '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person', 'name': b.profiles?.shop_name || b.profiles?.name || 'Sælger' }
     },
     'category': b.type,
-    'url': `${BASE_URL}/#/bike/${bikeId}`
+    'url': `${BASE_URL}/bike/${bikeId}`
   });
   document.head.appendChild(jsonLd);
 
   const { html, profile } = buildBikeBodyHTML(b);
-  const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+  const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
   detailView.innerHTML = `
     <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
       <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
@@ -2722,13 +2727,13 @@ function renderSellPage() {
   if (!currentUser) {
     openLoginModal();
     showToast('⚠️ Log ind for at oprette en annonce');
-    window.location.hash = '';
+    navigateTo('/');
     return;
   }
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Opret annonce – Cykelbørsen';
-  updateSEOMeta('Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.', '/#/sell');
+  updateSEOMeta('Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.', '/sell');
   selectedFiles = [];
 
   const isDealer = currentProfile?.seller_type === 'dealer';
@@ -2746,7 +2751,7 @@ function renderSellPage() {
   document.getElementById('detail-view').innerHTML = `
     <div class="sell-page">
       <div class="sell-page-header">
-        <button class="sell-back-btn" onclick="window.location.hash=''">← Tilbage</button>
+        <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="sell-page-title">Sæt din cykel til salg</h1>
         <p class="sell-page-subtitle">Gratis · Nemt · Under 2 minutter</p>
       </div>
@@ -2850,7 +2855,7 @@ function renderSellPage() {
 
         <div class="sell-page-actions">
           <button id="sell-submit-btn" class="form-submit sell-submit" onclick="submitSellPage()">Opret annonce gratis →</button>
-          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="window.location.hash='#/vilkaar'" class="sell-terms-link">vilkår og betingelser</span>.</p>
+          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="navigateTo('/vilkaar')" class="sell-terms-link">vilkår og betingelser</span>.</p>
         </div>
       </div>
     </div>
@@ -2938,7 +2943,7 @@ function showListingSuccessModal(bike) {
   const newBtn  = document.getElementById('success-new-btn');
   if (titleEl) titleEl.textContent = `${bike.brand} ${bike.model}`;
   if (priceEl) priceEl.textContent = bike.price ? `${bike.price.toLocaleString('da-DK')} kr.` : '';
-  if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); window.location.hash = `#/bike/${bike.id}`; };
+  if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); navigateTo(`/bike/${bike.id}`); };
   if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellPage(); };
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -3131,7 +3136,7 @@ function buildUserProfilePageHTML(data) {
       </div>
     </div>` : '';
 
-  const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+  const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
 
   return `
     <div class="pp-wrap">
@@ -3253,7 +3258,7 @@ function buildDealerProfilePageHTML(data) {
       </div>
     </div>` : '';
 
-  const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+  const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
 
   return `
     <div class="pp-wrap">
@@ -3314,19 +3319,19 @@ async function renderUserProfilePage(userId) {
   try {
     data = await fetchUserProfileData(userId);
   } catch (e) {
-    const back = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+    const back = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `<div class="pp-wrap"><button class="pp-back-btn" onclick="${back}">← Tilbage</button><div class="pp-empty-state"><p style="color:var(--rust);">Kunne ikke hente profil.</p></div></div>`;
     return;
   }
   if (!data.profile) {
-    const back = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+    const back = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `<div class="pp-wrap"><button class="pp-back-btn" onclick="${back}">← Tilbage</button><div class="pp-empty-state"><p>Profilen blev ikke fundet.</p></div></div>`;
     return;
   }
 
   const displayName = data.profile.seller_type === 'dealer' ? (data.profile.shop_name || data.profile.name) : data.profile.name;
   document.title = `${displayName} – Profil | Cykelbørsen`;
-  updateSEOMeta(`Se ${displayName}s profil og cykler til salg på Cykelbørsen.`, `/#/user/${userId}`);
+  updateSEOMeta(`Se ${displayName}s profil og cykler til salg på Cykelbørsen.`, `/profile/${userId}`);
   detailView.innerHTML = buildUserProfilePageHTML(data);
 
   // Aktivér stjerne-hover for anmeldelses-form
@@ -3347,19 +3352,19 @@ async function renderDealerProfilePage(dealerId) {
   try {
     data = await fetchDealerProfileData(dealerId);
   } catch (e) {
-    const back = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+    const back = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `<div class="pp-wrap"><button class="pp-back-btn" onclick="${back}">← Tilbage</button><div class="pp-empty-state"><p style="color:var(--rust);">Kunne ikke hente forhandler.</p></div></div>`;
     return;
   }
   if (!data.dealer) {
-    const back = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+    const back = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `<div class="pp-wrap"><button class="pp-back-btn" onclick="${back}">← Tilbage</button><div class="pp-empty-state"><p>Forhandleren blev ikke fundet.</p></div></div>`;
     return;
   }
 
   const displayName = data.dealer.shop_name || data.dealer.name || 'Forhandler';
   document.title = `${displayName} – Forhandler | Cykelbørsen`;
-  updateSEOMeta(`${displayName} – Autoriseret cykelforhandler på Cykelbørsen. Se udvalg og anmeldelser.`, `/#/dealer/${dealerId}`);
+  updateSEOMeta(`${displayName} – Autoriseret cykelforhandler på Cykelbørsen. Se udvalg og anmeldelser.`, `/dealer/${dealerId}`);
   detailView.innerHTML = buildDealerProfilePageHTML(data);
 
   // Star-hover for vurderingsform (samme som user profile)
@@ -3372,10 +3377,10 @@ async function renderDealerProfilePage(dealerId) {
 }
 
 function navigateToProfile(userId) {
-  window.location.hash = `#/profile/${userId}`;
+  navigateTo(`/profile/${userId}`);
 }
 function navigateToDealer(dealerId) {
-  window.location.hash = `#/dealer/${dealerId}`;
+  navigateTo(`/dealer/${dealerId}`);
 }
 
 /* ============================================================
@@ -3383,7 +3388,7 @@ function navigateToDealer(dealerId) {
    ============================================================ */
 
 function navigateToMyProfile() {
-  window.location.hash = '#/me';
+  navigateTo('/me');
 }
 
 async function renderMyProfilePage() {
@@ -3420,7 +3425,7 @@ function buildMyProfilePageHTML() {
     <div class="mp-wrap">
 
       <div class="mp-top">
-        <button class="mp-back-btn" onclick="window.location.hash='#/'">← Forside</button>
+        <button class="mp-back-btn" onclick="navigateTo('/')">← Forside</button>
         <h1 class="mp-title">Min konto</h1>
         <p class="mp-subtitle">Administrér dine annoncer, gemte søgninger og kontooplysninger</p>
       </div>
@@ -3442,7 +3447,7 @@ function buildMyProfilePageHTML() {
         </div>
         <div class="mp-header-actions">
           <button class="mp-action-btn" onclick="openProfileModal()">✏️ Redigér profil</button>
-          <button class="mp-action-btn mp-action-btn--secondary" onclick="window.location.hash='#/inbox'">✉️ Indbakke</button>
+          <button class="mp-action-btn mp-action-btn--secondary" onclick="navigateTo('/inbox')">✉️ Indbakke</button>
           <button class="mp-action-btn mp-action-btn--logout" onclick="logout()">Log ud</button>
         </div>
       </div>
@@ -3511,16 +3516,22 @@ function switchMyProfileTab(tab) {
   if (tab === 'trades')   loadTradeHistory('mp-trades-list');
 }
 
+// SPA navigation helper — pushState + route handling
+function navigateTo(path) {
+  history.pushState({}, '', path);
+  handleRoute();
+}
+
 function handleRoute() {
-  const hash = window.location.hash;
-  const bikeMatch    = hash.match(/^#\/bike\/([^/]+)$/);
-  const profileMatch = hash.match(/^#\/profile\/([^/]+)$/);
-  const dealerMatch  = hash.match(/^#\/dealer\/([^/]+)$/);
-  const meMatch      = hash === '#/me';
-  const sellMatch    = hash === '#/sell';
-  const inboxMatch   = hash === '#/inbox';
-  const dealerApply  = hash === '#/bliv-forhandler';
-  const staticMatch  = { '#/om-os': 'about', '#/vilkaar': 'terms', '#/privatlivspolitik': 'privacy', '#/kontakt': 'contact' }[hash];
+  const path = window.location.pathname;
+  const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
+  const profileMatch = path.match(/^\/profile\/([^/]+)$/);
+  const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
+  const meMatch      = path === '/me';
+  const sellMatch    = path === '/sell';
+  const inboxMatch   = path === '/inbox';
+  const dealerApply  = path === '/bliv-forhandler';
+  const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact' }[path];
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -3558,10 +3569,10 @@ function handleRoute() {
   }
 }
 
-window.addEventListener('hashchange', handleRoute);
+window.addEventListener('popstate', handleRoute);
 
 function navigateToBike(bikeId) {
-  window.location.hash = `#/bike/${bikeId}`;
+  navigateTo(`/bike/${bikeId}`);
 }
 
 async function loadResponseTime(sellerId) {
@@ -4667,11 +4678,11 @@ async function saveEditedListing() {
   updateFilterCounts();
 
   // Re-render det view brugeren faktisk ser efter save
-  const currentHash    = window.location.hash;
+  const currentPath    = window.location.pathname;
   const bikeModalOpen  = document.getElementById('bike-modal')?.classList.contains('open');
-  const profileMatch   = currentHash.match(/^#\/profile\/([^/]+)$/);
-  const dealerMatch    = currentHash.match(/^#\/dealer\/([^/]+)$/);
-  const onBikePage     = currentHash === `#/bike/${id}`;
+  const profileMatch   = currentPath.match(/^\/profile\/([^/]+)$/);
+  const dealerMatch    = currentPath.match(/^\/dealer\/([^/]+)$/);
+  const onBikePage     = currentPath === `/bike/${id}`;
 
   if (onBikePage) renderBikePage(id);
   if (bikeModalOpen) openBikeModal(id);
@@ -4853,7 +4864,7 @@ function startRealtimeNotifications() {
    ============================================================ */
 
 function openBecomeDealerModal() {
-  window.location.hash = '#/bliv-forhandler';
+  navigateTo('/bliv-forhandler');
 }
 
 function closeBecomeDealerModal() {
@@ -4869,12 +4880,12 @@ function renderBecomeDealerPage() {
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Bliv forhandler – Cykelbørsen';
-  updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå tusindvis af cykellkøbere i hele Danmark. 3 måneders gratis prøveperiode, fra kun 199 kr./md.', '/#/bliv-forhandler');
+  updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå tusindvis af cykellkøbere i hele Danmark. 3 måneders gratis prøveperiode, fra kun 199 kr./md.', '/bliv-forhandler');
 
   document.getElementById('detail-view').innerHTML = `
     <div class="bd-page">
       <div class="bd-page-header">
-        <button class="sell-back-btn" onclick="window.location.hash=''">← Tilbage</button>
+        <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="bd-page-title">Bliv forhandler</h1>
         <p class="bd-page-subtitle">Få din cykelbutik på Danmarks voksende cykelmarked</p>
       </div>
@@ -5066,6 +5077,7 @@ window.setSellPrimary            = setSellPrimary;
 window.removeSellImage           = removeSellImage;
 window.closeListingSuccessModal  = closeListingSuccessModal;
 window.openBikeModal      = openBikeModal;
+window.navigateTo         = navigateTo;
 window.navigateToBike     = navigateToBike;
 window.navigateToProfile  = navigateToProfile;
 window.navigateToDealer   = navigateToDealer;
@@ -5118,11 +5130,11 @@ let activeInboxThread = null;
 
 function openInboxModal() {
   if (!currentUser) { openLoginModal(); return; }
-  window.location.hash = '#/inbox';
+  navigateTo('/inbox');
 }
 
 function closeInboxModal() {
-  window.location.hash = '#/';
+  navigateTo('/');
 }
 
 async function renderInboxPage() {
@@ -5134,13 +5146,13 @@ async function renderInboxPage() {
 
   showDetailView();
   document.title = 'Indbakke | Cykelbørsen';
-  updateSEOMeta('Din indbakke på Cykelbørsen.', '/#/inbox');
+  updateSEOMeta('Din indbakke på Cykelbørsen.', '/inbox');
   const detailView = document.getElementById('detail-view');
 
   detailView.innerHTML = `
     <div class="inbox-page">
       <div class="inbox-page-top">
-        <button class="mp-back-btn" onclick="window.location.hash='#/'">← Forside</button>
+        <button class="mp-back-btn" onclick="navigateTo('/')">← Forside</button>
         <h1 class="inbox-page-title">Indbakke</h1>
         <p class="inbox-page-subtitle">Dine samtaler med købere og sælgere</p>
       </div>
@@ -5198,7 +5210,7 @@ async function loadInboxPage() {
         <div class="inbox-empty-icon">📭</div>
         <h3>Ingen beskeder endnu</h3>
         <p>Når du sender eller modtager beskeder om en annonce, vises de her.</p>
-        <button class="btn-primary" onclick="window.location.hash='#/'" style="margin-top:16px;">Udforsk cykler</button>
+        <button class="btn-primary" onclick="navigateTo('/')" style="margin-top:16px;">Udforsk cykler</button>
       </div>`;
     return;
   }
@@ -5306,7 +5318,7 @@ async function openInboxThread(bikeId, otherId, otherName) {
       <div class="inbox-chat-header-info">
         <button class="inbox-chat-back" onclick="closeInboxThread()" aria-label="Tilbage">←</button>
         <strong>${esc(otherName)}</strong>
-        <span class="inbox-chat-bike-link" onclick="window.location.hash='#/bike/${bikeId}'">🚲 ${bikeName}</span>
+        <span class="inbox-chat-bike-link" onclick="navigateTo('/bike/${bikeId}')">🚲 ${bikeName}</span>
       </div>`;
   }
 
@@ -5630,7 +5642,7 @@ var footerContent = {
   }
 };
 
-const staticPageRoutes = { about: '/#/om-os', terms: '/#/vilkaar', privacy: '/#/privatlivspolitik', contact: '/#/kontakt' };
+const staticPageRoutes = { about: '/om-os', terms: '/vilkaar', privacy: '/privatlivspolitik', contact: '/kontakt' };
 
 function renderStaticPage(type) {
   const data = footerContent[type];
@@ -5638,9 +5650,9 @@ function renderStaticPage(type) {
   showDetailView();
   document.title = `${data.title} – Cykelbørsen`;
   updateSEOMeta(`${data.title} – Cykelbørsen. Danmarks markedsplads for brugte cykler.`, staticPageRoutes[type] || '/');
-  const backAction = history.length > 1 ? 'history.back()' : "window.location.hash='#/'";
+  const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
   // Fix internal link from Om os → Kontakt
-  const body = data.body.replace(/closeFooterModal\(\);openFooterModal\('contact'\)/g, "window.location.hash='#/kontakt'");
+  const body = data.body.replace(/closeFooterModal\(\);openFooterModal\('contact'\)/g, "navigateTo('/kontakt')");
   document.getElementById('detail-view').innerHTML = `
     <div class="static-page">
       <button class="sell-back-btn" onclick="${backAction}">← Tilbage</button>
@@ -5650,8 +5662,8 @@ function renderStaticPage(type) {
 }
 
 function openFooterModal(type) {
-  const routes = { about: '#/om-os', terms: '#/vilkaar', privacy: '#/privatlivspolitik', contact: '#/kontakt' };
-  if (routes[type]) window.location.hash = routes[type];
+  const routes = { about: '/om-os', terms: '/vilkaar', privacy: '/privatlivspolitik', contact: '/kontakt' };
+  if (routes[type]) navigateTo(routes[type]);
 }
 
 function closeFooterModal() {
@@ -6012,7 +6024,7 @@ var currentShareBikeId = null;
 
 function openShareModal(bikeId, title) {
   currentShareBikeId = bikeId;
-  var url  = 'https://cykelbørsen.dk/?bike=' + bikeId;
+  var url  = 'https://cykelbørsen.dk/bike/' + bikeId;
   var text = 'Tjek denne cykel på Cykelbørsen: ' + title;
 
   document.getElementById('share-link-input').value = url;
@@ -6375,7 +6387,7 @@ function locateUser() {
 }
 
 function openFromMap(bikeId) {
-  window.location.hash = `#/bike/${bikeId}`;
+  navigateTo(`/bike/${bikeId}`);
 }
 window.openFromMap = openFromMap;
 
