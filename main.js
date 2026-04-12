@@ -2029,6 +2029,8 @@ async function loadMyListings(containerId = 'my-listings-grid') {
     grid.innerHTML = data.map(b => {
       const isSold = !b.is_active;
       const views  = b.views || 0;
+      const daysOld = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
+      const isOld  = !isSold && daysOld >= 30;
 
       if (isPage) {
         const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
@@ -2039,7 +2041,7 @@ async function loadMyListings(containerId = 'my-listings-grid') {
           <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
             <div class="mp-listing-img" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">${thumb}</div>
             <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
-              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}</div>
+              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}${isOld ? ` <span class="mp-old-tag" title="Annoncen er ${daysOld} dage gammel — overvej at opdatere prisen">⚠️ ${daysOld}d</span>` : ''}</div>
               <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
               <div class="mp-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
             </div>
@@ -2553,8 +2555,12 @@ function buildBikeBodyHTML(b) {
           <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
           <div class="bid-box" id="bid-box">
             <div class="bid-box-inner">
-              <input type="number" id="bid-amount" placeholder="Dit bud i kr.">
+              <input type="number" id="bid-amount" placeholder="Dit bud i kr." oninput="updateMeetMiddle(${b.price})">
               <button onclick="sendBid('${b.id}', '${profile.id}')">Send bud</button>
+            </div>
+            <div class="meet-middle" id="meet-middle" style="display:none">
+              Mød i midten: <strong id="meet-middle-price"></strong>
+              <button class="meet-middle-btn" onclick="useMeetMiddle()">Brug dette bud</button>
             </div>
           </div>
           <button class="btn-contact" onclick="toggleMessageBox()">✉️ Kontakt sælger</button>
@@ -3899,6 +3905,27 @@ function attachGallerySwipe() {
 window.galleryNav  = galleryNav;
 window.galleryGoto = galleryGoto;
 
+function updateMeetMiddle(listingPrice) {
+  const input = document.getElementById('bid-amount');
+  const el    = document.getElementById('meet-middle');
+  const priceEl = document.getElementById('meet-middle-price');
+  if (!input || !el || !priceEl) return;
+  const bid = parseInt(input.value);
+  if (!bid || bid <= 0 || bid >= listingPrice) { el.style.display = 'none'; return; }
+  const middle = Math.round((bid + listingPrice) / 2 / 50) * 50; // rund til nærmeste 50
+  priceEl.textContent = middle.toLocaleString('da-DK') + ' kr.';
+  el.style.display = 'flex';
+}
+
+function useMeetMiddle() {
+  const priceEl = document.getElementById('meet-middle-price');
+  const input   = document.getElementById('bid-amount');
+  if (!priceEl || !input) return;
+  const val = priceEl.textContent.replace(/[^\d]/g, '');
+  input.value = val;
+  document.getElementById('meet-middle').style.display = 'none';
+}
+
 function toggleBidBox() {
   if (!currentUser) { openLoginModal(); return; }
   const box = document.getElementById('bid-box');
@@ -5164,6 +5191,8 @@ window.openReportModal    = openReportModal;
 window.closeReportModal   = closeReportModal;
 window.submitReport       = submitReport;
 window.toggleBidBox       = toggleBidBox;
+window.updateMeetMiddle   = updateMeetMiddle;
+window.useMeetMiddle      = useMeetMiddle;
 window.toggleMessageBox   = toggleMessageBox;
 window.sendMessage        = sendMessage;
 window.sendBid            = sendBid;

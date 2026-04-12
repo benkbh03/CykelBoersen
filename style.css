@@ -3386,3 +3386,25 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   font-size: 0.78rem; color: var(--muted); margin-top: 8px;
   text-align: center;
 }
+
+/* ── MØD I MIDTEN ── */
+.meet-middle {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: #f0f4f0; border: 1px solid #c8d8c8; border-radius: 8px;
+  padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; color: var(--charcoal);
+}
+.meet-middle-btn {
+  background: var(--forest); color: var(--sand); border: none;
+  border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  white-space: nowrap;
+}
+.meet-middle-btn:hover { background: var(--forest-light); }
+
+/* ── GAMMEL ANNONCE TAG ── */
+.mp-old-tag {
+  display: inline-block; background: #FFF3CD; color: #856404;
+  border: 1px solid #FFECB5; border-radius: 4px;
+  font-size: 0.68rem; font-weight: 600; padding: 1px 5px;
+  vertical-align: middle; margin-left: 4px; cursor: help;
+}
