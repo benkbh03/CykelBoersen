@@ -3330,3 +3330,59 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
 }
 .empty-state-cta:hover { background: var(--forest-light); }
+
+/* ── MOBIL BOTTOM NAV ── */
+#mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--cream); border-top: 1px solid var(--border);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 2000;
+  justify-content: space-around; align-items: center;
+}
+@media (max-width: 768px) {
+  #mobile-bottom-nav { display: flex; }
+  body { padding-bottom: 68px; }
+}
+.mbn-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; color: var(--muted);
+  padding: 4px 12px; border-radius: 10px; transition: color 0.15s;
+  position: relative; min-width: 52px;
+}
+.mbn-btn:hover { color: var(--charcoal); }
+.mbn-icon { font-size: 1.3rem; line-height: 1; }
+.mbn-label { font-size: 0.68rem; font-weight: 500; }
+.mbn-btn--sell {
+  background: var(--forest); color: var(--sand) !important;
+  border-radius: 50%; width: 52px; height: 52px;
+  padding: 0; margin-top: -16px;
+  box-shadow: 0 4px 14px rgba(42,61,46,0.35);
+  justify-content: center;
+}
+.mbn-btn--sell .mbn-icon { font-size: 1.6rem; }
+.mbn-btn--sell .mbn-label { display: none; }
+.mbn-badge {
+  position: absolute; top: 2px; right: 6px;
+  background: var(--rust); color: #fff;
+  border-radius: 50%; width: 16px; height: 16px;
+  font-size: 0.65rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── BUDFLOW BEKRÆFTELSE ── */
+.bid-sent-confirm {
+  text-align: center; padding: 20px 16px;
+  background: var(--sand); border-radius: 12px;
+  border: 1.5px solid var(--border);
+}
+.bid-sent-icon { font-size: 2rem; margin-bottom: 8px; }
+.bid-sent-title { font-weight: 700; font-size: 1rem; color: var(--charcoal); margin: 0 0 6px; }
+.bid-sent-sub { font-size: 0.85rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+/* ── BILLEDUPLOAD HINT ── */
+.img-upload-hint {
+  font-size: 0.78rem; color: var(--muted); margin-top: 8px;
+  text-align: center;
+}

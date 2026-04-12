@@ -407,6 +407,35 @@
     </div>
   </div>
 
+  <!-- ── MOBIL BOTTOM NAV ── -->
+  <nav id="mobile-bottom-nav" aria-label="Mobilnavigation">
+    <button class="mbn-btn" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" aria-label="Forside">
+      <span class="mbn-icon">🏠</span>
+      <span class="mbn-label">Hjem</span>
+    </button>
+    <button class="mbn-btn" onclick="showSection('listings');document.querySelector('.hero-stats-bar')?.scrollIntoView({behavior:'smooth'})" aria-label="Annoncer">
+      <span class="mbn-icon">🔍</span>
+      <span class="mbn-label">Søg</span>
+    </button>
+    <button class="mbn-btn mbn-btn--sell" onclick="openModal()" aria-label="Sæt til salg">
+      <span class="mbn-icon">＋</span>
+      <span class="mbn-label">Sælg</span>
+    </button>
+    <button class="mbn-btn" id="mbn-inbox-btn" onclick="openInboxModal()" aria-label="Indbakke">
+      <span class="mbn-icon">✉️</span>
+      <span class="mbn-label">Indbakke</span>
+      <span class="mbn-badge" id="mbn-badge" style="display:none"></span>
+    </button>
+    <button class="mbn-btn" id="mbn-profile-btn" onclick="navigateToMyProfile()" aria-label="Min profil" style="display:none">
+      <span class="mbn-icon">👤</span>
+      <span class="mbn-label">Profil</span>
+    </button>
+    <button class="mbn-btn" id="mbn-login-btn" onclick="openLoginModal()" aria-label="Log ind">
+      <span class="mbn-icon">👤</span>
+      <span class="mbn-label">Log ind</span>
+    </button>
+  </nav>
+
   <!-- ── FOOTER ── -->
   <footer role="contentinfo">
     <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>

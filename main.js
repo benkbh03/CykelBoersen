@@ -353,14 +353,20 @@ async function init() {
 function updateNav(loggedIn, name, avatarUrl) {
   const sellBtn        = document.querySelector('.btn-sell');
   const navProfile     = document.getElementById('nav-profile');
+  const mbnProfile     = document.getElementById('mbn-profile-btn');
+  const mbnLogin       = document.getElementById('mbn-login-btn');
   if (loggedIn) {
     if (sellBtn) { sellBtn.textContent = '+ Sæt til salg'; sellBtn.setAttribute('onclick', 'openModal()'); }
     if (navProfile) navProfile.style.display = 'flex';
+    if (mbnProfile) mbnProfile.style.display = 'flex';
+    if (mbnLogin)   mbnLogin.style.display = 'none';
     updateNavAvatar(name, avatarUrl);
     checkUnreadMessages();
   } else {
     if (sellBtn) { sellBtn.textContent = 'Log ind / Sælg'; sellBtn.setAttribute('onclick', 'openLoginModal()'); }
     if (navProfile) navProfile.style.display = 'none';
+    if (mbnProfile) mbnProfile.style.display = 'none';
+    if (mbnLogin)   mbnLogin.style.display = 'flex';
   }
 }
 
@@ -2894,6 +2900,7 @@ function renderSellPage() {
           </div>
           <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
           <div id="sell-preview-grid" class="img-preview-grid"></div>
+          <p class="img-upload-hint" id="sell-img-hint" style="display:none">Klik ★ på et billede for at gøre det til forsidebillede</p>
         </div>
 
         <div class="sell-page-actions">
@@ -2956,9 +2963,13 @@ function renderSellImagePreviews() {
   grid.innerHTML = selectedFiles.map((item, i) => `
     <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
       <img src="${item.url}" alt="Billede ${i + 1}">
-      ${item.isPrimary ? '<span class="primary-badge">Primær</span>' : `<button class="set-primary" onclick="setSellPrimary(${i})">★</button>`}
+      ${item.isPrimary
+        ? '<span class="primary-badge">⭐ Forsidebillede</span>'
+        : `<button class="set-primary" title="Sæt som forsidebillede" onclick="setSellPrimary(${i})">★</button>`}
       <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
     </div>`).join('');
+  const hint = document.getElementById('sell-img-hint');
+  if (hint) hint.style.display = selectedFiles.length > 1 ? 'block' : 'none';
 }
 
 function setSellPrimary(index) {
@@ -3926,8 +3937,13 @@ async function sendMessage(bikeId, receiverId) {
     const textEl = document.getElementById('message-text');
     const boxEl  = document.getElementById('message-box');
     if (textEl) textEl.value = '';
-    if (boxEl)  boxEl.style.display = 'none';
-    showToast('✅ Besked sendt!');
+    if (boxEl) {
+      boxEl.innerHTML = `<div class="bid-sent-confirm">
+        <div class="bid-sent-icon">✅</div>
+        <p class="bid-sent-title">Besked sendt!</p>
+        <p class="bid-sent-sub">Sælgeren modtager en e-mail. Se svar i din <a onclick="openInboxModal()" style="color:var(--forest);cursor:pointer;font-weight:600;">Indbakke →</a></p>
+      </div>`;
+    }
 
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
@@ -3959,8 +3975,14 @@ async function sendBid(bikeId, receiverId) {
 
     if (error) { showToast('❌ Kunne ikke sende bud'); return; }
     document.getElementById('bid-amount').value = '';
-    document.getElementById('bid-box').style.display = 'none';
-    showToast('✅ Bud sendt til sælgeren!');
+    const bidBox = document.getElementById('bid-box');
+    if (bidBox) {
+      bidBox.innerHTML = `<div class="bid-sent-confirm">
+        <div class="bid-sent-icon">✅</div>
+        <p class="bid-sent-title">Bud sendt!</p>
+        <p class="bid-sent-sub">Sælgeren modtager en e-mail. Følg svaret i din <a onclick="openInboxModal()" style="color:var(--forest);cursor:pointer;font-weight:600;">Indbakke →</a></p>
+      </div>`;
+    }
 
     // Send email-notifikation til sælger via Edge Function
     if (msgData?.id) {
@@ -5430,13 +5452,14 @@ async function updateInboxBadge() {
     .eq('receiver_id', currentUser.id)
     .eq('read', false);
 
-  const badge = document.getElementById('nav-inbox-badge');
-  if (!badge) return;
+  const badge    = document.getElementById('nav-inbox-badge');
+  const mbnBadge = document.getElementById('mbn-badge');
   if (count > 0) {
-    badge.textContent = count;
-    badge.style.display = 'flex';
+    if (badge)    { badge.textContent = count; badge.style.display = 'flex'; }
+    if (mbnBadge) { mbnBadge.textContent = count; mbnBadge.style.display = 'flex'; }
   } else {
-    badge.style.display = 'none';
+    if (badge)    badge.style.display = 'none';
+    if (mbnBadge) mbnBadge.style.display = 'none';
   }
 }
 
