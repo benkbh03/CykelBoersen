@@ -195,6 +195,7 @@ async function init() {
       checkEmailConfirmed();
       if (_event === 'SIGNED_IN' && isNewLogin) {
         loadBikes();
+        if (!localStorage.getItem('onboarded')) showOnboardingBanner();
       }
     } else {
       _hasHadSession = false;
@@ -1225,7 +1226,15 @@ async function loadBikes(filters = {}, append = false) {
   if (!append) {
     bikesOffset    = 0;
     currentFilters = filters;
-    grid.innerHTML = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
+    grid.innerHTML = Array(6).fill(`
+      <div class="bike-card skeleton-card">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-line skeleton-line--sub"></div>
+          <div class="skeleton-line skeleton-line--price"></div>
+        </div>
+      </div>`).join('');
     // Fjern evt. eksisterende "Vis flere"-knap
     const old = document.getElementById('load-more-btn');
     if (old) old.remove();
@@ -1998,7 +2007,12 @@ async function loadMyListings(containerId = 'my-listings-grid') {
   if (statEl) statEl.textContent = data ? data.filter(b => b.is_active).length : 0;
 
   if (error || !data || data.length === 0) {
-    grid.innerHTML = '<p style="color:var(--muted);padding:16px 0;">Du har ingen annoncer endnu.</p>';
+    grid.innerHTML = `<div class="empty-state-box">
+      <div class="empty-state-icon">🚲</div>
+      <h3 class="empty-state-title">Ingen annoncer endnu</h3>
+      <p class="empty-state-sub">Sæt din første cykel til salg — det tager under 2 minutter.</p>
+      <button class="empty-state-cta" onclick="openModal()">+ Sæt til salg</button>
+    </div>`;
     return;
   }
 
@@ -2387,6 +2401,35 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function showOnboardingBanner() {
+  const existing = document.getElementById('onboarding-banner');
+  if (existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'onboarding-banner';
+  banner.innerHTML = `
+    <div class="onboarding-content">
+      <button class="onboarding-close" onclick="dismissOnboarding()">✕</button>
+      <div class="onboarding-icon">🚲</div>
+      <h3 class="onboarding-title">Velkommen til Cykelbørsen!</h3>
+      <p class="onboarding-sub">Hvad vil du gøre?</p>
+      <div class="onboarding-actions">
+        <button class="onboarding-btn onboarding-btn--primary" onclick="dismissOnboarding();openModal()">+ Sæt cykel til salg</button>
+        <button class="onboarding-btn" onclick="dismissOnboarding();document.querySelector('.hero-stats-bar')?.scrollIntoView({behavior:'smooth'})">Søg efter cykler</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  requestAnimationFrame(() => banner.classList.add('onboarding-visible'));
+}
+
+function dismissOnboarding() {
+  localStorage.setItem('onboarded', '1');
+  const banner = document.getElementById('onboarding-banner');
+  if (!banner) return;
+  banner.classList.remove('onboarding-visible');
+  setTimeout(() => banner.remove(), 300);
 }
 
 function showSection(section) {
@@ -3994,7 +4037,11 @@ async function loadInbox() {
   }
 
   if (!data || data.length === 0) {
-    list.innerHTML = '<p style="color:var(--muted)">Du har ingen beskeder endnu.</p>';
+    list.innerHTML = `<div class="empty-state-box">
+      <div class="empty-state-icon">✉️</div>
+      <h3 class="empty-state-title">Ingen beskeder endnu</h3>
+      <p class="empty-state-sub">Når du kontakter en sælger eller modtager et bud, dukker beskederne op her.</p>
+    </div>`;
     return;
   }
 
@@ -5030,6 +5077,7 @@ window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
+window.dismissOnboarding    = dismissOnboarding;
 window.switchDealerProfileTab = switchDealerProfileTab;
 window.saveProfile          = saveProfile;
 window.onSellerTypeChange   = onSellerTypeChange;
