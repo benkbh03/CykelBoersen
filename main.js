@@ -138,6 +138,7 @@ let bikesOffset       = 0;
 let currentFilters    = {};
 let userGeoCoords     = null; // [lat, lng] fra GPS
 let activeRadius      = null; // km radius filter
+const askedAvailableSet = new Set(); // Track sent "er den stadig til salg?" per bike
 
 function haversineKm([lat1, lon1], [lat2, lon2]) {
   const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
@@ -1368,7 +1369,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
           ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
-          ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}')" title="Er den stadig til salg?">💬</button>` : ''}
+          ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
         </div>
         <div class="bike-card-body">
           <div class="card-top">
@@ -1408,15 +1409,23 @@ function searchBikes() {
   loadBikes({ search, type, city });
 }
 
-async function askIfAvailable(bikeId, sellerId) {
+async function askIfAvailable(bikeId, sellerId, btn) {
   if (!currentUser) { openLoginModal(); return; }
   if (sellerId === currentUser.id) return;
+  if (askedAvailableSet.has(bikeId)) { showToast('Du har allerede spurgt om denne cykel'); return; }
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
   const { error } = await supabase.from('messages').insert({
     bike_id: bikeId, sender_id: currentUser.id, receiver_id: sellerId,
     content: '👋 Er cyklen stadig til salg?',
   });
-  if (error) { showToast('❌ Kunne ikke sende besked'); return; }
+  if (error) { showToast('❌ Kunne ikke sende besked'); if (btn) { btn.disabled = false; btn.style.opacity = ''; } return; }
+  askedAvailableSet.add(bikeId);
+  if (btn) { btn.textContent = '✅'; btn.style.opacity = '1'; }
   showToast('✅ Besked sendt til sælgeren!');
+
+  supabase.functions.invoke('notify-message', {
+    body: { type: 'message_id', bikeId, senderId: currentUser.id, receiverId: sellerId },
+  }).catch(() => {});
 }
 
 function toggleNearMe(pill) {
@@ -1427,6 +1436,8 @@ function toggleNearMe(pill) {
     if (radiusSel) radiusSel.style.display = 'none';
     userGeoCoords = null;
     activeRadius  = null;
+    // Fjern afstandstags
+    document.querySelectorAll('.nearme-dist').forEach(el => el.remove());
     loadBikes(currentFilters);
     return;
   }
@@ -1455,6 +1466,12 @@ async function applyNearMeFilter() {
   if (!userGeoCoords || !activeRadius) return;
   const grid = document.getElementById('listings-grid');
   const cards = [...grid.querySelectorAll('.bike-card:not(.skeleton-card)')];
+  grid.querySelector('.nearme-empty')?.remove();
+
+  // Vis loading-overlay mens byer geokodes
+  cards.forEach(c => c.style.opacity = '0.4');
+  showToast('📍 Filtrerer efter afstand...');
+
   let shown = 0;
   const promises = cards.map(async card => {
     const cityEl = card.querySelector('.bike-city');
@@ -1463,21 +1480,31 @@ async function applyNearMeFilter() {
     const coords = await geocodeCity(city);
     if (!coords) { card.style.display = 'none'; return; }
     const km = haversineKm(userGeoCoords, coords);
-    if (km <= activeRadius) { card.style.display = ''; shown++; }
-    else                    { card.style.display = 'none'; }
+    if (km <= activeRadius) {
+      card.style.display = '';
+      card.style.opacity = '';
+      // Vis afstand på kortet
+      let distTag = card.querySelector('.nearme-dist');
+      if (!distTag) {
+        distTag = document.createElement('span');
+        distTag.className = 'nearme-dist';
+        card.querySelector('.bike-card-img')?.appendChild(distTag);
+      }
+      distTag.textContent = Math.round(km) + ' km';
+      shown++;
+    } else {
+      card.style.display = 'none';
+    }
   });
   await Promise.all(promises);
+
   if (shown === 0) {
-    const existing = grid.querySelector('.nearme-empty');
-    if (!existing) {
-      const el = document.createElement('div');
-      el.className = 'nearme-empty empty-state-box';
-      el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
-      grid.appendChild(el);
-    }
-  } else {
-    grid.querySelector('.nearme-empty')?.remove();
+    const el = document.createElement('div');
+    el.className = 'nearme-empty empty-state-box';
+    el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
+    grid.appendChild(el);
   }
+  showToast(`📍 ${shown} cykel${shown !== 1 ? 'er' : ''} inden for ${activeRadius} km`);
 }
 
 function sortBikes(value) {
@@ -5405,8 +5432,10 @@ async function renderInboxPage() {
               <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
               <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
             </div>
-            <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
-            <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
+            <div class="inbox-chat-reply-row">
+              <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
+              <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
+            </div>
           </div>
         </div>
         <div class="inbox-page-empty-state" id="inbox-page-empty-chat">
@@ -6371,44 +6400,25 @@ function geocodeAddress(address, city) {
     .catch(function() { return null; });
 }
 
-// Slå dansk by op via Nominatim (med cache + rate-limit)
-var _geocodeQueue = Promise.resolve();
-var _lastGeocodeTime = 0;
-
+// Slå dansk by op via DAWA (Danmarks Adressers Web API) — ingen rate limit
 function geocodeCity(city) {
   var key = city.toLowerCase().trim();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  // Kø requests så vi max laver 1 kald per sekund (Nominatim rate limit)
-  _geocodeQueue = _geocodeQueue.then(function() {
-    if (_geocodeCache[key] !== undefined) return _geocodeCache[key];
-
-    var now = Date.now();
-    var wait = Math.max(0, 1100 - (now - _lastGeocodeTime));
-
-    return new Promise(function(resolve) { setTimeout(resolve, wait); }).then(function() {
-      _lastGeocodeTime = Date.now();
-      var url = 'https://nominatim.openstreetmap.org/search?q='
-        + encodeURIComponent(city + ', Danmark')
-        + '&format=json&limit=1&countrycodes=dk';
-
-      return fetch(url, { headers: { 'Accept-Language': 'da' } })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data && data.length > 0) {
-            var coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-            _geocodeCache[key] = coords;
-            _saveGeocodeCache();
-            return coords;
-          }
-          _geocodeCache[key] = null;
-          return null;
-        })
-        .catch(function() { return null; });
-    });
-  });
-
-  return _geocodeQueue;
+  return fetch('https://api.dataforsyningen.dk/steder?q='
+    + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=1&format=json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.length > 0 && data[0].visueltcenter) {
+        var coords = [data[0].visueltcenter[1], data[0].visueltcenter[0]]; // [lat, lng]
+        _geocodeCache[key] = coords;
+        _saveGeocodeCache();
+        return coords;
+      }
+      _geocodeCache[key] = null;
+      return null;
+    })
+    .catch(function() { return null; });
 }
 
 function setView(view) {
