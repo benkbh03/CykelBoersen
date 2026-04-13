@@ -3426,6 +3426,18 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   transition: opacity 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 .bike-card:hover .ask-available-btn { opacity: 1; }
+.ask-available-btn.asked { opacity: 1; background: #e8f5e9; }
+.ask-available-btn:disabled { cursor: default; }
+@media (hover: none) {
+  .ask-available-btn { opacity: 0.85; }
+}
+
+/* ── NÆR MIG AFSTANDSTAG ── */
+.nearme-dist {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(42,61,46,0.88); color: #fff; border-radius: 6px;
+  padding: 2px 8px; font-size: 0.72rem; font-weight: 600;
+}
 
 /* ── SAVED SEARCH NOTIFIKATION ── */
 #ss-notification {
