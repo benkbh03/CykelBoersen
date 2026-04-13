@@ -1470,10 +1470,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .inbox-chat-reply {
   display: flex;
-  gap: 10px;
-  padding: 16px 24px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 24px 16px;
   border-top: 1px solid var(--border);
   background: #fff;
+}
+.inbox-chat-reply-row {
+  display: flex;
+  gap: 10px;
   align-items: flex-end;
 }
 .inbox-chat-reply textarea {
@@ -1591,7 +1596,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .btn-accept-bid { display: block; width: 100%; margin-top: 10px; padding: 9px 0; background: var(--forest); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
 .btn-accept-bid:hover { background: var(--rust); }
 .thread-reply { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border); padding-top: 14px; }
-.thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; resize: none; height: 80px; outline: none; background: var(--cream); transition: border-color 0.2s; }
+.thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .thread-reply textarea:focus { border-color: var(--forest); }
 .thread-reply button { background: var(--forest); color: var(--sand); border: none; padding: 11px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
 .thread-reply button:hover { background: var(--forest-light); }

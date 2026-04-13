@@ -5405,8 +5405,10 @@ async function renderInboxPage() {
               <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
               <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
             </div>
-            <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
-            <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
+            <div class="inbox-chat-reply-row">
+              <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
+              <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
+            </div>
           </div>
         </div>
         <div class="inbox-page-empty-state" id="inbox-page-empty-chat">
