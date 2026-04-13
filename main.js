@@ -1990,10 +1990,10 @@ function showProfileData() {
   const sellerDisplay = document.getElementById('edit-seller-type-display');
   if (sellerDisplay) sellerDisplay.textContent = isDealer ? '🏪 Forhandler' : '👤 Privatperson';
 
-  // Vis abonnementsboks for forhandlere med Stripe-kunde
+  // Vis abonnementsboks kun for forhandlere med aktiv Stripe-kunde
   const subBox = document.getElementById('subscription-box');
   if (subBox) {
-    const hasSubscription = isDealer && profile.stripe_customer_id;
+    const hasSubscription = isDealer && profile.stripe_customer_id && profile.stripe_subscription_status !== 'canceled';
     subBox.style.display = hasSubscription ? 'block' : 'none';
     if (hasSubscription) {
       const badge  = document.getElementById('subscription-status-badge');
@@ -5129,40 +5129,26 @@ function renderBecomeDealerPage() {
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Bliv forhandler – Cykelbørsen';
-  updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå tusindvis af cykellkøbere i hele Danmark. 3 måneders gratis prøveperiode, fra kun 199 kr./md.', '/bliv-forhandler');
+  updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå cykellkøbere i hele Danmark. Helt gratis — ingen binding.', '/bliv-forhandler');
 
   document.getElementById('detail-view').innerHTML = `
     <div class="bd-page">
       <div class="bd-page-header">
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="bd-page-title">Bliv forhandler</h1>
-        <p class="bd-page-subtitle">Få din cykelbutik på Danmarks voksende cykelmarked</p>
+        <p class="bd-page-subtitle">Få din cykelbutik på Danmarks dedikerede cykelmarkedsplads</p>
       </div>
 
       <div class="bd-trial-banner">
-        🎉 <strong>Tilbud til nye forhandlere:</strong> 3 måneder gratis — ingen binding, annuller når som helst.
+        🎉 <strong>Gratis for forhandlere</strong> — opret din butiksprofil uden binding eller betaling.
       </div>
 
       <div class="bd-perks">
         <div class="bd-perk">✅ <span>Ubegrænset antal annoncer</span></div>
         <div class="bd-perk">✅ <span>Verificeret forhandler-badge</span></div>
         <div class="bd-perk">✅ <span>Direkte beskeder fra købere</span></div>
-        <div class="bd-perk">✅ <span>Statistik og salgsdata</span></div>
         <div class="bd-perk">✅ <span>Prioriteret placering i søgning</span></div>
-      </div>
-
-      <div class="bd-plans" role="group" aria-label="Vælg abonnementsplan">
-        <button class="dealer-plan-btn selected" data-plan="monthly" onclick="selectDealerPlan(this)" type="button">
-          <div class="plan-name">Månedlig</div>
-          <div class="plan-price">199 <span class="plan-unit">kr./md</span></div>
-          <div class="plan-note">3 mdr. gratis herefter</div>
-        </button>
-        <button class="dealer-plan-btn" data-plan="yearly" onclick="selectDealerPlan(this)" type="button">
-          <div class="plan-badge">Spar 37%</div>
-          <div class="plan-name">Årlig</div>
-          <div class="plan-price">1.499 <span class="plan-unit">kr./år</span></div>
-          <div class="plan-note">svarende til 125 kr./md</div>
-        </button>
+        <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
       </div>
 
       <div class="bd-form">
@@ -5176,9 +5162,9 @@ function renderBecomeDealerPage() {
           <div class="form-group"><label>Adresse</label><input type="text" id="dealer-address" placeholder="f.eks. Vesterbrogade 42" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group full"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
         </div>
-        <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Fortsæt til betaling →</button>
+        <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil →</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;">
-          Betaling via Stripe — kort og MobilePay accepteres. Ingen binding.
+          Gratis at oprette — ingen binding, ingen kreditkort.
         </p>
       </div>
     </div>`;
@@ -5198,50 +5184,41 @@ async function submitDealerApplication() {
   const phone    = document.getElementById('dealer-phone').value.trim();
   const address  = document.getElementById('dealer-address').value.trim();
   const city     = document.getElementById('dealer-city').value.trim();
-  const plan     = document.querySelector('.dealer-plan-btn.selected')?.dataset.plan || 'monthly';
 
   if (!shopName || !cvr || !contact || !email) {
     showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
   }
 
-  const restore = btnLoading('dealer-submit-btn', 'Forbereder betaling...');
+  const restore = btnLoading('dealer-submit-btn', 'Opretter profil...');
 
-  // Gem butiksinformation i profil
-  const { error: profileError } = await supabase.from('profiles').update({
+  const { error } = await supabase.from('profiles').update({
     shop_name:   shopName,
     cvr:         cvr,
     phone:       phone,
     address:     address,
     city:        city,
     seller_type: 'dealer',
+    verified:    true,
+    name:        contact,
   }).eq('id', currentUser.id);
 
-  if (profileError) {
-    restore();
+  restore();
+
+  if (error) {
     showToast('❌ Noget gik galt – prøv igen');
     return;
   }
 
-  // Opret Stripe Checkout session via Edge Function
-  const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-    body: {
-      plan,
-      user_id:     currentUser.id,
-      email:       email || currentUser.email,
-      success_url: window.location.origin + window.location.pathname,
-      cancel_url:  window.location.origin + window.location.pathname,
-    },
-  });
-
-  restore();
-
-  if (fnError || data?.error) {
-    showToast('❌ Kunne ikke starte betaling — ' + (data?.error || fnError?.message || 'prøv igen'));
-    return;
+  // Opdater lokal profil-cache så UI opdaterer sig
+  if (currentProfile) {
+    currentProfile.seller_type = 'dealer';
+    currentProfile.verified    = true;
+    currentProfile.shop_name   = shopName;
+    currentProfile.city        = city;
   }
 
-  // Redirect til Stripe Checkout (åbner i samme fane)
-  window.location.href = data.url;
+  showToast('🎉 Velkommen som forhandler på CykelBørsen!');
+  navigateTo('/');
 }
 
 async function openSubscriptionPortal() {
