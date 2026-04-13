@@ -1504,7 +1504,7 @@ async function applyNearMeFilter() {
     el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
     grid.appendChild(el);
   }
-  showToast(`📍 ${shown} cykel${shown !== 1 ? 'er' : ''} inden for ${activeRadius} km`);
+  showToast(`📍 ${shown} ${shown === 1 ? 'cykel' : 'cykler'} inden for ${activeRadius} km`);
 }
 
 function sortBikes(value) {
