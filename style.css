@@ -1637,7 +1637,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .profile-avatar-btn { width: 34px; height: 34px; }
   .nav-inbox-btn { width: 34px; height: 34px; }
   .nav-admin-btn { width: 34px; height: 34px; }
-  .hero { min-height: 480px; }
+  .hero { height: auto; min-height: 460px; }
   .hero-text { padding: 48px 20px 48px; max-width: 100%; }
   .hero-img-side::after { background: linear-gradient(to right, rgba(42,61,46,0.96) 0%, rgba(42,61,46,0.85) 50%, rgba(42,61,46,0.6) 100%); }
   .hero-text h1 { font-size: 2.8rem; line-height: 1.08; }
