@@ -1694,6 +1694,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .form-grid { grid-template-columns: 1fr !important; }
   .form-group.full { grid-column: 1; }
   .dealer-strip-header { flex-direction: column; }
+  #chat-widget { bottom: 82px; right: 16px; }
 }
 
 @media (max-width: 420px) {
