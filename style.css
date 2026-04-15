@@ -3339,7 +3339,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 /* ── MOBIL BOTTOM NAV ── */
 #mobile-bottom-nav {
   display: none;
-  position: fixed; top: auto; bottom: 0; left: 0; right: 0;
+  position: fixed; bottom: 0; left: 0; right: 0;
   background: var(--cream); border-top: 1px solid var(--border);
   padding: 8px 0 max(8px, env(safe-area-inset-bottom));
   z-index: 2000;
