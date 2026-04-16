@@ -5655,7 +5655,7 @@ var footerContent = {
     title: 'Sådan tjekker du en brugt cykel inden køb',
     metaDesc: 'Komplet guide til at tjekke en brugt cykel inden køb: ramme, hjul, drivlinje, bremser og prøvekørsel. Undgå dårlige handler — læs guiden her.',
     body: `
-      <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret april 2026 · 7 min. læsning</p>
+      <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret april 2026 · 4 min. læsning</p>
       <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">At købe en brugt cykel kan være en god investering — men kun hvis du ved hvad du kigger efter. Denne guide viser dig trin for trin, hvad du skal tjekke, inden du åbner lommebogen.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">1. Rammen — det vigtigste punkt</h2>
