@@ -5671,7 +5671,7 @@ var footerContent = {
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">2. Hjulene</h2>
       <p style="margin-bottom:8px;">Tag fat i hjulet og snurr det langsomt. Se det fra enden af cyklen:</p>
       <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Skæv fælg (lateral):</strong> Fælgen vandrer til siden. Kan trues op, men er tegn på slid eller et hårdt slag.</li>
+        <li><strong>Skæv fælg (lateral):</strong> Fælgen vandrer til siden. Kan centreres, men er tegn på slid eller et hårdt slag.</li>
         <li><strong>Oval fælg (radial):</strong> Hjulet hopper op og ned. Kræver ny fælg.</li>
         <li><strong>Fælg-slid:</strong> V-bremse-fælge har slid-indikatorer (en lille rille). Hvis rillerne er væk, er fælgen slidt.</li>
         <li><strong>Egerne:</strong> Niv på alle eger — løse eger giver skæve hjul og kan knække.</li>
