@@ -1331,17 +1331,113 @@ async function loadBikes(filters = {}, append = false) {
   grid.after(footer);
 }
 
-function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new Set()) {
-  const grid = document.getElementById('listings-grid');
+// Tjekker om der er aktive filtre (sidebar, hurtigfilter, søgning)
+function hasActiveFilters() {
+  const filtersSet = currentFilters && Object.keys(currentFilters).some(k => {
+    const v = currentFilters[k];
+    return v !== null && v !== undefined && v !== '' && v !== false;
+  });
+  const filterArgsSet = currentFilterArgs && (
+    (currentFilterArgs.types && currentFilterArgs.types.length > 0) ||
+    (currentFilterArgs.conditions && currentFilterArgs.conditions.length > 0) ||
+    (currentFilterArgs.wheelSizes && currentFilterArgs.wheelSizes.length > 0) ||
+    currentFilterArgs.minPrice ||
+    currentFilterArgs.maxPrice ||
+    currentFilterArgs.sellerType
+  );
+  return !!(filtersSet || filterArgsSet);
+}
 
-  if (!append && (!bikes || bikes.length === 0)) {
-    grid.innerHTML = `
+// Beskriver de aktive filtre i menneske-læsbar form
+function describeActiveFilters() {
+  const parts = [];
+  if (currentFilters?.search)    parts.push(`"${currentFilters.search}"`);
+  if (currentFilters?.type)      parts.push(currentFilters.type);
+  if (currentFilters?.city)      parts.push(currentFilters.city);
+  if (currentFilters?.maxPrice)  parts.push(`under ${currentFilters.maxPrice.toLocaleString('da-DK')} kr.`);
+  if (currentFilters?.warranty)  parts.push('med garanti');
+  if (currentFilters?.newOnly)   parts.push('nye annoncer');
+  if (currentFilters?.sellerType === 'dealer')  parts.push('forhandlere');
+  if (currentFilters?.sellerType === 'private') parts.push('private');
+
+  if (currentFilterArgs?.types?.length)      parts.push(currentFilterArgs.types.join(', '));
+  if (currentFilterArgs?.conditions?.length) parts.push(currentFilterArgs.conditions.join(', '));
+  if (currentFilterArgs?.wheelSizes?.length) parts.push(currentFilterArgs.wheelSizes.join(', '));
+  if (currentFilterArgs?.minPrice && currentFilterArgs?.maxPrice) {
+    parts.push(`${currentFilterArgs.minPrice.toLocaleString('da-DK')}–${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`);
+  } else if (currentFilterArgs?.minPrice) {
+    parts.push(`fra ${currentFilterArgs.minPrice.toLocaleString('da-DK')} kr.`);
+  } else if (currentFilterArgs?.maxPrice) {
+    parts.push(`under ${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`);
+  }
+  if (currentFilterArgs?.sellerType === 'dealer')  parts.push('forhandlere');
+  if (currentFilterArgs?.sellerType === 'private') parts.push('private');
+
+  return parts;
+}
+
+// Nulstil alle filtre — søgning, hurtigfilter-pills, sidebar
+function clearAllFilters() {
+  // Søgefelter
+  const s = document.getElementById('search-input'); if (s) s.value = '';
+  const t = document.getElementById('search-type');  if (t) t.value = '';
+  const c = document.getElementById('search-city');  if (c) c.value = '';
+
+  // Pills — sæt "Alle" aktiv, fjern resten
+  document.querySelectorAll('.filters-row .pill').forEach(p => {
+    const isAlle = (p.textContent || '').trim() === 'Alle';
+    p.classList.toggle('active', isAlle);
+    p.setAttribute('aria-pressed', isAlle ? 'true' : 'false');
+  });
+
+  // Sidebar checkboxes
+  document.querySelectorAll('.sidebar-box input[type="checkbox"]').forEach(cb => {
+    cb.checked = cb.dataset.value === 'all';
+  });
+
+  // Pris-felter
+  document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
+
+  currentFilters    = {};
+  currentFilterArgs = null;
+  loadBikes();
+  showToast('Filtre nulstillet');
+}
+
+function renderListingsEmptyState() {
+  if (!hasActiveFilters()) {
+    return `
       <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
         <div style="font-size:4rem;margin-bottom:16px;">🚲</div>
         <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler her endnu</h3>
         <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge din cykel på Cykelbørsen — det er gratis og tager kun 2 minutter.</p>
         <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Sæt din cykel til salg</button>
       </div>`;
+  }
+
+  const filterDesc = describeActiveFilters();
+  const filterText = filterDesc.length > 0
+    ? `<p style="color:var(--muted);font-size:0.85rem;margin:0 auto 18px;max-width:380px;">Filtre: <strong style="color:var(--charcoal)">${esc(filterDesc.join(' · '))}</strong></p>`
+    : '';
+
+  return `
+    <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
+      <div style="font-size:3.5rem;margin-bottom:14px;">🔍</div>
+      <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler matcher dine filtre</h3>
+      <p style="color:var(--muted);font-size:0.92rem;max-width:380px;margin:0 auto 14px;line-height:1.55;">Prøv at fjerne et filter eller udvid dit søgekriterium.</p>
+      ${filterText}
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;">
+        <button onclick="clearAllFilters()" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Nulstil filtre</button>
+        <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🔔 Få besked når der dukker en op</button>
+      </div>
+    </div>`;
+}
+
+function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new Set()) {
+  const grid = document.getElementById('listings-grid');
+
+  if (!append && (!bikes || bikes.length === 0)) {
+    grid.innerHTML = renderListingsEmptyState();
     return;
   }
 
@@ -4310,8 +4406,14 @@ function renderMessages(messages, isSeller, bikeActive, isInbox) {
     const acceptBtn  = (isBid && !isSent && isSeller && bikeActive)
       ? `<button class="btn-accept-bid" onclick="acceptBid('${msg.content.replace(/'/g, "\\'")}', ${isInbox})">✅ Accepter bud</button>`
       : '';
+    // Read receipts kun på sendte beskeder (ikke bud-accept-systembeskeder)
+    const readReceipt = (isSent && !isAccepted)
+      ? (msg.read
+          ? '<span class="read-receipt read" title="Læst">✓✓</span>'
+          : '<span class="read-receipt" title="Sendt">✓</span>')
+      : '';
     return `<div class="message-bubble ${isSent ? 'sent' : 'received'}${isBid ? ' bid-bubble' : ''}${isAccepted ? ' accepted-bubble' : ''}">
-      ${esc(msg.content)}${acceptBtn}<div class="msg-time">${time}</div>
+      ${esc(msg.content)}${acceptBtn}<div class="msg-time">${time}${readReceipt}</div>
     </div>`;
   }).join('');
 }
@@ -4764,10 +4866,17 @@ function editRemoveExisting(imgId) {
   renderEditNewImages();
 }
 
-function editPreviewImages(input) {
+async function editPreviewImages(input) {
   const files = Array.from(input.files);
   const remaining = 8 - editExistingImgs.filter(img => !img.toDelete).length - editNewFiles.length;
-  files.filter(validateImageFile).slice(0, remaining).forEach((file, i) => {
+  const toAdd = files.filter(validateImageFile).slice(0, remaining);
+
+  const label = document.getElementById('edit-upload-label');
+  if (label && toAdd.length > 0) label.textContent = 'Optimerer billeder...';
+
+  const compressed = await Promise.all(toAdd.map(compressImage));
+
+  compressed.forEach((file, i) => {
     const hasPrimary = editExistingImgs.some(img => !img.toDelete && img.is_primary) || editNewFiles.some(f => f.isPrimary);
     editNewFiles.push({ file, url: URL.createObjectURL(file), isPrimary: !hasPrimary && i === 0 });
   });
@@ -4961,7 +5070,51 @@ function validateImageFile(file) {
   return true;
 }
 
-function previewImages(input) {
+// Komprimerer billede til WebP (max 1600px bred, kvalitet ~82%) med Canvas API
+async function compressImage(file) {
+  // GIF og WebP under 500KB komprimeres ikke
+  if (file.type === 'image/gif') return file;
+  if (file.type === 'image/webp' && file.size < 500 * 1024) return file;
+
+  try {
+    const bitmap = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+
+    const MAX_W = 1600;
+    const MAX_H = 1600;
+    let { width, height } = bitmap;
+    if (width > MAX_W || height > MAX_H) {
+      const ratio = Math.min(MAX_W / width, MAX_H / height);
+      width  = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    URL.revokeObjectURL(bitmap.src);
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.82));
+    if (!blob) return file;
+
+    // Kun brug komprimeret hvis den faktisk er mindre
+    if (blob.size >= file.size) return file;
+
+    const baseName = file.name.replace(/\.[^.]+$/, '');
+    return new File([blob], `${baseName}.webp`, { type: 'image/webp' });
+  } catch (e) {
+    console.warn('Billedkomprimering fejlede, bruger original:', e);
+    return file;
+  }
+}
+
+async function previewImages(input) {
   const files = Array.from(input.files);
   if (!files.length) return;
 
@@ -4969,7 +5122,12 @@ function previewImages(input) {
   const remaining = 8 - selectedFiles.length;
   const toAdd = files.filter(validateImageFile).slice(0, remaining);
 
-  toAdd.forEach((file, i) => {
+  const label = document.getElementById('upload-label');
+  if (label && toAdd.length > 0) label.textContent = 'Optimerer billeder...';
+
+  const compressed = await Promise.all(toAdd.map(compressImage));
+
+  compressed.forEach((file, i) => {
     const url = URL.createObjectURL(file);
     selectedFiles.push({
       file,
@@ -4979,7 +5137,7 @@ function previewImages(input) {
   });
 
   renderImagePreviews();
-  document.getElementById('upload-label').textContent =
+  if (label) label.textContent =
     `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
 }
 
@@ -5284,6 +5442,7 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.clearAllFilters        = clearAllFilters;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
 window.openMobileFilter   = openMobileFilter;
