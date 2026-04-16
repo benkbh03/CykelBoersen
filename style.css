@@ -1590,9 +1590,45 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .message-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.5; }
 .message-bubble.sent { background: var(--forest); color: var(--sand); align-self: flex-end; border-bottom-right-radius: 4px; }
 .message-bubble.received { background: var(--sand); color: var(--charcoal); align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-.message-bubble .msg-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; }
-.message-bubble.bid-bubble.received { background: #fff8ec; border-color: var(--rust); font-weight: 600; }
-.message-bubble.accepted-bubble { background: #edf7ed; border-color: #4caf50; color: #2e7d32; font-weight: 600; align-self: stretch; border-radius: 10px; border: 1.5px solid #4caf50; }
+.message-bubble .msg-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+.message-bubble.sent .msg-time { justify-content: flex-end; }
+.read-receipt { font-size: 0.78rem; letter-spacing: -1px; opacity: 0.85; }
+.read-receipt.read { color: #4FC3F7; opacity: 1; font-weight: 600; }
+/* Bud-bobler — tydeligt visuelt skel fra almindelige beskeder */
+.message-bubble.bid-bubble {
+  position: relative;
+  border-left: 4px solid var(--rust);
+  padding-left: 14px;
+  margin-top: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.message-bubble.bid-bubble.received {
+  background: #fff8ec;
+  border-color: var(--rust);
+  border-left: 4px solid var(--rust);
+  color: #6B3410;
+}
+.message-bubble.bid-bubble.sent {
+  background: #C97A3F;
+  color: #fff;
+  border-left: 4px solid #6B3410;
+}
+.message-bubble.bid-bubble::before {
+  content: 'BUD';
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  background: var(--rust);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.message-bubble.accepted-bubble { background: #edf7ed; border-color: #4caf50; color: #2e7d32; font-weight: 600; align-self: stretch; border-radius: 10px; border: 1.5px solid #4caf50; text-align: center; }
+.message-bubble.accepted-bubble::before { display: none; }
 .btn-accept-bid { display: block; width: 100%; margin-top: 10px; padding: 9px 0; background: var(--forest); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
 .btn-accept-bid:hover { background: var(--rust); }
 .thread-reply { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border); padding-top: 14px; }
@@ -1649,15 +1685,43 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .stat-bar-item { padding: 0 20px 0 0; flex-shrink: 0; }
   .stat-bar-divider { margin: 0 20px 0 0; }
   .stat-bar-num { font-size: 1.1rem; }
-  .search-section { padding: 16px; }
-  .search-bar { flex-direction: column; gap: 10px; border-radius: 12px; padding: 14px; }
-  .search-bar input, .search-bar select, .search-bar button { width: 100%; border-radius: 8px; font-size: 0.9rem; }
-  .search-bar button { padding: 12px; }
+  .search-section {
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  /* Komprimer søgebar på mobil — kun input + søgeknap synlig, andre felter vises i drawer */
+  .search-bar {
+    flex-direction: row;
+    gap: 8px;
+    border-radius: 10px;
+    padding: 8px;
+    align-items: center;
+  }
+  .search-bar > div:first-child { flex: 1; min-width: 0; }
+  .search-bar input { width: 100%; border-radius: 8px; font-size: 0.9rem; padding: 10px 12px; }
+  .search-bar select { display: none; }
+  .search-bar button { width: auto; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; flex-shrink: 0; }
+  #save-search-btn { padding: 0 10px !important; }
   .cta-hero { padding: 48px 24px; }
   .cta-headline { font-size: 2rem; letter-spacing: -0.01em; }
   .cta-subheading { font-size: 0.9rem; }
   .cta-button { width: 100%; padding: 14px 32px; }
-  .filters-row { padding: 12px 16px; gap: 8px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .filters-row {
+    padding: 10px 16px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: sticky;
+    top: 70px;
+    z-index: 89;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+  }
   .filters-row::-webkit-scrollbar { display: none; }
   .filters-label { display: none; }
   .pill { flex-shrink: 0; font-size: 0.8rem; padding: 7px 14px; }
@@ -3391,6 +3455,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .img-upload-hint {
   font-size: 0.78rem; color: var(--muted); margin-top: 8px;
   text-align: center;
+}
+.photo-tips {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+}
+.photo-tip {
+  font-size: 0.76rem; color: var(--muted);
+  background: var(--sand); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 10px;
+  white-space: nowrap;
 }
 
 /* ── MØD I MIDTEN ── */
