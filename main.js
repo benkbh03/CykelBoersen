@@ -5667,16 +5667,20 @@ var footerContent = {
       <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer med et abonnement. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt os</h3>
-      <p>Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
+      <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Virksomhedsoplysninger</h3>
+      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Khan Bansen<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
     `
   },
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 9. april 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
+      <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Khan Bansen<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for:</p>
@@ -5700,8 +5704,8 @@ var footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerabonnement</h3>
-      <p style="margin-bottom:16px;">Forhandlere kan tegne et betalt abonnement via Stripe. Abonnementet fornyes automatisk ved periodens udløb med mindre det opsiges. Opsigelse sker via Stripe-portalen. Ved opsigelse har forhandleren adgang til resten af den betalte periode. Der tilbydes 3 måneders gratis prøveperiode for nye forhandlere. Alle priser er inkl. moms.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
+      <p style="margin-bottom:16px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
@@ -5730,23 +5734,30 @@ var footerContent = {
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Sletning af konto</h3>
       <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent. Eventuelle aktive forhandlerabonnementer skal opsiges separat via Stripe.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Ændringer af vilkår</h3>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Fortrydelsesret</h3>
+      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, gælder der ingen fortrydelsesret for oprettelse af brugerkonti eller annoncer — disse kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger, og er underlagt købelovens almindelige regler om fortrydelsesret ved fjernsalg mellem forbruger og erhvervsdrivende (14 dages fortrydelsesret jf. forbrugeraftalelovens kap. 4). Ved private handler mellem to privatpersoner gælder fortrydelsesretten ikke.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. AI-chatassistent</h3>
+      <p style="margin-bottom:16px;">Platformen tilbyder en AI-baseret chatassistent til generel hjælp og support. Svar fra AI-assistenten er udelukkende vejledende og udgør ikke juridisk, økonomisk eller professionel rådgivning. Vi garanterer ikke for rigtigheden eller fuldstændigheden af AI-assistentens svar. Ved tvivl bør du altid kontakte os direkte eller søge professionel rådgivning.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">12. Ændringer af vilkår</h3>
       <p style="margin-bottom:16px;">Vi kan opdatere disse vilkår fra tid til anden. Væsentlige ændringer vil blive meddelt via e-mail eller en meddelelse på platformen. Fortsat brug af platformen efter ændringer udgør accept af de opdaterede vilkår.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Lovvalg og tvistløsning</h3>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">13. Lovvalg og tvistløsning</h3>
       <p style="margin-bottom:16px;">Disse vilkår er underlagt dansk ret. Eventuelle tvister skal forsøges løst i mindelighed. Hvis dette ikke er muligt, afgøres tvisten ved de danske domstole. Som forbruger kan du også klage til <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a> eller <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">EU's online klageportal</a>.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">12. Kontakt</h3>
-      <p>Ved spørgsmål til disse vilkår kan du kontakte os på: <strong>kontakt@cykelborsen.dk</strong></p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">14. Kontakt</h3>
+      <p>Ved spørgsmål til disse vilkår kan du kontakte os på:<br><strong>Cykelbørsen v/ Benjamin Khan Bansen</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: <strong>kontakt@cykelborsen.dk</strong></p>
     `
   },
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 9. april 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen er dataansvarlig for behandlingen af dine personoplysninger. Kontakt os på <strong>kontakt@cykelborsen.dk</strong> ved spørgsmål om persondata.</p>
+      <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Khan Bansen</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
       <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
@@ -5804,6 +5815,7 @@ var footerContent = {
         <li><strong>Stripe (USA)</strong> — Betalingshåndtering for forhandlerabonnementer. Stripe er selvstændig dataansvarlig for betalingsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
         <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
+        <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 
@@ -5841,7 +5853,7 @@ var footerContent = {
       <p style="margin-bottom:16px;">Vi kan opdatere denne privatlivspolitik. Væsentlige ændringer meddeles via e-mail til registrerede brugere. Den gældende version er altid tilgængelig her på platformen.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Kontakt</h3>
-      <p>Spørgsmål om persondata og privatlivspolitikken rettes til:<br><strong>kontakt@cykelborsen.dk</strong></p>
+      <p>Spørgsmål om persondata og privatlivspolitikken rettes til:<br><strong>Cykelbørsen v/ Benjamin Khan Bansen</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: <strong>kontakt@cykelborsen.dk</strong></p>
     `
   },
   contact: {
