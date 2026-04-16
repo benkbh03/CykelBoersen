@@ -5670,7 +5670,7 @@ var footerContent = {
       <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Virksomhedsoplysninger</h3>
-      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Khan Bansen<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
+      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
     `
   },
   terms: {
@@ -5680,7 +5680,7 @@ var footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
-      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman <br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for:</p>
@@ -5747,7 +5747,7 @@ var footerContent = {
       <p style="margin-bottom:16px;">Disse vilkår er underlagt dansk ret. Eventuelle tvister skal forsøges løst i mindelighed. Hvis dette ikke er muligt, afgøres tvisten ved de danske domstole. Som forbruger kan du også klage til <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a> eller <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">EU's online klageportal</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">14. Kontakt</h3>
-      <p>Ved spørgsmål til disse vilkår kan du kontakte os på:<br><strong>Cykelbørsen v/ Benjamin Khan Bansen</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: <strong>kontakt@cykelborsen.dk</strong></p>
+      <p>Ved spørgsmål til disse vilkår kan du kontakte os på <strong>kontakt@cykelborsen.dk</strong>. Se virksomhedsoplysninger i sektion 1.</p>
     `
   },
   privacy: {
@@ -5757,7 +5757,7 @@ var footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
-      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Khan Bansen</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
       <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
@@ -5853,7 +5853,7 @@ var footerContent = {
       <p style="margin-bottom:16px;">Vi kan opdatere denne privatlivspolitik. Væsentlige ændringer meddeles via e-mail til registrerede brugere. Den gældende version er altid tilgængelig her på platformen.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Kontakt</h3>
-      <p>Spørgsmål om persondata og privatlivspolitikken rettes til:<br><strong>Cykelbørsen v/ Benjamin Khan Bansen</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: <strong>kontakt@cykelborsen.dk</strong></p>
+      <p>Spørgsmål om persondata rettes til <strong>kontakt@cykelborsen.dk</strong>. Se fulde virksomhedsoplysninger i sektion 1.</p>
     `
   },
   contact: {
