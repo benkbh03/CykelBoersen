@@ -3392,6 +3392,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   font-size: 0.78rem; color: var(--muted); margin-top: 8px;
   text-align: center;
 }
+.photo-tips {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+}
+.photo-tip {
+  font-size: 0.76rem; color: var(--muted);
+  background: var(--sand); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 10px;
+  white-space: nowrap;
+}
 
 /* ── MØD I MIDTEN ── */
 .meet-middle {
