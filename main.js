@@ -194,9 +194,25 @@ async function init() {
       }
 
       // Ægte login eller TOKEN_REFRESHED/andre events: hent profil og opdater UI
-      const { data: profile, error: profileErr } = await supabase
+      let { data: profile, error: profileErr } = await supabase
         .from('profiles').select('*').eq('id', currentUser.id).single();
       if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
+
+      // Ny OAuth-bruger uden profil endnu — opret den automatisk
+      if (!profile && _event === 'SIGNED_IN') {
+        const meta = currentUser.user_metadata || {};
+        const name = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'Ny bruger';
+        await supabase.from('profiles').upsert({
+          id:             currentUser.id,
+          name,
+          email:          currentUser.email,
+          seller_type:    'private',
+          email_verified: true,
+        }, { onConflict: 'id' });
+        const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        profile = newProfile;
+      }
+
       currentProfile = profile;
       updateNav(true, profile?.name, profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
@@ -1977,6 +1993,20 @@ async function handleForgotPassword() {
     closeLoginModal();
     showToast('✅ Tjek din email for nulstillingslinket');
   }
+}
+
+async function signInWithGoogle() {
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: 'https://xn--cykelbrsen-5cb.dk/' },
+  });
+}
+
+async function signInWithApple() {
+  await supabase.auth.signInWithOAuth({
+    provider: 'apple',
+    options: { redirectTo: 'https://xn--cykelbrsen-5cb.dk/' },
+  });
 }
 
 async function handleLogin() {
@@ -5405,6 +5435,8 @@ window.closeModal        = closeModal;
 window.selectType        = selectType;
 window.submitListing     = submitListing;
 window.openLoginModal    = openLoginModal;
+window.signInWithGoogle  = signInWithGoogle;
+window.signInWithApple   = signInWithApple;
 window.closeLoginModal   = closeLoginModal;
 window.switchTab         = switchTab;
 window.handleLogin       = handleLogin;
