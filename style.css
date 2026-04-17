@@ -1685,30 +1685,10 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .stat-bar-item { padding: 0 20px 0 0; flex-shrink: 0; }
   .stat-bar-divider { margin: 0 20px 0 0; }
   .stat-bar-num { font-size: 1.1rem; }
-  .search-section {
-    padding: 12px 16px;
-    position: sticky;
-    top: 0;
-    z-index: 90;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  }
-  /* Komprimer søgebar på mobil — kun input + søgeknap synlig, andre felter vises i drawer */
-  .search-bar {
-    flex-direction: row;
-    gap: 8px;
-    border-radius: 10px;
-    padding: 8px;
-    align-items: center;
-  }
-  .search-bar > div:first-child { flex: 1; min-width: 0; }
-  .search-bar input { width: 100%; border-radius: 8px; font-size: 0.9rem; padding: 10px 12px; }
-  .search-bar select { display: none; }
-  .search-bar button { width: auto; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; flex-shrink: 0; }
-  #save-search-btn { padding: 0 10px !important; }
-  .cta-hero { padding: 48px 24px; }
-  .cta-headline { font-size: 2rem; letter-spacing: -0.01em; }
-  .cta-subheading { font-size: 0.9rem; }
-  .cta-button { width: 100%; padding: 14px 32px; }
+  .search-section { padding: 16px; }
+  .search-bar { flex-direction: column; gap: 10px; border-radius: 12px; padding: 14px; }
+  .search-bar input, .search-bar select, .search-bar button { width: 100%; border-radius: 8px; font-size: 0.9rem; }
+  .search-bar button { padding: 12px; }
   .filters-row {
     padding: 10px 16px;
     gap: 8px;
@@ -1717,7 +1697,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     position: sticky;
-    top: 70px;
+    top: 52px;
     z-index: 89;
     background: var(--cream);
     border-bottom: 1px solid var(--border);
