@@ -5818,68 +5818,72 @@ var footerContent = {
       <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">At købe en brugt cykel kan være en god investering — men kun hvis du ved hvad du kigger efter. Denne guide viser dig trin for trin, hvad du skal tjekke, inden du åbner lommebogen.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">1. Rammen — det vigtigste punkt</h2>
-      <p style="margin-bottom:8px;">Rammen er cykelens hjerte. En beskadiget ramme kan ikke repareres, og den bør få dig til at gå væk fra handlen uanset prisen.</p>
+      <p style="margin-bottom:8px;">Rammen er cykelens hjerte. En beskadiget ramme kan sjældent repareres sikkert, og den bør få dig til at gå væk fra handlen uanset prisen.</p>
       <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Revner og buler:</strong> Undersøg alle rør — overrøret, underrøret, kæderørene og sadelrøret. Kig særligt ved svejsningerne og ved bundbeslag og styrhoved.</li>
-        <li><strong>Stålrammer:</strong> Rust er normalt og kan behandles. Rust <em>inde</em> i rørene er et advarselstegn — bank let på rørene og lyt om det klinger hult.</li>
-        <li><strong>Aluminiumsrammer:</strong> Revner er kritiske og ikke synlige for det blotte øje. Kig efter hvide pletter (oxidering) ved svejsningerne.</li>
-        <li><strong>Kulfiber:</strong> Hold rammen tæt op til en lampe og se efter sprækker eller skinnende misfarvninger. Aldrig køb kulfiber uden at have tjekket det grundigt.</li>
-        <li><strong>Bøjede rør:</strong> Selv en lille bøjning indikerer et hårdt stød — fx et styrt. Gå fra det.</li>
+        <li><strong>Revner og buler:</strong> Undersøg alle rør — overrøret, underrøret, kæderørene og sadelrøret. Kig især ved svejsningerne samt ved bundbeslag og styrhoved.</li>
+        <li><strong>Stålrammer:</strong> Overfladerust er normalt og kan behandles. Rust inde i rørene er et advarselstegn — bank let på rørene og lyt efter en dump eller ujævn lyd.</li>
+        <li><strong>Aluminiumsrammer:</strong> Revner er kritiske og kan være svære at opdage. Kig efter hvide pletter (oxidering), især ved svejsningerne.</li>
+        <li><strong>Kulfiber:</strong> Hold rammen op mod en lyskilde og se efter sprækker eller misfarvninger. Køb ikke kulfiber uden en grundig inspektion.</li>
+        <li><strong>Bøjede rør:</strong> Selv små bøjninger indikerer et hårdt stød, fx et styrt. Gå væk fra handlen.</li>
       </ul>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">2. Hjulene</h2>
       <p style="margin-bottom:8px;">Tag fat i hjulet og snurr det langsomt. Se det fra enden af cyklen:</p>
       <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Skæv fælg (lateral):</strong> Fælgen vandrer til siden. Kan centreres, men er tegn på slid eller et hårdt slag.</li>
-        <li><strong>Oval fælg (radial):</strong> Hjulet hopper op og ned. Kræver ny fælg.</li>
-        <li><strong>Fælg-slid:</strong> V-bremse-fælge har slid-indikatorer (en lille rille). Hvis rillerne er væk, er fælgen slidt.</li>
+        <li><strong>Skæv fælg (lateral):</strong> Fælgen bevæger sig fra side til side. Kan ofte rettes, men er tegn på slid eller slag.</li>
+        <li><strong>Oval fælg (radial):</strong> Hjulet hopper op og ned. Kræver ofte ny fælg.</li>
+        <li><strong>Fælgslid:</strong> V-bremsefælge har slidindikatorer (en lille rille). Hvis rillen er væk, er fælgen slidt.</li>
         <li><strong>Egerne:</strong> Niv på alle eger — løse eger giver skæve hjul og kan knække.</li>
-        <li><strong>Dækkene:</strong> Kig efter revner i slidbanen og siderne. Flade, slidt mønster eller alder &gt; 5 år = skift snart.</li>
-        <li><strong>Navene:</strong> Hold hjulet fast i aksen og vip det sideværts. Intet spil = godt. Spil = slidte lejer.</li>
+        <li><strong>Dækkene:</strong> Kig efter revner i slidbanen og siderne. Fladt mønster eller alder over 5 år → bør skiftes snart.</li>
+        <li><strong>Navene:</strong> Hold hjulet fast i aksen og vip det sideværts. Intet slør er godt — slør tyder på slidte lejer.</li>
       </ul>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">3. Drivlinjen (kæde, tandhjul, kranke)</h2>
-      <p style="margin-bottom:8px;">Drivlinjen er den mest omkostningstunge del at udskifte. Et slidt sæt (kæde + kassette + klinge) kan koste 500–1500 kr at udskifte.</p>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">3. Drivlinjen (kæde, tandhjul, kranksæt)</h2>
+      <p style="margin-bottom:8px;">Drivlinjen er en af de dyreste dele at udskifte. Et slidt sæt (kæde + kassette + klinger) kan koste 500–1500 kr.</p>
       <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Kæden:</strong> Løft kæden fra den forreste klinge. Kan du løfte den mere end ½ cm fra klingen, er den strakt og slidt.</li>
-        <li><strong>Kassetten (bageste tandhjul):</strong> Kig på tænderne — de skal være symmetriske. "Hajtænder" (asymmetriske, skæve tænder) = slidt kassette.</li>
-        <li><strong>Klingerne:</strong> Samme som kassetten — hajtænder er tegn på slid.</li>
-        <li><strong>Bundbeslagget:</strong> Hold pedalerne og vip dem sideværts. Intet spil = godt. Spil = slidte lejer.</li>
-        <li><strong>Klik og støj:</strong> Drejer du pedaler og hører klik eller støj, er der typisk slid et sted i drivlinjen.</li>
+        <li><strong>Kæden:</strong> Løft kæden fra den forreste klinge. Kan du løfte den mere end ca. ½ cm, er den slidt.</li>
+        <li><strong>Kassetten (bageste tandhjul):</strong> Kig på tænderne — de skal være symmetriske. "Hajtænder" (skæve tænder) tyder på slid.</li>
+        <li><strong>Klingerne:</strong> Samme princip som kassetten — hajtænder = slid.</li>
+        <li><strong>Bundbeslaget:</strong> Hold pedalerne og vip dem sideværts. Intet slør er godt — slør tyder på slidte lejer.</li>
+        <li><strong>Klik og støj:</strong> Drej pedalerne. Klik eller støj indikerer typisk slid i drivlinjen.</li>
       </ul>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">4. Bremserne</h2>
-      <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Skivebremser (hydrauliske):</strong> Tjek for olie-lækage ved kalipperne og langs slangen. Kig at skiven ikke er bøjet (hold den mod lyset). Skal bremsehåndtaget trykkes langt ind, er der luft i systemet — dyrt at reparere.</li>
-        <li><strong>Skivebremser (mekaniske):</strong> Tjek pude-tykkelse — de fleste har slid-indikator.</li>
-        <li><strong>Fælgbremser:</strong> Klem bremsehåndtaget. Der skal være mindst 2 cm til styret. Kig at bremsebelæggene rammer fælgen plant og ikke dækket.</li>
-        <li><strong>Prøv bremserne:</strong> Tag cyklen ud og brem hårdt. Cyklen skal stoppe kontrolleret uden at vibrere eller trække til siden.</li>
-      </ul>
+      <p style="margin-bottom:8px;"><strong>Skivebremser (hydrauliske):</strong><br>Tjek for olielækage ved kalibre og langs slangen. Kig, om bremseskiven er lige. Hvis bremsehåndtaget skal trykkes langt ind, kan der være luft i systemet.</p>
+      <p style="margin-bottom:8px;"><strong>Skivebremser (mekaniske):</strong><br>Tjek tykkelsen på bremseklodserne — de fleste har slidindikator.</p>
+      <p style="margin-bottom:8px;"><strong>Fælgbremser:</strong><br>Klem bremsehåndtaget. Der bør være mindst ca. 2 cm til styret. Sørg for, at bremseklodserne rammer fælgen korrekt og ikke dækket.</p>
+      <p style="margin-bottom:20px;"><strong>Prøv bremserne:</strong><br>Tag cyklen ud og brems hårdt. Cyklen skal stoppe kontrolleret uden at vibrere eller trække til siden.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">5. Styr, gaffel og saddel</h2>
       <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Gaflen:</strong> Kig forfra efter revner ved kronrøret. Hold forreste bremse inde og pres cyklen frem/tilbage — ingen bevægelse i styrhovedet.</li>
-        <li><strong>Styret:</strong> Hold forhjulet fast mellem benene og prøv at dreje styret. Intet spil, men det skal bevæge sig jævnt.</li>
-        <li><strong>Sadelstolpen:</strong> Kig om sadelrøret er ridset op (tegn på at stolpen er trykket ned over det tilladte mærke). Tjek at sadlen ikke vakler.</li>
-        <li><strong>Fjederben (MTB/el-cykel):</strong> Tryk på gaflen. Den skal komprimere jævnt og komme stille tilbage. Olie-striber på standrørene = beskadigede pakninger.</li>
+        <li><strong>Gaflen:</strong> Kig forfra efter revner ved kronrøret. Hold forbremsen inde og pres cyklen frem og tilbage — der må ikke være slør i styrfittingen.</li>
+        <li><strong>Styret:</strong> Hold forhjulet fast mellem benene og prøv at dreje styret. Ingen slør — bevægelsen skal være jævn.</li>
+        <li><strong>Sadelstolpen:</strong> Tjek om sadelrøret er ridset (tegn på forkert brug). Sørg for, at sadlen sidder fast.</li>
+        <li><strong>Affjedring (MTB/elcykel):</strong> Tryk på gaflen. Den skal bevæge sig jævnt og returnere kontrolleret. Olie på standrørene tyder på slidte pakninger.</li>
       </ul>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">6. Prøvekørsel — obligatorisk</h2>
-      <p style="margin-bottom:8px;">Afvis aldrig at prøvekøre. En sælger der nægter er et advarselstegn.</p>
-      <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Skift igennem alle gear</strong> — både op og ned. Skal gå smidigt uden at hoppe.</li>
-        <li><strong>Brem hårdt</strong> fra 15-20 km/t og mærk om cyklen trækker til siden.</li>
-        <li><strong>Lyt efter lyde:</strong> Klik ved pedalslag = slid i drivline eller bundbeslag. Knirk = løse dele. Slag = løse eger eller beskadiget lejer.</li>
-        <li><strong>Stel-nummer:</strong> Under trøjehøret (begyndelsen af nedrerøret) eller på bundbeslagget. Fotografér det og tjek det mod politiets database på <a href="https://politi.dk" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk</a>.</li>
+      <p style="margin-bottom:8px;">Afvis aldrig en prøvetur. En sælger, der nægter, er et advarselstegn.</p>
+      <ul style="margin-bottom:8px;padding-left:20px;line-height:2;">
+        <li><strong>Skift gennem alle gear</strong> — det skal ske glat uden hop</li>
+        <li><strong>Brems hårdt</strong> fra 15–20 km/t</li>
+        <li><strong>Lyt efter lyde:</strong>
+          <ul style="padding-left:20px;">
+            <li>Klik → slid i drivlinje eller bundbeslag</li>
+            <li>Knirk → løse dele</li>
+            <li>Slag → fx løse eger eller slidte lejer</li>
+          </ul>
+        </li>
       </ul>
+      <p style="margin-bottom:20px;"><strong>Stelnummer:</strong> Findes typisk under krankboksen eller på underrøret. Tag et billede og tjek det på <a href="https://politi.dk" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk</a>.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">7. Dokumentation og prisen</h2>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:12px;color:var(--charcoal);">7. Dokumentation og pris</h2>
       <ul style="margin-bottom:20px;padding-left:20px;line-height:2;">
-        <li><strong>Kvittering for køb:</strong> Ikke et krav, men et godt tegn. Mangler den, er stelchecket endnu vigtigere.</li>
-        <li><strong>Servicerapporter:</strong> En cykel der er serviceret regelmæssigt er typisk i bedre stand.</li>
-        <li><strong>Sammenlign priser:</strong> Kig på lignende annoncer på <a onclick="navigateTo('/')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">Cykelbørsen</a> for at vide om prisen er rimelig.</li>
-        <li><strong>Forhandl:</strong> Har du fundet fejl eller slid, er det fair at forhandle. "Jeg kan se kæden er slidt — jeg vil betale X for den."</li>
-        <li><strong>El-cykler:</strong> Bed sælger om at vise batteri-kapaciteten i app'en. Et batteri under 70% af original kapacitet bør give et prisnedslag på 1.000–3.000 kr.</li>
+        <li><strong>Kvittering:</strong> Ikke et krav, men et godt tegn. Mangler den, er stelnummer-tjek ekstra vigtigt.</li>
+        <li><strong>Servicehistorik:</strong> Regelmæssig service tyder på en velholdt cykel.</li>
+        <li><strong>Sammenlign priser:</strong> Kig på lignende annoncer for at vurdere niveauet.</li>
+        <li><strong>Forhandling:</strong> Finder du slid eller fejl, er det helt fair at forhandle.</li>
+        <li><strong>Elcykler:</strong> Bed om at se batteriets kapacitet i appen. Under ca. 70 % bør give et prisnedslag på 1.000–3.000 kr.</li>
       </ul>
 
       <div style="background:var(--sand);border-radius:12px;padding:20px 24px;margin-top:28px;border:1px solid var(--border);">
