@@ -2002,12 +2002,6 @@ async function signInWithGoogle() {
   });
 }
 
-async function signInWithApple() {
-  await supabase.auth.signInWithOAuth({
-    provider: 'apple',
-    options: { redirectTo: 'https://xn--cykelbrsen-5cb.dk/' },
-  });
-}
 
 async function handleLogin() {
   const email    = document.getElementById('login-email').value;
@@ -5436,7 +5430,6 @@ window.selectType        = selectType;
 window.submitListing     = submitListing;
 window.openLoginModal    = openLoginModal;
 window.signInWithGoogle  = signInWithGoogle;
-window.signInWithApple   = signInWithApple;
 window.closeLoginModal   = closeLoginModal;
 window.switchTab         = switchTab;
 window.handleLogin       = handleLogin;
