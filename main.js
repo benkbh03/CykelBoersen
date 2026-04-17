@@ -1274,7 +1274,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -1460,6 +1460,13 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
   if (!bikes || bikes.length === 0) return;
 
   const startIndex = append ? grid.querySelectorAll('.bike-card').length : 0;
+  const conditionClass = c => {
+    if (c === 'Ny')        return 'condition-tag--ny';
+    if (c === 'Som ny')    return 'condition-tag--som-ny';
+    if (c === 'God stand') return 'condition-tag--god';
+    return 'condition-tag--brugt';
+  };
+
   const html = bikes.map((b, i) => {
     const profile    = b.profiles || {};
     const sellerType = profile.seller_type || 'private';
@@ -1467,8 +1474,12 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
     const initials   = (sellerName || 'U').substring(0, 2).toUpperCase();
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">`
       : '<span style="font-size:4rem">🚲</span>';
+    const avatarUrl  = safeAvatarUrl(profile.avatar_url);
+    const avatarHtml = avatarUrl
+      ? `<img src="${avatarUrl}" alt="">`
+      : esc(initials);
 
     var isSold = !b.is_active;
     var saveCount = saveCounts[b.id] || 0;
@@ -1477,7 +1488,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
         <div class="bike-card-img">
           ${imgContent}
           ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
-          <span class="condition-tag">${esc(b.condition)}</span>
+          <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
           ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
@@ -1493,9 +1504,9 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
           </div>
           <div class="card-footer">
             <div class="seller-info">
-              <div class="seller-avatar">${esc(initials)}</div>
+              <div class="seller-avatar">${avatarHtml}</div>
               <div>
-                <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
+                <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
                 </span>
@@ -3364,16 +3375,22 @@ async function fetchDealerProfileData(dealerId) {
 }
 
 function buildProfileBikeCards(bikes) {
+  const conditionClass = c => {
+    if (c === 'Ny')        return 'condition-tag--ny';
+    if (c === 'Som ny')    return 'condition-tag--som-ny';
+    if (c === 'God stand') return 'condition-tag--god';
+    return 'condition-tag--brugt';
+  };
   return bikes.map((b, i) => {
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">`
       : '<span style="font-size:3.5rem">🚲</span>';
     return `
       <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
         <div class="bike-card-img">
           ${imgContent}
-          <span class="condition-tag">${b.condition}</span>
+          <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
           <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${_userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>
         </div>
         <div class="bike-card-body">
@@ -4654,7 +4671,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
