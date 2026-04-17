@@ -43,6 +43,7 @@ serve(async (req) => {
 
   try {
     // Slet brugerens data i rækkefølge (fremmednøgler først)
+    await adminClient.from("saved_searches").delete().eq("user_id", userId);
     await adminClient.from("saved_bikes").delete().eq("user_id", userId);
     await adminClient.from("reviews").delete().eq("reviewer_id", userId);
     await adminClient.from("messages").delete().or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
