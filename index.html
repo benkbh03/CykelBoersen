@@ -152,88 +152,54 @@
        ══════════════════════════════════════════════════ -->
   <main id="landing-layout">
 
-  <!-- ── HERO ── -->
-  <section class="hero">
-    <div class="hero-text">
-      <p class="hero-eyebrow">🇩🇰 Danmarks cykelmarked</p>
-      <h1>Find din<br>næste<br><em>to-hjuler</em></h1>
-      <p class="hero-sub">Køb og sælg brugte cykler direkte — fra private sælgere og autoriserede forhandlere.</p>
-      <div class="hero-btns">
-        <button class="btn-primary" onclick="openModal()">Sælg din cykel</button>
-        <button class="btn-outline" onclick="document.querySelector('.hero-stats-bar').scrollIntoView({behavior:'smooth'})">Udforsk cykler</button>
-      </div>
-      <div class="hero-trust">
-        <span>✓ Gratis at oprette annonce</span>
-        <span>✓ Verificerede forhandlere</span>
-        <span>✓ Sikker handel</span>
-      </div>
-    </div>
-    <div class="hero-img-side">
-      <img src="hero.jpg.png" alt="Cyklister i København" class="hero-photo">
-    </div>
-  </section>
-
-  <!-- ── STATS BAR ── -->
-  <div class="hero-stats-bar">
-    <div class="stat-bar-item">
-      <span class="stat-bar-icon">🚲</span>
-      <div>
-        <div class="stat-bar-num" id="stat-total">–</div>
-        <div class="stat-bar-label">Aktive annoncer</div>
-      </div>
-    </div>
-    <div class="stat-bar-divider"></div>
-    <div class="stat-bar-item">
-      <span class="stat-bar-icon">🏪</span>
-      <div>
-        <div class="stat-bar-num" id="stat-dealers">–</div>
-        <div class="stat-bar-label">Verificerede forhandlere</div>
-      </div>
-    </div>
-    <div class="stat-bar-divider"></div>
-    <div class="stat-bar-item">
-      <span class="stat-bar-icon">🤝</span>
-      <div>
-        <div class="stat-bar-num">100%</div>
-        <div class="stat-bar-label">Gratis at sælge</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── SØGEBAR ── -->
+  <!-- ── HERO + SØGEBAR ── -->
   <div class="search-section" role="search" aria-label="Søg efter cykler">
     <div class="search-hero-text">
-      <h1 class="search-hero-title">Find din næste <em>cykel</em></h1>
-      <p class="search-hero-sub" id="hero-listing-count">Søg i tusindvis af annoncer</p>
+      <div class="search-hero-pill">
+        <span class="search-hero-dot"></span>
+        <span id="hero-listing-count"><span id="stat-total">–</span> aktive annoncer i Danmark</span>
+      </div>
+      <h1 class="search-hero-title">Find din næste cykel på <em>Cykelbørsen</em></h1>
+      <p class="search-hero-sub">Danmarks dedikerede markedsplads for brugte cykler — privatpersoner og udvalgte forhandlere.</p>
     </div>
     <div class="search-bar-wrap">
       <div class="search-bar">
-        <div style="position:relative;flex:1;min-width:0;">
+        <div class="search-bar-field search-bar-query">
+          <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
           <label for="search-input" class="sr-only">Søg efter mærke, model eller type</label>
-          <input type="text" id="search-input" placeholder="Søg mærke, model, type..." oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
+          <input type="text" id="search-input" placeholder="Søg efter mærke, model…" oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
           <div id="autocomplete-list" class="autocomplete-list" style="display:none;" role="listbox" aria-label="Søgeforslag"></div>
         </div>
         <div class="search-bar-sep"></div>
-        <label for="search-type" class="sr-only">Vælg cykeltype</label>
-        <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="searchBikes()">
-          <option value="">Alle typer</option>
-          <option>Racercykel</option>
-          <option>Mountainbike</option>
-          <option>Citybike</option>
-          <option>El-cykel</option>
-          <option>Ladcykel</option>
-          <option>Børnecykel</option>
-        </select>
+        <div class="search-bar-field">
+          <label for="search-type" class="sr-only">Vælg cykeltype</label>
+          <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="searchBikes()">
+            <option value="">Alle typer</option>
+            <option>Racercykel</option>
+            <option>Mountainbike</option>
+            <option>Citybike</option>
+            <option>El-cykel</option>
+            <option>Ladcykel</option>
+            <option>Børnecykel</option>
+          </select>
+          <svg class="search-bar-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
         <div class="search-bar-sep"></div>
-        <label for="search-city" class="sr-only">Vælg by</label>
-        <select id="search-city" aria-label="Filtrer efter by" onchange="searchBikes()">
-          <option value="">Alle steder</option>
-          <option>København</option>
-          <option>Aarhus</option>
-          <option>Odense</option>
-          <option>Aalborg</option>
-        </select>
-        <button class="search-pill-btn" onclick="searchBikes()" aria-label="Søg efter cykler">Søg</button>
+        <div class="search-bar-field">
+          <label for="search-city" class="sr-only">Vælg by</label>
+          <select id="search-city" aria-label="Filtrer efter by" onchange="searchBikes()">
+            <option value="">Alle steder</option>
+            <option>København</option>
+            <option>Aarhus</option>
+            <option>Odense</option>
+            <option>Aalborg</option>
+          </select>
+          <svg class="search-bar-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <button class="search-pill-btn" onclick="searchBikes()" aria-label="Søg efter cykler">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          Søg
+        </button>
       </div>
       <button id="save-search-btn" onclick="saveCurrentSearch()" title="Gem denne søgning" aria-label="Gem søgning">🔔</button>
     </div>
@@ -253,7 +219,7 @@
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">El-cykler</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun forhandlere</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun private</span>
-    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Ny annonce</span>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">✨ Ny annonce</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Med garanti</span>
   </div>
 

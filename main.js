@@ -1692,10 +1692,8 @@ async function updateFilterCounts(data, dealerCount) {
 
   const countEl   = document.getElementById('listings-count');
   const statTotal = document.getElementById('stat-total');
-  const heroCount = document.getElementById('hero-listing-count');
   if (countEl)   countEl.textContent   = `${total} cykler til salg`;
   if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
-  if (heroCount && total > 0) heroCount.textContent = `${total.toLocaleString('da-DK')} annoncer klar til dig`;
 
   const statDealers = document.getElementById('stat-dealers');
   if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
