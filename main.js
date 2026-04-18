@@ -3117,6 +3117,14 @@ function renderSellPage() {
           <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
           <div id="sell-preview-grid" class="img-preview-grid"></div>
           <p class="img-upload-hint" id="sell-img-hint" style="display:none">Klik ★ på et billede for at gøre det til forsidebillede</p>
+          <div id="ai-suggest-wrap" class="ai-suggest-wrap" style="display:none;">
+            <button type="button" id="ai-suggest-btn" class="ai-suggest-btn" onclick="suggestListingFromImages()">
+              <span class="ai-suggest-icon">✨</span>
+              <span class="ai-suggest-label">Få AI-forslag baseret på billeder</span>
+            </button>
+            <p class="ai-suggest-hint">Gratis · Auto-udfylder mærke, model, stand, pris og beskrivelse</p>
+            <div id="ai-suggest-status" class="ai-suggest-status"></div>
+          </div>
         </div>
 
         <div class="sell-section">
@@ -3364,6 +3372,7 @@ function previewSellImages(input) {
   });
 
   renderSellImagePreviews();
+  updateAiSuggestVisibility();
   const label = document.getElementById('sell-upload-label');
   if (label) label.textContent = `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
 }
@@ -3383,6 +3392,12 @@ function renderSellImagePreviews() {
   if (hint) hint.style.display = selectedFiles.length > 1 ? 'block' : 'none';
 }
 
+function updateAiSuggestVisibility() {
+  const wrap = document.getElementById('ai-suggest-wrap');
+  if (!wrap) return;
+  wrap.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+}
+
 function setSellPrimary(index) {
   selectedFiles = selectedFiles.map((item, i) => ({ ...item, isPrimary: i === index }));
   renderSellImagePreviews();
@@ -3393,10 +3408,118 @@ function removeSellImage(index) {
   selectedFiles.splice(index, 1);
   if (selectedFiles.length > 0 && !selectedFiles.some(f => f.isPrimary)) selectedFiles[0].isPrimary = true;
   renderSellImagePreviews();
+  updateAiSuggestVisibility();
   const label = document.getElementById('sell-upload-label');
   if (label) label.textContent = selectedFiles.length > 0
     ? `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`
     : 'Klik for at vælge billeder';
+}
+
+async function suggestListingFromImages() {
+  if (!selectedFiles.length) {
+    showToast('⚠️ Upload mindst ét billede først');
+    return;
+  }
+  if (!currentUser) {
+    openLoginModal();
+    return;
+  }
+
+  const btn = document.getElementById('ai-suggest-btn');
+  const status = document.getElementById('ai-suggest-status');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.classList.add('loading');
+  const originalLabel = btn.querySelector('.ai-suggest-label').textContent;
+  btn.querySelector('.ai-suggest-label').textContent = 'Analyserer billeder...';
+  if (status) { status.textContent = ''; status.className = 'ai-suggest-status'; }
+
+  try {
+    // Brug op til 4 billeder, prioriter forsidebilledet først
+    const ordered = selectedFiles.slice().sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
+    const picks = ordered.slice(0, 4);
+
+    const images = await Promise.all(picks.map(async (item) => {
+      const { mediaType, base64 } = await fileToBase64(item.file);
+      return { media_type: mediaType, data: base64 };
+    }));
+
+    // Brug evt. eksisterende tekst som hint (hvis brugeren allerede har skrevet noget)
+    const hint = [
+      document.getElementById('sell-brand')?.value,
+      document.getElementById('sell-model')?.value,
+    ].filter(Boolean).join(' ').trim();
+
+    const { data, error } = await supabase.functions.invoke('suggest-listing', {
+      body: { images, hint: hint || undefined },
+    });
+
+    if (error || !data?.suggestion) {
+      console.error('suggest-listing fejl:', error || data);
+      if (status) { status.textContent = '❌ Kunne ikke hente forslag. Prøv igen.'; status.className = 'ai-suggest-status error'; }
+      return;
+    }
+
+    applyAiSuggestion(data.suggestion);
+    if (status) { status.textContent = '✓ Felter udfyldt med AI-forslag. Tjek og ret inden du opretter.'; status.className = 'ai-suggest-status success'; }
+  } catch (err) {
+    console.error('suggestListingFromImages fejl:', err);
+    if (status) { status.textContent = '❌ Noget gik galt. Prøv igen.'; status.className = 'ai-suggest-status error'; }
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.querySelector('.ai-suggest-label').textContent = originalLabel;
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      // result format: "data:image/jpeg;base64,XXXXX"
+      const match = result.match(/^data:([^;]+);base64,(.+)$/);
+      if (!match) { reject(new Error('Ugyldig fil')); return; }
+      resolve({ mediaType: match[1], base64: match[2] });
+    };
+    reader.onerror = () => reject(new Error('Kunne ikke læse fil'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function applyAiSuggestion(s) {
+  if (!s || typeof s !== 'object') return;
+
+  const setField = (id, value) => {
+    if (value == null || value === '') return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Skriv ikke over hvis brugeren allerede har udfyldt feltet
+    if (el.value && el.value.trim() !== '') return;
+    el.value = String(value);
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  setField('sell-brand', s.brand);
+  setField('sell-model', s.model);
+  setField('sell-type', s.type);
+  setField('sell-size', s.size);
+  setField('sell-wheel-size', s.wheel_size);
+  setField('sell-year', s.year);
+  setField('sell-condition', s.condition);
+  setField('sell-color', s.color);
+  setField('sell-desc', s.description);
+
+  // Pris: brug midten af intervallet hvis både min og max er givet
+  if (s.price_min != null && s.price_max != null) {
+    const mid = Math.round((Number(s.price_min) + Number(s.price_max)) / 2);
+    if (!isNaN(mid)) setField('sell-price', mid);
+  } else if (s.price_min != null) {
+    setField('sell-price', s.price_min);
+  }
+
+  // Trigger draft-save så AI-forslag også persisteres
+  if (typeof saveSellDraft === 'function') saveSellDraft();
 }
 
 function showListingSuccessModal(bike) {
@@ -5878,6 +6001,7 @@ window.submitSellPage            = submitSellPage;
 window.previewSellImages         = previewSellImages;
 window.setSellPrimary            = setSellPrimary;
 window.removeSellImage           = removeSellImage;
+window.suggestListingFromImages  = suggestListingFromImages;
 window.closeListingSuccessModal  = closeListingSuccessModal;
 window.openBikeModal      = openBikeModal;
 window.navigateTo         = navigateTo;
