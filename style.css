@@ -2990,7 +2990,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 /* ═══════════════════════════════════════════════════════════
    SELL WIZARD
    ═══════════════════════════════════════════════════════════ */
-.sell-wizard { max-width: 520px; margin: 0 auto; padding: 0 0 120px; }
+.sell-wizard { max-width: 520px; margin: 0 auto; padding: 0 0 160px; }
 .sell-wizard-top {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 0;
@@ -3163,13 +3163,15 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .sell-summary-row { display: flex; justify-content: space-between; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; }
 .sell-summary-row-key { opacity: 0.55; }
 .sell-summary-row-val { font-weight: 500; text-align: right; max-width: 60%; }
-/* Wizard footer */
+/* Wizard footer — z-index 2100 so it sits above the bottom nav (2000) */
 .sell-wizard-footer {
   position: fixed; bottom: 0; left: 0; right: 0;
-  padding: 10px 16px max(20px, env(safe-area-inset-bottom));
-  background: linear-gradient(to top, var(--cream) 55%, transparent 100%);
-  z-index: 100;
+  padding: 12px 16px max(84px, calc(68px + env(safe-area-inset-bottom)));
+  background: linear-gradient(to top, var(--cream) 65%, transparent 100%);
+  z-index: 2100;
+  pointer-events: none;
 }
+.sell-wizard-cta { pointer-events: auto; }
 .sell-wizard-cta {
   display: flex; align-items: center; justify-content: center; gap: 7px;
   width: 100%; max-width: 520px; height: 52px; margin: 0 auto;
