@@ -4533,7 +4533,13 @@ function initLightboxGestures() {
   img.addEventListener('dblclick', (e) => {
     e.preventDefault();
     if (_lb.scale === 1) {
-      _lb.scale = 2.5; _lb.tx = 0; _lb.ty = 0;
+      const rect = stage.getBoundingClientRect();
+      const clickX = e.clientX - rect.left - rect.width / 2;
+      const clickY = e.clientY - rect.top - rect.height / 2;
+      _lb.scale = 2.5;
+      _lb.tx = clickX * (1 - 2.5);
+      _lb.ty = clickY * (1 - 2.5);
+      lightboxClampPan();
     } else {
       lightboxResetZoom();
       return;
@@ -4543,11 +4549,19 @@ function initLightboxGestures() {
     setTimeout(() => img.classList.remove('dragging'), 200);
   });
 
-  // Mus-hjul til zoom
+  // Mus-hjul til zoom mod cursor-position
   stage.addEventListener('wheel', (e) => {
     e.preventDefault();
+    const oldScale = _lb.scale;
     const delta = -e.deltaY * 0.002;
-    const newScale = Math.max(1, Math.min(5, _lb.scale + delta * _lb.scale));
+    const newScale = Math.max(1, Math.min(5, oldScale + delta * oldScale));
+    if (newScale === oldScale) return;
+    const rect = stage.getBoundingClientRect();
+    const cursorX = e.clientX - rect.left - rect.width / 2;
+    const cursorY = e.clientY - rect.top - rect.height / 2;
+    const factor = newScale / oldScale;
+    _lb.tx = cursorX - factor * (cursorX - _lb.tx);
+    _lb.ty = cursorY - factor * (cursorY - _lb.ty);
     _lb.scale = newScale;
     if (_lb.scale === 1) { _lb.tx = 0; _lb.ty = 0; }
     else lightboxClampPan();
