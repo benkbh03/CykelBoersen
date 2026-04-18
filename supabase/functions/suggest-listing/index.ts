@@ -2,7 +2,7 @@
 // Deploy: supabase functions deploy suggest-listing
 //
 // Påkrævede secrets:
-//   ANTHROPIC_API_KEY  – din Anthropic API-nøgle fra console.anthropic.com
+//   ANTHROPIC_API_KEY_ANNONCE  – din Anthropic API-nøgle fra console.anthropic.com
 //
 // Input:  { images: [{ media_type, data }], hint?: string }
 //         images er base64-data (uden "data:...;base64," prefix). Max 4 billeder.
@@ -11,7 +11,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
+const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") ?? "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -61,7 +61,7 @@ serve(async (req) => {
   }
 
   if (!ANTHROPIC_API_KEY) {
-    console.error("ANTHROPIC_API_KEY mangler");
+    console.error("ANTHROPIC_API_KEY_ANNONCE mangler");
     return new Response(
       JSON.stringify({ error: "AI ikke konfigureret" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
