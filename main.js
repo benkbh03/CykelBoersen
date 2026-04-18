@@ -24,6 +24,10 @@ const bikeCache = new Map();
 let _bikeModalToken = 0;
 let _userProfileToken = 0;
 let _dealerProfileToken = 0;
+let _sellStep = 1;
+let _aiSuggestionPending = null;
+let _aiApplied = false;
+let _sellFormCache = {};
 
 // Hjælper: deaktiver knap og vis spinner, returnerer gendan-funktion
 function btnLoading(id, label) {
@@ -3083,149 +3087,369 @@ function renderSellPage() {
   document.title = 'Opret annonce – Cykelbørsen';
   updateSEOMeta('Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.', '/sell');
   selectedFiles = [];
-
-  const isDealer = currentProfile?.seller_type === 'dealer';
-  const dealerSection = isDealer ? `
-    <div class="sell-section">
-      <h3 class="sell-section-title">Forhandlerinfo</h3>
-      <div class="form-grid">
-        <div class="form-group full">
-          <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
-          <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
-        </div>
-      </div>
-    </div>` : '';
+  _sellStep = 1;
+  _aiApplied = false;
+  _aiSuggestionPending = null;
+  _sellFormCache = {};
 
   document.getElementById('detail-view').innerHTML = `
-    <div class="sell-page">
-      <div class="sell-page-header">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
-        <h1 class="sell-page-title">Sæt din cykel til salg</h1>
-        <p class="sell-page-subtitle">Gratis · Nemt · Under 2 minutter</p>
+    <div class="sell-wizard">
+      <div class="sell-wizard-top">
+        <button class="sell-wizard-back-btn" onclick="backSell()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="sell-wizard-logo">
+          <svg width="22" height="22" viewBox="0 0 40 40" fill="none">
+            <circle cx="11" cy="27" r="9" stroke="var(--forest)" stroke-width="2.5"/>
+            <circle cx="29" cy="27" r="9" stroke="var(--forest)" stroke-width="2.5"/>
+            <path d="M11 27l7-13h7l5 13M18 14h-3M23 14l-5 13" stroke="var(--rust)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Cykelbørsen</span>
+        </div>
+        <div style="width:40px"></div>
       </div>
 
-      <div class="sell-page-body">
-        ${dealerSection}
-
-        <div class="sell-section">
-          <h3 class="sell-section-title">Billeder</h3>
-          <p class="sell-section-desc">Billeder øger dine salgschancer drastisk — upload op til 8 billeder (JPG, PNG).</p>
-          <div class="img-upload" onclick="document.getElementById('sell-file-input').click()">
-            <div class="upload-icon">📷</div>
-            <p id="sell-upload-label">Klik for at vælge billeder</p>
-          </div>
-          <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
-          <div id="sell-preview-grid" class="img-preview-grid"></div>
-          <p class="img-upload-hint" id="sell-img-hint" style="display:none">Klik ★ på et billede for at gøre det til forsidebillede</p>
-          <div id="ai-suggest-wrap" class="ai-suggest-wrap" style="display:none;">
-            <button type="button" id="ai-suggest-btn" class="ai-suggest-btn" onclick="suggestListingFromImages()">
-              <span class="ai-suggest-icon">✨</span>
-              <span class="ai-suggest-label">Få AI-forslag baseret på billeder</span>
-            </button>
-            <p class="ai-suggest-hint">Gratis · Auto-udfylder mærke, model, stand, pris og beskrivelse</p>
-            <div id="ai-suggest-status" class="ai-suggest-status"></div>
-          </div>
-        </div>
-
-        <div class="sell-section">
-          <h3 class="sell-section-title">Om cyklen</h3>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Mærke *</label>
-              <input type="text" id="sell-brand" placeholder="f.eks. Trek, Giant, Specialized">
-            </div>
-            <div class="form-group">
-              <label>Model *</label>
-              <input type="text" id="sell-model" placeholder="f.eks. FX 3 Disc">
-            </div>
-            <div class="form-group">
-              <label>Cykeltype *</label>
-              <select id="sell-type">
-                <option value="">Vælg type</option>
-                <option>Racercykel</option>
-                <option>Mountainbike</option>
-                <option>Citybike</option>
-                <option>El-cykel</option>
-                <option>Ladcykel</option>
-                <option>Børnecykel</option>
-                <option>Gravel</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Ramme / str.</label>
-              <select id="sell-size">
-                <option value="">Vælg</option>
-                <option>XS (44–48 cm)</option>
-                <option>S (49–52 cm)</option>
-                <option>M (53–56 cm)</option>
-                <option>L (57–60 cm)</option>
-                <option>XL (61+ cm)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Hjulstørrelse</label>
-              <select id="sell-wheel-size">
-                <option value="">Vælg</option>
-                <option>26"</option>
-                <option>27.5" / 650b</option>
-                <option>28"</option>
-                <option>29"</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Årstal</label>
-              <input type="number" id="sell-year" placeholder="f.eks. 2021" min="1950" max="2030">
-            </div>
-            <div class="form-group">
-              <label>Stand *</label>
-              <select id="sell-condition">
-                <option value="">Vælg stand</option>
-                <option>Ny</option>
-                <option>Som ny</option>
-                <option>God stand</option>
-                <option>Brugt</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>By *</label>
-              <input type="text" id="sell-city" placeholder="f.eks. København">
-            </div>
-            <div class="form-group">
-              <label>Farve</label>
-              <input type="text" id="sell-color" placeholder="f.eks. Sort, Hvid/Rød">
-            </div>
-            <div class="form-group full">
-              <label>Beskrivelse</label>
-              <textarea id="sell-desc" placeholder="Beskriv din cykel — stand, udstyr, service, historik..." rows="5"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="sell-section">
-          <h3 class="sell-section-title">Pris</h3>
-          <div class="form-group" style="max-width:260px;">
-            <label>Pris (kr.) *</label>
-            <input type="number" id="sell-price" placeholder="f.eks. 4500" min="0">
-            <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
-          </div>
-        </div>
-
-        <div class="sell-page-actions">
-          <button id="sell-submit-btn" class="form-submit sell-submit" onclick="submitSellPage()">Opret annonce gratis →</button>
-          <p class="sell-disclaimer">Ved oprettelse accepterer du vores <span onclick="navigateTo('/vilkaar')" class="sell-terms-link">vilkår og betingelser</span>.</p>
-        </div>
-      </div>
+      <div id="sell-wizard-progress" class="sell-wizard-progress"></div>
+      <div id="sell-step-body" class="sell-wizard-body"></div>
+      <div id="sell-wizard-footer" class="sell-wizard-footer"></div>
     </div>
   `;
 
-  // Prisforslag ved type-valg
-  const typeSelect = document.getElementById('sell-type');
-  if (typeSelect) {
-    typeSelect.addEventListener('change', () => updateSellPriceSuggestion(typeSelect.value));
+  setSellStep(1);
+}
+
+function renderSellProgressHTML(step) {
+  const steps = [
+    { n: 1, label: 'Billeder' },
+    { n: 2, label: 'Om cyklen' },
+    { n: 3, label: 'Publicer' },
+  ];
+  return `<div class="sell-progress-row">${steps.map((s, i) => {
+    const done = step > s.n;
+    const active = step === s.n;
+    const dotClass = active ? 'active' : done ? 'done' : 'pending';
+    const labelClass = active ? 'active' : done ? '' : 'pending';
+    const connector = i < steps.length - 1
+      ? `<div class="sell-progress-line" style="background:${done ? 'var(--forest)' : 'var(--border)'}"></div>`
+      : '';
+    return `
+      <button class="sell-progress-step" onclick="step > ${s.n} ? setSellStep(${s.n}) : null" style="cursor:${step > s.n ? 'pointer' : 'default'}">
+        <div class="sell-progress-dot ${dotClass}">${done ? '✓' : s.n}</div>
+        <span class="sell-progress-label ${labelClass}">${s.label}</span>
+      </button>${connector}`;
+  }).join('')}</div>`;
+}
+
+function renderSellStep1HTML() {
+  const aiDone = _aiApplied;
+  return `
+    <h1 class="sell-step-heading">Start med <em>billeder</em></h1>
+    <p class="sell-step-subtitle">Gode billeder sælger bedre. Tilføj mindst ét — gerne fra flere vinkler.</p>
+
+    <div class="sell-drop-zone" id="sell-drop-zone" onclick="document.getElementById('sell-file-input').click()"
+      ondragover="event.preventDefault();this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="event.preventDefault();this.classList.remove('dragover');previewSellImages({files:event.dataTransfer.files})">
+      <div class="sell-drop-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="sell-drop-title">Træk billeder hertil</div>
+      <div class="sell-drop-sub">eller tryk for at vælge fra bibliotek</div>
+      <div class="sell-drop-badge">JPG, PNG, WEBP · op til 10 MB</div>
+    </div>
+    <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
+
+    <div id="ai-suggest-wrap" style="display:${selectedFiles.length > 0 ? 'block' : 'none'}">
+      ${aiDone ? `
+        <div class="sell-ai-applied">
+          <div class="sell-ai-applied-icon">✓</div>
+          <div><b>AI-forslag anvendt.</b> Gennemse i næste trin.</div>
+        </div>` : `
+        <button type="button" id="ai-suggest-btn" class="sell-ai-btn" onclick="suggestListingFromImages()">
+          <div class="sell-ai-btn-icon">✨</div>
+          <div>
+            <div class="sell-ai-btn-title">Få AI-forslag</div>
+            <div class="sell-ai-btn-sub">Vi udfylder mærke, model og beskrivelse fra billederne</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg);opacity:.6"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="ai-suggest-status" class="ai-suggest-status"></div>`}
+    </div>
+
+    ${selectedFiles.length > 0 ? `
+      <div class="sell-photo-grid-header">
+        <div class="sell-photo-grid-title">Dine billeder <span class="sell-photo-count">· ${selectedFiles.length}/8</span></div>
+        <div class="sell-photo-hint">Tryk ★ for primær</div>
+      </div>` : ''}
+    <div id="sell-preview-grid" class="img-preview-grid sell-preview-grid-new"></div>
+    <p class="img-upload-hint" id="sell-img-hint" style="display:none"></p>
+  `;
+}
+
+function renderSellStep2HTML() {
+  const isDealer = currentProfile?.seller_type === 'dealer';
+  const ai = _aiApplied;
+  const c = _sellFormCache;
+  const aiClass = ai ? ' ai-field' : '';
+
+  const opt = (val, list) => list.map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('');
+
+  return `
+    <h1 class="sell-step-heading">Om <em>cyklen</em></h1>
+    <p class="sell-step-subtitle">${ai ? 'Vi har udfyldt det vi kunne — gennemgå og ret hvis nødvendigt.' : 'Jo mere præcist, jo bedre bud.'}</p>
+
+    <div class="sell-form-grid-2">
+      <div class="sell-field">
+        <label>Mærke <span class="req">*</span></label>
+        <input type="text" id="sell-brand" placeholder="Trek" value="${esc(c['sell-brand'] || '')}" class="${aiClass}">
+      </div>
+      <div class="sell-field">
+        <label>Model <span class="req">*</span></label>
+        <input type="text" id="sell-model" placeholder="FX 3 Disc" value="${esc(c['sell-model'] || '')}" class="${aiClass}">
+      </div>
+    </div>
+
+    <div class="sell-field">
+      <label>Cykeltype <span class="req">*</span></label>
+      <select id="sell-type">
+        <option value="">Vælg type</option>
+        ${opt(c['sell-type'] || '', ['Racercykel','Mountainbike','Citybike','El-cykel','Ladcykel','Børnecykel','Gravel'])}
+      </select>
+    </div>
+
+    <div class="sell-form-grid-2">
+      <div class="sell-field">
+        <label>Stelstørrelse</label>
+        <select id="sell-size">
+          <option value="">Vælg</option>
+          ${opt(c['sell-size'] || '', ['XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)'])}
+        </select>
+      </div>
+      <div class="sell-field">
+        <label>Hjulstørrelse</label>
+        <select id="sell-wheel-size">
+          <option value="">Vælg</option>
+          ${opt(c['sell-wheel-size'] || '', ['26"','27.5" / 650b','28"','29"'])}
+        </select>
+      </div>
+      <div class="sell-field">
+        <label>Årgang</label>
+        <input type="number" id="sell-year" placeholder="2021" min="1950" max="2030" value="${c['sell-year'] || ''}">
+      </div>
+      <div class="sell-field">
+        <label>Stand <span class="req">*</span></label>
+        <select id="sell-condition" class="${aiClass}">
+          <option value="">Vælg stand</option>
+          ${opt(c['sell-condition'] || '', ['Ny','Som ny','God stand','Brugt'])}
+        </select>
+      </div>
+    </div>
+
+    <div class="sell-field">
+      <label>Farve</label>
+      <input type="text" id="sell-color" placeholder="Sort, Hvid, Rød …" value="${esc(c['sell-color'] || '')}" class="${aiClass}">
+    </div>
+
+    <div class="sell-field">
+      <label>Pris <span class="req">*</span> <span class="hint">inkl. moms</span></label>
+      <div class="suffix-wrap">
+        <input type="number" id="sell-price" placeholder="4.500" min="0" value="${c['sell-price'] || ''}">
+        <span class="suffix">DKK</span>
+      </div>
+      <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
+    </div>
+
+    ${isDealer ? `
+    <div class="sell-field">
+      <label>Garanti <span class="hint">(valgfrit)</span></label>
+      <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti" value="${esc(c['sell-warranty'] || '')}">
+    </div>` : ''}
+  `;
+}
+
+function renderSellStep3HTML() {
+  const c = _sellFormCache;
+  const brand = c['sell-brand'] || '';
+  const model = c['sell-model'] || '';
+  const type  = c['sell-type'] || '';
+  const size  = c['sell-size'] || '';
+  const wheel = c['sell-wheel-size'] || '';
+  const year  = c['sell-year'] || '';
+  const cond  = c['sell-condition'] || '';
+  const color = c['sell-color'] || '';
+  const price = c['sell-price'] || '';
+
+  const primaryImg = selectedFiles.find(f => f.isPrimary) || selectedFiles[0];
+  const thumbHTML = primaryImg
+    ? `<img src="${primaryImg.url}" alt="" class="sell-summary-thumb-img">`
+    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:.3">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none"><circle cx="11" cy="27" r="9" stroke="currentColor" stroke-width="2"/><circle cx="29" cy="27" r="9" stroke="currentColor" stroke-width="2"/><path d="M11 27l7-13h7l5 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>`;
+
+  const rows = [
+    ['Mærke & model', [brand, model].filter(Boolean).join(' ') || '—'],
+    ['Type', type || '—'],
+    ['Størrelse', [size, wheel].filter(Boolean).join(' · ') || '—'],
+    ['Årgang · Stand', [year, cond].filter(Boolean).join(' · ') || '—'],
+    ['Farve', color || '—'],
+    ['Pris', price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—'],
+    ['Billeder', `${selectedFiles.length} uploadet`],
+  ];
+
+  return `
+    <h1 class="sell-step-heading">Sidste <em>finish</em></h1>
+    <p class="sell-step-subtitle">Beskriv cyklen med dine egne ord og tjek oversigten.</p>
+
+    <div class="sell-field">
+      <label>Beskrivelse <span class="req">*</span> <span class="hint">min. 40 tegn</span></label>
+      <textarea id="sell-desc" placeholder="Fortæl om cyklens stand, udstyr, historik, hvorfor du sælger…" rows="5">${esc(c['sell-desc'] || '')}</textarea>
+    </div>
+
+    <div class="sell-field">
+      <label>By <span class="req">*</span></label>
+      <div class="suffix-wrap">
+        <span class="suffix" style="left:12px;right:auto">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg>
+        </span>
+        <input type="text" id="sell-city" placeholder="København" value="${esc(c['sell-city'] || '')}" style="padding-left:34px">
+      </div>
+    </div>
+
+    <div class="sell-summary-card">
+      <div class="sell-summary-label">Oversigt</div>
+      <div class="sell-summary-top">
+        <div class="sell-summary-thumb">${thumbHTML}</div>
+        <div>
+          <div class="sell-summary-title">${esc([brand, model].filter(Boolean).join(' ') || 'Din cykel')}</div>
+          <div class="sell-summary-sub">${esc(type || 'Type')} · ${esc(c['sell-city'] || 'By')}</div>
+          <div class="sell-summary-price">${price ? Number(price).toLocaleString('da-DK') + ' DKK' : '— DKK'}</div>
+        </div>
+      </div>
+      <div class="sell-summary-rows">
+        ${rows.map(([k, v]) => `
+          <div class="sell-summary-row">
+            <span class="sell-summary-row-key">${k}</span>
+            <span class="sell-summary-row-val">${esc(String(v))}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <p class="sell-disclaimer" style="margin-top:16px;text-align:center">
+      Ved oprettelse accepterer du vores <span onclick="navigateTo('/vilkaar')" class="sell-terms-link">vilkår og betingelser</span>.
+    </p>
+    <button id="sell-submit-btn" style="display:none"></button>
+  `;
+}
+
+function renderSellFooterHTML(step, canContinue) {
+  const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
+  const enabled = canContinue ? 'enabled' : 'disabled';
+  return `<button class="sell-wizard-cta ${enabled}" onclick="advanceSell()">
+    ${labels[step]}
+    ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+  </button>`;
+}
+
+function canAdvanceSell() {
+  if (_sellStep === 1) return selectedFiles.length > 0;
+  if (_sellStep === 2) {
+    const brand = document.getElementById('sell-brand')?.value.trim();
+    const model = document.getElementById('sell-model')?.value.trim();
+    const type  = document.getElementById('sell-type')?.value;
+    const cond  = document.getElementById('sell-condition')?.value;
+    const price = document.getElementById('sell-price')?.value;
+    return !!(brand && model && type && cond && price);
+  }
+  if (_sellStep === 3) {
+    const desc = document.getElementById('sell-desc')?.value.trim();
+    const city = document.getElementById('sell-city')?.value.trim();
+    return !!(desc && desc.length >= 10 && city);
+  }
+  return false;
+}
+
+function updateSellFooter() {
+  const el = document.getElementById('sell-wizard-footer');
+  if (el) el.innerHTML = renderSellFooterHTML(_sellStep, canAdvanceSell());
+}
+
+function setSellStep(n) {
+  if (_sellStep === 2) {
+    ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
+     'sell-year','sell-condition','sell-color','sell-price','sell-warranty'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) _sellFormCache[id] = el.value;
+    });
+  }
+  if (_sellStep === 3) {
+    ['sell-desc','sell-city'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) _sellFormCache[id] = el.value;
+    });
   }
 
-  // Auto-gem kladde i localStorage
-  initSellDraft();
+  _sellStep = n;
+
+  const progress = document.getElementById('sell-wizard-progress');
+  if (progress) progress.innerHTML = renderSellProgressHTML(n);
+
+  const body = document.getElementById('sell-step-body');
+  if (body) {
+    body.innerHTML = n === 1 ? renderSellStep1HTML()
+                   : n === 2 ? renderSellStep2HTML()
+                   : renderSellStep3HTML();
+  }
+
+  updateSellFooter();
+
+  if (n === 1) {
+    renderSellImagePreviews();
+    updateAiSuggestVisibility();
+  }
+
+  if (n === 2) {
+    const typeEl = document.getElementById('sell-type');
+    if (typeEl) typeEl.addEventListener('change', () => updateSellPriceSuggestion(typeEl.value));
+    initSellDraft();
+    if (_aiSuggestionPending) {
+      setTimeout(() => { applyAiSuggestion(_aiSuggestionPending); _aiSuggestionPending = null; }, 50);
+    }
+    // Live footer validation
+    ['sell-brand','sell-model','sell-type','sell-condition','sell-price'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updateSellFooter);
+      document.getElementById(id)?.addEventListener('change', updateSellFooter);
+    });
+  }
+
+  if (n === 3) {
+    ['sell-desc','sell-city'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updateSellFooter);
+    });
+    // Re-init draft listeners for step 3 fields
+    const debouncedSave = debounce(() => saveSellDraft(), 600);
+    ['sell-desc','sell-city'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', debouncedSave);
+    });
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function advanceSell() {
+  if (!canAdvanceSell()) {
+    showToast('⚠️ Udfyld alle påkrævede felter');
+    return;
+  }
+  if (_sellStep < 3) {
+    setSellStep(_sellStep + 1);
+  } else {
+    submitSellPage();
+  }
+}
+
+function backSell() {
+  if (_sellStep > 1) setSellStep(_sellStep - 1);
+  else navigateTo('/');
 }
 
 const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
@@ -3489,6 +3713,15 @@ function fileToBase64(file) {
 
 function applyAiSuggestion(s) {
   if (!s || typeof s !== 'object') return;
+  _aiApplied = true;
+  // If step 2 fields don't exist yet, store for when step 2 renders
+  if (!document.getElementById('sell-brand')) {
+    _aiSuggestionPending = s;
+    // Re-render step 1 to show "AI applied" state
+    const body = document.getElementById('sell-step-body');
+    if (body && _sellStep === 1) body.innerHTML = renderSellStep1HTML();
+    return;
+  }
 
   const setField = (id, value) => {
     if (value == null || value === '') return;
@@ -6016,6 +6249,9 @@ window.previewSellImages         = previewSellImages;
 window.setSellPrimary            = setSellPrimary;
 window.removeSellImage           = removeSellImage;
 window.suggestListingFromImages  = suggestListingFromImages;
+window.setSellStep               = setSellStep;
+window.advanceSell               = advanceSell;
+window.backSell                  = backSell;
 window.closeListingSuccessModal  = closeListingSuccessModal;
 window.openBikeModal      = openBikeModal;
 window.navigateTo         = navigateTo;
