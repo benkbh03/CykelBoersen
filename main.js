@@ -3795,8 +3795,9 @@ async function suggestListingFromImages() {
   if (!btn) return;
   btn.disabled = true;
   btn.classList.add('loading');
-  const originalLabel = btn.querySelector('.ai-suggest-label').textContent;
-  btn.querySelector('.ai-suggest-label').textContent = 'Analyserer billeder...';
+  const labelEl = btn.querySelector('.sell-ai-btn-title') || btn.querySelector('.ai-suggest-label');
+  const originalLabel = labelEl ? labelEl.textContent : '';
+  if (labelEl) labelEl.textContent = 'Analyserer billeder...';
   if (status) { status.textContent = ''; status.className = 'ai-suggest-status'; }
 
   try {
@@ -3833,7 +3834,7 @@ async function suggestListingFromImages() {
   } finally {
     btn.disabled = false;
     btn.classList.remove('loading');
-    btn.querySelector('.ai-suggest-label').textContent = originalLabel;
+    if (labelEl) labelEl.textContent = originalLabel;
   }
 }
 
