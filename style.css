@@ -3135,7 +3135,12 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .sell-field .ai-field { border-color: rgba(42,61,46,0.4) !important; box-shadow: 0 0 0 3px rgba(42,61,46,0.07); }
 .sell-field .suffix-wrap { position: relative; }
+.sell-field .suffix-wrap input { padding-right: 52px; }
 .sell-field .suffix { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
+/* Hide number input spinners so they don't overlap DKK suffix */
+.sell-field input[type="number"]::-webkit-inner-spin-button,
+.sell-field input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.sell-field input[type="number"] { -moz-appearance: textfield; }
 .sell-form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* Summary card */
 .sell-summary-card {
