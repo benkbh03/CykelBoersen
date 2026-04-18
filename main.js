@@ -3109,8 +3109,23 @@ function renderSellPage() {
         <div style="width:40px"></div>
       </div>
 
-      <div id="sell-wizard-progress" class="sell-wizard-progress"></div>
-      <div id="sell-step-body" class="sell-wizard-body"></div>
+      <div class="sell-wizard-desktop-header">
+        <div id="sell-desktop-step-label" class="sell-wizard-step-label">Trin 1 af 3</div>
+        <h1 class="sell-wizard-page-title">Sæt din cykel <em>til salg</em></h1>
+      </div>
+
+      <div class="sell-wizard-layout">
+        <aside id="sell-desktop-stepper" class="sell-wizard-desktop-stepper"></aside>
+
+        <div class="sell-wizard-main">
+          <div id="sell-wizard-progress" class="sell-wizard-progress"></div>
+          <div id="sell-step-body" class="sell-wizard-body"></div>
+          <div id="sell-desktop-footer" class="sell-wizard-desktop-footer"></div>
+        </div>
+
+        <aside id="sell-desktop-preview" class="sell-wizard-desktop-preview"></aside>
+      </div>
+
       <div id="sell-wizard-footer" class="sell-wizard-footer"></div>
     </div>
   `;
@@ -3350,6 +3365,106 @@ function renderSellFooterHTML(step, canContinue) {
   </button>`;
 }
 
+function renderSellDesktopStepperHTML(step) {
+  const steps = [
+    { n: 1, label: 'Billeder',  desc: 'Upload fotos af din cykel' },
+    { n: 2, label: 'Om cyklen', desc: 'Mærke, model, pris' },
+    { n: 3, label: 'Publicer',  desc: 'Beskrivelse & oversigt' },
+  ];
+  return `
+    <div class="sell-desktop-stepper-title">Opret annonce</div>
+    ${steps.map(s => {
+      const done = step > s.n;
+      const active = step === s.n;
+      const dotClass = active ? 'active' : done ? 'done' : 'pending';
+      const rowClass = active ? 'active' : '';
+      const clickable = step > s.n ? `onclick="setSellStep(${s.n})" style="cursor:pointer"` : 'style="cursor:default"';
+      return `
+        <button class="sell-desktop-step-row ${rowClass}" ${clickable}>
+          <div class="sell-progress-dot ${dotClass}">${done ? '✓' : s.n}</div>
+          <div class="sell-desktop-step-text">
+            <div class="sell-desktop-step-label ${active || done ? '' : 'muted'}">${s.label}</div>
+            <div class="sell-desktop-step-desc">${s.desc}</div>
+          </div>
+        </button>`;
+    }).join('')}
+    <div class="sell-desktop-stepper-footer">
+      Alle felter med <span style="color:var(--rust)">*</span> skal udfyldes.<br>
+      Annoncer er aktive i 60 dage.
+    </div>
+  `;
+}
+
+function renderSellDesktopPreviewHTML() {
+  const c = _sellFormCache;
+  const brand = c['sell-brand'] || '';
+  const model = c['sell-model'] || '';
+  const type  = c['sell-type'] || '';
+  const size  = c['sell-size'] || '';
+  const year  = c['sell-year'] || '';
+  const cond  = c['sell-condition'] || '';
+  const price = c['sell-price'] || '';
+  const city  = c['sell-city'] || '';
+
+  const primaryImg = selectedFiles.find(f => f.isPrimary) || selectedFiles[0];
+  const heroHTML = primaryImg
+    ? `<img src="${primaryImg.url}" alt="" class="sell-desktop-preview-img">`
+    : `<div class="sell-desktop-preview-placeholder">Billede vises her</div>`;
+
+  const condBadge = cond
+    ? `<div class="sell-desktop-preview-badge">${esc(cond)}</div>`
+    : '';
+
+  const title = [brand, model].filter(Boolean).join(' ') || 'Din cykel';
+  const meta  = [type, size, year].filter(Boolean).join(' · ') || 'Type · Størrelse · Årgang';
+
+  const thumbs = selectedFiles.length > 1
+    ? `<div class="sell-desktop-preview-thumbs">
+        ${selectedFiles.slice(0, 4).map(f => `
+          <div class="sell-desktop-preview-thumb ${f.isPrimary ? 'primary' : ''}">
+            <img src="${f.url}" alt="">
+          </div>`).join('')}
+       </div>`
+    : '';
+
+  const ownerName = currentProfile?.shop_name || currentProfile?.name || 'Sælger';
+
+  return `
+    <div class="sell-desktop-preview-label">Sådan ser annoncen ud</div>
+    <div class="sell-desktop-preview-card">
+      <div class="sell-desktop-preview-hero">
+        ${heroHTML}
+        ${condBadge}
+      </div>
+      <div class="sell-desktop-preview-body">
+        <div class="sell-desktop-preview-topline">
+          <div class="sell-desktop-preview-title">${esc(title)}</div>
+          <div class="sell-desktop-preview-price">${price ? Number(price).toLocaleString('da-DK') + ' kr' : '— kr'}</div>
+        </div>
+        <div class="sell-desktop-preview-meta">${esc(meta)}</div>
+        <div class="sell-desktop-preview-foot">
+          <span class="sell-desktop-preview-owner">${esc(ownerName)}</span>
+          <span class="sell-desktop-preview-city">${esc(city || 'By')}</span>
+        </div>
+      </div>
+    </div>
+    ${thumbs}
+  `;
+}
+
+function renderSellDesktopFooterHTML(step, canContinue) {
+  const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
+  const enabled = canContinue ? 'enabled' : 'disabled';
+  const backDisabled = step === 1;
+  return `
+    <button class="sell-desktop-back ${backDisabled ? 'disabled' : ''}" ${backDisabled ? 'disabled' : ''} onclick="backSell()">Tilbage</button>
+    <button class="sell-desktop-cta ${enabled}" onclick="advanceSell()">
+      ${labels[step]}
+      ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+    </button>
+  `;
+}
+
 function canAdvanceSell() {
   if (_sellStep === 1) return selectedFiles.length > 0;
   if (_sellStep === 2) {
@@ -3369,11 +3484,19 @@ function canAdvanceSell() {
 }
 
 function updateSellFooter() {
+  const can = canAdvanceSell();
   const el = document.getElementById('sell-wizard-footer');
-  if (el) el.innerHTML = renderSellFooterHTML(_sellStep, canAdvanceSell());
+  if (el) el.innerHTML = renderSellFooterHTML(_sellStep, can);
+  const elDesk = document.getElementById('sell-desktop-footer');
+  if (elDesk) elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
 }
 
-function setSellStep(n) {
+function updateSellDesktopPreview() {
+  const el = document.getElementById('sell-desktop-preview');
+  if (el) el.innerHTML = renderSellDesktopPreviewHTML();
+}
+
+function captureSellFormCache() {
   if (_sellStep === 2) {
     ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
      'sell-year','sell-condition','sell-color','sell-price','sell-warranty'].forEach(id => {
@@ -3387,8 +3510,18 @@ function setSellStep(n) {
       if (el) _sellFormCache[id] = el.value;
     });
   }
+}
+
+function setSellStep(n) {
+  captureSellFormCache();
 
   _sellStep = n;
+
+  const stepLabel = document.getElementById('sell-desktop-step-label');
+  if (stepLabel) stepLabel.textContent = `Trin ${n} af 3`;
+
+  const stepper = document.getElementById('sell-desktop-stepper');
+  if (stepper) stepper.innerHTML = renderSellDesktopStepperHTML(n);
 
   const progress = document.getElementById('sell-wizard-progress');
   if (progress) progress.innerHTML = renderSellProgressHTML(n);
@@ -3401,11 +3534,14 @@ function setSellStep(n) {
   }
 
   updateSellFooter();
+  updateSellDesktopPreview();
 
   if (n === 1) {
     renderSellImagePreviews();
     updateAiSuggestVisibility();
   }
+
+  const refreshOnChange = () => { updateSellFooter(); updateSellDesktopPreview(); };
 
   if (n === 2) {
     const typeEl = document.getElementById('sell-type');
@@ -3414,16 +3550,19 @@ function setSellStep(n) {
     if (_aiSuggestionPending) {
       setTimeout(() => { applyAiSuggestion(_aiSuggestionPending); _aiSuggestionPending = null; }, 50);
     }
-    // Live footer validation
-    ['sell-brand','sell-model','sell-type','sell-condition','sell-price'].forEach(id => {
-      document.getElementById(id)?.addEventListener('input', updateSellFooter);
-      document.getElementById(id)?.addEventListener('change', updateSellFooter);
+    // Live footer + preview updates
+    ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
+     'sell-year','sell-condition','sell-color','sell-price'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', () => { captureSellFormCache(); refreshOnChange(); });
+      el.addEventListener('change', () => { captureSellFormCache(); refreshOnChange(); });
     });
   }
 
   if (n === 3) {
     ['sell-desc','sell-city'].forEach(id => {
-      document.getElementById(id)?.addEventListener('input', updateSellFooter);
+      document.getElementById(id)?.addEventListener('input', () => { captureSellFormCache(); refreshOnChange(); });
     });
     // Re-init draft listeners for step 3 fields
     const debouncedSave = debounce(() => saveSellDraft(), 600);
@@ -3614,6 +3753,8 @@ function renderSellImagePreviews() {
     </div>`).join('');
   const hint = document.getElementById('sell-img-hint');
   if (hint) hint.style.display = selectedFiles.length > 1 ? 'block' : 'none';
+  if (typeof updateSellDesktopPreview === 'function') updateSellDesktopPreview();
+  if (typeof updateSellFooter === 'function') updateSellFooter();
 }
 
 function updateAiSuggestVisibility() {
