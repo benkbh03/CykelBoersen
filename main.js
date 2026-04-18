@@ -1692,8 +1692,10 @@ async function updateFilterCounts(data, dealerCount) {
 
   const countEl   = document.getElementById('listings-count');
   const statTotal = document.getElementById('stat-total');
+  const heroCount = document.getElementById('hero-listing-count');
   if (countEl)   countEl.textContent   = `${total} cykler til salg`;
   if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
+  if (heroCount && total > 0) heroCount.textContent = `${total.toLocaleString('da-DK')} annoncer klar til dig`;
 
   const statDealers = document.getElementById('stat-dealers');
   if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
@@ -5500,6 +5502,12 @@ async function sendReply(isInbox = false) {
    SIDEBAR FILTRE
    ============================================================ */
 
+function toggleSidebarSection(header) {
+  const box = header.closest('.sidebar-box');
+  const expanded = box.classList.toggle('collapsed');
+  header.setAttribute('aria-expanded', !expanded);
+}
+
 function applyFilters() {
   // Sælgertype — hvis "alle" er checket, ignorer de andre
   const sellerAll     = document.querySelector('[data-filter="seller"][data-value="all"]');
@@ -6374,6 +6382,7 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.toggleSidebarSection   = toggleSidebarSection;
 window.clearAllFilters        = clearAllFilters;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };

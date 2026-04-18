@@ -202,32 +202,40 @@
 
   <!-- ── SØGEBAR ── -->
   <div class="search-section" role="search" aria-label="Søg efter cykler">
-    <div class="search-bar">
-      <div style="position:relative;flex:1;">
-        <label for="search-input" class="sr-only">Søg efter mærke, model eller type</label>
-        <input type="text" id="search-input" placeholder="Søg efter mærke, model, type..." oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
-        <div id="autocomplete-list" class="autocomplete-list" style="display:none;" role="listbox" aria-label="Søgeforslag"></div>
+    <div class="search-hero-text">
+      <h1 class="search-hero-title">Find din næste <em>cykel</em></h1>
+      <p class="search-hero-sub" id="hero-listing-count">Søg i tusindvis af annoncer</p>
+    </div>
+    <div class="search-bar-wrap">
+      <div class="search-bar">
+        <div style="position:relative;flex:1;min-width:0;">
+          <label for="search-input" class="sr-only">Søg efter mærke, model eller type</label>
+          <input type="text" id="search-input" placeholder="Søg mærke, model, type..." oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
+          <div id="autocomplete-list" class="autocomplete-list" style="display:none;" role="listbox" aria-label="Søgeforslag"></div>
+        </div>
+        <div class="search-bar-sep"></div>
+        <label for="search-type" class="sr-only">Vælg cykeltype</label>
+        <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="searchBikes()">
+          <option value="">Alle typer</option>
+          <option>Racercykel</option>
+          <option>Mountainbike</option>
+          <option>Citybike</option>
+          <option>El-cykel</option>
+          <option>Ladcykel</option>
+          <option>Børnecykel</option>
+        </select>
+        <div class="search-bar-sep"></div>
+        <label for="search-city" class="sr-only">Vælg by</label>
+        <select id="search-city" aria-label="Filtrer efter by" onchange="searchBikes()">
+          <option value="">Alle steder</option>
+          <option>København</option>
+          <option>Aarhus</option>
+          <option>Odense</option>
+          <option>Aalborg</option>
+        </select>
+        <button class="search-pill-btn" onclick="searchBikes()" aria-label="Søg efter cykler">Søg</button>
       </div>
-      <label for="search-type" class="sr-only">Vælg cykeltype</label>
-      <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="searchBikes()">
-        <option value="">Alle typer</option>
-        <option>Racercykel</option>
-        <option>Mountainbike</option>
-        <option>Citybike</option>
-        <option>El-cykel</option>
-        <option>Ladcykel</option>
-        <option>Børnecykel</option>
-      </select>
-      <label for="search-city" class="sr-only">Vælg by</label>
-      <select id="search-city" aria-label="Filtrer efter by" onchange="searchBikes()">
-        <option value="">Alle steder</option>
-        <option>København</option>
-        <option>Aarhus</option>
-        <option>Odense</option>
-        <option>Aalborg</option>
-      </select>
-      <button onclick="searchBikes()" aria-label="Søg efter cykler">🔍 Søg</button>
-      <button id="save-search-btn" onclick="saveCurrentSearch()" title="Gem denne søgning" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:0 12px;cursor:pointer;font-size:1.1rem;color:var(--muted);transition:border-color 0.15s,color 0.15s;" aria-label="Gem søgning">🔔</button>
+      <button id="save-search-btn" onclick="saveCurrentSearch()" title="Gem denne søgning" aria-label="Gem søgning">🔔</button>
     </div>
   </div>
 
@@ -254,16 +262,22 @@
 
     <aside class="sidebar">
       <div class="sidebar-box">
-        <h3>Sælgertype</h3>
-        <div class="filter-group">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Sælgertype</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="applyFilters()"> Alle sælgere <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="applyFilters()"> 🏪 Forhandlere <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="applyFilters()"> 👤 Private <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box">
-        <h3>Cykeltype</h3>
-        <div class="filter-group">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Cykeltype</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Racercykel" onchange="applyFilters()"> Racercykel <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Mountainbike" onchange="applyFilters()"> Mountainbike <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="El-cykel" onchange="applyFilters()"> El-cykel <span class="filter-count">–</span></label>
@@ -274,8 +288,11 @@
         </div>
       </div>
       <div class="sidebar-box">
-        <h3>Pris</h3>
-        <div class="price-range">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Pris</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="price-range sidebar-section-body">
           <div class="price-inputs">
             <input type="number" placeholder="Min kr." min="0">
             <span>–</span>
@@ -285,8 +302,11 @@
         </div>
       </div>
       <div class="sidebar-box">
-        <h3>Stand</h3>
-        <div class="filter-group">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Stand</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Som ny" onchange="applyFilters()"> Som ny <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="God stand" onchange="applyFilters()"> God stand <span class="filter-count">–</span></label>
@@ -294,13 +314,21 @@
         </div>
       </div>
       <div class="sidebar-box">
-        <h3>Hjulstørrelse</h3>
-        <div class="filter-group">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Hjulstørrelse</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='26"' onchange="applyFilters()"> 26" <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='27.5" / 650b' onchange="applyFilters()"> 27.5" / 650b <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='28"' onchange="applyFilters()"> 28" <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='29"' onchange="applyFilters()"> 29" <span class="filter-count">–</span></label>
         </div>
+      </div>
+      <div class="sidebar-save-card">
+        <h4>Gem din søgning</h4>
+        <p>Få besked når der kommer nye cykler, der matcher dine filtre</p>
+        <button onclick="saveCurrentSearch()">🔔 Gem søgning</button>
       </div>
     </aside>
 
