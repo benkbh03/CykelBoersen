@@ -3108,6 +3108,18 @@ function renderSellPage() {
         ${dealerSection}
 
         <div class="sell-section">
+          <h3 class="sell-section-title">Billeder</h3>
+          <p class="sell-section-desc">Billeder øger dine salgschancer drastisk — upload op til 8 billeder (JPG, PNG).</p>
+          <div class="img-upload" onclick="document.getElementById('sell-file-input').click()">
+            <div class="upload-icon">📷</div>
+            <p id="sell-upload-label">Klik for at vælge billeder</p>
+          </div>
+          <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
+          <div id="sell-preview-grid" class="img-preview-grid"></div>
+          <p class="img-upload-hint" id="sell-img-hint" style="display:none">Klik ★ på et billede for at gøre det til forsidebillede</p>
+        </div>
+
+        <div class="sell-section">
           <h3 class="sell-section-title">Om cyklen</h3>
           <div class="form-grid">
             <div class="form-group">
@@ -3188,18 +3200,6 @@ function renderSellPage() {
             <input type="number" id="sell-price" placeholder="f.eks. 4500" min="0">
             <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
           </div>
-        </div>
-
-        <div class="sell-section">
-          <h3 class="sell-section-title">Billeder</h3>
-          <p class="sell-section-desc">Annoncer med billeder sælger hurtigere — upload op til 8 billeder (JPG, PNG).</p>
-          <div class="img-upload" onclick="document.getElementById('sell-file-input').click()">
-            <div class="upload-icon">📷</div>
-            <p id="sell-upload-label">Klik for at vælge billeder</p>
-          </div>
-          <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
-          <div id="sell-preview-grid" class="img-preview-grid"></div>
-          <p class="img-upload-hint" id="sell-img-hint" style="display:none">Klik ★ på et billede for at gøre det til forsidebillede</p>
         </div>
 
         <div class="sell-page-actions">
