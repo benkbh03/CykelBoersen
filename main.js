@@ -1912,18 +1912,20 @@ async function submitSellPage() {
   if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
   const restore = btnLoading('sell-submit-btn', 'Opretter...');
   try {
-    const brand     = document.getElementById('sell-brand')?.value.trim();
-    const model     = document.getElementById('sell-model')?.value.trim();
-    const price     = parseInt(document.getElementById('sell-price')?.value);
-    const year      = parseInt(document.getElementById('sell-year')?.value) || null;
-    const city      = document.getElementById('sell-city')?.value.trim();
-    const desc      = document.getElementById('sell-desc')?.value.trim();
-    const type      = document.getElementById('sell-type')?.value;
-    const size      = document.getElementById('sell-size')?.value;
-    const condition = document.getElementById('sell-condition')?.value;
-    const wheelSize = document.getElementById('sell-wheel-size')?.value || null;
-    const warranty  = document.getElementById('sell-warranty')?.value?.trim() || null;
-    const color     = document.getElementById('sell-color')?.value?.trim() || null;
+    // Read from DOM first, fall back to _sellFormCache (step 2 fields are gone when on step 3)
+    const getVal = (id) => (document.getElementById(id)?.value ?? _sellFormCache[id] ?? '').toString().trim();
+    const brand     = getVal('sell-brand');
+    const model     = getVal('sell-model');
+    const price     = parseInt(getVal('sell-price'));
+    const year      = parseInt(getVal('sell-year')) || null;
+    const city      = getVal('sell-city');
+    const desc      = getVal('sell-desc');
+    const type      = getVal('sell-type');
+    const size      = getVal('sell-size') || null;
+    const condition = getVal('sell-condition');
+    const wheelSize = getVal('sell-wheel-size') || null;
+    const warranty  = getVal('sell-warranty') || null;
+    const color     = getVal('sell-color') || null;
 
     if (!brand || !model || !price || !city || !type || !condition) {
       showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
@@ -3358,8 +3360,9 @@ function renderSellStep3HTML() {
 
 function renderSellFooterHTML(step, canContinue) {
   const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
-  const enabled = canContinue ? 'enabled' : 'disabled';
-  return `<button class="sell-wizard-cta ${enabled}" onclick="advanceSell()">
+  const cls = canContinue ? 'enabled' : 'disabled';
+  const dis = canContinue ? '' : 'disabled';
+  return `<button class="sell-wizard-cta ${cls}" onclick="advanceSell()" ${dis}>
     ${labels[step]}
     ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
   </button>`;
@@ -3454,11 +3457,12 @@ function renderSellDesktopPreviewHTML() {
 
 function renderSellDesktopFooterHTML(step, canContinue) {
   const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
-  const enabled = canContinue ? 'enabled' : 'disabled';
+  const cls = canContinue ? 'enabled' : 'disabled';
+  const dis = canContinue ? '' : 'disabled';
   const backDisabled = step === 1;
   return `
     <button class="sell-desktop-back ${backDisabled ? 'disabled' : ''}" ${backDisabled ? 'disabled' : ''} onclick="backSell()">Tilbage</button>
-    <button class="sell-desktop-cta ${enabled}" onclick="advanceSell()">
+    <button class="sell-desktop-cta ${cls}" onclick="advanceSell()" ${dis}>
       ${labels[step]}
       ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
     </button>
@@ -3582,6 +3586,7 @@ function advanceSell() {
   if (_sellStep < 3) {
     setSellStep(_sellStep + 1);
   } else {
+    captureSellFormCache(); // ensure step 3 fields are saved before submit
     submitSellPage();
   }
 }
