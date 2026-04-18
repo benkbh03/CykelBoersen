@@ -1053,6 +1053,18 @@
     </div>
   </div>
 
+  <!-- ── FULDSKÆRMS BILLED-LIGHTBOX ── -->
+  <div class="lightbox-overlay" id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Fuldskærms billede">
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Luk">✕</button>
+    <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)" aria-label="Forrige billede">&#8249;</button>
+    <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)" aria-label="Næste billede">&#8250;</button>
+    <div class="lightbox-stage" id="lightbox-stage">
+      <img id="lightbox-img" alt="" draggable="false">
+    </div>
+    <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
+    <div class="lightbox-hint" id="lightbox-hint">Dobbelt-tryk eller knib for at zoome</div>
+  </div>
+
   <!-- ── TOAST BESKED ── -->
   <div class="toast" id="toast">✅ Din annonce er oprettet!</div>
 
