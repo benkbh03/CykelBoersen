@@ -2988,6 +2988,199 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 
 /* ═══════════════════════════════════════════════════════════
+   SELL WIZARD
+   ═══════════════════════════════════════════════════════════ */
+.sell-wizard { max-width: 520px; margin: 0 auto; padding: 0 0 120px; }
+.sell-wizard-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 0;
+}
+.sell-wizard-back-btn {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: transparent; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--charcoal); transition: background 0.15s;
+}
+.sell-wizard-back-btn:hover { background: var(--sand); }
+.sell-wizard-logo {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px;
+  letter-spacing: -0.3px; color: var(--forest);
+}
+.sell-wizard-progress { padding: 16px 16px 4px; }
+.sell-progress-row { display: flex; align-items: center; gap: 4px; }
+.sell-progress-step {
+  display: flex; align-items: center; gap: 7px;
+  background: transparent; border: none; padding: 6px 2px;
+  color: inherit; font-family: 'DM Sans', sans-serif;
+}
+.sell-progress-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 12px; flex-shrink: 0;
+  transition: all 180ms ease;
+}
+.sell-progress-dot.active { background: var(--forest); color: var(--cream); }
+.sell-progress-dot.done   { background: var(--forest); color: var(--cream); }
+.sell-progress-dot.pending { background: transparent; border: 1.5px solid var(--border); color: var(--muted); }
+.sell-progress-label { font-size: 13px; font-weight: 500; color: var(--charcoal); }
+.sell-progress-label.active { font-weight: 600; }
+.sell-progress-label.pending { color: var(--muted); }
+.sell-progress-line { flex: 1; height: 1.5px; border-radius: 1px; margin: 0 2px; }
+.sell-wizard-body { padding: 4px 16px 0; }
+.sell-step-heading {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px;
+  line-height: 1.1; letter-spacing: -0.7px; margin: 14px 0 6px; color: var(--charcoal);
+}
+.sell-step-heading em { font-style: italic; color: var(--forest); }
+.sell-step-subtitle {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.5;
+  color: var(--muted); margin: 0 0 20px;
+}
+/* Drop zone */
+.sell-drop-zone {
+  border: 1.5px dashed var(--border); background: var(--sand);
+  border-radius: 18px; padding: 32px 20px;
+  text-align: center; cursor: pointer; transition: all 180ms ease;
+}
+.sell-drop-zone:hover, .sell-drop-zone.dragover {
+  border-color: var(--forest); background: rgba(42,61,46,0.04);
+}
+.sell-drop-icon {
+  width: 52px; height: 52px; border-radius: 14px; background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px; color: var(--forest);
+  box-shadow: 0 1px 3px rgba(42,61,46,0.1);
+}
+.sell-drop-title {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+  color: var(--charcoal); margin-bottom: 4px; letter-spacing: -0.2px;
+}
+.sell-drop-sub { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.sell-drop-badge {
+  display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px;
+  background: var(--cream); font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif;
+}
+/* AI button */
+.sell-ai-btn {
+  width: 100%; margin-top: 12px; padding: 13px 14px;
+  background: var(--forest); border: none; border-radius: 14px; color: var(--cream);
+  display: flex; align-items: center; gap: 11px; cursor: pointer; text-align: left;
+  transition: background 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.sell-ai-btn:hover { background: var(--forest-light); }
+.sell-ai-btn-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(245,240,232,0.12);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;
+}
+.sell-ai-btn-title {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
+  letter-spacing: -0.2px; color: var(--cream); margin-bottom: 2px;
+}
+.sell-ai-btn-sub { font-size: 12px; opacity: 0.75; line-height: 1.3; color: var(--cream); }
+.sell-ai-applied {
+  margin-top: 12px; padding: 11px 13px;
+  background: rgba(42,61,46,0.07); border-radius: 12px; border: 1px solid rgba(42,61,46,0.14);
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal);
+}
+.sell-ai-applied-icon {
+  width: 26px; height: 26px; border-radius: 8px;
+  background: var(--forest); color: var(--cream);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;
+}
+/* Photo grid header */
+.sell-photo-grid-header {
+  display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 8px;
+}
+.sell-photo-grid-title {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
+  color: var(--charcoal); letter-spacing: -0.2px;
+}
+.sell-photo-count { color: var(--muted); font-weight: 400; }
+.sell-photo-hint { font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+/* New preview grid style */
+.sell-preview-grid-new { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+.sell-preview-grid-new .img-preview-item {
+  border-radius: 12px !important; aspect-ratio: 1/1;
+}
+.sell-preview-grid-new .img-preview-item.primary {
+  outline: 2.5px solid var(--rust); outline-offset: 1px;
+}
+/* Step 2 form fields */
+.sell-field { margin-bottom: 14px; }
+.sell-field label {
+  display: block; margin-bottom: 5px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--charcoal); letter-spacing: -0.1px;
+}
+.sell-field label .req { color: var(--rust); margin-left: 2px; }
+.sell-field label .hint { font-weight: 400; color: var(--muted); font-size: 11px; margin-left: 4px; }
+.sell-field input,
+.sell-field select,
+.sell-field textarea {
+  width: 100%; padding: 11px 14px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--charcoal);
+  background: var(--cream); border: 1.5px solid var(--border);
+  border-radius: 12px; outline: none; box-sizing: border-box; transition: border-color 0.2s;
+}
+.sell-field input:focus,
+.sell-field select:focus,
+.sell-field textarea:focus { border-color: var(--forest); }
+.sell-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%238A8578' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+}
+.sell-field .ai-field { border-color: rgba(42,61,46,0.4) !important; box-shadow: 0 0 0 3px rgba(42,61,46,0.07); }
+.sell-field .suffix-wrap { position: relative; }
+.sell-field .suffix { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
+.sell-form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Summary card */
+.sell-summary-card {
+  margin-top: 16px; background: var(--forest);
+  border-radius: 18px; padding: 16px; color: var(--cream);
+  box-shadow: 0 8px 24px -8px rgba(42,61,46,0.3);
+}
+.sell-summary-label {
+  font-family: 'DM Sans', sans-serif; font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.65; margin-bottom: 10px;
+}
+.sell-summary-top { display: flex; gap: 12px; margin-bottom: 12px; }
+.sell-summary-thumb {
+  width: 68px; height: 68px; border-radius: 11px; overflow: hidden;
+  flex-shrink: 0; background: rgba(245,240,232,0.1);
+}
+.sell-summary-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+.sell-summary-title {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+  letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 3px;
+}
+.sell-summary-sub { font-family: 'DM Sans', sans-serif; font-size: 12px; opacity: 0.65; line-height: 1.4; }
+.sell-summary-price { font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; color: #f5d5a8; margin-top: 5px; letter-spacing: -0.3px; }
+.sell-summary-rows { border-top: 1px solid rgba(245,240,232,0.1); padding-top: 10px; display: grid; gap: 6px; }
+.sell-summary-row { display: flex; justify-content: space-between; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; }
+.sell-summary-row-key { opacity: 0.55; }
+.sell-summary-row-val { font-weight: 500; text-align: right; max-width: 60%; }
+/* Wizard footer */
+.sell-wizard-footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 10px 16px max(20px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--cream) 55%, transparent 100%);
+  z-index: 100;
+}
+.sell-wizard-cta {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; max-width: 520px; height: 52px; margin: 0 auto;
+  border-radius: 14px; border: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: -0.1px;
+  transition: all 180ms ease; cursor: pointer;
+}
+.sell-wizard-cta.enabled { background: var(--rust); color: var(--cream); box-shadow: 0 4px 14px -4px rgba(200,80,42,0.5); }
+.sell-wizard-cta.disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════════════════
    SELL PAGE (#/sell)
    ═══════════════════════════════════════════════════════════ */
 
