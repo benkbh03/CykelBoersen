@@ -1703,7 +1703,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .inbox-page-chat {
     position: fixed;
     inset: 0;
-    z-index: 2000;
+    z-index: 2100;
     background: #fff;
     max-height: none;
     border-radius: 0;
@@ -1712,7 +1712,10 @@ footer p { color: var(--muted); font-size: 0.82rem; }
     padding: 14px 16px;
   }
   .inbox-chat-back { display: flex !important; }
-  .inbox-chat-reply { padding: 12px 16px; }
+  .inbox-chat-reply {
+    padding: 12px 16px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
   .inbox-chat-messages { padding: 16px; }
   .inbox-page { padding: 0 16px 40px; }
   .inbox-page-title { font-size: 1.5rem; }
