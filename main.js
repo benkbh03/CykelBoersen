@@ -2407,22 +2407,39 @@ async function saveCurrentSearch() {
   const type   = document.getElementById('search-type').value;
   const city   = document.getElementById('search-city').value;
 
-  if (!search && !type && !city) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
+  // Include sidebar filter state
+  const fa = currentFilterArgs || {};
+  const hasFilters = search || type || city
+    || (fa.types?.length > 0)
+    || (fa.conditions?.length > 0)
+    || fa.minPrice || fa.maxPrice
+    || fa.sellerType
+    || (fa.wheelSizes?.length > 0);
 
-  // Lav et læsevenligt navn
-  const parts = [search, type, city].filter(Boolean);
-  const name  = parts.join(' · ') || 'Min søgning';
+  if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
+
+  // Build a readable name from all active filters
+  const parts = [];
+  if (search)                    parts.push(search);
+  if (type)                      parts.push(type);
+  if (fa.types?.length)          parts.push(...fa.types);
+  if (fa.sellerType === 'dealer')  parts.push('Forhandlere');
+  if (fa.sellerType === 'private') parts.push('Private');
+  if (fa.conditions?.length)     parts.push(...fa.conditions);
+  if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
+  if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
+  if (city)                      parts.push(city);
+  const name = parts.join(' · ') || 'Min søgning';
 
   const { error } = await supabase.from('saved_searches').insert({
     user_id: currentUser.id,
     name,
-    filters: { search, type, city },
+    filters: { search, type, city, ...fa },
   });
 
   if (error) { showToast('❌ Kunne ikke gemme søgning'); return; }
   showToast('🔔 Søgning gemt! Du finder den under "Søgninger" i din profil.');
 
-  // Fremhæv knappen kortvarigt
   const btn = document.getElementById('save-search-btn');
   if (btn) { btn.style.color = 'var(--rust)'; btn.style.borderColor = 'var(--rust)'; setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 2000); }
 }
