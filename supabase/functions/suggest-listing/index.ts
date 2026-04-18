@@ -9,8 +9,6 @@
 // Output: { suggestion: { brand, model, type, size, wheel_size, year, condition,
 //                         color, price, description } }
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") ?? "";
 
 const corsHeaders = {
@@ -51,7 +49,7 @@ Regler:
 - Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
 - Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.`;
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
