@@ -1952,6 +1952,7 @@ async function submitSellPage() {
       body: { bike: { id: newBike.id, brand: newBike.brand, model: newBike.model, type: newBike.type, city: newBike.city, price: newBike.price, condition: newBike.condition } },
     }).catch(() => {});
 
+    clearSellDraft();
     showListingSuccessModal(newBike);
   } finally {
     restore();
@@ -2777,7 +2778,7 @@ function buildBikeBodyHTML(b) {
   if (allImages.length === 0) {
     galleryHtml = `<div class="bike-detail-img"><span style="font-size:4rem">🚲</span></div>`;
   } else if (allImages.length === 1) {
-    galleryHtml = `<div class="bike-detail-img"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}" loading="lazy"></div>`;
+    galleryHtml = `<div class="bike-detail-img" style="cursor:zoom-in;" onclick="openLightbox(0)"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}" loading="lazy"></div>`;
   } else {
     const maxThumbs = 5;
     const visibleImages = allImages.slice(0, maxThumbs);
@@ -2793,7 +2794,7 @@ function buildBikeBodyHTML(b) {
       <div class="bike-gallery">
         <div class="gallery-main">
           <div class="gallery-main-bg" id="gallery-main-bg" style="background-image:url('${allImages[0].url}')"></div>
-          <img id="gallery-main-img" src="${allImages[0].url}" alt="${b.brand} ${b.model}">
+          <img id="gallery-main-img" src="${allImages[0].url}" alt="${b.brand} ${b.model}" onclick="openLightbox(window._galleryIndex || 0)">
           <button class="gallery-nav-btn gallery-prev" onclick="galleryNav(-1)" aria-label="Forrige billede">&#8249;</button>
           <button class="gallery-nav-btn gallery-next" onclick="galleryNav(1)" aria-label="Næste billede">&#8250;</button>
           <span class="gallery-counter" id="gallery-counter">1 / ${allImages.length}</span>
@@ -2866,6 +2867,14 @@ function buildBikeBodyHTML(b) {
     </div>` : ''}
     <div id="seller-other-listings" style="margin-top:28px;"></div>
     <div id="similar-listings" style="margin-top:24px;"></div>
+    ${!isOwner ? `
+    <div class="bike-sticky-bar" id="bike-sticky-bar">
+      <div class="bike-sticky-price">${b.price.toLocaleString('da-DK')} kr.</div>
+      <div class="bike-sticky-actions">
+        <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">✉️ Kontakt</button>
+        <button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">💰 Giv bud</button>
+      </div>
+    </div>` : ''}
   `,
     profile,
     allImages,
@@ -3206,6 +3215,118 @@ function renderSellPage() {
   if (typeSelect) {
     typeSelect.addEventListener('change', () => updateSellPriceSuggestion(typeSelect.value));
   }
+
+  // Auto-gem kladde i localStorage
+  initSellDraft();
+}
+
+const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
+const SELL_DRAFT_FIELDS = [
+  'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-wheel-size',
+  'sell-year', 'sell-condition', 'sell-city', 'sell-color', 'sell-desc',
+  'sell-price', 'sell-warranty',
+];
+
+function saveSellDraft() {
+  try {
+    const draft = {};
+    let hasAny = false;
+    SELL_DRAFT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.value != null && el.value !== '') {
+        draft[id] = el.value;
+        hasAny = true;
+      }
+    });
+    if (hasAny) {
+      draft._savedAt = Date.now();
+      localStorage.setItem(SELL_DRAFT_KEY, JSON.stringify(draft));
+    } else {
+      localStorage.removeItem(SELL_DRAFT_KEY);
+    }
+  } catch (_) {}
+}
+
+function clearSellDraft() {
+  try { localStorage.removeItem(SELL_DRAFT_KEY); } catch (_) {}
+  const banner = document.getElementById('sell-draft-banner');
+  if (banner) banner.remove();
+}
+
+function applySellDraft(draft) {
+  SELL_DRAFT_FIELDS.forEach(id => {
+    if (draft[id] != null) {
+      const el = document.getElementById(id);
+      if (el) el.value = draft[id];
+    }
+  });
+  const typeSelect = document.getElementById('sell-type');
+  if (typeSelect && typeSelect.value) updateSellPriceSuggestion(typeSelect.value);
+  showDraftSavedIndicator('Kladde gendannet');
+}
+
+function showDraftSavedIndicator(text) {
+  const ind = document.getElementById('sell-draft-indicator');
+  if (!ind) return;
+  ind.textContent = text || '✓ Kladde gemt';
+  ind.classList.add('show');
+  clearTimeout(ind._hideTimer);
+  ind._hideTimer = setTimeout(() => ind.classList.remove('show'), 1600);
+}
+
+function initSellDraft() {
+  let existing = null;
+  try {
+    const raw = localStorage.getItem(SELL_DRAFT_KEY);
+    if (raw) existing = JSON.parse(raw);
+  } catch (_) {}
+
+  // Tilføj kladde-indikator
+  const actions = document.querySelector('.sell-page-actions');
+  if (actions && !document.getElementById('sell-draft-indicator')) {
+    const ind = document.createElement('div');
+    ind.id = 'sell-draft-indicator';
+    ind.className = 'sell-draft-indicator';
+    ind.textContent = '✓ Kladde gemt';
+    actions.prepend(ind);
+  }
+
+  // Vis "gendan kladde"-banner hvis der er en gemt kladde
+  if (existing && existing._savedAt) {
+    const body = document.querySelector('.sell-page-body');
+    if (body && !document.getElementById('sell-draft-banner')) {
+      const minsAgo = Math.max(1, Math.round((Date.now() - existing._savedAt) / 60000));
+      const banner = document.createElement('div');
+      banner.id = 'sell-draft-banner';
+      banner.className = 'sell-draft-banner';
+      banner.innerHTML = `
+        <span>💾 Du har en gemt kladde fra ${minsAgo} min. siden.</span>
+        <div class="sell-draft-banner-actions">
+          <button type="button" class="sell-draft-restore">Gendan</button>
+          <button type="button" class="sell-draft-discard">Kassér</button>
+        </div>`;
+      body.prepend(banner);
+      banner.querySelector('.sell-draft-restore').onclick = () => {
+        applySellDraft(existing);
+        banner.remove();
+      };
+      banner.querySelector('.sell-draft-discard').onclick = () => {
+        clearSellDraft();
+      };
+    }
+  }
+
+  // Lyt på ændringer → debounce-gem
+  const debouncedSave = debounce(() => {
+    saveSellDraft();
+    showDraftSavedIndicator('✓ Kladde gemt');
+  }, 600);
+  SELL_DRAFT_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', debouncedSave);
+    el.addEventListener('change', debouncedSave);
+  });
 }
 
 async function updateSellPriceSuggestion(bikeType) {
@@ -4195,6 +4316,231 @@ function attachGallerySwipe() {
 window.galleryNav  = galleryNav;
 window.galleryGoto = galleryGoto;
 
+/* ── Fuldskærms lightbox med pinch-zoom og swipe ── */
+
+let _lb = {
+  scale: 1, tx: 0, ty: 0,
+  startDist: 0, startScale: 1,
+  startX: 0, startY: 0, startTx: 0, startTy: 0,
+  touchMode: null, // 'pan' | 'pinch' | 'swipe' | null
+  lastTap: 0,
+};
+
+function openLightbox(index) {
+  const images = window._galleryImages || [];
+  if (!images.length) return;
+  window._galleryIndex = ((index ?? window._galleryIndex ?? 0) + images.length) % images.length;
+  const modal = document.getElementById('lightbox-modal');
+  if (!modal) return;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lightboxShow(window._galleryIndex);
+  const hint = document.getElementById('lightbox-hint');
+  if (hint) {
+    hint.classList.remove('fade');
+    setTimeout(() => hint.classList.add('fade'), 2200);
+  }
+}
+
+function closeLightbox() {
+  const modal = document.getElementById('lightbox-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  lightboxResetZoom();
+  // Synkroniser galleri-visning med lightbox-index
+  galleryGoto(window._galleryIndex || 0);
+}
+
+function lightboxShow(index) {
+  const images = window._galleryImages || [];
+  if (!images.length) return;
+  window._galleryIndex = (index + images.length) % images.length;
+  const img = document.getElementById('lightbox-img');
+  const counter = document.getElementById('lightbox-counter');
+  if (img) img.src = images[window._galleryIndex];
+  if (counter) counter.textContent = `${window._galleryIndex + 1} / ${images.length}`;
+  lightboxResetZoom();
+}
+
+function lightboxNav(dir) {
+  lightboxShow((window._galleryIndex || 0) + dir);
+}
+
+function lightboxResetZoom() {
+  _lb.scale = 1; _lb.tx = 0; _lb.ty = 0;
+  const img = document.getElementById('lightbox-img');
+  if (img) img.style.transform = 'translate(0px, 0px) scale(1)';
+}
+
+function lightboxApplyTransform() {
+  const img = document.getElementById('lightbox-img');
+  if (!img) return;
+  img.style.transform = `translate(${_lb.tx}px, ${_lb.ty}px) scale(${_lb.scale})`;
+}
+
+function lightboxClampPan() {
+  const img = document.getElementById('lightbox-img');
+  const stage = document.getElementById('lightbox-stage');
+  if (!img || !stage) return;
+  const rect = stage.getBoundingClientRect();
+  const scaledW = img.clientWidth * _lb.scale;
+  const scaledH = img.clientHeight * _lb.scale;
+  const maxX = Math.max(0, (scaledW - rect.width) / 2);
+  const maxY = Math.max(0, (scaledH - rect.height) / 2);
+  _lb.tx = Math.max(-maxX, Math.min(maxX, _lb.tx));
+  _lb.ty = Math.max(-maxY, Math.min(maxY, _lb.ty));
+}
+
+function initLightboxGestures() {
+  const stage = document.getElementById('lightbox-stage');
+  const img = document.getElementById('lightbox-img');
+  const overlay = document.getElementById('lightbox-modal');
+  if (!stage || !img || !overlay || stage._gesturesAttached) return;
+  stage._gesturesAttached = true;
+
+  // Luk på klik på baggrund (ikke på billede/knapper), når ikke zoomet
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target === stage) {
+      if (_lb.scale === 1) closeLightbox();
+    }
+  });
+
+  // Dobbelt-klik (desktop) for zoom-toggle
+  img.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    if (_lb.scale === 1) {
+      _lb.scale = 2.5; _lb.tx = 0; _lb.ty = 0;
+    } else {
+      lightboxResetZoom();
+      return;
+    }
+    img.classList.add('dragging');
+    lightboxApplyTransform();
+    setTimeout(() => img.classList.remove('dragging'), 200);
+  });
+
+  // Mus-hjul til zoom
+  stage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.002;
+    const newScale = Math.max(1, Math.min(5, _lb.scale + delta * _lb.scale));
+    _lb.scale = newScale;
+    if (_lb.scale === 1) { _lb.tx = 0; _lb.ty = 0; }
+    else lightboxClampPan();
+    lightboxApplyTransform();
+  }, { passive: false });
+
+  // Mus-pan når zoomet
+  let mouseDown = false;
+  stage.addEventListener('mousedown', (e) => {
+    if (_lb.scale <= 1) return;
+    mouseDown = true;
+    _lb.startX = e.clientX; _lb.startY = e.clientY;
+    _lb.startTx = _lb.tx; _lb.startTy = _lb.ty;
+    img.classList.add('dragging');
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!mouseDown) return;
+    _lb.tx = _lb.startTx + (e.clientX - _lb.startX);
+    _lb.ty = _lb.startTy + (e.clientY - _lb.startY);
+    lightboxClampPan();
+    lightboxApplyTransform();
+  });
+  window.addEventListener('mouseup', () => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    img.classList.remove('dragging');
+  });
+
+  // Touch: pinch + pan + swipe + double-tap
+  stage.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      _lb.touchMode = 'pinch';
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      _lb.startDist = Math.hypot(dx, dy);
+      _lb.startScale = _lb.scale;
+      img.classList.add('dragging');
+    } else if (e.touches.length === 1) {
+      _lb.startX = e.touches[0].clientX;
+      _lb.startY = e.touches[0].clientY;
+      _lb.startTx = _lb.tx; _lb.startTy = _lb.ty;
+      _lb.touchMode = _lb.scale > 1 ? 'pan' : 'swipe';
+      // Double-tap detektion
+      const now = Date.now();
+      if (now - _lb.lastTap < 280) {
+        if (_lb.scale === 1) { _lb.scale = 2.5; _lb.tx = 0; _lb.ty = 0; }
+        else lightboxResetZoom();
+        img.classList.add('dragging');
+        lightboxApplyTransform();
+        setTimeout(() => img.classList.remove('dragging'), 200);
+        _lb.touchMode = null;
+      }
+      _lb.lastTap = now;
+    }
+  }, { passive: true });
+
+  stage.addEventListener('touchmove', (e) => {
+    if (_lb.touchMode === 'pinch' && e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const ratio = dist / (_lb.startDist || 1);
+      _lb.scale = Math.max(1, Math.min(5, _lb.startScale * ratio));
+      if (_lb.scale === 1) { _lb.tx = 0; _lb.ty = 0; }
+      else lightboxClampPan();
+      lightboxApplyTransform();
+      e.preventDefault();
+    } else if (_lb.touchMode === 'pan' && e.touches.length === 1) {
+      _lb.tx = _lb.startTx + (e.touches[0].clientX - _lb.startX);
+      _lb.ty = _lb.startTy + (e.touches[0].clientY - _lb.startY);
+      lightboxClampPan();
+      lightboxApplyTransform();
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  stage.addEventListener('touchend', (e) => {
+    if (_lb.touchMode === 'swipe' && e.changedTouches.length === 1) {
+      const diffX = _lb.startX - e.changedTouches[0].clientX;
+      const diffY = _lb.startY - e.changedTouches[0].clientY;
+      if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        lightboxNav(diffX > 0 ? 1 : -1);
+      } else if (diffY < -80 && Math.abs(diffY) > Math.abs(diffX)) {
+        // Træk ned → luk
+        closeLightbox();
+      }
+    }
+    img.classList.remove('dragging');
+    _lb.touchMode = null;
+  }, { passive: true });
+
+  // Klik på billedet lukker hvis ikke zoomet
+  img.addEventListener('click', (e) => {
+    if (_lb.scale === 1) {
+      e.stopPropagation();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initLightboxGestures);
+if (document.readyState !== 'loading') initLightboxGestures();
+
+// Escape lukker lightbox først (før andre modaler)
+document.addEventListener('keydown', (e) => {
+  const lb = document.getElementById('lightbox-modal');
+  if (!lb || !lb.classList.contains('open')) return;
+  if (e.key === 'Escape') { e.stopPropagation(); closeLightbox(); }
+  else if (e.key === 'ArrowLeft') lightboxNav(-1);
+  else if (e.key === 'ArrowRight') lightboxNav(1);
+}, true);
+
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
+window.lightboxNav = lightboxNav;
+
 function updateMeetMiddle(listingPrice) {
   const input = document.getElementById('bid-amount');
   const el    = document.getElementById('meet-middle');
@@ -4233,6 +4579,31 @@ function toggleMessageBox() {
   box.style.display = box.style.display === 'block' ? 'none' : 'block';
   if (box.style.display === 'block') document.getElementById('message-text').focus();
 }
+
+function stickyBarAction(kind) {
+  if (!currentUser) { openLoginModal(); return; }
+  const targetId = kind === 'bid' ? 'bid-box' : 'message-box';
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  if (kind === 'bid') {
+    const box = document.getElementById('bid-box');
+    const msgBox = document.getElementById('message-box');
+    if (msgBox) msgBox.style.display = 'none';
+    box.style.display = 'block';
+  } else {
+    const box = document.getElementById('message-box');
+    const bidBox = document.getElementById('bid-box');
+    if (bidBox) bidBox.style.display = 'none';
+    box.style.display = 'block';
+  }
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => {
+    const focusId = kind === 'bid' ? 'bid-amount' : 'message-text';
+    const el = document.getElementById(focusId);
+    if (el) el.focus({ preventScroll: true });
+  }, 320);
+}
+window.stickyBarAction = stickyBarAction;
 
 async function sendMessage(bikeId, receiverId) {
   if (!currentUser) { showToast('⚠️ Log ind for at sende beskeder'); return; }
