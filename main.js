@@ -3085,6 +3085,7 @@ function renderSellPage() {
     return;
   }
   showDetailView();
+  document.body.classList.add('on-sell-page');
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Opret annonce – Cykelbørsen';
   updateSEOMeta('Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.', '/sell');
@@ -4492,6 +4493,7 @@ function switchMyProfileTab(tab) {
 
 // SPA navigation helper — pushState + route handling
 function navigateTo(path) {
+  document.body.classList.remove('on-sell-page');
   history.pushState({}, '', path);
   handleRoute();
 }
