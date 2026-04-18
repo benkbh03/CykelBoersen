@@ -16,6 +16,11 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* Forhindrer iOS Safari auto-zoom ved fokus på inputs (sker når font-size < 16px) */
+@media (max-width: 768px) {
+  input, select, textarea { font-size: 16px !important; }
+}
+
 /* Skjult tekst kun for skærmlæsere */
 .sr-only {
   position: absolute;
