@@ -2688,7 +2688,7 @@ function showOnboardingBanner() {
       <p class="onboarding-sub">Hvad vil du gøre?</p>
       <div class="onboarding-actions">
         <button class="onboarding-btn onboarding-btn--primary" onclick="dismissOnboarding();openModal()">+ Sæt cykel til salg</button>
-        <button class="onboarding-btn" onclick="dismissOnboarding();document.querySelector('.hero-stats-bar')?.scrollIntoView({behavior:'smooth'})">Søg efter cykler</button>
+        <button class="onboarding-btn" onclick="dismissOnboarding();document.getElementById('search-input')?.focus();">Søg efter cykler</button>
       </div>
     </div>
   `;
@@ -2751,15 +2751,10 @@ function dismissOnboarding() {
 function showSection(section) {
   const onDetailPage = document.getElementById('page-layout')?.style.display !== 'none';
   if (onDetailPage) {
-    // Vi er på en detail/profil-side — navigér hjem først, scroll derefter
     navigateTo('/');
-    if (section === 'dealers') {
-      setTimeout(() => document.querySelector('.dealer-strip')?.scrollIntoView({ behavior: 'smooth' }), 80);
-    }
     return;
   }
-  if (section === 'dealers') document.querySelector('.dealer-strip').scrollIntoView({ behavior: 'smooth' });
-  else document.querySelector('.main').scrollIntoView({ behavior: 'smooth' });
+  document.querySelector('.main')?.scrollIntoView({ behavior: 'smooth' });
 }
 
 
@@ -4524,6 +4519,7 @@ function handleRoute() {
   const sellMatch    = path === '/sell';
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
+  const dealersMatch = path === '/forhandlere';
   const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek' }[path];
   if (staticMatch) {
     closeAllModals();
@@ -4533,6 +4529,10 @@ function handleRoute() {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     renderBecomeDealerPage();
+  } else if (dealersMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderDealersPage();
   } else if (inboxMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -6237,6 +6237,65 @@ function selectDealerPlan(btn) {
   btn.classList.add('selected');
 }
 
+async function renderDealersPage() {
+  showDetailView();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  document.title = 'Forhandlere – Cykelbørsen';
+  updateSEOMeta('Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.', '/forhandlere');
+
+  document.getElementById('detail-view').innerHTML = `
+    <div class="dealers-page">
+      <div class="dealers-page-header">
+        <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
+        <h1 class="dealers-page-title">Autoriserede forhandlere</h1>
+        <p class="dealers-page-subtitle">Køb med tryghed fra verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
+        <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">🏪 Bliv forhandler</button>
+      </div>
+      <div id="dealers-page-grid" class="dealer-cards">
+        <p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Henter forhandlere...</p>
+      </div>
+    </div>`;
+
+  const [dealerRes, bikeRes] = await Promise.all([
+    supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+    supabase.from('bikes').select('user_id').eq('is_active', true),
+  ]);
+
+  const grid = document.getElementById('dealers-page-grid');
+  if (!grid) return;
+
+  const dealers  = dealerRes.data  || [];
+  const bikeRows = bikeRes.data    || [];
+
+  if (dealerRes.error || dealers.length === 0) {
+    grid.className = 'dealer-cards dealer-empty-state';
+    grid.innerHTML = `
+      <div class="dealer-empty-card">
+        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+        <h3>Ingen forhandlere endnu</h3>
+        <p>Vær den første forhandler på Cykelbørsen og nå tusindvis af cykelkøbere.</p>
+        <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik →</button>
+      </div>`;
+    return;
+  }
+
+  const dealerIdSet = new Set(dealers.map(d => d.id));
+  const countMap = {};
+  for (const b of bikeRows) {
+    if (dealerIdSet.has(b.user_id)) {
+      countMap[b.user_id] = (countMap[b.user_id] || 0) + 1;
+    }
+  }
+
+  dealers.sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
+
+  grid.className = 'dealer-cards';
+  grid.innerHTML = dealers.map(d => buildDealerCard(d, countMap, false)).join('');
+
+  window._allDealers     = dealers;
+  window._dealerCountMap = countMap;
+}
+
 function renderBecomeDealerPage() {
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
@@ -6437,6 +6496,7 @@ window.switchMyProfileTab  = switchMyProfileTab;
 window.renderBikePage     = renderBikePage;
 window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
+window.renderDealersPage       = renderDealersPage;
 window.showDetailView     = showDetailView;
 window.showListingView    = showListingView;
 window.closeBikeModal     = closeBikeModal;
@@ -6849,7 +6909,7 @@ var footerContent = {
       <div style="background:var(--sand);border-radius:12px;padding:20px 24px;margin-top:28px;border:1px solid var(--border);">
         <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Klar til at købe?</h3>
         <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen — Danmarks dedikerede markedsplads for brugte cykler.</p>
-        <button onclick="navigateTo('/');document.querySelector('.hero-stats-bar')?.scrollIntoView({behavior:'smooth'})" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Se alle cykler</button>
+        <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Se alle cykler</button>
       </div>
     `
   },
