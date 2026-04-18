@@ -910,7 +910,7 @@ nav {
 
 /* ── FOOTER ── */
 footer { background: var(--charcoal); padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-@media (max-width: 999px) { body.on-sell-page footer { display: none; } }
+@media (max-width: 999px) { body.on-sell-page footer { display: none !important; } }
 footer .logo { font-size: 1.3rem; }
 footer p { color: var(--muted); font-size: 0.82rem; }
 .footer-links { display: flex; gap: 24px; background: transparent; padding: 0; position: static; }
