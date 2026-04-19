@@ -4558,6 +4558,7 @@ function handleRoute() {
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
   const dealersMatch = path === '/forhandlere';
+  const mapPageMatch = path === '/kort';
   const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek' }[path];
   if (staticMatch) {
     closeAllModals();
@@ -4571,6 +4572,10 @@ function handleRoute() {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     renderDealersPage();
+  } else if (mapPageMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    renderMapPage();
   } else if (inboxMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -6669,6 +6674,9 @@ window.renderBikePage     = renderBikePage;
 window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
 window.renderDealersPage       = renderDealersPage;
+window.renderMapPage           = renderMapPage;
+window.toggleMapNearMe         = toggleMapNearMe;
+window.resetMapFilters         = resetMapFilters;
 window.splitCardClick          = splitCardClick;
 window.toggleSplitList         = toggleSplitList;
 window.toggleDealerGPS        = toggleDealerGPS;
@@ -7859,31 +7867,15 @@ function setView(view) {
   currentView = view;
   var listGrid   = document.getElementById('listings-grid');
   var mapDiv     = document.getElementById('listings-map');
-  var splitDiv   = document.getElementById('browse-split');
-  var mainDiv    = document.querySelector('.main');
   var btnList    = document.getElementById('btn-list-view');
-  var btnSplit   = document.getElementById('btn-split-view');
 
-  // Nulstil alle knap-tilstande
-  [btnList, btnSplit].forEach(b => b && b.classList.remove('active'));
+  if (btnList) btnList.classList.remove('active');
 
-  if (view === 'split') {
-    if (mainDiv)  mainDiv.style.display  = 'none';
-    if (splitDiv) { splitDiv.style.display = 'flex'; splitDiv.removeAttribute('aria-hidden'); }
-    if (mapDiv)   mapDiv.style.display   = 'none';
-    if (listGrid) listGrid.style.display = 'none';
-    if (btnSplit) btnSplit.classList.add('active');
-    initSplitMap();
-  } else if (view === 'map') {
-    if (mainDiv)  mainDiv.style.display  = '';
-    if (splitDiv) { splitDiv.style.display = 'none'; splitDiv.setAttribute('aria-hidden', 'true'); }
+  if (view === 'map') {
     if (listGrid) listGrid.style.display = 'none';
     if (mapDiv)   mapDiv.style.display   = 'block';
-    if (btnList)  btnList.classList.remove('active');
     initMap();
   } else {
-    if (mainDiv)  mainDiv.style.display  = '';
-    if (splitDiv) { splitDiv.style.display = 'none'; splitDiv.setAttribute('aria-hidden', 'true'); }
     if (mapDiv)   mapDiv.style.display   = 'none';
     if (listGrid) listGrid.style.display = '';
     if (btnList)  btnList.classList.add('active');
@@ -7891,68 +7883,272 @@ function setView(view) {
 }
 
 /* ─────────────────────────────────────────────────────────
-   SPLIT-KORTVISNING
+   KORTVISNING (/kort)
    ───────────────────────────────────────────────────────── */
 
-async function initSplitMap() {
-  const cardsContainer = document.getElementById('split-cards-container');
-  const countEl        = document.getElementById('split-count');
-  const mapPanel       = document.getElementById('split-map-panel');
-  if (!cardsContainer || !mapPanel) return;
+// State for /kort-siden
+var _mapPageBikes         = [];   // Rå annoncer fra DB (op til MAP_PAGE_LIMIT)
+var _mapPageGeocoded      = null; // Map<bikeId, { coords, precise }>
+var _mapNearMeCoords      = null;
+var _mapFilterDebounce    = null;
+const MAP_PAGE_LIMIT      = 500;
 
-  cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);font-size:0.88rem;">Henter annoncer…</p>';
+async function renderMapPage() {
+  showDetailView();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  document.title = 'Kortvisning – Cykelbørsen';
+  updateSEOMeta('Find brugte cykler på kort. Se afstand til forhandlere og private sælgere i hele Danmark.', '/kort');
 
-  // Hent annoncer
-  const { data: bikes, error } = await supabase
+  // Nulstil kort-state (DOM genoprettes)
+  splitMapInstance  = null;
+  splitClusterGroup = null;
+  splitMarkerMap    = {};
+  _splitListVisible = true;
+  _mapPageBikes     = [];
+  _mapPageGeocoded  = null;
+  _mapNearMeCoords  = null;
+
+  document.getElementById('detail-view').innerHTML = `
+    <div class="map-page">
+      <div class="map-page-header">
+        <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
+        <h1 class="map-page-title">Kortvisning</h1>
+        <p class="map-page-subtitle">Se alle cykler på kortet · forhandlere har præcis placering · private er ca. by-center</p>
+      </div>
+      <div class="map-page-filters" role="search">
+        <input type="search" id="map-search" placeholder="Søg mærke, model..." class="map-filter-input" aria-label="Søg">
+        <select id="map-seller-type" class="map-filter-sel" aria-label="Sælgertype">
+          <option value="all">Alle sælgere</option>
+          <option value="dealer">🏪 Kun forhandlere</option>
+          <option value="private">👤 Kun private</option>
+        </select>
+        <select id="map-bike-type" class="map-filter-sel" aria-label="Cykeltype">
+          <option value="">Alle cykeltyper</option>
+          <option>Racercykel</option>
+          <option>Mountainbike</option>
+          <option>El-cykel</option>
+          <option>Citybike</option>
+          <option>Ladcykel</option>
+          <option>Børnecykel</option>
+          <option>Gravel</option>
+        </select>
+        <div class="map-filter-price">
+          <input type="number" id="map-price-min" placeholder="Min kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Min pris">
+          <span class="map-filter-sep">–</span>
+          <input type="number" id="map-price-max" placeholder="Max kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Max pris">
+        </div>
+        <button class="map-near-btn" id="map-near-btn" onclick="toggleMapNearMe()" aria-pressed="false">📍 Nær mig</button>
+        <select id="map-radius" class="map-filter-sel" aria-label="Radius" disabled>
+          <option value="5">5 km</option>
+          <option value="10">10 km</option>
+          <option value="25" selected>25 km</option>
+          <option value="50">50 km</option>
+          <option value="100">100 km</option>
+          <option value="">Hele landet</option>
+        </select>
+        <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">✕ Nulstil</button>
+      </div>
+      <div id="browse-split" class="map-page-split">
+        <div id="split-list-panel">
+          <div class="split-list-header">
+            <span id="split-count" style="font-size:0.85rem;color:var(--muted);">Henter annoncer…</span>
+            <button class="split-toggle-list-btn" id="split-toggle-btn" onclick="toggleSplitList()" title="Skjul liste">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="13 4 6 10 13 16"/></svg>
+              Skjul liste
+            </button>
+          </div>
+          <div id="split-cards-container"></div>
+        </div>
+        <div id="split-map-panel"></div>
+      </div>
+    </div>`;
+
+  // Filter-events (debounced) — genbruger applyMapFilters
+  const debounced = debounce(applyMapFilters, 220);
+  ['map-search', 'map-price-min', 'map-price-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', debounced);
+  });
+  ['map-seller-type', 'map-bike-type', 'map-radius'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', applyMapFilters);
+  });
+
+  await loadMapPageBikes();
+  await initSplitMap();
+}
+
+async function loadMapPageBikes() {
+  const { data, error } = await supabase
     .from('bikes')
     .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles(name, seller_type, shop_name, verified, address, avatar_url), bike_images(url, is_primary)')
     .eq('is_active', true)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(MAP_PAGE_LIMIT);
+  _mapPageBikes = (!error && data) ? data : [];
+}
 
-  if (error || !bikes || bikes.length === 0) {
+function getMapFilters() {
+  return {
+    q:       (document.getElementById('map-search')?.value || '').trim().toLowerCase(),
+    seller:  document.getElementById('map-seller-type')?.value || 'all',
+    type:    document.getElementById('map-bike-type')?.value || '',
+    priceMin: parseInt(document.getElementById('map-price-min')?.value, 10) || null,
+    priceMax: parseInt(document.getElementById('map-price-max')?.value, 10) || null,
+    radius:   _mapNearMeCoords ? (parseInt(document.getElementById('map-radius')?.value, 10) || null) : null,
+    nearCoords: _mapNearMeCoords,
+  };
+}
+
+function filterMapBikes() {
+  const f = getMapFilters();
+  return _mapPageBikes.filter(b => {
+    if (f.q) {
+      const hay = ((b.brand || '') + ' ' + (b.model || '') + ' ' + (b.type || '') + ' ' + (b.city || '')).toLowerCase();
+      if (!hay.includes(f.q)) return false;
+    }
+    if (f.seller !== 'all') {
+      const st = (b.profiles && b.profiles.seller_type) || 'private';
+      if (f.seller !== st) return false;
+    }
+    if (f.type && b.type !== f.type) return false;
+    if (f.priceMin != null && b.price < f.priceMin) return false;
+    if (f.priceMax != null && b.price > f.priceMax) return false;
+    if (f.nearCoords && f.radius && _mapPageGeocoded) {
+      const g = _mapPageGeocoded.get(b.id);
+      if (!g) return false;
+      const dist = haversineKm(f.nearCoords, g.coords);
+      if (dist > f.radius) return false;
+    }
+    return true;
+  });
+}
+
+function applyMapFilters() {
+  if (!splitMapInstance) return;
+  const filtered = filterMapBikes();
+  const cardsContainer = document.getElementById('split-cards-container');
+  const countEl        = document.getElementById('split-count');
+
+  if (countEl) countEl.textContent = filtered.length + (filtered.length === 1 ? ' annonce' : ' annoncer');
+
+  if (filtered.length === 0) {
+    cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);font-size:0.88rem;">Ingen annoncer matcher filtrene.</p>';
+  } else {
+    const f = getMapFilters();
+    let list = filtered;
+    if (f.nearCoords && _mapPageGeocoded) {
+      list = [...filtered].sort((a, b) => {
+        const ga = _mapPageGeocoded.get(a.id), gb = _mapPageGeocoded.get(b.id);
+        if (!ga) return 1;
+        if (!gb) return -1;
+        return haversineKm(f.nearCoords, ga.coords) - haversineKm(f.nearCoords, gb.coords);
+      });
+    }
+    renderSplitCards(list, cardsContainer);
+  }
+
+  // Vis kun filtrerede markører
+  const visibleIds = new Set(filtered.map(b => b.id));
+  splitClusterGroup.clearLayers();
+  Object.keys(splitMarkerMap).forEach(id => {
+    if (visibleIds.has(id)) splitClusterGroup.addLayer(splitMarkerMap[id].marker);
+  });
+
+  if (visibleIds.size > 0) {
+    try { splitMapInstance.fitBounds(splitClusterGroup.getBounds().pad(0.1)); } catch (e) {}
+  }
+}
+
+function resetMapFilters() {
+  const ids = ['map-search', 'map-price-min', 'map-price-max'];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const st = document.getElementById('map-seller-type'); if (st) st.value = 'all';
+  const bt = document.getElementById('map-bike-type');   if (bt) bt.value = '';
+  const rd = document.getElementById('map-radius');      if (rd) rd.value = '25';
+  _mapNearMeCoords = null;
+  const nb = document.getElementById('map-near-btn');
+  if (nb) { nb.classList.remove('active'); nb.setAttribute('aria-pressed', 'false'); nb.textContent = '📍 Nær mig'; }
+  const radiusSel = document.getElementById('map-radius'); if (radiusSel) radiusSel.disabled = true;
+  applyMapFilters();
+}
+
+async function toggleMapNearMe() {
+  const btn = document.getElementById('map-near-btn');
+  const radiusSel = document.getElementById('map-radius');
+  if (_mapNearMeCoords) {
+    _mapNearMeCoords = null;
+    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.textContent = '📍 Nær mig'; }
+    if (radiusSel) radiusSel.disabled = true;
+    applyMapFilters();
+    return;
+  }
+  if (!navigator.geolocation) {
+    showToast('Din browser understøtter ikke GPS'); return;
+  }
+  if (btn) btn.textContent = '📍 Henter...';
+  try {
+    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000, enableHighAccuracy: true }));
+    _mapNearMeCoords = [pos.coords.latitude, pos.coords.longitude];
+    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.textContent = '📍 Nær mig (aktiv)'; }
+    if (radiusSel) radiusSel.disabled = false;
+    // Centrer kortet på brugerens position
+    if (splitMapInstance) splitMapInstance.setView(_mapNearMeCoords, 11);
+    applyMapFilters();
+  } catch (e) {
+    if (btn) btn.textContent = '📍 Nær mig';
+    showToast('Kunne ikke hente din position');
+  }
+}
+
+async function initSplitMap() {
+  const cardsContainer = document.getElementById('split-cards-container');
+  const mapPanel       = document.getElementById('split-map-panel');
+  if (!cardsContainer || !mapPanel) return;
+
+  const bikes = _mapPageBikes;
+
+  if (!bikes || bikes.length === 0) {
     cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);">Ingen annoncer fundet.</p>';
+    const countEl = document.getElementById('split-count');
+    if (countEl) countEl.textContent = '0 annoncer';
     return;
   }
 
+  // Init Leaflet-kort på den nye DOM-node
+  splitMapInstance = L.map('split-map-panel', { zoomControl: true }).setView([56.0, 10.2], 7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org">OpenStreetMap</a>',
+    maxZoom: 18,
+  }).addTo(splitMapInstance);
+
+  splitClusterGroup = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 50,
+    iconCreateFunction: function(cluster) {
+      return L.divIcon({
+        html: '<div class="split-cluster">' + cluster.getChildCount() + '</div>',
+        className: '',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+    },
+  });
+  splitMapInstance.addLayer(splitClusterGroup);
+  splitMarkerMap = {};
+  _mapPageGeocoded = new Map();
+
+  // Initial render før geocoding (brugeren får noget at kigge på med det samme)
+  renderSplitCards(bikes, cardsContainer);
+  const countEl = document.getElementById('split-count');
   if (countEl) countEl.textContent = bikes.length + ' annoncer';
 
-  // Render kompakte kort
-  renderSplitCards(bikes, cardsContainer);
-
-  // Init kort
-  if (!splitMapInstance) {
-    splitMapInstance = L.map('split-map-panel', { zoomControl: true }).setView([56.0, 10.2], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org">OpenStreetMap</a>',
-      maxZoom: 18,
-    }).addTo(splitMapInstance);
-  }
-
-  // Cluster-gruppe
-  if (!splitClusterGroup) {
-    splitClusterGroup = L.markerClusterGroup({
-      showCoverageOnHover: false,
-      maxClusterRadius: 50,
-      iconCreateFunction: function(cluster) {
-        return L.divIcon({
-          html: '<div class="split-cluster">' + cluster.getChildCount() + '</div>',
-          className: '',
-          iconSize: [40, 40],
-          iconAnchor: [20, 20],
-        });
-      },
-    });
-    splitMapInstance.addLayer(splitClusterGroup);
-  } else {
-    splitClusterGroup.clearLayers();
-  }
-
-  splitMarkerMap = {};
-
-  // Geokod + tilføj markører
-  const promises = bikes
-    .filter(b => b.city)
-    .map(async b => {
+  // Geokod i batches for at undgå at oversvømme DAWA-API'et
+  const GEO_BATCH = 10;
+  const toGeocode = bikes.filter(b => b.city);
+  for (let i = 0; i < toGeocode.length; i += GEO_BATCH) {
+    const batch = toGeocode.slice(i, i + GEO_BATCH);
+    await Promise.all(batch.map(async b => {
       const profile  = b.profiles || {};
       const isDealer = profile.seller_type === 'dealer';
       const hasAddr  = isDealer && profile.address && profile.address.trim();
@@ -7966,10 +8162,11 @@ async function initSplitMap() {
       if (!coords) coords = await geocodeCity(b.city);
       if (!coords) return;
 
-      // Private sælgere: by-centrum med jitter så pins ikke stakker
       const jitter = precise ? 0.0001 : 0.003;
       const lat = coords[0] + (Math.random() - 0.5) * jitter;
       const lng = coords[1] + (Math.random() - 0.5) * jitter;
+
+      _mapPageGeocoded.set(b.id, { coords: [lat, lng], precise });
 
       const icon = L.divIcon({
         html: '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
@@ -7986,7 +8183,7 @@ async function initSplitMap() {
         + (primaryImg ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">' : '')
         + '<div class="split-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
         + '<div class="split-popup-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
-        + '<div class="split-popup-meta">' + esc(b.type) + ' · ' + esc(b.condition) + '</div>'
+        + '<div class="split-popup-meta">' + esc(b.type || '') + (b.condition ? ' · ' + esc(b.condition) : '') + '</div>'
         + '<div class="split-popup-seller">' + (isDealer ? '🏪' : '👤') + ' ' + esc(sellerName || 'Ukendt') + ' · 📍 ' + esc(b.city) + (precise ? '' : ' <span style="color:var(--muted);font-size:0.68rem;">(ca.)</span>') + '</div>'
         + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce →</button>'
         + '</div>';
@@ -8000,17 +8197,16 @@ async function initSplitMap() {
 
       splitMarkerMap[b.id] = { marker, lat, lng };
       splitClusterGroup.addLayer(marker);
-    });
-
-  await Promise.all(promises);
+    }));
+  }
 
   // Zoom til alle markører
   if (Object.keys(splitMarkerMap).length > 0) {
-    splitMapInstance.fitBounds(splitClusterGroup.getBounds().pad(0.08));
+    try { splitMapInstance.fitBounds(splitClusterGroup.getBounds().pad(0.08)); } catch(e) {}
   }
 
-  // Nødvendigt efter layout-ændring
   setTimeout(() => splitMapInstance && splitMapInstance.invalidateSize(), 150);
+  applyMapFilters();
 }
 
 function renderSplitCards(bikes, container) {
