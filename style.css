@@ -606,12 +606,27 @@ nav {
 .btn-become-dealer:hover { background: var(--rust-light); }
 .dealer-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 .dealer-card {
-  background: var(--cream);
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px;
-  transition: background 0.2s, box-shadow 0.2s;
+  border-radius: 14px;
+  padding: 22px 20px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(42,61,46,0.06);
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
 }
-.dealer-card:hover { background: var(--sand); box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+.dealer-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--forest) 0%, var(--rust) 100%);
+}
+.dealer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(42,61,46,0.12);
+  border-color: var(--forest);
+}
 .dealer-logo { font-size: 2rem; margin-bottom: 10px; }
 .dealer-logo-circle {
   width: 52px; height: 52px; border-radius: 50%;
