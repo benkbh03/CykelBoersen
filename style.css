@@ -4668,8 +4668,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 
 .split-card-img {
-  width: 100px;
-  min-height: 90px;
+  width: 110px;
+  min-height: 95px;
   flex-shrink: 0;
   background: var(--sand);
   overflow: hidden;
@@ -4680,7 +4680,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .split-card-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 4px;
 }
 .split-card-img-placeholder {
   font-size: 2rem;
@@ -4810,8 +4811,9 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .split-popup-img {
   width: 100%;
-  height: 110px;
-  object-fit: cover;
+  height: 160px;
+  object-fit: contain;
+  background: var(--sand);
   border-radius: 6px;
   margin-bottom: 8px;
   display: block;
