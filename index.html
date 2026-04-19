@@ -313,7 +313,7 @@
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="view-toggle active" id="btn-list-view" onclick="setView('list')" aria-label="Skift til listevisning" aria-pressed="true">☰</button>
-          <button class="view-toggle" id="btn-split-view" onclick="setView('split')" aria-label="Skift til kort + liste" aria-pressed="false" title="Kortvisning med liste">
+          <button class="view-toggle" id="btn-map-page" onclick="navigateTo('/kort')" aria-label="Åbn kortvisning" title="Kortvisning med liste">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15"><rect x="1" y="3" width="7" height="14" rx="1.5"/><rect x="11" y="3" width="8" height="14" rx="1.5"/></svg>
           </button>
           <label for="sort-select" class="sr-only">Sorter annoncer</label>
@@ -328,21 +328,6 @@
       <div id="listings-map" style="display:none;height:600px;border-radius:14px;overflow:hidden;border:1px solid var(--border);"></div>
     </div>
 
-  </div>
-
-  <!-- ── KORTVISNING MED LISTE (split layout) ── -->
-  <div id="browse-split" style="display:none;" aria-hidden="true">
-    <div id="split-list-panel">
-      <div class="split-list-header">
-        <span id="split-count" style="font-size:0.85rem;color:var(--muted);">Henter annoncer…</span>
-        <button class="split-toggle-list-btn" id="split-toggle-btn" onclick="toggleSplitList()" title="Skjul liste">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="13 4 6 10 13 16"/></svg>
-          Skjul liste
-        </button>
-      </div>
-      <div id="split-cards-container"></div>
-    </div>
-    <div id="split-map-panel"></div>
   </div>
 
   <!-- ── SÅDAN VIRKER DET ── -->
