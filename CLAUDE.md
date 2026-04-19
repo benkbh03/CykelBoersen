@@ -6,9 +6,9 @@ Danmarks dedikerede markedsplads for køb og salg af brugte cykler. Single-page 
 
 ```
 CykelBoersen/
-├── index.html          # Al HTML og modal-markup (~1180 linjer)
-├── main.js             # Al applogik (~7100+ linjer vanilla JS)
-├── style.css           # Al styling (~3500 linjer)
+├── index.html          # Al HTML og modal-markup (~1175 linjer)
+├── main.js             # Al applogik (~7600+ linjer vanilla JS)
+├── style.css           # Al styling (~3600 linjer)
 ├── CNAME               # GitHub Pages domæne (xn--cykelbrsen-5cb.dk)
 ├── _redirects          # SPA routing: /* → /index.html 200
 ├── robots.txt          # Tillader alle crawlers + sitemap-link
@@ -71,12 +71,25 @@ De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map
 
 ### Routing (pathname-baseret)
 - `navigateTo(path)` → `history.pushState`, derefter `handleRoute()`
-- `handleRoute()` læser `location.pathname` og ruter til `renderBikePage`, `renderUserProfilePage`, `renderDealerProfilePage`, `renderMyProfilePage`, `renderSellPage`, `renderBecomeDealerPage` m.fl.
+- `handleRoute()` læser `location.pathname` og ruter til `renderBikePage`, `renderUserProfilePage`, `renderDealerProfilePage`, `renderMyProfilePage`, `renderSellPage`, `renderBecomeDealerPage`, `renderDealersPage` m.fl.
 - Backward-compat: gamle hash-URLs `#/bike/123` konverteres til `/bike/123`
 - `?bike=ID` i query → auto-åbner bike-modal
 - `?inbox=true` → auto-åbner indbakke
 - Supabase hash params: `type=signup` (bekræft email) og `type=recovery` (reset password)
 - Stripe returnerer `?dealer_success=true` eller `?dealer_cancel=true`
+
+### Top-navigation (simplificeret)
+- Nav-links: **Forhandlere** (→ `/forhandlere`) + **+ Sæt til salg** + inbox + avatar
+- `Annoncer`- og `Om os`-links er fjernet: forsiden viser annoncer direkte, Om os ligger i footer
+- `/forhandlere` er en dedikeret side (`renderDealersPage()`) med GPS-afstand, rating og sort
+
+### Forhandler-side (`/forhandlere`)
+- `renderDealersPage()` henter forhandlere + bikes + reviews parallelt
+- State i `_dealersPageData` = `[{ dealer, bikeCount, avgRating, ratingCount, distKm }]`
+- `toggleDealerGPS()` — henter brugerens position, geokoder alle forhandlere (præcis adresse via `geocodeAddress`, by-fallback via `geocodeCity`), auto-skifter sortering til "Tættest"
+- `sortAndRenderDealers()` — sort options: Flest cykler | Tættest | Bedste rating
+- `buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm)` — kort med distance-badge, stjerner og Google Maps-chip
+- Kortene har en forest→rust gradient-stribe i toppen
 
 ### XSS-sikkerhed
 Brug ALTID `esc()` til al bruger-genereret tekst før den sættes i HTML:
@@ -147,6 +160,7 @@ supabase.functions.invoke('notify-message', {
 - `activeThread` / `activeInboxThread` — aktiv beskedtråd-kontekst
 - `bikesOffset`, `filterOffset`, `currentFilters`, `currentFilterArgs` — paginering og aktuelt filter-state
 - `userGeoCoords`, `activeRadius` — GPS-position og "nær mig"-radius
+- `_dealersPageData`, `_dealerGPSActive`, `_dealerGPSCoords` — state for `/forhandlere`-siden
 - `selectedFiles`, `editNewFiles`, `editExistingImgs` — upload-state for create/edit modaler
 - `chatHistory`, `chatOpen` — support-chat widget state
 - `askedAvailableSet` — bikes hvor bruger allerede har spurgt "er den stadig til salg?"
@@ -174,8 +188,16 @@ Eksporter er samlet i blokke omkring linje 4184, 5433-5537, 5829-5838 og 6350-63
 ### Database-queries
 - `loadBikes()` bruger `.eq('is_active', true)` — henter kun aktive annoncer
 - Brug specifikke `.select()` felter i stedet for `select('*')` for at reducere data
-- `loadBikesWithFilters()` og `loadBikes()` skal have identiske `profiles(...)` felter inkl. `verified, id_verified, email_verified, last_seen`
+- `loadBikesWithFilters()` og `loadBikes()` skal have identiske `profiles(...)` felter inkl. `verified, id_verified, email_verified, last_seen, address` (address bruges til præcis GPS-distance for forhandlere)
 - `loadInitialData()` kører `loadDealers` + `updateFilterCounts` parallelt (2 queries i stedet for 4)
+
+### Geocoding og "Nær mig"-filter
+- `geocodeCity(city)` — DAWA `/steder` API, by-center. Cache i `_geocodeCache` localStorage
+- `geocodeAddress(address, city)` — DAWA `/datavask/adresser` for præcis koordinat. Bruges til forhandler-adresser
+- Bike-cards får data-attributter: `data-city`, `data-address` (kun dealers), `data-seller-type`
+- `applyNearMeFilter()` bruger `geocodeAddress` for dealers med adresse, `geocodeCity` for private. Sorterer DOM efter afstand (nærmeste først). "~" prefix indikerer ca-afstand (by-center), uden prefix = præcis
+- Re-anvendes automatisk efter `renderBikes()` når Nær mig er aktiv (dvs. respekterer pagination + filter-ændringer)
+- Google Maps-links: `https://www.google.com/maps/search/?api=1&query=<adresse,by>` på dealer-profil + dealer-kort
 
 ### Galleri
 - Maks 5 thumbnails synlige — viser "+N" overlay på den 5. hvis flere
