@@ -1278,7 +1278,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -1487,8 +1487,11 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
 
     var isSold = !b.is_active;
     var saveCount = saveCounts[b.id] || 0;
+    var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
+    var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
+    var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
     return `
-      <div class="bike-card" style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
+      <div class="bike-card"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
         <div class="bike-card-img">
           ${imgContent}
           ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
@@ -1527,6 +1530,9 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
   } else {
     grid.innerHTML = html;
   }
+
+  // Hvis "Nær mig" er aktiv, re-filtrér + sortér efter afstand
+  if (userGeoCoords && activeRadius) applyNearMeFilter();
 }
 
 function searchBikes() {
@@ -1589,49 +1595,74 @@ function updateNearMeRadius(val) {
   if (userGeoCoords) applyNearMeFilter();
 }
 
+function formatDistance(km) {
+  if (km < 1)  return (Math.round(km * 10) / 10).toString().replace('.', ',') + ' km';
+  if (km < 10) return (Math.round(km * 10) / 10).toString().replace('.', ',') + ' km';
+  return Math.round(km) + ' km';
+}
+
 async function applyNearMeFilter() {
   if (!userGeoCoords || !activeRadius) return;
   const grid = document.getElementById('listings-grid');
   const cards = [...grid.querySelectorAll('.bike-card:not(.skeleton-card)')];
   grid.querySelector('.nearme-empty')?.remove();
 
-  // Vis loading-overlay mens byer geokodes
   cards.forEach(c => c.style.opacity = '0.4');
   showToast('📍 Filtrerer efter afstand...');
 
-  let shown = 0;
-  const promises = cards.map(async card => {
-    const cityEl = card.querySelector('.bike-city');
-    const city   = cityEl ? cityEl.textContent.trim() : '';
-    if (!city) { card.style.display = 'none'; return; }
-    const coords = await geocodeCity(city);
-    if (!coords) { card.style.display = 'none'; return; }
-    const km = haversineKm(userGeoCoords, coords);
-    if (km <= activeRadius) {
-      card.style.display = '';
-      card.style.opacity = '';
-      // Vis afstand på kortet
-      let distTag = card.querySelector('.nearme-dist');
-      if (!distTag) {
-        distTag = document.createElement('span');
-        distTag.className = 'nearme-dist';
-        card.querySelector('.bike-card-img')?.appendChild(distTag);
-      }
-      distTag.textContent = Math.round(km) + ' km';
-      shown++;
-    } else {
-      card.style.display = 'none';
-    }
-  });
-  await Promise.all(promises);
+  // Hent koordinater for hvert kort — præcis adresse for forhandlere, by for private
+  const resolved = await Promise.all(cards.map(async card => {
+    const city    = card.dataset.city || card.querySelector('.bike-city')?.textContent.trim() || '';
+    const address = card.dataset.address || '';
+    const isDealer = card.dataset.sellerType === 'dealer';
 
-  if (shown === 0) {
+    let coords = null;
+    let precise = false;
+    if (isDealer && address && city) {
+      coords = await geocodeAddress(address, city);
+      if (coords) precise = true;
+    }
+    if (!coords && city) {
+      coords = await geocodeCity(city);
+    }
+    if (!coords) return { card, km: null, precise: false };
+    const km = haversineKm(userGeoCoords, coords);
+    return { card, km, precise };
+  }));
+
+  // Filtrér inden for radius og sortér efter afstand
+  const within = resolved
+    .filter(r => r.km !== null && r.km <= activeRadius)
+    .sort((a, b) => a.km - b.km);
+  const outside = resolved.filter(r => r.km === null || r.km > activeRadius);
+
+  // Skjul dem uden for radius
+  outside.forEach(({ card }) => { card.style.display = 'none'; });
+
+  // Vis + opdatér distance-tag på dem inden for radius
+  within.forEach(({ card, km, precise }) => {
+    card.style.display = '';
+    card.style.opacity = '';
+    let distTag = card.querySelector('.nearme-dist');
+    if (!distTag) {
+      distTag = document.createElement('span');
+      distTag.className = 'nearme-dist';
+      card.querySelector('.bike-card-img')?.appendChild(distTag);
+    }
+    distTag.textContent = (precise ? '' : '~') + formatDistance(km);
+    distTag.title = precise ? 'Præcis afstand (forhandler-adresse)' : 'Ca. afstand (by-center)';
+  });
+
+  // Reordne DOM så nærmeste kort vises først
+  within.forEach(({ card }) => grid.appendChild(card));
+
+  if (within.length === 0) {
     const el = document.createElement('div');
     el.className = 'nearme-empty empty-state-box';
     el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
     grid.appendChild(el);
   }
-  showToast(`📍 ${shown} ${shown === 1 ? 'cykel' : 'cykler'} inden for ${activeRadius} km`);
+  showToast(`📍 ${within.length} ${within.length === 1 ? 'cykel' : 'cykler'} inden for ${activeRadius} km`);
 }
 
 function sortBikes(value) {
@@ -5584,7 +5615,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);

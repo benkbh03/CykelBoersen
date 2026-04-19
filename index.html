@@ -209,9 +209,16 @@
     <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
     <span class="pill pill--nearme" id="pill-nearme" onclick="toggleNearMe(this)" role="button" tabindex="0" aria-pressed="false">📍 Nær mig</span>
     <select id="nearme-radius" onchange="updateNearMeRadius(this.value)" style="display:none;font-size:0.8rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--sand);cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <option value="2">2 km</option>
+      <option value="5">5 km</option>
       <option value="10">10 km</option>
+      <option value="15">15 km</option>
       <option value="20" selected>20 km</option>
+      <option value="30">30 km</option>
       <option value="50">50 km</option>
+      <option value="75">75 km</option>
+      <option value="100">100 km</option>
+      <option value="200">200 km</option>
     </select>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Under 3.000 kr</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">El-cykler</span>
