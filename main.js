@@ -150,6 +150,13 @@ function haversineKm([lat1, lon1], [lat2, lon2]) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
+// Deterministisk offset baseret på annonce-ID — pin-position er stabil på tværs af page-loads
+function stableOffset(id, axis) {
+  let h = axis === 0 ? 0x811c9dc5 : 0xdeadbeef;
+  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 0x1000193) >>> 0;
+  return (h / 0xFFFFFFFF) - 0.5; // [-0.5, 0.5]
+}
+
 /* ============================================================
    INIT – hent session én gang og sæt alt op
    ============================================================ */
@@ -8163,8 +8170,8 @@ async function initSplitMap() {
       if (!coords) return;
 
       const jitter = precise ? 0.0001 : 0.003;
-      const lat = coords[0] + (Math.random() - 0.5) * jitter;
-      const lng = coords[1] + (Math.random() - 0.5) * jitter;
+      const lat = coords[0] + stableOffset(b.id, 0) * jitter;
+      const lng = coords[1] + stableOffset(b.id, 1) * jitter;
 
       _mapPageGeocoded.set(b.id, { coords: [lat, lng], precise });
 
@@ -8321,8 +8328,8 @@ async function initMap() {
     // Forhandlere med præcis adresse: ingen offset
     // Private sælgere: lille offset så markører på samme by ikke stacker
     var jitter = isPrecise ? 0.0002 : 0.002;
-    var lat = coords[0] + (Math.random() - 0.5) * jitter;
-    var lng = coords[1] + (Math.random() - 0.5) * jitter;
+    var lat = coords[0] + stableOffset(b.id, 0) * jitter;
+    var lng = coords[1] + stableOffset(b.id, 1) * jitter;
 
     var profile    = b.profiles || {};
     var sellerType = profile.seller_type || 'private';
@@ -8400,8 +8407,8 @@ async function initMap() {
           .then(function(coords) {
             if (!coords) return;
             var displayName = d.shop_name || d.name || 'Forhandler';
-            var lat = coords[0] + (Math.random() - 0.5) * 0.0002;
-            var lng = coords[1] + (Math.random() - 0.5) * 0.0002;
+            var lat = coords[0] + stableOffset(d.id, 0) * 0.0002;
+            var lng = coords[1] + stableOffset(d.id, 1) * 0.0002;
             var icon = L.divIcon({
               html: '<div style="background:#2A3D2E;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏪</div>',
               className: '',
