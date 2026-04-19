@@ -4487,3 +4487,271 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   white-space: nowrap;
 }
 .qr-btn:hover { border-color: var(--forest); background: #f0f4f0; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPLIT KORTVISNING
+   ═══════════════════════════════════════════════════════════ */
+
+#browse-split {
+  display: flex;
+  height: calc(100vh - 64px);
+  width: 100%;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Venstre liste-panel ── */
+#split-list-panel {
+  width: 370px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--cream);
+  transition: width 0.25s ease, opacity 0.25s ease;
+  overflow: hidden;
+}
+#split-list-panel.collapsed {
+  width: 0;
+  opacity: 0;
+  border-right: none;
+}
+
+.split-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.split-toggle-list-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.split-toggle-list-btn:hover { background: var(--sand); }
+
+#split-cards-container {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 0;
+}
+
+/* ── Split-kort (vandret layout som DBA) ── */
+.split-card {
+  display: flex;
+  gap: 0;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  padding: 0;
+}
+.split-card:hover { background: var(--sand); }
+.split-card.highlighted {
+  background: #e8f2ea;
+  border-left: 3px solid var(--forest);
+}
+
+.split-card-img {
+  width: 100px;
+  min-height: 90px;
+  flex-shrink: 0;
+  background: var(--sand);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.split-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.split-card-img-placeholder {
+  font-size: 2rem;
+  opacity: 0.35;
+}
+
+.split-card-body {
+  flex: 1;
+  padding: 10px 12px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.split-card-price {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--rust);
+  line-height: 1.2;
+}
+.split-card-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.split-card-meta {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+.split-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.split-card-location {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.split-card-seller {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.split-card-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+/* ── Åbn-liste knap (vises når liste er lukket) ── */
+#split-reopen-btn {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1200;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  display: none;
+  align-items: center;
+  gap: 6px;
+  transition: box-shadow 0.15s;
+}
+#split-reopen-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+
+/* ── Kort-panel ── */
+#split-map-panel {
+  flex: 1;
+  position: relative;
+}
+
+/* ── Split-markers ── */
+.split-marker {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+  transition: transform 0.15s;
+}
+.split-marker:hover { transform: scale(1.15); }
+.split-marker--dealer { background: var(--forest); color: #fff; }
+.split-marker--private { background: var(--rust); color: #fff; }
+.split-marker.highlighted-pin {
+  transform: scale(1.3);
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.5), 0 4px 12px rgba(0,0,0,0.35);
+}
+
+/* ── Cluster ── */
+.split-cluster {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Popup ── */
+.split-popup {
+  min-width: 200px;
+  font-family: 'DM Sans', sans-serif;
+}
+.split-popup-img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: block;
+}
+.split-popup-price {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--rust);
+  margin-bottom: 2px;
+}
+.split-popup-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 2px;
+}
+.split-popup-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; }
+.split-popup-seller { font-size: 0.74rem; color: var(--muted); margin-bottom: 8px; }
+.split-popup-btn {
+  display: block;
+  width: 100%;
+  background: var(--forest);
+  color: var(--sand);
+  border: none;
+  border-radius: 7px;
+  padding: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-align: center;
+  transition: background 0.15s;
+}
+.split-popup-btn:hover { background: var(--rust); }
+
+/* ── Skjul kortvisning på mobil ── */
+@media (max-width: 700px) {
+  #btn-split-view { display: none; }
+  #browse-split { display: none !important; }
+}

@@ -6669,6 +6669,8 @@ window.renderBikePage     = renderBikePage;
 window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
 window.renderDealersPage       = renderDealersPage;
+window.splitCardClick          = splitCardClick;
+window.toggleSplitList         = toggleSplitList;
 window.toggleDealerGPS        = toggleDealerGPS;
 window.sortAndRenderDealers   = sortAndRenderDealers;
 window.showDetailView     = showDetailView;
@@ -7787,6 +7789,12 @@ var mapMarkers         = [];
 var currentView        = 'list';
 var userLocationMarker = null;
 
+// Split-kortvisning
+var splitMapInstance   = null;
+var splitClusterGroup  = null;
+var splitMarkerMap     = {}; // bikeId → { marker, lat, lng }
+var _splitListVisible  = true;
+
 /* ── Geocoding cache ── */
 var _geocodeCache = (function() {
   try {
@@ -7849,23 +7857,234 @@ function geocodeCity(city) {
 
 function setView(view) {
   currentView = view;
-  var listGrid  = document.getElementById('listings-grid');
-  var mapDiv    = document.getElementById('listings-map');
-  var btnList   = document.getElementById('btn-list-view');
-  var btnMap    = document.getElementById('btn-map-view');
+  var listGrid   = document.getElementById('listings-grid');
+  var mapDiv     = document.getElementById('listings-map');
+  var splitDiv   = document.getElementById('browse-split');
+  var mainDiv    = document.querySelector('.main');
+  var btnList    = document.getElementById('btn-list-view');
+  var btnSplit   = document.getElementById('btn-split-view');
 
-  if (view === 'map') {
-    listGrid.style.display = 'none';
-    mapDiv.style.display   = 'block';
-    btnList.classList.remove('active');
-    btnMap.classList.add('active');
+  // Nulstil alle knap-tilstande
+  [btnList, btnSplit].forEach(b => b && b.classList.remove('active'));
+
+  if (view === 'split') {
+    if (mainDiv)  mainDiv.style.display  = 'none';
+    if (splitDiv) { splitDiv.style.display = 'flex'; splitDiv.removeAttribute('aria-hidden'); }
+    if (mapDiv)   mapDiv.style.display   = 'none';
+    if (listGrid) listGrid.style.display = 'none';
+    if (btnSplit) btnSplit.classList.add('active');
+    initSplitMap();
+  } else if (view === 'map') {
+    if (mainDiv)  mainDiv.style.display  = '';
+    if (splitDiv) { splitDiv.style.display = 'none'; splitDiv.setAttribute('aria-hidden', 'true'); }
+    if (listGrid) listGrid.style.display = 'none';
+    if (mapDiv)   mapDiv.style.display   = 'block';
+    if (btnList)  btnList.classList.remove('active');
     initMap();
   } else {
-    listGrid.style.display = '';
-    mapDiv.style.display   = 'none';
-    btnMap.classList.remove('active');
-    btnList.classList.add('active');
+    if (mainDiv)  mainDiv.style.display  = '';
+    if (splitDiv) { splitDiv.style.display = 'none'; splitDiv.setAttribute('aria-hidden', 'true'); }
+    if (mapDiv)   mapDiv.style.display   = 'none';
+    if (listGrid) listGrid.style.display = '';
+    if (btnList)  btnList.classList.add('active');
   }
+}
+
+/* ─────────────────────────────────────────────────────────
+   SPLIT-KORTVISNING
+   ───────────────────────────────────────────────────────── */
+
+async function initSplitMap() {
+  const cardsContainer = document.getElementById('split-cards-container');
+  const countEl        = document.getElementById('split-count');
+  const mapPanel       = document.getElementById('split-map-panel');
+  if (!cardsContainer || !mapPanel) return;
+
+  cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);font-size:0.88rem;">Henter annoncer…</p>';
+
+  // Hent annoncer
+  const { data: bikes, error } = await supabase
+    .from('bikes')
+    .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles(name, seller_type, shop_name, verified, address, avatar_url), bike_images(url, is_primary)')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+
+  if (error || !bikes || bikes.length === 0) {
+    cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);">Ingen annoncer fundet.</p>';
+    return;
+  }
+
+  if (countEl) countEl.textContent = bikes.length + ' annoncer';
+
+  // Render kompakte kort
+  renderSplitCards(bikes, cardsContainer);
+
+  // Init kort
+  if (!splitMapInstance) {
+    splitMapInstance = L.map('split-map-panel', { zoomControl: true }).setView([56.0, 10.2], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org">OpenStreetMap</a>',
+      maxZoom: 18,
+    }).addTo(splitMapInstance);
+  }
+
+  // Cluster-gruppe
+  if (!splitClusterGroup) {
+    splitClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 50,
+      iconCreateFunction: function(cluster) {
+        return L.divIcon({
+          html: '<div class="split-cluster">' + cluster.getChildCount() + '</div>',
+          className: '',
+          iconSize: [40, 40],
+          iconAnchor: [20, 20],
+        });
+      },
+    });
+    splitMapInstance.addLayer(splitClusterGroup);
+  } else {
+    splitClusterGroup.clearLayers();
+  }
+
+  splitMarkerMap = {};
+
+  // Geokod + tilføj markører
+  const promises = bikes
+    .filter(b => b.city)
+    .map(async b => {
+      const profile  = b.profiles || {};
+      const isDealer = profile.seller_type === 'dealer';
+      const hasAddr  = isDealer && profile.address && profile.address.trim();
+
+      let coords = null;
+      let precise = false;
+      if (hasAddr) {
+        coords = await geocodeAddress(profile.address, b.city);
+        if (coords) precise = true;
+      }
+      if (!coords) coords = await geocodeCity(b.city);
+      if (!coords) return;
+
+      // Private sælgere: by-centrum med jitter så pins ikke stakker
+      const jitter = precise ? 0.0001 : 0.003;
+      const lat = coords[0] + (Math.random() - 0.5) * jitter;
+      const lng = coords[1] + (Math.random() - 0.5) * jitter;
+
+      const icon = L.divIcon({
+        html: '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
+          + (isDealer ? '🏪' : '🚲') + '</div>',
+        className: '',
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+      });
+
+      const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+      const sellerName = isDealer ? profile.shop_name : profile.name;
+
+      const popupHtml = '<div class="split-popup">'
+        + (primaryImg ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">' : '')
+        + '<div class="split-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
+        + '<div class="split-popup-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
+        + '<div class="split-popup-meta">' + esc(b.type) + ' · ' + esc(b.condition) + '</div>'
+        + '<div class="split-popup-seller">' + (isDealer ? '🏪' : '👤') + ' ' + esc(sellerName || 'Ukendt') + ' · 📍 ' + esc(b.city) + (precise ? '' : ' <span style="color:var(--muted);font-size:0.68rem;">(ca.)</span>') + '</div>'
+        + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce →</button>'
+        + '</div>';
+
+      const marker = L.marker([lat, lng], { icon });
+      marker.bindPopup(popupHtml, { maxWidth: 260, closeButton: false });
+      marker.on('click', function() {
+        marker.openPopup();
+        splitHighlightCard(b.id);
+      });
+
+      splitMarkerMap[b.id] = { marker, lat, lng };
+      splitClusterGroup.addLayer(marker);
+    });
+
+  await Promise.all(promises);
+
+  // Zoom til alle markører
+  if (Object.keys(splitMarkerMap).length > 0) {
+    splitMapInstance.fitBounds(splitClusterGroup.getBounds().pad(0.08));
+  }
+
+  // Nødvendigt efter layout-ændring
+  setTimeout(() => splitMapInstance && splitMapInstance.invalidateSize(), 150);
+}
+
+function renderSplitCards(bikes, container) {
+  container.innerHTML = bikes.map(b => {
+    const profile    = b.profiles || {};
+    const isDealer   = profile.seller_type === 'dealer';
+    const sellerName = isDealer ? profile.shop_name : profile.name;
+    const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+    const timeAgo    = formatLastSeen ? formatLastSeen(b.created_at) : '';
+    const badge      = isDealer
+      ? '<span style="background:var(--forest);color:#fff;border-radius:4px;padding:1px 5px;font-size:0.65rem;font-weight:600;">Forhandler</span>'
+      : '<span style="background:var(--sand);color:var(--muted);border-radius:4px;padding:1px 5px;font-size:0.65rem;">Privat</span>';
+    return '<div class="split-card" data-bike-id="' + b.id + '" onclick="splitCardClick(\'' + b.id + '\')">'
+      + '<div class="split-card-img">'
+      + (primaryImg ? '<img src="' + primaryImg + '" alt="" loading="lazy">' : '<div class="split-card-img-placeholder">🚲</div>')
+      + '</div>'
+      + '<div class="split-card-body">'
+      + '<div class="split-card-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
+      + '<div class="split-card-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
+      + '<div class="split-card-meta">' + esc(b.type || '') + (b.year ? ' · ' + b.year : '') + '</div>'
+      + '<div class="split-card-footer">'
+      + '<span class="split-card-location">📍 ' + esc(b.city || '–') + '</span>'
+      + badge
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function splitCardClick(bikeId) {
+  const m = splitMarkerMap[bikeId];
+  // Highlight kort i liste
+  splitHighlightCard(bikeId);
+  if (!m) return;
+  // Åbn markørens cluster og fly til den
+  splitClusterGroup.zoomToShowLayer(m.marker, function() {
+    m.marker.openPopup();
+  });
+}
+
+function splitHighlightCard(bikeId) {
+  document.querySelectorAll('.split-card.highlighted').forEach(c => c.classList.remove('highlighted'));
+  // Fjern highlight fra pins
+  document.querySelectorAll('.split-marker.highlighted-pin').forEach(el => el.classList.remove('highlighted-pin'));
+
+  const card = document.querySelector('.split-card[data-bike-id="' + bikeId + '"]');
+  if (card) {
+    card.classList.add('highlighted');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Highlight pin
+  const m = splitMarkerMap[bikeId];
+  if (m) {
+    const el = m.marker.getElement();
+    if (el) {
+      const pin = el.querySelector('.split-marker');
+      if (pin) pin.classList.add('highlighted-pin');
+    }
+  }
+}
+
+function toggleSplitList() {
+  const panel  = document.getElementById('split-list-panel');
+  const btn    = document.getElementById('split-toggle-btn');
+  if (!panel) return;
+  _splitListVisible = !_splitListVisible;
+  panel.classList.toggle('collapsed', !_splitListVisible);
+  if (btn) {
+    btn.innerHTML = _splitListVisible
+      ? '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="13 4 6 10 13 16"/></svg> Skjul liste'
+      : '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="7 4 14 10 7 16"/></svg> Vis liste';
+  }
+  setTimeout(() => splitMapInstance && splitMapInstance.invalidateSize(), 280);
 }
 
 async function initMap() {
