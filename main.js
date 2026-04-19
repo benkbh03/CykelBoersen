@@ -6268,11 +6268,18 @@ function selectDealerPlan(btn) {
   btn.classList.add('selected');
 }
 
+let _dealersPageData  = [];   // [{ dealer, bikeCount, avgRating, ratingCount, distKm }]
+let _dealerGPSActive  = false;
+let _dealerGPSCoords  = null;
+
 async function renderDealersPage() {
   showDetailView();
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Forhandlere – Cykelbørsen';
   updateSEOMeta('Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.', '/forhandlere');
+  _dealersPageData = [];
+  _dealerGPSActive = false;
+  _dealerGPSCoords = null;
 
   document.getElementById('detail-view').innerHTML = `
     <div class="dealers-page">
@@ -6282,14 +6289,23 @@ async function renderDealersPage() {
         <p class="dealers-page-subtitle">Køb med tryghed fra verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
         <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">🏪 Bliv forhandler</button>
       </div>
+      <div class="dealers-toolbar">
+        <button class="dealers-gps-btn" id="dealers-gps-btn" onclick="toggleDealerGPS()">📍 Brug min position</button>
+        <select class="dealers-sort-sel" id="dealers-sort" onchange="sortAndRenderDealers()">
+          <option value="bikes">Flest cykler</option>
+          <option value="nearest">Tættest</option>
+          <option value="rating">Bedste rating</option>
+        </select>
+      </div>
       <div id="dealers-page-grid" class="dealer-cards">
         <p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Henter forhandlere...</p>
       </div>
     </div>`;
 
-  const [dealerRes, bikeRes] = await Promise.all([
+  const [dealerRes, bikeRes, reviewRes] = await Promise.all([
     supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
     supabase.from('bikes').select('user_id').eq('is_active', true),
+    supabase.from('reviews').select('reviewed_user_id, rating'),
   ]);
 
   const grid = document.getElementById('dealers-page-grid');
@@ -6297,6 +6313,7 @@ async function renderDealersPage() {
 
   const dealers  = dealerRes.data  || [];
   const bikeRows = bikeRes.data    || [];
+  const reviews  = reviewRes.data  || [];
 
   if (dealerRes.error || dealers.length === 0) {
     grid.className = 'dealer-cards dealer-empty-state';
@@ -6311,20 +6328,129 @@ async function renderDealersPage() {
   }
 
   const dealerIdSet = new Set(dealers.map(d => d.id));
+
   const countMap = {};
   for (const b of bikeRows) {
-    if (dealerIdSet.has(b.user_id)) {
-      countMap[b.user_id] = (countMap[b.user_id] || 0) + 1;
+    if (dealerIdSet.has(b.user_id)) countMap[b.user_id] = (countMap[b.user_id] || 0) + 1;
+  }
+
+  const ratingSum = {}, ratingCount = {};
+  for (const r of reviews) {
+    if (dealerIdSet.has(r.reviewed_user_id) && r.rating) {
+      ratingSum[r.reviewed_user_id]   = (ratingSum[r.reviewed_user_id]   || 0) + r.rating;
+      ratingCount[r.reviewed_user_id] = (ratingCount[r.reviewed_user_id] || 0) + 1;
     }
   }
 
-  dealers.sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
-
-  grid.className = 'dealer-cards';
-  grid.innerHTML = dealers.map(d => buildDealerCard(d, countMap, false)).join('');
+  _dealersPageData = dealers.map(dealer => ({
+    dealer,
+    bikeCount:   countMap[dealer.id]   || 0,
+    avgRating:   ratingCount[dealer.id] ? ratingSum[dealer.id] / ratingCount[dealer.id] : null,
+    ratingCount: ratingCount[dealer.id] || 0,
+    distKm:      null,
+  }));
 
   window._allDealers     = dealers;
   window._dealerCountMap = countMap;
+
+  sortAndRenderDealers();
+}
+
+async function toggleDealerGPS() {
+  const btn = document.getElementById('dealers-gps-btn');
+  if (_dealerGPSActive) {
+    _dealerGPSActive = false;
+    _dealerGPSCoords = null;
+    _dealersPageData.forEach(d => d.distKm = null);
+    if (btn) { btn.classList.remove('active'); btn.textContent = '📍 Brug min position'; }
+    sortAndRenderDealers();
+    return;
+  }
+  if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt'); return; }
+  if (btn) { btn.textContent = '📍 Henter position...'; btn.disabled = true; }
+  navigator.geolocation.getCurrentPosition(async pos => {
+    _dealerGPSCoords = [pos.coords.latitude, pos.coords.longitude];
+    _dealerGPSActive = true;
+    if (btn) { btn.classList.add('active'); btn.textContent = '📍 Position aktiv'; btn.disabled = false; }
+    showToast('📍 Beregner afstande...');
+    // Geocode alle forhandlere
+    await Promise.all(_dealersPageData.map(async d => {
+      const { dealer } = d;
+      let coords = null;
+      if (dealer.address && dealer.city) coords = await geocodeAddress(dealer.address, dealer.city);
+      if (!coords && dealer.city)        coords = await geocodeCity(dealer.city);
+      d.distKm = coords ? haversineKm(_dealerGPSCoords, coords) : null;
+    }));
+    // Skift sortering til "Tættest" automatisk
+    const sel = document.getElementById('dealers-sort');
+    if (sel) sel.value = 'nearest';
+    sortAndRenderDealers();
+  }, () => {
+    showToast('❌ Kunne ikke hente position — tjek tilladelser');
+    if (btn) { btn.textContent = '📍 Brug min position'; btn.disabled = false; }
+  });
+}
+
+function sortAndRenderDealers() {
+  const sort = document.getElementById('dealers-sort')?.value || 'bikes';
+  const data = [..._dealersPageData];
+
+  if (sort === 'nearest') {
+    const withDist  = data.filter(d => d.distKm !== null).sort((a, b) => a.distKm - b.distKm);
+    const withoutDist = data.filter(d => d.distKm === null).sort((a, b) => b.bikeCount - a.bikeCount);
+    _dealersPageData.splice(0, _dealersPageData.length, ...withDist, ...withoutDist);
+  } else if (sort === 'rating') {
+    data.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+    _dealersPageData.splice(0, _dealersPageData.length, ...data);
+  } else {
+    data.sort((a, b) => b.bikeCount - a.bikeCount);
+    _dealersPageData.splice(0, _dealersPageData.length, ...data);
+  }
+
+  const grid = document.getElementById('dealers-page-grid');
+  if (!grid) return;
+  grid.className = 'dealer-cards';
+  grid.innerHTML = _dealersPageData.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
+    buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm)
+  ).join('');
+}
+
+function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) {
+  const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials     = displayName.substring(0, 2).toUpperCase();
+  const locationText = dealer.address && dealer.city
+    ? `${dealer.address}, ${dealer.city}`
+    : dealer.city || '';
+
+  const distHtml = distKm !== null
+    ? `<span class="dealer-dist-badge">${formatDistance(distKm)}</span>`
+    : '';
+
+  const starsHtml = avgRating !== null
+    ? `<div class="dealer-rating">
+        <span class="dealer-stars">${renderStars(avgRating)}</span>
+        <span class="dealer-rating-num">${avgRating.toFixed(1)} <span style="color:var(--muted);font-weight:400;">(${ratingCount})</span></span>
+       </div>`
+    : '';
+
+  return `
+    <div class="dealer-card" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
+      <div class="dealer-card-top">
+        <div class="dealer-logo-circle">${initials}</div>
+        ${distHtml}
+      </div>
+      <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
+      ${locationText ? `<div class="dealer-city">📍 ${esc(locationText)}</div>` : ''}
+      ${starsHtml}
+      <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+    </div>`;
+}
+
+function renderStars(avg) {
+  const full = Math.floor(avg);
+  const half = avg - full >= 0.5 ? 1 : 0;
+  const empty = 5 - full - half;
+  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
 }
 
 function renderBecomeDealerPage() {
@@ -6528,6 +6654,8 @@ window.renderBikePage     = renderBikePage;
 window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
 window.renderDealersPage       = renderDealersPage;
+window.toggleDealerGPS        = toggleDealerGPS;
+window.sortAndRenderDealers   = sortAndRenderDealers;
 window.showDetailView     = showDetailView;
 window.showListingView    = showListingView;
 window.closeBikeModal     = closeBikeModal;
