@@ -2976,7 +2976,27 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   font-size: 0.85rem;
   color: var(--muted);
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+.pp-maps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--sand);
+  color: var(--forest);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.pp-maps-link:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
+.pp-maps-link svg { flex-shrink: 0; }
 .pp-last-seen {
   font-size: 0.78rem;
   color: var(--muted);
@@ -4025,6 +4045,22 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .dealer-stars { color: #e9a800; letter-spacing: 1px; font-size: 0.85rem; }
 .dealer-rating-num { font-size: 0.8rem; }
+.dealer-maps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  background: var(--sand);
+  color: var(--forest);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.dealer-maps-link:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
 @media (max-width: 600px) {
   .dealers-page { padding: 20px 16px 60px; }
   .dealers-page-header { text-align: left; padding-top: 40px; }

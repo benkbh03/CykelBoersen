@@ -4294,7 +4294,14 @@ function buildDealerProfilePageHTML(data) {
             <span class="badge badge-dealer">🏪 Forhandler</span>
             ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
           </div>
-          ${dealer.city ? `<div class="pp-location">📍 ${esc(dealer.address ? dealer.address + ', ' : '')}${esc(dealer.city)}</div>` : ''}
+          ${dealer.city ? `
+            <div class="pp-location">
+              📍 ${esc(dealer.address ? dealer.address + ', ' : '')}${esc(dealer.city)}
+              <a class="pp-maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((dealer.address ? dealer.address + ', ' : '') + dealer.city)}" target="_blank" rel="noopener noreferrer" title="Åbn i Google Maps">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Åbn i Google Maps
+              </a>
+            </div>` : ''}
           ${dealer.bio ? `<p class="pp-bio">${esc(dealer.bio)}</p>` : ''}
           ${contactHtml}
         </div>
@@ -6433,6 +6440,13 @@ function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) 
        </div>`
     : '';
 
+  const mapsHtml = (dealer.address && dealer.city)
+    ? `<a class="dealer-maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dealer.address + ', ' + dealer.city)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Åbn i Google Maps">
+         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+         Google Maps
+       </a>`
+    : '';
+
   return `
     <div class="dealer-card" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
       <div class="dealer-card-top">
@@ -6443,6 +6457,7 @@ function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) 
       ${locationText ? `<div class="dealer-city">📍 ${esc(locationText)}</div>` : ''}
       ${starsHtml}
       <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      ${mapsHtml}
     </div>`;
 }
 
