@@ -5,7 +5,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL      = Deno.env.get("SUPABASE_URL") ?? "";
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
 const corsHeaders = {
@@ -14,47 +13,58 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+function parseJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
-
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
 
-  // Brug anon-klient med brugerens auth-header til at verificere session
-  const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
-  });
-
-  const { data: { user }, error: userError } = await userClient.auth.getUser();
-
-  if (userError || !user) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+  // Supabase gateway verificerer JWT — vi udtrækker blot user id fra payload
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
+  if (!token) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
-  const userId = user.id;
+  const payload = parseJwtPayload(token);
+  const userId = payload?.sub as string | undefined;
+
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   try {
-    // 1. Hent brugerens cykler (bruges til at slette relaterede data)
+    // 1. Hent brugerens cykler
     const { data: bikes } = await adminClient
-      .from("bikes")
-      .select("id")
-      .eq("user_id", userId);
+      .from("bikes").select("id").eq("user_id", userId);
     const bikeIds = (bikes || []).map((b: { id: string }) => b.id);
 
-    // 2. Slet ting der refererer til brugerens cykler (fremmednøgler)
+    // 2. Slet FK-afhængigheder til cykler
     if (bikeIds.length > 0) {
       await adminClient.from("saved_bikes").delete().in("bike_id", bikeIds);
       await adminClient.from("bike_images").delete().in("bike_id", bikeIds);
     }
 
-    // 3. Slet brugerens egne rækker
+    // 3. Slet brugerens øvrige data
     await adminClient.from("saved_searches").delete().eq("user_id", userId);
     await adminClient.from("saved_bikes").delete().eq("user_id", userId);
     await adminClient.from("reviews").delete().or(`reviewer_id.eq.${userId},reviewed_user_id.eq.${userId}`);
@@ -68,22 +78,18 @@ serve(async (req) => {
     }
     await adminClient.from("profiles").delete().eq("id", userId);
 
-    // Slet auth-bruger (skal være sidst)
+    // 5. Slet auth-bruger sidst
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
-    if (deleteError) {
-      throw new Error(`Auth delete fejl: ${deleteError.message}`);
-    }
+    if (deleteError) throw new Error(deleteError.message);
 
-    return new Response(
-      JSON.stringify({ ok: true }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
 
   } catch (err) {
-    console.error("Fejl ved sletning af konto:", err);
-    return new Response(
-      JSON.stringify({ error: String(err) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.error("Fejl ved sletning:", err);
+    return new Response(JSON.stringify({ error: String(err) }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
