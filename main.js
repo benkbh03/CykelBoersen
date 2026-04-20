@@ -8221,6 +8221,11 @@ async function initSplitMap() {
   splitMarkerMap = {};
   _mapPageGeocoded = new Map();
 
+  splitMapInstance.on('popupopen', function(e) {
+    const closeBtn = e.popup.getElement()?.querySelector('.split-popup-close');
+    if (closeBtn) closeBtn.addEventListener('click', () => splitMapInstance.closePopup(e.popup));
+  });
+
   // Initial render før geocoding (brugeren får noget at kigge på med det samme)
   renderSplitCards(bikes, cardsContainer);
   const countEl = document.getElementById('split-count');
@@ -8261,15 +8266,30 @@ async function initSplitMap() {
 
       const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
       const sellerName = isDealer ? profile.shop_name : profile.name;
+      const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
+      const imgCount = (b.bike_images || []).length || 0;
+      const imgCounter = imgCount > 0
+        ? '<span class="split-popup-img-counter"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>1/' + imgCount + '</span>'
+        : '';
 
       const dealerBadge = isDealer
         ? '<span class="split-popup-badge split-popup-badge--dealer">Forhandler</span>'
         : '<span class="split-popup-badge split-popup-badge--private">Privat</span>';
-      const locationText = esc(b.city) + (precise ? '' : ' <span class="split-popup-approx">(ca.)</span>');
+
+      const postalMatch = (profile.address || '').match(/\b(\d{4})\b/);
+      const postalCode = postalMatch ? postalMatch[1] : '';
+      const approxSuffix = precise ? '' : ' <span class="split-popup-approx">(ca.)</span>';
+
       const popupHtml = '<div class="split-popup">'
+        + '<div class="split-popup-media">'
         + (primaryImg
-            ? '<div class="split-popup-img-wrap"><img src="' + primaryImg + '" alt="" class="split-popup-img"></div>'
+            ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">'
             : '<div class="split-popup-img-placeholder">🚲</div>')
+        + '<button class="split-popup-close" aria-label="Luk">'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+        + '</button>'
+        + imgCounter
+        + '</div>'
         + '<div class="split-popup-body">'
         + '<div class="split-popup-top">'
         + '<span class="split-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</span>'
@@ -8277,16 +8297,29 @@ async function initSplitMap() {
         + '</div>'
         + '<div class="split-popup-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
         + '<div class="split-popup-meta">' + esc(b.type || '') + (b.condition ? ' · ' + esc(b.condition) : '') + (b.year ? ' · ' + b.year : '') + '</div>'
-        + '<div class="split-popup-seller">'
-        + '<span class="split-popup-seller-name">' + (isDealer ? '🏪' : '👤') + ' ' + esc(sellerName || 'Ukendt') + '</span>'
-        + '<span class="split-popup-location">📍 ' + locationText + '</span>'
+        + '<div class="split-popup-divider"></div>'
+        + '<div class="split-popup-info">'
+        + '<div class="split-popup-info-col">'
+        + '<div class="split-popup-info-icon">' + (isDealer ? '🏪' : '👤') + '</div>'
+        + '<div class="split-popup-info-text">'
+        + '<div class="split-popup-info-main">' + esc(sellerName || 'Ukendt') + '</div>'
+        + '<div class="split-popup-info-sub">' + sellerLabel + '</div>'
+        + '</div>'
+        + '</div>'
+        + '<div class="split-popup-info-col">'
+        + '<div class="split-popup-info-icon">📍</div>'
+        + '<div class="split-popup-info-text">'
+        + '<div class="split-popup-info-main">' + esc(b.city) + approxSuffix + '</div>'
+        + (postalCode ? '<div class="split-popup-info-sub">' + postalCode + '</div>' : '<div class="split-popup-info-sub">Danmark</div>')
+        + '</div>'
+        + '</div>'
         + '</div>'
         + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce →</button>'
         + '</div>'
         + '</div>';
 
       const marker = L.marker([lat, lng], { icon });
-      marker.bindPopup(popupHtml, { maxWidth: 300, minWidth: 280, closeButton: true });
+      marker.bindPopup(popupHtml, { maxWidth: 300, minWidth: 280, closeButton: false });
       marker.on('click', function() {
         marker.openPopup();
         splitHighlightCard(b.id);
