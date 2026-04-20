@@ -6684,6 +6684,7 @@ window.renderDealersPage       = renderDealersPage;
 window.renderMapPage           = renderMapPage;
 window.toggleMapNearMe         = toggleMapNearMe;
 window.resetMapFilters         = resetMapFilters;
+window.toggleMapFilterPanel    = toggleMapFilterPanel;
 window.splitCardClick          = splitCardClick;
 window.toggleSplitList         = toggleSplitList;
 window.toggleDealerGPS        = toggleDealerGPS;
@@ -7924,66 +7925,84 @@ async function renderMapPage() {
         <h1 class="map-page-title">Kortvisning</h1>
         <p class="map-page-subtitle">Forhandlere har præcis placering · private er ca. by-center</p>
       </div>
-      <div class="map-page-filters" role="search">
-        <input type="search" id="map-search" placeholder="Søg mærke, model..." class="map-filter-input" aria-label="Søg">
-        <select id="map-seller-type" class="map-filter-sel" aria-label="Sælgertype">
-          <option value="all">Alle sælgere</option>
-          <option value="dealer">🏪 Forhandlere</option>
-          <option value="private">👤 Private</option>
-        </select>
-        <select id="map-bike-type" class="map-filter-sel" aria-label="Cykeltype">
-          <option value="">Alle typer</option>
-          <option>Racercykel</option>
-          <option>Mountainbike</option>
-          <option>El-cykel</option>
-          <option>Citybike</option>
-          <option>Ladcykel</option>
-          <option>Børnecykel</option>
-          <option>Gravel</option>
-        </select>
-        <div class="map-filter-price">
-          <input type="number" id="map-price-min" placeholder="Min kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Min pris">
-          <span class="map-filter-sep">–</span>
-          <input type="number" id="map-price-max" placeholder="Max kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Max pris">
+
+      <!-- Filterpanel: row1 altid synlig, row2 kun synlig på desktop og mobil-udfoldet -->
+      <div class="map-filters-bar" role="search">
+        <div class="map-filters-row1">
+          <input type="search" id="map-search" placeholder="Søg mærke, model..." class="map-filter-input map-filter-input--search" aria-label="Søg">
+          <button class="map-near-btn" id="map-near-btn" onclick="toggleMapNearMe()" aria-pressed="false">📍 Nær mig</button>
+          <button class="map-filter-expand-btn" id="map-filter-expand-btn" onclick="toggleMapFilterPanel()">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
+            Filtre
+            <span class="map-filter-badge" id="map-filter-badge" style="display:none;">0</span>
+          </button>
+          <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">✕ Nulstil</button>
         </div>
-        <button class="map-near-btn" id="map-near-btn" onclick="toggleMapNearMe()" aria-pressed="false">📍 Nær mig</button>
-        <select id="map-radius" class="map-filter-sel" aria-label="Radius" disabled>
-          <option value="5">5 km</option>
-          <option value="10">10 km</option>
-          <option value="25" selected>25 km</option>
-          <option value="50">50 km</option>
-          <option value="100">100 km</option>
-          <option value="">Hele landet</option>
-        </select>
-        <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">✕ Nulstil</button>
+        <div class="map-filters-row2" id="map-filters-row2">
+          <select id="map-seller-type" class="map-filter-sel" aria-label="Sælgertype">
+            <option value="all">Alle sælgere</option>
+            <option value="dealer">🏪 Forhandlere</option>
+            <option value="private">👤 Private</option>
+          </select>
+          <select id="map-bike-type" class="map-filter-sel" aria-label="Cykeltype">
+            <option value="">Alle typer</option>
+            <option>Racercykel</option>
+            <option>Mountainbike</option>
+            <option>El-cykel</option>
+            <option>Citybike</option>
+            <option>Ladcykel</option>
+            <option>Børnecykel</option>
+            <option>Gravel</option>
+          </select>
+          <select id="map-condition" class="map-filter-sel" aria-label="Stand">
+            <option value="">Alle stande</option>
+            <option>Ny</option>
+            <option>Som ny</option>
+            <option>God stand</option>
+            <option>Brugt</option>
+          </select>
+          <div class="map-filter-price">
+            <input type="number" id="map-price-min" placeholder="Min kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Min pris">
+            <span class="map-filter-sep">–</span>
+            <input type="number" id="map-price-max" placeholder="Max kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Max pris">
+          </div>
+          <select id="map-radius" class="map-filter-sel" aria-label="Radius" disabled>
+            <option value="5">5 km</option>
+            <option value="10">10 km</option>
+            <option value="25" selected>25 km</option>
+            <option value="50">50 km</option>
+            <option value="100">100 km</option>
+            <option value="">Hele landet</option>
+          </select>
+        </div>
       </div>
+
       <div id="browse-split" class="map-page-split${_splitListVisible ? ' list-open' : ''}">
         <div id="split-list-panel"${!_splitListVisible ? ' class="collapsed"' : ''}>
           <div class="split-list-header">
-            <div class="split-sheet-handle"></div>
             <span id="split-count" class="split-count-label">Henter annoncer…</span>
-            <button class="split-list-close-btn" onclick="toggleSplitList()" aria-label="Luk liste">✕</button>
+            <button class="split-list-close-btn" onclick="toggleSplitList()" aria-label="Luk liste">Luk ✕</button>
           </div>
           <div id="split-cards-container"></div>
         </div>
         <div id="split-map-panel">
           <button class="split-list-toggle-float" id="split-toggle-btn" onclick="toggleSplitList()">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="13 4 6 10 13 16"/></svg>
-            Skjul liste
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="7 4 14 10 7 16"/></svg>
+            Vis liste
           </button>
         </div>
       </div>
     </div>`;
 
-  // Filter-events (debounced) — genbruger applyMapFilters
-  const debounced = debounce(applyMapFilters, 220);
+  // Filter-events (debounced)
+  const debounced = debounce(() => { applyMapFilters(); updateMapFilterBadge(); }, 220);
   ['map-search', 'map-price-min', 'map-price-max'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', debounced);
   });
-  ['map-seller-type', 'map-bike-type', 'map-radius'].forEach(id => {
+  ['map-seller-type', 'map-bike-type', 'map-condition', 'map-radius'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('change', applyMapFilters);
+    if (el) el.addEventListener('change', () => { applyMapFilters(); updateMapFilterBadge(); });
   });
 
   await loadMapPageBikes();
@@ -8002,12 +8021,13 @@ async function loadMapPageBikes() {
 
 function getMapFilters() {
   return {
-    q:       (document.getElementById('map-search')?.value || '').trim().toLowerCase(),
-    seller:  document.getElementById('map-seller-type')?.value || 'all',
-    type:    document.getElementById('map-bike-type')?.value || '',
-    priceMin: parseInt(document.getElementById('map-price-min')?.value, 10) || null,
-    priceMax: parseInt(document.getElementById('map-price-max')?.value, 10) || null,
-    radius:   _mapNearMeCoords ? (parseInt(document.getElementById('map-radius')?.value, 10) || null) : null,
+    q:         (document.getElementById('map-search')?.value || '').trim().toLowerCase(),
+    seller:    document.getElementById('map-seller-type')?.value || 'all',
+    type:      document.getElementById('map-bike-type')?.value || '',
+    condition: document.getElementById('map-condition')?.value || '',
+    priceMin:  parseInt(document.getElementById('map-price-min')?.value, 10) || null,
+    priceMax:  parseInt(document.getElementById('map-price-max')?.value, 10) || null,
+    radius:    _mapNearMeCoords ? (parseInt(document.getElementById('map-radius')?.value, 10) || null) : null,
     nearCoords: _mapNearMeCoords,
   };
 }
@@ -8024,6 +8044,7 @@ function filterMapBikes() {
       if (f.seller !== st) return false;
     }
     if (f.type && b.type !== f.type) return false;
+    if (f.condition && b.condition !== f.condition) return false;
     if (f.priceMin != null && b.price < f.priceMin) return false;
     if (f.priceMax != null && b.price > f.priceMax) return false;
     if (f.nearCoords && f.radius && _mapPageGeocoded) {
@@ -8034,6 +8055,29 @@ function filterMapBikes() {
     }
     return true;
   });
+}
+
+function updateMapFilterBadge() {
+  const f = getMapFilters();
+  let n = 0;
+  if (f.seller !== 'all') n++;
+  if (f.type) n++;
+  if (f.condition) n++;
+  if (f.priceMin != null) n++;
+  if (f.priceMax != null) n++;
+  if (_mapNearMeCoords) n++;
+  const badge = document.getElementById('map-filter-badge');
+  if (!badge) return;
+  if (n > 0) { badge.style.display = ''; badge.textContent = n; }
+  else { badge.style.display = 'none'; }
+}
+
+function toggleMapFilterPanel() {
+  const row2 = document.getElementById('map-filters-row2');
+  const btn  = document.getElementById('map-filter-expand-btn');
+  if (!row2) return;
+  const isOpen = row2.classList.toggle('open');
+  if (btn) btn.classList.toggle('active', isOpen);
 }
 
 function applyMapFilters() {
@@ -8079,16 +8123,24 @@ function applyMapFilters() {
 }
 
 function resetMapFilters() {
-  const ids = ['map-search', 'map-price-min', 'map-price-max'];
-  ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['map-search', 'map-price-min', 'map-price-max'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
   const st = document.getElementById('map-seller-type'); if (st) st.value = 'all';
   const bt = document.getElementById('map-bike-type');   if (bt) bt.value = '';
-  const rd = document.getElementById('map-radius');      if (rd) rd.value = '25';
+  const co = document.getElementById('map-condition');   if (co) co.value = '';
+  const rd = document.getElementById('map-radius');      if (rd) { rd.value = '25'; rd.disabled = true; }
   _mapNearMeCoords = null;
+  if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
   const nb = document.getElementById('map-near-btn');
   if (nb) { nb.classList.remove('active'); nb.setAttribute('aria-pressed', 'false'); nb.textContent = '📍 Nær mig'; }
-  const radiusSel = document.getElementById('map-radius'); if (radiusSel) radiusSel.disabled = true;
+  // Luk filterpanel på mobil
+  const row2 = document.getElementById('map-filters-row2');
+  if (row2) row2.classList.remove('open');
+  const expBtn = document.getElementById('map-filter-expand-btn');
+  if (expBtn) expBtn.classList.remove('active');
   applyMapFilters();
+  updateMapFilterBadge();
 }
 
 async function toggleMapNearMe() {
@@ -8099,7 +8151,7 @@ async function toggleMapNearMe() {
     if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.textContent = '📍 Nær mig'; }
     if (radiusSel) radiusSel.disabled = true;
     if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
-    applyMapFilters();
+    applyMapFilters(); updateMapFilterBadge();
     return;
   }
   if (!navigator.geolocation) {
@@ -8125,7 +8177,7 @@ async function toggleMapNearMe() {
         .addTo(splitMapInstance);
       splitMapInstance.setView(_mapNearMeCoords, 11);
     }
-    applyMapFilters();
+    applyMapFilters(); updateMapFilterBadge();
   } catch (e) {
     if (btn) btn.textContent = '📍 Nær mig';
     showToast('Kunne ikke hente din position');
