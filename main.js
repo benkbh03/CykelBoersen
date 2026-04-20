@@ -7910,7 +7910,7 @@ async function renderMapPage() {
   splitMapInstance  = null;
   splitClusterGroup = null;
   splitMarkerMap    = {};
-  _splitListVisible = true;
+  _splitListVisible = window.innerWidth > 700; // mobil: start med kortet
   _mapPageBikes     = [];
   _mapPageGeocoded  = null;
   _mapNearMeCoords  = null;
@@ -7920,17 +7920,17 @@ async function renderMapPage() {
       <div class="map-page-header">
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="map-page-title">Kortvisning</h1>
-        <p class="map-page-subtitle">Se alle cykler på kortet · forhandlere har præcis placering · private er ca. by-center</p>
+        <p class="map-page-subtitle">Forhandlere har præcis placering · private er ca. by-center</p>
       </div>
       <div class="map-page-filters" role="search">
         <input type="search" id="map-search" placeholder="Søg mærke, model..." class="map-filter-input" aria-label="Søg">
         <select id="map-seller-type" class="map-filter-sel" aria-label="Sælgertype">
           <option value="all">Alle sælgere</option>
-          <option value="dealer">🏪 Kun forhandlere</option>
-          <option value="private">👤 Kun private</option>
+          <option value="dealer">🏪 Forhandlere</option>
+          <option value="private">👤 Private</option>
         </select>
         <select id="map-bike-type" class="map-filter-sel" aria-label="Cykeltype">
-          <option value="">Alle cykeltyper</option>
+          <option value="">Alle typer</option>
           <option>Racercykel</option>
           <option>Mountainbike</option>
           <option>El-cykel</option>
@@ -7955,18 +7955,21 @@ async function renderMapPage() {
         </select>
         <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">✕ Nulstil</button>
       </div>
-      <div id="browse-split" class="map-page-split">
-        <div id="split-list-panel">
+      <div id="browse-split" class="map-page-split${_splitListVisible ? ' list-open' : ''}">
+        <div id="split-list-panel"${!_splitListVisible ? ' class="collapsed"' : ''}>
           <div class="split-list-header">
-            <span id="split-count" style="font-size:0.85rem;color:var(--muted);">Henter annoncer…</span>
-            <button class="split-toggle-list-btn" id="split-toggle-btn" onclick="toggleSplitList()" title="Skjul liste">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="13 4 6 10 13 16"/></svg>
-              Skjul liste
-            </button>
+            <div class="split-sheet-handle"></div>
+            <span id="split-count" class="split-count-label">Henter annoncer…</span>
+            <button class="split-list-close-btn" onclick="toggleSplitList()" aria-label="Luk liste">✕</button>
           </div>
           <div id="split-cards-container"></div>
         </div>
-        <div id="split-map-panel"></div>
+        <div id="split-map-panel">
+          <button class="split-list-toggle-float" id="split-toggle-btn" onclick="toggleSplitList()">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="13 4 6 10 13 16"/></svg>
+            Skjul liste
+          </button>
+        </div>
       </div>
     </div>`;
 
@@ -8037,7 +8040,13 @@ function applyMapFilters() {
   const cardsContainer = document.getElementById('split-cards-container');
   const countEl        = document.getElementById('split-count');
 
-  if (countEl) countEl.textContent = filtered.length + (filtered.length === 1 ? ' annonce' : ' annoncer');
+  const countText = filtered.length + (filtered.length === 1 ? ' annonce' : ' annoncer');
+  if (countEl) countEl.textContent = countText;
+  // Hold floating toggle-knap synkroniseret med aktuel tæller
+  if (!_splitListVisible) {
+    const btn = document.getElementById('split-toggle-btn');
+    if (btn) btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="7 4 14 10 7 16"/></svg> ' + countText;
+  }
 
   if (filtered.length === 0) {
     cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);font-size:0.88rem;">Ingen annoncer matcher filtrene.</p>';
@@ -8277,15 +8286,21 @@ function splitHighlightCard(bikeId) {
 }
 
 function toggleSplitList() {
-  const panel  = document.getElementById('split-list-panel');
-  const btn    = document.getElementById('split-toggle-btn');
+  const panel     = document.getElementById('split-list-panel');
+  const btn       = document.getElementById('split-toggle-btn');
+  const splitWrap = document.getElementById('browse-split');
+  const countEl   = document.getElementById('split-count');
   if (!panel) return;
   _splitListVisible = !_splitListVisible;
   panel.classList.toggle('collapsed', !_splitListVisible);
+  if (splitWrap) splitWrap.classList.toggle('list-open', _splitListVisible);
   if (btn) {
-    btn.innerHTML = _splitListVisible
-      ? '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="13 4 6 10 13 16"/></svg> Skjul liste'
-      : '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="7 4 14 10 7 16"/></svg> Vis liste';
+    if (_splitListVisible) {
+      btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="13 4 6 10 13 16"/></svg> Skjul liste';
+    } else {
+      const count = countEl ? countEl.textContent : 'liste';
+      btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="7 4 14 10 7 16"/></svg> ' + count;
+    }
   }
   setTimeout(() => splitMapInstance && splitMapInstance.invalidateSize(), 280);
 }
