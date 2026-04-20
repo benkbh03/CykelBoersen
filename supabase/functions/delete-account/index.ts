@@ -4,7 +4,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_URL      = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
 const corsHeaders = {
@@ -22,24 +23,22 @@ serve(async (req) => {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
 
-  // Verificer brugerens JWT
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader) {
-    return new Response("Unauthorized", { status: 401, headers: corsHeaders });
-  }
+  // Brug anon-klient med brugerens auth-header til at verificere session
+  const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
+  });
 
-  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-  // Hent bruger fra JWT
-  const { data: { user }, error: userError } = await adminClient.auth.getUser(
-    authHeader.replace("Bearer ", "")
-  );
+  const { data: { user }, error: userError } = await userClient.auth.getUser();
 
   if (userError || !user) {
-    return new Response("Unauthorized", { status: 401, headers: corsHeaders });
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   const userId = user.id;
+  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   try {
     // 1. Hent brugerens cykler (bruges til at slette relaterede data)
