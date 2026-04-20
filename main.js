@@ -8221,10 +8221,7 @@ async function initSplitMap() {
   splitMarkerMap = {};
   _mapPageGeocoded = new Map();
 
-  splitMapInstance.on('popupopen', function(e) {
-    const closeBtn = e.popup.getElement()?.querySelector('.split-popup-close');
-    if (closeBtn) closeBtn.addEventListener('click', () => splitMapInstance.closePopup(e.popup));
-  });
+  window._closeMapPopup = () => splitMapInstance && splitMapInstance.closePopup();
 
   // Initial render før geocoding (brugeren får noget at kigge på med det samme)
   renderSplitCards(bikes, cardsContainer);
@@ -8285,7 +8282,7 @@ async function initSplitMap() {
         + (primaryImg
             ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">'
             : '<div class="split-popup-img-placeholder">🚲</div>')
-        + '<button class="split-popup-close" aria-label="Luk">'
+        + '<button class="split-popup-close" aria-label="Luk" onclick="event.stopPropagation();_closeMapPopup()">'
         + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
         + '</button>'
         + imgCounter
