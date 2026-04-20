@@ -42,25 +42,31 @@ serve(async (req) => {
   const userId = user.id;
 
   try {
-    // Slet brugerens data i rækkefølge (fremmednøgler først)
-    await adminClient.from("saved_searches").delete().eq("user_id", userId);
-    await adminClient.from("saved_bikes").delete().eq("user_id", userId);
-    await adminClient.from("reviews").delete().eq("reviewer_id", userId);
-    await adminClient.from("messages").delete().or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
-
-    // Hent cykel-id'er så vi kan slette billeder
+    // 1. Hent brugerens cykler (bruges til at slette relaterede data)
     const { data: bikes } = await adminClient
       .from("bikes")
       .select("id")
       .eq("user_id", userId);
+    const bikeIds = (bikes || []).map((b: { id: string }) => b.id);
 
-    if (bikes && bikes.length > 0) {
-      const bikeIds = bikes.map((b: { id: string }) => b.id);
+    // 2. Slet ting der refererer til brugerens cykler (fremmednøgler)
+    if (bikeIds.length > 0) {
+      await adminClient.from("saved_bikes").delete().in("bike_id", bikeIds);
       await adminClient.from("bike_images").delete().in("bike_id", bikeIds);
-      await adminClient.from("bikes").delete().eq("user_id", userId);
     }
 
-    // Slet profil
+    // 3. Slet brugerens egne rækker
+    await adminClient.from("saved_searches").delete().eq("user_id", userId);
+    await adminClient.from("saved_bikes").delete().eq("user_id", userId);
+    await adminClient.from("reviews").delete().or(`reviewer_id.eq.${userId},reviewed_user_id.eq.${userId}`);
+    await adminClient.from("messages").delete().or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
+    await adminClient.from("dealer_applications").delete().eq("user_id", userId);
+    await adminClient.from("id_applications").delete().eq("user_id", userId);
+
+    // 4. Slet cykler og profil
+    if (bikeIds.length > 0) {
+      await adminClient.from("bikes").delete().eq("user_id", userId);
+    }
     await adminClient.from("profiles").delete().eq("id", userId);
 
     // Slet auth-bruger (skal være sidst)
