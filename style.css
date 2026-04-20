@@ -4807,49 +4807,122 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 /* ── Popup ── */
 .split-popup {
-  min-width: 200px;
   font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+}
+.split-popup-img-wrap {
+  width: calc(100% + 40px); /* Leaflet adds 20px padding on each side */
+  margin: -20px -20px 0;
+  height: 170px;
+  overflow: hidden;
+  background: var(--sand);
 }
 .split-popup-img {
   width: 100%;
-  height: 160px;
+  height: 100%;
   object-fit: contain;
   background: var(--sand);
-  border-radius: 6px;
-  margin-bottom: 8px;
   display: block;
+}
+.split-popup-img-placeholder {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  background: var(--sand);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.split-popup-body {
+  padding: 12px 0 0;
+}
+.split-popup-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
 }
 .split-popup-price {
   font-family: 'Fraunces', serif;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--rust);
-  margin-bottom: 2px;
+  line-height: 1.2;
 }
+.split-popup-badge {
+  font-size: 0.66rem;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.split-popup-badge--dealer { background: var(--forest); color: #fff; }
+.split-popup-badge--private { background: var(--sand); color: var(--muted); }
 .split-popup-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--charcoal);
   margin-bottom: 2px;
+  line-height: 1.3;
 }
-.split-popup-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; }
-.split-popup-seller { font-size: 0.74rem; color: var(--muted); margin-bottom: 8px; }
+.split-popup-meta {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.split-popup-seller {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.split-popup-seller-name { font-weight: 500; color: var(--charcoal); }
+.split-popup-location {}
+.split-popup-approx { font-size: 0.68rem; }
 .split-popup-btn {
   display: block;
   width: 100%;
   background: var(--forest);
-  color: var(--sand);
+  color: var(--cream);
   border: none;
-  border-radius: 7px;
-  padding: 8px;
-  font-size: 0.82rem;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   text-align: center;
   transition: background 0.15s;
+  letter-spacing: 0.01em;
 }
 .split-popup-btn:hover { background: var(--rust); }
+
+/* ── "Du er her"-markør ── */
+.map-user-dot {
+  width: 18px;
+  height: 18px;
+  background: #2563eb;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.4);
+  position: relative;
+}
+.map-user-pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: rgba(37,99,235,0.2);
+  animation: userPulse 1.8s ease-out infinite;
+}
+@keyframes userPulse {
+  0%   { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
 
 /* ── Mobil: kortvisning med bottom-sheet liste ── */
 @media (max-width: 700px) {

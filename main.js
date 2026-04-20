@@ -7809,6 +7809,7 @@ var splitMapInstance   = null;
 var splitClusterGroup  = null;
 var splitMarkerMap     = {}; // bikeId → { marker, lat, lng }
 var _splitListVisible  = true;
+var _mapUserMarker     = null; // "Du er her"-markør
 
 /* ── Geocoding cache ── */
 var _geocodeCache = (function() {
@@ -7910,10 +7911,11 @@ async function renderMapPage() {
   splitMapInstance  = null;
   splitClusterGroup = null;
   splitMarkerMap    = {};
-  _splitListVisible = window.innerWidth > 700; // mobil: start med kortet
+  _splitListVisible = window.innerWidth > 700;
   _mapPageBikes     = [];
   _mapPageGeocoded  = null;
   _mapNearMeCoords  = null;
+  _mapUserMarker    = null;
 
   document.getElementById('detail-view').innerHTML = `
     <div class="map-page">
@@ -8096,6 +8098,7 @@ async function toggleMapNearMe() {
     _mapNearMeCoords = null;
     if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.textContent = '📍 Nær mig'; }
     if (radiusSel) radiusSel.disabled = true;
+    if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
     applyMapFilters();
     return;
   }
@@ -8106,10 +8109,22 @@ async function toggleMapNearMe() {
   try {
     const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000, enableHighAccuracy: true }));
     _mapNearMeCoords = [pos.coords.latitude, pos.coords.longitude];
-    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.textContent = '📍 Nær mig (aktiv)'; }
+    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.textContent = '📍 Min position'; }
     if (radiusSel) radiusSel.disabled = false;
-    // Centrer kortet på brugerens position
-    if (splitMapInstance) splitMapInstance.setView(_mapNearMeCoords, 11);
+    if (splitMapInstance) {
+      // Fjern evt. gammel markør
+      if (_mapUserMarker) splitMapInstance.removeLayer(_mapUserMarker);
+      const userIcon = L.divIcon({
+        html: '<div class="map-user-dot"><div class="map-user-pulse"></div></div>',
+        className: '',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+      });
+      _mapUserMarker = L.marker(_mapNearMeCoords, { icon: userIcon, zIndexOffset: 1000 })
+        .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.82rem;padding:4px 2px;">📍 <strong>Du er her</strong></div>', { closeButton: false })
+        .addTo(splitMapInstance);
+      splitMapInstance.setView(_mapNearMeCoords, 11);
+    }
     applyMapFilters();
   } catch (e) {
     if (btn) btn.textContent = '📍 Nær mig';
@@ -8195,17 +8210,31 @@ async function initSplitMap() {
       const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
       const sellerName = isDealer ? profile.shop_name : profile.name;
 
+      const dealerBadge = isDealer
+        ? '<span class="split-popup-badge split-popup-badge--dealer">Forhandler</span>'
+        : '<span class="split-popup-badge split-popup-badge--private">Privat</span>';
+      const locationText = esc(b.city) + (precise ? '' : ' <span class="split-popup-approx">(ca.)</span>');
       const popupHtml = '<div class="split-popup">'
-        + (primaryImg ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">' : '')
-        + '<div class="split-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
+        + (primaryImg
+            ? '<div class="split-popup-img-wrap"><img src="' + primaryImg + '" alt="" class="split-popup-img"></div>'
+            : '<div class="split-popup-img-placeholder">🚲</div>')
+        + '<div class="split-popup-body">'
+        + '<div class="split-popup-top">'
+        + '<span class="split-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</span>'
+        + dealerBadge
+        + '</div>'
         + '<div class="split-popup-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
-        + '<div class="split-popup-meta">' + esc(b.type || '') + (b.condition ? ' · ' + esc(b.condition) : '') + '</div>'
-        + '<div class="split-popup-seller">' + (isDealer ? '🏪' : '👤') + ' ' + esc(sellerName || 'Ukendt') + ' · 📍 ' + esc(b.city) + (precise ? '' : ' <span style="color:var(--muted);font-size:0.68rem;">(ca.)</span>') + '</div>'
+        + '<div class="split-popup-meta">' + esc(b.type || '') + (b.condition ? ' · ' + esc(b.condition) : '') + (b.year ? ' · ' + b.year : '') + '</div>'
+        + '<div class="split-popup-seller">'
+        + '<span class="split-popup-seller-name">' + (isDealer ? '🏪' : '👤') + ' ' + esc(sellerName || 'Ukendt') + '</span>'
+        + '<span class="split-popup-location">📍 ' + locationText + '</span>'
+        + '</div>'
         + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce →</button>'
+        + '</div>'
         + '</div>';
 
       const marker = L.marker([lat, lng], { icon });
-      marker.bindPopup(popupHtml, { maxWidth: 260, closeButton: false });
+      marker.bindPopup(popupHtml, { maxWidth: 300, minWidth: 280, closeButton: true });
       marker.on('click', function() {
         marker.openPopup();
         splitHighlightCard(b.id);
