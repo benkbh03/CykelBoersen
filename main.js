@@ -6486,6 +6486,24 @@ function renderBecomeDealerPage() {
   document.title = 'Bliv forhandler – Cykelbørsen';
   updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå cykellkøbere i hele Danmark. Helt gratis — ingen binding.', '/bliv-forhandler');
 
+  const isLoggedIn = !!currentUser;
+  const isAlreadyDealer = isLoggedIn && currentProfile?.seller_type === 'dealer';
+
+  if (isAlreadyDealer) {
+    document.getElementById('detail-view').innerHTML = `
+      <div class="bd-page">
+        <div class="bd-page-header">
+          <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
+          <h1 class="bd-page-title">Du er allerede forhandler</h1>
+          <p class="bd-page-subtitle">Din butiksprofil er aktiv på Cykelbørsen</p>
+        </div>
+        <div style="text-align:center;padding:32px 0;">
+          <button class="form-submit" onclick="navigateTo('/min-profil')" style="width:auto;padding:14px 32px;">Se min profil →</button>
+        </div>
+      </div>`;
+    return;
+  }
+
   document.getElementById('detail-view').innerHTML = `
     <div class="bd-page">
       <div class="bd-page-header">
@@ -6512,11 +6530,25 @@ function renderBecomeDealerPage() {
           <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Adresse</label><input type="text" id="dealer-address" placeholder="f.eks. Vesterbrogade 42" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group full"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
         </div>
+
+        ${!isLoggedIn ? `
+        <div class="bd-form-divider">
+          <span>Din forhandlerkonto</span>
+        </div>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Adgangskode *</label><input type="password" id="dealer-password" placeholder="Min. 6 tegn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+        </div>
+        <p class="bd-auth-note">Vi opretter automatisk en forhandlerkonto med din email. Tjek din indbakke for at bekræfte.</p>
+        ` : `
+        <div class="bd-form-divider"><span>Logget ind som ${esc(currentProfile?.name || currentUser?.email || '')}</span></div>
+        <input type="hidden" id="dealer-email" value="${esc(currentUser?.email || '')}">
+        `}
+
         <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil →</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;">
           Gratis at oprette — ingen binding, ingen kreditkort.
@@ -6526,25 +6558,52 @@ function renderBecomeDealerPage() {
 }
 
 async function submitDealerApplication() {
-  if (!currentUser) {
-    openLoginModal();
-    showToast('⚠️ Log ind for at blive forhandler');
-    return;
-  }
+  const shopName = (document.getElementById('dealer-shop-name')?.value || '').trim();
+  const cvr      = (document.getElementById('dealer-cvr')?.value || '').trim();
+  const contact  = (document.getElementById('dealer-contact')?.value || '').trim();
+  const phone    = (document.getElementById('dealer-phone')?.value || '').trim();
+  const address  = (document.getElementById('dealer-address')?.value || '').trim();
+  const city     = (document.getElementById('dealer-city')?.value || '').trim();
+  const email    = (document.getElementById('dealer-email')?.value || '').trim();
+  const password = (document.getElementById('dealer-password')?.value || '').trim();
 
-  const shopName = document.getElementById('dealer-shop-name').value.trim();
-  const cvr      = document.getElementById('dealer-cvr').value.trim();
-  const contact  = document.getElementById('dealer-contact').value.trim();
-  const email    = document.getElementById('dealer-email').value.trim();
-  const phone    = document.getElementById('dealer-phone').value.trim();
-  const address  = document.getElementById('dealer-address').value.trim();
-  const city     = document.getElementById('dealer-city').value.trim();
-
-  if (!shopName || !cvr || !contact || !email) {
+  if (!shopName || !cvr || !contact) {
     showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
   }
 
   const restore = btnLoading('dealer-submit-btn', 'Opretter profil...');
+
+  let userId = currentUser?.id;
+
+  if (!currentUser) {
+    if (!email || !password) {
+      restore();
+      showToast('⚠️ Udfyld email og adgangskode'); return;
+    }
+    if (password.length < 6) {
+      restore();
+      showToast('⚠️ Adgangskoden skal være mindst 6 tegn'); return;
+    }
+
+    const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name: contact, seller_type: 'dealer' } },
+    });
+
+    if (signUpErr) {
+      restore();
+      if (signUpErr.message?.includes('already registered')) {
+        showToast('⚠️ E-mailen er allerede i brug — log ind i stedet');
+      } else {
+        showToast('❌ ' + (signUpErr.message || 'Kunne ikke oprette konto'));
+      }
+      return;
+    }
+
+    userId = signUpData.user?.id;
+    if (!userId) { restore(); showToast('❌ Noget gik galt – prøv igen'); return; }
+  }
 
   const { error } = await supabase.from('profiles').update({
     shop_name:   shopName,
@@ -6555,7 +6614,7 @@ async function submitDealerApplication() {
     seller_type: 'dealer',
     verified:    true,
     name:        contact,
-  }).eq('id', currentUser.id);
+  }).eq('id', userId);
 
   restore();
 
@@ -6564,7 +6623,6 @@ async function submitDealerApplication() {
     return;
   }
 
-  // Opdater lokal profil-cache så UI opdaterer sig
   if (currentProfile) {
     currentProfile.seller_type = 'dealer';
     currentProfile.verified    = true;
@@ -6572,8 +6630,19 @@ async function submitDealerApplication() {
     currentProfile.city        = city;
   }
 
-  showToast('🎉 Velkommen som forhandler på CykelBørsen!');
-  navigateTo('/');
+  if (!currentUser) {
+    document.getElementById('detail-view').innerHTML = `
+      <div class="bd-page">
+        <div class="bd-page-header">
+          <h1 class="bd-page-title">Bekræft din email</h1>
+          <p class="bd-page-subtitle">Vi har sendt en bekræftelsesmail til <strong>${esc(email)}</strong>.<br>Klik på linket i mailen for at aktivere din forhandlerkonto.</p>
+        </div>
+        <div style="text-align:center;padding:32px 0;font-size:3rem;">📬</div>
+      </div>`;
+  } else {
+    showToast('🎉 Velkommen som forhandler på CykelBørsen!');
+    navigateTo('/');
+  }
 }
 
 async function openSubscriptionPortal() {

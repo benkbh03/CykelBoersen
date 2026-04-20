@@ -3961,6 +3961,30 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   color: var(--charcoal);
   margin: 0 0 18px;
 }
+.bd-form-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 18px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.bd-form-divider::before,
+.bd-form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.bd-auth-note {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
 
 @media (max-width: 600px) {
   .bd-page { padding: 20px 16px 60px; }
