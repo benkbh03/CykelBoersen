@@ -314,13 +314,55 @@ async function init() {
   if (hashParams.get('type') === 'signup') {
     history.replaceState(null, '', window.location.pathname);
     dismissEmailBanner();
-    // Synk email_verified til profil for at vise badge til andre brugere
-    if (currentUser) {
-      supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
-        if (currentProfile) currentProfile.email_verified = true;
-      });
+
+    const pendingDealerRaw = localStorage.getItem('_pending_dealer');
+    if (currentUser && pendingDealerRaw) {
+      localStorage.removeItem('_pending_dealer');
+      try {
+        const pd = JSON.parse(pendingDealerRaw);
+        supabase.from('profiles').update({
+          shop_name:     pd.shopName,
+          cvr:           pd.cvr,
+          name:          pd.contact,
+          phone:         pd.phone,
+          address:       pd.address,
+          city:          pd.city,
+          seller_type:   'dealer',
+          verified:      false,
+          email_verified: true,
+        }).eq('id', currentUser.id).then(({ error }) => {
+          if (!error && currentProfile) {
+            currentProfile.seller_type   = 'dealer';
+            currentProfile.verified      = false;
+            currentProfile.shop_name     = pd.shopName;
+            currentProfile.city          = pd.city;
+            currentProfile.email_verified = true;
+          }
+        });
+        supabase.functions.invoke('notify-message', {
+          body: {
+            type:      'dealer_application',
+            shop_name: pd.shopName,
+            cvr:       pd.cvr,
+            contact:   pd.contact,
+            city:      pd.city,
+            email:     currentUser.email,
+            user_id:   currentUser.id,
+          },
+        }).catch(() => {});
+        showToast('✅ Email bekræftet! Din ansøgning er modtaget – vi vender tilbage hurtigst muligt.');
+        navigateTo('/min-profil');
+      } catch (e) {
+        showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
+      }
+    } else {
+      if (currentUser) {
+        supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
+          if (currentProfile) currentProfile.email_verified = true;
+        });
+      }
+      showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
     }
-    showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
   } else if (hashParams.get('type') === 'recovery') {
     history.replaceState(null, '', window.location.pathname);
     document.getElementById('reset-modal').classList.add('open');
@@ -4499,6 +4541,14 @@ function buildMyProfilePageHTML() {
         </div>
       </div>
 
+      ${isDealer && !p.verified ? `
+      <div class="mp-pending-card">
+        <div class="mp-pending-icon">⏳</div>
+        <div class="mp-pending-body">
+          <div class="mp-pending-title">Ansøgning afventer godkendelse</div>
+          <div class="mp-pending-sub">Vi gennemgår din ansøgning og vender tilbage hurtigst muligt. Du modtager besked når din forhandlerprofil er godkendt.</div>
+        </div>
+      </div>` : ''}
       ${!isDealer ? `<div class="mp-verify-card">
         <div class="mp-verify-title">Verificering</div>
         <div class="mp-verify-items">
@@ -6603,8 +6653,22 @@ async function submitDealerApplication() {
 
     userId = signUpData.user?.id;
     if (!userId) { restore(); showToast('❌ Noget gik galt – prøv igen'); return; }
+
+    // Ny bruger: gem forhandlerdata til efter email-bekræftelse (kan ikke opdatere profil endnu)
+    localStorage.setItem('_pending_dealer', JSON.stringify({ shopName, cvr, contact, phone, address, city }));
+    restore();
+    document.getElementById('detail-view').innerHTML = `
+      <div class="bd-page">
+        <div class="bd-page-header">
+          <h1 class="bd-page-title">Tjek din indbakke</h1>
+          <p class="bd-page-subtitle">Vi har sendt en bekræftelsesmail til <strong>${esc(email)}</strong>.<br>Klik på linket i mailen for at aktivere din forhandlerkonto.</p>
+        </div>
+        <div style="text-align:center;padding:32px 0;font-size:3rem;">📬</div>
+      </div>`;
+    return;
   }
 
+  // Eksisterende bruger: opret ansøgning med verified=false (afventer admin-godkendelse)
   const { error } = await supabase.from('profiles').update({
     shop_name:   shopName,
     cvr:         cvr,
@@ -6612,7 +6676,7 @@ async function submitDealerApplication() {
     address:     address,
     city:        city,
     seller_type: 'dealer',
-    verified:    true,
+    verified:    false,
     name:        contact,
   }).eq('id', userId);
 
@@ -6625,24 +6689,25 @@ async function submitDealerApplication() {
 
   if (currentProfile) {
     currentProfile.seller_type = 'dealer';
-    currentProfile.verified    = true;
+    currentProfile.verified    = false;
     currentProfile.shop_name   = shopName;
     currentProfile.city        = city;
   }
 
-  if (!currentUser) {
-    document.getElementById('detail-view').innerHTML = `
-      <div class="bd-page">
-        <div class="bd-page-header">
-          <h1 class="bd-page-title">Bekræft din email</h1>
-          <p class="bd-page-subtitle">Vi har sendt en bekræftelsesmail til <strong>${esc(email)}</strong>.<br>Klik på linket i mailen for at aktivere din forhandlerkonto.</p>
-        </div>
-        <div style="text-align:center;padding:32px 0;font-size:3rem;">📬</div>
-      </div>`;
-  } else {
-    showToast('🎉 Velkommen som forhandler på CykelBørsen!');
-    navigateTo('/');
-  }
+  supabase.functions.invoke('notify-message', {
+    body: {
+      type:      'dealer_application',
+      shop_name: shopName,
+      cvr:       cvr,
+      contact:   contact,
+      city:      city,
+      email:     currentUser.email,
+      user_id:   currentUser.id,
+    },
+  }).catch(() => {});
+
+  showToast('✅ Ansøgning modtaget – vi vender tilbage hurtigst muligt!');
+  navigateTo('/min-profil');
 }
 
 async function openSubscriptionPortal() {

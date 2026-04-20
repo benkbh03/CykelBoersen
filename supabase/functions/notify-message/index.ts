@@ -173,6 +173,29 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ── FORHANDLER ANSØGNING → ADMIN ─────────────────────────
+    if (payload.type === "dealer_application") {
+      const { shop_name, cvr, contact, city, email, user_id } = payload;
+
+      const html = emailWrapper(`
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🏪 Ny forhandleransøgning</h2>
+        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;">
+          <strong style="color:#1A1A18;">Butik:</strong> ${shop_name ?? "–"}<br>
+          <strong style="color:#1A1A18;">CVR:</strong> ${cvr ?? "–"}<br>
+          <strong style="color:#1A1A18;">Kontaktperson:</strong> ${contact ?? "–"}<br>
+          <strong style="color:#1A1A18;">By:</strong> ${city ?? "–"}<br>
+          <strong style="color:#1A1A18;">Email:</strong> ${email ?? "–"}
+        </p>
+        <a href="https://cykelbørsen.dk"
+           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Åbn admin-panel →
+        </a>
+      `);
+
+      await sendEmail("benkbh03@gmail.com", `🏪 Ny forhandleransøgning: ${shop_name ?? email} – Cykelbørsen`, html);
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── RAPPORTER ANNONCE ─────────────────────────────────────
     if (payload.type === "report_listing") {
       const { bike_id, bike_title, reason, details, reporter_name, reporter_email } = payload;
