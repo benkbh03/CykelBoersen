@@ -1456,7 +1456,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
-  transform-origin: 0 0;
+  transform-origin: 50% 50%;
   transition: transform 0.18s ease;
   will-change: transform;
 }
