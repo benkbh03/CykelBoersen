@@ -65,7 +65,8 @@ function esc(str) {
 }
 
 // SEO-hjælper: opdater meta description + canonical URL + OG tags ved sidenavigation
-const BASE_URL = 'https://xn--cykelbrsen-5cb.dk';
+// Bruger unicode-domænet så delinger på sociale medier viser "cykelbørsen.dk" (ikke punycode)
+const BASE_URL = 'https://cykelbørsen.dk';
 const DEFAULT_DESC = 'Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
 
 function removeBikeJsonLd() {
@@ -174,12 +175,45 @@ async function init() {
 
     const { data: profile } = await supabase
       .from('profiles').select('*').eq('id', currentUser.id).single();
-    currentProfile = profile;
 
-    updateNav(true, profile?.name, profile?.avatar_url);
+    // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
+    const meta = currentUser.user_metadata || {};
+    if (meta.pending_dealer && (!profile || profile.seller_type !== 'dealer')) {
+      await supabase.from('profiles').upsert({
+        id:            currentUser.id,
+        email:         currentUser.email,
+        name:          meta.name || '',
+        shop_name:     meta.shop_name || '',
+        cvr:           meta.cvr || '',
+        phone:         meta.phone || '',
+        address:       meta.address || '',
+        city:          meta.city || '',
+        seller_type:   'dealer',
+        verified:      false,
+        email_verified: true,
+      }, { onConflict: 'id' });
+      const { data: freshProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      currentProfile = freshProfile;
+      supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
+      supabase.functions.invoke('notify-message', {
+        body: {
+          type:      'dealer_application',
+          shop_name: meta.shop_name,
+          cvr:       meta.cvr,
+          contact:   meta.name,
+          city:      meta.city,
+          email:     currentUser.email,
+          user_id:   currentUser.id,
+        },
+      }).catch(() => {});
+    } else {
+      currentProfile = profile;
+    }
+
+    updateNav(true, currentProfile?.name, currentProfile?.avatar_url);
     startRealtimeNotifications();
     // Vis admin knap hvis admin
-    if (profile && profile.is_admin) {
+    if (currentProfile && currentProfile.is_admin) {
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = 'flex';
     }
@@ -314,53 +348,21 @@ async function init() {
   if (hashParams.get('type') === 'signup') {
     history.replaceState(null, '', window.location.pathname);
     dismissEmailBanner();
+    localStorage.removeItem('_pending_dealer');
 
-    const pendingDealerRaw = localStorage.getItem('_pending_dealer');
-    if (currentUser && pendingDealerRaw) {
-      localStorage.removeItem('_pending_dealer');
-      try {
-        const pd = JSON.parse(pendingDealerRaw);
-        supabase.from('profiles').update({
-          shop_name:     pd.shopName,
-          cvr:           pd.cvr,
-          name:          pd.contact,
-          phone:         pd.phone,
-          address:       pd.address,
-          city:          pd.city,
-          seller_type:   'dealer',
-          verified:      false,
-          email_verified: true,
-        }).eq('id', currentUser.id).then(({ error }) => {
-          if (!error && currentProfile) {
-            currentProfile.seller_type   = 'dealer';
-            currentProfile.verified      = false;
-            currentProfile.shop_name     = pd.shopName;
-            currentProfile.city          = pd.city;
-            currentProfile.email_verified = true;
-          }
-        });
-        supabase.functions.invoke('notify-message', {
-          body: {
-            type:      'dealer_application',
-            shop_name: pd.shopName,
-            cvr:       pd.cvr,
-            contact:   pd.contact,
-            city:      pd.city,
-            email:     currentUser.email,
-            user_id:   currentUser.id,
-          },
-        }).catch(() => {});
-        showToast('✅ Email bekræftet! Din ansøgning er modtaget – vi vender tilbage hurtigst muligt.');
-        navigateTo('/min-profil');
-      } catch (e) {
-        showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
-      }
+    // init() har allerede fuldført dealer-setup hvis user_metadata.pending_dealer var sat
+    const isPendingDealer = currentProfile?.seller_type === 'dealer' && currentProfile?.verified === false;
+
+    if (currentUser && !isPendingDealer) {
+      supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
+        if (currentProfile) currentProfile.email_verified = true;
+      });
+    }
+
+    if (isPendingDealer) {
+      showToast('✅ Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.');
+      navigateTo('/min-profil');
     } else {
-      if (currentUser) {
-        supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
-          if (currentProfile) currentProfile.email_verified = true;
-        });
-      }
       showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
     }
   } else if (hashParams.get('type') === 'recovery') {
@@ -4834,6 +4836,15 @@ let _reportBikeId    = null;
 let _reportBikeTitle = null;
 
 function openReportModal(bikeId, bikeTitle) {
+  if (!currentUser) {
+    showToast('⚠️ Du skal være logget ind for at rapportere en annonce');
+    openLoginModal();
+    return;
+  }
+  if (!currentUser.email_confirmed_at && !currentProfile?.email_verified) {
+    showToast('⚠️ Bekræft din e-mail for at kunne rapportere annoncer');
+    return;
+  }
   _reportBikeId    = bikeId;
   _reportBikeTitle = bikeTitle;
   document.getElementById('report-reason').value  = '';
@@ -4851,6 +4862,12 @@ function closeReportModal() {
 }
 
 async function submitReport() {
+  if (!currentUser) {
+    showToast('⚠️ Du skal være logget ind for at rapportere');
+    closeReportModal();
+    openLoginModal();
+    return;
+  }
   const reason  = document.getElementById('report-reason').value.trim();
   const details = document.getElementById('report-details').value.trim();
   if (!reason) { showToast('Vælg venligst en årsag'); return; }
@@ -6113,8 +6130,19 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif
 const MAX_IMAGE_SIZE_MB   = 10;
 
 function validateImageFile(file) {
+  const nameLower = (file.name || '').toLowerCase();
+  // HEIC/HEIF fra iPhone — browseren kan ikke dekode dem
+  if (file.type === 'image/heic' || file.type === 'image/heif' ||
+      nameLower.endsWith('.heic') || nameLower.endsWith('.heif')) {
+    showToast(`⚠️ HEIC-billeder understøttes ikke. Skift til "Mest kompatibel" under iPhone kamera-indstillinger, eller konvertér til JPG.`);
+    return false;
+  }
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     showToast(`⚠️ "${file.name}" er ikke et gyldigt billedformat (kun JPG, PNG, WebP, GIF)`);
+    return false;
+  }
+  if (file.size === 0) {
+    showToast(`⚠️ "${file.name}" er tom eller korrupt`);
     return false;
   }
   if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
@@ -6130,17 +6158,37 @@ async function compressImage(file) {
   if (file.type === 'image/gif') return file;
   if (file.type === 'image/webp' && file.size < 500 * 1024) return file;
 
+  let objectUrl = null;
   try {
-    const bitmap = await new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = URL.createObjectURL(file);
-    });
+    // Brug createImageBitmap hvis muligt — respekterer EXIF-orientering (iPhone-billeder
+    // taget i portræt bliver ellers vist vandret på mobil).
+    let source;
+    if (typeof createImageBitmap === 'function') {
+      try {
+        source = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      } catch (e) {
+        // Fallback til Image-tag hvis createImageBitmap fejler (fx corrupt eller ikke-understøttet format)
+        source = null;
+      }
+    }
+
+    if (!source) {
+      objectUrl = URL.createObjectURL(file);
+      source = await new Promise((resolve, reject) => {
+        const img = new Image();
+        const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
+        img.onload  = () => { clearTimeout(timeout); resolve(img); };
+        img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
+        img.src = objectUrl;
+      });
+    }
 
     const MAX_W = 1600;
     const MAX_H = 1600;
-    let { width, height } = bitmap;
+    let width  = source.width  || source.naturalWidth;
+    let height = source.height || source.naturalHeight;
+    if (!width || !height) throw new Error('Billede har ingen dimensioner');
+
     if (width > MAX_W || height > MAX_H) {
       const ratio = Math.min(MAX_W / width, MAX_H / height);
       width  = Math.round(width * ratio);
@@ -6151,20 +6199,23 @@ async function compressImage(file) {
     canvas.width  = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(bitmap, 0, 0, width, height);
-    URL.revokeObjectURL(bitmap.src);
+    if (!ctx) throw new Error('Canvas ikke tilgængelig');
+    ctx.drawImage(source, 0, 0, width, height);
+    if (source.close) source.close();
 
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.82));
-    if (!blob) return file;
+    if (!blob || blob.size === 0) return file;
 
     // Kun brug komprimeret hvis den faktisk er mindre
     if (blob.size >= file.size) return file;
 
-    const baseName = file.name.replace(/\.[^.]+$/, '');
+    const baseName = (file.name || 'image').replace(/\.[^.]+$/, '');
     return new File([blob], `${baseName}.webp`, { type: 'image/webp' });
   } catch (e) {
     console.warn('Billedkomprimering fejlede, bruger original:', e);
     return file;
+  } finally {
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
   }
 }
 
@@ -6638,7 +6689,17 @@ async function submitDealerApplication() {
     const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name: contact, seller_type: 'dealer' } },
+      options: {
+        data: {
+          name:           contact,
+          pending_dealer: true,
+          shop_name:      shopName,
+          cvr:            cvr,
+          phone:          phone,
+          address:        address,
+          city:           city,
+        },
+      },
     });
 
     if (signUpErr) {
@@ -6654,8 +6715,7 @@ async function submitDealerApplication() {
     userId = signUpData.user?.id;
     if (!userId) { restore(); showToast('❌ Noget gik galt – prøv igen'); return; }
 
-    // Ny bruger: gem forhandlerdata til efter email-bekræftelse (kan ikke opdatere profil endnu)
-    localStorage.setItem('_pending_dealer', JSON.stringify({ shopName, cvr, contact, phone, address, city }));
+    // Ny bruger: forhandlerdata er i user_metadata, init() fuldfører setup efter email-bekræftelse
     restore();
     document.getElementById('detail-view').innerHTML = `
       <div class="bd-page">
