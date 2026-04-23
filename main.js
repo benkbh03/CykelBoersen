@@ -180,17 +180,21 @@ async function init() {
     const meta = currentUser.user_metadata || {};
     if (meta.pending_dealer && (!profile || profile.seller_type !== 'dealer')) {
       await supabase.from('profiles').upsert({
-        id:            currentUser.id,
-        email:         currentUser.email,
-        name:          meta.name || '',
-        shop_name:     meta.shop_name || '',
-        cvr:           meta.cvr || '',
-        phone:         meta.phone || '',
-        address:       meta.address || '',
-        city:          meta.city || '',
-        seller_type:   'dealer',
-        verified:      false,
-        email_verified: true,
+        id:                 currentUser.id,
+        email:              currentUser.email,
+        name:               meta.name || '',
+        shop_name:          meta.shop_name || '',
+        cvr:                meta.cvr || '',
+        phone:              meta.phone || '',
+        address:            meta.address || '',
+        city:               meta.city || '',
+        lat:                meta.lat || null,
+        lng:                meta.lng || null,
+        postcode:           meta.postcode || null,
+        location_precision: meta.lat && meta.lng ? 'exact' : null,
+        seller_type:        'dealer',
+        verified:           false,
+        email_verified:     true,
       }, { onConflict: 'id' });
       const { data: freshProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = freshProfile;
@@ -2210,6 +2214,19 @@ function showProfileData() {
   const sellerDisplay = document.getElementById('edit-seller-type-display');
   if (sellerDisplay) sellerDisplay.textContent = isDealer ? '🏪 Forhandler' : '👤 Privatperson';
 
+  // Kobl DAWA-autocomplete: forhandlere → præcis adresse, private → by
+  const cityInput    = document.getElementById('edit-city');
+  const addressInput = document.getElementById('edit-address');
+  if (isDealer) {
+    attachAddressAutocomplete(addressInput, (picked) => {
+      // Adresse valgt → udfyld by automatisk
+      if (cityInput && picked.city) cityInput.value = picked.city;
+    });
+    attachCityAutocomplete(cityInput);
+  } else {
+    attachCityAutocomplete(cityInput);
+  }
+
   // Vis abonnementsboks kun for forhandlere med aktiv Stripe-kunde
   const subBox = document.getElementById('subscription-box');
   if (subBox) {
@@ -2252,26 +2269,47 @@ function switchProfileTab(tab) {
 async function saveProfile() {
   if (!currentUser) return;
 
+  const isDealer      = currentProfile?.seller_type === 'dealer';
+  const addressInput  = document.getElementById('edit-address');
+  const cityInput     = document.getElementById('edit-city');
+  const addressData   = readDawaData(addressInput);
+  const cityData      = readDawaData(cityInput);
+
   const updates = {
     name:        document.getElementById('edit-name').value,
     phone:       document.getElementById('edit-phone').value,
-    city:        document.getElementById('edit-city').value,
-    seller_type: currentProfile?.seller_type || 'private', // sælgertype ændres kun via forhandler-flow
+    city:        cityInput.value,
+    seller_type: currentProfile?.seller_type || 'private',
     shop_name:   document.getElementById('edit-shop-name').value,
-    address:     document.getElementById('edit-address').value,
+    address:     addressInput.value,
     bio:         (document.getElementById('edit-bio')?.value || '').trim(),
   };
+
+  // Lokationsdata: forhandler har præcis adresse, privat har kun by
+  if (isDealer && addressData.lat && addressData.lng) {
+    updates.lat = addressData.lat;
+    updates.lng = addressData.lng;
+    updates.postcode = addressData.postcode;
+    updates.location_precision = 'exact';
+    if (addressData.city) updates.city = addressData.city;
+  } else if (!isDealer && cityData.lat && cityData.lng) {
+    updates.lat = cityData.lat;
+    updates.lng = cityData.lng;
+    updates.postcode = null;
+    updates.location_precision = 'city';
+    updates.address = null;
+  } else if (!isDealer) {
+    updates.address = null;
+  }
 
   const restore = btnLoading('save-profile-btn', 'Gemmer...');
   try {
     const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
     if (error) { showToast('❌ Kunne ikke gemme profil'); return; }
 
-    // Sync ny by til alle brugerens cykelannoncer så kortet opdateres
     if (updates.city && updates.city !== (currentProfile && currentProfile.city)) {
       await supabase.from('bikes').update({ city: updates.city }).eq('user_id', currentUser.id);
     }
-    // Ryd DAWA-cache for gammel adresse+by så kortet henter nye koordinater
     var oldAddr = (currentProfile && currentProfile.address || '').toLowerCase().trim();
     var oldCity = (currentProfile && currentProfile.city || '').toLowerCase().trim();
     if (oldAddr && oldCity) {
@@ -2280,7 +2318,6 @@ async function saveProfile() {
       _saveGeocodeCache();
     }
 
-    // Opdater cache
     currentProfile = { ...currentProfile, ...updates };
     showProfileData();
     updateNavAvatar(updates.name, currentProfile.avatar_url);
@@ -3663,6 +3700,9 @@ function setSellStep(n) {
     ['sell-desc','sell-city'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', () => { captureSellFormCache(); refreshOnChange(); });
     });
+    // By-autocomplete for private sælgere (grov bymidte, ikke præcis adresse)
+    const sellCity = document.getElementById('sell-city');
+    if (sellCity) attachCityAutocomplete(sellCity);
     // Re-init draft listeners for step 3 fields
     const debouncedSave = debounce(() => saveSellDraft(), 600);
     ['sell-desc','sell-city'].forEach(id => {
@@ -6423,7 +6463,7 @@ async function renderDealersPage() {
     </div>`;
 
   const [dealerRes, bikeRes, reviewRes] = await Promise.all([
-    supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+    supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, lat, lng, location_precision').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
     supabase.from('bikes').select('user_id').eq('is_active', true),
     supabase.from('reviews').select('reviewed_user_id, rating'),
   ]);
@@ -6497,8 +6537,9 @@ async function toggleDealerGPS() {
     await Promise.all(_dealersPageData.map(async d => {
       const { dealer } = d;
       let coords = null;
-      if (dealer.address && dealer.city) coords = await geocodeAddress(dealer.address, dealer.city);
-      if (!coords && dealer.city)        coords = await geocodeCity(dealer.city);
+      if (dealer.lat && dealer.lng)              coords = [dealer.lat, dealer.lng];
+      else if (dealer.address && dealer.city)    coords = await geocodeAddress(dealer.address, dealer.city);
+      if (!coords && dealer.city)                coords = await geocodeCity(dealer.city);
       d.distKm = coords ? haversineKm(_dealerGPSCoords, coords) : null;
     }));
     // Skift sortering til "Tættest" automatisk
@@ -6632,9 +6673,10 @@ function renderBecomeDealerPage() {
           <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>Adresse</label><input type="text" id="dealer-address" placeholder="f.eks. Vesterbrogade 42" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="f.eks. København" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Adresse *</label><input type="text" id="dealer-address" placeholder="Start med at skrive gadenavn…" autocomplete="off"></div>
+          <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="Udfyldes automatisk" autocomplete="off"></div>
         </div>
+        <p class="bd-auth-note" style="margin:-4px 0 0;">📍 Vælg din præcise butiks-adresse fra listen — så vises butikken korrekt på kortet.</p>
 
         ${!isLoggedIn ? `
         <div class="bd-form-divider">
@@ -6656,6 +6698,19 @@ function renderBecomeDealerPage() {
         </p>
       </div>
     </div>`;
+
+  // Kobl adresse-autocomplete: ved valg udfyldes by automatisk
+  const dealerAddressInput = document.getElementById('dealer-address');
+  const dealerCityInput    = document.getElementById('dealer-city');
+  if (dealerAddressInput) {
+    attachAddressAutocomplete(dealerAddressInput, (picked) => {
+      if (dealerCityInput && picked.city) {
+        dealerCityInput.value = picked.city;
+        dealerCityInput.dataset.dawaLat = String(picked.lat);
+        dealerCityInput.dataset.dawaLng = String(picked.lng);
+      }
+    });
+  }
 }
 
 async function submitDealerApplication() {
@@ -6663,13 +6718,19 @@ async function submitDealerApplication() {
   const cvr      = (document.getElementById('dealer-cvr')?.value || '').trim();
   const contact  = (document.getElementById('dealer-contact')?.value || '').trim();
   const phone    = (document.getElementById('dealer-phone')?.value || '').trim();
-  const address  = (document.getElementById('dealer-address')?.value || '').trim();
-  const city     = (document.getElementById('dealer-city')?.value || '').trim();
+  const addressInput = document.getElementById('dealer-address');
+  const cityInput    = document.getElementById('dealer-city');
+  const address  = (addressInput?.value || '').trim();
+  const city     = (cityInput?.value || '').trim();
+  const addrData = readDawaData(addressInput);
   const email    = (document.getElementById('dealer-email')?.value || '').trim();
   const password = (document.getElementById('dealer-password')?.value || '').trim();
 
   if (!shopName || !cvr || !contact) {
     showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
+  }
+  if (!address || !addrData.lat || !addrData.lng) {
+    showToast('⚠️ Vælg din butiks-adresse fra listen så kortet viser jer korrekt'); return;
   }
 
   const restore = btnLoading('dealer-submit-btn', 'Opretter profil...');
@@ -6698,6 +6759,9 @@ async function submitDealerApplication() {
           phone:          phone,
           address:        address,
           city:           city,
+          lat:            addrData.lat,
+          lng:            addrData.lng,
+          postcode:       addrData.postcode,
         },
       },
     });
@@ -6730,14 +6794,18 @@ async function submitDealerApplication() {
 
   // Eksisterende bruger: opret ansøgning med verified=false (afventer admin-godkendelse)
   const { error } = await supabase.from('profiles').update({
-    shop_name:   shopName,
-    cvr:         cvr,
-    phone:       phone,
-    address:     address,
-    city:        city,
-    seller_type: 'dealer',
-    verified:    false,
-    name:        contact,
+    shop_name:          shopName,
+    cvr:                cvr,
+    phone:              phone,
+    address:            address,
+    city:               city,
+    lat:                addrData.lat,
+    lng:                addrData.lng,
+    postcode:           addrData.postcode,
+    location_precision: 'exact',
+    seller_type:        'dealer',
+    verified:           false,
+    name:               contact,
   }).eq('id', userId);
 
   restore();
@@ -8066,6 +8134,225 @@ function geocodeCity(city) {
     .catch(function() { return null; });
 }
 
+/* ──────────────────────────────────────────────────────────
+   DAWA AUTOCOMPLETE — to flows: præcis adresse (forhandlere),
+   by/område (private brugere).
+   ────────────────────────────────────────────────────────── */
+
+const _dawaDebounce = new WeakMap();
+let _dawaActive = null; // { input, dropdown }
+
+function _closeDawaDropdown() {
+  if (_dawaActive && _dawaActive.dropdown?.parentNode) {
+    _dawaActive.dropdown.remove();
+  }
+  _dawaActive = null;
+}
+
+document.addEventListener('click', (e) => {
+  if (_dawaActive && !_dawaActive.input.contains(e.target) && !_dawaActive.dropdown.contains(e.target)) {
+    _closeDawaDropdown();
+  }
+});
+document.addEventListener('scroll', _closeDawaDropdown, true);
+window.addEventListener('resize', _closeDawaDropdown);
+
+function _positionDawaDropdown(input, dropdown) {
+  const rect = input.getBoundingClientRect();
+  dropdown.style.top    = (rect.bottom + window.scrollY + 4) + 'px';
+  dropdown.style.left   = (rect.left + window.scrollX) + 'px';
+  dropdown.style.width  = rect.width + 'px';
+}
+
+function _renderDawaDropdown(input, items, onPick, emptyMsg) {
+  if (_dawaActive && _dawaActive.input !== input) _closeDawaDropdown();
+
+  let dropdown = _dawaActive?.dropdown;
+  if (!dropdown) {
+    dropdown = document.createElement('div');
+    dropdown.className = 'dawa-autocomplete-dropdown';
+    document.body.appendChild(dropdown);
+    _dawaActive = { input, dropdown, index: -1, items };
+  }
+  _dawaActive.items = items;
+  _dawaActive.index = -1;
+
+  if (!items || items.length === 0) {
+    dropdown.innerHTML = `<div class="dawa-autocomplete-empty">${emptyMsg || 'Ingen resultater'}</div>`;
+  } else {
+    dropdown.innerHTML = items.map((item, i) =>
+      `<div class="dawa-autocomplete-item" data-index="${i}">${esc(item.label)}</div>`
+    ).join('');
+    dropdown.querySelectorAll('.dawa-autocomplete-item').forEach((el) => {
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const idx = parseInt(el.dataset.index, 10);
+        const picked = _dawaActive?.items?.[idx];
+        if (picked) { onPick(picked); _closeDawaDropdown(); }
+      });
+    });
+  }
+  _positionDawaDropdown(input, dropdown);
+}
+
+function _setDawaLoading(input) {
+  if (_dawaActive && _dawaActive.input !== input) _closeDawaDropdown();
+  let dropdown = _dawaActive?.dropdown;
+  if (!dropdown) {
+    dropdown = document.createElement('div');
+    dropdown.className = 'dawa-autocomplete-dropdown';
+    document.body.appendChild(dropdown);
+    _dawaActive = { input, dropdown, index: -1, items: [] };
+  }
+  dropdown.innerHTML = `<div class="dawa-autocomplete-loading">Søger…</div>`;
+  _positionDawaDropdown(input, dropdown);
+}
+
+function attachAddressAutocomplete(input, onSelect) {
+  if (!input || input._dawaAttached) return;
+  input._dawaAttached = true;
+  input.setAttribute('autocomplete', 'off');
+  input.setAttribute('spellcheck', 'false');
+
+  const handleInput = () => {
+    // Nye taster → ryd gemte koordinater indtil bruger vælger fra dropdown
+    delete input.dataset.dawaLat;
+    delete input.dataset.dawaLng;
+    delete input.dataset.dawaPostcode;
+    delete input.dataset.dawaCity;
+    delete input.dataset.dawaFull;
+
+    const q = (input.value || '').trim();
+    if (q.length < 2) { _closeDawaDropdown(); return; }
+
+    clearTimeout(_dawaDebounce.get(input));
+    _setDawaLoading(input);
+    _dawaDebounce.set(input, setTimeout(async () => {
+      try {
+        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=adresse&per_side=8&q=' + encodeURIComponent(q));
+        const data = await res.json();
+        if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen adresser fundet'); return; }
+        const items = data.map(r => {
+          const a = r.adresse || {};
+          return {
+            label:      r.tekst || '',
+            street:     a.vejnavn || '',
+            houseNumber: [a.husnr, a.etage, a.dør].filter(Boolean).join(' ').trim() || a.husnr || '',
+            postcode:   a.postnr || '',
+            city:       a.postnrnavn || '',
+            lat:        typeof a.y === 'number' ? a.y : null,
+            lng:        typeof a.x === 'number' ? a.x : null,
+            fullAddress: (a.vejnavn && a.husnr ? `${a.vejnavn} ${a.husnr}` : r.tekst || '').trim(),
+          };
+        }).filter(it => it.lat && it.lng && it.fullAddress);
+
+        _renderDawaDropdown(input, items, (picked) => {
+          input.value = picked.fullAddress;
+          input.dataset.dawaLat      = String(picked.lat);
+          input.dataset.dawaLng      = String(picked.lng);
+          input.dataset.dawaPostcode = picked.postcode;
+          input.dataset.dawaCity     = picked.city;
+          input.dataset.dawaFull     = picked.label;
+          if (typeof onSelect === 'function') onSelect(picked);
+        }, 'Ingen adresser fundet');
+      } catch (e) {
+        _renderDawaDropdown(input, [], () => {}, 'Kunne ikke hente adresser');
+      }
+    }, 220));
+  };
+
+  input.addEventListener('input', handleInput);
+  input.addEventListener('focus', () => { if (input.value.trim().length >= 2) handleInput(); });
+  input.addEventListener('keydown', _dawaKeyHandler);
+}
+
+function attachCityAutocomplete(input, onSelect) {
+  if (!input || input._dawaAttached) return;
+  input._dawaAttached = true;
+  input.setAttribute('autocomplete', 'off');
+  input.setAttribute('spellcheck', 'false');
+
+  const handleInput = () => {
+    delete input.dataset.dawaLat;
+    delete input.dataset.dawaLng;
+    delete input.dataset.dawaPostcode;
+
+    const q = (input.value || '').trim();
+    if (q.length < 2) { _closeDawaDropdown(); return; }
+
+    clearTimeout(_dawaDebounce.get(input));
+    _setDawaLoading(input);
+    _dawaDebounce.set(input, setTimeout(async () => {
+      try {
+        const res = await fetch('https://api.dataforsyningen.dk/steder?q='
+          + encodeURIComponent(q) + '&hovedtype=Bebyggelse&per_side=10&format=json');
+        const data = await res.json();
+        if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
+        const seen = new Set();
+        const items = [];
+        for (const s of data) {
+          const name = (s.primærtnavn || (s.navne && s.navne[0]?.navn) || '').trim();
+          if (!name || seen.has(name.toLowerCase())) continue;
+          seen.add(name.toLowerCase());
+          const vc = s.visueltcenter;
+          if (!vc || vc.length < 2) continue;
+          const undertype = s.undertype ? ` · ${s.undertype}` : '';
+          items.push({
+            label: name + undertype,
+            city:  name,
+            lat:   vc[1],
+            lng:   vc[0],
+          });
+        }
+        _renderDawaDropdown(input, items, (picked) => {
+          input.value = picked.city;
+          input.dataset.dawaLat = String(picked.lat);
+          input.dataset.dawaLng = String(picked.lng);
+          if (typeof onSelect === 'function') onSelect(picked);
+        }, 'Ingen byer fundet');
+      } catch (e) {
+        _renderDawaDropdown(input, [], () => {}, 'Kunne ikke hente byer');
+      }
+    }, 220));
+  };
+
+  input.addEventListener('input', handleInput);
+  input.addEventListener('focus', () => { if (input.value.trim().length >= 2) handleInput(); });
+  input.addEventListener('keydown', _dawaKeyHandler);
+}
+
+function _dawaKeyHandler(e) {
+  if (!_dawaActive || _dawaActive.input !== e.target) return;
+  const items = _dawaActive.items || [];
+  if (e.key === 'Escape') { _closeDawaDropdown(); return; }
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    _dawaActive.index = e.key === 'ArrowDown'
+      ? Math.min(items.length - 1, _dawaActive.index + 1)
+      : Math.max(0, _dawaActive.index - 1);
+    _dawaActive.dropdown.querySelectorAll('.dawa-autocomplete-item').forEach((el, i) => {
+      el.classList.toggle('active', i === _dawaActive.index);
+    });
+  } else if (e.key === 'Enter' && _dawaActive.index >= 0) {
+    e.preventDefault();
+    const el = _dawaActive.dropdown.querySelector(`.dawa-autocomplete-item[data-index="${_dawaActive.index}"]`);
+    if (el) el.dispatchEvent(new MouseEvent('mousedown'));
+  }
+}
+
+// Udtræk lat/lng/postcode/city fra input efter bruger har valgt fra autocomplete
+function readDawaData(input) {
+  if (!input) return {};
+  return {
+    lat:      input.dataset.dawaLat ? parseFloat(input.dataset.dawaLat) : null,
+    lng:      input.dataset.dawaLng ? parseFloat(input.dataset.dawaLng) : null,
+    postcode: input.dataset.dawaPostcode || null,
+    city:     input.dataset.dawaCity || null,
+  };
+}
+
 function setView(view) {
   currentView = view;
   var listGrid   = document.getElementById('listings-grid');
@@ -8206,7 +8493,7 @@ async function renderMapPage() {
 async function loadMapPageBikes() {
   const { data, error } = await supabase
     .from('bikes')
-    .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles(name, seller_type, shop_name, verified, address, avatar_url), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .limit(MAP_PAGE_LIMIT);
@@ -8424,7 +8711,7 @@ async function initSplitMap() {
 
   // Geokod i batches for at undgå at oversvømme DAWA-API'et
   const GEO_BATCH = 10;
-  const toGeocode = bikes.filter(b => b.city);
+  const toGeocode = bikes.filter(b => b.city || (b.profiles && b.profiles.lat));
   for (let i = 0; i < toGeocode.length; i += GEO_BATCH) {
     const batch = toGeocode.slice(i, i + GEO_BATCH);
     await Promise.all(batch.map(async b => {
@@ -8434,11 +8721,16 @@ async function initSplitMap() {
 
       let coords = null;
       let precise = false;
-      if (hasAddr) {
+
+      // Foretræk gemte koordinater fra profil (fra DAWA-autocomplete ved oprettelse)
+      if (profile.lat && profile.lng) {
+        coords = [profile.lat, profile.lng];
+        precise = profile.location_precision === 'exact';
+      } else if (hasAddr) {
         coords = await geocodeAddress(profile.address, b.city);
         if (coords) precise = true;
       }
-      if (!coords) coords = await geocodeCity(b.city);
+      if (!coords && b.city) coords = await geocodeCity(b.city);
       if (!coords) return;
 
       const jitter = precise ? 0.0001 : 0.003;
@@ -8635,7 +8927,7 @@ async function initMap() {
   // Hent annoncer med by
   var result = await supabase
     .from('bikes')
-    .select('*, profiles(name, seller_type, shop_name, verified, address)')
+    .select('*, profiles(name, seller_type, shop_name, verified, address, lat, lng, location_precision)')
     .eq('is_active', true);
 
   if (!result.data || result.data.length === 0) return;
@@ -8690,20 +8982,27 @@ async function initMap() {
   // Forhandlere: brug butiks-adresse fra profil (præcis geocoding via DAWA)
   // Private sælgere: vis på by-centrum (ingen privatadresse)
   var geocodePromises = result.data
-    .filter(function(b) { return !!b.city; })
+    .filter(function(b) { return !!b.city || (b.profiles && b.profiles.lat); })
     .map(function(b) {
       var profile = b.profiles || {};
       var isDealer = profile.seller_type === 'dealer';
       var dealerAddress = isDealer && profile.address && profile.address.trim();
 
-      var lookup = dealerAddress
-        ? geocodeAddress(profile.address, b.city).then(function(coords) {
-            return coords || geocodeCity(b.city); // Fallback til by hvis adresse fejler
-          })
-        : geocodeCity(b.city);
+      // Foretræk gemte koordinater fra profil (fra DAWA-autocomplete)
+      var lookup;
+      if (profile.lat && profile.lng) {
+        lookup = Promise.resolve([profile.lat, profile.lng]);
+      } else if (dealerAddress) {
+        lookup = geocodeAddress(profile.address, b.city).then(function(coords) {
+          return coords || geocodeCity(b.city);
+        });
+      } else {
+        lookup = geocodeCity(b.city);
+      }
 
       return lookup.then(function(coords) {
-        if (coords) addBikeMarker(b, coords, isDealer && !!dealerAddress);
+        var isPrecise = (profile.location_precision === 'exact') || (isDealer && !!dealerAddress);
+        if (coords) addBikeMarker(b, coords, isPrecise);
       });
     });
 
@@ -8712,18 +9011,18 @@ async function initMap() {
   // Tilføj markører for verificerede forhandlere med adresse der IKKE allerede har en annonce-markør
   var dealerProfileResult = await supabase
     .from('profiles')
-    .select('id, shop_name, name, city, address')
+    .select('id, shop_name, name, city, address, lat, lng, location_precision')
     .eq('seller_type', 'dealer')
-    .eq('verified', true)
-    .not('address', 'is', null)
-    .not('address', 'eq', '');
+    .eq('verified', true);
 
   if (dealerProfileResult.data) {
     var dealerOnlyPromises = dealerProfileResult.data
-      .filter(function(d) { return !dealersWithMarkers.has(d.id) && d.address && d.city; })
+      .filter(function(d) { return !dealersWithMarkers.has(d.id) && (d.lat || (d.address && d.city)); })
       .map(function(d) {
-        return geocodeAddress(d.address, d.city)
-          .then(function(coords) { return coords || geocodeCity(d.city); })
+        var lookup = (d.lat && d.lng)
+          ? Promise.resolve([d.lat, d.lng])
+          : geocodeAddress(d.address, d.city).then(function(coords) { return coords || geocodeCity(d.city); });
+        return lookup
           .then(function(coords) {
             if (!coords) return;
             var displayName = d.shop_name || d.name || 'Forhandler';

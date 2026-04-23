@@ -2468,6 +2468,40 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 
 /* Min profil — verificeringskort */
+/* ─── DAWA Autocomplete Dropdown ─── */
+.dawa-autocomplete-dropdown {
+  position: absolute;
+  z-index: 11000;
+  background: var(--cream, #FEFAF3);
+  border: 1.5px solid var(--border, #DDD8CE);
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  max-height: 280px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+.dawa-autocomplete-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  line-height: 1.4;
+  color: var(--ink, #1A1A18);
+  transition: background 0.12s;
+}
+.dawa-autocomplete-item:last-child { border-bottom: none; }
+.dawa-autocomplete-item:hover,
+.dawa-autocomplete-item.active {
+  background: var(--sand, #F5F0E8);
+  color: var(--rust, #C8502A);
+}
+.dawa-autocomplete-empty,
+.dawa-autocomplete-loading {
+  padding: 12px 14px;
+  color: var(--muted, #8A8578);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
 .mp-pending-card {
   display: flex; align-items: flex-start; gap: 14px;
   background: #FFF8E6;
