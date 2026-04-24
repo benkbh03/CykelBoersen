@@ -50,17 +50,52 @@ function emailWrapper(content) {
 
 function bikeMatchesSearch(bike, filters) {
   if (!filters) return false;
+
+  // Legacy enkelt-type dropdown
   if (filters.type && bike.type !== filters.type) return false;
+
+  // Sidebar: multi-select cykeltyper
+  if (Array.isArray(filters.types) && filters.types.length > 0) {
+    if (!filters.types.includes(bike.type)) return false;
+  }
+
+  // Sidebar: multi-select stand
+  if (Array.isArray(filters.conditions) && filters.conditions.length > 0) {
+    if (!filters.conditions.includes(bike.condition)) return false;
+  }
+
+  // Sidebar: multi-select hjulstørrelser
+  if (Array.isArray(filters.wheelSizes) && filters.wheelSizes.length > 0) {
+    if (!bike.wheel_size || !filters.wheelSizes.includes(bike.wheel_size)) return false;
+  }
+
+  // Pris
+  if (filters.minPrice && typeof bike.price === "number" && bike.price < filters.minPrice) return false;
+  if (filters.maxPrice && typeof bike.price === "number" && bike.price > filters.maxPrice) return false;
+
+  // Sælgertype (fra profiles)
+  if (filters.sellerType && bike.seller_type && bike.seller_type !== filters.sellerType) return false;
+
+  // Specifik forhandler
+  if (filters.dealerId && bike.user_id && bike.user_id !== filters.dealerId) return false;
+
+  // Garanti (Hurtigfilter-pill)
+  if (filters.warranty && !bike.warranty) return false;
+
+  // By-match
   if (filters.city) {
     const bikeCity = (bike.city || "").toLowerCase();
     const searchCity = filters.city.toLowerCase();
     if (!bikeCity.includes(searchCity) && !searchCity.includes(bikeCity)) return false;
   }
+
+  // Fritekst søgning (mærke/model)
   if (filters.search) {
     const haystack = `${bike.brand} ${bike.model}`.toLowerCase();
     const needle = filters.search.toLowerCase();
     if (!haystack.includes(needle)) return false;
   }
+
   return true;
 }
 
@@ -128,6 +163,11 @@ serve(async (req) => {
 
         const searchNames = userSearches.map(s => `<li style="margin-bottom:4px;">${s.name}</li>`).join("");
 
+        const bikeUrl  = `https://xn--cykelbrsen-5cb.dk/bike/${bike.id}`;
+        const imgHtml  = bike.image
+          ? `<a href="${bikeUrl}" style="text-decoration:none;"><img src="${bike.image}" alt="${bikeName}" style="width:100%;max-width:536px;height:auto;max-height:320px;object-fit:cover;border-radius:10px;display:block;margin:0 0 16px;"></a>`
+          : "";
+
         const html = emailWrapper(`
           <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🔔 Ny annonce matcher din søgning!</h2>
           <p style="color:#8A8578;margin:0 0 16px;font-size:0.9rem;line-height:1.6;">
@@ -135,17 +175,19 @@ serve(async (req) => {
             Der er netop oprettet en ny annonce, der matcher ${userSearches.length === 1 ? 'din gemte søgning' : 'dine gemte søgninger'}:
           </p>
           <ul style="color:#8A8578;font-size:0.9rem;margin:0 0 20px;padding-left:20px;">${searchNames}</ul>
+          ${imgHtml}
           <div style="background:#F5F0E8;border-left:4px solid #2A3D2E;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
             <p style="color:#1A1A18;margin:0 0 4px;font-weight:bold;font-size:1rem;">${bikeName}</p>
             ${bikePrice ? `<p style="color:#C8502A;margin:0 0 4px;font-weight:bold;">${bikePrice}</p>` : ""}
             ${bike.type ? `<p style="color:#8A8578;margin:0;font-size:0.85rem;">${bike.type}${bike.city ? " · " + bike.city : ""}${bike.condition ? " · " + bike.condition : ""}</p>` : ""}
           </div>
-          <a href="https://cykelbørsen.dk?bike=${bike.id}"
+          <a href="${bikeUrl}"
              style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:16px;">
             Se annonce →
           </a>
           <p style="color:#8A8578;font-size:0.8rem;margin:16px 0 0;">
             Du modtager denne besked fordi du har gemt en søgning på Cykelbørsen.
+            <br><a href="https://xn--cykelbrsen-5cb.dk/me" style="color:#8A8578;">Administrér dine gemte søgninger</a>
           </p>
         `);
 
