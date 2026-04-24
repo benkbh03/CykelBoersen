@@ -8190,12 +8190,19 @@ function _renderDawaDropdown(input, items, onPick, emptyMsg) {
       `<div class="dawa-autocomplete-item" data-index="${i}">${esc(item.label)}</div>`
     ).join('');
     dropdown.querySelectorAll('.dawa-autocomplete-item').forEach((el) => {
-      el.addEventListener('mousedown', (e) => {
+      let handled = false;
+      const handlePick = (e) => {
+        if (handled) return;
+        handled = true;
         e.preventDefault();
+        e.stopPropagation();
         const idx = parseInt(el.dataset.index, 10);
         const picked = _dawaActive?.items?.[idx];
         if (picked) { onPick(picked); _closeDawaDropdown(); }
-      });
+      };
+      el.addEventListener('mousedown', handlePick);
+      el.addEventListener('click', handlePick);
+      el.addEventListener('touchend', handlePick);
     });
   }
   _positionDawaDropdown(input, dropdown);
