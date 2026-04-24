@@ -8154,14 +8154,20 @@ document.addEventListener('click', (e) => {
     _closeDawaDropdown();
   }
 });
-document.addEventListener('scroll', _closeDawaDropdown, true);
-window.addEventListener('resize', _closeDawaDropdown);
+document.addEventListener('scroll', (e) => {
+  if (_dawaActive && !_dawaActive.dropdown.contains(e.target)) {
+    _positionDawaDropdown(_dawaActive.input, _dawaActive.dropdown);
+  }
+}, true);
+window.addEventListener('resize', () => {
+  if (_dawaActive) _positionDawaDropdown(_dawaActive.input, _dawaActive.dropdown);
+});
 
 function _positionDawaDropdown(input, dropdown) {
   const rect = input.getBoundingClientRect();
-  dropdown.style.top    = (rect.bottom + window.scrollY + 4) + 'px';
-  dropdown.style.left   = (rect.left + window.scrollX) + 'px';
-  dropdown.style.width  = rect.width + 'px';
+  dropdown.style.top   = (rect.bottom + 4) + 'px';
+  dropdown.style.left  = rect.left + 'px';
+  dropdown.style.width = rect.width + 'px';
 }
 
 function _renderDawaDropdown(input, items, onPick, emptyMsg) {
