@@ -1398,6 +1398,42 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .seller-detail-city { font-size: 0.8rem; color: var(--muted); }
 .bike-detail-description { background: var(--sand); border-radius: 10px; padding: 16px; font-size: 0.88rem; line-height: 1.6; color: var(--charcoal); border: 1px solid var(--border); }
 
+/* ── Ejer-panel og interesserede brugere ── */
+.owner-panel { background: var(--sand); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.owner-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.owner-panel-title { font-weight: 700; font-size: 0.88rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.interested-section { margin-top: 4px; }
+.interested-loading { font-size: 0.85rem; color: var(--muted); }
+.interested-empty { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+.interested-count { font-size: 0.82rem; font-weight: 600; color: var(--forest); margin-bottom: 8px; }
+.interested-list { display: flex; flex-direction: column; gap: 8px; }
+.interested-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.interested-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--forest); color: var(--sand);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; flex-shrink: 0; overflow: hidden;
+}
+.interested-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.interested-name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.interested-time { font-size: 0.75rem; color: var(--muted); }
+.interested-msg-btn {
+  background: var(--forest); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 6px 12px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.interested-msg-btn:hover { background: var(--forest-light); }
+
 /* ── Sælgerens andre / Lignende annoncer ── */
 .related-section-title {
   font-family: 'Fraunces', serif;
@@ -1766,9 +1802,10 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   max-height: 600px;
 }
 .inbox-chat-header {
-  padding: 16px 24px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
   background: var(--sand);
+  flex-shrink: 0;
 }
 .inbox-chat-header-info {
   display: flex;
@@ -1787,16 +1824,26 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   align-items: center;
 }
 .inbox-chat-header-info strong { font-size: 0.95rem; }
-.inbox-chat-bike-link {
-  font-size: 0.8rem;
-  color: var(--forest);
+/* ── Bike preview i chat-header ── */
+.inbox-chat-bike-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   cursor: pointer;
-  padding: 3px 10px;
-  background: rgba(42,61,46,0.08);
-  border-radius: 100px;
   transition: background 0.15s;
 }
-.inbox-chat-bike-link:hover { background: rgba(42,61,46,0.15); }
+.inbox-chat-bike-preview:hover { background: var(--sand-2); }
+.inbox-chat-bike-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 7px; flex-shrink: 0; }
+.inbox-chat-bike-icon { font-size: 1.5rem; }
+.inbox-chat-bike-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.inbox-chat-bike-name { font-weight: 600; font-size: 0.82rem; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inbox-chat-bike-price { font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem; color: var(--rust); }
+.inbox-chat-bike-sold { font-size: 0.72rem; font-weight: 700; background: var(--muted); color: #fff; padding: 2px 8px; border-radius: 100px; white-space: nowrap; }
 .inbox-chat-messages {
   flex: 1;
   overflow-y: auto;

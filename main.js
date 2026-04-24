@@ -1851,6 +1851,8 @@ async function toggleSave(btn, bikeId) {
     _userSavedSet.delete(bikeId);
     showToast('Fjernet fra gemte');
   } else {
+    const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
+    if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
     const { error } = await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
     if (error) { showToast('❌ Kunne ikke gemme annonce'); return; }
     btn.textContent = '❤️';
@@ -1858,7 +1860,6 @@ async function toggleSave(btn, bikeId) {
     showToast('❤️ Gemt! Find den under Gemte i din profil.');
 
     // Send email notification to bike owner (fire-and-forget)
-    const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
     if (bike) {
       supabase.functions.invoke('notify-message', {
         body: {
@@ -3045,7 +3046,15 @@ function buildBikeBodyHTML(b) {
           <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
           <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${b.brand} ${b.model}')">🚩 Rapporter annonce</button>
         </div>
-        ` : `<p style="color:var(--muted);font-size:.85rem">Dette er din egen annonce.</p>`}
+        ` : `
+        <div class="owner-panel">
+          <div class="owner-panel-header">
+            <span class="owner-panel-title">Din annonce</span>
+          </div>
+          <div id="interested-users-section" class="interested-section">
+            <p class="interested-loading">Henter interesserede…</p>
+          </div>
+        </div>`}
       </div>
     </div>
     ${b.description ? `
@@ -3133,6 +3142,7 @@ async function openBikeModal(bikeId) {
     loadResponseTime(profile.id);
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
+    if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
   } catch (renderErr) {
     console.error('openBikeModal render error:', renderErr.message);
     document.getElementById('bike-modal-body').innerHTML = retryHTML('Kunne ikke vise annonce.', `() => openBikeModal('${bikeId}')`);
@@ -3236,6 +3246,7 @@ async function renderBikePage(bikeId) {
   loadResponseTime(profile.id);
   loadSellerOtherListings(profile.id, b.id);
   loadSimilarListings(b.type, b.id);
+  if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
 }
 
 function showDetailView() {
@@ -4923,6 +4934,66 @@ async function loadSimilarListings(bikeType, currentBikeId) {
   }
 }
 
+/* ── Interesserede brugere (sælger-view) ── */
+
+async function loadInterestedUsers(bikeId) {
+  const el = document.getElementById('interested-users-section');
+  if (!el) return;
+
+  const { data, error } = await supabase
+    .from('saved_bikes')
+    .select('user_id, created_at, profiles:user_id(id, name, avatar_url, city)')
+    .eq('bike_id', bikeId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    el.innerHTML = '<p class="interested-empty">Kunne ikke hente interesserede.</p>';
+    return;
+  }
+  if (!data || data.length === 0) {
+    el.innerHTML = '<p class="interested-empty">Ingen har gemt denne annonce endnu.</p>';
+    return;
+  }
+
+  el.innerHTML = `
+    <p class="interested-count">${data.length} interesseret${data.length !== 1 ? 'e' : ''}</p>
+    <div class="interested-list">
+      ${data.map(row => {
+        const p         = row.profiles || {};
+        const name      = esc(p.name || 'Bruger');
+        const safeName  = (p.name || 'Bruger').replace(/'/g, '');
+        const initials  = (p.name || 'U').substring(0, 2).toUpperCase();
+        const avUrl     = safeAvatarUrl(p.avatar_url);
+        const avContent = avUrl
+          ? `<img src="${avUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          : initials;
+        const timeAgo   = formatLastSeen(row.created_at);
+        return `
+          <div class="interested-user-row">
+            <div class="interested-avatar">${avContent}</div>
+            <div class="interested-info">
+              <span class="interested-name">${name}</span>
+              <span class="interested-time">${timeAgo}</span>
+            </div>
+            <button class="interested-msg-btn" onclick="startConversationWithLiker('${bikeId}','${p.id}','${safeName}')">Send besked</button>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+let _pendingInboxThread = null;
+
+function startConversationWithLiker(bikeId, likerId, likerName) {
+  // Luk bike-modal hvis åben
+  const bikeModal = document.getElementById('bike-modal');
+  if (bikeModal && bikeModal.classList.contains('open')) {
+    bikeModal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  _pendingInboxThread = { bikeId, likerId, likerName };
+  navigateTo('/inbox');
+}
+
 /* ── Rapporter annonce ── */
 
 let _reportBikeId    = null;
@@ -5438,11 +5509,12 @@ async function toggleSaveFromModal(btn, bikeId) {
     await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
     btn.textContent = '🤍 Gem annonce';
   } else {
+    const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
+    if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
     await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
     btn.textContent = '❤️ Gemt';
 
     // Send email notification to bike owner (fire-and-forget)
-    const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
     if (bike) {
       supabase.functions.invoke('notify-message', {
         body: {
@@ -7128,8 +7200,10 @@ window.sendReply          = sendReply;
 window.acceptBid          = acceptBid;
 window.openInboxModal     = openInboxModal;
 window.closeInboxModal    = closeInboxModal;
-window.openInboxThread    = openInboxThread;
-window.closeInboxThread   = closeInboxThread;
+window.openInboxThread              = openInboxThread;
+window.closeInboxThread             = closeInboxThread;
+window.loadInterestedUsers          = loadInterestedUsers;
+window.startConversationWithLiker   = startConversationWithLiker;
 window.loadInboxModal     = loadInboxModal;
 window.loadInboxPage      = loadInboxPage;
 window.renderInboxPage    = renderInboxPage;
@@ -7213,6 +7287,22 @@ async function renderInboxPage() {
     </div>`;
 
   await loadInboxPage();
+
+  // Sælger kom fra "Send besked" på en liker → åbn tråd direkte
+  if (_pendingInboxThread) {
+    const { bikeId, likerId, likerName } = _pendingInboxThread;
+    _pendingInboxThread = null;
+    await openInboxThread(bikeId, likerId, likerName);
+    // Forudfyld første besked hvis tråden er tom
+    const messagesEl = document.getElementById('inbox-page-chat-messages');
+    if (messagesEl && messagesEl.children.length === 0) {
+      const ta = document.getElementById('inbox-modal-reply-text');
+      if (ta) {
+        ta.value = `Hej ${likerName.split(' ')[0]}! Jeg kan se, at du har gemt min annonce. Er du stadig interesseret? Spørg endelig, hvis du har spørgsmål 😊`;
+        ta.focus();
+      }
+    }
+  }
 }
 
 async function loadInboxPage() {
@@ -7332,10 +7422,10 @@ async function openInboxThread(bikeId, otherId, otherName) {
   const activeRow = document.querySelector('[data-thread="' + bikeId + '_' + otherId + '"]');
   if (activeRow) activeRow.classList.add('active');
 
-  // Hent cykel-info
+  // Hent cykel-info inkl. billede og pris til preview
   const { data: bikeData } = await supabase
     .from('bikes')
-    .select('user_id, is_active, brand, model')
+    .select('user_id, is_active, brand, model, price, bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
 
@@ -7344,13 +7434,24 @@ async function openInboxThread(bikeId, otherId, otherName) {
   activeInboxThread.isSeller   = isSeller;
   activeInboxThread.bikeActive = bikeActive;
 
-  const bikeName = bikeData ? esc(bikeData.brand + ' ' + bikeData.model) : 'Ukendt cykel';
+  const bikeName    = bikeData ? esc(bikeData.brand + ' ' + bikeData.model) : 'Ukendt cykel';
+  const bikePrice   = bikeData ? bikeData.price.toLocaleString('da-DK') + ' kr.' : '';
+  const bikeThumb   = bikeData?.bike_images?.find(i => i.is_primary)?.url || bikeData?.bike_images?.[0]?.url || '';
+  const isActive    = bikeData?.is_active;
+
   if (headerEl) {
     headerEl.innerHTML = `
       <div class="inbox-chat-header-info">
         <button class="inbox-chat-back" onclick="closeInboxThread()" aria-label="Tilbage">←</button>
         <strong>${esc(otherName)}</strong>
-        <span class="inbox-chat-bike-link" onclick="navigateTo('/bike/${bikeId}')">🚲 ${bikeName}</span>
+      </div>
+      <div class="inbox-chat-bike-preview" onclick="navigateTo('/bike/${bikeId}')" role="button" tabindex="0">
+        ${bikeThumb ? `<img src="${bikeThumb}" alt="" class="inbox-chat-bike-thumb">` : '<span class="inbox-chat-bike-icon">🚲</span>'}
+        <div class="inbox-chat-bike-info">
+          <span class="inbox-chat-bike-name">${bikeName}</span>
+          <span class="inbox-chat-bike-price">${bikePrice}</span>
+        </div>
+        ${!isActive ? '<span class="inbox-chat-bike-sold">Solgt</span>' : ''}
       </div>`;
   }
 
