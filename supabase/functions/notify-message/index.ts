@@ -175,20 +175,27 @@ serve(async (req) => {
 
     // ── FORHANDLER ANSØGNING → ADMIN ─────────────────────────
     if (payload.type === "dealer_application") {
-      const { shop_name, cvr, contact, city, email, user_id } = payload;
+      const { shop_name, cvr, contact, city, phone, address, email, user_id } = payload;
 
       const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🏪 Ny forhandleransøgning</h2>
-        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;">
-          <strong style="color:#1A1A18;">Butik:</strong> ${shop_name ?? "–"}<br>
-          <strong style="color:#1A1A18;">CVR:</strong> ${cvr ?? "–"}<br>
-          <strong style="color:#1A1A18;">Kontaktperson:</strong> ${contact ?? "–"}<br>
-          <strong style="color:#1A1A18;">By:</strong> ${city ?? "–"}<br>
-          <strong style="color:#1A1A18;">Email:</strong> ${email ?? "–"}
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 16px;">🏪 Ny forhandleransøgning</h2>
+        <p style="color:#1A1A18;margin:0 0 16px;font-size:0.95rem;line-height:1.6;">
+          <strong>Butik:</strong> ${shop_name ?? "–"}<br>
+          <strong>CVR:</strong> ${cvr ?? "–"}<br>
+          <strong>Kontaktperson:</strong> ${contact ?? "–"}<br>
+          ${phone ? `<strong>Telefon:</strong> ${phone}<br>` : ""}
+          ${address ? `<strong>Adresse:</strong> ${address}<br>` : ""}
+          <strong>By:</strong> ${city ?? "–"}<br>
+          <strong>Email:</strong> ${email ?? "–"}
         </p>
-        <a href="https://cykelbørsen.dk"
-           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Åbn admin-panel →
+        <div style="background:#FEF3E7;border-left:4px solid #C8502A;padding:12px 16px;border-radius:0 8px 8px 0;margin:0 0 20px;">
+          <p style="color:#1A1A18;margin:0;font-size:0.9rem;">
+            Klik nedenfor for at åbne admin-panelet direkte på ansøgningerne. Her kan du godkende eller afvise.
+          </p>
+        </div>
+        <a href="https://cykelbørsen.dk/?admin=dealers"
+           style="background:#2A3D2E;color:white;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;font-size:0.95rem;">
+          ✓ Godkend forhandler →
         </a>
       `);
 

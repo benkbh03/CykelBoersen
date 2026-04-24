@@ -86,6 +86,20 @@ function updateSEOMeta(description, canonicalPath) {
   if (ogUrl) ogUrl.setAttribute('content', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
 }
 
+// Forhandler afventer admin-godkendelse — blokér adgang til listing-features
+function isPendingDealer() {
+  return currentProfile?.seller_type === 'dealer' && currentProfile?.verified === false;
+}
+
+function blockIfPendingDealer() {
+  if (isPendingDealer()) {
+    showToast('⏳ Din forhandlerprofil afventer godkendelse — du kan oprette annoncer når en admin har godkendt dig');
+    navigateTo('/min-profil');
+    return true;
+  }
+  return false;
+}
+
 // Validér avatar-URL — tillad kun https Supabase storage URLs for at forhindre XSS
 function safeAvatarUrl(url) {
   if (!url || typeof url !== 'string') return null;
@@ -205,6 +219,8 @@ async function init() {
           shop_name: meta.shop_name,
           cvr:       meta.cvr,
           contact:   meta.name,
+          phone:     meta.phone,
+          address:   meta.address,
           city:      meta.city,
           email:     currentUser.email,
           user_id:   currentUser.id,
@@ -347,6 +363,17 @@ async function init() {
     openBikeModal(sharedBikeId);
   }
 
+  // Åbn admin-panel direkte hvis ?admin=dealers er i URL'en (fra notifikationsmail)
+  const adminTab = new URLSearchParams(window.location.search).get('admin');
+  if (adminTab && currentProfile?.is_admin) {
+    history.replaceState(null, '', window.location.pathname);
+    openAdminPanel();
+    const validTabs = ['applications', 'users', 'id'];
+    const tabMap    = { dealers: 'applications', forhandlere: 'applications' };
+    const target    = tabMap[adminTab] || (validTabs.includes(adminTab) ? adminTab : 'applications');
+    setTimeout(() => switchAdminTab(target), 100);
+  }
+
   // Håndter email-bekræftelse og password reset (Supabase sætter type i hash)
   const hashParams = new URLSearchParams(window.location.hash.slice(1));
   if (hashParams.get('type') === 'signup') {
@@ -441,7 +468,21 @@ function updateNav(loggedIn, name, avatarUrl) {
   const mbnProfile     = document.getElementById('mbn-profile-btn');
   const mbnLogin       = document.getElementById('mbn-login-btn');
   if (loggedIn) {
-    if (sellBtn) { sellBtn.textContent = '+ Sæt til salg'; sellBtn.setAttribute('onclick', 'openModal()'); }
+    if (sellBtn) {
+      if (isPendingDealer()) {
+        sellBtn.textContent = '⏳ Afventer godkendelse';
+        sellBtn.setAttribute('onclick', 'blockIfPendingDealer()');
+        sellBtn.setAttribute('title', 'Din forhandlerprofil afventer admin-godkendelse');
+        sellBtn.style.opacity = '0.6';
+        sellBtn.style.cursor = 'not-allowed';
+      } else {
+        sellBtn.textContent = '+ Sæt til salg';
+        sellBtn.setAttribute('onclick', 'openModal()');
+        sellBtn.removeAttribute('title');
+        sellBtn.style.opacity = '';
+        sellBtn.style.cursor = '';
+      }
+    }
     if (navProfile) navProfile.style.display = 'flex';
     if (mbnProfile) mbnProfile.style.display = 'flex';
     if (mbnLogin)   mbnLogin.style.display = 'none';
@@ -1868,6 +1909,7 @@ document.querySelectorAll('.pill').forEach(pill => {
 
 function openModal() {
   if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (blockIfPendingDealer()) return;
   navigateTo('/sell');
 }
 
@@ -1938,6 +1980,7 @@ function selectType(type) {
 
 async function submitListing() {
   if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (blockIfPendingDealer()) return;
   const restore = btnLoading('submit-listing-btn', 'Opretter...');
   try {
 
@@ -1996,6 +2039,7 @@ async function submitListing() {
 
 async function submitSellPage() {
   if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (blockIfPendingDealer()) return;
   const restore = btnLoading('sell-submit-btn', 'Opretter...');
   try {
     // Read from DOM first, fall back to _sellFormCache (step 2 fields are gone when on step 3)
@@ -3215,6 +3259,7 @@ function renderSellPage() {
     navigateTo('/');
     return;
   }
+  if (blockIfPendingDealer()) return;
   showDetailView();
   document.body.classList.add('on-sell-page');
   window.scrollTo({ top: 0, behavior: 'auto' });
@@ -6828,6 +6873,8 @@ async function submitDealerApplication() {
       shop_name: shopName,
       cvr:       cvr,
       contact:   contact,
+      phone:     phone,
+      address:   address,
       city:      city,
       email:     currentUser.email,
       user_id:   currentUser.id,
@@ -6860,6 +6907,7 @@ async function openSubscriptionPortal() {
    ============================================================ */
 
 window.openModal         = openModal;
+window.blockIfPendingDealer = blockIfPendingDealer;
 window.closeModal        = closeModal;
 window.selectType        = selectType;
 window.submitListing     = submitListing;
@@ -8309,21 +8357,20 @@ function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        const res = await fetch('https://api.dataforsyningen.dk/steder?q='
-          + encodeURIComponent(q) + '&hovedtype=Bebyggelse&per_side=10&format=json');
+        const res = await fetch('https://api.dataforsyningen.dk/postnumre?q='
+          + encodeURIComponent(q) + '&per_side=12&format=json');
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const seen = new Set();
         const items = [];
-        for (const s of data) {
-          const name = (s.primærtnavn || (s.navne && s.navne[0]?.navn) || '').trim();
+        for (const p of data) {
+          const name = (p.navn || '').trim();
           if (!name || seen.has(name.toLowerCase())) continue;
           seen.add(name.toLowerCase());
-          const vc = s.visueltcenter;
+          const vc = p.visueltcenter;
           if (!vc || vc.length < 2) continue;
-          const undertype = s.undertype ? ` · ${s.undertype}` : '';
           items.push({
-            label: name + undertype,
+            label: `${p.nr} ${name}`,
             city:  name,
             lat:   vc[1],
             lng:   vc[0],
