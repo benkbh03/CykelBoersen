@@ -449,6 +449,7 @@ async function init() {
     if (document.getElementById('share-modal')?.classList.contains('open'))      { closeShareModal(); return; }
     if (document.getElementById('admin-modal')?.classList.contains('open'))      { closeAdminPanel(); return; }
     if (document.getElementById('edit-modal')?.classList.contains('open'))       { closeEditModal(); return; }
+    if (document.getElementById('crop-modal')?.style.display === 'flex')          { closeCropModal(); return; }
     if (document.getElementById('bike-modal')?.classList.contains('open'))       { closeBikeModal(); return; }
     if (document.getElementById('map-bike-modal')?.classList.contains('open'))   { closeMapBikeModal(); return; }
     if (document.getElementById('inbox-modal')?.classList.contains('open'))      { closeInboxModal(); return; }
@@ -1591,8 +1592,10 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
         <div class="bike-card-img">
           ${imgContent}
           ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
-          <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
-          ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+          <div class="bike-card-badges">
+            <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
+            ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+          </div>
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
           ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
@@ -3934,6 +3937,7 @@ function renderSellImagePreviews() {
       ${item.isPrimary
         ? '<span class="primary-badge">⭐ Forsidebillede</span>'
         : `<button class="set-primary" title="Sæt som forsidebillede" onclick="setSellPrimary(${i})">★</button>`}
+      <button class="crop-img" title="Beskær billede" onclick="openCropModal('sell', ${i})">✂️</button>
       <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
     </div>`).join('');
   const hint = document.getElementById('sell-img-hint');
@@ -6048,6 +6052,7 @@ function renderEditNewImages() {
       ${item.isPrimary
         ? '<span class="primary-badge">Primær</span>'
         : `<button type="button" class="set-primary" onclick="editSetNewPrimary(${i})">★</button>`}
+      <button type="button" class="crop-img" title="Beskær billede" onclick="openCropModal('edit', ${i})">✂️</button>
       <button type="button" class="remove-img" onclick="editRemoveNew(${i})">✕</button>
     </div>`).join('');
   const label = document.getElementById('edit-upload-label');
@@ -6213,6 +6218,98 @@ let selectedFiles = []; // { file, url, isPrimary }
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_IMAGE_SIZE_MB   = 10;
+
+/* ============================================================
+   BILLEDE-BESKÆRING (Cropper.js)
+   ============================================================ */
+let _cropperInstance = null;
+let _cropContext     = null; // { mode: 'sell' | 'edit', index, originalUrl }
+
+function openCropModal(mode, index) {
+  const list = mode === 'sell' ? selectedFiles : editNewFiles;
+  const item = list?.[index];
+  if (!item || !item.url) { showToast('❌ Kunne ikke åbne beskæring'); return; }
+  if (typeof Cropper === 'undefined') { showToast('❌ Cropper-biblioteket er ikke indlæst endnu — prøv igen'); return; }
+
+  _cropContext = { mode, index, originalUrl: item.url };
+
+  const modal  = document.getElementById('crop-modal');
+  const img    = document.getElementById('crop-target');
+  img.src = item.url;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Reset ratio-knap til 4:3 som default
+  document.querySelectorAll('#crop-modal .crop-ratio-btn').forEach(b => b.classList.remove('active'));
+  const def = document.querySelector('#crop-modal .crop-ratio-btn[data-ratio="1.3333"]');
+  if (def) def.classList.add('active');
+
+  if (_cropperInstance) { try { _cropperInstance.destroy(); } catch (_) {} _cropperInstance = null; }
+
+  _cropperInstance = new Cropper(img, {
+    aspectRatio: 4 / 3,
+    viewMode:    1,
+    autoCropArea: 1,
+    background:  false,
+    responsive:  true,
+    dragMode:    'move',
+    guides:      true,
+    movable:     true,
+    zoomable:    true,
+    rotatable:   false,
+    scalable:    false,
+  });
+}
+
+function setCropRatio(ratio, btn) {
+  if (!_cropperInstance) return;
+  _cropperInstance.setAspectRatio(ratio);
+  document.querySelectorAll('#crop-modal .crop-ratio-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+async function applyCrop() {
+  if (!_cropperInstance || !_cropContext) return;
+  const canvas = _cropperInstance.getCroppedCanvas({
+    maxWidth:  2000,
+    maxHeight: 2000,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high',
+  });
+  if (!canvas) { showToast('❌ Kunne ikke beskære billedet'); return; }
+
+  const { mode, index } = _cropContext;
+  const list   = mode === 'sell' ? selectedFiles : editNewFiles;
+  const target = list?.[index];
+  if (!target) { closeCropModal(); return; }
+
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+  if (!blob) { showToast('❌ Kunne ikke gemme beskæring'); return; }
+
+  const newName = (target.file?.name || 'billede.jpg').replace(/\.(heic|heif|png|webp|gif)$/i, '.jpg');
+  const newFile = new File([blob], newName, { type: 'image/jpeg' });
+  const newUrl  = URL.createObjectURL(newFile);
+
+  try { URL.revokeObjectURL(target.url); } catch (_) {}
+  target.file = newFile;
+  target.url  = newUrl;
+
+  if (mode === 'sell') renderSellImagePreviews();
+  else                 renderEditNewImages();
+
+  closeCropModal();
+  showToast('✂️ Beskæring gemt');
+}
+
+function closeCropModal() {
+  if (_cropperInstance) { try { _cropperInstance.destroy(); } catch (_) {} _cropperInstance = null; }
+  _cropContext = null;
+  const modal = document.getElementById('crop-modal');
+  if (modal) modal.style.display = 'none';
+  const img = document.getElementById('crop-target');
+  if (img) img.src = '';
+  document.body.style.overflow = '';
+}
 
 function validateImageFile(file) {
   const nameLower = (file.name || '').toLowerCase();
@@ -6974,6 +7071,10 @@ window.submitSellPage            = submitSellPage;
 window.previewSellImages         = previewSellImages;
 window.setSellPrimary            = setSellPrimary;
 window.removeSellImage           = removeSellImage;
+window.openCropModal             = openCropModal;
+window.closeCropModal            = closeCropModal;
+window.applyCrop                 = applyCrop;
+window.setCropRatio              = setCropRatio;
 window.suggestListingFromImages  = suggestListingFromImages;
 window.setSellStep               = setSellStep;
 window.advanceSell               = advanceSell;

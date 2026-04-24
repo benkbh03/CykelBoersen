@@ -41,6 +41,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -1164,8 +1165,34 @@
     </div>
   </div>
 
+  <!-- Crop billede modal -->
+  <div class="modal-overlay" id="crop-modal" role="dialog" aria-modal="true" style="display:none;z-index:6500;" onclick="if(event.target===this)closeCropModal()">
+    <div class="crop-modal-box">
+      <div class="crop-modal-header">
+        <h3>Beskær billede</h3>
+        <button type="button" class="crop-modal-close" onclick="closeCropModal()" aria-label="Luk">✕</button>
+      </div>
+      <div class="crop-modal-body">
+        <div class="crop-container"><img id="crop-target" alt="Billede der beskæres"></div>
+      </div>
+      <div class="crop-modal-footer">
+        <div class="crop-ratio-toggle" role="group" aria-label="Billedforhold">
+          <button type="button" class="crop-ratio-btn active" data-ratio="1.3333" onclick="setCropRatio(4/3, this)">4:3</button>
+          <button type="button" class="crop-ratio-btn" data-ratio="1" onclick="setCropRatio(1, this)">1:1</button>
+          <button type="button" class="crop-ratio-btn" data-ratio="1.7778" onclick="setCropRatio(16/9, this)">16:9</button>
+          <button type="button" class="crop-ratio-btn" data-ratio="0" onclick="setCropRatio(NaN, this)">Frit</button>
+        </div>
+        <div class="crop-modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeCropModal()">Annuller</button>
+          <button type="button" class="btn-primary" onclick="applyCrop()">Gem beskæring</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js" defer></script>
   <script type="module" src="main.js"></script>
 </body>
 </html>
