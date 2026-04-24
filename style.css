@@ -5043,11 +5043,11 @@ body:has(.map-page) #chat-widget {
   gap: 3px;
 }
 
-/* ── Floating liste-toggle (top-right på desktop-kort) ── */
+/* ── Floating liste-toggle (top-left på desktop-kort, under zoom) ── */
 .split-list-toggle-float {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 90px;
+  left: 14px;
   z-index: 500;
   background: var(--cream);
   border: 1px solid var(--border);
