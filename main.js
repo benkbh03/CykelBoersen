@@ -86,6 +86,20 @@ function updateSEOMeta(description, canonicalPath) {
   if (ogUrl) ogUrl.setAttribute('content', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
 }
 
+// Forhandler afventer admin-godkendelse — blokér adgang til listing-features
+function isPendingDealer() {
+  return currentProfile?.seller_type === 'dealer' && currentProfile?.verified === false;
+}
+
+function blockIfPendingDealer() {
+  if (isPendingDealer()) {
+    showToast('⏳ Din forhandlerprofil afventer godkendelse — du kan oprette annoncer når en admin har godkendt dig');
+    navigateTo('/min-profil');
+    return true;
+  }
+  return false;
+}
+
 // Validér avatar-URL — tillad kun https Supabase storage URLs for at forhindre XSS
 function safeAvatarUrl(url) {
   if (!url || typeof url !== 'string') return null;
@@ -454,7 +468,21 @@ function updateNav(loggedIn, name, avatarUrl) {
   const mbnProfile     = document.getElementById('mbn-profile-btn');
   const mbnLogin       = document.getElementById('mbn-login-btn');
   if (loggedIn) {
-    if (sellBtn) { sellBtn.textContent = '+ Sæt til salg'; sellBtn.setAttribute('onclick', 'openModal()'); }
+    if (sellBtn) {
+      if (isPendingDealer()) {
+        sellBtn.textContent = '⏳ Afventer godkendelse';
+        sellBtn.setAttribute('onclick', 'blockIfPendingDealer()');
+        sellBtn.setAttribute('title', 'Din forhandlerprofil afventer admin-godkendelse');
+        sellBtn.style.opacity = '0.6';
+        sellBtn.style.cursor = 'not-allowed';
+      } else {
+        sellBtn.textContent = '+ Sæt til salg';
+        sellBtn.setAttribute('onclick', 'openModal()');
+        sellBtn.removeAttribute('title');
+        sellBtn.style.opacity = '';
+        sellBtn.style.cursor = '';
+      }
+    }
     if (navProfile) navProfile.style.display = 'flex';
     if (mbnProfile) mbnProfile.style.display = 'flex';
     if (mbnLogin)   mbnLogin.style.display = 'none';
@@ -1881,6 +1909,7 @@ document.querySelectorAll('.pill').forEach(pill => {
 
 function openModal() {
   if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (blockIfPendingDealer()) return;
   navigateTo('/sell');
 }
 
@@ -1951,6 +1980,7 @@ function selectType(type) {
 
 async function submitListing() {
   if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (blockIfPendingDealer()) return;
   const restore = btnLoading('submit-listing-btn', 'Opretter...');
   try {
 
@@ -2009,6 +2039,7 @@ async function submitListing() {
 
 async function submitSellPage() {
   if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+  if (blockIfPendingDealer()) return;
   const restore = btnLoading('sell-submit-btn', 'Opretter...');
   try {
     // Read from DOM first, fall back to _sellFormCache (step 2 fields are gone when on step 3)
@@ -3228,6 +3259,7 @@ function renderSellPage() {
     navigateTo('/');
     return;
   }
+  if (blockIfPendingDealer()) return;
   showDetailView();
   document.body.classList.add('on-sell-page');
   window.scrollTo({ top: 0, behavior: 'auto' });
@@ -6875,6 +6907,7 @@ async function openSubscriptionPortal() {
    ============================================================ */
 
 window.openModal         = openModal;
+window.blockIfPendingDealer = blockIfPendingDealer;
 window.closeModal        = closeModal;
 window.selectType        = selectType;
 window.submitListing     = submitListing;
