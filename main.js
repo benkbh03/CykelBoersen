@@ -7098,6 +7098,10 @@ window.resetMapFilters         = resetMapFilters;
 window.toggleMapFilterPanel    = toggleMapFilterPanel;
 window.splitCardClick          = splitCardClick;
 window.toggleSplitList         = toggleSplitList;
+window.applyMapFilters         = applyMapFilters;
+window.openMapFiltersSheet     = openMapFiltersSheet;
+window.closeMapFiltersSheet    = closeMapFiltersSheet;
+window.mapTabSwitch            = mapTabSwitch;
 window.toggleDealerGPS        = toggleDealerGPS;
 window.sortAndRenderDealers   = sortAndRenderDealers;
 window.showDetailView     = showDetailView;
@@ -8574,87 +8578,184 @@ async function renderMapPage() {
 
   document.getElementById('detail-view').innerHTML = `
     <div class="map-page">
-      <div class="map-page-header">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
-        <h1 class="map-page-title">Kortvisning</h1>
-        <p class="map-page-subtitle">Forhandlere har præcis placering · private er ca. by-center</p>
+      <!-- Mobil sub-header: back + titel + antal + filter chips (kun mobil) -->
+      <div class="map-mobile-subheader">
+        <button class="map-mobile-back" onclick="navigateTo('/')" aria-label="Tilbage">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Tilbage
+        </button>
+        <div class="map-mobile-title-row">
+          <h1 class="map-mobile-title">Kortvisning</h1>
+          <span id="map-mobile-count" class="map-mobile-count">Henter…</span>
+        </div>
       </div>
 
-      <!-- Filterpanel: row1 altid synlig, row2 kun synlig på desktop og mobil-udfoldet -->
+      <!-- Filterbar: desktop = alle felter inline, mobil = chips + bundfilter-sheet -->
       <div class="map-filters-bar" role="search">
-        <div class="map-filters-row1">
-          <input type="search" id="map-search" placeholder="Søg mærke, model..." class="map-filter-input map-filter-input--search" aria-label="Søg">
-          <button class="map-near-btn" id="map-near-btn" onclick="toggleMapNearMe()" aria-pressed="false">📍 Nær mig</button>
-          <button class="map-filter-expand-btn" id="map-filter-expand-btn" onclick="toggleMapFilterPanel()">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
-            Filtre
-            <span class="map-filter-badge" id="map-filter-badge" style="display:none;">0</span>
-          </button>
-          <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">✕ Nulstil</button>
-        </div>
-        <div class="map-filters-row2" id="map-filters-row2">
-          <select id="map-seller-type" class="map-filter-sel" aria-label="Sælgertype">
-            <option value="all">Alle sælgere</option>
-            <option value="dealer">🏪 Forhandlere</option>
-            <option value="private">👤 Private</option>
-          </select>
-          <select id="map-bike-type" class="map-filter-sel" aria-label="Cykeltype">
-            <option value="">Alle typer</option>
-            <option>Racercykel</option>
-            <option>Mountainbike</option>
-            <option>El-cykel</option>
-            <option>Citybike</option>
-            <option>Ladcykel</option>
-            <option>Børnecykel</option>
-            <option>Gravel</option>
-          </select>
-          <select id="map-condition" class="map-filter-sel" aria-label="Stand">
-            <option value="">Alle stande</option>
-            <option>Ny</option>
-            <option>Som ny</option>
-            <option>God stand</option>
-            <option>Brugt</option>
-          </select>
-          <div class="map-filter-price">
-            <input type="number" id="map-price-min" placeholder="Min kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Min pris">
-            <span class="map-filter-sep">–</span>
-            <input type="number" id="map-price-max" placeholder="Max kr." min="0" class="map-filter-input map-filter-input--sm" aria-label="Max pris">
+        <!-- Desktop: enkelt filter-row med alle kontroller -->
+        <div class="map-filters-row map-filters-desktop">
+          <div class="map-pill map-pill--search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
+            <input type="search" id="map-search" placeholder="Søg mærke, model..." aria-label="Søg">
           </div>
-          <select id="map-radius" class="map-filter-sel" aria-label="Radius" disabled>
-            <option value="5">5 km</option>
-            <option value="10">10 km</option>
-            <option value="25" selected>25 km</option>
-            <option value="50">50 km</option>
-            <option value="100">100 km</option>
-            <option value="">Hele landet</option>
-          </select>
+          <button class="map-pill map-pill--near" id="map-near-btn" onclick="toggleMapNearMe()" aria-pressed="false">
+            <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>
+            <span>Nær mig</span>
+          </button>
+          <div class="map-pill map-pill--sel">
+            <select id="map-radius" aria-label="Radius" disabled>
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+              <option value="25" selected>25 km</option>
+              <option value="50">50 km</option>
+              <option value="100">100 km</option>
+              <option value="">Hele landet</option>
+            </select>
+            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="map-pill map-pill--sel map-pill--icon">
+            <svg class="map-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="17" r="4"/><circle cx="18" cy="17" r="4"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke-linejoin="round" stroke-linecap="round"/></svg>
+            <select id="map-bike-type" aria-label="Cykeltype">
+              <option value="">Alle typer</option>
+              <option>Racercykel</option>
+              <option>Mountainbike</option>
+              <option>El-cykel</option>
+              <option>Citybike</option>
+              <option>Ladcykel</option>
+              <option>Børnecykel</option>
+              <option>Gravel</option>
+            </select>
+            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="map-pill map-pill--sel map-pill--icon">
+            <svg class="map-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7" stroke-linecap="round"/></svg>
+            <select id="map-seller-type" aria-label="Sælgertype">
+              <option value="all">Alle sælgere</option>
+              <option value="dealer">Forhandler</option>
+              <option value="private">Privat</option>
+            </select>
+            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="map-pill map-pill--sel map-pill--icon">
+            <svg class="map-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <select id="map-condition" aria-label="Stand">
+              <option value="">Alle stande</option>
+              <option>Ny</option>
+              <option>Som ny</option>
+              <option>God stand</option>
+              <option>Brugt</option>
+            </select>
+            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="map-pill map-pill--price">
+            <input type="number" id="map-price-min" placeholder="Min. pris" min="0" aria-label="Min pris">
+            <span class="map-pill-sep">—</span>
+            <input type="number" id="map-price-max" placeholder="Max. pris" min="0" aria-label="Max pris">
+            <span class="map-pill-unit">kr.</span>
+          </div>
+          <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115-6.7L21 8M21 3v5h-5M21 12a9 9 0 01-15 6.7L3 16M3 21v-5h5"/></svg>
+            Nulstil
+          </button>
+        </div>
+
+        <!-- Mobil: scrollable filter chips -->
+        <div class="map-filters-mobile">
+          <div class="map-pill map-pill--search map-chip-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
+            <input type="search" id="map-search-mobile" placeholder="Søg mærke, model..." aria-label="Søg">
+          </div>
+          <button class="map-chip map-chip--filters" onclick="openMapFiltersSheet()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h11M4 18h7M15 6a2 2 0 114 0 2 2 0 01-4 0zM11 18a2 2 0 114 0 2 2 0 01-4 0zM4 12h5m10 0h-5M9 12a2 2 0 104 0 2 2 0 00-4 0z"/></svg>
+            Filtre
+            <span class="map-chip-badge" id="map-filter-badge" style="display:none;">0</span>
+          </button>
+          <button class="map-chip map-chip--near" id="map-near-btn-mobile" onclick="toggleMapNearMe()" aria-pressed="false">
+            <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>
+            Nær mig
+          </button>
         </div>
       </div>
 
       <div id="browse-split" class="map-page-split${_splitListVisible ? ' list-open' : ''}">
         <div id="split-list-panel"${!_splitListVisible ? ' class="collapsed"' : ''}>
+          <!-- Grab-handle (kun mobil) -->
+          <button class="split-sheet-handle" onclick="toggleSplitList()" aria-label="Toggle liste">
+            <div class="split-sheet-handle-bar"></div>
+          </button>
           <div class="split-list-header">
-            <span id="split-count" class="split-count-label">Henter annoncer…</span>
-            <button class="split-list-close-btn" onclick="toggleSplitList()" aria-label="Luk liste">Luk ✕</button>
+            <div class="split-list-header-text">
+              <div class="split-list-count-big" id="split-count-big">–</div>
+              <div class="split-list-count-label" id="split-count">Henter annoncer…</div>
+            </div>
+            <div class="split-list-header-actions">
+              <div class="map-pill map-pill--sel map-pill--sort">
+                <select id="map-sort" onchange="applyMapFilters()" aria-label="Sortering">
+                  <option value="newest">Sortér: Nyeste</option>
+                  <option value="price_asc">Sortér: Pris ↑</option>
+                  <option value="price_desc">Sortér: Pris ↓</option>
+                  <option value="distance">Sortér: Afstand</option>
+                </select>
+                <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <button class="split-list-close-btn" onclick="toggleSplitList()" aria-label="Skjul liste">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+            </div>
           </div>
           <div id="split-cards-container"></div>
         </div>
         <div id="split-map-panel">
           <button class="split-list-toggle-float" id="split-toggle-btn" onclick="toggleSplitList()">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="7 4 14 10 7 16"/></svg>
-            Vis liste
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span>Vis liste</span>
           </button>
+        </div>
+      </div>
+
+      <!-- Mobil tab bar: Liste ⇄ Kort -->
+      <div class="map-tab-bar" id="map-tab-bar">
+        <button class="map-tab-btn active" id="map-tab-map" onclick="mapTabSwitch('map')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2m0-14l6 2m-6-2v14m6-12l6-2v14l-6 2m0-14v14"/></svg>
+          Kort
+        </button>
+        <button class="map-tab-btn" id="map-tab-list" onclick="mapTabSwitch('list')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          Liste
+        </button>
+      </div>
+
+      <!-- Mobil filter-sheet -->
+      <div class="map-filter-sheet-overlay" id="map-filter-sheet" onclick="if(event.target===this)closeMapFiltersSheet()">
+        <div class="map-filter-sheet">
+          <div class="map-filter-sheet-handle"></div>
+          <div class="map-filter-sheet-head">
+            <div class="map-filter-sheet-title">Filtre</div>
+            <button class="map-filter-sheet-close" onclick="closeMapFiltersSheet()" aria-label="Luk">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          <div class="map-filter-sheet-body" id="map-filter-sheet-body"></div>
+          <div class="map-filter-sheet-footer">
+            <button class="map-filter-reset" onclick="resetMapFilters()">Nulstil</button>
+            <button class="map-filter-apply" onclick="closeMapFiltersSheet()" id="map-filter-apply-btn">Vis annoncer</button>
+          </div>
         </div>
       </div>
     </div>`;
 
-  // Filter-events (debounced)
+  // Filter-events (debounced). Sync desktop<->mobile søgeinput.
   const debounced = debounce(() => { applyMapFilters(); updateMapFilterBadge(); }, 220);
-  ['map-search', 'map-price-min', 'map-price-max'].forEach(id => {
+  const searchDesk = document.getElementById('map-search');
+  const searchMob  = document.getElementById('map-search-mobile');
+  const syncSearch = (src, dst) => { if (dst && dst.value !== src.value) dst.value = src.value; };
+  if (searchDesk) searchDesk.addEventListener('input', () => { syncSearch(searchDesk, searchMob); debounced(); });
+  if (searchMob)  searchMob.addEventListener('input',  () => { syncSearch(searchMob, searchDesk); debounced(); });
+  ['map-price-min', 'map-price-max'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', debounced);
   });
-  ['map-seller-type', 'map-bike-type', 'map-condition', 'map-radius'].forEach(id => {
+  ['map-seller-type', 'map-bike-type', 'map-condition', 'map-radius', 'map-sort'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', () => { applyMapFilters(); updateMapFilterBadge(); });
   });
@@ -8674,8 +8775,10 @@ async function loadMapPageBikes() {
 }
 
 function getMapFilters() {
+  const qDesk = (document.getElementById('map-search')?.value || '').trim();
+  const qMob  = (document.getElementById('map-search-mobile')?.value || '').trim();
   return {
-    q:         (document.getElementById('map-search')?.value || '').trim().toLowerCase(),
+    q:         (qDesk || qMob).toLowerCase(),
     seller:    document.getElementById('map-seller-type')?.value || 'all',
     type:      document.getElementById('map-bike-type')?.value || '',
     condition: document.getElementById('map-condition')?.value || '',
@@ -8683,6 +8786,7 @@ function getMapFilters() {
     priceMax:  parseInt(document.getElementById('map-price-max')?.value, 10) || null,
     radius:    _mapNearMeCoords ? (parseInt(document.getElementById('map-radius')?.value, 10) || null) : null,
     nearCoords: _mapNearMeCoords,
+    sort:      document.getElementById('map-sort')?.value || 'newest',
   };
 }
 
@@ -8727,11 +8831,8 @@ function updateMapFilterBadge() {
 }
 
 function toggleMapFilterPanel() {
-  const row2 = document.getElementById('map-filters-row2');
-  const btn  = document.getElementById('map-filter-expand-btn');
-  if (!row2) return;
-  const isOpen = row2.classList.toggle('open');
-  if (btn) btn.classList.toggle('active', isOpen);
+  // Bagud-kompatibilitet: den nye mobil-UX bruger fuld-sheet
+  openMapFiltersSheet();
 }
 
 function applyMapFilters() {
@@ -8739,27 +8840,46 @@ function applyMapFilters() {
   const filtered = filterMapBikes();
   const cardsContainer = document.getElementById('split-cards-container');
   const countEl        = document.getElementById('split-count');
+  const countBigEl     = document.getElementById('split-count-big');
+  const countMobEl     = document.getElementById('map-mobile-count');
 
-  const countText = filtered.length + (filtered.length === 1 ? ' annonce' : ' annoncer');
-  if (countEl) countEl.textContent = countText;
+  const noun = filtered.length === 1 ? 'annonce' : 'annoncer';
+  const countText = filtered.length + ' ' + noun;
+  if (countEl)    countEl.textContent = 'cykler fundet';
+  if (countBigEl) countBigEl.textContent = filtered.length.toLocaleString('da-DK');
+  if (countMobEl) countMobEl.textContent = filtered.length + ' cykler';
+  const applyBtn = document.getElementById('map-filter-apply-btn');
+  if (applyBtn) applyBtn.textContent = 'Vis ' + countText;
   // Hold floating toggle-knap synkroniseret med aktuel tæller
-  if (!_splitListVisible) {
-    const btn = document.getElementById('split-toggle-btn');
-    if (btn) btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="7 4 14 10 7 16"/></svg> ' + countText;
+  const tgl = document.getElementById('split-toggle-btn');
+  if (tgl) {
+    tgl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Vis liste (' + filtered.length + ')</span>';
   }
 
   if (filtered.length === 0) {
-    cardsContainer.innerHTML = '<p style="padding:24px 16px;color:var(--muted);font-size:0.88rem;">Ingen annoncer matcher filtrene.</p>';
+    cardsContainer.innerHTML = '<div class="split-empty">Ingen annoncer matcher filtrene.</div>';
   } else {
     const f = getMapFilters();
-    let list = filtered;
-    if (f.nearCoords && _mapPageGeocoded) {
-      list = [...filtered].sort((a, b) => {
+    let list = [...filtered];
+    // Sort primært efter valgt sortering; "distance" kræver nearCoords
+    if (f.sort === 'price_asc')  list.sort((a, b) => a.price - b.price);
+    else if (f.sort === 'price_desc') list.sort((a, b) => b.price - a.price);
+    else if (f.sort === 'distance' && f.nearCoords && _mapPageGeocoded) {
+      list.sort((a, b) => {
         const ga = _mapPageGeocoded.get(a.id), gb = _mapPageGeocoded.get(b.id);
-        if (!ga) return 1;
-        if (!gb) return -1;
+        if (!ga) return 1; if (!gb) return -1;
         return haversineKm(f.nearCoords, ga.coords) - haversineKm(f.nearCoords, gb.coords);
       });
+    } else if (f.nearCoords && _mapPageGeocoded && f.sort === 'newest') {
+      // Hvis Nær mig er aktiv men sort er default, sortér alligevel efter afstand først
+      list.sort((a, b) => {
+        const ga = _mapPageGeocoded.get(a.id), gb = _mapPageGeocoded.get(b.id);
+        if (!ga) return 1; if (!gb) return -1;
+        return haversineKm(f.nearCoords, ga.coords) - haversineKm(f.nearCoords, gb.coords);
+      });
+    } else {
+      // newest (default)
+      list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
     renderSplitCards(list, cardsContainer);
   }
@@ -8777,32 +8897,59 @@ function applyMapFilters() {
 }
 
 function resetMapFilters() {
-  ['map-search', 'map-price-min', 'map-price-max'].forEach(id => {
+  ['map-search', 'map-search-mobile', 'map-price-min', 'map-price-max'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   const st = document.getElementById('map-seller-type'); if (st) st.value = 'all';
   const bt = document.getElementById('map-bike-type');   if (bt) bt.value = '';
   const co = document.getElementById('map-condition');   if (co) co.value = '';
   const rd = document.getElementById('map-radius');      if (rd) { rd.value = '25'; rd.disabled = true; }
+  const so = document.getElementById('map-sort');        if (so) so.value = 'newest';
   _mapNearMeCoords = null;
   if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
-  const nb = document.getElementById('map-near-btn');
-  if (nb) { nb.classList.remove('active'); nb.setAttribute('aria-pressed', 'false'); nb.textContent = '📍 Nær mig'; }
-  // Luk filterpanel på mobil
-  const row2 = document.getElementById('map-filters-row2');
-  if (row2) row2.classList.remove('open');
-  const expBtn = document.getElementById('map-filter-expand-btn');
-  if (expBtn) expBtn.classList.remove('active');
+  [document.getElementById('map-near-btn'), document.getElementById('map-near-btn-mobile')].forEach(b => {
+    if (!b) return;
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed', 'false');
+    const span = b.querySelector('span');
+    if (span) span.textContent = 'Nær mig';
+    else {
+      const svg = b.querySelector('svg');
+      b.innerHTML = '';
+      if (svg) b.appendChild(svg);
+      b.appendChild(document.createTextNode(' Nær mig'));
+    }
+  });
+  // Populer sheet igen hvis åben, så den afspejler nulstillede felter
+  const sheet = document.getElementById('map-filter-sheet');
+  if (sheet && sheet.classList.contains('open')) openMapFiltersSheet();
   applyMapFilters();
   updateMapFilterBadge();
 }
 
 async function toggleMapNearMe() {
-  const btn = document.getElementById('map-near-btn');
+  const btn    = document.getElementById('map-near-btn');
+  const btnMob = document.getElementById('map-near-btn-mobile');
   const radiusSel = document.getElementById('map-radius');
+  const setBtn = (active, label) => {
+    [btn, btnMob].forEach(b => {
+      if (!b) return;
+      b.classList.toggle('active', !!active);
+      b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      const span = b.querySelector('span');
+      if (span) span.textContent = label;
+      else {
+        // Mobilchip har ikke <span>-wrapper — bevar ikonet og opdater trailing tekst
+        const svg = b.querySelector('svg');
+        b.innerHTML = '';
+        if (svg) b.appendChild(svg);
+        b.appendChild(document.createTextNode(' ' + label));
+      }
+    });
+  };
   if (_mapNearMeCoords) {
     _mapNearMeCoords = null;
-    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.textContent = '📍 Nær mig'; }
+    setBtn(false, 'Nær mig');
     if (radiusSel) radiusSel.disabled = true;
     if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
     applyMapFilters(); updateMapFilterBadge();
@@ -8811,11 +8958,11 @@ async function toggleMapNearMe() {
   if (!navigator.geolocation) {
     showToast('Din browser understøtter ikke GPS'); return;
   }
-  if (btn) btn.textContent = '📍 Henter...';
+  setBtn(false, 'Henter…');
   try {
     const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000, enableHighAccuracy: true }));
     _mapNearMeCoords = [pos.coords.latitude, pos.coords.longitude];
-    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.textContent = '📍 Min position'; }
+    setBtn(true, 'Min position');
     if (radiusSel) radiusSel.disabled = false;
     if (splitMapInstance) {
       // Fjern evt. gammel markør
@@ -8852,8 +8999,9 @@ async function initSplitMap() {
     return;
   }
 
-  // Init Leaflet-kort på den nye DOM-node
-  splitMapInstance = L.map('split-map-panel', { zoomControl: true }).setView([56.0, 10.2], 7);
+  // Init Leaflet-kort på den nye DOM-node (zoom top-left per design)
+  splitMapInstance = L.map('split-map-panel', { zoomControl: false }).setView([56.0, 10.2], 7);
+  L.control.zoom({ position: 'topleft' }).addTo(splitMapInstance);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org">OpenStreetMap</a>',
     maxZoom: 18,
@@ -8996,27 +9144,49 @@ async function initSplitMap() {
 }
 
 function renderSplitCards(bikes, container) {
+  const f = getMapFilters();
   container.innerHTML = bikes.map(b => {
     const profile    = b.profiles || {};
     const isDealer   = profile.seller_type === 'dealer';
-    const sellerName = isDealer ? profile.shop_name : profile.name;
     const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
-    const timeAgo    = formatLastSeen ? formatLastSeen(b.created_at) : '';
-    const badge      = isDealer
-      ? '<span style="background:var(--forest);color:#fff;border-radius:4px;padding:1px 5px;font-size:0.65rem;font-weight:600;">Forhandler</span>'
-      : '<span style="background:var(--sand);color:var(--muted);border-radius:4px;padding:1px 5px;font-size:0.65rem;">Privat</span>';
+    const sellerBadge = isDealer
+      ? '<span class="split-card-badge split-card-badge--dealer">Forhandler</span>'
+      : '<span class="split-card-badge split-card-badge--private">Privat</span>';
+
+    // Afstand hvis Nær mig er aktiv
+    let distStr = '';
+    if (f.nearCoords && _mapPageGeocoded) {
+      const g = _mapPageGeocoded.get(b.id);
+      if (g) {
+        const d = haversineKm(f.nearCoords, g.coords);
+        distStr = (d < 1 ? d.toFixed(1) : Math.round(d)) + ' km';
+      }
+    }
+
+    // Tag chips: type + år + stand (eller str. hvis intet)
+    const chips = [];
+    if (b.condition) chips.push(esc(b.condition));
+    if (b.year)      chips.push(String(b.year));
+    if (b.size)      chips.push('Str. ' + esc(b.size));
+
     return '<div class="split-card" data-bike-id="' + b.id + '" onclick="splitCardClick(\'' + b.id + '\')">'
       + '<div class="split-card-img">'
       + (primaryImg ? '<img src="' + primaryImg + '" alt="" loading="lazy">' : '<div class="split-card-img-placeholder">🚲</div>')
+      + sellerBadge
+      + '<button class="split-card-heart" onclick="event.stopPropagation();toggleSave(this,\'' + b.id + '\')" aria-label="Gem annonce">'
+      + (_userSavedSet && _userSavedSet.has(b.id) ? '❤️' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20.8s-7.5-4.6-7.5-11A4.5 4.5 0 0112 6a4.5 4.5 0 017.5 3.8c0 6.4-7.5 11-7.5 11z"/></svg>')
+      + '</button>'
       + '</div>'
       + '<div class="split-card-body">'
       + '<div class="split-card-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
-      + '<div class="split-card-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
+      + '<div class="split-card-title">' + esc(b.brand || '') + ' ' + esc(b.model || '') + '</div>'
       + '<div class="split-card-meta">' + esc(b.type || '') + (b.year ? ' · ' + b.year : '') + '</div>'
-      + '<div class="split-card-footer">'
-      + '<span class="split-card-location">📍 ' + esc(b.city || '–') + '</span>'
-      + badge
+      + '<div class="split-card-loc">'
+      + '<span class="split-card-loc-city"><svg width="10" height="10" viewBox="0 0 24 24"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" fill="currentColor"/></svg>' + esc(b.city || '–') + '</span>'
+      + (distStr ? '<span class="split-card-loc-dist"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/></svg>' + distStr + '</span>' : '')
       + '</div>'
+      + (chips.length ? '<div class="split-card-chips">' + chips.map(c => '<span class="split-card-chip">' + c + '</span>').join('') + '</div>' : '')
+      + '<div class="split-card-cta">Se annonce →</div>'
       + '</div>'
       + '</div>';
   }).join('');
@@ -9057,22 +9227,106 @@ function splitHighlightCard(bikeId) {
 
 function toggleSplitList() {
   const panel     = document.getElementById('split-list-panel');
-  const btn       = document.getElementById('split-toggle-btn');
   const splitWrap = document.getElementById('browse-split');
-  const countEl   = document.getElementById('split-count');
   if (!panel) return;
   _splitListVisible = !_splitListVisible;
   panel.classList.toggle('collapsed', !_splitListVisible);
   if (splitWrap) splitWrap.classList.toggle('list-open', _splitListVisible);
-  if (btn) {
-    if (_splitListVisible) {
-      btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="13 4 6 10 13 16"/></svg> Skjul liste';
-    } else {
-      const count = countEl ? countEl.textContent : 'liste';
-      btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="7 4 14 10 7 16"/></svg> ' + count;
-    }
+  // Mobil tab-state synkroniseres med sheet
+  const tabMap  = document.getElementById('map-tab-map');
+  const tabList = document.getElementById('map-tab-list');
+  if (tabMap && tabList) {
+    tabMap.classList.toggle('active', !_splitListVisible);
+    tabList.classList.toggle('active', _splitListVisible);
   }
+  // Genopfrisk toggle-tekst
+  applyMapFilters();
   setTimeout(() => splitMapInstance && splitMapInstance.invalidateSize(), 280);
+}
+
+// Mobil tab bar: Kort/Liste. Styrer sheet-åbning.
+function mapTabSwitch(target) {
+  const wantList = target === 'list';
+  if (wantList !== _splitListVisible) toggleSplitList();
+}
+
+// Mobil filter-sheet: populeret dynamisk ud fra eksisterende filter-state
+function openMapFiltersSheet() {
+  const sheet = document.getElementById('map-filter-sheet');
+  const body  = document.getElementById('map-filter-sheet-body');
+  if (!sheet || !body) return;
+
+  const cur = {
+    type:      document.getElementById('map-bike-type')?.value || '',
+    seller:    document.getElementById('map-seller-type')?.value || 'all',
+    condition: document.getElementById('map-condition')?.value || '',
+    radius:    document.getElementById('map-radius')?.value || '25',
+    priceMin:  document.getElementById('map-price-min')?.value || '',
+    priceMax:  document.getElementById('map-price-max')?.value || '',
+  };
+
+  const groups = [
+    { key:'type',      title:'Cykeltype',  opts:[['','Alle'],['Racercykel','Racercykel'],['Mountainbike','Mountainbike'],['Citybike','Citybike'],['El-cykel','El-cykel'],['Gravel','Gravel'],['Ladcykel','Ladcykel'],['Børnecykel','Børnecykel']] },
+    { key:'seller',    title:'Sælger',     opts:[['all','Alle'],['private','Privat'],['dealer','Forhandler']] },
+    { key:'condition', title:'Stand',      opts:[['','Alle'],['Ny','Ny'],['Som ny','Som ny'],['God stand','God stand'],['Brugt','Brugt']] },
+    { key:'radius',    title:'Afstand',    opts:[['5','5 km'],['10','10 km'],['25','25 km'],['50','50 km'],['100','100 km'],['','Hele landet']] },
+  ];
+
+  body.innerHTML = groups.map(g => {
+    const current = cur[g.key];
+    return '<div class="msf-group">'
+      + '<div class="msf-group-title">' + g.title.toUpperCase() + '</div>'
+      + '<div class="msf-opts">'
+      + g.opts.map(([val,label]) => {
+          const selected = String(current) === String(val);
+          return '<button type="button" class="msf-opt' + (selected ? ' active' : '') + '" data-g="' + g.key + '" data-v="' + esc(val) + '">' + esc(label) + '</button>';
+        }).join('')
+      + '</div>'
+      + '</div>';
+  }).join('')
+  + '<div class="msf-group">'
+  + '<div class="msf-group-title">PRIS</div>'
+  + '<div class="msf-price">'
+  + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
+  + '<span>—</span>'
+  + '<input type="number" id="msf-price-max" placeholder="Max kr" value="' + esc(cur.priceMax) + '">'
+  + '</div>'
+  + '</div>';
+
+  body.querySelectorAll('.msf-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const g = btn.dataset.g;
+      const v = btn.dataset.v;
+      body.querySelectorAll('.msf-opt[data-g="' + g + '"]').forEach(o => o.classList.remove('active'));
+      btn.classList.add('active');
+      const targetId = ({ type:'map-bike-type', seller:'map-seller-type', condition:'map-condition', radius:'map-radius' })[g];
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.value = v;
+        if (g === 'radius' && _mapNearMeCoords) el.disabled = false;
+      }
+      applyMapFilters(); updateMapFilterBadge();
+    });
+  });
+  const syncPrice = (src, dst) => {
+    if (!dst) return;
+    dst.value = src.value;
+    applyMapFilters(); updateMapFilterBadge();
+  };
+  const msfMin = document.getElementById('msf-price-min');
+  const msfMax = document.getElementById('msf-price-max');
+  if (msfMin) msfMin.addEventListener('input', () => syncPrice(msfMin, document.getElementById('map-price-min')));
+  if (msfMax) msfMax.addEventListener('input', () => syncPrice(msfMax, document.getElementById('map-price-max')));
+
+  sheet.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMapFiltersSheet() {
+  const sheet = document.getElementById('map-filter-sheet');
+  if (!sheet) return;
+  sheet.classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 async function initMap() {
