@@ -8309,21 +8309,20 @@ function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        const res = await fetch('https://api.dataforsyningen.dk/steder?q='
-          + encodeURIComponent(q) + '&hovedtype=Bebyggelse&per_side=10&format=json');
+        const res = await fetch('https://api.dataforsyningen.dk/postnumre?q='
+          + encodeURIComponent(q) + '&per_side=12&format=json');
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const seen = new Set();
         const items = [];
-        for (const s of data) {
-          const name = (s.primærtnavn || (s.navne && s.navne[0]?.navn) || '').trim();
+        for (const p of data) {
+          const name = (p.navn || '').trim();
           if (!name || seen.has(name.toLowerCase())) continue;
           seen.add(name.toLowerCase());
-          const vc = s.visueltcenter;
+          const vc = p.visueltcenter;
           if (!vc || vc.length < 2) continue;
-          const undertype = s.undertype ? ` · ${s.undertype}` : '';
           items.push({
-            label: name + undertype,
+            label: `${p.nr} ${name}`,
             city:  name,
             lat:   vc[1],
             lng:   vc[0],
