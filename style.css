@@ -2470,7 +2470,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 /* Min profil — verificeringskort */
 /* ─── DAWA Autocomplete Dropdown ─── */
 .dawa-autocomplete-dropdown {
-  position: absolute;
+  position: fixed;
   z-index: 11000;
   background: var(--cream, #FEFAF3);
   border: 1.5px solid var(--border, #DDD8CE);
