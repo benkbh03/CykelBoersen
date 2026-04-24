@@ -205,6 +205,8 @@ async function init() {
           shop_name: meta.shop_name,
           cvr:       meta.cvr,
           contact:   meta.name,
+          phone:     meta.phone,
+          address:   meta.address,
           city:      meta.city,
           email:     currentUser.email,
           user_id:   currentUser.id,
@@ -345,6 +347,17 @@ async function init() {
   if (sharedBikeId) {
     history.replaceState(null, '', window.location.pathname);
     openBikeModal(sharedBikeId);
+  }
+
+  // Åbn admin-panel direkte hvis ?admin=dealers er i URL'en (fra notifikationsmail)
+  const adminTab = new URLSearchParams(window.location.search).get('admin');
+  if (adminTab && currentProfile?.is_admin) {
+    history.replaceState(null, '', window.location.pathname);
+    openAdminPanel();
+    const validTabs = ['applications', 'users', 'id'];
+    const tabMap    = { dealers: 'applications', forhandlere: 'applications' };
+    const target    = tabMap[adminTab] || (validTabs.includes(adminTab) ? adminTab : 'applications');
+    setTimeout(() => switchAdminTab(target), 100);
   }
 
   // Håndter email-bekræftelse og password reset (Supabase sætter type i hash)
@@ -6828,6 +6841,8 @@ async function submitDealerApplication() {
       shop_name: shopName,
       cvr:       cvr,
       contact:   contact,
+      phone:     phone,
+      address:   address,
       city:      city,
       email:     currentUser.email,
       user_id:   currentUser.id,
