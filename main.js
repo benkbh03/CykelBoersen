@@ -8233,26 +8233,38 @@ function attachAddressAutocomplete(input, onSelect) {
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen adresser fundet'); return; }
         const items = data.map(r => {
-          const a = r.adresse || {};
+          const a = r.data || {};
           return {
-            label:      r.tekst || '',
-            street:     a.vejnavn || '',
+            label:       r.tekst || '',
+            street:      a.vejnavn || '',
             houseNumber: [a.husnr, a.etage, a.dør].filter(Boolean).join(' ').trim() || a.husnr || '',
-            postcode:   a.postnr || '',
-            city:       a.postnrnavn || '',
-            lat:        typeof a.y === 'number' ? a.y : null,
-            lng:        typeof a.x === 'number' ? a.x : null,
+            postcode:    a.postnr  || '',
+            city:        a.postnrnavn || '',
+            lat:         typeof a.y === 'number' ? a.y : null,
+            lng:         typeof a.x === 'number' ? a.x : null,
+            adresseId:   a.id || '',
             fullAddress: (a.vejnavn && a.husnr ? `${a.vejnavn} ${a.husnr}` : r.tekst || '').trim(),
           };
-        }).filter(it => it.lat && it.lng && it.fullAddress);
+        }).filter(it => it.fullAddress);
 
-        _renderDawaDropdown(input, items, (picked) => {
+        _renderDawaDropdown(input, items, async (picked) => {
           input.value = picked.fullAddress;
-          input.dataset.dawaLat      = String(picked.lat);
-          input.dataset.dawaLng      = String(picked.lng);
-          input.dataset.dawaPostcode = picked.postcode;
-          input.dataset.dawaCity     = picked.city;
-          input.dataset.dawaFull     = picked.label;
+          // If autocomplete didn't include coords, fetch from full adresse endpoint
+          if ((!picked.lat || !picked.lng) && picked.adresseId) {
+            try {
+              const r2 = await fetch('https://api.dataforsyningen.dk/adresser/' + picked.adresseId);
+              const full = await r2.json();
+              if (full && full.adgangspunkt && full.adgangspunkt.koordinater) {
+                picked.lng = full.adgangspunkt.koordinater[0];
+                picked.lat = full.adgangspunkt.koordinater[1];
+              }
+            } catch (_) {}
+          }
+          if (picked.lat)      input.dataset.dawaLat      = String(picked.lat);
+          if (picked.lng)      input.dataset.dawaLng      = String(picked.lng);
+          if (picked.postcode) input.dataset.dawaPostcode = picked.postcode;
+          if (picked.city)     input.dataset.dawaCity     = picked.city;
+          input.dataset.dawaFull = picked.label;
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen adresser fundet');
       } catch (e) {
