@@ -1592,8 +1592,10 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
         <div class="bike-card-img">
           ${imgContent}
           ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
-          <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
-          ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+          <div class="bike-card-badges">
+            <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
+            ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+          </div>
           ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
           ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
           ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
