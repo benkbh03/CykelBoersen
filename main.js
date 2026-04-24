@@ -2952,6 +2952,10 @@ function buildBikeBodyHTML(b) {
   const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
   const initials   = (sellerName || 'U').substring(0, 2).toUpperCase();
   const isOwner    = currentUser && currentUser.id === profile.id;
+  const avatarUrl  = safeAvatarUrl(profile.avatar_url);
+  const avatarContent = avatarUrl
+    ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+    : initials;
 
   // Sorter billeder: primærbillede først
   const allImages = (b.bike_images || []).slice().sort((a, x) => (x.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
@@ -3006,7 +3010,7 @@ function buildBikeBodyHTML(b) {
         </div>
         ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>` : ''}
         <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
-          <div class="seller-avatar-large">${initials}</div>
+          <div class="seller-avatar-large">${avatarContent}</div>
           <div style="flex:1">
             <div class="seller-detail-name">${sellerName || 'Ukendt'}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
             <div class="seller-detail-city">${profile.city || ''}</div>

@@ -1393,7 +1393,7 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
 .bike-detail-seller { display: flex; align-items: center; gap: 12px; background: var(--sand); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
-.seller-avatar-large { width: 44px; height: 44px; border-radius: 50%; background: var(--forest); color: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 700; flex-shrink: 0; }
+.seller-avatar-large { width: 44px; height: 44px; border-radius: 50%; background: var(--forest); color: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 700; flex-shrink: 0; overflow: hidden; }
 .seller-detail-name { font-weight: 600; font-size: 0.95rem; }
 .seller-detail-city { font-size: 0.8rem; color: var(--muted); }
 .bike-detail-description { background: var(--sand); border-radius: 10px; padding: 16px; font-size: 0.88rem; line-height: 1.6; color: var(--charcoal); border: 1px solid var(--border); }
@@ -2632,6 +2632,10 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   height: calc(100vh - 64px);
   overflow: hidden;
   min-height: unset;
+}
+body:has(.map-page) > footer,
+body:has(.map-page) #chat-widget {
+  display: none !important;
 }
 
 
