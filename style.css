@@ -5099,7 +5099,7 @@ body:has(.map-page) #chat-widget {
 /* ── Floating liste-toggle (top-left på desktop-kort, under zoom) ── */
 .split-list-toggle-float {
   position: absolute;
-  top: 90px;
+  top: 116px;
   left: 14px;
   z-index: 500;
   background: var(--cream);
