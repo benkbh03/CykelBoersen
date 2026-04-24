@@ -2035,9 +2035,7 @@ async function submitListing() {
   updateFilterCounts();
 
   // Notificér brugere med matchende gemte søgninger (fire-and-forget)
-  supabase.functions.invoke('notify-saved-searches', {
-    body: { bike: { id: newBike.id, brand: newBike.brand, model: newBike.model, type: newBike.type, city: newBike.city, price: newBike.price, condition: newBike.condition } },
-  }).catch(() => {});
+  notifySavedSearches(newBike);
   } finally { restore(); }
 }
 
@@ -2088,9 +2086,7 @@ async function submitSellPage() {
     loadBikes();
     updateFilterCounts();
 
-    supabase.functions.invoke('notify-saved-searches', {
-      body: { bike: { id: newBike.id, brand: newBike.brand, model: newBike.model, type: newBike.type, city: newBike.city, price: newBike.price, condition: newBike.condition } },
-    }).catch(() => {});
+    notifySavedSearches(newBike);
 
     clearSellDraft();
     showListingSuccessModal(newBike);
@@ -2567,6 +2563,39 @@ async function removeSaved(bikeId, btn) {
    GEMTE SØGNINGER
    ============================================================ */
 
+// Fire-and-forget: send match-notifikationer til brugere med gemte søgninger
+async function notifySavedSearches(newBike) {
+  try {
+    // Hent fuld bike-payload inkl. profiles.seller_type + primært billede
+    const { data: full } = await supabase
+      .from('bikes')
+      .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, profiles(seller_type), bike_images(url, is_primary)')
+      .eq('id', newBike.id)
+      .single();
+    if (!full) return;
+    const primaryImage = full.bike_images?.find(i => i.is_primary)?.url || full.bike_images?.[0]?.url || null;
+    supabase.functions.invoke('notify-saved-searches', {
+      body: {
+        bike: {
+          id:          full.id,
+          brand:       full.brand,
+          model:       full.model,
+          type:        full.type,
+          city:        full.city,
+          price:       full.price,
+          condition:   full.condition,
+          wheel_size:  full.wheel_size,
+          warranty:    full.warranty,
+          year:        full.year,
+          size:        full.size,
+          seller_type: full.profiles?.seller_type || 'private',
+          image:       primaryImage,
+        },
+      },
+    }).catch(() => {});
+  } catch (_) { /* silent */ }
+}
+
 async function saveCurrentSearch() {
   if (!currentUser) { showToast('⚠️ Log ind for at gemme søgninger'); return; }
 
@@ -2574,14 +2603,17 @@ async function saveCurrentSearch() {
   const type   = document.getElementById('search-type').value;
   const city   = document.getElementById('search-city').value;
 
-  // Include sidebar filter state
-  const fa = currentFilterArgs || {};
+  // Include sidebar filter state + hurtigfilter-state (warranty pill m.m.)
+  const fa       = currentFilterArgs || {};
+  const cf       = currentFilters || {};
+  const warranty = !!cf.warranty;
   const hasFilters = search || type || city
     || (fa.types?.length > 0)
     || (fa.conditions?.length > 0)
     || fa.minPrice || fa.maxPrice
     || fa.sellerType
-    || (fa.wheelSizes?.length > 0);
+    || (fa.wheelSizes?.length > 0)
+    || warranty;
 
   if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
 
@@ -2593,6 +2625,8 @@ async function saveCurrentSearch() {
   if (fa.sellerType === 'dealer')  parts.push('Forhandlere');
   if (fa.sellerType === 'private') parts.push('Private');
   if (fa.conditions?.length)     parts.push(...fa.conditions);
+  if (fa.wheelSizes?.length)     parts.push(...fa.wheelSizes.map(w => 'Hjul ' + w));
+  if (warranty)                  parts.push('Med garanti');
   if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
   if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
   if (city)                      parts.push(city);
@@ -2601,7 +2635,7 @@ async function saveCurrentSearch() {
   const { error } = await supabase.from('saved_searches').insert({
     user_id: currentUser.id,
     name,
-    filters: { search, type, city, ...fa },
+    filters: { search, type, city, warranty, ...fa },
   });
 
   if (error) { showToast('❌ Kunne ikke gemme søgning'); return; }
