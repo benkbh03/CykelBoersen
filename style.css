@@ -2709,11 +2709,14 @@ body:has(.map-page) #chat-widget {
    ============================================================ */
 
 .mp-wrap {
-  max-width: 1200px;
-  margin: 0 auto;
+  margin: 0;
   padding: 28px 24px 72px;
   background: var(--sand);
   min-height: calc(100vh - 64px);
+}
+.mp-inner {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* ── Top ── */
