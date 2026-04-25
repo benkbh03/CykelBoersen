@@ -2902,10 +2902,10 @@ body:has(.map-page) #chat-widget {
 }
 .mp-action-secondary:hover { background: var(--sand); border-color: #c8c0b4; }
 
-/* ── Stats-grid: 4 kort ── */
+/* ── Stats-grid: 3 kort ── */
 .mp-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 .mp-stat-card {
@@ -3400,7 +3400,7 @@ body:has(.map-page) #chat-widget {
     gap: 10px;
   }
   .mp-logout-link { grid-column: 1 / -1; }
-  .mp-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .mp-stats-grid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 640px) {
   .mp-wrap { padding: 16px 14px 60px; }
@@ -3456,7 +3456,7 @@ body:has(.map-page) #chat-widget {
   .mp-action-secondary .mp-action-label { display: none; }
 
   /* Stats */
-  .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .mp-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .mp-stat-card { padding: 14px; min-height: 110px; }
   .mp-stat-num { font-size: 1.7rem; }
 

@@ -4729,12 +4729,6 @@ function buildMyProfilePageHTML() {
               <div class="mp-stat-label">Aktive annoncer</div>
               <div class="mp-stat-delta" style="color:var(--forest)" id="mp-stat-active-delta">Henter…</div>
             </div>
-            <div class="mp-stat-card" title="Visninger">
-              <div class="mp-stat-icon" style="color:var(--rust)">${svgEye}</div>
-              <div class="mp-stat-num" id="mp-stat-views">–</div>
-              <div class="mp-stat-label">Visninger i alt</div>
-              <div class="mp-stat-delta" style="color:var(--rust)" id="mp-stat-views-delta">Henter…</div>
-            </div>
             <div class="mp-stat-card" onclick="switchMyProfileTab('saved')" title="Gemte annoncer">
               <div class="mp-stat-icon" style="color:var(--forest)">${svgHeart}</div>
               <div class="mp-stat-num" id="mp-stat-saved">–</div>
@@ -4853,7 +4847,6 @@ async function loadProfileStats() {
 
     const bikes       = bikesRes.data || [];
     const activeBikes = bikes.filter(b => b.is_active);
-    const totalViews  = bikes.reduce((s, b) => s + (b.views || 0), 0);
     const savedCount  = savedRes.count || 0;
     const searches    = searchesRes.data || [];
     const tradesCount = new Set((tradesRes.data || []).map(m => m.bike_id)).size;
@@ -4861,8 +4854,6 @@ async function loadProfileStats() {
     // Stats cards
     const activeEl = document.getElementById('mp-stat-active');
     if (activeEl) activeEl.textContent = activeBikes.length;
-    const viewsEl = document.getElementById('mp-stat-views');
-    if (viewsEl) viewsEl.textContent = totalViews.toLocaleString('da-DK');
     const savedEl = document.getElementById('mp-stat-saved');
     if (savedEl) savedEl.textContent = savedCount;
     const tradesEl = document.getElementById('mp-stat-trades');
@@ -4870,8 +4861,6 @@ async function loadProfileStats() {
 
     const activeDelta = document.getElementById('mp-stat-active-delta');
     if (activeDelta) activeDelta.textContent = activeBikes.length === 1 ? '1 live nu' : `${activeBikes.length} live nu`;
-    const viewsDelta = document.getElementById('mp-stat-views-delta');
-    if (viewsDelta) viewsDelta.textContent = totalViews > 0 ? `${totalViews.toLocaleString('da-DK')} totalt` : 'Ingen endnu';
     const savedDelta = document.getElementById('mp-stat-saved-delta');
     if (savedDelta) savedDelta.textContent = savedCount > 0 ? `${savedCount} favoritter` : 'Ingen endnu';
 
