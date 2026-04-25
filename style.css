@@ -1771,6 +1771,24 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 }
 .inbox-page-row.unread .inbox-page-name { font-weight: 700; }
 .inbox-page-row.unread .inbox-page-preview { opacity: 1; font-weight: 500; }
+
+/* Interest-række (en bruger har gemt din annonce — ingen tråd endnu) */
+.inbox-page-row--interest {
+  background: linear-gradient(90deg, rgba(200,80,42,0.06), transparent 60%);
+  border-left: 3px solid var(--rust);
+}
+.inbox-page-row--interest:hover { background: linear-gradient(90deg, rgba(200,80,42,0.1), var(--sand) 60%); }
+.inbox-interest-tag {
+  display: inline-block;
+  background: var(--rust);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
 .inbox-page-unread-dot {
   background: var(--rust);
   color: #fff;

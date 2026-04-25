@@ -6657,6 +6657,21 @@ function startRealtimeNotifications() {
         btn.classList.add('inbox-pulse');
         setTimeout(function() { btn.classList.remove('inbox-pulse'); }, 2000);
       }
+    })
+    .on('postgres_changes', {
+      event:  'INSERT',
+      schema: 'public',
+      table:  'saved_bikes',
+    }, async function(payload) {
+      const save = payload.new;
+      // Kun trigger hvis det er en af VORES annoncer der er blevet gemt
+      const { data: bike } = await supabase
+        .from('bikes').select('user_id').eq('id', save.bike_id).single();
+      if (!bike || bike.user_id !== currentUser.id) return;
+      showToast('❤️ En bruger har gemt din annonce!');
+      updateInboxBadge();
+      // Refresh inbox hvis brugeren er på indbakken
+      if (window.location.pathname === '/inbox') loadInboxPage();
     });
 
   _realtimeChannel.subscribe();
@@ -7344,32 +7359,32 @@ async function loadInboxPage() {
   const list = document.getElementById('inbox-page-threads');
   if (!list) return;
 
-  let data, error;
+  let msgRes, saveRes;
   try {
-    ({ data, error } = await supabase
-      .from('messages')
-      .select('*, bikes(brand, model, bike_images(url, is_primary)), sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, avatar_url), receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, avatar_url)')
-      .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
-      .order('created_at', { ascending: false }));
+    [msgRes, saveRes] = await Promise.all([
+      supabase
+        .from('messages')
+        .select('*, bikes(brand, model, bike_images(url, is_primary)), sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, avatar_url), receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, avatar_url)')
+        .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('saved_bikes')
+        .select('user_id, bike_id, created_at, bikes!inner(id, user_id, brand, model, bike_images(url, is_primary)), profiles:user_id(id, name, shop_name, seller_type, avatar_url)')
+        .eq('bikes.user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+    ]);
   } catch (e) {
-    error = e;
-  }
-
-  if (error) {
     list.innerHTML = retryHTML('Kunne ikke hente beskeder.', 'loadInboxPage');
     return;
   }
 
-  if (!data || data.length === 0) {
-    list.innerHTML = `
-      <div class="inbox-no-messages">
-        <div class="inbox-empty-icon">📭</div>
-        <h3>Ingen beskeder endnu</h3>
-        <p>Når du sender eller modtager beskeder om en annonce, vises de her.</p>
-        <button class="btn-primary" onclick="navigateTo('/')" style="margin-top:16px;">Udforsk cykler</button>
-      </div>`;
+  if (msgRes.error) {
+    list.innerHTML = retryHTML('Kunne ikke hente beskeder.', 'loadInboxPage');
     return;
   }
+
+  const data  = msgRes.data || [];
+  const saves = (saveRes && !saveRes.error && saveRes.data) ? saveRes.data : [];
 
   const threads = {};
   data.forEach(function(msg) {
@@ -7386,6 +7401,7 @@ async function loadInboxPage() {
         messages:   [],
         hasUnread:  false,
         unreadCount: 0,
+        sortTime:   msg.created_at,
       };
     }
     threads[key].messages.push(msg);
@@ -7395,9 +7411,53 @@ async function loadInboxPage() {
     }
   });
 
+  // Tilføj "pending interests" — saves på egne annoncer uden eksisterende tråd
+  const interests = saves.filter(s => !threads[s.bike_id + '_' + s.user_id]);
+
+  if (data.length === 0 && interests.length === 0) {
+    list.innerHTML = `
+      <div class="inbox-no-messages">
+        <div class="inbox-empty-icon">📭</div>
+        <h3>Ingen beskeder endnu</h3>
+        <p>Når du sender eller modtager beskeder om en annonce, vises de her.</p>
+        <button class="btn-primary" onclick="navigateTo('/')" style="margin-top:16px;">Udforsk cykler</button>
+      </div>`;
+    return;
+  }
+
   const threadList = Object.values(threads);
 
-  list.innerHTML = threadList.map(function(t) {
+  // Byg HTML for interest-rows (vises øverst — nyeste først)
+  const interestHTML = interests.map(function(s) {
+    const p         = s.profiles || {};
+    const liker     = p.seller_type === 'dealer' ? p.shop_name : p.name;
+    const likerName = liker || 'Bruger';
+    const safeName  = likerName.replace(/'/g, '');
+    const initials  = likerName.substring(0, 2).toUpperCase();
+    const avUrl     = safeAvatarUrl(p.avatar_url);
+    const avatarHTML = avUrl
+      ? '<img src="' + avUrl + '" alt="" class="inbox-page-avatar-img">'
+      : initials;
+    const bikeName  = s.bikes ? esc(s.bikes.brand + ' ' + s.bikes.model) : 'Din annonce';
+    const bikeImg   = s.bikes?.bike_images?.find(i => i.is_primary)?.url || s.bikes?.bike_images?.[0]?.url;
+    const time      = formatInboxTime(s.created_at);
+    return '<div class="inbox-page-row inbox-page-row--interest unread" onclick="startConversationWithLiker(\'' + s.bike_id + '\', \'' + s.user_id + '\', \'' + safeName + '\')">'
+      + '<div class="inbox-page-avatar">' + avatarHTML + '</div>'
+      + '<div class="inbox-page-row-body">'
+      + '<div class="inbox-page-row-top">'
+      + '<span class="inbox-page-name">' + esc(likerName) + '</span>'
+      + '<span class="inbox-page-time">' + time + '</span>'
+      + '</div>'
+      + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : '🚲') + ' ' + bikeName + '</div>'
+      + '<div class="inbox-page-preview">'
+      + '<span class="inbox-interest-tag">❤️ Har gemt din annonce</span> Klik for at starte samtale'
+      + '</div>'
+      + '</div>'
+      + '<span class="inbox-page-unread-dot">!</span>'
+      + '</div>';
+  }).join('');
+
+  const threadHTML = threadList.map(function(t) {
     const lastMsg   = t.messages[0];
     const initials  = (t.otherName || 'U').substring(0, 2).toUpperCase();
     const preview   = esc(lastMsg.content.length > 60 ? lastMsg.content.substring(0, 60) + '...' : lastMsg.content);
@@ -7427,6 +7487,8 @@ async function loadInboxPage() {
       + (t.hasUnread ? '<span class="inbox-page-unread-dot">' + t.unreadCount + '</span>' : '')
       + '</div>';
   }).join('');
+
+  list.innerHTML = interestHTML + threadHTML;
 }
 
 function formatInboxTime(dateStr) {
@@ -7543,17 +7605,35 @@ async function loadInboxModal() { await loadInboxPage(); }
 
 async function updateInboxBadge() {
   if (!currentUser) return;
-  const { count } = await supabase
-    .from('messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('receiver_id', currentUser.id)
-    .eq('read', false);
 
+  const [msgRes, savesRes, threadMsgsRes] = await Promise.all([
+    supabase.from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('receiver_id', currentUser.id).eq('read', false),
+    supabase.from('saved_bikes')
+      .select('user_id, bike_id, bikes!inner(user_id)')
+      .eq('bikes.user_id', currentUser.id),
+    supabase.from('messages')
+      .select('bike_id, sender_id, receiver_id')
+      .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id),
+  ]);
+
+  const unreadMsgs = msgRes.count || 0;
+
+  // Saves uden eksisterende tråd = pending interests
+  const threadKeys = new Set();
+  (threadMsgsRes.data || []).forEach(m => {
+    const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+    threadKeys.add(m.bike_id + '_' + otherId);
+  });
+  const pending = (savesRes.data || []).filter(s => !threadKeys.has(s.bike_id + '_' + s.user_id)).length;
+
+  const total = unreadMsgs + pending;
   const badge    = document.getElementById('nav-inbox-badge');
   const mbnBadge = document.getElementById('mbn-badge');
-  if (count > 0) {
-    if (badge)    { badge.textContent = count; badge.style.display = 'flex'; }
-    if (mbnBadge) { mbnBadge.textContent = count; mbnBadge.style.display = 'flex'; }
+  if (total > 0) {
+    if (badge)    { badge.textContent = total; badge.style.display = 'flex'; }
+    if (mbnBadge) { mbnBadge.textContent = total; mbnBadge.style.display = 'flex'; }
   } else {
     if (badge)    badge.style.display = 'none';
     if (mbnBadge) mbnBadge.style.display = 'none';
