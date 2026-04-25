@@ -4801,9 +4801,6 @@ function buildMyProfilePageHTML() {
             ${!u?.email_confirmed_at ? `<button class="mp-completion-cta" onclick="openProfileModal()">Bekræft e-mail →</button>` : ''}
           </div>` : ''}
 
-          <!-- Fastgjort søgning (udfyldes asynkront) -->
-          <div class="mp-pinned-search" id="mp-pinned-search" style="display:none"></div>
-
           ${isDealer && !p.verified ? `
           <div class="mp-pending-card">
             <div class="mp-pending-icon">⏳</div>
@@ -4922,18 +4919,6 @@ async function loadProfileStats() {
       insightEl.style.display = '';
     }
 
-    // Pinned search: most recent saved search
-    const pinnedEl = document.getElementById('mp-pinned-search');
-    if (pinnedEl && searches.length > 0) {
-      const s = searches[0];
-      pinnedEl.innerHTML = `
-        <div class="mp-pinned-label">GEMT SØGNING</div>
-        <div class="mp-pinned-name">${esc(s.name)}</div>
-        <div class="mp-pinned-count">${searches.length} ${searches.length === 1 ? 'søgning gemt' : 'søgninger gemt'}</div>
-        <button class="mp-pinned-cta" onclick="switchMyProfileTab('searches')">Se søgninger ${svgChev}</button>
-      `;
-      pinnedEl.style.display = '';
-    }
   } catch (e) {
     console.error('loadProfileStats fejl:', e);
   }
