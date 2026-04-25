@@ -2902,10 +2902,10 @@ body:has(.map-page) #chat-widget {
 }
 .mp-action-secondary:hover { background: var(--sand); border-color: #c8c0b4; }
 
-/* ── Stats-grid: 3 kort ── */
+/* ── Stats-grid: 4 kort ── */
 .mp-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 .mp-stat-card {
@@ -3326,48 +3326,6 @@ body:has(.map-page) #chat-widget {
   width: 100%;
 }
 .mp-completion-cta:hover { background: var(--forest-light); }
-.mp-pinned-search {
-  background: var(--sand);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-}
-.mp-pinned-label {
-  font-size: 0.68rem;
-  color: var(--muted);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-}
-.mp-pinned-name {
-  font-family: 'Fraunces', serif;
-  font-weight: 700;
-  font-size: 0.92rem;
-  letter-spacing: -0.02em;
-  color: var(--charcoal);
-  margin-bottom: 4px;
-}
-.mp-pinned-count {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-.mp-pinned-cta {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s;
-}
-.mp-pinned-cta:hover { background: var(--border); }
 .mp-logout-link {
   display: inline-flex;
   align-items: center;
@@ -3381,7 +3339,7 @@ body:has(.map-page) #chat-widget {
   padding: 8px 4px;
   font-family: 'DM Sans', sans-serif;
   transition: color 0.15s;
-  align-self: flex-start;
+  align-self: center;
 }
 .mp-logout-link:hover { color: var(--charcoal); }
 
@@ -3400,7 +3358,7 @@ body:has(.map-page) #chat-widget {
     gap: 10px;
   }
   .mp-logout-link { grid-column: 1 / -1; }
-  .mp-stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .mp-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
   .mp-wrap { padding: 16px 14px 60px; }
@@ -3456,7 +3414,7 @@ body:has(.map-page) #chat-widget {
   .mp-action-secondary .mp-action-label { display: none; }
 
   /* Stats */
-  .mp-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .mp-stat-card { padding: 14px; min-height: 110px; }
   .mp-stat-num { font-size: 1.7rem; }
 
