@@ -2419,8 +2419,10 @@ async function loadMyListings(containerId = 'my-listings-grid') {
   }
 
   // Opdatér annonce-tæller i stats-boksen (kun på #/me page)
-  const statEl = document.getElementById('mp-stat-listings');
+  const statEl = document.getElementById('mp-stat-active');
   if (statEl) statEl.textContent = data ? data.filter(b => b.is_active).length : 0;
+  const countEl = document.getElementById('mp-count-listings');
+  if (countEl) countEl.textContent = data ? data.length : 0;
 
   if (error || !data || data.length === 0) {
     grid.innerHTML = `<div class="empty-state-box">
@@ -2444,21 +2446,28 @@ async function loadMyListings(containerId = 'my-listings-grid') {
 
       if (isPage) {
         const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
-        const thumb  = imgUrl
-          ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
-          : `<div class="mp-listing-thumb mp-listing-thumb--empty">🚲</div>`;
+        const statusLabel = isSold ? 'Solgt' : isOld ? `${daysOld}d gammel` : 'Aktiv';
+        const statusClass = isSold ? 'mp-status--sold' : isOld ? 'mp-status--old' : 'mp-status--active';
         return `
           <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
-            <div class="mp-listing-img" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">${thumb}</div>
+            <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
+              ${imgUrl
+                ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
+                : `<div class="mp-listing-thumb--empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`}
+              <span class="mp-status-badge ${statusClass}">${statusLabel}</span>
+            </div>
             <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
-              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}${isSold ? ' <span class="mp-sold-tag">SOLGT</span>' : ''}${isOld ? ` <span class="mp-old-tag" title="Annoncen er ${daysOld} dage gammel — overvej at opdatere prisen">⚠️ ${daysOld}d</span>` : ''}</div>
+              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}</div>
               <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
-              <div class="mp-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
+              <div class="mp-listing-stats-row">
+                <span class="mp-listing-stat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg> ${views.toLocaleString('da-DK')} visninger</span>
+              </div>
             </div>
             <div class="mp-listing-aside">
               <div class="mp-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
               <div class="mp-listing-actions">
-                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">✏️ Redigér</button>
+                <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg> Se</button>
+                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg> Redigér</button>
                 ${!isSold
                   ? `<button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
@@ -2514,6 +2523,8 @@ async function loadSavedListings(containerId = 'my-saved-grid') {
   }
   const savedStat = document.getElementById('mp-stat-saved');
   if (savedStat) savedStat.textContent = data ? data.length : 0;
+  const savedCount = document.getElementById('mp-count-saved');
+  if (savedCount) savedCount.textContent = data ? data.length : 0;
 
   if (error || !data || data.length === 0) {
     grid.innerHTML = '<p style="color:var(--muted)">Du har ikke gemt nogen annoncer endnu.</p>';
@@ -2661,6 +2672,8 @@ async function loadSavedSearches(containerId = 'my-searches-list') {
   }
 
   if (error) { list.innerHTML = retryHTML('Kunne ikke hente gemte søgninger.', 'loadSavedSearches'); return; }
+  const searchCountEl = document.getElementById('mp-count-searches');
+  if (searchCountEl) searchCountEl.textContent = data ? data.length : 0;
   if (!data || data.length === 0) {
     list.innerHTML = `<p style="color:var(--muted)">Ingen gemte søgninger endnu. Brug 🔔 knappen ved søgefeltet for at gemme en søgning.</p>`;
     return;
@@ -2732,7 +2745,10 @@ async function loadTradeHistory(containerId = 'trade-history-list') {
 
     if (error) { list.innerHTML = retryHTML('Kunne ikke hente handelshistorik.', 'loadTradeHistory'); return; }
     const tradesStat = document.getElementById('mp-stat-trades');
-    if (tradesStat) tradesStat.textContent = tradeMessages ? new Set(tradeMessages.map(m => m.bike_id)).size : 0;
+    const tradesCount = new Set(tradeMessages ? tradeMessages.map(m => m.bike_id) : []).size;
+    if (tradesStat) tradesStat.textContent = tradesCount;
+    const tradesCountEl = document.getElementById('mp-count-trades');
+    if (tradesCountEl) tradesCountEl.textContent = tradesCount;
     if (!tradeMessages || tradeMessages.length === 0) {
       list.innerHTML = '<p style="color:var(--muted)">Ingen gennemførte handler endnu.</p>';
       return;
@@ -4614,11 +4630,12 @@ async function renderMyProfilePage() {
 
   showDetailView();
   const detailView = document.getElementById('detail-view');
-  detailView.innerHTML     = renderProfileSkeleton();
+  detailView.innerHTML = renderProfileSkeleton();
 
-  document.title = `Min profil | Cykelbørsen`;
+  document.title = `Min konto | Cykelbørsen`;
   detailView.innerHTML = buildMyProfilePageHTML();
   loadMyListings('mp-listings-grid');
+  loadProfileStats();
 }
 
 function buildMyProfilePageHTML() {
@@ -4631,103 +4648,180 @@ function buildMyProfilePageHTML() {
     ? new Date(p.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' })
     : null;
 
-  const avatarContent = safeAvatarUrl(p.avatar_url)
-    ? `<img src="${safeAvatarUrl(p.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+  const avatarUrl = safeAvatarUrl(p.avatar_url);
+  const avatarContent = avatarUrl
+    ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : initials;
+
+  // Profile completion
+  const completionItems = [
+    { label: 'E-mail verificeret', done: !!u?.email_confirmed_at },
+    { label: 'Profilbillede',      done: !!p.avatar_url },
+    { label: 'By tilføjet',        done: !!p.city },
+    { label: 'Om mig udfyldt',     done: !!p.bio },
+  ];
+  const doneCount = completionItems.filter(i => i.done).length;
+  const pct       = Math.round((doneCount / completionItems.length) * 100);
+
+  const svgBike    = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const svgEye     = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
+  const svgHeart   = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20.8s-7.5-4.6-7.5-11A4.5 4.5 0 0112 6a4.5 4.5 0 017.5 3.8c0 6.4-7.5 11-7.5 11z" stroke="currentColor" stroke-width="1.8"/></svg>`;
+  const svgShake   = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 13l5-5 3 3-5 5-3-3zM9 11l4-4 3 3-4 4-3-3zM13 7l3-3 4 4-3 3M5 16l3 3M13 17l2 2 2-1 1-2-3-3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+  const svgPlus    = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+  const svgEdit    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+  const svgInbox   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 13l3-7h12l3 7v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 13h5l1 2h6l1-2h5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+  const svgCheck   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const svgPin     = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>`;
+  const svgMail    = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 7l9 7 9-7" stroke="currentColor" stroke-width="1.6"/></svg>`;
+  const svgLogout  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const svgChev    = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+  const svgBack    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
   return `
     <div class="mp-wrap">
-
       <div class="mp-top">
-        <button class="mp-back-btn" onclick="navigateTo('/')">← Forside</button>
+        <button class="mp-back-btn" onclick="navigateTo('/')">${svgBack} Forside</button>
         <h1 class="mp-title">Min konto</h1>
         <p class="mp-subtitle">Administrér dine annoncer, gemte søgninger og kontooplysninger</p>
       </div>
 
-      <div class="mp-account-card">
-        <div class="mp-avatar">${avatarContent}</div>
-        <div class="mp-info">
-          <h2 class="mp-name">
-            ${esc(displayName)}
-            ${p.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${p.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
-          </h2>
-          <div class="mp-meta">
-            <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
-            ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
+      <div class="mp-layout">
+        <!-- Hoved-kolonne -->
+        <div class="mp-main">
+
+          <!-- Profil-kort -->
+          <div class="mp-account-card">
+            <div class="mp-avatar-decor"></div>
+            <div class="mp-avatar">${avatarContent}</div>
+            <div class="mp-info">
+              <div class="mp-name-row">
+                <h2 class="mp-name">${esc(displayName)}</h2>
+                ${p.verified ? `<span class="mp-verified-icon" style="color:var(--forest)" title="Verificeret">${svgCheck}</span>` : ''}
+              </div>
+              <div class="mp-meta">
+                <span class="mp-type-pill">
+                  ${isDealer ? svgBike : ''} ${isDealer ? 'Forhandler' : 'Privat sælger'}
+                </span>
+                ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
+              </div>
+              <div class="mp-contact-row">
+                ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
+                ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
+              </div>
+            </div>
+            <div class="mp-header-actions">
+              <button class="mp-action-primary" onclick="navigateTo('/sell')">${svgPlus} Opret annonce</button>
+              <div class="mp-action-secondary-row">
+                <button class="mp-action-secondary" onclick="openProfileModal()">${svgEdit} Redigér</button>
+                <button class="mp-action-secondary" onclick="navigateTo('/inbox')">${svgInbox} Indbakke</button>
+              </div>
+            </div>
           </div>
-          ${p.city   ? `<div class="mp-location">📍 ${esc(p.city)}</div>` : ''}
-          ${u?.email ? `<div class="mp-email">✉️ ${esc(u.email)}</div>` : ''}
-        </div>
-        <div class="mp-header-actions">
-          <button class="mp-action-btn" onclick="openProfileModal()">✏️ Redigér profil</button>
-          <button class="mp-action-btn mp-action-btn--secondary" onclick="navigateTo('/inbox')">✉️ Indbakke</button>
-          <button class="mp-action-btn mp-action-btn--logout" onclick="logout()">Log ud</button>
-        </div>
-      </div>
 
-      <div class="mp-stats-row">
-        <div class="mp-stat-box" onclick="switchMyProfileTab('listings')" title="Mine annoncer">
-          <span class="mp-stat-num" id="mp-stat-listings">–</span>
-          <span class="mp-stat-label">Annoncer</span>
-        </div>
-        <div class="mp-stat-box" onclick="switchMyProfileTab('saved')" title="Gemte annoncer">
-          <span class="mp-stat-num" id="mp-stat-saved">–</span>
-          <span class="mp-stat-label">Gemte</span>
-        </div>
-        <div class="mp-stat-box" onclick="switchMyProfileTab('trades')" title="Handler">
-          <span class="mp-stat-num" id="mp-stat-trades">–</span>
-          <span class="mp-stat-label">Handler</span>
-        </div>
-      </div>
+          <!-- Stats-grid -->
+          <div class="mp-stats-grid">
+            <div class="mp-stat-card" onclick="switchMyProfileTab('listings')" title="Mine annoncer">
+              <div class="mp-stat-icon" style="color:var(--forest)">${svgBike}</div>
+              <div class="mp-stat-num" id="mp-stat-active">–</div>
+              <div class="mp-stat-label">Aktive annoncer</div>
+              <div class="mp-stat-delta" style="color:var(--forest)" id="mp-stat-active-delta">Henter…</div>
+            </div>
+            <div class="mp-stat-card" title="Visninger">
+              <div class="mp-stat-icon" style="color:var(--rust)">${svgEye}</div>
+              <div class="mp-stat-num" id="mp-stat-views">–</div>
+              <div class="mp-stat-label">Visninger i alt</div>
+              <div class="mp-stat-delta" style="color:var(--rust)" id="mp-stat-views-delta">Henter…</div>
+            </div>
+            <div class="mp-stat-card" onclick="switchMyProfileTab('saved')" title="Gemte annoncer">
+              <div class="mp-stat-icon" style="color:var(--forest)">${svgHeart}</div>
+              <div class="mp-stat-num" id="mp-stat-saved">–</div>
+              <div class="mp-stat-label">Gemte cykler</div>
+              <div class="mp-stat-delta" style="color:var(--forest)" id="mp-stat-saved-delta">Henter…</div>
+            </div>
+            <div class="mp-stat-card" onclick="switchMyProfileTab('trades')" title="Handler">
+              <div class="mp-stat-icon" style="color:var(--forest-light)">${svgShake}</div>
+              <div class="mp-stat-num" id="mp-stat-trades">–</div>
+              <div class="mp-stat-label">Handler afsluttet</div>
+              <div class="mp-stat-delta" style="color:var(--forest-light)" id="mp-stat-trades-delta">Henter…</div>
+            </div>
+          </div>
 
-      ${isDealer && !p.verified ? `
-      <div class="mp-pending-card">
-        <div class="mp-pending-icon">⏳</div>
-        <div class="mp-pending-body">
-          <div class="mp-pending-title">Ansøgning afventer godkendelse</div>
-          <div class="mp-pending-sub">Vi gennemgår din ansøgning og vender tilbage hurtigst muligt. Du modtager besked når din forhandlerprofil er godkendt.</div>
-        </div>
-      </div>` : ''}
-      ${!isDealer ? `<div class="mp-verify-card">
-        <div class="mp-verify-title">Verificering</div>
-        <div class="mp-verify-items">
-          <div class="mp-verify-item ${u?.email_confirmed_at ? 'verified' : ''}">
-            <span class="mp-verify-icon">✉️</span>
-            <span class="mp-verify-label">E-mail</span>
-            <span class="mp-verify-check">${u?.email_confirmed_at ? '✓' : '–'}</span>
+          <!-- Insight-banner (vises kun når vi har data) -->
+          <div class="mp-insight" id="mp-insight" style="display:none"></div>
+
+          <!-- Tabs + indhold -->
+          <div class="mp-tabs-panel">
+            <div class="mp-tabs">
+              <button class="mp-tab active" data-tab="listings" onclick="switchMyProfileTab('listings')">
+                Mine annoncer <span class="mp-tab-count active" id="mp-count-listings">–</span>
+              </button>
+              <button class="mp-tab" data-tab="saved" onclick="switchMyProfileTab('saved')">
+                Gemte <span class="mp-tab-count" id="mp-count-saved">–</span>
+              </button>
+              <button class="mp-tab" data-tab="searches" onclick="switchMyProfileTab('searches')">
+                Søgninger <span class="mp-tab-count" id="mp-count-searches">–</span>
+              </button>
+              <button class="mp-tab" data-tab="trades" onclick="switchMyProfileTab('trades')">
+                Handler <span class="mp-tab-count" id="mp-count-trades">–</span>
+              </button>
+            </div>
+            <div id="mp-panel-listings" class="mp-tab-panel">
+              <div id="mp-listings-grid"><p style="color:var(--muted);padding:20px 0">Henter annoncer…</p></div>
+            </div>
+            <div id="mp-panel-saved" class="mp-tab-panel" style="display:none;">
+              <div id="mp-saved-grid"><p style="color:var(--muted);padding:20px 0">Henter gemte…</p></div>
+            </div>
+            <div id="mp-panel-searches" class="mp-tab-panel" style="display:none;">
+              <div id="mp-searches-list"><p style="color:var(--muted);padding:20px 0">Henter søgninger…</p></div>
+            </div>
+            <div id="mp-panel-trades" class="mp-tab-panel" style="display:none;">
+              <div id="mp-trades-list"><p style="color:var(--muted);padding:20px 0">Henter handler…</p></div>
+            </div>
           </div>
         </div>
-        ${!u?.email_confirmed_at ? '<button class="mp-verify-cta" onclick="openProfileModal()">Bekræft e-mail →</button>' : ''}
-      </div>` : ''}
 
-      <div id="mp-achievements" class="mp-achievements"></div>
+        <!-- Sidebar (kun desktop) -->
+        <aside class="mp-sidebar">
+          <!-- Profil-komplethed -->
+          <div class="mp-completion-card">
+            <div class="mp-completion-title">Profil ${pct}% komplet</div>
+            <div class="mp-completion-sub">Tilføj de sidste detaljer for flere henvendelser.</div>
+            <div class="mp-completion-bar">
+              <div class="mp-completion-fill" style="width:${pct}%"></div>
+            </div>
+            ${completionItems.map(x => `
+              <div class="mp-completion-item">
+                <span class="mp-completion-check${x.done ? ' done' : ''}">${x.done ? '✓' : ''}</span>
+                <span style="${x.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${x.label}</span>
+              </div>`).join('')}
+            ${!u?.email_confirmed_at ? `<button class="mp-completion-cta" onclick="openProfileModal()">Bekræft e-mail →</button>` : ''}
+          </div>
 
-      <div class="mp-tabs">
-        <button class="mp-tab active" data-tab="listings" onclick="switchMyProfileTab('listings')">Mine annoncer</button>
-        <button class="mp-tab" data-tab="saved"    onclick="switchMyProfileTab('saved')">Gemte</button>
-        <button class="mp-tab" data-tab="searches" onclick="switchMyProfileTab('searches')">Søgninger</button>
-        <button class="mp-tab" data-tab="trades"   onclick="switchMyProfileTab('trades')">Handler</button>
-      </div>
+          <!-- Fastgjort søgning (udfyldes asynkront) -->
+          <div class="mp-pinned-search" id="mp-pinned-search" style="display:none"></div>
 
-      <div id="mp-panel-listings" class="mp-tab-panel">
-        <div id="mp-listings-grid"><p style="color:var(--muted)">Henter annoncer…</p></div>
-      </div>
-      <div id="mp-panel-saved" class="mp-tab-panel" style="display:none;">
-        <div id="mp-saved-grid"><p style="color:var(--muted)">Henter gemte…</p></div>
-      </div>
-      <div id="mp-panel-searches" class="mp-tab-panel" style="display:none;">
-        <div id="mp-searches-list"><p style="color:var(--muted)">Henter søgninger…</p></div>
-      </div>
-      <div id="mp-panel-trades" class="mp-tab-panel" style="display:none;">
-        <div id="mp-trades-list"><p style="color:var(--muted)">Henter handler…</p></div>
+          ${isDealer && !p.verified ? `
+          <div class="mp-pending-card">
+            <div class="mp-pending-icon">⏳</div>
+            <div class="mp-pending-body">
+              <div class="mp-pending-title">Ansøgning afventer godkendelse</div>
+              <div class="mp-pending-sub">Vi gennemgår din ansøgning og vender tilbage hurtigst muligt.</div>
+            </div>
+          </div>` : ''}
+
+          <button class="mp-logout-link" onclick="logout()">${svgLogout} Log ud</button>
+        </aside>
       </div>
     </div>`;
 }
 
 function switchMyProfileTab(tab) {
-  document.querySelectorAll('.mp-tab').forEach(btn =>
-    btn.classList.toggle('active', btn.dataset.tab === tab));
+  document.querySelectorAll('.mp-tab').forEach(btn => {
+    const on = btn.dataset.tab === tab;
+    btn.classList.toggle('active', on);
+    const count = btn.querySelector('.mp-tab-count');
+    if (count) count.classList.toggle('active', on);
+  });
   ['listings', 'saved', 'searches', 'trades'].forEach(t => {
     const panel = document.getElementById(`mp-panel-${t}`);
     if (panel) panel.style.display = t === tab ? '' : 'none';
@@ -4736,6 +4830,83 @@ function switchMyProfileTab(tab) {
   if (tab === 'saved')    loadSavedListings('mp-saved-grid');
   if (tab === 'searches') loadSavedSearches('mp-searches-list');
   if (tab === 'trades')   loadTradeHistory('mp-trades-list');
+}
+
+async function loadProfileStats() {
+  if (!currentUser) return;
+  const svgTrend = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 8-8M15 7h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const svgBulb  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5V15a1 1 0 001 1h6a1 1 0 001-1v-1.5A6 6 0 0012 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+  const svgChev  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+  try {
+    const [bikesRes, savedRes, searchesRes] = await Promise.all([
+      supabase.from('bikes').select('id, brand, model, views, is_active').eq('user_id', currentUser.id),
+      supabase.from('saved_bikes').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
+      supabase.from('saved_searches').select('id, name, filters, created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
+    ]);
+
+    const bikes       = bikesRes.data || [];
+    const activeBikes = bikes.filter(b => b.is_active);
+    const totalViews  = bikes.reduce((s, b) => s + (b.views || 0), 0);
+    const savedCount  = savedRes.count || 0;
+    const searches    = searchesRes.data || [];
+
+    // Stats cards
+    const activeEl = document.getElementById('mp-stat-active');
+    if (activeEl) activeEl.textContent = activeBikes.length;
+    const viewsEl = document.getElementById('mp-stat-views');
+    if (viewsEl) viewsEl.textContent = totalViews.toLocaleString('da-DK');
+    const savedEl = document.getElementById('mp-stat-saved');
+    if (savedEl) savedEl.textContent = savedCount;
+
+    const activeDelta = document.getElementById('mp-stat-active-delta');
+    if (activeDelta) activeDelta.textContent = activeBikes.length === 1 ? '1 live nu' : `${activeBikes.length} live nu`;
+    const viewsDelta = document.getElementById('mp-stat-views-delta');
+    if (viewsDelta) viewsDelta.textContent = totalViews > 0 ? `${totalViews.toLocaleString('da-DK')} totalt` : 'Ingen endnu';
+    const savedDelta = document.getElementById('mp-stat-saved-delta');
+    if (savedDelta) savedDelta.textContent = savedCount > 0 ? `${savedCount} favoritter` : 'Ingen endnu';
+
+    // Tab count badges
+    const countListings = document.getElementById('mp-count-listings');
+    if (countListings) countListings.textContent = bikes.length;
+    const countSaved = document.getElementById('mp-count-saved');
+    if (countSaved) countSaved.textContent = savedCount;
+    const countSearches = document.getElementById('mp-count-searches');
+    if (countSearches) countSearches.textContent = searches.length;
+
+    // Insight banner: most-viewed active listing
+    const topBike = activeBikes.sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+    const insightEl = document.getElementById('mp-insight');
+    if (insightEl && topBike && (topBike.views || 0) > 0) {
+      insightEl.innerHTML = `
+        <div class="mp-insight-icon">${svgTrend}</div>
+        <div class="mp-insight-body">
+          <div class="mp-insight-title">
+            ${esc(topBike.brand)} ${esc(topBike.model)} har fået
+            <span style="color:var(--rust-light)">${(topBike.views || 0).toLocaleString('da-DK')} visninger</span>
+          </div>
+          <div class="mp-insight-sub">${svgBulb} Tip: Tilføj flere billeder for at øge synligheden</div>
+        </div>
+        <button class="mp-insight-cta" onclick="openEditModal('${topBike.id}')">Redigér ${svgChev}</button>
+      `;
+      insightEl.style.display = '';
+    }
+
+    // Pinned search: most recent saved search
+    const pinnedEl = document.getElementById('mp-pinned-search');
+    if (pinnedEl && searches.length > 0) {
+      const s = searches[0];
+      pinnedEl.innerHTML = `
+        <div class="mp-pinned-label">GEMT SØGNING</div>
+        <div class="mp-pinned-name">${esc(s.name)}</div>
+        <div class="mp-pinned-count">${searches.length} ${searches.length === 1 ? 'søgning gemt' : 'søgninger gemt'}</div>
+        <button class="mp-pinned-cta" onclick="switchMyProfileTab('searches')">Se søgninger ${svgChev}</button>
+      `;
+      pinnedEl.style.display = '';
+    }
+  } catch (e) {
+    console.error('loadProfileStats fejl:', e);
+  }
 }
 
 // SPA navigation helper — pushState + route handling
@@ -6657,6 +6828,21 @@ function startRealtimeNotifications() {
         btn.classList.add('inbox-pulse');
         setTimeout(function() { btn.classList.remove('inbox-pulse'); }, 2000);
       }
+    })
+    .on('postgres_changes', {
+      event:  'INSERT',
+      schema: 'public',
+      table:  'saved_bikes',
+    }, async function(payload) {
+      const save = payload.new;
+      // Kun trigger hvis det er en af VORES annoncer der er blevet gemt
+      const { data: bike } = await supabase
+        .from('bikes').select('user_id').eq('id', save.bike_id).single();
+      if (!bike || bike.user_id !== currentUser.id) return;
+      showToast('❤️ En bruger har gemt din annonce!');
+      updateInboxBadge();
+      // Refresh inbox hvis brugeren er på indbakken
+      if (window.location.pathname === '/inbox') loadInboxPage();
     });
 
   _realtimeChannel.subscribe();
@@ -7344,32 +7530,32 @@ async function loadInboxPage() {
   const list = document.getElementById('inbox-page-threads');
   if (!list) return;
 
-  let data, error;
+  let msgRes, saveRes;
   try {
-    ({ data, error } = await supabase
-      .from('messages')
-      .select('*, bikes(brand, model, bike_images(url, is_primary)), sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, avatar_url), receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, avatar_url)')
-      .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
-      .order('created_at', { ascending: false }));
+    [msgRes, saveRes] = await Promise.all([
+      supabase
+        .from('messages')
+        .select('*, bikes(brand, model, bike_images(url, is_primary)), sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, avatar_url), receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, avatar_url)')
+        .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('saved_bikes')
+        .select('user_id, bike_id, created_at, bikes!inner(id, user_id, brand, model, bike_images(url, is_primary)), profiles:user_id(id, name, shop_name, seller_type, avatar_url)')
+        .eq('bikes.user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+    ]);
   } catch (e) {
-    error = e;
-  }
-
-  if (error) {
     list.innerHTML = retryHTML('Kunne ikke hente beskeder.', 'loadInboxPage');
     return;
   }
 
-  if (!data || data.length === 0) {
-    list.innerHTML = `
-      <div class="inbox-no-messages">
-        <div class="inbox-empty-icon">📭</div>
-        <h3>Ingen beskeder endnu</h3>
-        <p>Når du sender eller modtager beskeder om en annonce, vises de her.</p>
-        <button class="btn-primary" onclick="navigateTo('/')" style="margin-top:16px;">Udforsk cykler</button>
-      </div>`;
+  if (msgRes.error) {
+    list.innerHTML = retryHTML('Kunne ikke hente beskeder.', 'loadInboxPage');
     return;
   }
+
+  const data  = msgRes.data || [];
+  const saves = (saveRes && !saveRes.error && saveRes.data) ? saveRes.data : [];
 
   const threads = {};
   data.forEach(function(msg) {
@@ -7386,6 +7572,7 @@ async function loadInboxPage() {
         messages:   [],
         hasUnread:  false,
         unreadCount: 0,
+        sortTime:   msg.created_at,
       };
     }
     threads[key].messages.push(msg);
@@ -7395,9 +7582,53 @@ async function loadInboxPage() {
     }
   });
 
+  // Tilføj "pending interests" — saves på egne annoncer uden eksisterende tråd
+  const interests = saves.filter(s => !threads[s.bike_id + '_' + s.user_id]);
+
+  if (data.length === 0 && interests.length === 0) {
+    list.innerHTML = `
+      <div class="inbox-no-messages">
+        <div class="inbox-empty-icon">📭</div>
+        <h3>Ingen beskeder endnu</h3>
+        <p>Når du sender eller modtager beskeder om en annonce, vises de her.</p>
+        <button class="btn-primary" onclick="navigateTo('/')" style="margin-top:16px;">Udforsk cykler</button>
+      </div>`;
+    return;
+  }
+
   const threadList = Object.values(threads);
 
-  list.innerHTML = threadList.map(function(t) {
+  // Byg HTML for interest-rows (vises øverst — nyeste først)
+  const interestHTML = interests.map(function(s) {
+    const p         = s.profiles || {};
+    const liker     = p.seller_type === 'dealer' ? p.shop_name : p.name;
+    const likerName = liker || 'Bruger';
+    const safeName  = likerName.replace(/'/g, '');
+    const initials  = likerName.substring(0, 2).toUpperCase();
+    const avUrl     = safeAvatarUrl(p.avatar_url);
+    const avatarHTML = avUrl
+      ? '<img src="' + avUrl + '" alt="" class="inbox-page-avatar-img">'
+      : initials;
+    const bikeName  = s.bikes ? esc(s.bikes.brand + ' ' + s.bikes.model) : 'Din annonce';
+    const bikeImg   = s.bikes?.bike_images?.find(i => i.is_primary)?.url || s.bikes?.bike_images?.[0]?.url;
+    const time      = formatInboxTime(s.created_at);
+    return '<div class="inbox-page-row inbox-page-row--interest unread" onclick="startConversationWithLiker(\'' + s.bike_id + '\', \'' + s.user_id + '\', \'' + safeName + '\')">'
+      + '<div class="inbox-page-avatar">' + avatarHTML + '</div>'
+      + '<div class="inbox-page-row-body">'
+      + '<div class="inbox-page-row-top">'
+      + '<span class="inbox-page-name">' + esc(likerName) + '</span>'
+      + '<span class="inbox-page-time">' + time + '</span>'
+      + '</div>'
+      + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : '🚲') + ' ' + bikeName + '</div>'
+      + '<div class="inbox-page-preview">'
+      + '<span class="inbox-interest-tag">❤️ Har gemt din annonce</span> Klik for at starte samtale'
+      + '</div>'
+      + '</div>'
+      + '<span class="inbox-page-unread-dot">!</span>'
+      + '</div>';
+  }).join('');
+
+  const threadHTML = threadList.map(function(t) {
     const lastMsg   = t.messages[0];
     const initials  = (t.otherName || 'U').substring(0, 2).toUpperCase();
     const preview   = esc(lastMsg.content.length > 60 ? lastMsg.content.substring(0, 60) + '...' : lastMsg.content);
@@ -7427,6 +7658,8 @@ async function loadInboxPage() {
       + (t.hasUnread ? '<span class="inbox-page-unread-dot">' + t.unreadCount + '</span>' : '')
       + '</div>';
   }).join('');
+
+  list.innerHTML = interestHTML + threadHTML;
 }
 
 function formatInboxTime(dateStr) {
@@ -7543,17 +7776,35 @@ async function loadInboxModal() { await loadInboxPage(); }
 
 async function updateInboxBadge() {
   if (!currentUser) return;
-  const { count } = await supabase
-    .from('messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('receiver_id', currentUser.id)
-    .eq('read', false);
 
+  const [msgRes, savesRes, threadMsgsRes] = await Promise.all([
+    supabase.from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('receiver_id', currentUser.id).eq('read', false),
+    supabase.from('saved_bikes')
+      .select('user_id, bike_id, bikes!inner(user_id)')
+      .eq('bikes.user_id', currentUser.id),
+    supabase.from('messages')
+      .select('bike_id, sender_id, receiver_id')
+      .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id),
+  ]);
+
+  const unreadMsgs = msgRes.count || 0;
+
+  // Saves uden eksisterende tråd = pending interests
+  const threadKeys = new Set();
+  (threadMsgsRes.data || []).forEach(m => {
+    const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+    threadKeys.add(m.bike_id + '_' + otherId);
+  });
+  const pending = (savesRes.data || []).filter(s => !threadKeys.has(s.bike_id + '_' + s.user_id)).length;
+
+  const total = unreadMsgs + pending;
   const badge    = document.getElementById('nav-inbox-badge');
   const mbnBadge = document.getElementById('mbn-badge');
-  if (count > 0) {
-    if (badge)    { badge.textContent = count; badge.style.display = 'flex'; }
-    if (mbnBadge) { mbnBadge.textContent = count; mbnBadge.style.display = 'flex'; }
+  if (total > 0) {
+    if (badge)    { badge.textContent = total; badge.style.display = 'flex'; }
+    if (mbnBadge) { mbnBadge.textContent = total; mbnBadge.style.display = 'flex'; }
   } else {
     if (badge)    badge.style.display = 'none';
     if (mbnBadge) mbnBadge.style.display = 'none';
