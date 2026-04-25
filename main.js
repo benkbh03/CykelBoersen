@@ -4693,28 +4693,30 @@ function buildMyProfilePageHTML() {
           <!-- Profil-kort -->
           <div class="mp-account-card">
             <div class="mp-avatar-decor"></div>
-            <div class="mp-avatar">${avatarContent}</div>
-            <div class="mp-info">
-              <div class="mp-name-row">
-                <h2 class="mp-name">${esc(displayName)}</h2>
-                ${p.verified ? `<span class="mp-verified-icon" style="color:var(--forest)" title="Verificeret">${svgCheck}</span>` : ''}
-              </div>
-              <div class="mp-meta">
-                <span class="mp-type-pill">
-                  ${isDealer ? svgBike : ''} ${isDealer ? 'Forhandler' : 'Privat sælger'}
-                </span>
-                ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
-              </div>
-              <div class="mp-contact-row">
-                ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
-                ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
+            <div class="mp-identity">
+              <div class="mp-avatar">${avatarContent}</div>
+              <div class="mp-info">
+                <div class="mp-name-row">
+                  <h2 class="mp-name">${esc(displayName)}</h2>
+                  ${p.verified ? `<span class="mp-verified-icon" style="color:var(--forest)" title="Verificeret">${svgCheck}</span>` : ''}
+                </div>
+                <div class="mp-meta">
+                  <span class="mp-type-pill">
+                    ${isDealer ? svgBike : ''} ${isDealer ? 'Forhandler' : 'Privat sælger'}
+                  </span>
+                  ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
+                </div>
+                <div class="mp-contact-row">
+                  ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
+                  ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
+                </div>
               </div>
             </div>
             <div class="mp-header-actions">
-              <button class="mp-action-primary" onclick="navigateTo('/sell')">${svgPlus} Opret annonce</button>
+              <button class="mp-action-primary" onclick="navigateTo('/sell')">${svgPlus} <span>Opret annonce</span></button>
               <div class="mp-action-secondary-row">
-                <button class="mp-action-secondary" onclick="openProfileModal()">${svgEdit} Redigér</button>
-                <button class="mp-action-secondary" onclick="navigateTo('/inbox')">${svgInbox} Indbakke</button>
+                <button class="mp-action-secondary" onclick="openProfileModal()" aria-label="Redigér profil">${svgEdit} <span class="mp-action-label">Redigér</span></button>
+                <button class="mp-action-secondary" onclick="navigateTo('/inbox')" aria-label="Indbakke">${svgInbox} <span class="mp-action-label">Indbakke</span></button>
               </div>
             </div>
           </div>
@@ -4842,10 +4844,11 @@ async function loadProfileStats() {
   const svgChev  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
   try {
-    const [bikesRes, savedRes, searchesRes] = await Promise.all([
+    const [bikesRes, savedRes, searchesRes, tradesRes] = await Promise.all([
       supabase.from('bikes').select('id, brand, model, views, is_active, created_at, bike_images(id)').eq('user_id', currentUser.id),
       supabase.from('saved_bikes').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
       supabase.from('saved_searches').select('id, name, filters, created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
+      supabase.from('messages').select('bike_id').or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`).ilike('content', '%accepteret%'),
     ]);
 
     const bikes       = bikesRes.data || [];
@@ -4853,6 +4856,7 @@ async function loadProfileStats() {
     const totalViews  = bikes.reduce((s, b) => s + (b.views || 0), 0);
     const savedCount  = savedRes.count || 0;
     const searches    = searchesRes.data || [];
+    const tradesCount = new Set((tradesRes.data || []).map(m => m.bike_id)).size;
 
     // Stats cards
     const activeEl = document.getElementById('mp-stat-active');
@@ -4861,6 +4865,8 @@ async function loadProfileStats() {
     if (viewsEl) viewsEl.textContent = totalViews.toLocaleString('da-DK');
     const savedEl = document.getElementById('mp-stat-saved');
     if (savedEl) savedEl.textContent = savedCount;
+    const tradesEl = document.getElementById('mp-stat-trades');
+    if (tradesEl) tradesEl.textContent = tradesCount;
 
     const activeDelta = document.getElementById('mp-stat-active-delta');
     if (activeDelta) activeDelta.textContent = activeBikes.length === 1 ? '1 live nu' : `${activeBikes.length} live nu`;
@@ -4876,6 +4882,12 @@ async function loadProfileStats() {
     if (countSaved) countSaved.textContent = savedCount;
     const countSearches = document.getElementById('mp-count-searches');
     if (countSearches) countSearches.textContent = searches.length;
+    const countTrades = document.getElementById('mp-count-trades');
+    if (countTrades) countTrades.textContent = tradesCount;
+
+    // Trades delta
+    const tradesDelta = document.getElementById('mp-stat-trades-delta');
+    if (tradesDelta) tradesDelta.textContent = tradesCount > 0 ? (tradesCount === 1 ? '1 gennemført' : `${tradesCount} gennemførte`) : 'Ingen endnu';
 
     // Insight banner: most-viewed active listing
     const topBike = [...activeBikes].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
