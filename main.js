@@ -2448,6 +2448,9 @@ async function loadMyListings(containerId = 'my-listings-grid') {
         const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
         const statusLabel = isSold ? 'Solgt' : isOld ? `${daysOld}d gammel` : 'Aktiv';
         const statusClass = isSold ? 'mp-status--sold' : isOld ? 'mp-status--old' : 'mp-status--active';
+        const priceStr = (b.price || 0).toLocaleString('da-DK') + ' kr.';
+        const svgEye    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
+        const svgEditSm = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
         return `
           <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
             <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
@@ -2460,19 +2463,27 @@ async function loadMyListings(containerId = 'my-listings-grid') {
               <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}</div>
               <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
               <div class="mp-listing-stats-row">
-                <span class="mp-listing-stat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg> ${views.toLocaleString('da-DK')} visninger</span>
+                <span class="mp-listing-stat">${svgEye} ${views.toLocaleString('da-DK')} visninger</span>
               </div>
+              <div class="mp-listing-price mp-price-mobile">${priceStr}</div>
             </div>
             <div class="mp-listing-aside">
-              <div class="mp-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
+              <div class="mp-listing-price">${priceStr}</div>
               <div class="mp-listing-actions">
-                <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg> Se</button>
-                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg> Redigér</button>
+                <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
+                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                 ${!isSold
                   ? `<button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                 <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
               </div>
+            </div>
+            <div class="mp-listing-actions-mobile">
+              <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
+              <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+              ${!isSold
+                ? `<button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
+                : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
             </div>
           </div>`;
       }

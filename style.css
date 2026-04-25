@@ -3185,6 +3185,7 @@ body:has(.map-page) #chat-widget {
   letter-spacing: -0.04em;
   line-height: 1;
 }
+.mp-price-mobile { display: none; }
 .mp-listing-actions {
   display: flex;
   flex-direction: column;
@@ -3192,6 +3193,7 @@ body:has(.map-page) #chat-widget {
   align-items: stretch;
   width: 100%;
 }
+.mp-listing-actions-mobile { display: none; }
 .mp-btn-view {
   background: var(--cream);
   border: 1px solid var(--border);
@@ -3429,31 +3431,36 @@ body:has(.map-page) #chat-widget {
 
   /* Listing-kort */
   .mp-listing-card {
-    grid-template-columns: 110px 1fr;
-    grid-template-rows: auto auto;
+    grid-template-columns: 108px 1fr;
     padding: 12px;
     gap: 12px;
   }
   .mp-listing-title { font-size: 1rem; }
-  .mp-listing-aside {
+  .mp-listing-aside { display: none; }
+  .mp-price-mobile {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 1.25rem;
+    color: var(--rust);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-top: 6px;
+  }
+  .mp-listing-actions-mobile {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     grid-column: 1 / -1;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid var(--border);
-    padding-top: 10px;
-    margin-top: 4px;
-  }
-  .mp-listing-price { font-size: 1.15rem; }
-  .mp-listing-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: auto;
     gap: 6px;
+    margin-top: 2px;
   }
-  .mp-btn-view, .mp-btn-edit, .mp-btn-sold, .mp-btn-unsold {
-    padding: 7px 10px;
-    font-size: 0.74rem;
+  .mp-listing-actions-mobile .mp-btn-view,
+  .mp-listing-actions-mobile .mp-btn-edit,
+  .mp-listing-actions-mobile .mp-btn-sold,
+  .mp-listing-actions-mobile .mp-btn-unsold {
+    padding: 9px 8px;
+    font-size: 0.75rem;
+    justify-content: center;
   }
 
   .mp-sidebar { display: flex; flex-direction: column; }
