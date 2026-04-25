@@ -2760,6 +2760,7 @@ body:has(.map-page) #chat-widget {
   gap: 22px;
   align-items: flex-start;
 }
+.mp-layout.mp-no-sidebar { grid-template-columns: 1fr; }
 .mp-main { display: flex; flex-direction: column; gap: 14px; }
 .mp-sidebar { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 20px; }
 
@@ -3333,13 +3334,14 @@ body:has(.map-page) #chat-widget {
   background: none;
   border: none;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
-  padding: 8px 4px;
+  padding: 4px 2px;
   font-family: 'DM Sans', sans-serif;
   transition: color 0.15s;
-  align-self: center;
+  align-self: flex-start;
+  margin-top: 4px;
 }
 .mp-logout-link:hover { color: var(--charcoal); }
 
@@ -3357,7 +3359,6 @@ body:has(.map-page) #chat-widget {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-  .mp-logout-link { grid-column: 1 / -1; }
   .mp-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {

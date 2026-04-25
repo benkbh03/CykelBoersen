@@ -4662,6 +4662,7 @@ function buildMyProfilePageHTML() {
   ];
   const doneCount = completionItems.filter(i => i.done).length;
   const pct       = Math.round((doneCount / completionItems.length) * 100);
+  const hasSidebarContent = pct < 100 || (isDealer && !p.verified);
 
   const svgBike    = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const svgEye     = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
@@ -4686,7 +4687,7 @@ function buildMyProfilePageHTML() {
         <p class="mp-subtitle">Administrér dine annoncer, gemte søgninger og kontooplysninger</p>
       </div>
 
-      <div class="mp-layout">
+      <div class="mp-layout${hasSidebarContent ? '' : ' mp-no-sidebar'}">
         <!-- Hoved-kolonne -->
         <div class="mp-main">
 
@@ -4718,6 +4719,7 @@ function buildMyProfilePageHTML() {
                 <button class="mp-action-secondary" onclick="openProfileModal()" aria-label="Redigér profil">${svgEdit} <span class="mp-action-label">Redigér</span></button>
                 <button class="mp-action-secondary" onclick="navigateTo('/inbox')" aria-label="Indbakke">${svgInbox} <span class="mp-action-label">Indbakke</span></button>
               </div>
+              <button class="mp-logout-link" onclick="logout()">${svgLogout} Log ud</button>
             </div>
           </div>
 
@@ -4783,8 +4785,8 @@ function buildMyProfilePageHTML() {
           </div>
         </div>
 
-        <!-- Sidebar (kun desktop) -->
-        <aside class="mp-sidebar">
+        <!-- Sidebar (kun desktop, kun hvis indhold) -->
+        <aside class="mp-sidebar"${!hasSidebarContent ? ' style="display:none"' : ''}>
           <!-- Profil-komplethed (kun hvis ikke 100%) -->
           ${pct < 100 ? `
           <div class="mp-completion-card">
@@ -4810,7 +4812,6 @@ function buildMyProfilePageHTML() {
             </div>
           </div>` : ''}
 
-          <button class="mp-logout-link" onclick="logout()">${svgLogout} Log ud</button>
         </aside>
       </div>
      </div>
