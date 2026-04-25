@@ -4680,7 +4680,7 @@ function buildMyProfilePageHTML() {
 
   return `
     <div class="mp-wrap">
-     <div class="mp-inner">
+     <div class="mp-inner${hasSidebarContent ? '' : ' mp-no-sidebar'}">
       <div class="mp-top">
         <button class="mp-back-btn" onclick="navigateTo('/')">${svgBack} Forside</button>
         <h1 class="mp-title">Min konto</h1>

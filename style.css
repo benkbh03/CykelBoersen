@@ -2760,11 +2760,8 @@ body:has(.map-page) #chat-widget {
   gap: 22px;
   align-items: flex-start;
 }
-.mp-layout.mp-no-sidebar {
-  grid-template-columns: 1fr;
-  max-width: 920px;
-  margin: 0 auto;
-}
+.mp-inner.mp-no-sidebar { max-width: 920px; }
+.mp-layout.mp-no-sidebar { grid-template-columns: 1fr; }
 .mp-main { display: flex; flex-direction: column; gap: 14px; }
 .mp-sidebar { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 20px; }
 
