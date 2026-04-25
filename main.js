@@ -4843,7 +4843,7 @@ async function loadProfileStats() {
 
   try {
     const [bikesRes, savedRes, searchesRes] = await Promise.all([
-      supabase.from('bikes').select('id, brand, model, views, is_active').eq('user_id', currentUser.id),
+      supabase.from('bikes').select('id, brand, model, views, is_active, created_at, bike_images(id)').eq('user_id', currentUser.id),
       supabase.from('saved_bikes').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
       supabase.from('saved_searches').select('id, name, filters, created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
     ]);
@@ -4878,9 +4878,24 @@ async function loadProfileStats() {
     if (countSearches) countSearches.textContent = searches.length;
 
     // Insight banner: most-viewed active listing
-    const topBike = activeBikes.sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+    const topBike = [...activeBikes].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
     const insightEl = document.getElementById('mp-insight');
     if (insightEl && topBike && (topBike.views || 0) > 0) {
+      const imgCount  = (topBike.bike_images || []).length;
+      const MAX_IMGS  = 8;
+      const daysOld   = topBike.created_at ? Math.floor((Date.now() - new Date(topBike.created_at)) / 86400000) : 0;
+
+      // Prioritised tips: most impactful first
+      let tip;
+      if (imgCount < MAX_IMGS) {
+        const missing = MAX_IMGS - imgCount;
+        tip = `Tilføj ${missing} ${missing === 1 ? 'billede mere' : 'billeder mere'} for at øge synligheden`;
+      } else if (daysOld >= 21) {
+        tip = `Annoncen er ${daysOld} dage gammel — overvej at justere prisen`;
+      } else {
+        tip = `Del annoncen med venner for at nå flere potentielle købers`;
+      }
+
       insightEl.innerHTML = `
         <div class="mp-insight-icon">${svgTrend}</div>
         <div class="mp-insight-body">
@@ -4888,7 +4903,7 @@ async function loadProfileStats() {
             ${esc(topBike.brand)} ${esc(topBike.model)} har fået
             <span style="color:var(--rust-light)">${(topBike.views || 0).toLocaleString('da-DK')} visninger</span>
           </div>
-          <div class="mp-insight-sub">${svgBulb} Tip: Tilføj flere billeder for at øge synligheden</div>
+          <div class="mp-insight-sub">${svgBulb} ${tip}</div>
         </div>
         <button class="mp-insight-cta" onclick="openEditModal('${topBike.id}')">Redigér ${svgChev}</button>
       `;
