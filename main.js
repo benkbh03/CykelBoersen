@@ -4679,6 +4679,7 @@ function buildMyProfilePageHTML() {
 
   return `
     <div class="mp-wrap">
+     <div class="mp-inner">
       <div class="mp-top">
         <button class="mp-back-btn" onclick="navigateTo('/')">${svgBack} Forside</button>
         <h1 class="mp-title">Min konto</h1>
@@ -4782,7 +4783,8 @@ function buildMyProfilePageHTML() {
 
         <!-- Sidebar (kun desktop) -->
         <aside class="mp-sidebar">
-          <!-- Profil-komplethed -->
+          <!-- Profil-komplethed (kun hvis ikke 100%) -->
+          ${pct < 100 ? `
           <div class="mp-completion-card">
             <div class="mp-completion-title">Profil ${pct}% komplet</div>
             <div class="mp-completion-sub">Tilføj de sidste detaljer for flere henvendelser.</div>
@@ -4795,7 +4797,7 @@ function buildMyProfilePageHTML() {
                 <span style="${x.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${x.label}</span>
               </div>`).join('')}
             ${!u?.email_confirmed_at ? `<button class="mp-completion-cta" onclick="openProfileModal()">Bekræft e-mail →</button>` : ''}
-          </div>
+          </div>` : ''}
 
           <!-- Fastgjort søgning (udfyldes asynkront) -->
           <div class="mp-pinned-search" id="mp-pinned-search" style="display:none"></div>
@@ -4812,6 +4814,7 @@ function buildMyProfilePageHTML() {
           <button class="mp-logout-link" onclick="logout()">${svgLogout} Log ud</button>
         </aside>
       </div>
+     </div>
     </div>`;
 }
 
