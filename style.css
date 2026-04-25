@@ -2776,6 +2776,7 @@ body:has(.map-page) #chat-widget {
   position: relative;
   overflow: hidden;
 }
+.mp-identity { display: contents; }
 .mp-avatar-decor {
   position: absolute;
   top: -40px;
@@ -3404,28 +3405,76 @@ body:has(.map-page) #chat-widget {
 @media (max-width: 640px) {
   .mp-wrap { padding: 16px 14px 60px; }
   .mp-title { font-size: 1.6rem; }
+  .mp-subtitle { font-size: 0.82rem; }
+
+  /* Profile card: avatar+info i samme række, actions under */
   .mp-account-card {
     grid-template-columns: 1fr;
-    text-align: center;
-    padding: 18px 16px;
+    padding: 18px;
+    gap: 16px;
+  }
+  .mp-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
   }
   .mp-avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 1.5rem;
-    margin: 0 auto;
+    width: 60px;
+    height: 60px;
+    font-size: 1.4rem;
+    border-width: 2px;
+    flex-shrink: 0;
   }
-  .mp-name-row { justify-content: center; }
-  .mp-meta { justify-content: center; }
-  .mp-contact-row { justify-content: center; }
-  .mp-header-actions { min-width: 0; }
-  .mp-action-secondary-row { justify-content: center; }
+  .mp-info { min-width: 0; }
+  .mp-name { font-size: 1.25rem; }
+  .mp-meta { gap: 6px; margin-bottom: 6px; }
+  .mp-type-pill { font-size: 0.68rem; padding: 3px 8px; }
+  .mp-member-since { font-size: 0.72rem; }
+  .mp-contact-row { gap: 10px; flex-direction: column; align-items: flex-start; }
+  .mp-contact-item { font-size: 0.75rem; }
+
+  /* Actions: primær + 2 ikon-knapper på en række */
+  .mp-header-actions {
+    min-width: 0;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .mp-action-primary {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 14px;
+    font-size: 0.85rem;
+  }
+  .mp-action-secondary-row { gap: 8px; flex-shrink: 0; }
+  .mp-action-secondary {
+    flex: 0 0 auto;
+    padding: 11px 12px;
+    min-width: 44px;
+  }
+  .mp-action-secondary .mp-action-label { display: none; }
+
+  /* Stats */
   .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .mp-stat-num { font-size: 1.6rem; }
+  .mp-stat-card { padding: 14px; min-height: 110px; }
+  .mp-stat-num { font-size: 1.7rem; }
+
+  /* Insight banner */
+  .mp-insight { grid-template-columns: 36px 1fr; padding: 14px; gap: 12px; }
+  .mp-insight-icon { width: 36px; height: 36px; }
+  .mp-insight-title { font-size: 0.92rem; }
+  .mp-insight-sub { font-size: 0.74rem; }
+  .mp-insight-cta { display: none; }
+
+  /* Listing-kort */
   .mp-listing-card {
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 110px 1fr;
     grid-template-rows: auto auto;
+    padding: 12px;
+    gap: 12px;
   }
+  .mp-listing-title { font-size: 1rem; }
   .mp-listing-aside {
     grid-column: 1 / -1;
     flex-direction: row;
@@ -3435,16 +3484,21 @@ body:has(.map-page) #chat-widget {
     padding-top: 10px;
     margin-top: 4px;
   }
+  .mp-listing-price { font-size: 1.15rem; }
   .mp-listing-actions {
     flex-direction: row;
     flex-wrap: wrap;
     width: auto;
+    gap: 6px;
   }
-  .mp-insight { grid-template-columns: 36px 1fr; }
-  .mp-insight-cta { display: none; }
+  .mp-btn-view, .mp-btn-edit, .mp-btn-sold, .mp-btn-unsold {
+    padding: 7px 10px;
+    font-size: 0.74rem;
+  }
+
   .mp-sidebar { display: flex; flex-direction: column; }
   .mp-tabs-panel { padding: 4px 14px 18px; }
-  .mp-tab { padding: 12px 12px; font-size: 0.82rem; }
+  .mp-tab { padding: 12px 10px; font-size: 0.8rem; gap: 5px; }
 }
 
 /* ============================================================
