@@ -3324,6 +3324,7 @@ function showListingView() {
   const pageLayout    = document.getElementById('page-layout');
   if (pageLayout)    pageLayout.style.display    = 'none';
   if (landingLayout) landingLayout.style.display = '';
+  document.body.classList.remove('is-mp-mobile');
   document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
   updateSEOMeta(DEFAULT_DESC, '/');
   removeBikeJsonLd();
@@ -4644,6 +4645,7 @@ async function renderMyProfilePage() {
   }
 
   showDetailView();
+  document.body.classList.toggle('is-mp-mobile', window.innerWidth <= 768);
   const detailView = document.getElementById('detail-view');
   detailView.innerHTML = renderProfileSkeleton();
 
@@ -4948,6 +4950,7 @@ function navigateTo(path) {
 }
 
 function handleRoute() {
+  document.body.classList.remove('is-mp-mobile');
   const path = window.location.pathname;
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
@@ -8735,6 +8738,7 @@ document.addEventListener('scroll', (e) => {
 }, true);
 window.addEventListener('resize', () => {
   if (_dawaActive) _positionDawaDropdown(_dawaActive.input, _dawaActive.dropdown);
+  document.body.classList.toggle('is-mp-mobile', window.innerWidth <= 768);
 });
 
 function _positionDawaDropdown(input, dropdown) {
