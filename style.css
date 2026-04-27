@@ -3375,9 +3375,8 @@ body:has(.map-page) #chat-widget {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-  .mp-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .mp-wrap { padding: 16px 14px 60px; }
   .mp-title { font-size: 1.6rem; }
   .mp-subtitle { font-size: 0.82rem; }
@@ -3409,28 +3408,28 @@ body:has(.map-page) #chat-widget {
   .mp-contact-row { gap: 10px; flex-direction: column; align-items: flex-start; }
   .mp-contact-item { font-size: 0.75rem; }
 
-  /* Actions: Opret (fuld bredde) → icon-knapper (separat række) → log ud */
+  /* Actions: [Opret (flex:1)] [Edit icon + Inbox icon] linje 1 → Log ud linje 2 */
   .mp-header-actions {
     min-width: 0;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: stretch;
     gap: 8px;
   }
   .mp-action-primary {
-    width: 100%;
+    flex: 1;
     padding: 11px 14px;
     font-size: 0.9rem;
   }
-  .mp-action-secondary-row { gap: 8px; }
+  .mp-action-secondary-row { gap: 8px; flex-shrink: 0; }
   .mp-action-secondary {
-    flex: 1;
     padding: 11px 12px;
     min-width: 44px;
   }
   .mp-action-secondary .mp-action-label { display: none; }
-  .mp-logout-link { font-size: 0.74rem; margin-top: 0; }
+  .mp-logout-link { flex-basis: 100%; font-size: 0.74rem; margin-top: 0; }
 
-  /* Stats */
+  /* Stats: 4-col → 2-col */
   .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .mp-stat-card { padding: 14px; min-height: 110px; }
   .mp-stat-num { font-size: 1.7rem; }
