@@ -39,6 +39,8 @@ body {
   background: var(--cream);
   color: var(--charcoal);
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* ── NAV ── */
@@ -2691,6 +2693,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 #page-layout {
   min-height: calc(100vh - 64px);
+  width: 100%;
+  overflow-x: hidden;
 }
 /* Kortvisning fylder hele viewport — skjul scroll/footer */
 #page-layout:has(.map-page) {
