@@ -4718,10 +4718,10 @@ function buildMyProfilePageHTML() {
                   </span>
                   ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
                 </div>
-                <div class="mp-contact-row">
-                  ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
-                  ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
-                </div>
+              </div>
+              <div class="mp-contact-row">
+                ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
+                ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
               </div>
             </div>
             <div class="mp-header-actions">
