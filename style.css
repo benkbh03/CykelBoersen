@@ -3699,8 +3699,8 @@ body:has(.map-page) #chat-widget {
 /* Bikes grid */
 .pp-bikes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
 }
 
 /* Empty state */
@@ -3723,7 +3723,7 @@ body:has(.map-page) #chat-widget {
    PROFILSIDE – Responsive
    ============================================================ */
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .pp-wrap {
     padding: 16px 12px 48px;
   }
@@ -3762,7 +3762,7 @@ body:has(.map-page) #chat-widget {
     font-size: 1.1rem;
   }
   .pp-bikes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 }
