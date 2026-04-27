@@ -3396,26 +3396,26 @@ body:has(.map-page) #chat-widget {
   .mp-contact-row { gap: 10px; flex-direction: column; align-items: flex-start; }
   .mp-contact-item { font-size: 0.75rem; }
 
-  /* Actions: primær + 2 ikon-knapper på en række */
+  /* Actions: Opret (fuld bredde) → icon-knapper (separat række) → log ud */
   .mp-header-actions {
     min-width: 0;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
   .mp-action-primary {
-    flex: 1;
-    min-width: 0;
+    width: 100%;
     padding: 11px 14px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
-  .mp-action-secondary-row { gap: 8px; flex-shrink: 0; }
+  .mp-action-secondary-row { gap: 8px; }
   .mp-action-secondary {
-    flex: 0 0 auto;
+    flex: 1;
     padding: 11px 12px;
     min-width: 44px;
   }
   .mp-action-secondary .mp-action-label { display: none; }
+  .mp-logout-link { font-size: 0.74rem; margin-top: 0; }
 
   /* Stats */
   .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
