@@ -817,7 +817,9 @@ async function openDealerProfile(dealerId) {
       <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
         <div class="bike-card-img">
           ${imgContent}
-          <span class="condition-tag">${b.condition}</span>
+          <div class="bike-card-badges">
+            <span class="condition-tag">${b.condition}</span>
+          </div>
           <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${_userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>
         </div>
         <div class="bike-card-body">
@@ -4274,7 +4276,9 @@ function buildProfileBikeCards(bikes) {
       <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
         <div class="bike-card-img">
           ${imgContent}
-          <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
+          <div class="bike-card-badges">
+            <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
+          </div>
           <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${_userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>
         </div>
         <div class="bike-card-body">
