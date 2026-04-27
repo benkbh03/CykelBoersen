@@ -3489,6 +3489,115 @@ body:has(.map-page) #chat-widget {
 }
 
 /* ============================================================
+   MIN KONTO MOBIL – JS-klasse (is-mp-mobile på body)
+   Sikrer mobil-layout uanset browser-zoom og cache-adfærd
+   ============================================================ */
+body.is-mp-mobile .mp-layout { grid-template-columns: 1fr; }
+body.is-mp-mobile .mp-sidebar { position: static; display: flex; flex-direction: column; gap: 10px; }
+
+body.is-mp-mobile .mp-wrap { padding: 16px 14px 60px; }
+body.is-mp-mobile .mp-title { font-size: 1.6rem; letter-spacing: -0.05em; }
+body.is-mp-mobile .mp-subtitle { font-size: 0.82rem; }
+
+body.is-mp-mobile .mp-account-card {
+  display: flex !important;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+body.is-mp-mobile .mp-identity {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+body.is-mp-mobile .mp-avatar {
+  width: 60px !important;
+  height: 60px !important;
+  font-size: 1.4rem;
+  border-width: 2px;
+  flex-shrink: 0;
+  grid-row: unset !important;
+  align-self: unset !important;
+}
+body.is-mp-mobile .mp-info { flex: 1; min-width: 0; }
+body.is-mp-mobile .mp-contact-row {
+  flex-basis: 100%;
+  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+}
+body.is-mp-mobile .mp-contact-item { font-size: 0.75rem; }
+body.is-mp-mobile .mp-name { font-size: 1.25rem; }
+body.is-mp-mobile .mp-meta { gap: 6px; margin-bottom: 4px; }
+body.is-mp-mobile .mp-type-pill { font-size: 0.68rem; padding: 3px 8px; }
+body.is-mp-mobile .mp-member-since { display: none; }
+
+body.is-mp-mobile .mp-header-actions {
+  min-width: 0 !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+body.is-mp-mobile .mp-action-primary {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.87rem;
+  box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5);
+}
+body.is-mp-mobile .mp-action-secondary-row { gap: 8px; }
+body.is-mp-mobile .mp-action-secondary { flex: 1; padding: 11px 12px; }
+body.is-mp-mobile .mp-action-secondary .mp-action-label { display: inline; }
+body.is-mp-mobile .mp-logout-link { font-size: 0.74rem; margin-top: 0; }
+
+body.is-mp-mobile .mp-stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+body.is-mp-mobile .mp-stat-card { padding: 14px; min-height: 110px; gap: 6px; }
+body.is-mp-mobile .mp-stat-num { font-size: 1.62rem; }
+body.is-mp-mobile .mp-stat-icon { width: 32px; height: 32px; border-radius: 9px; }
+
+body.is-mp-mobile .mp-insight { grid-template-columns: 36px 1fr; padding: 14px; gap: 12px; }
+body.is-mp-mobile .mp-insight-icon { width: 36px; height: 36px; }
+body.is-mp-mobile .mp-insight-title { font-size: 0.9rem; }
+body.is-mp-mobile .mp-insight-sub { font-size: 0.72rem; }
+body.is-mp-mobile .mp-insight-cta { display: none; }
+
+body.is-mp-mobile .mp-listing-card {
+  grid-template-columns: 108px minmax(0, 1fr) !important;
+  padding: 12px;
+  gap: 12px;
+}
+body.is-mp-mobile .mp-listing-title { font-size: 1rem; }
+body.is-mp-mobile .mp-listing-aside { display: none; }
+body.is-mp-mobile .mp-price-mobile {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: var(--rust);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-top: 6px;
+}
+body.is-mp-mobile .mp-listing-actions-mobile {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column: 1 / -1;
+  gap: 6px;
+  margin-top: 2px;
+}
+body.is-mp-mobile .mp-listing-actions-mobile .mp-btn-view,
+body.is-mp-mobile .mp-listing-actions-mobile .mp-btn-edit,
+body.is-mp-mobile .mp-listing-actions-mobile .mp-btn-sold,
+body.is-mp-mobile .mp-listing-actions-mobile .mp-btn-unsold {
+  padding: 9px 8px;
+  font-size: 0.75rem;
+  justify-content: center;
+}
+body.is-mp-mobile .mp-tabs-panel { padding: 4px 12px 18px; }
+body.is-mp-mobile .mp-tab { padding: 12px 10px; font-size: 0.8rem; gap: 5px; }
+
+/* ============================================================
    PROFILSIDE (.pp-*) – Marketplace-kvalitet profil-pages
    ============================================================ */
 
