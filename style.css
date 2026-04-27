@@ -16,6 +16,11 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /* Forhindrer iOS Safari auto-zoom ved fokus på inputs (sker når font-size < 16px) */
 @media (max-width: 768px) {
   input, select, textarea { font-size: 16px !important; }
@@ -39,6 +44,8 @@ body {
   background: var(--cream);
   color: var(--charcoal);
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* ── NAV ── */
@@ -2691,6 +2698,8 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 
 #page-layout {
   min-height: calc(100vh - 64px);
+  width: 100%;
+  overflow-x: hidden;
 }
 /* Kortvisning fylder hele viewport — skjul scroll/footer */
 #page-layout:has(.map-page) {
@@ -2713,10 +2722,14 @@ body:has(.map-page) #chat-widget {
   padding: 28px 24px 72px;
   background: var(--sand);
   min-height: calc(100vh - 64px);
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 .mp-inner {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 /* ── Top ── */
@@ -3396,26 +3409,26 @@ body:has(.map-page) #chat-widget {
   .mp-contact-row { gap: 10px; flex-direction: column; align-items: flex-start; }
   .mp-contact-item { font-size: 0.75rem; }
 
-  /* Actions: primær + 2 ikon-knapper på en række */
+  /* Actions: Opret (fuld bredde) → icon-knapper (separat række) → log ud */
   .mp-header-actions {
     min-width: 0;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
   .mp-action-primary {
-    flex: 1;
-    min-width: 0;
+    width: 100%;
     padding: 11px 14px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
-  .mp-action-secondary-row { gap: 8px; flex-shrink: 0; }
+  .mp-action-secondary-row { gap: 8px; }
   .mp-action-secondary {
-    flex: 0 0 auto;
+    flex: 1;
     padding: 11px 12px;
     min-width: 44px;
   }
   .mp-action-secondary .mp-action-label { display: none; }
+  .mp-logout-link { font-size: 0.74rem; margin-top: 0; }
 
   /* Stats */
   .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
