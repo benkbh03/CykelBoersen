@@ -2257,9 +2257,16 @@ function showProfileData() {
 
   const shopGroup    = document.getElementById('edit-shop-group');
   const addressGroup = document.getElementById('edit-address-group');
+  const offersGroup  = document.getElementById('edit-dealer-offers-group');
   const isDealer = profile.seller_type === 'dealer';
   shopGroup.style.display    = isDealer ? 'flex' : 'none';
   addressGroup.style.display = isDealer ? 'flex' : 'none';
+  if (offersGroup) offersGroup.style.display = isDealer ? 'flex' : 'none';
+
+  const finCb = document.getElementById('edit-offers-financing');
+  const triCb = document.getElementById('edit-offers-tradein');
+  if (finCb) finCb.checked = !!profile.offers_financing;
+  if (triCb) triCb.checked = !!profile.offers_tradein;
 
   // Vis sælgertype som tekst (ikke redigerbar dropdown)
   const sellerDisplay = document.getElementById('edit-seller-type-display');
@@ -2335,6 +2342,11 @@ async function saveProfile() {
     address:     addressInput.value,
     bio:         (document.getElementById('edit-bio')?.value || '').trim(),
   };
+
+  if (isDealer) {
+    updates.offers_financing = !!document.getElementById('edit-offers-financing')?.checked;
+    updates.offers_tradein   = !!document.getElementById('edit-offers-tradein')?.checked;
+  }
 
   // Lokationsdata: forhandler har præcis adresse, privat har kun by
   if (isDealer && addressData.lat && addressData.lng) {
@@ -3029,7 +3041,7 @@ async function fetchBikeById(bikeId) {
   }
   const fetchPromise = supabase
     .from('bikes')
-    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified, email_verified), bike_images(url, is_primary)')
+    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified, email_verified, offers_financing, offers_tradein), bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
   const timeoutPromise = new Promise((_, reject) =>
@@ -3119,19 +3131,24 @@ function buildBikeBodyHTML(b) {
           <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
         </div>
         ${!isOwner ? `
-        ${sellerType === 'dealer' ? `
+        ${sellerType === 'dealer' ? (() => {
+          const perks = [];
+          if (profile.verified) perks.push('Verificeret virksomhed');
+          if (b.warranty) perks.push(`Garanti: ${esc(b.warranty)}`);
+          else perks.push('Service & faglig rådgivning');
+          if (profile.offers_tradein)   perks.push('Byttetilbud muligt');
+          if (profile.offers_financing) perks.push('Finansiering muligt');
+          return `
         <div class="dealer-perks">
           <div class="dealer-perks-header">
             <span class="dealer-perks-icon">🏪</span>
             <span class="dealer-perks-title">Køb hos forhandler</span>
           </div>
           <ul class="dealer-perks-list">
-            ${profile.verified ? '<li><span class="dp-check">✓</span>Verificeret virksomhed</li>' : ''}
-            ${b.warranty ? `<li><span class="dp-check">✓</span>Garanti: ${esc(b.warranty)}</li>` : '<li><span class="dp-check">✓</span>Service & faglig rådgivning</li>'}
-            <li><span class="dp-check">✓</span>Byttetilbud muligt</li>
-            <li><span class="dp-check">✓</span>Finansiering muligt</li>
+            ${perks.map(p => `<li><span class="dp-check">✓</span>${p}</li>`).join('')}
           </ul>
-        </div>` : ''}
+        </div>`;
+        })() : ''}
         <div class="action-buttons">
           <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
           <div class="bid-box" id="bid-box">
