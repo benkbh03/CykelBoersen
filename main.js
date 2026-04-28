@@ -1617,7 +1617,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
               <div>
                 <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
                 <div class="seller-trust-row">
-                  <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
+                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? (profile.verified ? '🏪 Forhandler ★' : '🏪 Forhandler') : '👤 Privat'}</span>
                   ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
                 </div>
               </div>
@@ -2975,6 +2975,32 @@ function useQuickReply(textareaId, btn) {
   ta.focus();
 }
 
+function getQuickReplies() {
+  const isDealer = currentProfile?.seller_type === 'dealer';
+  if (isDealer) {
+    return [
+      'Tak for din interesse — cyklen er stadig til salg.',
+      'Du er velkommen til at komme forbi og prøve den.',
+      'Vi har åbent man-fre 10-17, lør 10-14.',
+      'Vi tilbyder finansiering og byttetilbud.',
+      'Tak for handlen — god tur!',
+    ];
+  }
+  return [
+    'Stadig til salg 👍',
+    'Prisen er fast',
+    'Kan mødes i weekenden',
+    'Er du stadig interesseret?',
+    'Tak for interessen!',
+  ];
+}
+
+function renderQuickRepliesHTML(textareaId) {
+  return getQuickReplies().map(reply =>
+    `<button class="qr-btn" onclick="useQuickReply('${textareaId}', this)">${esc(reply)}</button>`
+  ).join('');
+}
+
 function dismissOnboarding() {
   localStorage.setItem('onboarded', '1');
   const banner = document.getElementById('onboarding-banner');
@@ -3093,6 +3119,16 @@ function buildBikeBodyHTML(b) {
           <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
         </div>
         ${!isOwner ? `
+        ${sellerType === 'dealer' ? `
+        <div class="dealer-perks">
+          <div class="dealer-perks-title">🏪 Køb hos forhandler</div>
+          <ul class="dealer-perks-list">
+            ${profile.verified ? '<li>✓ Verificeret virksomhed</li>' : ''}
+            ${b.warranty ? `<li>🛡️ Inkluderet garanti: ${esc(b.warranty)}</li>` : '<li>🛠️ Service & rådgivning</li>'}
+            <li>↻ Mulighed for byttetilbud</li>
+            <li>💳 Mulighed for finansiering</li>
+          </ul>
+        </div>` : ''}
         <div class="action-buttons">
           <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
           <div class="bid-box" id="bid-box">
@@ -4779,6 +4815,25 @@ function buildMyProfilePageHTML() {
             </div>
           </div>
 
+          <!-- Forhandler leads-banner (vises kun for dealers) -->
+          ${isDealer ? `
+          <div class="mp-dealer-banner" id="mp-dealer-banner">
+            <div class="mp-dealer-banner-stat">
+              <div class="mp-dealer-banner-num" id="mp-dealer-leads">–</div>
+              <div class="mp-dealer-banner-label">Nye leads (7 dage)</div>
+            </div>
+            <div class="mp-dealer-banner-divider"></div>
+            <div class="mp-dealer-banner-stat">
+              <div class="mp-dealer-banner-num" id="mp-dealer-topviews">–</div>
+              <div class="mp-dealer-banner-label">Visninger på topcykel</div>
+            </div>
+            <div class="mp-dealer-banner-divider"></div>
+            <div class="mp-dealer-banner-stat">
+              <div class="mp-dealer-banner-num" id="mp-dealer-respond">–</div>
+              <div class="mp-dealer-banner-label">Ubesvarede tråde</div>
+            </div>
+          </div>` : ''}
+
           <!-- Insight-banner (vises kun når vi har data) -->
           <div class="mp-insight" id="mp-insight" style="display:none"></div>
 
@@ -4914,6 +4969,44 @@ async function loadProfileStats() {
     // Trades delta
     const tradesDelta = document.getElementById('mp-stat-trades-delta');
     if (tradesDelta) tradesDelta.textContent = tradesCount > 0 ? (tradesCount === 1 ? '1 gennemført' : `${tradesCount} gennemførte`) : 'Ingen endnu';
+
+    // Forhandler-banner stats (kun hvis bruger er dealer)
+    if (currentProfile?.seller_type === 'dealer') {
+      try {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+        const [recentMsgsRes, allReceivedRes, allSentRes] = await Promise.all([
+          supabase.from('messages').select('id', { count: 'exact', head: true })
+            .eq('receiver_id', currentUser.id).gte('created_at', sevenDaysAgo),
+          supabase.from('messages').select('id, bike_id, sender_id, created_at')
+            .eq('receiver_id', currentUser.id).order('created_at', { ascending: false }).limit(200),
+          supabase.from('messages').select('bike_id, sender_id, created_at')
+            .eq('sender_id', currentUser.id).order('created_at', { ascending: false }).limit(200),
+        ]);
+
+        const leadsEl = document.getElementById('mp-dealer-leads');
+        if (leadsEl) leadsEl.textContent = (recentMsgsRes.count || 0).toString();
+
+        const topViewedBike = [...activeBikes].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+        const topViewsEl = document.getElementById('mp-dealer-topviews');
+        if (topViewsEl) topViewsEl.textContent = (topViewedBike?.views || 0).toLocaleString('da-DK');
+
+        // Ubesvarede tråde: indgående beskeder hvor sælger ikke har svaret bagefter på samme bike+sender
+        const received = allReceivedRes.data || [];
+        const sent     = allSentRes.data || [];
+        const unanswered = received.filter(rm => {
+          return !sent.some(sm =>
+            sm.bike_id === rm.bike_id &&
+            new Date(sm.created_at) > new Date(rm.created_at)
+          );
+        });
+        // Tæl unikke (bike_id + sender_id)-tråde
+        const unansweredKeys = new Set(unanswered.map(m => `${m.bike_id}|${m.sender_id}`));
+        const respondEl = document.getElementById('mp-dealer-respond');
+        if (respondEl) respondEl.textContent = unansweredKeys.size.toString();
+      } catch (e) {
+        console.error('Dealer banner stats fejl:', e);
+      }
+    }
 
     // Insight banner: most-viewed active listing
     const topBike = [...activeBikes].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
@@ -7539,13 +7632,7 @@ async function renderInboxPage() {
           <div class="inbox-chat-header" id="inbox-page-chat-header"></div>
           <div class="inbox-chat-messages" id="inbox-page-chat-messages"></div>
           <div class="inbox-chat-reply">
-            <div class="quick-replies">
-              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg 👍</button>
-              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Prisen er fast</button>
-              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Kan mødes i weekenden</button>
-              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
-              <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Tak for interessen!</button>
-            </div>
+            <div class="quick-replies">${renderQuickRepliesHTML('inbox-modal-reply-text')}</div>
             <div class="inbox-chat-reply-row">
               <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
               <button id="send-inbox-reply-btn" onclick="sendReply(true)">Send</button>
