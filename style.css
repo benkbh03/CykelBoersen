@@ -586,8 +586,15 @@ nav {
 .bike-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
 .bike-meta span::after { content: ' · '; }
 .bike-meta span:last-child::after { content: ''; }
-.card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; }
-.seller-info { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
+.card-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid var(--border); padding-top: 12px; gap: 6px; }
+.seller-info { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; min-width: 0; }
+.seller-trust-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+.trust-chip {
+  display: inline-flex; align-items: center;
+  background: rgba(46,125,50,0.1); color: #2e7d32;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
+  padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+}
 .seller-avatar {
   width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
   background: var(--forest); overflow: hidden;
@@ -595,8 +602,10 @@ nav {
   font-size: 0.68rem; color: var(--sand); font-weight: 600;
 }
 .seller-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.seller-name { color: var(--charcoal); font-weight: 500; }
-.card-location { font-size: 0.78rem; color: var(--muted); }
+.seller-name { color: var(--charcoal); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-meta-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.card-location { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+.card-last-seen { font-size: 0.67rem; color: var(--muted); opacity: 0.75; white-space: nowrap; }
 
 /* ── FORHANDLER SEKTION ── */
 .dealer-strip { background: var(--forest); padding: 48px; }
@@ -962,8 +971,85 @@ nav {
 .btn-become-dealer-small:hover { background: var(--rust); border-color: var(--rust); color: #fff; }
 
 /* Forhandler perks */
-.dealer-perks { display: flex; flex-direction: column; gap: 10px; background: var(--sand); border-radius: 10px; padding: 18px 20px; border: 1px solid var(--border); }
-.dealer-perk { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 500; }
+/* Forhandler-fordele banner i bike-modal (vises kun når sælger er dealer) */
+.dealer-perks {
+  background: linear-gradient(135deg, rgba(46,125,50,0.08), rgba(46,125,50,0.04));
+  border: 1px solid rgba(46,125,50,0.22);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 4px;
+}
+.dealer-perks-title {
+  font-family: 'Fraunces', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2e6e32;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.dealer-perks-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+.dealer-perks-list li {
+  font-size: 0.78rem;
+  color: var(--charcoal);
+  line-height: 1.4;
+}
+@media (max-width: 480px) {
+  .dealer-perks-list { grid-template-columns: 1fr; }
+}
+
+/* Premium-look for verified dealers på bike-cards */
+.badge-dealer-verified {
+  background: linear-gradient(135deg, #2e7d32, #4caf50) !important;
+  color: #fff !important;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(46,125,50,0.25);
+}
+
+/* Forhandler-leads banner på Min Konto */
+.mp-dealer-banner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+  background: linear-gradient(135deg, var(--forest), var(--forest-light));
+  color: var(--sand);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.mp-dealer-banner-stat {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 2px; min-width: 0;
+}
+.mp-dealer-banner-num {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.04em;
+  color: var(--rust-light);
+  line-height: 1;
+}
+.mp-dealer-banner-label {
+  font-size: 0.72rem;
+  opacity: 0.82;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.mp-dealer-banner-divider {
+  width: 1px; height: 32px;
+  background: rgba(245,240,232,0.18);
+}
+@media (max-width: 560px) {
+  .mp-dealer-banner { padding: 14px; gap: 6px; }
+  .mp-dealer-banner-num { font-size: 1.35rem; }
+  .mp-dealer-banner-label { font-size: 0.66rem; }
+  .mp-dealer-banner-divider { height: 24px; }
+}
 
 /* ── GRATIS PRØVEPERIODE BANNER ── */
 .dealer-trial-banner {
@@ -1672,10 +1758,29 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   .btn-contact { display: none; }
 }
 .message-box { display: none; margin-top: 12px; }
+.msg-presets {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+}
+.msg-preset-chip {
+  background: var(--sand); border: 1.5px solid var(--border);
+  border-radius: 999px; padding: 6px 12px;
+  font-size: 0.76rem; font-weight: 500; color: var(--charcoal);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.msg-preset-chip:hover { background: #e8e2d8; border-color: #b8b2a8; }
 .message-box textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; resize: vertical; min-height: 90px; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .message-box textarea:focus { border-color: var(--forest); }
 .message-box button { margin-top: 8px; background: var(--forest); color: var(--sand); border: none; padding: 11px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; width: 100%; }
 .message-box button:hover { background: var(--forest-light); }
+.antiscam-tip {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: rgba(46,125,50,0.07); border: 1px solid rgba(46,125,50,0.18);
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 0.76rem; color: #2e6e32; line-height: 1.45;
+  font-family: 'DM Sans', sans-serif;
+}
 .bid-box { display: none; margin-top: 12px; }
 .bid-box-inner { display: flex; gap: 8px; align-items: center; }
 .bid-box input { flex: 1; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; background: var(--cream); transition: border-color 0.2s; }
