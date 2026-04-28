@@ -640,6 +640,20 @@
               <label>Adresse</label>
               <input type="text" id="edit-address" placeholder="f.eks. Vesterbrogade 42">
             </div>
+            <div class="form-group" id="edit-dealer-offers-group" style="display:none;">
+              <label>Hvad tilbyder din butik?</label>
+              <div class="dealer-offers-checks">
+                <label class="dealer-offer-check">
+                  <input type="checkbox" id="edit-offers-financing">
+                  <span>💳 Finansiering</span>
+                </label>
+                <label class="dealer-offer-check">
+                  <input type="checkbox" id="edit-offers-tradein">
+                  <span>↻ Byttetilbud</span>
+                </label>
+              </div>
+              <p class="dealer-offers-hint">Vises på dine annoncer under "Køb hos forhandler".</p>
+            </div>
           </div>
           <button id="save-profile-btn" class="form-submit" onclick="saveProfile()">Gem ændringer</button>
 

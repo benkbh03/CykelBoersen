@@ -1020,6 +1020,36 @@ nav {
   .dealer-perks-list { grid-template-columns: 1fr; }
 }
 
+/* Forhandler-fordele opt-in (profil-form) */
+.dealer-offers-checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.dealer-offer-check {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.dealer-offer-check:hover { border-color: var(--forest); }
+.dealer-offer-check input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--forest);
+  cursor: pointer;
+}
+.dealer-offers-hint {
+  margin: 6px 0 0; padding: 0;
+  font-size: 0.74rem; color: var(--muted);
+}
+@media (max-width: 480px) {
+  .dealer-offers-checks { grid-template-columns: 1fr; }
+}
+
 /* Premium-look for verified dealers på bike-cards */
 .badge-dealer-verified {
   background: linear-gradient(135deg, #1b5e20, #388e3c) !important;
