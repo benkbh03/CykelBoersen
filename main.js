@@ -1430,6 +1430,7 @@ async function loadBikes(filters = {}, append = false) {
   } else {
     renderBikes(data, false, saveCounts, userSavedSet);
   }
+  updateActiveFiltersBar();
 
   bikesOffset += data.length;
 
@@ -1521,6 +1522,115 @@ function clearAllFilters() {
   currentFilterArgs = null;
   loadBikes();
   showToast('Filtre nulstillet');
+}
+
+function updateActiveFiltersBar() {
+  const bar = document.getElementById('active-filters-bar');
+  if (!bar) return;
+  if (!hasActiveFilters()) { bar.style.display = 'none'; return; }
+
+  const pills = [];
+
+  // Fra currentFilters (hurtigpills + søgning)
+  if (currentFilters?.search)    pills.push({ label: `"${currentFilters.search}"`, type: 'search' });
+  if (currentFilters?.city)      pills.push({ label: currentFilters.city, type: 'city' });
+  if (currentFilters?.type)      pills.push({ label: currentFilters.type, type: 'quick-type' });
+  if (currentFilters?.maxPrice)  pills.push({ label: `Under ${currentFilters.maxPrice.toLocaleString('da-DK')} kr.`, type: 'quick-price' });
+  if (currentFilters?.warranty)  pills.push({ label: 'Med garanti', type: 'quick-warranty' });
+  if (currentFilters?.newOnly)   pills.push({ label: 'Ny annonce', type: 'quick-newonly' });
+  if (currentFilters?.sellerType === 'dealer')  pills.push({ label: 'Kun forhandlere', type: 'quick-seller' });
+  if (currentFilters?.sellerType === 'private') pills.push({ label: 'Kun private', type: 'quick-seller' });
+
+  // Fra currentFilterArgs (sidebar)
+  for (const t of (currentFilterArgs?.types || []))      pills.push({ label: t, type: 'type', value: t });
+  for (const c of (currentFilterArgs?.conditions || [])) pills.push({ label: c, type: 'condition', value: c });
+  for (const w of (currentFilterArgs?.wheelSizes || [])) pills.push({ label: w, type: 'wheel', value: w });
+  if (currentFilterArgs?.minPrice && currentFilterArgs?.maxPrice) {
+    pills.push({ label: `${currentFilterArgs.minPrice.toLocaleString('da-DK')}–${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
+  } else if (currentFilterArgs?.minPrice) {
+    pills.push({ label: `Fra ${currentFilterArgs.minPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
+  } else if (currentFilterArgs?.maxPrice) {
+    pills.push({ label: `Under ${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
+  }
+  if (currentFilterArgs?.sellerType === 'dealer')  pills.push({ label: 'Forhandlere', type: 'seller', value: 'dealer' });
+  if (currentFilterArgs?.sellerType === 'private') pills.push({ label: 'Private', type: 'seller', value: 'private' });
+
+  bar.style.display = 'flex';
+  bar.innerHTML = `
+    <div class="afb-pills">
+      ${pills.map(p => `<span class="afb-pill">${esc(p.label)}<button class="afb-pill-remove" onclick="removeFilterPill('${p.type}','${(p.value || '').replace(/'/g, "\\'")}')">✕</button></span>`).join('')}
+    </div>
+    <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
+  `;
+}
+
+function removeFilterPill(type, value) {
+  const resetQuickPills = () => {
+    document.querySelectorAll('.filters-row .pill').forEach(p => {
+      const isAlle = p.textContent.trim() === 'Alle';
+      p.classList.toggle('active', isAlle);
+      p.setAttribute('aria-pressed', isAlle ? 'true' : 'false');
+    });
+  };
+
+  switch (type) {
+    case 'search':
+      { const el = document.getElementById('search-input'); if (el) el.value = ''; }
+      currentFilters = { ...currentFilters, search: '' };
+      loadBikes(currentFilters);
+      break;
+    case 'city':
+      { const el = document.getElementById('search-city'); if (el) el.value = ''; }
+      currentFilters = { ...currentFilters, city: '' };
+      loadBikes(currentFilters);
+      break;
+    case 'quick-type':
+      currentFilters = { ...currentFilters, type: '' };
+      resetQuickPills();
+      loadBikes(currentFilters);
+      break;
+    case 'quick-price':
+      currentFilters = { ...currentFilters, maxPrice: null };
+      resetQuickPills();
+      loadBikes(currentFilters);
+      break;
+    case 'quick-warranty':
+      currentFilters = { ...currentFilters, warranty: false };
+      resetQuickPills();
+      loadBikes(currentFilters);
+      break;
+    case 'quick-newonly':
+      currentFilters = { ...currentFilters, newOnly: false };
+      resetQuickPills();
+      loadBikes(currentFilters);
+      break;
+    case 'quick-seller':
+      currentFilters = { ...currentFilters, sellerType: null };
+      resetQuickPills();
+      loadBikes(currentFilters);
+      break;
+    case 'type':
+      document.querySelectorAll(`[data-filter="type"][data-value="${value}"]`).forEach(cb => cb.checked = false);
+      applyFilters();
+      break;
+    case 'condition':
+      document.querySelectorAll(`[data-filter="condition"][data-value="${value}"]`).forEach(cb => cb.checked = false);
+      applyFilters();
+      break;
+    case 'wheel':
+      document.querySelectorAll(`[data-filter="wheel"][data-value="${value}"]`).forEach(cb => cb.checked = false);
+      applyFilters();
+      break;
+    case 'price':
+      document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
+      applyFilters();
+      break;
+    case 'seller':
+      document.querySelectorAll('[data-filter="seller"][data-value="all"]').forEach(cb => cb.checked = true);
+      document.querySelectorAll('[data-filter="seller"]:not([data-value="all"])').forEach(cb => cb.checked = false);
+      applyFilters();
+      break;
+  }
 }
 
 function renderListingsEmptyState() {
@@ -6256,6 +6366,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
   }
 
   renderBikes(data || [], append);
+  updateActiveFiltersBar();
   filterOffset += (data || []).length;
 
   // "Vis flere"-knap
@@ -7510,6 +7621,7 @@ window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
 window.toggleSidebarSection   = toggleSidebarSection;
 window.clearAllFilters        = clearAllFilters;
+window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
 window.openMobileFilter   = openMobileFilter;
