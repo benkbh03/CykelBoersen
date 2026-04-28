@@ -556,6 +556,11 @@ async function checkUnreadMessages() {
     if (count > 0) { navBadge.textContent = count; navBadge.style.display = 'flex'; }
     else { navBadge.style.display = 'none'; }
   }
+  const mpBadge = document.getElementById('mp-inbox-count-badge');
+  if (mpBadge) {
+    if (count > 0) { mpBadge.textContent = count; mpBadge.style.display = 'flex'; }
+    else { mpBadge.style.display = 'none'; }
+  }
 }
 
 /* ============================================================
@@ -4830,6 +4835,7 @@ async function renderMyProfilePage() {
   detailView.innerHTML = buildMyProfilePageHTML();
   loadMyListings('mp-listings-grid');
   loadProfileStats();
+  checkUnreadMessages();
 }
 
 function buildMyProfilePageHTML() {
@@ -4911,7 +4917,7 @@ function buildMyProfilePageHTML() {
               <button class="mp-action-primary" onclick="navigateTo('/sell')">${svgPlus} <span>Opret annonce</span></button>
               <div class="mp-action-secondary-row">
                 <button class="mp-action-secondary" onclick="openProfileModal()" aria-label="Redigér profil">${svgEdit} <span class="mp-action-label">Redigér</span></button>
-                <button class="mp-action-secondary" onclick="navigateTo('/inbox')" aria-label="Indbakke">${svgInbox} <span class="mp-action-label">Indbakke</span></button>
+                <button class="mp-action-secondary mp-action-inbox" onclick="navigateTo('/inbox')" aria-label="Indbakke">${svgInbox} <span class="mp-action-label">Indbakke</span><span class="mp-inbox-count-badge" id="mp-inbox-count-badge" style="display:none;">0</span></button>
               </div>
               <button class="mp-logout-link" onclick="logout()">${svgLogout} Log ud</button>
             </div>
