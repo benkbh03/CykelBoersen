@@ -556,11 +556,6 @@ async function checkUnreadMessages() {
     if (count > 0) { navBadge.textContent = count; navBadge.style.display = 'flex'; }
     else { navBadge.style.display = 'none'; }
   }
-  const mpBadge = document.getElementById('mp-inbox-count-badge');
-  if (mpBadge) {
-    if (count > 0) { mpBadge.textContent = count; mpBadge.style.display = 'flex'; }
-    else { mpBadge.style.display = 'none'; }
-  }
 }
 
 /* ============================================================
@@ -4905,21 +4900,20 @@ function buildMyProfilePageHTML() {
                   <span class="mp-type-pill">
                     ${isDealer ? svgBike : ''} ${isDealer ? 'Forhandler' : 'Privat sælger'}
                   </span>
-                  ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
                 </div>
               </div>
               <div class="mp-contact-row">
                 ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
                 ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
+                ${memberSince ? `<span class="mp-member-since">· Medlem siden ${memberSince}</span>` : ''}
               </div>
             </div>
             <div class="mp-header-actions">
               <button class="mp-action-primary" onclick="navigateTo('/sell')">${svgPlus} <span>Opret annonce</span></button>
               <div class="mp-action-secondary-row">
                 <button class="mp-action-secondary" onclick="openProfileModal()" aria-label="Redigér profil">${svgEdit} <span class="mp-action-label">Redigér</span></button>
-                <button class="mp-action-secondary mp-action-inbox" onclick="navigateTo('/inbox')" aria-label="Indbakke">${svgInbox} <span class="mp-action-label">Indbakke</span><span class="mp-inbox-count-badge" id="mp-inbox-count-badge" style="display:none;">0</span></button>
+                <button class="mp-action-secondary mp-action-logout" onclick="logout()" aria-label="Log ud">${svgLogout} <span class="mp-action-label">Log ud</span></button>
               </div>
-              <button class="mp-logout-link" onclick="logout()">${svgLogout} Log ud</button>
             </div>
           </div>
 
