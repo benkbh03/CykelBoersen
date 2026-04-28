@@ -3397,32 +3397,32 @@ body:has(.map-page) #chat-widget {
     padding: 18px;
   }
 
-  /* Identity: avatar + info (name+pill) in flex row, contact wraps below */
+  /* Identity: avatar left spanning full height, info+contact stacked right */
   .mp-identity {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    column-gap: 14px;
+    row-gap: 0;
+    align-items: start;
   }
   .mp-avatar {
     width: 60px;
     height: 60px;
     font-size: 1.4rem;
     border-width: 2px;
-    flex-shrink: 0;
-    grid-row: unset;
-    align-self: unset;
+    grid-row: 1 / 3;
+    align-self: center;
   }
-  .mp-info { flex: 1; min-width: 0; }
-  .mp-contact-row { flex-basis: 100%; gap: 8px; flex-direction: row; align-items: center; }
-  .mp-contact-item { font-size: 0.75rem; }
+  .mp-info { flex: unset; min-width: 0; }
+  .mp-contact-row { flex-direction: column; gap: 3px; align-items: flex-start; margin-top: 4px; }
+  .mp-contact-item { font-size: 0.78rem; }
 
-  .mp-name { font-size: 1.25rem; }
-  .mp-meta { gap: 6px; margin-bottom: 4px; }
+  .mp-name { font-size: 1.2rem; }
+  .mp-meta { gap: 6px; margin-bottom: 2px; flex-wrap: wrap; }
   .mp-type-pill { font-size: 0.68rem; padding: 3px 8px; }
-  .mp-member-since { display: none; }
+  .mp-member-since { display: block; font-size: 0.72rem; }
 
-  /* Actions: Opret full-width, then labeled Redigér + Indbakke row, then Log ud */
+  /* Actions: Opret full-width, then icon-only Redigér + Indbakke */
   .mp-header-actions {
     min-width: 0;
     flex-direction: column;
@@ -3430,10 +3430,10 @@ body:has(.map-page) #chat-widget {
     gap: 8px;
     flex-wrap: nowrap;
   }
-  .mp-action-primary { width: 100%; padding: 12px 14px; font-size: 0.87rem; }
-  .mp-action-secondary-row { gap: 8px; }
-  .mp-action-secondary { flex: 1; padding: 11px 12px; }
-  .mp-action-secondary .mp-action-label { display: inline; }
+  .mp-action-primary { width: 100%; padding: 12px 14px; font-size: 0.87rem; box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5); }
+  .mp-action-secondary-row { gap: 8px; justify-content: flex-start; }
+  .mp-action-secondary { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; }
+  .mp-action-secondary .mp-action-label { display: none !important; }
   .mp-logout-link { font-size: 0.74rem; margin-top: 0; }
 
   /* Stats: 4-col → 2-col */
@@ -3506,10 +3506,12 @@ body.is-mp-mobile .mp-account-card {
   padding: 18px;
 }
 body.is-mp-mobile .mp-identity {
-  display: flex !important;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: center;
+  display: grid !important;
+  grid-template-columns: 64px 1fr !important;
+  column-gap: 14px;
+  row-gap: 0;
+  align-items: start;
+  flex-wrap: unset;
 }
 body.is-mp-mobile .mp-avatar {
   width: 60px !important;
@@ -3517,21 +3519,22 @@ body.is-mp-mobile .mp-avatar {
   font-size: 1.4rem;
   border-width: 2px;
   flex-shrink: 0;
-  grid-row: unset !important;
-  align-self: unset !important;
+  grid-row: 1 / 3 !important;
+  align-self: center !important;
 }
-body.is-mp-mobile .mp-info { flex: 1; min-width: 0; }
+body.is-mp-mobile .mp-info { flex: unset; min-width: 0; }
 body.is-mp-mobile .mp-contact-row {
-  flex-basis: 100%;
-  gap: 8px;
-  flex-direction: row;
-  align-items: center;
+  flex-basis: unset;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  margin-top: 4px;
 }
-body.is-mp-mobile .mp-contact-item { font-size: 0.75rem; }
-body.is-mp-mobile .mp-name { font-size: 1.25rem; }
-body.is-mp-mobile .mp-meta { gap: 6px; margin-bottom: 4px; }
+body.is-mp-mobile .mp-contact-item { font-size: 0.78rem; }
+body.is-mp-mobile .mp-name { font-size: 1.2rem; }
+body.is-mp-mobile .mp-meta { gap: 6px; margin-bottom: 2px; flex-wrap: wrap; }
 body.is-mp-mobile .mp-type-pill { font-size: 0.68rem; padding: 3px 8px; }
-body.is-mp-mobile .mp-member-since { display: none; }
+body.is-mp-mobile .mp-member-since { display: block; font-size: 0.72rem; }
 
 body.is-mp-mobile .mp-header-actions {
   min-width: 0 !important;
@@ -3546,9 +3549,15 @@ body.is-mp-mobile .mp-action-primary {
   font-size: 0.87rem;
   box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5);
 }
-body.is-mp-mobile .mp-action-secondary-row { gap: 8px; }
-body.is-mp-mobile .mp-action-secondary { flex: 1; padding: 11px 12px; }
-body.is-mp-mobile .mp-action-secondary .mp-action-label { display: inline; }
+body.is-mp-mobile .mp-action-secondary-row { gap: 8px; justify-content: flex-start; }
+body.is-mp-mobile .mp-action-secondary {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+}
+body.is-mp-mobile .mp-action-secondary .mp-action-label { display: none !important; }
 body.is-mp-mobile .mp-logout-link { font-size: 0.74rem; margin-top: 0; }
 
 body.is-mp-mobile .mp-stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
