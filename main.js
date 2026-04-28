@@ -4901,11 +4901,13 @@ function buildMyProfilePageHTML() {
                     ${isDealer ? svgBike : ''} ${isDealer ? 'Forhandler' : 'Privat sælger'}
                   </span>
                 </div>
-              </div>
-              <div class="mp-contact-row">
-                ${p.city   ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
-                ${u?.email ? `<span class="mp-contact-item">${svgMail} ${esc(u.email)}</span>` : ''}
-                ${memberSince ? `<span class="mp-member-since">· Medlem siden ${memberSince}</span>` : ''}
+                <div class="mp-contact-row">
+                  <div class="mp-contact-top">
+                    ${p.city ? `<span class="mp-contact-item" style="color:var(--rust)">${svgPin} ${esc(p.city)}</span>` : ''}
+                    ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
+                  </div>
+                  ${u?.email ? `<span class="mp-contact-item mp-contact-email-item">${svgMail} <span class="mp-email-text">${esc(u.email)}</span></span>` : ''}
+                </div>
               </div>
             </div>
             <div class="mp-header-actions">
