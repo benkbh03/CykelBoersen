@@ -1377,7 +1377,7 @@ async function loadBikes(filters = {}, append = false) {
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
@@ -1589,6 +1589,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
     var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
     var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
     var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
+    const lastSeenCard = formatLastSeen(profile.last_seen);
     return `
       <div class="bike-card"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
         <div class="bike-card-img">
@@ -1615,12 +1616,16 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
               <div class="seller-avatar">${avatarHtml}</div>
               <div>
                 <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
-                <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
-                  ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
-                </span>
+                <div class="seller-trust-row">
+                  <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
+                  ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
+                </div>
               </div>
             </div>
-            <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
+            <div class="card-meta-right">
+              <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
+              ${lastSeenCard ? `<div class="card-last-seen">${lastSeenCard}</div>` : ''}
+            </div>
           </div>
         </div>
       </div>`;
@@ -3102,9 +3107,15 @@ function buildBikeBodyHTML(b) {
           </div>
           <button class="btn-contact" onclick="toggleMessageBox()">✉️ Kontakt sælger</button>
           <div class="message-box" id="message-box">
+            <div class="msg-presets">
+              <button class="msg-preset-chip" onclick="insertPresetMsg('Er den stadig til salg?')">Er den stadig til salg?</button>
+              <button class="msg-preset-chip" onclick="insertPresetMsg('Hvad er laveste pris?')">Hvad er laveste pris?</button>
+              <button class="msg-preset-chip" onclick="insertPresetMsg('Kan jeg komme og se den?')">Kan jeg se den?</button>
+            </div>
             <textarea id="message-text" placeholder="Skriv en besked til sælgeren..."></textarea>
             <button onclick="sendMessage('${b.id}', '${profile.id}')">Send besked</button>
           </div>
+          <div class="antiscam-tip">🔒 Mød op personligt og betal ved levering. Del aldrig kontooplysninger.</div>
           <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
           <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
           <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${b.brand} ${b.model}')">🚩 Rapporter annonce</button>
@@ -5627,6 +5638,13 @@ function toggleBidBox() {
   if (box.style.display === 'block') document.getElementById('bid-amount').focus();
 }
 
+function insertPresetMsg(text) {
+  const box = document.getElementById('message-box');
+  if (box && box.style.display !== 'block') toggleMessageBox();
+  const ta = document.getElementById('message-text');
+  if (ta) { ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); }
+}
+
 function toggleMessageBox() {
   if (!currentUser) { openLoginModal(); return; }
   const box = document.getElementById('message-box');
@@ -6105,7 +6123,7 @@ async function loadBikesWithFilters({ types = [], conditions = [], minPrice, max
 
   let query = supabase
     .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address), bike_images(url, is_primary)')
+    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
@@ -7444,6 +7462,7 @@ window.toggleBidBox       = toggleBidBox;
 window.updateMeetMiddle   = updateMeetMiddle;
 window.useMeetMiddle      = useMeetMiddle;
 window.toggleMessageBox   = toggleMessageBox;
+window.insertPresetMsg    = insertPresetMsg;
 window.sendMessage        = sendMessage;
 window.sendBid            = sendBid;
 window.toggleSaveFromModal= toggleSaveFromModal;
