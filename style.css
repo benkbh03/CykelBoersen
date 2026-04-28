@@ -970,21 +970,28 @@ nav {
 }
 .btn-become-dealer-small:hover { background: var(--rust); border-color: var(--rust); color: #fff; }
 
-/* Forhandler perks */
 /* Forhandler-fordele banner i bike-modal (vises kun når sælger er dealer) */
 .dealer-perks {
-  background: linear-gradient(135deg, rgba(46,125,50,0.08), rgba(46,125,50,0.04));
-  border: 1px solid rgba(46,125,50,0.22);
-  border-radius: 10px;
-  padding: 12px 14px;
+  background: #f0f7f0;
+  border: 1px solid rgba(46,125,50,0.18);
+  border-radius: 12px;
+  padding: 14px 16px;
   margin-bottom: 4px;
 }
+.dealer-perks-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(46,125,50,0.14);
+}
+.dealer-perks-icon { font-size: 1rem; line-height: 1; }
 .dealer-perks-title {
   font-family: 'Fraunces', serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #2e6e32;
-  margin-bottom: 6px;
   letter-spacing: -0.01em;
 }
 .dealer-perks-list {
@@ -992,11 +999,21 @@ nav {
   margin: 0; padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px 12px;
+  gap: 6px 12px;
 }
 .dealer-perks-list li {
   font-size: 0.78rem;
-  color: var(--charcoal);
+  color: #333;
+  line-height: 1.4;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.dp-check {
+  color: #2e7d32;
+  font-weight: 800;
+  font-size: 0.72rem;
+  flex-shrink: 0;
   line-height: 1.4;
 }
 @media (max-width: 480px) {
@@ -1005,10 +1022,11 @@ nav {
 
 /* Premium-look for verified dealers på bike-cards */
 .badge-dealer-verified {
-  background: linear-gradient(135deg, #2e7d32, #4caf50) !important;
+  background: linear-gradient(135deg, #1b5e20, #388e3c) !important;
   color: #fff !important;
   font-weight: 700;
-  box-shadow: 0 1px 4px rgba(46,125,50,0.25);
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 5px rgba(27,94,32,0.3);
 }
 
 /* Forhandler-leads banner på Min Konto */

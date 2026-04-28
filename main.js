@@ -1617,7 +1617,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
               <div>
                 <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
                 <div class="seller-trust-row">
-                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? (profile.verified ? '🏪 Forhandler ★' : '🏪 Forhandler') : '👤 Privat'}</span>
+                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
                   ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
                 </div>
               </div>
@@ -3121,12 +3121,15 @@ function buildBikeBodyHTML(b) {
         ${!isOwner ? `
         ${sellerType === 'dealer' ? `
         <div class="dealer-perks">
-          <div class="dealer-perks-title">🏪 Køb hos forhandler</div>
+          <div class="dealer-perks-header">
+            <span class="dealer-perks-icon">🏪</span>
+            <span class="dealer-perks-title">Køb hos forhandler</span>
+          </div>
           <ul class="dealer-perks-list">
-            ${profile.verified ? '<li>✓ Verificeret virksomhed</li>' : ''}
-            ${b.warranty ? `<li>🛡️ Inkluderet garanti: ${esc(b.warranty)}</li>` : '<li>🛠️ Service & rådgivning</li>'}
-            <li>↻ Mulighed for byttetilbud</li>
-            <li>💳 Mulighed for finansiering</li>
+            ${profile.verified ? '<li><span class="dp-check">✓</span>Verificeret virksomhed</li>' : ''}
+            ${b.warranty ? `<li><span class="dp-check">✓</span>Garanti: ${esc(b.warranty)}</li>` : '<li><span class="dp-check">✓</span>Service & faglig rådgivning</li>'}
+            <li><span class="dp-check">✓</span>Byttetilbud muligt</li>
+            <li><span class="dp-check">✓</span>Finansiering muligt</li>
           </ul>
         </div>` : ''}
         <div class="action-buttons">
