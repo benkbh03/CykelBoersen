@@ -3114,6 +3114,8 @@ body:has(.map-page) #chat-widget {
   transition: background 0.15s, border-color 0.15s;
 }
 .mp-action-secondary:hover { background: var(--sand); border-color: #c8c0b4; }
+.mp-action-secondary.mp-action-logout { color: var(--muted); }
+.mp-action-secondary.mp-action-logout:hover { color: var(--charcoal); }
 
 /* ── Stats-grid: 4 kort ── */
 .mp-stats-grid {
@@ -3345,6 +3347,7 @@ body:has(.map-page) #chat-widget {
   font-weight: 700;
   letter-spacing: 0.03em;
   font-family: 'DM Sans', sans-serif;
+  text-transform: uppercase;
 }
 .mp-status--active { background: rgba(61,89,66,0.14); color: var(--forest); }
 .mp-status--sold   { background: var(--charcoal); color: #fff; }
@@ -3777,24 +3780,12 @@ body.is-mp-mobile .mp-action-secondary {
   position: relative;
 }
 body.is-mp-mobile .mp-action-secondary .mp-action-label { display: inline !important; }
-body.is-mp-mobile .mp-action-inbox { position: relative; }
-body.is-mp-mobile .mp-inbox-count-badge {
-  position: absolute;
-  top: -5px; right: -5px;
-  min-width: 18px; height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--rust);
-  color: #fff;
-  font-size: 0.62rem;
-  font-weight: 700;
-  display: flex;
+body.is-mp-mobile .mp-action-logout { color: var(--muted); }
+body.is-mp-mobile .mp-action-logout:hover { color: var(--charcoal); }
+body.is-mp-mobile .mp-member-since {
+  display: inline-flex !important;
   align-items: center;
-  justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-  line-height: 1;
 }
-body.is-mp-mobile .mp-logout-link { font-size: 0.78rem; margin-top: 0; }
 
 /* Stats-grid 2x2 */
 body.is-mp-mobile .mp-stats-grid {
