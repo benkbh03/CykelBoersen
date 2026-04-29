@@ -1,0 +1,225 @@
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px;
+}
+.badge-dealer  { background: #E8F0E8; color: var(--forest); }
+.badge-private { background: #FBF0E8; color: #8A4A20; }
+
+/* ── LISTINGS HEADER ── */
+.listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+.listings-header h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; }
+.listings-header span { color: var(--muted); font-size: 0.88rem; }
+.sort-select {
+  padding: 8px 14px; border: 1.5px solid var(--border);
+  border-radius: 6px; font-size: 0.85rem;
+  background: var(--cream); font-family: 'DM Sans', sans-serif;
+  cursor: pointer; color: var(--charcoal); outline: none;
+}
+
+/* ── ANNONCEKORT ── */
+/* Aktive filtre bar */
+#active-filters-bar {
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--sand-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+}
+.afb-pills { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+.afb-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: 999px; padding: 4px 10px 4px 12px;
+  font-size: 0.78rem; font-weight: 500; color: var(--charcoal);
+  white-space: nowrap;
+}
+.afb-pill-remove {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border: none; background: none;
+  color: var(--muted); font-size: 0.65rem; cursor: pointer;
+  border-radius: 50%; padding: 0; line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+.afb-pill-remove:hover { background: var(--border); color: var(--charcoal); }
+.afb-clear-all {
+  flex-shrink: 0; background: none; border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 5px 12px;
+  font-size: 0.78rem; font-weight: 600; color: var(--muted);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  white-space: nowrap; transition: border-color 0.15s, color 0.15s;
+}
+.afb-clear-all:hover { border-color: var(--rust); color: var(--rust); }
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  /* Reserver plads så siden ikke skubbes op/ned mens annoncer loader (CLS) */
+  min-height: 600px;
+  content-visibility: auto;
+  contain-intrinsic-size: 1200px;
+}
+.bike-card {
+  background: var(--cream); border-radius: 14px;
+  border: 1px solid var(--border); overflow: hidden;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeUp 0.5s ease both;
+}
+.bike-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.12); }
+.bike-card-img {
+  aspect-ratio: 4/3; width: 100%; background: var(--sand);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4.5rem; position: relative; overflow: hidden;
+}
+.bike-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bike-card-img::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.10));
+  pointer-events: none;
+}
+.bike-card-badges {
+  position: absolute; top: 10px; left: 10px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  max-width: calc(100% - 58px); /* plads til save-btn i højre side */
+  z-index: 1;
+}
+.condition-tag {
+  border-radius: 6px;
+  padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2px;
+  background: rgba(255,255,255,0.92); color: var(--charcoal);
+  white-space: nowrap;
+}
+.condition-tag--ny      { background: #e8f5e9; color: #2e7d32; }
+.condition-tag--som-ny  { background: #e3f2fd; color: #1565c0; }
+.condition-tag--god     { background: #fff3e0; color: #bf360c; }
+.condition-tag--brugt   { background: #efeae0; color: #5a544a; }
+.warranty-card-badge {
+  background: #e8f5e9; color: #2e7d32;
+  border-radius: 6px; padding: 4px 9px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 3px;
+}
+@media (max-width: 560px) {
+  .bike-card-badges { gap: 4px; }
+  .warranty-card-badge { font-size: 0.6rem; padding: 3px 7px; }
+  .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
+}
+.save-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(254,250,243,0.92);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  border: none;
+  border-radius: 50%; width: 32px; height: 32px;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1; transition: background 0.15s;
+}
+.save-btn:hover { background: #fff; }
+.bike-card-body { padding: 14px 16px 16px; }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
+.bike-title {
+  font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.bike-price { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 900; color: var(--rust); white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
+.bike-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+.bike-meta span::after { content: ' · '; }
+.bike-meta span:last-child::after { content: ''; }
+.card-footer {
+  display: flex; align-items: center;
+  border-top: 1px solid var(--border); padding-top: 10px; gap: 8px;
+}
+.seller-avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: var(--forest); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; color: var(--sand); font-weight: 600;
+}
+.seller-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-seller-details { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.card-seller-top {
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+}
+.card-seller-bottom {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.seller-name {
+  font-size: 0.78rem; color: var(--charcoal); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
+}
+.trust-chip {
+  display: inline-flex; align-items: center;
+  background: rgba(46,125,50,0.1); color: #2e7d32;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
+  padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+}
+.card-location { font-size: 0.74rem; color: var(--muted); white-space: nowrap; }
+.card-last-seen { font-size: 0.67rem; color: var(--muted); opacity: 0.75; white-space: nowrap; }
+
+/* ── FORHANDLER SEKTION ── */
+.dealer-strip { background: var(--forest); padding: 48px; }
+.dealer-strip-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 28px;
+  gap: 20px; flex-wrap: wrap;
+}
+.dealer-strip h2 { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--sand); font-weight: 700; margin-bottom: 8px; }
+.dealer-strip p { color: var(--sand); opacity: 0.65; max-width: 540px; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; }
+.btn-become-dealer {
+  background: var(--rust); color: #fff;
+  border: none; padding: 13px 24px; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.btn-become-dealer:hover { background: var(--rust-light); }
+.dealer-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.dealer-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 20px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(42,61,46,0.06);
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.dealer-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--forest) 0%, var(--rust) 100%);
+}
+.dealer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(42,61,46,0.12);
+  border-color: var(--forest);
+}
+.dealer-logo { font-size: 2rem; margin-bottom: 10px; }
+.dealer-logo-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--rust); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;
+  margin-bottom: 12px;
+}
+.dealer-name { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--charcoal); font-weight: 600; margin-bottom: 4px; }
+.dealer-verified-tick {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #4caf50; color: #fff;
+  font-size: 0.6rem; font-weight: 700; font-style: normal;
+  vertical-align: middle; margin-left: 4px;
+}
+.dealer-city { font-size: 0.8rem; color: var(--muted); }
+.dealer-count { font-size: 0.78rem; color: var(--rust); margin-top: 8px; font-weight: 500; }
+
