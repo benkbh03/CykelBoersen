@@ -1699,6 +1699,117 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .gallery-thumb:hover:not(.active) { border-color: var(--muted); }
 .gallery-main img { cursor: zoom-in; }
 
+/* ── Bike-detail location map ── */
+.bike-location-card {
+  margin-top: 14px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 18px -14px rgba(42,61,46,0.18);
+}
+.bike-location-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.bike-location-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.bike-location-pin {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+.bike-location-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1;
+}
+.bike-location-place {
+  font-family: 'Fraunces', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bike-location-dist {
+  flex-shrink: 0;
+  background: rgba(200,80,42,0.12);
+  color: var(--rust);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.bike-location-map {
+  height: 220px;
+  width: 100%;
+  background: var(--sand);
+  position: relative;
+}
+.bike-location-map .leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: var(--sand);
+  font-family: 'DM Sans', sans-serif;
+}
+.bike-location-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--cream);
+}
+.bike-location-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.bike-location-btn--locate {
+  background: var(--rust);
+  color: #fff;
+  border: 1px solid var(--rust);
+}
+.bike-location-btn--locate:hover { background: var(--rust-light); border-color: var(--rust-light); }
+.bike-location-btn--locate:disabled { opacity: 0.6; cursor: not-allowed; }
+.bike-location-btn--full {
+  background: var(--cream);
+  color: var(--forest);
+  border: 1px solid var(--border);
+}
+.bike-location-btn--full:hover { background: var(--sand); border-color: var(--forest); }
+
+@media (max-width: 768px) {
+  .bike-location-map { height: 180px; }
+  .bike-location-actions { flex-direction: column; }
+  .bike-location-btn { width: 100%; }
+}
+
 /* ── Fuldskærms billed-lightbox ── */
 .lightbox-overlay {
   position: fixed; inset: 0;
