@@ -9532,10 +9532,10 @@ async function renderMapPage() {
             <div class="split-list-header-actions">
               <div class="map-pill map-pill--sel map-pill--sort">
                 <select id="map-sort" onchange="applyMapFilters()" aria-label="Sortering">
-                  <option value="newest">Sortér: Nyeste</option>
-                  <option value="price_asc">Sortér: Pris ↑</option>
-                  <option value="price_desc">Sortér: Pris ↓</option>
-                  <option value="distance">Sortér: Afstand</option>
+                  <option value="newest">Nyeste</option>
+                  <option value="price_asc">Pris ↑</option>
+                  <option value="price_desc">Pris ↓</option>
+                  <option value="distance">Afstand</option>
                 </select>
                 <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
               </div>
