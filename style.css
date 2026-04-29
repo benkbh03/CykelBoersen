@@ -6162,6 +6162,36 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* Skjul "Vis liste" når listen er åben på desktop */
 .map-page-split.list-open .split-list-toggle-float { display: none; }
 
+/* Floating locate-me knap på kortvisning */
+.map-locate-float {
+  position: absolute;
+  bottom: 100px;
+  right: 14px;
+  z-index: 500;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background 0.12s, color 0.12s;
+  color: var(--forest);
+}
+.map-locate-float:hover { background: var(--sand); }
+.map-locate-float.active {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+
+/* Skjul bundnav og juster padding på kortvisning */
+body.map-page-view #mobile-bottom-nav { display: none !important; }
+body.map-page-view { padding-bottom: 0 !important; }
+
 /* ── Kort-panel ── */
 #split-map-panel {
   flex: 1;
