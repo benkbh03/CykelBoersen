@@ -3220,7 +3220,8 @@ function buildBikeBodyHTML(b) {
               <span class="bike-location-pin">📍</span>
               <div>
                 <div class="bike-location-label">Sælgers placering</div>
-                <div class="bike-location-place">${esc(profile.city || '')}${profile.address ? `, ${esc(profile.address)}` : ''}</div>
+                <div class="bike-location-place">${esc(profile.city || '')}</div>
+                ${profile.address ? `<div class="bike-location-address">${esc(profile.address)}</div>` : ''}
               </div>
             </div>
             <span class="bike-location-dist" id="bike-location-dist" style="display:none;"></span>
