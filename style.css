@@ -6710,17 +6710,13 @@ body.map-page-view { padding-bottom: 0 !important; }
     border-radius: 0;
     box-shadow: none;
     z-index: 40;
-    opacity: 0;
-    pointer-events: none;
     transition: opacity 0.2s;
   }
-  /* Vis kun tab bar når listen er åben */
-  .map-page-split.list-open ~ .map-tab-bar {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  /* Skjul "Liste"-knappen — når listen er åben er den irrelevant */
-  #map-tab-list { display: none !important; }
+  /* Kortvisning: vis kun "Liste", skjul "Kort" */
+  #map-tab-map { display: none; }
+  /* Listevisning: vis kun "Kort", skjul "Liste" */
+  .map-page-split.list-open ~ .map-tab-bar #map-tab-map { display: inline-flex; }
+  .map-page-split.list-open ~ .map-tab-bar #map-tab-list { display: none; }
   .map-tab-btn {
     display: inline-flex;
     align-items: center;
