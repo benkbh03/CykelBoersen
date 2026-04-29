@@ -3151,7 +3151,7 @@ async function fetchBikeById(bikeId) {
   }
   const fetchPromise = supabase
     .from('bikes')
-    .select('*, profiles(id, name, seller_type, shop_name, phone, city, verified, id_verified, email_verified, offers_financing, offers_tradein), bike_images(url, is_primary)')
+    .select('*, profiles(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein), bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
   const timeoutPromise = new Promise((_, reject) =>
@@ -3213,6 +3213,24 @@ function buildBikeBodyHTML(b) {
     <div class="bike-detail-grid">
       <div>
         ${galleryHtml}
+        ${(profile.city || profile.address) ? `
+        <div class="bike-location-card" id="bike-location-card">
+          <div class="bike-location-header">
+            <div class="bike-location-title">
+              <span class="bike-location-pin">📍</span>
+              <div>
+                <div class="bike-location-label">Sælgers placering</div>
+                <div class="bike-location-place">${esc(profile.city || '')}${profile.address ? `, ${esc(profile.address)}` : ''}</div>
+              </div>
+            </div>
+            <span class="bike-location-dist" id="bike-location-dist" style="display:none;"></span>
+          </div>
+          <div class="bike-location-map" id="bike-location-map"></div>
+          <div class="bike-location-actions">
+            <button class="bike-location-btn bike-location-btn--locate" id="bike-location-locate-btn" onclick="showMyDistanceOnBikeMap()">📍 Vis min afstand</button>
+            <a class="bike-location-btn bike-location-btn--full" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((profile.address ? profile.address + ', ' : '') + (profile.city || ''))}" target="_blank" rel="noopener">Åbn i Google Maps →</a>
+          </div>
+        </div>` : ''}
       </div>
       <div class="bike-detail-info">
         <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
@@ -3382,12 +3400,144 @@ async function openBikeModal(bikeId) {
     loadResponseTime(profile.id);
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
+    initBikeDetailMap(b);
     if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
   } catch (renderErr) {
     console.error('openBikeModal render error:', renderErr.message);
     document.getElementById('bike-modal-body').innerHTML = retryHTML('Kunne ikke vise annonce.', `() => openBikeModal('${bikeId}')`);
   }
 }
+
+/* ============================================================
+   BIKE LOCATION MAP — vises under galleriet på annonce-siden
+   ============================================================ */
+
+let _bikeDetailMap = null;
+let _bikeDetailMapData = null; // { sellerCoords, sellerType, profile }
+
+async function initBikeDetailMap(b) {
+  const mapEl = document.getElementById('bike-location-map');
+  if (!mapEl || typeof L === 'undefined') return;
+
+  // Tear down previous instance hvis nogen
+  if (_bikeDetailMap) {
+    try { _bikeDetailMap.remove(); } catch (e) {}
+    _bikeDetailMap = null;
+  }
+  _bikeDetailMapData = null;
+
+  const profile = b.profiles || {};
+  const isDealer = profile.seller_type === 'dealer';
+
+  // Geokod sælgers placering — adresse hvis tilgængelig, ellers by
+  let coords = null;
+  if (profile.address && (profile.city || b.city)) {
+    coords = await geocodeAddress(profile.address, profile.city || b.city);
+  }
+  if (!coords && (profile.city || b.city)) {
+    coords = await geocodeCity(profile.city || b.city);
+  }
+  if (!coords) {
+    mapEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:0.85rem;">Kunne ikke vise kort for denne placering</div>';
+    return;
+  }
+
+  _bikeDetailMap = L.map(mapEl, {
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: false,
+  }).setView(coords, 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+  }).addTo(_bikeDetailMap);
+
+  // Sælger-marker — rust for privat, forest for forhandler
+  const markerColor = isDealer ? '#2A3D2E' : '#C8502A';
+  const sellerLabel = isDealer ? '🏪 Forhandler' : '👤 Privat sælger';
+  const sellerIcon = L.divIcon({
+    html: `<div style="background:${markerColor};border-radius:50% 50% 50% 0;width:30px;height:30px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;"><span style="transform:rotate(45deg);font-size:13px;">${isDealer ? '🏪' : '🚲'}</span></div>`,
+    className: '',
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30],
+  });
+
+  L.marker(coords, { icon: sellerIcon })
+    .addTo(_bikeDetailMap)
+    .bindPopup(`<div style="font-family:'DM Sans',sans-serif;font-size:0.85rem;"><strong>${esc(isDealer ? (profile.shop_name || profile.name || '') : (profile.name || ''))}</strong><br>${esc(profile.city || '')}<br><span style="color:var(--muted);font-size:0.78rem;">${sellerLabel}</span></div>`);
+
+  _bikeDetailMapData = { sellerCoords: coords, profile, isDealer };
+
+  // Hvis vi allerede har brugerens GPS, vis straks
+  if (userGeoCoords) {
+    _drawUserPositionOnBikeMap();
+  }
+
+  setTimeout(() => { try { _bikeDetailMap.invalidateSize(); } catch (e) {} }, 120);
+}
+
+function _drawUserPositionOnBikeMap() {
+  if (!_bikeDetailMap || !_bikeDetailMapData || !userGeoCoords) return;
+  const { sellerCoords } = _bikeDetailMapData;
+
+  // Bruger-marker
+  const userIcon = L.divIcon({
+    html: '<div style="background:#1877F2;border-radius:50%;width:16px;height:16px;border:3px solid white;box-shadow:0 0 0 4px rgba(24,119,242,0.25);"></div>',
+    className: '',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
+  L.marker(userGeoCoords, { icon: userIcon })
+    .addTo(_bikeDetailMap)
+    .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.85rem;font-weight:600;">📍 Din placering</div>');
+
+  // Linje mellem bruger og sælger
+  L.polyline([userGeoCoords, sellerCoords], {
+    color: '#C8502A',
+    weight: 3,
+    opacity: 0.7,
+    dashArray: '8, 6',
+  }).addTo(_bikeDetailMap);
+
+  // Zoom så begge er synlige
+  const bounds = L.latLngBounds([userGeoCoords, sellerCoords]).pad(0.25);
+  _bikeDetailMap.fitBounds(bounds);
+
+  // Distance-badge
+  const km = haversineKm(userGeoCoords, sellerCoords);
+  const distEl = document.getElementById('bike-location-dist');
+  if (distEl) {
+    distEl.textContent = `${km < 10 ? km.toFixed(1) : Math.round(km)} km væk`;
+    distEl.style.display = '';
+  }
+  // Skjul "Vis min afstand"-knappen
+  const btn = document.getElementById('bike-location-locate-btn');
+  if (btn) btn.style.display = 'none';
+}
+
+function showMyDistanceOnBikeMap() {
+  if (!navigator.geolocation) {
+    showToast('⚠️ Din browser understøtter ikke lokation');
+    return;
+  }
+  const btn = document.getElementById('bike-location-locate-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Henter…'; }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userGeoCoords = [pos.coords.latitude, pos.coords.longitude];
+      _drawUserPositionOnBikeMap();
+    },
+    () => {
+      showToast('⚠️ Kunne ikke hente din lokation');
+      if (btn) { btn.disabled = false; btn.textContent = '📍 Vis min afstand'; }
+    },
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+  );
+}
+
+window.showMyDistanceOnBikeMap = showMyDistanceOnBikeMap;
 
 /* ============================================================
    ANNONCE DETALJE PAGE (hash routing)
@@ -3486,6 +3636,7 @@ async function renderBikePage(bikeId) {
   loadResponseTime(profile.id);
   loadSellerOtherListings(profile.id, b.id);
   loadSimilarListings(b.type, b.id);
+  initBikeDetailMap(b);
   if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
 }
 
@@ -5544,6 +5695,11 @@ function closeBikeModal() {
   if (typeof modal._restoreTitle === 'function') {
     modal._restoreTitle();
     modal._restoreTitle = null;
+  }
+  if (_bikeDetailMap) {
+    try { _bikeDetailMap.remove(); } catch (e) {}
+    _bikeDetailMap = null;
+    _bikeDetailMapData = null;
   }
 }
 document.getElementById('bike-modal').addEventListener('click', e => {
