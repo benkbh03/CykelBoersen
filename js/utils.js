@@ -122,7 +122,7 @@ export function getInitials(name, fallback = "U") {
 
 
 export function formatDistanceKm(km) {
-  if (km < 1)  return (Math.round(km * 10) / 10).toString().replace('.', \,') + ' km';
-  if (km < 10) return (Math.round(km * 10) / 10).toString().replace('.', \,') + ' km';
+  if (km < 1)  return (Math.round(km * 10) / 10).toString().replace('.', ',') + ' km';
+  if (km < 10) return (Math.round(km * 10) / 10).toString().replace('.', ',') + ' km';
   return Math.round(km) + ' km';
 }
