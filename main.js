@@ -9051,13 +9051,17 @@ var _mapUserMarker     = null; // "Du er her"-markør
 /* ── Geocoding cache ── */
 var _geocodeCache = (function() {
   try {
-    var stored = localStorage.getItem('_geocodeCache');
-    return stored ? JSON.parse(stored) : {};
+    // v2: bumpede nøgle efter geocodeCity nu vælger største match (fixer fx Valby → København i stedet for Støvring)
+    var stored = localStorage.getItem('_geocodeCache_v2');
+    if (stored) return JSON.parse(stored);
+    // Fjern gammel cache, så vi ikke beholder forældede koordinater
+    try { localStorage.removeItem('_geocodeCache'); } catch (e) {}
+    return {};
   } catch (e) { return {}; }
 })();
 
 function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache', JSON.stringify(_geocodeCache)); } catch (e) {}
+  try { localStorage.setItem('_geocodeCache_v2', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
 // Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
@@ -9092,18 +9096,33 @@ function geocodeCity(city) {
   var key = city.toLowerCase().trim();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
+  // Hent flere resultater og vælg den største — løser tvetydigheder som
+  // "Valby" der både findes som lille bebyggelse v. Støvring og som stor
+  // bydel i København. Vi bruger bbox-arealet som proxy for størrelse.
   return fetch('https://api.dataforsyningen.dk/steder?q='
-    + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=1&format=json')
+    + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=10&format=json')
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data && data.length > 0 && data[0].visueltcenter) {
-        var coords = [data[0].visueltcenter[1], data[0].visueltcenter[0]]; // [lat, lng]
-        _geocodeCache[key] = coords;
-        _saveGeocodeCache();
-        return coords;
+      if (!data || data.length === 0) {
+        _geocodeCache[key] = null;
+        return null;
       }
-      _geocodeCache[key] = null;
-      return null;
+      // Filtrér til entries der har visueltcenter, og find den med største bbox-areal
+      var candidates = data.filter(function(p) { return p.visueltcenter; });
+      if (candidates.length === 0) {
+        _geocodeCache[key] = null;
+        return null;
+      }
+      function bboxArea(p) {
+        if (!p.bbox || p.bbox.length < 4) return 0;
+        return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
+      }
+      candidates.sort(function(a, b) { return bboxArea(b) - bboxArea(a); });
+      var best = candidates[0];
+      var coords = [best.visueltcenter[1], best.visueltcenter[0]]; // [lat, lng]
+      _geocodeCache[key] = coords;
+      _saveGeocodeCache();
+      return coords;
     })
     .catch(function() { return null; });
 }
