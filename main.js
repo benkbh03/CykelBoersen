@@ -3149,7 +3149,7 @@ async function fetchBikeById(bikeId) {
   }
   const fetchPromise = supabase
     .from('bikes')
-    .select('*, profiles(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein), bike_images(url, is_primary)')
+    .select('*, profiles(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary)')
     .eq('id', bikeId)
     .single();
   const timeoutPromise = new Promise((_, reject) =>
