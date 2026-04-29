@@ -1722,19 +1722,17 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
             <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${esc(b.size) || '–'}</span>
           </div>
           <div class="card-footer">
-            <div class="seller-info">
-              <div class="seller-avatar">${avatarHtml}</div>
-              <div>
-                <div class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
-                <div class="seller-trust-row">
-                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
-                  ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
-                </div>
+            <div class="seller-avatar">${avatarHtml}</div>
+            <div class="card-seller-details">
+              <div class="card-seller-top">
+                <span class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</span>
+                <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
+                ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
               </div>
-            </div>
-            <div class="card-meta-right">
-              <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
-              ${lastSeenCard ? `<div class="card-last-seen">${lastSeenCard}</div>` : ''}
+              <div class="card-seller-bottom">
+                <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
+                ${lastSeenCard ? `<span class="card-last-seen">${lastSeenCard}</span>` : ''}
+              </div>
             </div>
           </div>
         </div>

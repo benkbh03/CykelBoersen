@@ -623,25 +623,35 @@ nav {
 .bike-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
 .bike-meta span::after { content: ' · '; }
 .bike-meta span:last-child::after { content: ''; }
-.card-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid var(--border); padding-top: 12px; gap: 6px; }
-.seller-info { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; min-width: 0; }
-.seller-trust-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+.card-footer {
+  display: flex; align-items: center;
+  border-top: 1px solid var(--border); padding-top: 10px; gap: 8px;
+}
+.seller-avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: var(--forest); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; color: var(--sand); font-weight: 600;
+}
+.seller-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-seller-details { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.card-seller-top {
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+}
+.card-seller-bottom {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.seller-name {
+  font-size: 0.78rem; color: var(--charcoal); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
+}
 .trust-chip {
   display: inline-flex; align-items: center;
   background: rgba(46,125,50,0.1); color: #2e7d32;
   font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
   padding: 2px 6px; border-radius: 4px; white-space: nowrap;
 }
-.seller-avatar {
-  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-  background: var(--forest); overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.68rem; color: var(--sand); font-weight: 600;
-}
-.seller-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.seller-name { color: var(--charcoal); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-meta-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
-.card-location { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+.card-location { font-size: 0.74rem; color: var(--muted); white-space: nowrap; }
 .card-last-seen { font-size: 0.67rem; color: var(--muted); opacity: 0.75; white-space: nowrap; }
 
 /* ── FORHANDLER SEKTION ── */
@@ -1089,11 +1099,11 @@ nav {
 
 /* Premium-look for verified dealers på bike-cards */
 .badge-dealer-verified {
-  background: linear-gradient(135deg, #1b5e20, #388e3c) !important;
-  color: #fff !important;
+  background: #d4edda !important;
+  color: #1b5e20 !important;
   font-weight: 700;
   letter-spacing: 0.01em;
-  box-shadow: 0 1px 5px rgba(27,94,32,0.3);
+  border: 1px solid rgba(27,94,32,0.2);
 }
 
 /* Forhandler-leads banner på Min Konto */
