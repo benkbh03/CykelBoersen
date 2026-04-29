@@ -9689,7 +9689,7 @@ function applyMapFilters() {
 
   const noun = filtered.length === 1 ? 'annonce' : 'annoncer';
   const countText = filtered.length + ' ' + noun;
-  if (countEl)    countEl.textContent = 'cykler fundet';
+  if (countEl)    countEl.textContent = 'Cykler fundet';
   if (countBigEl) countBigEl.textContent = filtered.length.toLocaleString('da-DK');
   if (countMobEl) countMobEl.textContent = filtered.length + ' cykler';
   const applyBtn = document.getElementById('map-filter-apply-btn');
