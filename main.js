@@ -811,7 +811,7 @@ async function openDealerProfile(dealerId) {
     const avatarInit = (sellerName).substring(0, 2).toUpperCase();
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:4rem">🚲</span>';
     return `
       <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
@@ -946,7 +946,7 @@ async function openUserProfile(userId) {
   const activeBikeCards = (activeBikes || []).map((b, i) => {
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
       : '<span style="font-size:2.5rem">🚲</span>';
     return `
       <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
@@ -1687,7 +1687,7 @@ function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new 
     const initials   = (sellerName || 'U').substring(0, 2).toUpperCase();
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
       : '<span style="font-size:4rem">🚲</span>';
     const avatarUrl  = safeAvatarUrl(profile.avatar_url);
     const avatarHtml = avatarUrl
@@ -4598,7 +4598,7 @@ function buildProfileBikeCards(bikes) {
   return bikes.map((b, i) => {
     const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
     const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">`
+      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
       : '<span style="font-size:3.5rem">🚲</span>';
     return `
       <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
