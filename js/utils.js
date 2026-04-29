@@ -115,3 +115,15 @@ export function stableOffset(id, axis) {
   for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 0x1000193) >>> 0;
   return (h / 0xFFFFFFFF) - 0.5;
 }
+
+export function getInitials(name, fallback = "U") {
+  const base = (name || fallback).toString().trim();
+  return (base || fallback).substring(0, 2).toUpperCase();
+}
+
+
+export function formatDistanceKm(km) {
+  if (km < 1)  return (Math.round(km * 10) / 10).toString().replace('.', \,') + ' km';
+  if (km < 10) return (Math.round(km * 10) / 10).toString().replace('.', \,') + ' km';
+  return Math.round(km) + ' km';
+}
