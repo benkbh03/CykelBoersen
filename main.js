@@ -2,15 +2,10 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading } from './js/utils.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import './js/support-chat.js';
-
-const SUPABASE_URL = 'https://ktufgncydxhkhfttojkh.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+import { supabase } from './js/supabase-client.js';
 
 // Global bruger-cache — hentes én gang ved init
 let currentUser    = null;
