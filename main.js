@@ -3535,7 +3535,7 @@ function showListingView() {
   if (landingLayout) landingLayout.style.display = '';
   document.body.classList.remove('is-mp-mobile');
   document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
-  updateSEOMeta(DEFAULT_DESC, '/');
+  updateSEOMeta(null, '/');
   removeBikeJsonLd();
 }
 

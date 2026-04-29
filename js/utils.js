@@ -10,10 +10,10 @@ const DEFAULT_DESC = 'Danmarks markedsplads for brugte cykler. Køb og sælg rac
 export function btnLoading(id, label) {
   const btn = document.getElementById(id);
   if (!btn) return () => {};
-  const orig = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span> ${label || ''}`;
-  return () => { btn.disabled = false; btn.innerHTML = orig; };
+  btn.dataset.origText = btn.innerHTML;
+  btn.innerHTML = `<span class="btn-spinner"></span>${label}`;
+  return () => { btn.disabled = false; btn.innerHTML = btn.dataset.origText; };
 }
 
 export function debounce(fn, ms) {
@@ -22,16 +22,15 @@ export function debounce(fn, ms) {
 }
 
 export function formatLastSeen(dateStr) {
-  if (!dateStr) return 'Ukendt';
+  if (!dateStr) return null;
   const diff = Date.now() - new Date(dateStr).getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 2) return 'Aktiv lige nu';
-  if (min < 60) return `Aktiv for ${min} min. siden`;
-  const h = Math.floor(min / 60);
-  if (h < 24) return `Aktiv for ${h} t. siden`;
-  const d = Math.floor(h / 24);
-  if (d === 1) return 'Aktiv i går';
-  if (d < 7) return `Aktiv for ${d} dage siden`;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 5)   return 'Netop aktiv';
+  if (mins < 60)  return `Aktiv for ${mins} min. siden`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)   return `Aktiv for ${hrs} ${hrs === 1 ? 'time' : 'timer'} siden`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7)   return `Aktiv for ${days} ${days === 1 ? 'dag' : 'dage'} siden`;
   return 'Aktiv for over en uge siden';
 }
 
