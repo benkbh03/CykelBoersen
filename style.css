@@ -1976,15 +1976,28 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .msg-presets {
   display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
 }
-.msg-preset-chip {
-  background: var(--sand); border: 1.5px solid var(--border);
-  border-radius: 999px; padding: 6px 12px;
-  font-size: 0.76rem; font-weight: 500; color: var(--charcoal);
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s, border-color 0.15s;
+.msg-preset-chip,
+.message-box .msg-preset-chip {
+  background: #fff8f4;
+  border: 1.5px solid rgba(200, 80, 42, 0.3);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--rust);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
   white-space: nowrap;
+  width: auto !important;
+  margin-top: 0 !important;
 }
-.msg-preset-chip:hover { background: #e8e2d8; border-color: #b8b2a8; }
+.msg-preset-chip:hover,
+.message-box .msg-preset-chip:hover {
+  background: rgba(200, 80, 42, 0.08);
+  border-color: var(--rust);
+  color: var(--rust);
+}
 .message-box textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; resize: vertical; min-height: 90px; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .message-box textarea:focus { border-color: var(--forest); }
 .message-box button { margin-top: 8px; background: var(--forest); color: var(--sand); border: none; padding: 11px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; width: 100%; }
