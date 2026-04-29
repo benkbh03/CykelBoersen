@@ -1745,6 +1745,14 @@ footer p { color: var(--muted); font-size: 0.82rem; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.bike-location-address {
+  font-size: 0.72rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
 .bike-location-dist {
   flex-shrink: 0;
   background: rgba(200,80,42,0.12);
@@ -1805,9 +1813,20 @@ footer p { color: var(--muted); font-size: 0.82rem; }
 .bike-location-btn--full:hover { background: var(--sand); border-color: var(--forest); }
 
 @media (max-width: 768px) {
-  .bike-location-map { height: 180px; }
-  .bike-location-actions { flex-direction: column; }
-  .bike-location-btn { width: 100%; }
+  .bike-location-card { margin-top: 10px; border-radius: 12px; }
+  .bike-location-header { padding: 10px 12px; gap: 8px; }
+  .bike-location-pin { font-size: 1rem; }
+  .bike-location-label { font-size: 0.65rem; }
+  .bike-location-place { font-size: 0.85rem; margin-top: 1px; }
+  .bike-location-dist { font-size: 0.7rem; padding: 4px 8px; }
+  .bike-location-map { height: 160px; }
+  .bike-location-address { display: none; }
+  .bike-location-actions { padding: 8px 10px; gap: 6px; }
+  .bike-location-btn {
+    padding: 8px 10px;
+    font-size: 0.74rem;
+    border-radius: 8px;
+  }
 }
 
 /* ── Fuldskærms billed-lightbox ── */
