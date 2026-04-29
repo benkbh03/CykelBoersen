@@ -6666,9 +6666,13 @@ body.map-page-view { padding-bottom: 0 !important; }
     color: var(--charcoal);
     margin-top: 0;
   }
-  .split-list-header-actions { gap: 6px; }
-  .map-pill--sort { height: 32px; padding: 0 24px 0 10px; font-size: 0.76rem; }
-  .map-pill--sort select { min-width: 110px; font-size: 0.76rem; }
+  /* Header: [count] [sort → venstre i actions] ........... [X] */
+  .split-list-header { align-items: center; gap: 8px; justify-content: flex-start; }
+  .split-list-header-text { flex: 0 0 auto; }
+  .split-list-header-actions { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .split-list-close-btn { margin-left: auto; }
+  .map-pill--sort { height: 30px; padding: 0 22px 0 8px; font-size: 0.73rem; }
+  .map-pill--sort select { min-width: 80px; font-size: 0.73rem; }
   .split-list-close-btn {
     display: inline-flex;
     align-items: center;
@@ -6706,9 +6710,17 @@ body.map-page-view { padding-bottom: 0 !important; }
     border-radius: 0;
     box-shadow: none;
     z-index: 40;
-    transition: bottom 0.26s cubic-bezier(0.2,0.8,0.2,1), opacity 0.2s;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
   }
-  .map-page-split.list-open ~ .map-tab-bar { opacity: 0; pointer-events: none; }
+  /* Vis kun tab bar når listen er åben */
+  .map-page-split.list-open ~ .map-tab-bar {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Skjul "Liste"-knappen — når listen er åben er den irrelevant */
+  #map-tab-list { display: none !important; }
   .map-tab-btn {
     display: inline-flex;
     align-items: center;
