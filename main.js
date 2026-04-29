@@ -5337,6 +5337,7 @@ function navigateTo(path) {
 
 function handleRoute() {
   document.body.classList.remove('is-mp-mobile');
+  document.body.classList.remove('map-page-view');
   const path = window.location.pathname;
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
@@ -5363,6 +5364,7 @@ function handleRoute() {
   } else if (mapPageMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    document.body.classList.add('map-page-view');
     renderMapPage();
   } else if (inboxMatch) {
     closeAllModals();
@@ -9549,6 +9551,9 @@ async function renderMapPage() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             <span>Vis liste</span>
           </button>
+          <button class="map-locate-float" id="map-locate-float-btn" onclick="toggleMapNearMe()" aria-label="Find min placering" title="Find min placering">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-width="1.2" stroke-dasharray="2 2"/></svg>
+          </button>
         </div>
       </div>
 
@@ -9770,6 +9775,7 @@ async function toggleMapNearMe() {
   const btn    = document.getElementById('map-near-btn');
   const btnMob = document.getElementById('map-near-btn-mobile');
   const radiusSel = document.getElementById('map-radius');
+  const locateFloatBtn = document.getElementById('map-locate-float-btn');
   const setBtn = (active, label) => {
     [btn, btnMob].forEach(b => {
       if (!b) return;
@@ -9785,6 +9791,7 @@ async function toggleMapNearMe() {
         b.appendChild(document.createTextNode(' ' + label));
       }
     });
+    if (locateFloatBtn) locateFloatBtn.classList.toggle('active', !!active);
   };
   if (_mapNearMeCoords) {
     _mapNearMeCoords = null;
