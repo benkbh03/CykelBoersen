@@ -3,6 +3,9 @@
    ============================================================ */
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading } from './js/utils.js';
+import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
+import './js/support-chat.js';
 
 const SUPABASE_URL = 'https://ktufgncydxhkhfttojkh.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
@@ -29,63 +32,6 @@ let _aiSuggestionPending = null;
 let _aiApplied = false;
 let _sellFormCache = {};
 
-// Hjælper: deaktiver knap og vis spinner, returnerer gendan-funktion
-function btnLoading(id, label) {
-  const btn = document.getElementById(id);
-  if (!btn) return () => {};
-  btn.disabled = true;
-  btn.dataset.origText = btn.innerHTML;
-  btn.innerHTML = `<span class="btn-spinner"></span>${label}`;
-  return () => { btn.disabled = false; btn.innerHTML = btn.dataset.origText; };
-}
-
-// Hjælper: debounce
-function debounce(fn, ms) {
-  let t;
-  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-}
-
-// Hjælper: escap HTML for at forhindre XSS
-function formatLastSeen(dateStr) {
-  if (!dateStr) return null;
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 5)   return 'Netop aktiv';
-  if (mins < 60)  return `Aktiv for ${mins} min. siden`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24)   return `Aktiv for ${hrs} ${hrs === 1 ? 'time' : 'timer'} siden`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7)   return `Aktiv for ${days} ${days === 1 ? 'dag' : 'dage'} siden`;
-  return 'Aktiv for over en uge siden';
-}
-
-function esc(str) {
-  if (str == null) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-// SEO-hjælper: opdater meta description + canonical URL + OG tags ved sidenavigation
-// Bruger unicode-domænet så delinger på sociale medier viser "cykelbørsen.dk" (ikke punycode)
-const BASE_URL = 'https://cykelbørsen.dk';
-const DEFAULT_DESC = 'Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
-
-function removeBikeJsonLd() {
-  const old = document.getElementById('bike-jsonld');
-  if (old) old.remove();
-}
-
-function updateSEOMeta(description, canonicalPath) {
-  const desc = description || DEFAULT_DESC;
-  const metaDesc = document.getElementById('meta-description');
-  if (metaDesc) metaDesc.setAttribute('content', desc);
-  const canonical = document.getElementById('canonical-link');
-  if (canonical) canonical.setAttribute('href', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
-  const ogDesc = document.querySelector('meta[property="og:description"]');
-  if (ogDesc) ogDesc.setAttribute('content', desc);
-  const ogUrl = document.querySelector('meta[property="og:url"]');
-  if (ogUrl) ogUrl.setAttribute('content', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
-}
-
 // Forhandler afventer admin-godkendelse — blokér adgang til listing-features
 function isPendingDealer() {
   return currentProfile?.seller_type === 'dealer' && currentProfile?.verified === false;
@@ -100,57 +46,6 @@ function blockIfPendingDealer() {
   return false;
 }
 
-// Validér avatar-URL — tillad kun https Supabase storage URLs for at forhindre XSS
-function safeAvatarUrl(url) {
-  if (!url || typeof url !== 'string') return null;
-  try {
-    const u = new URL(url);
-    if (u.protocol !== 'https:') return null;
-    return esc(url);
-  } catch { return null; }
-}
-
-// Hjælper: focus trap — returnerer cleanup-funktion
-function trapFocus(modalEl) {
-  const focusable = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-  const els = () => Array.from(modalEl.querySelectorAll(focusable));
-  const first = () => els()[0];
-  const last  = () => els()[els().length - 1];
-
-  function onKeyDown(e) {
-    if (e.key !== 'Tab') return;
-    const all = els();
-    if (!all.length) return;
-    if (e.shiftKey) {
-      if (document.activeElement === first()) { e.preventDefault(); last().focus(); }
-    } else {
-      if (document.activeElement === last())  { e.preventDefault(); first().focus(); }
-    }
-  }
-
-  modalEl.addEventListener('keydown', onKeyDown);
-  // Sæt fokus på første fokuserbare element
-  requestAnimationFrame(() => { const f = first(); if (f) f.focus(); });
-  return () => modalEl.removeEventListener('keydown', onKeyDown);
-}
-
-// Map: modal-id → cleanup-funktion
-const _focusTrapCleanup = {};
-
-function enableFocusTrap(modalId) {
-  const el = document.getElementById(modalId);
-  if (!el) return;
-  if (_focusTrapCleanup[modalId]) _focusTrapCleanup[modalId]();
-  _focusTrapCleanup[modalId] = trapFocus(el);
-}
-
-function disableFocusTrap(modalId) {
-  if (_focusTrapCleanup[modalId]) {
-    _focusTrapCleanup[modalId]();
-    delete _focusTrapCleanup[modalId];
-  }
-}
-
 // Pagination
 const BIKES_PAGE_SIZE = 24;
 let bikesOffset       = 0;
@@ -159,18 +54,6 @@ let userGeoCoords     = null; // [lat, lng] fra GPS
 let activeRadius      = null; // km radius filter
 const askedAvailableSet = new Set(); // Track sent "er den stadig til salg?" per bike
 
-function haversineKm([lat1, lon1], [lat2, lon2]) {
-  const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-// Deterministisk offset baseret på annonce-ID — pin-position er stabil på tværs af page-loads
-function stableOffset(id, axis) {
-  let h = axis === 0 ? 0x811c9dc5 : 0xdeadbeef;
-  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 0x1000193) >>> 0;
-  return (h / 0xFFFFFFFF) - 0.5; // [-0.5, 0.5]
-}
 
 /* ============================================================
    INIT – hent session én gang og sæt alt op
@@ -2485,8 +2368,7 @@ async function saveProfile() {
     var oldCity = (currentProfile && currentProfile.city || '').toLowerCase().trim();
     if (oldAddr && oldCity) {
       var oldDawaKey = 'dawa3:' + oldAddr + ', ' + oldCity;
-      delete _geocodeCache[oldDawaKey];
-      _saveGeocodeCache();
+      invalidateGeocodeEntry(oldDawaKey);
     }
 
     currentProfile = { ...currentProfile, ...updates };
@@ -9048,84 +8930,6 @@ var splitMarkerMap     = {}; // bikeId → { marker, lat, lng }
 var _splitListVisible  = true;
 var _mapUserMarker     = null; // "Du er her"-markør
 
-/* ── Geocoding cache ── */
-var _geocodeCache = (function() {
-  try {
-    // v2: bumpede nøgle efter geocodeCity nu vælger største match (fixer fx Valby → København i stedet for Støvring)
-    var stored = localStorage.getItem('_geocodeCache_v2');
-    if (stored) return JSON.parse(stored);
-    // Fjern gammel cache, så vi ikke beholder forældede koordinater
-    try { localStorage.removeItem('_geocodeCache'); } catch (e) {}
-    return {};
-  } catch (e) { return {}; }
-})();
-
-function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache_v2', JSON.stringify(_geocodeCache)); } catch (e) {}
-}
-
-// Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
-function geocodeAddress(address, city) {
-  var query = address.trim() + ', ' + city.trim();
-  var key = 'dawa3:' + query.toLowerCase();
-  if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
-
-  var datavaskUrl = 'https://api.dataforsyningen.dk/datavask/adresser?betegnelse='
-    + encodeURIComponent(query);
-
-  return fetch(datavaskUrl)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data || !data.resultater || data.resultater.length === 0) return null;
-      var id = data.resultater[0].adresse.id;
-      return fetch('https://api.dataforsyningen.dk/adresser/' + id)
-        .then(function(r) { return r.json(); })
-        .then(function(adresse) {
-          var koord = adresse.adgangsadresse.adgangspunkt.koordinater; // [lng, lat]
-          var coords = [koord[1], koord[0]];
-          _geocodeCache[key] = coords;
-          _saveGeocodeCache();
-          return coords;
-        });
-    })
-    .catch(function() { return null; });
-}
-
-// Slå dansk by op via DAWA (Danmarks Adressers Web API) — ingen rate limit
-function geocodeCity(city) {
-  var key = city.toLowerCase().trim();
-  if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
-
-  // Hent flere resultater og vælg den største — løser tvetydigheder som
-  // "Valby" der både findes som lille bebyggelse v. Støvring og som stor
-  // bydel i København. Vi bruger bbox-arealet som proxy for størrelse.
-  return fetch('https://api.dataforsyningen.dk/steder?q='
-    + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=10&format=json')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data || data.length === 0) {
-        _geocodeCache[key] = null;
-        return null;
-      }
-      // Filtrér til entries der har visueltcenter, og find den med største bbox-areal
-      var candidates = data.filter(function(p) { return p.visueltcenter; });
-      if (candidates.length === 0) {
-        _geocodeCache[key] = null;
-        return null;
-      }
-      function bboxArea(p) {
-        if (!p.bbox || p.bbox.length < 4) return 0;
-        return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
-      }
-      candidates.sort(function(a, b) { return bboxArea(b) - bboxArea(a); });
-      var best = candidates[0];
-      var coords = [best.visueltcenter[1], best.visueltcenter[0]]; // [lat, lng]
-      _geocodeCache[key] = coords;
-      _saveGeocodeCache();
-      return coords;
-    })
-    .catch(function() { return null; });
-}
 
 /* ──────────────────────────────────────────────────────────
    DAWA AUTOCOMPLETE — to flows: præcis adresse (forhandlere),
@@ -10506,108 +10310,3 @@ window.openAllDealersModal   = openAllDealersModal;
 window.openDealerProfile     = openDealerProfile;
 window.filterByDealerCard    = filterByDealerCard;
 
-/* ============================================================
-   AI SUPPORT CHAT WIDGET
-   ============================================================ */
-
-const CHAT_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat-support`;
-
-let chatHistory = [];   // { role: 'user'|'assistant', content: string }[]
-let chatOpen    = false;
-
-function toggleChat() {
-  chatOpen = !chatOpen;
-  const win  = document.getElementById('chat-window');
-  const iconOpen  = document.getElementById('chat-icon-open');
-  const iconClose = document.getElementById('chat-icon-close');
-  win.classList.toggle('open', chatOpen);
-  iconOpen.style.display  = chatOpen ? 'none'  : '';
-  iconClose.style.display = chatOpen ? ''      : 'none';
-  if (chatOpen) {
-    setTimeout(() => document.getElementById('chat-input')?.focus(), 250);
-  }
-}
-
-function handleChatKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendChatMessage();
-  }
-}
-
-function appendChatMsg(role, text) {
-  const container = document.getElementById('chat-messages');
-  const wrap = document.createElement('div');
-  wrap.className = `chat-msg chat-msg--${role === 'user' ? 'user' : 'bot'}`;
-  const bubble = document.createElement('div');
-  bubble.className = 'chat-bubble';
-  bubble.textContent = text;
-  wrap.appendChild(bubble);
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-  return wrap;
-}
-
-function showTyping() {
-  const container = document.getElementById('chat-messages');
-  const wrap = document.createElement('div');
-  wrap.className = 'chat-msg chat-msg--bot chat-typing';
-  wrap.id = 'chat-typing-indicator';
-  const bubble = document.createElement('div');
-  bubble.className = 'chat-bubble';
-  bubble.textContent = 'Skriver…';
-  wrap.appendChild(bubble);
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-}
-
-function removeTyping() {
-  document.getElementById('chat-typing-indicator')?.remove();
-}
-
-async function sendChatMessage() {
-  const input = document.getElementById('chat-input');
-  const sendBtn = document.getElementById('chat-send-btn');
-  const text = input.value.trim();
-  if (!text) return;
-
-  input.value = '';
-  input.style.height = '';
-  appendChatMsg('user', text);
-
-  chatHistory.push({ role: 'user', content: text });
-
-  sendBtn.disabled = true;
-  showTyping();
-
-  try {
-    const res = await fetch(CHAT_FUNCTION_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: chatHistory }),
-    });
-
-    const data = await res.json();
-
-    removeTyping();
-
-    if (!res.ok || data.error) {
-      appendChatMsg('bot', 'Beklager, noget gik galt. Prøv igen om lidt.');
-      chatHistory.pop(); // fjern det fejlede brugerspørgsmål fra historik
-    } else {
-      appendChatMsg('bot', data.reply);
-      chatHistory.push({ role: 'assistant', content: data.reply });
-    }
-  } catch {
-    removeTyping();
-    appendChatMsg('bot', 'Ingen forbindelse – tjek din internet-forbindelse og prøv igen.');
-    chatHistory.pop();
-  } finally {
-    sendBtn.disabled = false;
-    input.focus();
-  }
-}
-
-window.toggleChat      = toggleChat;
-window.sendChatMessage = sendChatMessage;
-window.handleChatKey   = handleChatKey;
