@@ -558,6 +558,7 @@ nav {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
+  align-items: start;
   /* Reserver plads så siden ikke skubbes op/ned mens annoncer loader (CLS) */
   min-height: 600px;
   content-visibility: auto;
