@@ -32,6 +32,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/section-nav.js`: section navigation helper.
 - `js/dealer-modal-actions.js`: dealer modal action helpers.
 - `js/dealer-guards.js`: pending dealer guards.
+- `js/auth.js`: login/register/forgot-password/Google OAuth handlers + login modal open/close.
 
 ## Practical rule of thumb
 When adding/changing functionality:
