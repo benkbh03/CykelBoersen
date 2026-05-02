@@ -36,6 +36,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/filters.js`: pill toggle, near-me GPS filter, sidebar filter pills, filter counts, sort, active-filter chip bar (cross-cuts state via getter/setter injection).
 - `js/bikes-list.js`: loadBikes, renderBikes, renderListingsEmptyState, searchBikes, loadBikesWithFilters — main listing grid loader and card renderer.
 - `js/my-profile.js`: brugerens egne annoncer, gemte annoncer, gemte søgninger, handelshistorik, slet/fjern-actions + notifySavedSearches.
+- `js/reviews.js`: stjerne-picker, submitReview, rate-now-modal flow (open/close/submit).
 
 ## Practical rule of thumb
 When adding/changing functionality:
