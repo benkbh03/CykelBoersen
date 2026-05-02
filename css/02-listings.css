@@ -60,6 +60,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
+  align-items: start;
+  align-content: start;
   /* Reserver plads så siden ikke skubbes op/ned mens annoncer loader (CLS) */
   min-height: 600px;
   content-visibility: auto;
@@ -73,7 +75,7 @@
 }
 .bike-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.12); }
 .bike-card-img {
-  aspect-ratio: 4/3; width: 100%; background: var(--sand);
+  aspect-ratio: 3/2; width: 100%; background: var(--sand);
   display: flex; align-items: center; justify-content: center;
   font-size: 4.5rem; position: relative; overflow: hidden;
 }
