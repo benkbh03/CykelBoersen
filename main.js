@@ -26,6 +26,12 @@ import { showOnboardingBanner, dismissOnboarding } from './js/onboarding.js';
 import { showSectionNavigation } from './js/section-nav.js';
 import { openBecomeDealerPage, closeBecomeDealerModalCompat, selectDealerPlanButton } from './js/dealer-modal-actions.js';
 import { isPendingDealerProfile, blockIfPendingDealerProfile } from './js/dealer-guards.js';
+import { createAuthActions } from './js/auth.js';
+import { createFilters } from './js/filters.js';
+import { createBikesList } from './js/bikes-list.js';
+import { createMyProfile } from './js/my-profile.js';
+import { createReviews } from './js/reviews.js';
+import { createProfileModals } from './js/profile-modals.js';
 
 // Global bruger-cache — hentes én gang ved init
 let currentUser    = null;
@@ -40,8 +46,6 @@ const bikeCache = new Map();
 // Stale-request guards: hvert modal-open incrementerer sit token.
 // Async responses tjekker om tokenet stadig matcher — ellers ignoreres response.
 let _bikeModalToken = 0;
-let _userProfileToken = 0;
-let _dealerProfileToken = 0;
 let _sellStep = 1;
 let _aiSuggestionPending = null;
 let _aiApplied = false;
@@ -62,6 +66,125 @@ let currentFilters    = {};
 let userGeoCoords     = null; // [lat, lng] fra GPS
 let activeRadius      = null; // km radius filter
 const askedAvailableSet = new Set(); // Track sent "er den stadig til salg?" per bike
+
+// Filter actions (createFilters bruger getter/setter for cross-module state).
+// currentFilterArgs deklareres længere nede men er hoistet via let-binding;
+// closures over for-getterne læser bindingen lazy ved kald (efter init).
+const {
+  hasActiveFilters,
+  describeActiveFilters,
+  clearAllFilters,
+  updateActiveFiltersBar,
+  removeFilterPill,
+  toggleNearMe,
+  updateNearMeRadius,
+  applyNearMeFilter,
+  sortBikes,
+  updateFilterCounts,
+  setCount,
+  togglePill,
+} = createFilters({
+  supabase, showToast, esc,
+  haversineKm, formatDistanceKm,
+  geocodeAddress, geocodeCity,
+  loadBikes:    (...args) => loadBikes(...args),
+  applyFilters: (...args) => applyFilters(...args),
+  getCurrentFilters:    () => currentFilters,
+  setCurrentFilters:    v => { currentFilters = v; },
+  getCurrentFilterArgs: () => currentFilterArgs,
+  setCurrentFilterArgs: v => { currentFilterArgs = v; },
+  getUserGeoCoords:     () => userGeoCoords,
+  setUserGeoCoords:     v => { userGeoCoords = v; },
+  getActiveRadius:      () => activeRadius,
+  setActiveRadius:      v => { activeRadius = v; },
+});
+
+// Bike list (loadBikes/renderBikes/searchBikes/loadBikesWithFilters).
+// filterOffset deklareres længere nede; closures over for-getterne læser
+// bindingen lazy ved kald.
+const {
+  loadBikes,
+  renderBikes,
+  renderListingsEmptyState,
+  searchBikes,
+  loadBikesWithFilters,
+} = createBikesList({
+  supabase, BIKES_PAGE_SIZE,
+  esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML,
+  updateActiveFiltersBar, applyNearMeFilter, hasActiveFilters, describeActiveFilters,
+  getBikesOffset:       () => bikesOffset,
+  setBikesOffset:       v => { bikesOffset = v; },
+  getFilterOffset:      () => filterOffset,
+  setFilterOffset:      v => { filterOffset = v; },
+  getCurrentFilters:    () => currentFilters,
+  setCurrentFilters:    v => { currentFilters = v; },
+  setCurrentFilterArgs: v => { currentFilterArgs = v; },
+  getCurrentUser:       () => currentUser,
+  getUserGeoCoords:     () => userGeoCoords,
+  getActiveRadius:      () => activeRadius,
+  userSavedSet:         _userSavedSet,
+  askedAvailableSet,
+});
+
+// My-profile actions (loadMyListings, savedListings, savedSearches, tradeHistory).
+const {
+  reloadMyListings,
+  loadMyListings,
+  deleteListing,
+  loadSavedListings,
+  removeSaved,
+  notifySavedSearches,
+  saveCurrentSearch,
+  loadSavedSearches,
+  applySavedSearch,
+  deleteSavedSearch,
+  loadTradeHistory,
+} = createMyProfile({
+  supabase, esc, retryHTML, showToast,
+  getCurrentUser:       () => currentUser,
+  getCurrentFilters:    () => currentFilters,
+  getCurrentFilterArgs: () => currentFilterArgs,
+  loadBikes:           (...args) => loadBikes(...args),
+  updateFilterCounts:  (...args) => updateFilterCounts(...args),
+  searchBikes:         (...args) => searchBikes(...args),
+  closeProfileModal:   (...args) => closeProfileModal(...args),
+});
+
+// Reviews (rating modal + submit-flow).
+const {
+  pickStar,
+  highlightStars,
+  submitReview,
+  openRateModal,
+  closeRateModal,
+  submitRatingFromModal,
+} = createReviews({
+  supabase, esc, showToast, enableFocusTrap,
+  getCurrentUser:  () => currentUser,
+  openUserProfile: (...args) => openUserProfile(...args),
+});
+
+// Profile modals (user/dealer profile views, tabs, contact, achievements).
+const {
+  filterByDealerCard,
+  openDealerProfile,
+  closeDealerProfileModal,
+  openUserProfileWithReview,
+  openUserProfile,
+  switchUserProfileTab,
+  switchDealerProfileTab,
+  toggleProfileContact,
+  sendProfileMessage,
+  loadUserAchievements,
+  closeUserProfileModal,
+} = createProfileModals({
+  supabase, esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, showToast,
+  getCurrentUser:       () => currentUser,
+  userSavedSet:         _userSavedSet,
+  closeAllDealersModal: (...args) => closeAllDealersModal(...args),
+  closeAllModals:       (...args) => closeAllModals(...args),
+  highlightStars,
+});
 
 
 /* ============================================================
@@ -557,1052 +680,11 @@ function closeAllModals() {
   document.body.style.overflow = '';
 }
 
-function filterByDealerCard(dealerId) {
-  openDealerProfile(dealerId);
-}
-
-async function openDealerProfile(dealerId) {
-  const myToken = ++_dealerProfileToken;
-  closeAllDealersModal();
-  const modal = document.getElementById('dealer-profile-modal');
-  const header = document.getElementById('dealer-profile-header');
-  const bikesGrid = document.getElementById('dealer-profile-bikes');
-  if (!modal) return;
-
-  header.innerHTML = '<p style="color:var(--muted);padding:20px 0">Henter forhandler...</p>';
-  bikesGrid.innerHTML = '';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-
-  // Hent forhandlerens profil
-  let dealer, dealerErr;
-  try {
-    const fetchPromise = supabase
-      .from('profiles')
-      .select('id, shop_name, name, city, verified, avatar_url')
-      .eq('id', dealerId)
-      .single();
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout: forhandlerforespørgsel tog for lang tid')), 15000));
-    ({ data: dealer, error: dealerErr } = await Promise.race([fetchPromise, timeoutPromise]));
-  } catch (e) {
-    dealerErr = e;
-    console.error('openDealerProfile fetch error:', e.message);
-  }
-
-  if (myToken !== _dealerProfileToken) return;
-
-  if (!dealer) {
-    header.innerHTML = retryHTML('Kunne ikke hente forhandler.', `() => openDealerProfile('${dealerId}')`);
-    return;
-  }
-
-  const displayName = dealer.shop_name || dealer.name || 'Forhandler';
-  const initials    = getInitials(displayName);
-  const countMap    = window._dealerCountMap || {};
-  const bikeCount   = countMap[dealerId] ?? null;
-
-  const dealerLogoContent = safeAvatarUrl(dealer.avatar_url)
-    ? `<img src="${safeAvatarUrl(dealer.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-    : initials;
-
-  header.innerHTML = `
-    <div class="dealer-profile-hero">
-      <div class="dealer-profile-logo">${dealerLogoContent}</div>
-      <div class="dealer-profile-info">
-        <h2 class="dealer-profile-name">
-          ${displayName}
-          ${dealer.verified ? '<span class="dealer-verified-tick" title="Verificeret forhandler">✓</span>' : ''}
-        </h2>
-        ${dealer.city ? `<div class="dealer-profile-city">📍 ${dealer.city}</div>` : ''}
-        ${bikeCount !== null ? `<div class="dealer-profile-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>` : ''}
-      </div>
-    </div>
-    <hr class="dealer-profile-divider">
-    <h3 class="dealer-profile-section-title">Cykler til salg</h3>
-  `;
-
-  if (myToken !== _dealerProfileToken) return;
-
-  // Hent forhandlerens cykler
-  let bikes, bikesErr;
-  try {
-    const bikesFetch = supabase
-      .from('bikes')
-      .select('*, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
-      .eq('user_id', dealerId)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
-    const bikesTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout: forhandlercykler tog for lang tid')), 15000));
-    ({ data: bikes, error: bikesErr } = await Promise.race([bikesFetch, bikesTimeout]));
-  } catch (e) {
-    bikesErr = e;
-    console.error('openDealerProfile bikes fetch error:', e.message);
-  }
-
-  if (bikesErr || !bikes) {
-    bikesGrid.innerHTML = retryHTML('Kunne ikke hente forhandlerens cykler.', `() => openDealerProfile('${dealerId}')`);
-    return;
-  }
-  if (bikes.length === 0) {
-    bikesGrid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--muted);">
-        <div style="font-size:3rem;margin-bottom:12px;">🚲</div>
-        <p>Ingen aktive annoncer fra denne forhandler.</p>
-      </div>`;
-    return;
-  }
-
-  bikesGrid.innerHTML = bikes.map((b, i) => {
-    const profile    = b.profiles || {};
-    const sellerType = profile.seller_type || 'dealer';
-    const sellerName = profile.shop_name || profile.name || displayName;
-    const avatarInit = getInitials(sellerName);
-    const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
-    const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
-      : '<span style="font-size:4rem">🚲</span>';
-    return `
-      <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
-        <div class="bike-card-img">
-          ${imgContent}
-          <div class="bike-card-badges">
-            <span class="condition-tag">${b.condition}</span>
-          </div>
-          <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${_userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>
-        </div>
-        <div class="bike-card-body">
-          <div class="card-top">
-            <div class="bike-title">${b.brand} ${b.model}</div>
-            <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
-          </div>
-          <div class="bike-meta">
-            <span>${b.type}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
-          </div>
-          <div class="card-footer">
-            <div class="seller-info">
-              <div class="seller-avatar">${avatarInit}</div>
-              <div>
-                <div class="seller-name">${sellerName}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
-                <span class="badge badge-dealer">🏪 Forhandler</span>
-              </div>
-            </div>
-            <div class="card-location">📍 ${b.city}</div>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function closeDealerProfileModal() {
-  const modal = document.getElementById('dealer-profile-modal');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-/* ============================================================
-   BRUGER PROFIL
-   ============================================================ */
-
-async function openUserProfileWithReview(userId) {
-  await openUserProfile(userId);
-  // Vent på at profil-indhold renderes, scroll så til og fremhæv vurderingsformularen
-  setTimeout(() => {
-    const wrap = document.getElementById('write-review-wrap');
-    if (wrap) {
-      wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      wrap.style.outline = '2.5px solid var(--rust)';
-      wrap.style.borderRadius = '12px';
-      setTimeout(() => { wrap.style.outline = ''; }, 2000);
-    }
-  }, 600);
-}
-
-async function openUserProfile(userId) {
-  const myToken = ++_userProfileToken;
-  closeAllModals();
-  const modal   = document.getElementById('user-profile-modal');
-  const content = document.getElementById('user-profile-content');
-  if (!modal || !content) { console.error('user-profile-modal eller user-profile-content ikke fundet i DOM'); return; }
-  content.innerHTML = '<p style="color:var(--muted);padding:60px 0;text-align:center;">Henter profil...</p>';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-
-  // Hent parallelt: profil, aktive cykler, solgte cykler, anmeldelser
-  let profile, activeBikes, soldBikes, reviews, messagesCount;
-  try {
-    const safe = p => Promise.resolve(p).catch(e => { console.warn('Query fejl:', e); return { data: null, error: e }; });
-
-    const dataPromise = Promise.all([
-      safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
-      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
-      safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
-      safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
-    ]);
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout: profilforespørgsel tog for lang tid')), 15000));
-    const [r1, r2, r3, r4] = await Promise.race([dataPromise, timeoutPromise]);
-
-    profile     = r1.data;
-    activeBikes = r2.data;
-    soldBikes   = r3.data;
-    reviews     = r4.error ? [] : (r4.data || []);
-
-    if (currentUser) {
-      // hasTraded = der findes en budaccepterings-besked mellem de to brugere
-      const { data: tradeMsg, error: msgErr } = await safe(
-        supabase.from('messages')
-          .select('id')
-          .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`)
-          .ilike('content', '%accepteret%')
-          .limit(1)
-      );
-      messagesCount = tradeMsg?.length || 0;
-    } else {
-      messagesCount = 0;
-    }
-  } catch (err) {
-    console.error('openUserProfile error:', err.message);
-    content.innerHTML = retryHTML('Kunne ikke hente profil.', `() => openUserProfile('${userId}')`);
-    return;
-  }
-
-  if (myToken !== _userProfileToken) return;
-
-  if (!profile) {
-    content.innerHTML = retryHTML('Kunne ikke hente profil.', `() => openUserProfile('${userId}')`);
-    return;
-  }
-
-  const displayName  = profile.seller_type === 'dealer' ? (profile.shop_name || profile.name) : profile.name;
-  const initials     = getInitials(displayName);
-  const isDealer     = profile.seller_type === 'dealer';
-  const memberYear   = profile.created_at ? new Date(profile.created_at).getFullYear() : null;
-  const isOwnProfile = currentUser && currentUser.id === userId;
-  const lastSeenText = !isOwnProfile ? formatLastSeen(profile.last_seen) : null;
-
-  // Gennemsnit og anmeldelsesantal
-  const reviewList   = reviews || [];
-  const avgRating    = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
-  const hasReviewed  = currentUser && reviewList.some(r => r.reviewer_id === currentUser.id);
-  const hasTraded    = currentUser && messagesCount > 0;
-
-  // Stjerner helper
-  function stars(n) {
-    return [1,2,3,4,5].map(i => `<span class="star${i <= Math.round(n) ? ' filled' : ''}">★</span>`).join('');
-  }
-
-  // Aktive annoncer
-  const activeBikeCards = (activeBikes || []).map((b, i) => {
-    const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
-    const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
-      : '<span style="font-size:2.5rem">🚲</span>';
-    return `
-      <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
-        <div class="up-bike-img">${imgContent}</div>
-        <div class="up-bike-info">
-          <div class="up-bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-          <div class="up-bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
-          <div class="up-bike-meta">${esc(b.type)} · ${esc(b.condition)} · ${esc(b.city || '–')}</div>
-        </div>
-      </div>`;
-  }).join('') || `<p class="up-empty">Ingen aktive annoncer.</p>`;
-
-  // Solgte cykler (kompakt liste)
-  const soldRows = (soldBikes || []).map(b => `
-    <div class="up-sold-row">
-      <div class="up-sold-info">
-        <span class="up-sold-title">${esc(b.brand)} ${esc(b.model)}</span>
-        <span class="up-sold-meta">${esc(b.type)} · ${esc(b.condition)}${b.year ? ' · ' + b.year : ''}</span>
-      </div>
-      <div class="up-sold-price">${b.price.toLocaleString('da-DK')} kr. <span class="sold-chip">Solgt</span></div>
-    </div>`).join('') || `<p class="up-empty">Ingen solgte cykler endnu.</p>`;
-
-  // Anmeldelser
-  const reviewCards = reviewList.map(r => {
-    const rName = r.reviewer?.seller_type === 'dealer' ? r.reviewer.shop_name : r.reviewer?.name;
-    const rInit = getInitials(rName);
-    const date  = new Date(r.created_at).toLocaleDateString('da-DK', { year:'numeric', month:'short', day:'numeric' });
-    return `
-      <div class="up-review-card">
-        <div class="up-review-top">
-          <div class="up-review-avatar">${rInit}</div>
-          <div>
-            <div class="up-review-name">${esc(rName || 'Anonym')}</div>
-            <div class="up-review-stars">${stars(r.rating)}</div>
-          </div>
-          <div class="up-review-date">${date}</div>
-        </div>
-        ${r.comment ? `<p class="up-review-comment">${esc(r.comment)}</p>` : ''}
-      </div>`;
-  }).join('') || `<p class="up-empty">Ingen vurderinger endnu.</p>`;
-
-  // Skriv anmeldelse formular — kun synlig hvis de to har handlet (beskeder) og ikke allerede vurderet
-  const writeReviewHtml = (!isOwnProfile && currentUser && !hasReviewed && hasTraded) ? `
-    <div class="up-write-review" id="write-review-wrap">
-      <h4 class="up-section-title" style="margin-bottom:12px;">Giv en vurdering</h4>
-      <div class="up-star-picker" id="star-picker">
-        ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
-      </div>
-      <textarea id="review-comment" class="up-review-textarea" placeholder="Fortæl om din handel med ${esc(displayName)}... (valgfrit)"></textarea>
-      <button class="btn-submit-review" onclick="submitReview('${userId}')">Send vurdering</button>
-    </div>`
-  : (!isOwnProfile && currentUser && !hasReviewed) ? `
-    <p class="up-empty" style="font-size:0.85rem;color:var(--muted);margin-top:8px;">Du kan kun vurdere brugere du har handlet med via Cykelbørsen.</p>`
-  : '';
-
-  // Send besked sektion — kun for andre brugeres profiler med aktive annoncer
-  const numActive = (activeBikes || []).length;
-  const sendMsgHtml = (!isOwnProfile && currentUser && numActive > 0) ? `
-    <div class="up-contact-section" id="up-contact-section">
-      <button class="up-contact-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
-      <div class="up-contact-form" id="up-contact-form" style="display:none;">
-        ${numActive > 1 ? `
-        <select class="up-contact-bike-select" id="up-contact-bike-select">
-          ${(activeBikes || []).map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${b.price.toLocaleString('da-DK')} kr.</option>`).join('')}
-        </select>` : `<input type="hidden" id="up-contact-bike-select" value="${activeBikes[0].id}">`}
-        <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
-        <button class="up-contact-send-btn" onclick="sendProfileMessage('${userId}')">Send besked</button>
-      </div>
-    </div>` : '';
-
-  const upAvatarContent = safeAvatarUrl(profile.avatar_url)
-    ? `<img src="${safeAvatarUrl(profile.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-    : initials;
-
-  const nActive  = (activeBikes || []).length;
-  const nSold    = (soldBikes || []).length;
-  const nReviews = reviewList.length;
-
-  content.innerHTML = `
-    <!-- Header -->
-    <div class="up-header">
-      <div class="up-avatar">${upAvatarContent}</div>
-      <div class="up-meta">
-        <h2 class="up-name">
-          ${esc(displayName)}
-          ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-          ${profile.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
-        </h2>
-        ${isDealer && profile.address ? `<div class="up-city">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">📍 ${esc(profile.city)}</div>` : ''}
-        ${lastSeenText ? `<div class="up-last-seen">🕐 ${lastSeenText}</div>` : ''}
-        <div class="up-badges">
-          <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
-          ${memberYear ? `<span class="up-member-since">Medlem siden ${memberYear}</span>` : ''}
-        </div>
-        <div class="up-achievements" id="user-achievements"></div>
-        ${profile.bio ? `<p class="up-bio">${esc(profile.bio)}</p>` : ''}
-        ${sendMsgHtml}
-      </div>
-    </div>
-
-    <!-- Statistik -->
-    <div class="up-stats">
-      <div class="up-stat up-stat-clickable" onclick="switchUserProfileTab('listings')">
-        <div class="up-stat-val">${nActive}</div>
-        <div class="up-stat-label">Til salg</div>
-      </div>
-      <div class="up-stat up-stat-clickable" onclick="switchUserProfileTab('sold')">
-        <div class="up-stat-val">${nSold}</div>
-        <div class="up-stat-label">Solgt</div>
-      </div>
-      <div class="up-stat up-stat-clickable" onclick="switchUserProfileTab('reviews')">
-        <div class="up-stat-val">${avgRating !== null ? avgRating.toFixed(1) + ' ★' : '–'}</div>
-        <div class="up-stat-label">${nReviews} ${nReviews === 1 ? 'vurdering' : 'vurderinger'}</div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="up-tabs">
-      <button class="up-tab active" data-tab="listings" onclick="switchUserProfileTab('listings')">Til salg (${nActive})</button>
-      <button class="up-tab" data-tab="sold" onclick="switchUserProfileTab('sold')">Solgt (${nSold})</button>
-      <button class="up-tab" data-tab="reviews" onclick="switchUserProfileTab('reviews')">Vurderinger${avgRating !== null ? ` ${avgRating.toFixed(1)} ★` : ` (${nReviews})`}</button>
-    </div>
-
-    <!-- Tab: Til salg -->
-    <div id="up-tab-listings" class="up-tab-panel">
-      <div class="up-bikes-grid">${activeBikeCards}</div>
-    </div>
-
-    <!-- Tab: Solgte cykler -->
-    <div id="up-tab-sold" class="up-tab-panel" style="display:none;">
-      <div class="up-sold-list">${soldRows}</div>
-    </div>
-
-    <!-- Tab: Vurderinger -->
-    <div id="up-tab-reviews" class="up-tab-panel" style="display:none;">
-      <div class="up-reviews-list">${reviewCards}</div>
-      ${writeReviewHtml}
-    </div>
-  `;
-
-  // Aktivér stjerne-hover
-  document.querySelectorAll('.star-pick').forEach(s => {
-    s.addEventListener('mouseover', () => highlightStars(+s.dataset.val));
-    s.addEventListener('mouseout',  () => highlightStars(window._pickedStar || 0));
-  });
-  window._pickedStar = 0;
-
-  // Beregn og vis achievements asynkront
-  loadUserAchievements(userId, activeBikes, soldBikes, reviewList, profile);
-}
-
-function switchUserProfileTab(tab) {
-  document.querySelectorAll('.up-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.querySelectorAll('.up-tab-panel').forEach(p => p.style.display = 'none');
-  const panel = document.getElementById('up-tab-' + tab);
-  if (panel) panel.style.display = '';
-}
-
-function switchDealerProfileTab(tab) {
-  document.querySelectorAll('.dp-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  ['listings', 'reviews'].forEach(t => {
-    const p = document.getElementById('dp-tab-' + t);
-    if (p) p.style.display = t === tab ? '' : 'none';
-  });
-}
-
-function toggleProfileContact() {
-  const form = document.getElementById('up-contact-form');
-  if (!form) return;
-  const isHidden = form.style.display === 'none';
-  form.style.display = isHidden ? 'block' : 'none';
-  if (isHidden) {
-    const ta = document.getElementById('up-contact-message');
-    if (ta) ta.focus();
-  }
-}
-
-async function sendProfileMessage(receiverId) {
-  if (!currentUser) { showToast('⚠️ Log ind for at sende beskeder'); return; }
-  const bikeId  = document.getElementById('up-contact-bike-select')?.value;
-  const content = document.getElementById('up-contact-message')?.value?.trim();
-  if (!bikeId)  { showToast('⚠️ Vælg en annonce'); return; }
-  if (!content) { showToast('⚠️ Skriv en besked'); return; }
-
-  const btn = document.querySelector('#up-contact-form .up-contact-send-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sender...'; }
-  try {
-    const { data: inserted, error } = await supabase.from('messages').insert({
-      bike_id:     bikeId,
-      sender_id:   currentUser.id,
-      receiver_id: receiverId,
-      content,
-    }).select('id').single();
-
-    if (error) { showToast('❌ Kunne ikke sende besked'); console.error(error); return; }
-    showToast('✅ Besked sendt!');
-    document.getElementById('up-contact-form').style.display = 'none';
-    const ta = document.getElementById('up-contact-message');
-    if (ta) ta.value = '';
-
-    if (inserted?.id) {
-      supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } }).catch(() => {});
-    }
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Send besked'; }
-  }
-}
-
-async function loadUserAchievements(userId, activeBikes, soldBikes, reviewList, profile) {
-  const wrap = document.getElementById('user-achievements');
-  if (!wrap) return;
-  try {
-    const badges = [];
-    const numActive = (activeBikes || []).length;
-    const numSold   = (soldBikes || []).length;
-    const avgRating = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : 0;
-
-    // Uploader ofte: 3+ aktive annoncer
-    if (numActive >= 3) badges.push({ icon: '📦', label: 'Uploader ofte', title: '3+ aktive annoncer' });
-
-    // Erfaren sælger: 5+ solgte
-    if (numSold >= 5) badges.push({ icon: '🏆', label: 'Erfaren sælger', title: '5+ solgte cykler' });
-    else if (numSold >= 1) badges.push({ icon: '🤝', label: 'Har solgt', title: `${numSold} gennemført${numSold === 1 ? '' : 'e'} salg` });
-
-    // Top-rated: 4.5+ gennemsnit med mindst 3 vurderinger
-    if (reviewList.length >= 3 && avgRating >= 4.5) badges.push({ icon: '⭐', label: 'Topvurderet', title: `${avgRating.toFixed(1)} gns. fra ${reviewList.length} vurderinger` });
-
-    // Verificeret: e-mail
-    if (profile.email_verified) badges.push({ icon: '✉️', label: 'E-mail verificeret', title: 'Har verificeret sin e-mail' });
-
-    // Veteranmedlem: 1+ år
-    if (profile.created_at) {
-      const ageMonths = (Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24 * 30);
-      if (ageMonths >= 12) badges.push({ icon: '🎖️', label: 'Veteranmedlem', title: 'Medlem i 1+ år' });
-    }
-
-    // Svarer hurtigt: hent responstid
-    const { data: sent } = await supabase
-      .from('messages')
-      .select('created_at, bike_id')
-      .eq('sender_id', userId)
-      .order('created_at', { ascending: true })
-      .limit(50);
-    const { data: received } = await supabase
-      .from('messages')
-      .select('created_at, bike_id')
-      .eq('receiver_id', userId)
-      .order('created_at', { ascending: true })
-      .limit(50);
-    if (sent && received && sent.length >= 3 && received.length >= 1) {
-      const responseTimes = [];
-      received.forEach(inMsg => {
-        const reply = sent.find(o => o.bike_id === inMsg.bike_id && new Date(o.created_at) > new Date(inMsg.created_at));
-        if (reply) {
-          const mins = (new Date(reply.created_at) - new Date(inMsg.created_at)) / 60000;
-          if (mins > 0 && mins < 10080) responseTimes.push(mins);
-        }
-      });
-      if (responseTimes.length >= 2) {
-        const avg = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
-        if (avg < 60) badges.push({ icon: '⚡', label: 'Svarer hurtigt', title: 'Svarer typisk inden for en time' });
-        else if (avg < 360) badges.push({ icon: '💬', label: 'Svarer samme dag', title: 'Svarer typisk inden for få timer' });
-      }
-    }
-
-    if (badges.length === 0) return;
-
-    wrap.innerHTML = badges.map(b =>
-      `<span class="achievement-badge" title="${esc(b.title)}">${b.icon} ${esc(b.label)}</span>`
-    ).join('');
-  } catch (e) {
-    console.error('loadUserAchievements fejl:', e);
-  }
-}
-
-function pickStar(val) {
-  window._pickedStar = val;
-  highlightStars(val);
-}
-
-function highlightStars(val) {
-  document.querySelectorAll('.star-pick').forEach(s => {
-    s.classList.toggle('active', +s.dataset.val <= val);
-  });
-}
-
-async function submitReview(reviewedUserId) {
-  const rating  = window._pickedStar || 0;
-  const comment = document.getElementById('review-comment')?.value?.trim() || '';
-
-  if (!currentUser)       { showToast('⚠️ Log ind for at give en vurdering'); return; }
-  if (rating < 1)         { showToast('⚠️ Vælg et antal stjerner'); return; }
-
-  // Verificér at der er en budaccepterings-besked mellem de to brugere (= reel handel)
-  const { data: tradeMsg } = await supabase.from('messages')
-    .select('id')
-    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${reviewedUserId}),and(sender_id.eq.${reviewedUserId},receiver_id.eq.${currentUser.id})`)
-    .ilike('content', '%accepteret%')
-    .limit(1);
-  const hasTraded = tradeMsg?.length > 0;
-  if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
-
-  const { error } = await supabase.from('reviews').insert({
-    reviewer_id:      currentUser.id,
-    reviewed_user_id: reviewedUserId,
-    rating,
-    comment: comment || null,
-  });
-
-  if (error) { showToast('❌ Kunne ikke sende vurdering'); console.error(error); return; }
-
-  showToast('✅ Vurdering sendt!');
-  // Genindlæs profilen
-  openUserProfile(reviewedUserId);
-}
-
-// Global state for rating modal
-let _ratingModalUserId = null;
-let _ratingModalUserName = null;
-
-function openRateModal(otherId, otherName, bikeInfo) {
-  // Store the user we're about to rate
-  _ratingModalUserId = otherId;
-  _ratingModalUserName = otherName;
-
-  // Build and insert the modal content
-  const content = `
-    <div class="rate-modal-section">
-      <div class="rate-modal-person">Vurder ${esc(otherName)}</div>
-      <label class="rate-modal-label">Hvordan var din handel?</label>
-      <div class="rate-stars" id="rate-stars">
-        ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
-      </div>
-      <label class="rate-modal-label">Kommentar (valgfrit)</label>
-      <textarea id="rate-modal-comment" class="rate-comment" placeholder="Fortæl om din handel..."></textarea>
-    </div>
-  `;
-
-  document.getElementById('rate-modal-content').innerHTML = content;
-
-  // Set up star hover listeners
-  document.querySelectorAll('#rate-stars .star-pick').forEach(s => {
-    s.addEventListener('mouseover', () => highlightStars(+s.dataset.val));
-    s.addEventListener('mouseout',  () => highlightStars(window._pickedStar || 0));
-  });
-
-  // Reset star picker state
-  window._pickedStar = 0;
-  document.querySelectorAll('#rate-stars .star-pick').forEach(s => s.classList.remove('active'));
-
-  // Show the modal
-  const modal = document.getElementById('rate-now-modal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  enableFocusTrap('rate-now-modal');
-}
-
-function closeRateModal() {
-  const modal = document.getElementById('rate-now-modal');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-  _ratingModalUserId = null;
-  _ratingModalUserName = null;
-  window._pickedStar = 0;
-}
-
-async function submitRatingFromModal() {
-  if (!_ratingModalUserId) return;
-
-  const rating  = window._pickedStar || 0;
-  const comment = document.getElementById('rate-modal-comment')?.value?.trim() || '';
-
-  if (!currentUser) { showToast('⚠️ Log ind for at give en vurdering'); return; }
-  if (rating < 1)   { showToast('⚠️ Vælg et antal stjerner'); return; }
-
-  // Verificér at der er en budaccepterings-besked mellem de to brugere
-  const { data: tradeMsg } = await supabase.from('messages')
-    .select('id')
-    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${_ratingModalUserId}),and(sender_id.eq.${_ratingModalUserId},receiver_id.eq.${currentUser.id})`)
-    .ilike('content', '%accepteret%')
-    .limit(1);
-  const hasTraded = tradeMsg?.length > 0;
-  if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
-
-  const { error } = await supabase.from('reviews').insert({
-    reviewer_id:      currentUser.id,
-    reviewed_user_id: _ratingModalUserId,
-    rating,
-    comment: comment || null,
-  });
-
-  if (error) { showToast('❌ Kunne ikke sende vurdering'); console.error(error); return; }
-
-  showToast('✅ Vurdering sendt!');
-  closeRateModal();
-}
-
-function closeUserProfileModal() {
-  const modal = document.getElementById('user-profile-modal');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-  window._pickedStar = 0;
-}
 
 /* ============================================================
    ANNONCER
    ============================================================ */
 
-async function loadBikes(filters = {}, append = false) {
-  const grid = document.getElementById('listings-grid');
-
-  if (!append) {
-    bikesOffset    = 0;
-    currentFilters = filters;
-    grid.innerHTML = Array(6).fill(`
-      <div class="bike-card skeleton-card">
-        <div class="skeleton-img"></div>
-        <div class="skeleton-body">
-          <div class="skeleton-line skeleton-line--title"></div>
-          <div class="skeleton-line skeleton-line--sub"></div>
-          <div class="skeleton-line skeleton-line--price"></div>
-        </div>
-      </div>`).join('');
-    // Fjern evt. eksisterende "Vis flere"-knap
-    const old = document.getElementById('load-more-btn');
-    if (old) old.remove();
-  }
-
-  let query = supabase
-    .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-    .range(bikesOffset, bikesOffset + BIKES_PAGE_SIZE - 1);
-
-  if (filters.type)       query = query.eq('type', filters.type);
-  if (filters.city)       query = query.ilike('city', `%${filters.city}%`);
-  if (filters.maxPrice)   query = query.lte('price', filters.maxPrice);
-  if (filters.search) {
-    const s = filters.search.replace(/[%_\\,.()"']/g, '');
-    if (s) query = query.or(`brand.ilike.%${s}%,model.ilike.%${s}%`);
-  }
-  if (filters.warranty)   query = query.not('warranty', 'is', null);
-  if (filters.newOnly)    query = query.gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
-
-  const { data: rawData, error } = await query;
-
-  if (error) {
-    console.error('loadBikes fejl:', error);
-    if (!append) grid.innerHTML = '<p style="color:var(--rust);padding:20px">Kunne ikke hente annoncer.</p>';
-    return;
-  }
-
-  // sellerType filtreres client-side da det er en join-kolonne
-  const data = filters.sellerType
-    ? rawData.filter(b => b.profiles?.seller_type === filters.sellerType)
-    : rawData;
-
-  // Hent favorit-tæller + brugerens egne gemte bikes i én query
-  const bikeIds = data.map(b => b.id);
-  let saveCounts = {};
-  let userSavedSet = new Set();
-  if (bikeIds.length > 0) {
-    const { data: countData } = await supabase
-      .from('saved_bikes')
-      .select('bike_id, user_id')
-      .in('bike_id', bikeIds);
-    if (countData) {
-      countData.forEach(row => {
-        saveCounts[row.bike_id] = (saveCounts[row.bike_id] || 0) + 1;
-        if (currentUser && row.user_id === currentUser.id) {
-          userSavedSet.add(row.bike_id);
-          _userSavedSet.add(row.bike_id);
-        }
-      });
-    }
-  }
-
-  if (append) {
-    renderBikes(data, true, saveCounts, userSavedSet);
-  } else {
-    renderBikes(data, false, saveCounts, userSavedSet);
-  }
-  updateActiveFiltersBar();
-
-  bikesOffset += data.length;
-
-  // Vis "Vis flere"-knap eller "Ingen flere"-besked
-  const existing = document.getElementById('load-more-btn');
-  if (existing) existing.remove();
-
-  const footer = document.createElement('div');
-  footer.id = 'load-more-btn';
-  if (data.length === BIKES_PAGE_SIZE) {
-    footer.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
-  } else if (append && bikesOffset > BIKES_PAGE_SIZE) {
-    footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
-  } else {
-    // Første side med færre end BIKES_PAGE_SIZE — intet footer element nødvendigt
-    return;
-  }
-  grid.after(footer);
-}
-
-// Tjekker om der er aktive filtre (sidebar, hurtigfilter, søgning)
-function hasActiveFilters() {
-  const filtersSet = currentFilters && Object.keys(currentFilters).some(k => {
-    const v = currentFilters[k];
-    return v !== null && v !== undefined && v !== '' && v !== false;
-  });
-  const filterArgsSet = currentFilterArgs && (
-    (currentFilterArgs.types && currentFilterArgs.types.length > 0) ||
-    (currentFilterArgs.conditions && currentFilterArgs.conditions.length > 0) ||
-    (currentFilterArgs.wheelSizes && currentFilterArgs.wheelSizes.length > 0) ||
-    currentFilterArgs.minPrice ||
-    currentFilterArgs.maxPrice ||
-    currentFilterArgs.sellerType
-  );
-  return !!(filtersSet || filterArgsSet);
-}
-
-// Beskriver de aktive filtre i menneske-læsbar form
-function describeActiveFilters() {
-  const parts = [];
-  if (currentFilters?.search)    parts.push(`"${currentFilters.search}"`);
-  if (currentFilters?.type)      parts.push(currentFilters.type);
-  if (currentFilters?.city)      parts.push(currentFilters.city);
-  if (currentFilters?.maxPrice)  parts.push(`under ${currentFilters.maxPrice.toLocaleString('da-DK')} kr.`);
-  if (currentFilters?.warranty)  parts.push('med garanti');
-  if (currentFilters?.newOnly)   parts.push('nye annoncer');
-  if (currentFilters?.sellerType === 'dealer')  parts.push('forhandlere');
-  if (currentFilters?.sellerType === 'private') parts.push('private');
-
-  if (currentFilterArgs?.types?.length)      parts.push(currentFilterArgs.types.join(', '));
-  if (currentFilterArgs?.conditions?.length) parts.push(currentFilterArgs.conditions.join(', '));
-  if (currentFilterArgs?.wheelSizes?.length) parts.push(currentFilterArgs.wheelSizes.join(', '));
-  if (currentFilterArgs?.minPrice && currentFilterArgs?.maxPrice) {
-    parts.push(`${currentFilterArgs.minPrice.toLocaleString('da-DK')}–${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`);
-  } else if (currentFilterArgs?.minPrice) {
-    parts.push(`fra ${currentFilterArgs.minPrice.toLocaleString('da-DK')} kr.`);
-  } else if (currentFilterArgs?.maxPrice) {
-    parts.push(`under ${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`);
-  }
-  if (currentFilterArgs?.sellerType === 'dealer')  parts.push('forhandlere');
-  if (currentFilterArgs?.sellerType === 'private') parts.push('private');
-
-  return parts;
-}
-
-// Nulstil alle filtre — søgning, hurtigfilter-pills, sidebar
-function clearAllFilters() {
-  // Søgefelter
-  const s = document.getElementById('search-input'); if (s) s.value = '';
-  const t = document.getElementById('search-type');  if (t) t.value = '';
-  const c = document.getElementById('search-city');  if (c) c.value = '';
-
-  // Pills — sæt "Alle" aktiv, fjern resten
-  document.querySelectorAll('.filters-row .pill').forEach(p => {
-    const isAlle = (p.textContent || '').trim() === 'Alle';
-    p.classList.toggle('active', isAlle);
-    p.setAttribute('aria-pressed', isAlle ? 'true' : 'false');
-  });
-
-  // Sidebar checkboxes
-  document.querySelectorAll('.sidebar-box input[type="checkbox"]').forEach(cb => {
-    cb.checked = cb.dataset.value === 'all';
-  });
-
-  // Pris-felter
-  document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
-
-  currentFilters    = {};
-  currentFilterArgs = null;
-  loadBikes();
-  showToast('Filtre nulstillet');
-}
-
-function updateActiveFiltersBar() {
-  const bar = document.getElementById('active-filters-bar');
-  if (!bar) return;
-  if (!hasActiveFilters()) { bar.style.display = 'none'; return; }
-
-  const pills = [];
-
-  // Fra currentFilters (hurtigpills + søgning)
-  if (currentFilters?.search)    pills.push({ label: `"${currentFilters.search}"`, type: 'search' });
-  if (currentFilters?.city)      pills.push({ label: currentFilters.city, type: 'city' });
-  if (currentFilters?.type)      pills.push({ label: currentFilters.type, type: 'quick-type' });
-  if (currentFilters?.maxPrice)  pills.push({ label: `Under ${currentFilters.maxPrice.toLocaleString('da-DK')} kr.`, type: 'quick-price' });
-  if (currentFilters?.warranty)  pills.push({ label: 'Med garanti', type: 'quick-warranty' });
-  if (currentFilters?.newOnly)   pills.push({ label: 'Ny annonce', type: 'quick-newonly' });
-  if (currentFilters?.sellerType === 'dealer')  pills.push({ label: 'Kun forhandlere', type: 'quick-seller' });
-  if (currentFilters?.sellerType === 'private') pills.push({ label: 'Kun private', type: 'quick-seller' });
-
-  // Fra currentFilterArgs (sidebar)
-  for (const t of (currentFilterArgs?.types || []))      pills.push({ label: t, type: 'type', value: t });
-  for (const c of (currentFilterArgs?.conditions || [])) pills.push({ label: c, type: 'condition', value: c });
-  for (const w of (currentFilterArgs?.wheelSizes || [])) pills.push({ label: w, type: 'wheel', value: w });
-  if (currentFilterArgs?.minPrice && currentFilterArgs?.maxPrice) {
-    pills.push({ label: `${currentFilterArgs.minPrice.toLocaleString('da-DK')}–${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
-  } else if (currentFilterArgs?.minPrice) {
-    pills.push({ label: `Fra ${currentFilterArgs.minPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
-  } else if (currentFilterArgs?.maxPrice) {
-    pills.push({ label: `Under ${currentFilterArgs.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
-  }
-  if (currentFilterArgs?.sellerType === 'dealer')  pills.push({ label: 'Forhandlere', type: 'seller', value: 'dealer' });
-  if (currentFilterArgs?.sellerType === 'private') pills.push({ label: 'Private', type: 'seller', value: 'private' });
-
-  bar.style.display = 'flex';
-  bar.innerHTML = `
-    <div class="afb-pills">
-      ${pills.map(p => `<span class="afb-pill">${esc(p.label)}<button class="afb-pill-remove" onclick="removeFilterPill('${p.type}','${(p.value || '').replace(/'/g, "\\'")}')">✕</button></span>`).join('')}
-    </div>
-    <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
-  `;
-}
-
-function removeFilterPill(type, value) {
-  const resetQuickPills = () => {
-    document.querySelectorAll('.filters-row .pill').forEach(p => {
-      const isAlle = p.textContent.trim() === 'Alle';
-      p.classList.toggle('active', isAlle);
-      p.setAttribute('aria-pressed', isAlle ? 'true' : 'false');
-    });
-  };
-
-  switch (type) {
-    case 'search':
-      { const el = document.getElementById('search-input'); if (el) el.value = ''; }
-      currentFilters = { ...currentFilters, search: '' };
-      loadBikes(currentFilters);
-      break;
-    case 'city':
-      { const el = document.getElementById('search-city'); if (el) el.value = ''; }
-      currentFilters = { ...currentFilters, city: '' };
-      loadBikes(currentFilters);
-      break;
-    case 'quick-type':
-      currentFilters = { ...currentFilters, type: '' };
-      resetQuickPills();
-      loadBikes(currentFilters);
-      break;
-    case 'quick-price':
-      currentFilters = { ...currentFilters, maxPrice: null };
-      resetQuickPills();
-      loadBikes(currentFilters);
-      break;
-    case 'quick-warranty':
-      currentFilters = { ...currentFilters, warranty: false };
-      resetQuickPills();
-      loadBikes(currentFilters);
-      break;
-    case 'quick-newonly':
-      currentFilters = { ...currentFilters, newOnly: false };
-      resetQuickPills();
-      loadBikes(currentFilters);
-      break;
-    case 'quick-seller':
-      currentFilters = { ...currentFilters, sellerType: null };
-      resetQuickPills();
-      loadBikes(currentFilters);
-      break;
-    case 'type':
-      document.querySelectorAll(`[data-filter="type"][data-value="${value}"]`).forEach(cb => cb.checked = false);
-      applyFilters();
-      break;
-    case 'condition':
-      document.querySelectorAll(`[data-filter="condition"][data-value="${value}"]`).forEach(cb => cb.checked = false);
-      applyFilters();
-      break;
-    case 'wheel':
-      document.querySelectorAll(`[data-filter="wheel"][data-value="${value}"]`).forEach(cb => cb.checked = false);
-      applyFilters();
-      break;
-    case 'price':
-      document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
-      applyFilters();
-      break;
-    case 'seller':
-      document.querySelectorAll('[data-filter="seller"][data-value="all"]').forEach(cb => cb.checked = true);
-      document.querySelectorAll('[data-filter="seller"]:not([data-value="all"])').forEach(cb => cb.checked = false);
-      applyFilters();
-      break;
-  }
-}
-
-function renderListingsEmptyState() {
-  if (!hasActiveFilters()) {
-    return `
-      <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
-        <div style="font-size:4rem;margin-bottom:16px;">🚲</div>
-        <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler her endnu</h3>
-        <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge din cykel på Cykelbørsen — det er gratis og tager kun 2 minutter.</p>
-        <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Sæt din cykel til salg</button>
-      </div>`;
-  }
-
-  const filterDesc = describeActiveFilters();
-  const filterText = filterDesc.length > 0
-    ? `<p style="color:var(--muted);font-size:0.85rem;margin:0 auto 18px;max-width:380px;">Filtre: <strong style="color:var(--charcoal)">${esc(filterDesc.join(' · '))}</strong></p>`
-    : '';
-
-  return `
-    <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
-      <div style="font-size:3.5rem;margin-bottom:14px;">🔍</div>
-      <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler matcher dine filtre</h3>
-      <p style="color:var(--muted);font-size:0.92rem;max-width:380px;margin:0 auto 14px;line-height:1.55;">Prøv at fjerne et filter eller udvid dit søgekriterium.</p>
-      ${filterText}
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;">
-        <button onclick="clearAllFilters()" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Nulstil filtre</button>
-        <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🔔 Få besked når der dukker en op</button>
-      </div>
-    </div>`;
-}
-
-function renderBikes(bikes, append = false, saveCounts = {}, userSavedSet = new Set()) {
-  const grid = document.getElementById('listings-grid');
-
-  if (!append && (!bikes || bikes.length === 0)) {
-    grid.innerHTML = renderListingsEmptyState();
-    return;
-  }
-
-  if (!bikes || bikes.length === 0) return;
-
-  const startIndex = append ? grid.querySelectorAll('.bike-card').length : 0;
-  const conditionClass = c => {
-    if (c === 'Ny')        return 'condition-tag--ny';
-    if (c === 'Som ny')    return 'condition-tag--som-ny';
-    if (c === 'God stand') return 'condition-tag--god';
-    return 'condition-tag--brugt';
-  };
-
-  const html = bikes.map((b, i) => {
-    const profile    = b.profiles || {};
-    const sellerType = profile.seller_type || 'private';
-    const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
-    const initials   = getInitials(sellerName);
-    const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
-    const imgContent = primaryImg
-      ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
-      : '<span style="font-size:4rem">🚲</span>';
-    const avatarUrl  = safeAvatarUrl(profile.avatar_url);
-    const avatarHtml = avatarUrl
-      ? `<img src="${avatarUrl}" alt="">`
-      : esc(initials);
-
-    var isSold = !b.is_active;
-    var saveCount = saveCounts[b.id] || 0;
-    var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
-    var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
-    var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
-    const lastSeenCard = formatLastSeen(profile.last_seen);
-    return `
-      <div class="bike-card"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
-        <div class="bike-card-img">
-          ${imgContent}
-          ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
-          <div class="bike-card-badges">
-            <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
-            ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
-          </div>
-          ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
-          ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
-          ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
-        </div>
-        <div class="bike-card-body">
-          <div class="card-top">
-            <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-            <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
-          </div>
-          <div class="bike-meta">
-            <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${esc(b.size) || '–'}</span>
-          </div>
-          <div class="card-footer">
-            <div class="seller-avatar">${avatarHtml}</div>
-            <div class="card-seller-details">
-              <div class="card-seller-top">
-                <span class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</span>
-                <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
-                ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
-              </div>
-              <div class="card-seller-bottom">
-                <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
-                ${lastSeenCard ? `<span class="card-last-seen">${lastSeenCard}</span>` : ''}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-
-  if (append) {
-    grid.insertAdjacentHTML('beforeend', html);
-  } else {
-    grid.innerHTML = html;
-  }
-
-  // Hvis "Nær mig" er aktiv, re-filtrér + sortér efter afstand
-  if (userGeoCoords && activeRadius) applyNearMeFilter();
-}
-
-function searchBikes() {
-  const search = document.getElementById('search-input').value;
-  const type   = document.getElementById('search-type').value;
-  const city   = document.getElementById('search-city').value;
-  loadBikes({ search, type, city });
-}
 
 async function askIfAvailable(bikeId, sellerId, btn) {
   if (!currentUser) { openLoginModal(); return; }
@@ -1623,176 +705,6 @@ async function askIfAvailable(bikeId, sellerId, btn) {
   }).catch(() => {});
 }
 
-function toggleNearMe(pill) {
-  const isActive = pill.classList.contains('active');
-  const radiusSel = document.getElementById('nearme-radius');
-  if (isActive) {
-    pill.classList.remove('active');
-    if (radiusSel) radiusSel.style.display = 'none';
-    userGeoCoords = null;
-    activeRadius  = null;
-    // Fjern afstandstags
-    document.querySelectorAll('.nearme-dist').forEach(el => el.remove());
-    loadBikes(currentFilters);
-    return;
-  }
-  if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt i din browser'); return; }
-  showToast('📍 Henter din position...');
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      userGeoCoords = [pos.coords.latitude, pos.coords.longitude];
-      activeRadius  = parseInt(document.getElementById('nearme-radius').value || 20);
-      pill.classList.add('active');
-      if (radiusSel) radiusSel.style.display = 'inline-block';
-      // Deaktiver andre pills
-      document.querySelectorAll('.filters-row .pill.active:not(#pill-nearme)').forEach(p => p.classList.remove('active'));
-      applyNearMeFilter();
-    },
-    () => showToast('❌ Kunne ikke hente din position — tjek GPS-tilladelser')
-  );
-}
-
-function updateNearMeRadius(val) {
-  activeRadius = parseInt(val);
-  if (userGeoCoords) applyNearMeFilter();
-}
-
-async function applyNearMeFilter() {
-  if (!userGeoCoords || !activeRadius) return;
-  const grid = document.getElementById('listings-grid');
-  const cards = [...grid.querySelectorAll('.bike-card:not(.skeleton-card)')];
-  grid.querySelector('.nearme-empty')?.remove();
-
-  cards.forEach(c => c.style.opacity = '0.4');
-  showToast('📍 Filtrerer efter afstand...');
-
-  // Hent koordinater for hvert kort — præcis adresse for forhandlere, by for private
-  const resolved = await Promise.all(cards.map(async card => {
-    const city    = card.dataset.city || card.querySelector('.bike-city')?.textContent.trim() || '';
-    const address = card.dataset.address || '';
-    const isDealer = card.dataset.sellerType === 'dealer';
-
-    let coords = null;
-    let precise = false;
-    if (isDealer && address && city) {
-      coords = await geocodeAddress(address, city);
-      if (coords) precise = true;
-    }
-    if (!coords && city) {
-      coords = await geocodeCity(city);
-    }
-    if (!coords) return { card, km: null, precise: false };
-    const km = haversineKm(userGeoCoords, coords);
-    return { card, km, precise };
-  }));
-
-  // Filtrér inden for radius og sortér efter afstand
-  const within = resolved
-    .filter(r => r.km !== null && r.km <= activeRadius)
-    .sort((a, b) => a.km - b.km);
-  const outside = resolved.filter(r => r.km === null || r.km > activeRadius);
-
-  // Skjul dem uden for radius
-  outside.forEach(({ card }) => { card.style.display = 'none'; });
-
-  // Vis + opdatér distance-tag på dem inden for radius
-  within.forEach(({ card, km, precise }) => {
-    card.style.display = '';
-    card.style.opacity = '';
-    let distTag = card.querySelector('.nearme-dist');
-    if (!distTag) {
-      distTag = document.createElement('span');
-      distTag.className = 'nearme-dist';
-      card.querySelector('.bike-card-img')?.appendChild(distTag);
-    }
-    distTag.textContent = (precise ? '' : '~') + formatDistanceKm(km);
-    distTag.title = precise ? 'Præcis afstand (forhandler-adresse)' : 'Ca. afstand (by-center)';
-  });
-
-  // Reordne DOM så nærmeste kort vises først
-  within.forEach(({ card }) => grid.appendChild(card));
-
-  if (within.length === 0) {
-    const el = document.createElement('div');
-    el.className = 'nearme-empty empty-state-box';
-    el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${activeRadius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
-    grid.appendChild(el);
-  }
-  showToast(`📍 ${within.length} ${within.length === 1 ? 'cykel' : 'cykler'} inden for ${activeRadius} km`);
-}
-
-function sortBikes(value) {
-  const grid  = document.getElementById('listings-grid');
-  const cards = [...grid.querySelectorAll('.bike-card')];
-  cards.sort((a, b) => {
-    const pA = parseInt(a.querySelector('.bike-price').textContent.replace(/\D/g, ''));
-    const pB = parseInt(b.querySelector('.bike-price').textContent.replace(/\D/g, ''));
-    if (value === 'price_asc')  return pA - pB;
-    if (value === 'price_desc') return pB - pA;
-    return 0;
-  });
-  cards.forEach(c => grid.appendChild(c));
-}
-
-/* ============================================================
-   FILTER TÆLLER
-   ============================================================ */
-
-async function updateFilterCounts(data, dealerCount) {
-  if (!data) {
-    const [bikesRes, dealerRes] = await Promise.all([
-      supabase.from('bikes').select('type, condition, wheel_size, profiles(seller_type)').eq('is_active', true),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
-    ]);
-    if (bikesRes.error || !bikesRes.data) {
-      const { data: fallback } = await supabase.from('bikes').select('type, condition, profiles(seller_type)').eq('is_active', true);
-      if (!fallback) return;
-      data = fallback;
-    } else {
-      data = bikesRes.data;
-    }
-    dealerCount = dealerRes?.count ?? null;
-  }
-
-  const total    = data.length;
-  const dealers  = data.filter(b => b.profiles?.seller_type === 'dealer').length;
-  const privates = data.filter(b => b.profiles?.seller_type !== 'dealer').length;
-
-  setCount('seller', 'all',           total);
-  setCount('seller', 'dealer',        dealers);
-  setCount('seller', 'private',       privates);
-  setCount('type',   'Racercykel',    data.filter(b => b.type === 'Racercykel').length);
-  setCount('type',   'Mountainbike',  data.filter(b => b.type === 'Mountainbike').length);
-  setCount('type',   'El-cykel',      data.filter(b => b.type === 'El-cykel').length);
-  setCount('type',   'Citybike',      data.filter(b => b.type === 'Citybike').length);
-  setCount('type',   'Ladcykel',      data.filter(b => b.type === 'Ladcykel').length);
-  setCount('type',   'Børnecykel',    data.filter(b => b.type === 'Børnecykel').length);
-  setCount('type',   'Gravel',        data.filter(b => b.type === 'Gravel').length);
-  setCount('condition', 'Ny',         data.filter(b => b.condition === 'Ny').length);
-  setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
-  setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
-  setCount('condition', 'Brugt',      data.filter(b => b.condition === 'Brugt').length);
-  setCount('wheel',  '26"',           data.filter(b => b.wheel_size === '26"').length);
-  setCount('wheel',  '27.5" / 650b',  data.filter(b => b.wheel_size === '27.5" / 650b').length);
-  setCount('wheel',  '28"',           data.filter(b => b.wheel_size === '28"').length);
-  setCount('wheel',  '29"',           data.filter(b => b.wheel_size === '29"').length);
-
-  const countEl   = document.getElementById('listings-count');
-  const statTotal = document.getElementById('stat-total');
-  if (countEl)   countEl.textContent   = `${total} cykler til salg`;
-  if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
-
-  const statDealers = document.getElementById('stat-dealers');
-  if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
-}
-
-function setCount(filterAttr, filterValue, count) {
-  document.querySelectorAll(`[data-filter="${filterAttr}"]`).forEach(input => {
-    if (input.dataset.value !== filterValue) return;
-    const countEl = input.closest('.filter-option')?.querySelector('.filter-count');
-    if (countEl) countEl.textContent = count > 0 ? count.toLocaleString('da-DK') : '0';
-  });
-}
 
 /* ============================================================
    GEM / FJERN ANNONCE
@@ -1833,26 +745,6 @@ async function toggleSave(btn, bikeId) {
   }
 }
 
-/* ============================================================
-   FILTER PILLS
-   ============================================================ */
-
-function togglePill(el) {
-  document.querySelectorAll('.pill').forEach(p => {
-    p.classList.remove('active');
-    p.setAttribute('aria-pressed', 'false');
-  });
-  el.classList.add('active');
-  el.setAttribute('aria-pressed', 'true');
-  const text = el.textContent.trim();
-  if      (text === 'Alle')            loadBikes();
-  else if (text === 'El-cykler')       loadBikes({ type: 'El-cykel' });
-  else if (text === 'Kun forhandlere') loadBikes({ sellerType: 'dealer' });
-  else if (text === 'Kun private')     loadBikes({ sellerType: 'private' });
-  else if (text === 'Under 3.000 kr') loadBikes({ maxPrice: 3000 });
-  else if (text === 'Med garanti')     loadBikes({ warranty: true });
-  else if (text === 'Ny annonce')      loadBikes({ newOnly: true });
-}
 
 // Keyboard-aktivering af filterpills (Enter/Space)
 document.querySelectorAll('.pill').forEach(pill => {
@@ -2056,90 +948,19 @@ async function submitSellPage() {
    LOGIN MODAL
    ============================================================ */
 
-function openLoginModal() {
-  document.getElementById('login-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  enableFocusTrap('login-modal');
-}
-function closeLoginModal() {
-  document.getElementById('login-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  disableFocusTrap('login-modal');
-}
+const {
+  openLoginModal,
+  closeLoginModal,
+  switchTab,
+  handleForgotPassword,
+  signInWithGoogle,
+  handleLogin,
+  handleRegister,
+} = createAuthActions({ supabase, showToast, btnLoading, enableFocusTrap, disableFocusTrap });
+
 document.getElementById('login-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeLoginModal();
 });
-
-function switchTab(tab) {
-  // Fane-knapper kun for login/register
-  document.getElementById('tab-login').classList.toggle('selected', tab === 'login');
-  document.getElementById('tab-register').classList.toggle('selected', tab === 'register');
-
-  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
-  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('form-forgot').style.display   = tab === 'forgot'   ? 'block' : 'none';
-
-  // Opdater modal-titel
-  const titles = { login: 'Log ind', register: 'Opret konto', forgot: 'Glemt adgangskode' };
-  document.querySelector('#login-modal .modal-header h2').textContent = titles[tab] || 'Log ind';
-}
-
-async function handleForgotPassword() {
-  const email = document.getElementById('forgot-email').value.trim();
-  if (!email) { showToast('⚠️ Indtast din email'); return; }
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://xn--cykelbrsen-5cb.dk/',
-  });
-
-  if (error) {
-    showToast('❌ Kunne ikke sende link – tjek emailen');
-  } else {
-    closeLoginModal();
-    showToast('✅ Tjek din email for nulstillingslinket');
-  }
-}
-
-async function signInWithGoogle() {
-  await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: 'https://xn--cykelbrsen-5cb.dk/' },
-  });
-}
-
-
-async function handleLogin() {
-  const email    = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-  if (!email || !password) { showToast('⚠️ Udfyld email og adgangskode'); return; }
-  const restore = btnLoading('login-btn', 'Logger ind...');
-  try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) showToast('❌ Forkert email eller adgangskode');
-    else { closeLoginModal(); showToast('✅ Du er nu logget ind'); }
-  } finally { restore(); }
-}
-
-async function handleRegister() {
-  const name     = document.getElementById('register-name').value;
-  const email    = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
-  if (!name || !email || !password) { showToast('⚠️ Udfyld alle felter'); return; }
-  if (password.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
-  const restore = btnLoading('register-btn', 'Opretter konto...');
-  try {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name },
-        emailRedirectTo: window.location.origin,
-      },
-    });
-    if (error) showToast('❌ ' + error.message);
-    else { closeLoginModal(); showToast('✅ Tjek din email for at bekræfte kontoen'); }
-  } finally { restore(); }
-}
 
 /* ============================================================
    PROFIL MODAL
@@ -2365,424 +1186,6 @@ async function uploadAvatar(file) {
   showToast('✅ Profilbillede opdateret!');
 }
 
-// Reload listings i den rette kontekst (page vs modal)
-function reloadMyListings() {
-  if (document.getElementById('mp-listings-grid')) loadMyListings('mp-listings-grid');
-  else loadMyListings();
-}
-
-async function loadMyListings(containerId = 'my-listings-grid') {
-  if (!currentUser) return;
-  const grid = document.getElementById(containerId);
-  let data, error;
-  try {
-    ({ data, error } = await supabase
-      .from('bikes')
-      .select('*, bike_images(url, is_primary)')
-      .eq('user_id', currentUser.id)
-      .order('created_at', { ascending: false }));
-  } catch (e) {
-    grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'loadMyListings');
-    return;
-  }
-
-  // Opdatér annonce-tæller i stats-boksen (kun på #/me page)
-  const statEl = document.getElementById('mp-stat-active');
-  if (statEl) statEl.textContent = data ? data.filter(b => b.is_active).length : 0;
-  const countEl = document.getElementById('mp-count-listings');
-  if (countEl) countEl.textContent = data ? data.length : 0;
-
-  if (error || !data || data.length === 0) {
-    grid.innerHTML = `<div class="empty-state-box">
-      <div class="empty-state-icon">🚲</div>
-      <h3 class="empty-state-title">Ingen annoncer endnu</h3>
-      <p class="empty-state-sub">Sæt din første cykel til salg — det tager under 2 minutter.</p>
-      <button class="empty-state-cta" onclick="openModal()">+ Sæt til salg</button>
-    </div>`;
-    return;
-  }
-
-  // Brug marketplace-kortlayout på page, simpelt row-layout i modal
-  const isPage = containerId === 'mp-listings-grid';
-
-  try {
-    grid.innerHTML = data.map(b => {
-      const isSold = !b.is_active;
-      const views  = b.views || 0;
-      const daysOld = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
-      const isOld  = !isSold && daysOld >= 30;
-
-      if (isPage) {
-        const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
-        const statusLabel = isSold ? 'Solgt' : isOld ? `${daysOld}d gammel` : 'Aktiv';
-        const statusClass = isSold ? 'mp-status--sold' : isOld ? 'mp-status--old' : 'mp-status--active';
-        const priceStr = (b.price || 0).toLocaleString('da-DK') + ' kr.';
-        const svgEye    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
-        const svgEditSm = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
-        return `
-          <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
-            <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
-              ${imgUrl
-                ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
-                : `<div class="mp-listing-thumb--empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`}
-              <span class="mp-status-badge ${statusClass}">${statusLabel}</span>
-            </div>
-            <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
-              <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}</div>
-              <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
-              <div class="mp-listing-stats-row">
-                <span class="mp-listing-stat">${svgEye} ${views.toLocaleString('da-DK')} visninger</span>
-              </div>
-              <div class="mp-listing-price mp-price-mobile">${priceStr}</div>
-            </div>
-            <div class="mp-listing-aside">
-              <div class="mp-listing-price">${priceStr}</div>
-              <div class="mp-listing-actions">
-                <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
-                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
-                ${!isSold
-                  ? `<button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
-                  : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
-                <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
-              </div>
-            </div>
-            <div class="mp-listing-actions-mobile">
-              <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
-              <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
-              ${!isSold
-                ? `<button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
-                : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
-            </div>
-          </div>`;
-      }
-
-      // Modal-layout (kompakt)
-      return `<div class="my-listing-row" style="${isSold ? 'opacity:0.65' : ''}">
-        <div class="my-listing-info">
-          <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
-          <div class="my-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
-          <div class="my-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
-        </div>
-        <div class="my-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          ${!isSold ? `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : `<button class="btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
-          <button class="btn-edit" onclick="openEditModal('${b.id}')">✏️</button>
-          <button class="btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
-        </div>
-      </div>`;
-    }).join('');
-  } catch (renderErr) {
-    console.error('Fejl ved rendering af mine annoncer:', renderErr);
-    grid.innerHTML = retryHTML('Kunne ikke vise annoncer.', 'loadMyListings');
-  }
-}
-
-async function deleteListing(id) {
-  if (!confirm('Er du sikker på at du vil slette denne annonce?')) return;
-  const { error } = await supabase.from('bikes').delete().eq('id', id);
-  if (error) { showToast('❌ Kunne ikke slette annonce'); return; }
-  showToast('🗑️ Annonce slettet');
-  reloadMyListings();
-  loadBikes();
-  updateFilterCounts();
-}
-
-async function loadSavedListings(containerId = 'my-saved-grid') {
-  if (!currentUser) return;
-  const grid = document.getElementById(containerId);
-  let data, error;
-  try {
-    ({ data, error } = await supabase
-      .from('saved_bikes')
-      .select('bike_id, bikes(brand, model, price, type, city, condition, is_active, bike_images(url, is_primary))')
-      .eq('user_id', currentUser.id));
-  } catch (e) {
-    grid.innerHTML = retryHTML('Kunne ikke hente gemte annoncer.', 'loadSavedListings');
-    return;
-  }
-  const savedStat = document.getElementById('mp-stat-saved');
-  if (savedStat) savedStat.textContent = data ? data.length : 0;
-  const savedCount = document.getElementById('mp-count-saved');
-  if (savedCount) savedCount.textContent = data ? data.length : 0;
-
-  if (error || !data || data.length === 0) {
-    grid.innerHTML = '<p style="color:var(--muted)">Du har ikke gemt nogen annoncer endnu.</p>';
-    return;
-  }
-
-  grid.className = 'saved-cards-grid';
-  grid.innerHTML = data.map(s => {
-    const b = s.bikes;
-    if (!b) return '';
-    const imgs    = b.bike_images || [];
-    const primary = imgs.find(i => i.is_primary) || imgs[0];
-    const imgHtml = primary
-      ? `<img src="${primary.url}" alt="${esc(b.brand)} ${esc(b.model)}" class="saved-card-img" loading="lazy">`
-      : `<div class="saved-card-img-placeholder">🚲</div>`;
-    const isSold = b.is_active === false;
-    return `
-      <div class="saved-card${isSold ? ' saved-card--sold' : ''}" onclick="navigateToBike('${s.bike_id}')">
-        <div class="saved-card-thumb">
-          ${imgHtml}
-          ${isSold ? '<span class="saved-card-sold-badge">Solgt</span>' : ''}
-          <button class="saved-card-remove" onclick="event.stopPropagation();removeSaved('${s.bike_id}',this)" title="Fjern fra gemte">♡</button>
-        </div>
-        <div class="saved-card-body">
-          <div class="saved-card-title">${esc(b.brand)} ${esc(b.model)}</div>
-          <div class="saved-card-meta">${esc(b.type)} · ${esc(b.city)}</div>
-          <div class="saved-card-price">${b.price ? b.price.toLocaleString('da-DK') + ' kr.' : '–'}</div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-async function removeSaved(bikeId, btn) {
-  if (!currentUser) return;
-  const { error } = await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
-  if (error) { showToast('❌ Kunne ikke fjerne annonce'); return; }
-  showToast('Fjernet fra gemte');
-  const card = btn.closest('.saved-card');
-  if (card) card.remove();
-  const grid = document.getElementById('mp-saved-grid') || document.getElementById('my-saved-grid');
-  if (grid && !grid.querySelector('.saved-card')) {
-    grid.innerHTML = '<p style="color:var(--muted)">Du har ikke gemt nogen annoncer endnu.</p>';
-  }
-}
-
-/* ============================================================
-   GEMTE SØGNINGER
-   ============================================================ */
-
-// Fire-and-forget: send match-notifikationer til brugere med gemte søgninger
-async function notifySavedSearches(newBike) {
-  try {
-    // Hent fuld bike-payload inkl. profiles.seller_type + primært billede
-    const { data: full } = await supabase
-      .from('bikes')
-      .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, profiles(seller_type), bike_images(url, is_primary)')
-      .eq('id', newBike.id)
-      .single();
-    if (!full) return;
-    const primaryImage = full.bike_images?.find(i => i.is_primary)?.url || full.bike_images?.[0]?.url || null;
-    supabase.functions.invoke('notify-saved-searches', {
-      body: {
-        bike: {
-          id:          full.id,
-          brand:       full.brand,
-          model:       full.model,
-          type:        full.type,
-          city:        full.city,
-          price:       full.price,
-          condition:   full.condition,
-          wheel_size:  full.wheel_size,
-          warranty:    full.warranty,
-          year:        full.year,
-          size:        full.size,
-          seller_type: full.profiles?.seller_type || 'private',
-          image:       primaryImage,
-        },
-      },
-    }).catch(() => {});
-  } catch (_) { /* silent */ }
-}
-
-async function saveCurrentSearch() {
-  if (!currentUser) { showToast('⚠️ Log ind for at gemme søgninger'); return; }
-
-  const search = document.getElementById('search-input').value.trim();
-  const type   = document.getElementById('search-type').value;
-  const city   = document.getElementById('search-city').value;
-
-  // Include sidebar filter state + hurtigfilter-state (warranty pill m.m.)
-  const fa       = currentFilterArgs || {};
-  const cf       = currentFilters || {};
-  const warranty = !!cf.warranty;
-  const hasFilters = search || type || city
-    || (fa.types?.length > 0)
-    || (fa.conditions?.length > 0)
-    || fa.minPrice || fa.maxPrice
-    || fa.sellerType
-    || (fa.wheelSizes?.length > 0)
-    || warranty;
-
-  if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
-
-  // Build a readable name from all active filters
-  const parts = [];
-  if (search)                    parts.push(search);
-  if (type)                      parts.push(type);
-  if (fa.types?.length)          parts.push(...fa.types);
-  if (fa.sellerType === 'dealer')  parts.push('Forhandlere');
-  if (fa.sellerType === 'private') parts.push('Private');
-  if (fa.conditions?.length)     parts.push(...fa.conditions);
-  if (fa.wheelSizes?.length)     parts.push(...fa.wheelSizes.map(w => 'Hjul ' + w));
-  if (warranty)                  parts.push('Med garanti');
-  if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
-  if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
-  if (city)                      parts.push(city);
-  const name = parts.join(' · ') || 'Min søgning';
-
-  const { error } = await supabase.from('saved_searches').insert({
-    user_id: currentUser.id,
-    name,
-    filters: { search, type, city, warranty, ...fa },
-  });
-
-  if (error) { showToast('❌ Kunne ikke gemme søgning'); return; }
-  showToast('🔔 Søgning gemt! Du finder den under "Søgninger" i din profil.');
-
-  const btn = document.getElementById('save-search-btn');
-  if (btn) { btn.style.color = 'var(--rust)'; btn.style.borderColor = 'var(--rust)'; setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 2000); }
-}
-
-async function loadSavedSearches(containerId = 'my-searches-list') {
-  if (!currentUser) return;
-  const list = document.getElementById(containerId);
-  let data, error;
-  try {
-    ({ data, error } = await supabase
-      .from('saved_searches')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .order('created_at', { ascending: false }));
-  } catch (e) {
-    list.innerHTML = retryHTML('Kunne ikke hente gemte søgninger.', 'loadSavedSearches');
-    return;
-  }
-
-  if (error) { list.innerHTML = retryHTML('Kunne ikke hente gemte søgninger.', 'loadSavedSearches'); return; }
-  const searchCountEl = document.getElementById('mp-count-searches');
-  if (searchCountEl) searchCountEl.textContent = data ? data.length : 0;
-  if (!data || data.length === 0) {
-    list.innerHTML = `<p style="color:var(--muted)">Ingen gemte søgninger endnu. Brug 🔔 knappen ved søgefeltet for at gemme en søgning.</p>`;
-    return;
-  }
-
-  list.innerHTML = data.map(s => {
-    const f = s.filters || {};
-    const tags = [f.search, f.type, f.city].filter(Boolean).map(t =>
-      `<span style="background:var(--border);border-radius:4px;padding:2px 8px;font-size:0.75rem;">${esc(t)}</span>`
-    ).join(' ');
-    return `
-      <div class="my-listing-row">
-        <div class="my-listing-info" style="cursor:pointer;" onclick="applySavedSearch('${s.id}')">
-          <div class="my-listing-title">${esc(s.name)}</div>
-          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">${tags}</div>
-          <div class="my-listing-meta" style="margin-top:4px;">${new Date(s.created_at).toLocaleDateString('da-DK', { day:'numeric', month:'short', year:'numeric' })}</div>
-        </div>
-        <button class="btn-delete" onclick="deleteSavedSearch('${s.id}', this)" title="Slet søgning">🗑️</button>
-      </div>`;
-  }).join('');
-}
-
-async function applySavedSearch(searchId) {
-  const { data } = await supabase.from('saved_searches').select('filters').eq('id', searchId).single();
-  if (!data) return;
-  const f = data.filters || {};
-
-  // Udfyld søgefelter
-  const inp  = document.getElementById('search-input');
-  const type = document.getElementById('search-type');
-  const city = document.getElementById('search-city');
-  if (inp)  inp.value  = f.search || '';
-  if (type) type.value = f.type   || '';
-  if (city) city.value = f.city   || '';
-
-  // Luk profil-modal og søg
-  closeProfileModal();
-  searchBikes();
-  showToast('🔍 Søgning genaktiveret');
-}
-
-async function deleteSavedSearch(id, btn) {
-  const { error } = await supabase.from('saved_searches').delete().eq('id', id).eq('user_id', currentUser.id);
-  if (error) { showToast('❌ Kunne ikke slette søgning'); return; }
-  btn.closest('.my-listing-row').remove();
-  showToast('Søgning slettet');
-  const list = document.getElementById('my-searches-list');
-  if (list && !list.querySelector('.my-listing-row')) {
-    list.innerHTML = `<p style="color:var(--muted)">Ingen gemte søgninger endnu.</p>`;
-  }
-}
-
-/* ============================================================
-   HANDELSHISTORIK
-   ============================================================ */
-
-async function loadTradeHistory(containerId = 'trade-history-list') {
-  if (!currentUser) return;
-  const list = document.getElementById(containerId);
-
-  try {
-    // Find alle beskeder med "accepteret" der involverer den aktuelle bruger
-    const { data: tradeMessages, error } = await supabase
-      .from('messages')
-      .select('id, bike_id, sender_id, receiver_id, content, created_at')
-      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-      .ilike('content', '%accepteret%')
-      .order('created_at', { ascending: false });
-
-    if (error) { list.innerHTML = retryHTML('Kunne ikke hente handelshistorik.', 'loadTradeHistory'); return; }
-    const tradesStat = document.getElementById('mp-stat-trades');
-    const tradesCount = new Set(tradeMessages ? tradeMessages.map(m => m.bike_id) : []).size;
-    if (tradesStat) tradesStat.textContent = tradesCount;
-    const tradesCountEl = document.getElementById('mp-count-trades');
-    if (tradesCountEl) tradesCountEl.textContent = tradesCount;
-    if (!tradeMessages || tradeMessages.length === 0) {
-      list.innerHTML = '<p style="color:var(--muted)">Ingen gennemførte handler endnu.</p>';
-      return;
-    }
-
-    // Dedupliker pr. bike_id (kun nyeste trade-besked pr. cykel)
-    const seen = new Set();
-    const uniqueTrades = tradeMessages.filter(m => {
-      if (seen.has(m.bike_id)) return false;
-      seen.add(m.bike_id);
-      return true;
-    });
-
-    // Hent bike-info og modparts profil
-    const bikeIds  = uniqueTrades.map(m => m.bike_id);
-    const otherIds = uniqueTrades.map(m => m.sender_id === currentUser.id ? m.receiver_id : m.sender_id);
-
-    const [bikesRes, profilesRes] = await Promise.all([
-      supabase.from('bikes').select('id, brand, model, price, type, bike_images(url, is_primary)').in('id', bikeIds),
-      supabase.from('profiles').select('id, name, shop_name, seller_type').in('id', [...new Set(otherIds)]),
-    ]);
-
-    const bikesMap    = {};
-    const profilesMap = {};
-    (bikesRes.data || []).forEach(b => bikesMap[b.id] = b);
-    (profilesRes.data || []).forEach(p => profilesMap[p.id] = p);
-
-    list.innerHTML = uniqueTrades.map(trade => {
-      const bike     = bikesMap[trade.bike_id] || {};
-      const otherId  = trade.sender_id === currentUser.id ? trade.receiver_id : trade.sender_id;
-      const other    = profilesMap[otherId] || {};
-      const otherName = other.seller_type === 'dealer' ? other.shop_name : other.name;
-      const isSeller  = trade.sender_id === currentUser.id;
-      const date       = new Date(trade.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
-      const img        = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
-
-      return `
-        <div class="trade-row">
-          <div class="trade-img" onclick="openBikeModal('${trade.bike_id}')">
-            ${img ? `<img src="${img}" alt="" loading="lazy">` : '<span style="font-size:1.5rem">🚲</span>'}
-          </div>
-          <div class="trade-info">
-            <div class="trade-title">${esc(bike.brand || '')} ${esc(bike.model || '')}</div>
-            <div class="trade-meta">${isSeller ? 'Solgt til' : 'Købt fra'} <strong onclick="navigateToProfile('${otherId}')" style="cursor:pointer;color:var(--rust);">${esc(otherName || 'Ukendt')}</strong></div>
-            <div class="trade-date">${date}</div>
-          </div>
-          <div class="trade-price">${bike.price ? bike.price.toLocaleString('da-DK') + ' kr.' : ''}</div>
-          <span class="trade-status">✅ Gennemført</span>
-        </div>`;
-    }).join('');
-  } catch (e) {
-    console.error('loadTradeHistory fejl:', e);
-    list.innerHTML = retryHTML('Kunne ikke hente handelshistorik.', 'loadTradeHistory');
-  }
-}
 
 /* ============================================================
    LOGOUT
@@ -6260,58 +4663,6 @@ const debouncedLoadFilters = debounce(
 let filterOffset       = 0;
 let currentFilterArgs  = null;
 
-async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [] } = {}, append = false) {
-  const grid = document.getElementById('listings-grid');
-
-  if (!append) {
-    filterOffset      = 0;
-    currentFilterArgs = { types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes };
-    grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
-    const old = document.getElementById('load-more-btn');
-    if (old) old.remove();
-  }
-
-  let query = supabase
-    .from('bikes')
-    .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-    .range(filterOffset, filterOffset + BIKES_PAGE_SIZE - 1);
-
-  if (types.length > 0)      query = query.in('type', types);
-  if (conditions.length > 0) query = query.in('condition', conditions);
-  if (minPrice)              query = query.gte('price', minPrice);
-  if (maxPrice)              query = query.lte('price', maxPrice);
-  if (dealerId)              query = query.eq('user_id', dealerId);
-  if (wheelSizes.length > 0) query = query.in('wheel_size', wheelSizes);
-  if (sellerType && !dealerId) query = query.eq('profiles.seller_type', sellerType);
-
-  const { data, error } = await query;
-  if (error) {
-    grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'applyFilters');
-    return;
-  }
-
-  renderBikes(data || [], append);
-  updateActiveFiltersBar();
-  filterOffset += (data || []).length;
-
-  // "Vis flere"-knap
-  const existing = document.getElementById('load-more-btn');
-  if (existing) existing.remove();
-
-  if ((data || []).length === BIKES_PAGE_SIZE) {
-    const btn = document.createElement('div');
-    btn.id = 'load-more-btn';
-    btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
-    grid.after(btn);
-  } else if (append && filterOffset > BIKES_PAGE_SIZE) {
-    const msg = document.createElement('div');
-    msg.id = 'load-more-btn';
-    msg.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
-    grid.after(msg);
-  }
-}
 
 
 /* ============================================================
