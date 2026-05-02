@@ -8,6 +8,7 @@
   --rust-light:   #E8694A;
   --forest:       #2A3D2E;
   --forest-light: #3D5942;
+  --forest-2:     #1F2E22;
   --cream:        #FEFAF3;
   --charcoal:     #1A1A18;
   --muted:        #8A8578;
@@ -53,12 +54,12 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 48px;
-  background: var(--forest);
+  padding: 16px 48px;
+  background: var(--forest-light);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.18);
+  border-bottom: 1px solid rgba(0,0,0,0.22);
 }
 .logo {
   font-family: 'Fraunces', serif;
@@ -83,10 +84,12 @@ nav {
   background: var(--rust);
   color: #fff !important;
   opacity: 1 !important;
-  padding: 10px 22px;
-  border-radius: 4px;
-  font-weight: 500 !important;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600 !important;
+  font-size: 0.88rem !important;
   transition: background 0.2s !important;
+  box-shadow: 0 4px 14px -3px rgba(200,80,42,0.5);
 }
 .btn-sell:hover { background: var(--rust-light) !important; }
 
@@ -125,7 +128,7 @@ nav {
   min-width: 16px; height: 16px;
   display: flex; align-items: center; justify-content: center;
   padding: 0 3px;
-  border: 2px solid var(--forest);
+  border: 2px solid var(--forest-light);
   line-height: 1;
 }
 
@@ -302,10 +305,11 @@ nav {
 
 /* ── HERO + SØGEBAR ── */
 .search-section {
-  background: linear-gradient(180deg, var(--forest) 0%, var(--forest) 55%, transparent 100%),
-              var(--sand);
-  padding: 48px 48px 52px;
-  border-bottom: none;
+  background: var(--forest-light);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0, transparent 50%),
+    radial-gradient(circle at 80% 100%, rgba(200,80,42,0.10) 0, transparent 55%);
+  padding: 52px 48px 56px;
 }
 .search-hero-text { text-align: center; margin-bottom: 28px; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
@@ -322,23 +326,23 @@ nav {
   background: #7ac97a; box-shadow: 0 0 8px #7ac97a;
 }
 .search-hero-title {
-  font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 700;
-  color: var(--sand); line-height: 1.05; letter-spacing: -0.03em;
-  margin: 0 0 10px;
+  font-family: 'Fraunces', serif; font-size: 3.4rem; font-weight: 400;
+  color: var(--sand); line-height: 1.02; letter-spacing: -0.04em;
+  margin: 0 0 12px; text-wrap: balance;
 }
 .search-hero-title em {
-  font-style: italic; color: var(--rust-light); font-weight: 700;
+  font-style: italic; color: var(--rust-light); font-weight: 500;
 }
 .search-hero-sub {
-  color: rgba(245,240,232,0.72); font-size: 0.98rem;
-  line-height: 1.5; max-width: 540px; margin: 0 auto;
+  color: rgba(245,240,232,0.70); font-size: 0.97rem;
+  line-height: 1.5; max-width: 480px; margin: 0 auto;
 }
 .search-bar-wrap { max-width: 920px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
   background: var(--cream); border-radius: 999px;
   padding: 7px 7px 7px 7px;
-  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3), 0 0 0 1px rgba(26,26,24,0.06);
+  box-shadow: 0 24px 50px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(26,26,24,0.05);
   overflow: hidden;
 }
 .search-bar-field {
@@ -393,19 +397,20 @@ nav {
 
 /* ── HURTIGFILTER ── */
 .filters-row {
-  padding: 12px 48px; background: var(--sand);
-  border-bottom: 1px solid var(--border);
+  padding: 14px 48px 20px;
+  background: var(--forest-light);
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
 }
-.filters-label { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-right: 4px; }
+.filters-label { font-size: 0.8rem; color: rgba(245,240,232,0.55); font-weight: 500; margin-right: 4px; }
 .pill {
-  padding: 5px 14px; border-radius: 100px;
-  border: 1.5px solid var(--border);
+  padding: 7px 14px; border-radius: 100px;
+  border: 1.5px solid rgba(245,240,232,0.18);
   font-size: 0.8rem; cursor: pointer;
-  background: var(--cream); color: var(--charcoal);
+  background: rgba(245,240,232,0.06); color: var(--sand);
   font-weight: 500; transition: all 0.15s; user-select: none;
 }
-.pill:hover, .pill.active { background: var(--forest); color: var(--sand); border-color: var(--forest); }
+.pill:hover { background: rgba(245,240,232,0.14); border-color: rgba(245,240,232,0.28); }
+.pill.active { background: var(--cream); color: var(--charcoal); border-color: var(--cream); }
 
 /* ── MAIN LAYOUT ── */
 .main {

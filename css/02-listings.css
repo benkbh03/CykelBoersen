@@ -225,3 +225,51 @@
 .dealer-city { font-size: 0.8rem; color: var(--muted); }
 .dealer-count { font-size: 0.78rem; color: var(--rust); margin-top: 8px; font-weight: 500; }
 
+
+/* ── SÆLG CTA BANNER ── */
+.sell-cta-section {
+  background: var(--cream);
+  padding: 20px 48px 56px;
+}
+.sell-cta-inner {
+  max-width: 1300px; margin: 0 auto;
+  background: var(--forest-light); color: var(--sand);
+  border-radius: 18px; padding: 36px 44px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 32px; align-items: center;
+  position: relative; overflow: hidden;
+}
+.sell-cta-inner::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: rgba(200,80,42,0.20); filter: blur(50px);
+  pointer-events: none;
+}
+.sell-cta-label {
+  font-size: 0.7rem; font-weight: 600; color: var(--rust-light);
+  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
+}
+.sell-cta-headline {
+  font-family: 'Fraunces', serif; font-weight: 400; font-size: 1.75rem;
+  letter-spacing: -0.04em; margin: 0 0 8px; line-height: 1.15; color: var(--sand);
+}
+.sell-cta-headline em { font-style: italic; font-weight: 500; color: var(--rust-light); }
+.sell-cta-sub {
+  font-size: 0.9rem; opacity: 0.72; margin: 0; line-height: 1.5; max-width: 540px;
+}
+.sell-cta-btn {
+  background: var(--rust); color: #fff; border: none;
+  padding: 14px 24px; border-radius: 10px; font-size: 0.9rem;
+  font-weight: 600; font-family: 'DM Sans', sans-serif;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 6px 18px -4px rgba(200,80,42,0.55);
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+  white-space: nowrap; position: relative;
+}
+.sell-cta-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
+@media (max-width: 768px) {
+  .sell-cta-section { padding: 16px 16px 48px; }
+  .sell-cta-inner { grid-template-columns: 1fr; padding: 28px 24px; gap: 20px; }
+  .sell-cta-headline { font-size: 1.45rem; }
+  .sell-cta-btn { width: 100%; justify-content: center; }
+}

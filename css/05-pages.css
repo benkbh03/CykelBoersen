@@ -434,7 +434,7 @@
   .stat-bar-num { font-size: 1.1rem; }
   .search-section { padding: 26px 16px 36px; }
   .search-hero-text { margin-bottom: 18px; }
-  .search-hero-title { font-size: 1.55rem; letter-spacing: -0.02em; }
+  .search-hero-title { font-size: 1.75rem; letter-spacing: -0.03em; }
   .search-hero-sub { font-size: 0.85rem; }
   .search-hero-pill { font-size: 0.68rem; padding: 4px 10px; margin-bottom: 12px; }
   .search-bar-wrap { flex-direction: column; gap: 8px; }
@@ -464,10 +464,9 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     position: sticky;
-    top: 52px;
+    top: 51px;
     z-index: 89;
-    background: var(--sand);
-    border-bottom: 1px solid var(--border);
+    background: var(--forest-light);
   }
   .filters-row::-webkit-scrollbar { display: none; }
   .filters-label { display: none; }

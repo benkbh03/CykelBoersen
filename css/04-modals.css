@@ -1,10 +1,10 @@
 /* ── FOOTER ── */
-footer { background: var(--charcoal); padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+footer { background: var(--forest-2); padding: 36px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
 @media (max-width: 999px) { body.on-sell-page footer, body.on-sell-page #chat-widget { display: none !important; } }
 footer .logo { font-size: 1.3rem; }
-footer p { color: var(--muted); font-size: 0.82rem; }
+footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .footer-links { display: flex; gap: 24px; background: transparent; padding: 0; position: static; }
-.footer-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; cursor: pointer; }
+.footer-links a { color: rgba(245,240,232,0.55); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; cursor: pointer; }
 .footer-links a:hover { color: var(--sand); }
 
 /* ── MODALER ── */
