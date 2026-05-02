@@ -33,6 +33,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/dealer-modal-actions.js`: dealer modal action helpers.
 - `js/dealer-guards.js`: pending dealer guards.
 - `js/auth.js`: login/register/forgot-password/Google OAuth handlers + login modal open/close.
+- `js/filters.js`: pill toggle, near-me GPS filter, sidebar filter pills, filter counts, sort, active-filter chip bar (cross-cuts state via getter/setter injection).
 
 ## Practical rule of thumb
 When adding/changing functionality:
