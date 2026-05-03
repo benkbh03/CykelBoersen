@@ -379,7 +379,7 @@ const {
   loadSavedListings,
   loadSavedSearches,
   loadTradeHistory,
-  checkUnreadMessages,
+  checkUnreadMessages: (...args) => checkUnreadMessages(...args),
   navigateTo:        (...args) => navigateTo(...args),
   getCurrentUser:    () => currentUser,
   getCurrentProfile: () => currentProfile,
