@@ -979,6 +979,8 @@ const { useQuickReply, getQuickReplies, renderQuickRepliesHTML } = createQuickRe
 function showSection(section) {
   return showSectionNavigation(section, { navigateTo });
 }
+
+/* ============================================================
    PROFIL SIDER (hash routing)
    ============================================================ */
 
