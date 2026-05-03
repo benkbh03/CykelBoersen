@@ -211,7 +211,7 @@
 .split-list-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 .map-pill--sort {
   height: 34px;
@@ -938,7 +938,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   /* Header: [count] [sort → venstre i actions] ........... [X] */
   .split-list-header { align-items: center; gap: 8px; justify-content: flex-start; }
   .split-list-header-text { flex: 0 0 auto; }
-  .split-list-header-actions { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .split-list-header-actions { flex: 1; display: flex; align-items: center; gap: 12px; }
   .split-list-close-btn { margin-left: auto; }
   .map-pill--sort { height: 30px; width: 100px; padding: 0 24px 0 10px; font-size: 0.75rem; }
   .map-pill--sort select { min-width: unset; width: 100%; font-size: 0.75rem; }
