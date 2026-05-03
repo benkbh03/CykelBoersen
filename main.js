@@ -33,6 +33,7 @@ import { createMyProfile } from './js/my-profile.js';
 import { createReviews } from './js/reviews.js';
 import { createProfileModals } from './js/profile-modals.js';
 import { createProfilePage } from './js/profile-page.js';
+import { createImageUpload } from './js/image-upload.js';
 
 // Global bruger-cache — hentes én gang ved init
 let currentUser    = null;
@@ -206,6 +207,19 @@ const {
   getCurrentProfile: () => currentProfile,
   setCurrentProfile: v => { currentProfile = v; },
   setCurrentUser:    v => { currentUser = v; },
+});
+
+const {
+  validateImageFile, compressImage, previewImages, renderImagePreviews,
+  setPrimary, removeImage, uploadImages, resetImageUpload,
+  openCropModal, setCropRatio, applyCrop, closeCropModal,
+  getSelectedFiles,
+} = createImageUpload({
+  supabase,
+  showToast,
+  getEditNewFiles:         () => editNewFiles,
+  renderSellImagePreviews: () => renderSellImagePreviews(),
+  renderEditNewImages:     () => renderEditNewImages(),
 });
 
 
@@ -894,7 +908,7 @@ async function submitListing() {
   if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
 
   // Upload billeder hvis der er valgt nogle
-  if (selectedFiles.length > 0) {
+  if (getSelectedFiles().length > 0) {
     showToast('⏳ Uploader billeder...');
     await uploadImages(newBike.id);
   }
@@ -949,7 +963,7 @@ async function submitSellPage() {
     const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
     if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
 
-    if (selectedFiles.length > 0) {
+    if (getSelectedFiles().length > 0) {
       showToast('⏳ Uploader billeder...');
       await uploadImages(newBike.id);
     }
@@ -1570,7 +1584,7 @@ function renderSellPage() {
   window.scrollTo({ top: 0, behavior: 'auto' });
   document.title = 'Opret annonce – Cykelbørsen';
   updateSEOMeta('Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.', '/sell');
-  selectedFiles = [];
+  getSelectedFiles().splice(0);
   _sellStep = 1;
   _aiApplied = false;
   _aiSuggestionPending = null;
@@ -1658,7 +1672,7 @@ function renderSellStep1HTML() {
     </div>
     <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
 
-    <div id="ai-suggest-wrap" style="display:${selectedFiles.length > 0 ? 'block' : 'none'}">
+    <div id="ai-suggest-wrap" style="display:${getSelectedFiles().length > 0 ? 'block' : 'none'}">
       ${aiDone ? `
         <div class="sell-ai-applied">
           <div class="sell-ai-applied-icon">✓</div>
@@ -1675,9 +1689,9 @@ function renderSellStep1HTML() {
         <div id="ai-suggest-status" class="ai-suggest-status"></div>`}
     </div>
 
-    ${selectedFiles.length > 0 ? `
+    ${getSelectedFiles().length > 0 ? `
       <div class="sell-photo-grid-header">
-        <div class="sell-photo-grid-title">Dine billeder <span class="sell-photo-count">· ${selectedFiles.length}/8</span></div>
+        <div class="sell-photo-grid-title">Dine billeder <span class="sell-photo-count">· ${getSelectedFiles().length}/8</span></div>
         <div class="sell-photo-hint">Tryk ★ for primær</div>
       </div>` : ''}
     <div id="sell-preview-grid" class="img-preview-grid sell-preview-grid-new"></div>
@@ -1778,7 +1792,8 @@ function renderSellStep3HTML() {
   const color = c['sell-color'] || '';
   const price = c['sell-price'] || '';
 
-  const primaryImg = selectedFiles.find(f => f.isPrimary) || selectedFiles[0];
+  const _sf = getSelectedFiles();
+  const primaryImg = _sf.find(f => f.isPrimary) || _sf[0];
   const thumbHTML = primaryImg
     ? `<img src="${primaryImg.url}" alt="" class="sell-summary-thumb-img">`
     : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:.3">
@@ -1792,7 +1807,7 @@ function renderSellStep3HTML() {
     ['Årgang · Stand', [year, cond].filter(Boolean).join(' · ') || '—'],
     ['Farve', color || '—'],
     ['Pris', price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—'],
-    ['Billeder', `${selectedFiles.length} uploadet`],
+    ['Billeder', `${_sf.length} uploadet`],
   ];
 
   return `
@@ -1891,7 +1906,8 @@ function renderSellDesktopPreviewHTML() {
   const price = c['sell-price'] || '';
   const city  = c['sell-city'] || '';
 
-  const primaryImg = selectedFiles.find(f => f.isPrimary) || selectedFiles[0];
+  const _sf2 = getSelectedFiles();
+  const primaryImg = _sf2.find(f => f.isPrimary) || _sf2[0];
   const heroHTML = primaryImg
     ? `<img src="${primaryImg.url}" alt="" class="sell-desktop-preview-img">`
     : `<div class="sell-desktop-preview-placeholder">Billede vises her</div>`;
@@ -1903,9 +1919,9 @@ function renderSellDesktopPreviewHTML() {
   const title = [brand, model].filter(Boolean).join(' ') || 'Din cykel';
   const meta  = [type, size, year].filter(Boolean).join(' · ') || 'Type · Størrelse · Årgang';
 
-  const thumbs = selectedFiles.length > 1
+  const thumbs = _sf2.length > 1
     ? `<div class="sell-desktop-preview-thumbs">
-        ${selectedFiles.slice(0, 4).map(f => `
+        ${_sf2.slice(0, 4).map(f => `
           <div class="sell-desktop-preview-thumb ${f.isPrimary ? 'primary' : ''}">
             <img src="${f.url}" alt="">
           </div>`).join('')}
@@ -1952,7 +1968,7 @@ function renderSellDesktopFooterHTML(step, canContinue) {
 }
 
 function canAdvanceSell() {
-  if (_sellStep === 1) return selectedFiles.length > 0;
+  if (_sellStep === 1) return getSelectedFiles().length > 0;
   if (_sellStep === 2) {
     const brand = document.getElementById('sell-brand')?.value.trim();
     const model = document.getElementById('sell-model')?.value.trim();
@@ -2216,24 +2232,26 @@ function previewSellImages(input) {
   const files = Array.from(input.files);
   if (!files.length) return;
 
-  const remaining = 8 - selectedFiles.length;
+  const sf = getSelectedFiles();
+  const remaining = 8 - sf.length;
   const toAdd = files.filter(validateImageFile).slice(0, remaining);
 
   toAdd.forEach((file, i) => {
     const url = URL.createObjectURL(file);
-    selectedFiles.push({ file, url, isPrimary: selectedFiles.length === 0 && i === 0 });
+    sf.push({ file, url, isPrimary: sf.length === 0 && i === 0 });
   });
 
   renderSellImagePreviews();
   updateAiSuggestVisibility();
   const label = document.getElementById('sell-upload-label');
-  if (label) label.textContent = `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
+  if (label) label.textContent = `${sf.length} billede${sf.length !== 1 ? 'r' : ''} valgt`;
 }
 
 function renderSellImagePreviews() {
   const grid = document.getElementById('sell-preview-grid');
   if (!grid) return;
-  grid.innerHTML = selectedFiles.map((item, i) => `
+  const sf = getSelectedFiles();
+  grid.innerHTML = sf.map((item, i) => `
     <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
       <img src="${item.url}" alt="Billede ${i + 1}">
       ${item.isPrimary
@@ -2243,7 +2261,7 @@ function renderSellImagePreviews() {
       <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
     </div>`).join('');
   const hint = document.getElementById('sell-img-hint');
-  if (hint) hint.style.display = selectedFiles.length > 1 ? 'block' : 'none';
+  if (hint) hint.style.display = sf.length > 1 ? 'block' : 'none';
   if (typeof updateSellDesktopPreview === 'function') updateSellDesktopPreview();
   if (typeof updateSellFooter === 'function') updateSellFooter();
 }
@@ -2251,28 +2269,30 @@ function renderSellImagePreviews() {
 function updateAiSuggestVisibility() {
   const wrap = document.getElementById('ai-suggest-wrap');
   if (!wrap) return;
-  wrap.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+  wrap.style.display = getSelectedFiles().length > 0 ? 'block' : 'none';
 }
 
 function setSellPrimary(index) {
-  selectedFiles = selectedFiles.map((item, i) => ({ ...item, isPrimary: i === index }));
+  getSelectedFiles().forEach((item, i) => { item.isPrimary = i === index; });
   renderSellImagePreviews();
 }
 
 function removeSellImage(index) {
-  URL.revokeObjectURL(selectedFiles[index].url);
-  selectedFiles.splice(index, 1);
-  if (selectedFiles.length > 0 && !selectedFiles.some(f => f.isPrimary)) selectedFiles[0].isPrimary = true;
+  const sf = getSelectedFiles();
+  URL.revokeObjectURL(sf[index].url);
+  sf.splice(index, 1);
+  if (sf.length > 0 && !sf.some(f => f.isPrimary)) sf[0].isPrimary = true;
   renderSellImagePreviews();
   updateAiSuggestVisibility();
   const label = document.getElementById('sell-upload-label');
-  if (label) label.textContent = selectedFiles.length > 0
-    ? `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`
+  if (label) label.textContent = sf.length > 0
+    ? `${sf.length} billede${sf.length !== 1 ? 'r' : ''} valgt`
     : 'Klik for at vælge billeder';
 }
 
 async function suggestListingFromImages() {
-  if (!selectedFiles.length) {
+  const sf = getSelectedFiles();
+  if (!sf.length) {
     showToast('⚠️ Upload mindst ét billede først');
     return;
   }
@@ -2293,7 +2313,7 @@ async function suggestListingFromImages() {
 
   try {
     // Brug op til 4 billeder, prioriter forsidebilledet først
-    const ordered = selectedFiles.slice().sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
+    const ordered = sf.slice().sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
     const picks = ordered.slice(0, 4);
 
     const images = await Promise.all(picks.map(async (item) => {
@@ -4768,304 +4788,6 @@ async function saveEditedListing() {
   if (profileMatch && profileMatch[1] === currentUser?.id) renderUserProfilePage(profileMatch[1]);
   if (dealerMatch && dealerMatch[1] === currentUser?.id) renderDealerProfilePage(dealerMatch[1]);
 }
-
-
-/* ============================================================
-   BILLEDE UPLOAD
-   ============================================================ */
-
-let selectedFiles = []; // { file, url, isPrimary }
-
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_IMAGE_SIZE_MB   = 10;
-
-/* ============================================================
-   BILLEDE-BESKÆRING (Cropper.js)
-   ============================================================ */
-let _cropperInstance = null;
-let _cropContext     = null; // { mode: 'sell' | 'edit', index, originalUrl }
-
-function openCropModal(mode, index) {
-  const list = mode === 'sell' ? selectedFiles : editNewFiles;
-  const item = list?.[index];
-  if (!item || !item.url) { showToast('❌ Kunne ikke åbne beskæring'); return; }
-  if (typeof Cropper === 'undefined') { showToast('❌ Cropper-biblioteket er ikke indlæst endnu — prøv igen'); return; }
-
-  _cropContext = { mode, index, originalUrl: item.url };
-
-  const modal  = document.getElementById('crop-modal');
-  const img    = document.getElementById('crop-target');
-  img.src = item.url;
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-
-  // Reset ratio-knap til 4:3 som default
-  document.querySelectorAll('#crop-modal .crop-ratio-btn').forEach(b => b.classList.remove('active'));
-  const def = document.querySelector('#crop-modal .crop-ratio-btn[data-ratio="1.3333"]');
-  if (def) def.classList.add('active');
-
-  if (_cropperInstance) { try { _cropperInstance.destroy(); } catch (_) {} _cropperInstance = null; }
-
-  _cropperInstance = new Cropper(img, {
-    aspectRatio: 4 / 3,
-    viewMode:    1,
-    autoCropArea: 1,
-    background:  false,
-    responsive:  true,
-    dragMode:    'move',
-    guides:      true,
-    movable:     true,
-    zoomable:    true,
-    rotatable:   false,
-    scalable:    false,
-  });
-}
-
-function setCropRatio(ratio, btn) {
-  if (!_cropperInstance) return;
-  _cropperInstance.setAspectRatio(ratio);
-  document.querySelectorAll('#crop-modal .crop-ratio-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-}
-
-async function applyCrop() {
-  if (!_cropperInstance || !_cropContext) return;
-  const canvas = _cropperInstance.getCroppedCanvas({
-    maxWidth:  2000,
-    maxHeight: 2000,
-    imageSmoothingEnabled: true,
-    imageSmoothingQuality: 'high',
-  });
-  if (!canvas) { showToast('❌ Kunne ikke beskære billedet'); return; }
-
-  const { mode, index } = _cropContext;
-  const list   = mode === 'sell' ? selectedFiles : editNewFiles;
-  const target = list?.[index];
-  if (!target) { closeCropModal(); return; }
-
-  const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
-  if (!blob) { showToast('❌ Kunne ikke gemme beskæring'); return; }
-
-  const newName = (target.file?.name || 'billede.jpg').replace(/\.(heic|heif|png|webp|gif)$/i, '.jpg');
-  const newFile = new File([blob], newName, { type: 'image/jpeg' });
-  const newUrl  = URL.createObjectURL(newFile);
-
-  try { URL.revokeObjectURL(target.url); } catch (_) {}
-  target.file = newFile;
-  target.url  = newUrl;
-
-  if (mode === 'sell') renderSellImagePreviews();
-  else                 renderEditNewImages();
-
-  closeCropModal();
-  showToast('✂️ Beskæring gemt');
-}
-
-function closeCropModal() {
-  if (_cropperInstance) { try { _cropperInstance.destroy(); } catch (_) {} _cropperInstance = null; }
-  _cropContext = null;
-  const modal = document.getElementById('crop-modal');
-  if (modal) modal.style.display = 'none';
-  const img = document.getElementById('crop-target');
-  if (img) img.src = '';
-  document.body.style.overflow = '';
-}
-
-function validateImageFile(file) {
-  const nameLower = (file.name || '').toLowerCase();
-  // HEIC/HEIF fra iPhone — browseren kan ikke dekode dem
-  if (file.type === 'image/heic' || file.type === 'image/heif' ||
-      nameLower.endsWith('.heic') || nameLower.endsWith('.heif')) {
-    showToast(`⚠️ HEIC-billeder understøttes ikke. Skift til "Mest kompatibel" under iPhone kamera-indstillinger, eller konvertér til JPG.`);
-    return false;
-  }
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-    showToast(`⚠️ "${file.name}" er ikke et gyldigt billedformat (kun JPG, PNG, WebP, GIF)`);
-    return false;
-  }
-  if (file.size === 0) {
-    showToast(`⚠️ "${file.name}" er tom eller korrupt`);
-    return false;
-  }
-  if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-    showToast(`⚠️ "${file.name}" er for stor (maks ${MAX_IMAGE_SIZE_MB} MB)`);
-    return false;
-  }
-  return true;
-}
-
-// Komprimerer billede til WebP (max 1600px bred, kvalitet ~82%) med Canvas API
-async function compressImage(file) {
-  // GIF og WebP under 500KB komprimeres ikke
-  if (file.type === 'image/gif') return file;
-  if (file.type === 'image/webp' && file.size < 500 * 1024) return file;
-
-  let objectUrl = null;
-  try {
-    // Brug createImageBitmap hvis muligt — respekterer EXIF-orientering (iPhone-billeder
-    // taget i portræt bliver ellers vist vandret på mobil).
-    let source;
-    if (typeof createImageBitmap === 'function') {
-      try {
-        source = await createImageBitmap(file, { imageOrientation: 'from-image' });
-      } catch (e) {
-        // Fallback til Image-tag hvis createImageBitmap fejler (fx corrupt eller ikke-understøttet format)
-        source = null;
-      }
-    }
-
-    if (!source) {
-      objectUrl = URL.createObjectURL(file);
-      source = await new Promise((resolve, reject) => {
-        const img = new Image();
-        const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
-        img.onload  = () => { clearTimeout(timeout); resolve(img); };
-        img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
-        img.src = objectUrl;
-      });
-    }
-
-    const MAX_W = 1600;
-    const MAX_H = 1600;
-    let width  = source.width  || source.naturalWidth;
-    let height = source.height || source.naturalHeight;
-    if (!width || !height) throw new Error('Billede har ingen dimensioner');
-
-    if (width > MAX_W || height > MAX_H) {
-      const ratio = Math.min(MAX_W / width, MAX_H / height);
-      width  = Math.round(width * ratio);
-      height = Math.round(height * ratio);
-    }
-
-    const canvas = document.createElement('canvas');
-    canvas.width  = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Canvas ikke tilgængelig');
-    ctx.drawImage(source, 0, 0, width, height);
-    if (source.close) source.close();
-
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.82));
-    if (!blob || blob.size === 0) return file;
-
-    // Kun brug komprimeret hvis den faktisk er mindre
-    if (blob.size >= file.size) return file;
-
-    const baseName = (file.name || 'image').replace(/\.[^.]+$/, '');
-    return new File([blob], `${baseName}.webp`, { type: 'image/webp' });
-  } catch (e) {
-    console.warn('Billedkomprimering fejlede, bruger original:', e);
-    return file;
-  } finally {
-    if (objectUrl) URL.revokeObjectURL(objectUrl);
-  }
-}
-
-async function previewImages(input) {
-  const files = Array.from(input.files);
-  if (!files.length) return;
-
-  // Maks 8 billeder i alt
-  const remaining = 8 - selectedFiles.length;
-  const toAdd = files.filter(validateImageFile).slice(0, remaining);
-
-  const label = document.getElementById('upload-label');
-  if (label && toAdd.length > 0) label.textContent = 'Optimerer billeder...';
-
-  const compressed = await Promise.all(toAdd.map(compressImage));
-
-  compressed.forEach((file, i) => {
-    const url = URL.createObjectURL(file);
-    selectedFiles.push({
-      file,
-      url,
-      isPrimary: selectedFiles.length === 0 && i === 0, // Første billede er primær
-    });
-  });
-
-  renderImagePreviews();
-  if (label) label.textContent =
-    `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
-}
-
-function renderImagePreviews() {
-  const grid = document.getElementById('img-preview-grid');
-  if (!grid) return;
-
-  grid.innerHTML = selectedFiles.map((item, i) => `
-    <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
-      <img src="${item.url}" alt="Billede ${i+1}">
-      ${item.isPrimary ? '<span class="primary-badge">Primær</span>' : ''}
-      ${!item.isPrimary ? `<button class="set-primary" onclick="setPrimary(${i})">★</button>` : ''}
-      <button class="remove-img" onclick="removeImage(${i})">✕</button>
-    </div>
-  `).join('');
-}
-
-function setPrimary(index) {
-  selectedFiles = selectedFiles.map((item, i) => ({ ...item, isPrimary: i === index }));
-  renderImagePreviews();
-}
-
-function removeImage(index) {
-  URL.revokeObjectURL(selectedFiles[index].url);
-  selectedFiles.splice(index, 1);
-  // Sæt første som primær hvis den primære blev fjernet
-  if (selectedFiles.length > 0 && !selectedFiles.some(f => f.isPrimary)) {
-    selectedFiles[0].isPrimary = true;
-  }
-  renderImagePreviews();
-  const label = document.getElementById('upload-label');
-  if (label) label.textContent = selectedFiles.length > 0
-    ? `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`
-    : 'Klik for at vælge billeder';
-}
-
-async function uploadImages(bikeId) {
-  if (selectedFiles.length === 0) return;
-
-  let failed = 0;
-  for (const item of selectedFiles) {
-    const ext      = item.file.name.split('.').pop();
-    const filename = `${bikeId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from('bike-images')
-      .upload(filename, item.file, { contentType: item.file.type, upsert: false });
-
-    if (error) { console.error('Upload fejl:', error); failed++; continue; }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('bike-images')
-      .getPublicUrl(filename);
-
-    await supabase.from('bike_images').insert({
-      bike_id:    bikeId,
-      url:        publicUrl,
-      is_primary: item.isPrimary,
-    });
-  }
-
-  if (failed > 0) {
-    showToast(`⚠️ ${failed} billede${failed > 1 ? 'r' : ''} kunne ikke uploades`);
-  }
-
-  // Ryd valgte filer
-  selectedFiles.forEach(f => URL.revokeObjectURL(f.url));
-  selectedFiles = [];
-}
-
-function resetImageUpload() {
-  selectedFiles = [];
-  const grid  = document.getElementById('img-preview-grid');
-  const label = document.getElementById('upload-label');
-  const input = document.getElementById('img-file-input');
-  if (grid)  grid.innerHTML = '';
-  if (label) label.textContent = 'Klik for at vælge billeder';
-  if (input) input.value = '';
-}
-
-
 
 /* ============================================================
    REAL-TIME NOTIFIKATIONER
