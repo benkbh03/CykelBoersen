@@ -5,16 +5,20 @@
 
 var _geocodeCache = (function() {
   try {
-    // v3: rydder stale v2-koordinater (fx Valby geocodede til Jutland i stedet for København)
-    var stored = localStorage.getItem('_geocodeCache_v3');
+    // v4: rydder stale null-entries fra v3 (null blev cachet permanent ved fejl)
+    var stored = localStorage.getItem('_geocodeCache_v4');
     if (stored) return JSON.parse(stored);
-    try { localStorage.removeItem('_geocodeCache'); localStorage.removeItem('_geocodeCache_v2'); } catch (e) {}
+    try {
+      localStorage.removeItem('_geocodeCache');
+      localStorage.removeItem('_geocodeCache_v2');
+      localStorage.removeItem('_geocodeCache_v3');
+    } catch (e) {}
     return {};
   } catch (e) { return {}; }
 })();
 
 function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache_v3', JSON.stringify(_geocodeCache)); } catch (e) {}
+  try { localStorage.setItem('_geocodeCache_v4', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
 export function invalidateGeocodeEntry(key) {
@@ -61,15 +65,9 @@ export function geocodeCity(city) {
     + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=10&format=json')
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (!data || data.length === 0) {
-        _geocodeCache[key] = null;
-        return null;
-      }
+      if (!data || data.length === 0) return null;
       var candidates = data.filter(function(p) { return p.visueltcenter; });
-      if (candidates.length === 0) {
-        _geocodeCache[key] = null;
-        return null;
-      }
+      if (candidates.length === 0) return null;
       function bboxArea(p) {
         if (!p.bbox || p.bbox.length < 4) return 0;
         return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
