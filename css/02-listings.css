@@ -60,7 +60,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
   align-content: start;
   /* Reserver plads så siden ikke skubbes op/ned mens annoncer loader (CLS) */
   min-height: 600px;
@@ -72,6 +72,7 @@
   border: 1px solid var(--border); overflow: hidden;
   cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
   animation: fadeUp 0.5s ease both;
+  display: flex; flex-direction: column; height: 100%;
 }
 .bike-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.12); }
 .bike-card-img {
@@ -125,7 +126,7 @@
   z-index: 1; transition: background 0.15s;
 }
 .save-btn:hover { background: #fff; }
-.bike-card-body { padding: 14px 16px 16px; }
+.bike-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
 .bike-title {
   font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; line-height: 1.35;
@@ -138,6 +139,7 @@
 .card-footer {
   display: flex; align-items: center;
   border-top: 1px solid var(--border); padding-top: 10px; gap: 8px;
+  margin-top: auto;
 }
 .seller-avatar {
   width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
