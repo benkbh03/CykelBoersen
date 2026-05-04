@@ -53,31 +53,42 @@ export function geocodeAddress(address, city) {
     .catch(function() { return null; });
 }
 
-// Slå dansk by op via DAWA — vælger den største match via bbox-areal
+// Slå dansk by op via DAWA — vælger den største match via bbox-areal,
+// falder tilbage på /postnumre hvis /steder ikke returnerer koordinater
 export function geocodeCity(city) {
   var key = city.toLowerCase().trim();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  // Hent flere resultater og vælg den største — løser tvetydigheder som
-  // "Valby" der både findes som lille bebyggelse v. Støvring og som stor
-  // bydel i København. Vi bruger bbox-arealet som proxy for størrelse.
   return fetch('https://api.dataforsyningen.dk/steder?q='
     + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=10&format=json')
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (!data || data.length === 0) return null;
-      var candidates = data.filter(function(p) { return p.visueltcenter; });
-      if (candidates.length === 0) return null;
-      function bboxArea(p) {
-        if (!p.bbox || p.bbox.length < 4) return 0;
-        return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
+      var candidates = Array.isArray(data) ? data.filter(function(p) { return p.visueltcenter; }) : [];
+      if (candidates.length > 0) {
+        function bboxArea(p) {
+          if (!p.bbox || p.bbox.length < 4) return 0;
+          return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
+        }
+        candidates.sort(function(a, b) { return bboxArea(b) - bboxArea(a); });
+        var best = candidates[0];
+        var coords = [best.visueltcenter[1], best.visueltcenter[0]];
+        _geocodeCache[key] = coords;
+        _saveGeocodeCache();
+        return coords;
       }
-      candidates.sort(function(a, b) { return bboxArea(b) - bboxArea(a); });
-      var best = candidates[0];
-      var coords = [best.visueltcenter[1], best.visueltcenter[0]]; // [lat, lng]
-      _geocodeCache[key] = coords;
-      _saveGeocodeCache();
-      return coords;
+      // Fallback: /postnumre endpoint
+      return fetch('https://api.dataforsyningen.dk/postnumre?q='
+        + encodeURIComponent(city) + '&per_side=5&format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(pdata) {
+          if (!Array.isArray(pdata) || pdata.length === 0) return null;
+          var hit = pdata.find(function(p) { return p.visueltcenter; });
+          if (!hit) return null;
+          var coords = [hit.visueltcenter[1], hit.visueltcenter[0]];
+          _geocodeCache[key] = coords;
+          _saveGeocodeCache();
+          return coords;
+        });
     })
     .catch(function() { return null; });
 }
