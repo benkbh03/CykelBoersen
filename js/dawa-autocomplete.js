@@ -170,43 +170,31 @@ export function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        // DAWA postnumre autocomplete — same provider as address autocomplete,
-        // returns postal code + city name with visueltcenter [lng, lat].
-        const url = 'https://api.dataforsyningen.dk/postnumre/autocomplete?per_side=10&q='
-                  + encodeURIComponent(q);
-        const res = await fetch(url);
-        if (!res.ok) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
+        // Same endpoint as address autocomplete (confirmed working), type=postnummer.
+        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=10&q=' + encodeURIComponent(q));
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
 
         const seen = new Set();
         const items = [];
         for (const r of data) {
-          const p = r.postnummer || {};
+          const p = r.data || {};
           const cityName = (p.navn || '').trim();
           const postnr   = (p.nr   || '').trim();
           if (!cityName || !postnr) continue;
-
-          const key = (postnr + '|' + cityName.toLowerCase());
+          const key = postnr + '|' + cityName.toLowerCase();
           if (seen.has(key)) continue;
           seen.add(key);
-
-          const vc = p.visueltcenter; // [lng, lat]
+          const vc  = p.visueltcenter; // [lng, lat]
           const lat = Array.isArray(vc) ? vc[1] : null;
           const lng = Array.isArray(vc) ? vc[0] : null;
-
-          items.push({
-            label: `${postnr} ${cityName}`,
-            city: cityName,
-            postcode: postnr,
-            lat, lng,
-          });
+          items.push({ label: `${postnr} ${cityName}`, city: cityName, postcode: postnr, lat, lng });
         }
 
         _renderDawaDropdown(input, items, (picked) => {
           input.value = picked.city;
-          if (picked.lat) input.dataset.dawaLat = String(picked.lat);
-          if (picked.lng) input.dataset.dawaLng = String(picked.lng);
+          if (picked.lat)      input.dataset.dawaLat      = String(picked.lat);
+          if (picked.lng)      input.dataset.dawaLng      = String(picked.lng);
           if (picked.postcode) input.dataset.dawaPostcode = picked.postcode;
           input.dispatchEvent(new Event('input', { bubbles: true }));
           if (typeof onSelect === 'function') onSelect(picked);
