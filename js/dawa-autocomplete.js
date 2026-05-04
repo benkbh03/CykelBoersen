@@ -169,49 +169,63 @@ export function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=15&q='
-          + encodeURIComponent(q));
+        // Use Nominatim (OpenStreetMap) — public, CORS-enabled, no API key needed.
+        // Searches Danish cities/towns/villages by name.
+        const url = 'https://nominatim.openstreetmap.org/search?format=json'
+                  + '&countrycodes=dk&accept-language=da&limit=15&addressdetails=1'
+                  + '&q=' + encodeURIComponent(q);
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
         if (!res.ok) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
+
+        // Only keep settlement-type results (city, town, village, suburb, neighbourhood, hamlet)
+        const SETTLEMENT_TYPES = new Set([
+          'city', 'town', 'village', 'suburb', 'neighbourhood', 'hamlet',
+          'municipality', 'administrative',
+        ]);
         const seen = new Set();
         const items = [];
         for (const r of data) {
-          const p = r.data || {};
-          const name = (p.navn || '').trim();
-          const nr   = (p.nr || '').trim();
-          if (!name) continue;
-          const key = name.toLowerCase();
+          const cls = r.class;
+          const typ = r.type;
+          if (cls !== 'place' && cls !== 'boundary') continue;
+          if (!SETTLEMENT_TYPES.has(typ)) continue;
+
+          const addr = r.address || {};
+          const cityName = (
+            addr.city || addr.town || addr.village || addr.suburb ||
+            addr.municipality || addr.neighbourhood || addr.hamlet ||
+            r.name || ''
+          ).trim();
+          if (!cityName) continue;
+
+          const key = cityName.toLowerCase();
           if (seen.has(key)) continue;
           seen.add(key);
-          items.push({
-            label: r.tekst || `${nr} ${name}`,
-            city:  name,
-            nr:    nr,
-          });
+
+          const lat = parseFloat(r.lat);
+          const lon = parseFloat(r.lon);
+          if (!isFinite(lat) || !isFinite(lon)) continue;
+
+          // Build a friendly label: "Frederiksberg · Region Hovedstaden"
+          const region = addr.state || addr.county || addr.region || '';
+          const label  = region ? `${cityName} · ${region}` : cityName;
+
+          items.push({ label, city: cityName, lat, lng: lon });
+          if (items.length >= 10) break;
         }
-        _renderDawaDropdown(input, items, async (picked) => {
+
+        _renderDawaDropdown(input, items, (picked) => {
           input.value = picked.city;
-          // Fetch coordinates for the picked postal area
-          if (picked.nr) {
-            try {
-              const r2 = await fetch('https://api.dataforsyningen.dk/postnumre/' + picked.nr);
-              if (r2.ok) {
-                const full = await r2.json();
-                const vc = full?.visueltcenter;
-                if (vc && vc.length >= 2) {
-                  input.dataset.dawaLat = String(vc[1]);
-                  input.dataset.dawaLng = String(vc[0]);
-                }
-              }
-            } catch (_) {}
-          }
+          input.dataset.dawaLat = String(picked.lat);
+          input.dataset.dawaLng = String(picked.lng);
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen byer fundet');
       } catch (e) {
         _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet');
       }
-    }, 220));
+    }, 320));
   };
 
   input.addEventListener('input', handleInput);
