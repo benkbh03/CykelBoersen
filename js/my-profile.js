@@ -209,6 +209,7 @@ export function createMyProfile({
         body: {
           bike: {
             id:          full.id,
+            user_id:     newBike.user_id || null,
             brand:       full.brand,
             model:       full.model,
             type:        full.type,
