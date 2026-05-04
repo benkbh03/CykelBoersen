@@ -1061,6 +1061,18 @@ const { useQuickReply, getQuickReplies, renderQuickRepliesHTML } = createQuickRe
 function showSection(section) {
   return showSectionNavigation(section, { navigateTo });
 }
+
+function selectHeroCatChip(el, type) {
+  document.getElementById('search-type').value = type;
+  searchBikes();
+  document.querySelectorAll('.hero-cat-chip').forEach(c => {
+    c.classList.remove('active');
+    c.setAttribute('aria-pressed', 'false');
+  });
+  el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
+}
+
 // SPA navigation helper — pushState + route handling
 function navigateTo(path) {
   document.body.classList.remove('on-sell-page');
@@ -1359,7 +1371,8 @@ window.saveCurrentSearch  = saveCurrentSearch;
 window.applySavedSearch   = applySavedSearch;
 window.deleteSavedSearch  = deleteSavedSearch;
 window.loadTradeHistory   = loadTradeHistory;
-window.showSection       = showSection;
+window.showSection         = showSection;
+window.selectHeroCatChip  = selectHeroCatChip;
 window.logout                  = logout;
 window.resendConfirmationEmail = resendConfirmationEmail;
 window.dismissEmailBanner      = dismissEmailBanner;

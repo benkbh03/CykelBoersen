@@ -456,20 +456,8 @@
     background: rgba(245,240,232,0.1) !important;
     border: 1px solid rgba(245,240,232,0.2) !important;
   }
-  .filters-row {
-    padding: 10px 16px;
-    gap: 8px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    position: sticky;
-    top: 51px;
-    z-index: 89;
-    background: var(--forest-light);
-  }
-  .filters-row::-webkit-scrollbar { display: none; }
-  .filters-label { display: none; }
+  .hero-cat-chips { padding: 0 4px; gap: 6px; }
+  .hero-cat-chip { font-size: 0.75rem; padding: 6px 12px; }
   .pill { flex-shrink: 0; font-size: 0.8rem; padding: 7px 14px; }
   .main { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
   .sidebar { display: none; }
