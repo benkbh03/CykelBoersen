@@ -5,17 +5,16 @@
 
 var _geocodeCache = (function() {
   try {
-    // v2: bumpede nøgle efter geocodeCity nu vælger største match (fixer fx Valby → København i stedet for Støvring)
-    var stored = localStorage.getItem('_geocodeCache_v2');
+    // v3: rydder stale v2-koordinater (fx Valby geocodede til Jutland i stedet for København)
+    var stored = localStorage.getItem('_geocodeCache_v3');
     if (stored) return JSON.parse(stored);
-    // Fjern gammel cache, så vi ikke beholder forældede koordinater
-    try { localStorage.removeItem('_geocodeCache'); } catch (e) {}
+    try { localStorage.removeItem('_geocodeCache'); localStorage.removeItem('_geocodeCache_v2'); } catch (e) {}
     return {};
   } catch (e) { return {}; }
 })();
 
 function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache_v2', JSON.stringify(_geocodeCache)); } catch (e) {}
+  try { localStorage.setItem('_geocodeCache_v3', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
 export function invalidateGeocodeEntry(key) {
