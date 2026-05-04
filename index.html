@@ -174,7 +174,7 @@
         <span id="hero-listing-count"><span id="stat-total">–</span> aktive annoncer i Danmark</span>
       </div>
       <h1 class="search-hero-title">Find din næste cykel på <em>Cykelbørsen</em></h1>
-      <p class="search-hero-sub">Danmarks dedikerede markedsplads for brugte cykler.</p>
+      <p class="search-hero-sub">Danmarks dedikerede markedsplads for nye og brugte cykler.</p>
     </div>
     <div class="search-bar-wrap">
       <div class="search-bar">
@@ -217,9 +217,20 @@
       </div>
       <button id="save-search-btn" onclick="saveCurrentSearch()" title="Gem denne søgning" aria-label="Gem søgning">🔔</button>
     </div>
+    <!-- ── KATEGORI CHIPS ── -->
+    <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
+      <button class="hero-cat-chip active" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
+    </div>
   </div>
 
-  <!-- ── HURTIGFILTER PILLS ── -->
+  <!-- ── HURTIGFILTER PILLS (skjult — erstattet af hero-cat-chips) ── -->
   <div class="filters-row" role="group" aria-label="Hurtigfiltre">
     <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
     <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
@@ -351,7 +362,7 @@
       <div>
         <div class="sell-cta-label">— Sælg din cykel</div>
         <h2 class="sell-cta-headline">Klar på 3 minutter. <em>Gratis</em> for alle.</h2>
-        <p class="sell-cta-sub">Tag tre billeder, sæt en pris — så er du live på få minutter. Gratis for både privatpersoner og forhandlere.</p>
+        <p class="sell-cta-sub">Tag tre billeder, sæt en pris — så er du live på få minutter.</p>
       </div>
       <div>
         <button class="sell-cta-btn" onclick="openModal()">+ Sæt til salg</button>
