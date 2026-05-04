@@ -1045,7 +1045,7 @@ async function checkSavedSearchNotifications() {
   banner.innerHTML = `
     <div class="ss-notif-content">
       <span class="ss-notif-icon">🔔</span>
-      <span class="ss-notif-text">${count} nye cykler siden dit sidste besøg — <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Tjek dine søgninger →</a></span>
+      <span class="ss-notif-text">${count} nye cykler matcher dine Cykelagenter — <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Se matches →</a></span>
       <button onclick="this.closest('#ss-notification').remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px;">✕</button>
     </div>
   `;

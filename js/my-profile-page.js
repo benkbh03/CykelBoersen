@@ -89,7 +89,7 @@ export function createMyProfilePage({
       <div class="mp-top">
         <button class="mp-back-btn" onclick="navigateTo('/')">${svgBack} Forside</button>
         <h1 class="mp-title">Min konto</h1>
-        <p class="mp-subtitle">Administrér dine annoncer, gemte søgninger og kontooplysninger</p>
+        <p class="mp-subtitle">Administrér dine annoncer, Cykelagenter og kontooplysninger</p>
       </div>
 
       <div class="mp-layout${hasSidebarContent ? '' : ' mp-no-sidebar'}">
@@ -189,7 +189,7 @@ export function createMyProfilePage({
                 Gemte <span class="mp-tab-count" id="mp-count-saved">–</span>
               </button>
               <button class="mp-tab" data-tab="searches" onclick="switchMyProfileTab('searches')">
-                Søgninger <span class="mp-tab-count" id="mp-count-searches">–</span>
+                Cykelagenter <span class="mp-tab-count" id="mp-count-searches">–</span>
               </button>
               <button class="mp-tab" data-tab="trades" onclick="switchMyProfileTab('trades')">
                 Handler <span class="mp-tab-count" id="mp-count-trades">–</span>
@@ -202,7 +202,7 @@ export function createMyProfilePage({
               <div id="mp-saved-grid"><p style="color:var(--muted);padding:20px 0">Henter gemte…</p></div>
             </div>
             <div id="mp-panel-searches" class="mp-tab-panel" style="display:none;">
-              <div id="mp-searches-list"><p style="color:var(--muted);padding:20px 0">Henter søgninger…</p></div>
+              <div id="mp-searches-list"><p style="color:var(--muted);padding:20px 0">Henter Cykelagenter…</p></div>
             </div>
             <div id="mp-panel-trades" class="mp-tab-panel" style="display:none;">
               <div id="mp-trades-list"><p style="color:var(--muted);padding:20px 0">Henter handler…</p></div>

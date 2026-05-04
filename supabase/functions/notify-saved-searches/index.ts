@@ -132,8 +132,10 @@ serve(async (req) => {
       });
     }
 
-    // Filtrer: kun søgninger der matcher
-    const matching = searches.filter(s => bikeMatchesSearch(bike, s.filters || {}));
+    // Filtrer: kun søgninger der matcher + ekskludér cyklens ejer
+    const matching = searches.filter(s =>
+      s.user_id !== bike.user_id && bikeMatchesSearch(bike, s.filters || {})
+    );
     if (matching.length === 0) {
       return new Response(JSON.stringify({ ok: true, sent: 0 }), {
         status: 200,
