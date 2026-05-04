@@ -169,26 +169,33 @@ export function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=12&q='
-          + encodeURIComponent(q));
+        const res = await fetch('https://api.dataforsyningen.dk/steder?q='
+          + encodeURIComponent(q) + '&hovedtype=Bebyggelse&per_side=20&format=json');
         if (!res.ok) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
+        function bboxArea(p) {
+          if (!p.bbox || p.bbox.length < 4) return 0;
+          return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
+        }
         const seen = new Set();
         const items = [];
-        for (const r of data) {
-          const p = r.data || {};
-          const name = (p.navn || '').trim();
-          if (!name || seen.has(name.toLowerCase())) continue;
-          seen.add(name.toLowerCase());
+        const sorted = data.slice().sort((a, b) => bboxArea(b) - bboxArea(a));
+        for (const p of sorted) {
+          const name = (p.primærtnavn || (typeof p.navn === 'string' ? p.navn : '')).trim();
+          if (!name) continue;
+          const key = name.toLowerCase();
+          if (seen.has(key)) continue;
+          seen.add(key);
           const vc = p.visueltcenter;
           if (!vc || vc.length < 2) continue;
           items.push({
-            label: r.tekst || `${p.nr} ${name}`,
+            label: name,
             city:  name,
             lat:   vc[1],
             lng:   vc[0],
           });
+          if (items.length >= 12) break;
         }
         _renderDawaDropdown(input, items, (picked) => {
           input.value = picked.city;
