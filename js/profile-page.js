@@ -84,13 +84,16 @@ export function createProfilePage({
       badge.className   = 'badge badge-private';
     }
 
-    document.getElementById('edit-name').value        = profile.name || '';
-    document.getElementById('edit-phone').value       = profile.phone || '';
-    document.getElementById('edit-city').value        = profile.city || '';
+    const profileModal = document.getElementById('profile-modal');
+    const $p = (id) => profileModal?.querySelector(`#${id}`) || document.getElementById(id);
+
+    $p('edit-name').value        = profile.name || '';
+    $p('edit-phone').value       = profile.phone || '';
+    $p('edit-city').value        = profile.city || '';
     document.getElementById('edit-seller-type').value = profile.seller_type || 'private';
-    document.getElementById('edit-shop-name').value   = profile.shop_name || '';
-    document.getElementById('edit-address').value     = profile.address || '';
-    const bioEl = document.getElementById('edit-bio');
+    $p('edit-shop-name').value   = profile.shop_name || '';
+    $p('edit-address').value     = profile.address || '';
+    const bioEl = $p('edit-bio');
     if (bioEl) bioEl.value = profile.bio || '';
 
     const shopGroup    = document.getElementById('edit-shop-group');
@@ -111,8 +114,8 @@ export function createProfilePage({
     if (sellerDisplay) sellerDisplay.textContent = isDealer ? '🏪 Forhandler' : '👤 Privatperson';
 
     // Kobl DAWA-autocomplete: forhandlere → præcis adresse, private → by
-    const cityInput    = document.getElementById('edit-city');
-    const addressInput = document.getElementById('edit-address');
+    const cityInput    = $p('edit-city');
+    const addressInput = $p('edit-address');
     if (isDealer) {
       attachAddressAutocomplete(addressInput, (picked) => {
         // Adresse valgt → udfyld by automatisk

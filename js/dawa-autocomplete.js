@@ -170,17 +170,60 @@ export function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        // Same endpoint as address autocomplete (confirmed working), type=postnummer.
-        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=10&q=' + encodeURIComponent(q));
+        // Brug dedikeret postnummer-autocomplete først (mest stabil til bynavne),
+        // fallback til generisk /autocomplete?type=postnummer.
+        const params = new URLSearchParams({ q });
+        const url = `https://api.dataforsyningen.dk/postnumre/autocomplete?${params.toString()}`;
+        console.log('[DAWA city] input:', q);
+        console.log('[DAWA city] url:', url);
+        let res = await fetch(url);
+        if (!res.ok) {
+          const fallbackUrl = `https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=10&q=${encodeURIComponent(q)}`;
+          console.warn('[DAWA city] primary endpoint failed, trying fallback:', res.status, fallbackUrl);
+          res = await fetch(fallbackUrl);
+        }
+        console.log('[DAWA city] status:', res.status, res.statusText);
         const data = await res.json();
+        console.log('[DAWA city] raw response:', data);
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
 
         const seen = new Set();
         const items = [];
         for (const r of data) {
-          const p = r.data || {};
-          const cityName = (p.navn || '').trim();
-          const postnr   = (p.nr   || '').trim();
+          const p = r.data || r || {};
+          let cityName = (
+            p.navn ||
+            p.postnrnavn ||
+            p.postnummernavn ||
+            p.postnummer?.navn ||
+            r.postnummer?.navn ||
+            ''
+          ).trim();
+          let postnr = String(
+            p.nr ||
+            p.postnr ||
+            p.postnummernr ||
+            p.postnummer?.nr ||
+            r.postnummer?.nr ||
+            ''
+          ).trim();
+
+          // Fallback: nogle DAWA-svar kan mangle r.data.* men have "tekst", fx "2500 Valby".
+          if ((!cityName || !postnr) && r.tekst) {
+            const m = String(r.tekst).trim().match(/^(\d{4})\s+(.+)$/);
+            if (m) {
+              postnr = postnr || m[1];
+              cityName = cityName || m[2];
+            }
+          }
+          // Ekstra fallback: enkelte endpoints kan bruge "forslagstekst".
+          if ((!cityName || !postnr) && r.forslagstekst) {
+            const m = String(r.forslagstekst).trim().match(/^(\d{4})\s+(.+)$/);
+            if (m) {
+              postnr = postnr || m[1];
+              cityName = cityName || m[2];
+            }
+          }
           if (!cityName || !postnr) continue;
           const key = postnr + '|' + cityName.toLowerCase();
           if (seen.has(key)) continue;
@@ -190,6 +233,7 @@ export function attachCityAutocomplete(input, onSelect) {
           const lng = Array.isArray(vc) ? vc[0] : null;
           items.push({ label: `${postnr} ${cityName}`, city: cityName, postcode: postnr, lat, lng });
         }
+        console.log('[DAWA city] mapped suggestions:', items);
 
         _renderDawaDropdown(input, items, (picked) => {
           input.value = picked.city;
@@ -200,6 +244,7 @@ export function attachCityAutocomplete(input, onSelect) {
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen byer fundet');
       } catch (e) {
+        console.error('[DAWA city] fetch/parse error:', e);
         _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet');
       }
     }, 220));
@@ -241,4 +286,3 @@ export function readDawaData(input) {
     city:     input.dataset.dawaCity || null,
   };
 }
-

@@ -160,6 +160,9 @@ export function createListingEdit({
   // ── Modal open/close ───────────────────────────────────────
 
   async function openEditModal(id) {
+    const editModal = document.getElementById('edit-modal');
+    const $e = (fieldId) => editModal?.querySelector(`#${fieldId}`) || document.getElementById(fieldId);
+
     const { data: b, error } = await supabase
       .from('bikes')
       .select('*, bike_images(id, url, is_primary)')
@@ -171,7 +174,7 @@ export function createListingEdit({
     document.getElementById('edit-model').value         = b.model || '';
     document.getElementById('edit-price').value         = b.price || '';
     document.getElementById('edit-year').value          = b.year || '';
-    document.getElementById('edit-city').value          = b.city || '';
+    $e('edit-city').value                               = b.city || '';
     document.getElementById('edit-color').value         = b.color || '';
     document.getElementById('edit-description').value   = b.description || '';
     document.getElementById('edit-type').value          = b.type || '';
@@ -193,7 +196,7 @@ export function createListingEdit({
     renderEditExistingImages();
     renderEditNewImages();
 
-    const editCityInput = document.getElementById('edit-city');
+    const editCityInput = $e('edit-city');
     if (editCityInput) attachCityAutocomplete(editCityInput);
 
     document.getElementById('edit-modal').classList.add('open');
