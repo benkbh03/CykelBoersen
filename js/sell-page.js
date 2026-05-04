@@ -683,10 +683,30 @@ export function createSellPage({
 
   function updateSellFooter() {
     const can = canAdvanceSell();
+
     const el = document.getElementById('sell-wizard-footer');
-    if (el) el.innerHTML = renderSellFooterHTML(_sellStep, can);
+    if (el) {
+      const btn = el.querySelector('.sell-wizard-cta');
+      if (btn) {
+        btn.disabled = !can;
+        btn.classList.toggle('enabled', can);
+        btn.classList.toggle('disabled', !can);
+      } else {
+        el.innerHTML = renderSellFooterHTML(_sellStep, can);
+      }
+    }
+
     const elDesk = document.getElementById('sell-desktop-footer');
-    if (elDesk) elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
+    if (elDesk) {
+      const btn = elDesk.querySelector('.sell-desktop-cta');
+      if (btn) {
+        btn.disabled = !can;
+        btn.classList.toggle('enabled', can);
+        btn.classList.toggle('disabled', !can);
+      } else {
+        elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
+      }
+    }
   }
 
   function updateSellDesktopPreview() {
