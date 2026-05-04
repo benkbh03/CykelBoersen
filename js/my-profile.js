@@ -296,7 +296,7 @@ export function createMyProfile({
     const searchCountEl = document.getElementById('mp-count-searches');
     if (searchCountEl) searchCountEl.textContent = data ? data.length : 0;
     if (!data || data.length === 0) {
-      list.innerHTML = `<p style="color:var(--muted)">Ingen Cykelagenter endnu. Brug 🔔-knappen ved søgefeltet for at oprette din første.</p>`;
+      list.innerHTML = `<p style="color:var(--muted)">Ingen Cykelagenter endnu. Brug knappen ovenfor for at oprette din første.</p>`;
       return;
     }
 
