@@ -1,3 +1,5 @@
+import { esc } from './utils.js';
+
 const _dawaDebounce = new WeakMap();
 let _dawaActive = null; // { input, dropdown }
 
