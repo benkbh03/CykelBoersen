@@ -161,6 +161,7 @@ export function attachCityAutocomplete(input, onSelect) {
   input.setAttribute('spellcheck', 'false');
 
   const handleInput = () => {
+    if (input._dawaPicking) return;
     delete input.dataset.dawaLat;
     delete input.dataset.dawaLng;
     delete input.dataset.dawaPostcode;
@@ -193,11 +194,13 @@ export function attachCityAutocomplete(input, onSelect) {
         }
 
         _renderDawaDropdown(input, items, (picked) => {
+          input._dawaPicking = true;
           input.value = picked.city;
           if (picked.lat)      input.dataset.dawaLat      = String(picked.lat);
           if (picked.lng)      input.dataset.dawaLng      = String(picked.lng);
           if (picked.postcode) input.dataset.dawaPostcode = picked.postcode;
           input.dispatchEvent(new Event('input', { bubbles: true }));
+          input._dawaPicking = false;
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen byer fundet');
       } catch (e) {
