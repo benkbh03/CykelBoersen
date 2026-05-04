@@ -245,6 +245,45 @@ export function createDealersPage({
 
     const isLoggedIn      = !!currentUser;
     const isAlreadyDealer = isLoggedIn && currentProfile?.seller_type === 'dealer';
+    const isPrivateUser   = isLoggedIn && currentProfile?.seller_type !== 'dealer';
+
+    if (isPrivateUser) {
+      const name = esc(currentProfile?.name || currentUser?.email || 'dig');
+      document.getElementById('detail-view').innerHTML = `
+      <div class="bd-page">
+        <div class="bd-page-header">
+          <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
+          <h1 class="bd-page-title">Bliv forhandler</h1>
+          <p class="bd-page-subtitle">Få din cykelbutik på Danmarks dedikerede cykelmarkedsplads</p>
+        </div>
+
+        <div class="bd-perks">
+          <div class="bd-perk">✅ <span>Ubegrænset antal annoncer</span></div>
+          <div class="bd-perk">✅ <span>Verificeret forhandler-badge</span></div>
+          <div class="bd-perk">✅ <span>Direkte beskeder fra købere</span></div>
+          <div class="bd-perk">✅ <span>Prioriteret placering i søgning</span></div>
+          <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
+        </div>
+
+        <div class="bd-form" style="text-align:center;">
+          <div style="font-size:2.8rem;margin-bottom:16px;">🏪</div>
+          <h3 class="bd-form-title" style="margin-bottom:10px;">Opret dig som forhandler</h3>
+          <p style="font-size:0.92rem;color:var(--muted);line-height:1.6;max-width:420px;margin:0 auto 28px;">
+            Du er logget ind som <strong>${name}</strong> (privat bruger).
+            Forhandlerkonti oprettes som en separat konto — log ud og opret en ny konto med din butiks e-mailadresse.
+          </p>
+          <button class="form-submit" onclick="logout().then(()=>navigateTo('/bliv-forhandler'))" style="width:auto;padding:14px 32px;margin-bottom:12px;">
+            Log ud og opret forhandlerkonto →
+          </button>
+          <div>
+            <button onclick="navigateTo('/')" style="background:none;border:none;color:var(--muted);font-size:0.85rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">
+              Fortsæt som privat bruger
+            </button>
+          </div>
+        </div>
+      </div>`;
+      return;
+    }
 
     if (isAlreadyDealer) {
       document.getElementById('detail-view').innerHTML = `

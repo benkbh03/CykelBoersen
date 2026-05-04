@@ -169,20 +169,22 @@ export function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        const res = await fetch('https://api.dataforsyningen.dk/postnumre?q='
-          + encodeURIComponent(q) + '&per_side=12&format=json');
+        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=12&q='
+          + encodeURIComponent(q));
+        if (!res.ok) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const seen = new Set();
         const items = [];
-        for (const p of data) {
+        for (const r of data) {
+          const p = r.data || {};
           const name = (p.navn || '').trim();
           if (!name || seen.has(name.toLowerCase())) continue;
           seen.add(name.toLowerCase());
           const vc = p.visueltcenter;
           if (!vc || vc.length < 2) continue;
           items.push({
-            label: `${p.nr} ${name}`,
+            label: r.tekst || `${p.nr} ${name}`,
             city:  name,
             lat:   vc[1],
             lng:   vc[0],
@@ -195,7 +197,7 @@ export function attachCityAutocomplete(input, onSelect) {
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen byer fundet');
       } catch (e) {
-        _renderDawaDropdown(input, [], () => {}, 'Kunne ikke hente byer');
+        _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet');
       }
     }, 220));
   };

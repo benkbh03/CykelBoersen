@@ -305,7 +305,7 @@ const {
   suggestListingFromImages, applyAiSuggestion, fileToBase64,
   setSellStep, advanceSell, backSell, saveSellDraft, clearSellDraft, initSellDraft,
   updateSellPriceSuggestion, showListingSuccessModal, closeListingSuccessModal,
-  renderSellImagePreviews,
+  renderSellImagePreviews, showSellTermsModal,
 } = sellPage;
 
 const bikeDetail = createBikeDetail({
@@ -1417,6 +1417,7 @@ window.setSellStep               = setSellStep;
 window.advanceSell               = advanceSell;
 window.backSell                  = backSell;
 window.closeListingSuccessModal  = closeListingSuccessModal;
+window.showSellTermsModal        = showSellTermsModal;
 window.openBikeModal      = openBikeModal;
 window.navigateTo         = navigateTo;
 window.navigateToBike     = navigateToBike;

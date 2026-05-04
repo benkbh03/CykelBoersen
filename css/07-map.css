@@ -217,8 +217,11 @@
   height: 34px;
   padding: 0 28px 0 12px;
   font-size: 0.8rem;
+  overflow: hidden;
 }
-.map-pill--sort select { min-width: 130px; font-size: 0.8rem; }
+.map-pill--sort select { min-width: 0; font-size: 0.8rem; }
+
+.split-list-close-btn { flex-shrink: 0; }
 
 .split-sheet-handle { display: none; }
 .split-list-close-btn {

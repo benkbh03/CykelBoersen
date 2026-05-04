@@ -544,7 +544,7 @@ export function createSellPage({
       </div>
 
       <p class="sell-disclaimer" style="margin-top:16px;text-align:center">
-        Ved oprettelse accepterer du vores <span onclick="navigateTo('/vilkaar')" class="sell-terms-link">vilkår og betingelser</span>.
+        Ved oprettelse accepterer du vores <span onclick="showSellTermsModal()" class="sell-terms-link">vilkår og betingelser</span>.
       </p>
       <button id="sell-submit-btn" style="display:none"></button>
     `;
@@ -683,10 +683,30 @@ export function createSellPage({
 
   function updateSellFooter() {
     const can = canAdvanceSell();
+
     const el = document.getElementById('sell-wizard-footer');
-    if (el) el.innerHTML = renderSellFooterHTML(_sellStep, can);
+    if (el) {
+      const btn = el.querySelector('.sell-wizard-cta');
+      if (btn) {
+        btn.disabled = !can;
+        btn.classList.toggle('enabled', can);
+        btn.classList.toggle('disabled', !can);
+      } else {
+        el.innerHTML = renderSellFooterHTML(_sellStep, can);
+      }
+    }
+
     const elDesk = document.getElementById('sell-desktop-footer');
-    if (elDesk) elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
+    if (elDesk) {
+      const btn = elDesk.querySelector('.sell-desktop-cta');
+      if (btn) {
+        btn.disabled = !can;
+        btn.classList.toggle('enabled', can);
+        btn.classList.toggle('disabled', !can);
+      } else {
+        elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
+      }
+    }
   }
 
   function updateSellDesktopPreview() {
@@ -1132,6 +1152,64 @@ export function createSellPage({
   /* ----------------------------------------------------------
      Public API
   ---------------------------------------------------------- */
+  function showSellTermsModal() {
+    const existing = document.getElementById('sell-terms-overlay');
+    if (existing) { existing.remove(); return; }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'sell-terms-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,26,24,0.55);z-index:9000;display:flex;align-items:flex-end;justify-content:center';
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+    const TERMS_BODY = `
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
+      <p style="margin-bottom:8px;">Cykelbørsen er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
+      <p style="margin-bottom:16px;font-size:0.85rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman · CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg · kontakt@cykelborsen.dk</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
+      <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for at de oplysninger du angiver er korrekte, at holde dine loginoplysninger fortrolige og al aktivitet under din konto. Du skal være mindst 18 år.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;margin-top:16px;">3. Platformens rolle</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
+      <p style="margin-bottom:8px;">Som sælger indestår du for at annoncen er retvisende, at du har lovlig ret til at sælge varen, og at indholdet ikke krænker tredjemands rettigheder. Vi kan uden varsel fjerne annoncer der overtræder disse vilkår.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;margin-top:16px;">5. Forhandlerkonto</h3>
+      <p style="margin-bottom:16px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto med gyldigt CVR-nummer. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
+      <p style="margin-bottom:16px;">Det er ikke tilladt at oprette annoncer for stjålne varer, anvende platformen til svindel eller spam, uploade ulovligt indhold, eller manipulere priser eller anmeldelser. Overtrædelse kan medføre øjeblikkelig kontosletning.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Ansvarsfraskrivelse</h3>
+      <p style="margin-bottom:16px;">Platformen stilles til rådighed "som den er". Vi garanterer ikke for rigtigheden af annoncer og er ikke ansvarlig for tab som følge af handler indgået via platformen.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Ændringer og kontakt</h3>
+      <p style="margin-bottom:8px;">Vi kan opdatere disse vilkår fra tid til anden. Væsentlige ændringer meddeles via e-mail. Fortsat brug udgør accept af opdaterede vilkår.</p>
+      <p>Ved spørgsmål: <strong>kontakt@cykelborsen.dk</strong></p>
+    `;
+
+    overlay.innerHTML = `
+      <div style="background:var(--cream);width:100%;max-width:680px;max-height:88vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 32px rgba(0,0,0,0.18)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
+          <div>
+            <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Juridisk</div>
+            <h2 style="font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;color:var(--charcoal);margin:0">Vilkår og betingelser</h2>
+          </div>
+          <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:36px;height:36px;border-radius:50%;background:var(--sand);border:none;color:var(--charcoal);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">×</button>
+        </div>
+        <div style="overflow-y:auto;padding:24px;flex:1;font-family:'DM Sans',sans-serif;font-size:0.88rem;line-height:1.7;color:var(--charcoal)">
+          ${TERMS_BODY}
+        </div>
+        <div style="padding:16px 24px;border-top:1px solid var(--border);flex-shrink:0;background:var(--cream)">
+          <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:100%;padding:14px;background:var(--forest);color:var(--sand);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer">
+            Forstået — fortsæt
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    document.addEventListener('keydown', function onEsc(e) {
+      if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', onEsc); }
+    });
+  }
+
   return {
     // OPRET ANNONCE MODAL
     openModal,
@@ -1158,5 +1236,6 @@ export function createSellPage({
     showListingSuccessModal,
     closeListingSuccessModal,
     renderSellImagePreviews,
+    showSellTermsModal,
   };
 }
