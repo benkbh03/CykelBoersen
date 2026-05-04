@@ -202,6 +202,9 @@ export function createMyProfilePage({
               <div id="mp-saved-grid"><p style="color:var(--muted);padding:20px 0">Henter gemte…</p></div>
             </div>
             <div id="mp-panel-searches" class="mp-tab-panel" style="display:none;">
+              <button onclick="navigateTo('/');setTimeout(()=>showToast('Sæt dine filtre og klik 🔔 for at oprette en Cykelagent'),300)" style="display:flex;align-items:center;gap:8px;background:var(--rust);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:16px;">
+                🔔 Opret ny Cykelagent
+              </button>
               <div id="mp-searches-list"><p style="color:var(--muted);padding:20px 0">Henter Cykelagenter…</p></div>
             </div>
             <div id="mp-panel-trades" class="mp-tab-panel" style="display:none;">
