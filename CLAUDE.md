@@ -34,6 +34,10 @@ CykelBoersen/
 - Hovedgren til deploy: læs aktuel branch fra `git branch --show-current`
 - Push altid til den aktuelle arbejdsgren: `git push -u origin <branch>`
 
+## Kodestil og filstruktur
+
+Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide eksisterende filer. Filer bør holdes under ~400 linjer. Eksportér funktioner og importér dem i `main.js` (eller den relevante modul). Husk at eksportere nye `onclick`-handlere til `window` i `main.js`.
+
 ## Teknologier
 
 - **Frontend**: Vanilla JS (ES modules via CDN), HTML, CSS — ingen frameworks
