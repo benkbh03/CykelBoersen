@@ -229,7 +229,7 @@ export function createMyProfile({
 
   async function saveCurrentSearch() {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at gemme søgninger'); return; }
+    if (!currentUser) { showToast('⚠️ Log ind for at oprette en Cykelagent'); return; }
 
     const search = document.getElementById('search-input').value.trim();
     const type   = document.getElementById('search-type').value;
@@ -268,8 +268,8 @@ export function createMyProfile({
       filters: { search, type, city, warranty, ...fa },
     });
 
-    if (error) { showToast('❌ Kunne ikke gemme søgning'); return; }
-    showToast('🔔 Søgning gemt! Du finder den under "Søgninger" i din profil.');
+    if (error) { showToast('❌ Kunne ikke oprette Cykelagent'); return; }
+    showToast('🔔 Cykelagent oprettet! Du får besked på e-mail når nye cykler matcher.');
 
     const btn = document.getElementById('save-search-btn');
     if (btn) { btn.style.color = 'var(--rust)'; btn.style.borderColor = 'var(--rust)'; setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 2000); }
@@ -287,15 +287,15 @@ export function createMyProfile({
         .eq('user_id', currentUser.id)
         .order('created_at', { ascending: false }));
     } catch (e) {
-      list.innerHTML = retryHTML('Kunne ikke hente gemte søgninger.', 'loadSavedSearches');
+      list.innerHTML = retryHTML('Kunne ikke hente Cykelagenter.', 'loadSavedSearches');
       return;
     }
 
-    if (error) { list.innerHTML = retryHTML('Kunne ikke hente gemte søgninger.', 'loadSavedSearches'); return; }
+    if (error) { list.innerHTML = retryHTML('Kunne ikke hente Cykelagenter.', 'loadSavedSearches'); return; }
     const searchCountEl = document.getElementById('mp-count-searches');
     if (searchCountEl) searchCountEl.textContent = data ? data.length : 0;
     if (!data || data.length === 0) {
-      list.innerHTML = `<p style="color:var(--muted)">Ingen gemte søgninger endnu. Brug 🔔 knappen ved søgefeltet for at gemme en søgning.</p>`;
+      list.innerHTML = `<p style="color:var(--muted)">Ingen Cykelagenter endnu. Brug 🔔-knappen ved søgefeltet for at oprette din første.</p>`;
       return;
     }
 
@@ -341,7 +341,7 @@ export function createMyProfile({
     showToast('Søgning slettet');
     const list = document.getElementById('my-searches-list');
     if (list && !list.querySelector('.my-listing-row')) {
-      list.innerHTML = `<p style="color:var(--muted)">Ingen gemte søgninger endnu.</p>`;
+      list.innerHTML = `<p style="color:var(--muted)">Ingen Cykelagenter endnu.</p>`;
     }
   }
 
