@@ -122,6 +122,7 @@ export function attachAddressAutocomplete(input, onSelect) {
 
         _renderDawaDropdown(input, items, async (picked) => {
           input.value = picked.fullAddress;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
           // If autocomplete didn't include coords, fetch from full adresse endpoint
           if ((!picked.lat || !picked.lng) && picked.adresseId) {
             try {
@@ -220,6 +221,7 @@ export function attachCityAutocomplete(input, onSelect) {
           input.value = picked.city;
           input.dataset.dawaLat = String(picked.lat);
           input.dataset.dawaLng = String(picked.lng);
+          input.dispatchEvent(new Event('input', { bubbles: true }));
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen byer fundet');
       } catch (e) {
