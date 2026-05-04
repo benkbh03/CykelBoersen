@@ -245,6 +245,7 @@ const listingEdit = createListingEdit({
   renderBikePage:             (...args) => renderBikePage(...args),
   renderUserProfilePage:      (...args) => renderUserProfilePage(...args),
   renderDealerProfilePage:    (...args) => renderDealerProfilePage(...args),
+  attachCityAutocomplete,
 });
 
 const {

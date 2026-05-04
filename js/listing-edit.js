@@ -20,6 +20,7 @@ export function createListingEdit({
   renderBikePage,
   renderUserProfilePage,
   renderDealerProfilePage,
+  attachCityAutocomplete,
 }) {
   let editNewFiles     = [];  // { file, url, isPrimary }
   let editExistingImgs = [];  // { id, url, is_primary, toDelete }
@@ -191,6 +192,9 @@ export function createListingEdit({
     enforceSinglePrimaryImage();
     renderEditExistingImages();
     renderEditNewImages();
+
+    const editCityInput = document.getElementById('edit-city');
+    if (editCityInput) attachCityAutocomplete(editCityInput);
 
     document.getElementById('edit-modal').classList.add('open');
     document.body.style.overflow = 'hidden';

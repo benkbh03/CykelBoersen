@@ -182,7 +182,16 @@ export function attachCityAutocomplete(input, onSelect) {
         const items = [];
         const sorted = data.slice().sort((a, b) => bboxArea(b) - bboxArea(a));
         for (const p of sorted) {
-          const name = (p.primærtnavn || (typeof p.navn === 'string' ? p.navn : '')).trim();
+          let name = '';
+          if (p.primærtnavn) {
+            name = p.primærtnavn;
+          } else if (Array.isArray(p.navn) && p.navn.length > 0) {
+            const primary = p.navn.find(n => n.brugsprioritet === 'primær') || p.navn[0];
+            name = primary?.navn || '';
+          } else if (typeof p.navn === 'string') {
+            name = p.navn;
+          }
+          name = name.trim();
           if (!name) continue;
           const key = name.toLowerCase();
           if (seen.has(key)) continue;
