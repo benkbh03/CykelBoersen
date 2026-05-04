@@ -169,47 +169,43 @@ export function attachCityAutocomplete(input, onSelect) {
     _setDawaLoading(input);
     _dawaDebounce.set(input, setTimeout(async () => {
       try {
-        const res = await fetch('https://api.dataforsyningen.dk/steder?q='
-          + encodeURIComponent(q) + '&hovedtype=Bebyggelse&per_side=20&format=json');
+        const res = await fetch('https://api.dataforsyningen.dk/autocomplete?type=postnummer&per_side=15&q='
+          + encodeURIComponent(q));
         if (!res.ok) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
         const data = await res.json();
         if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
-        function bboxArea(p) {
-          if (!p.bbox || p.bbox.length < 4) return 0;
-          return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
-        }
         const seen = new Set();
         const items = [];
-        const sorted = data.slice().sort((a, b) => bboxArea(b) - bboxArea(a));
-        for (const p of sorted) {
-          let name = '';
-          if (p.primærtnavn) {
-            name = p.primærtnavn;
-          } else if (Array.isArray(p.navn) && p.navn.length > 0) {
-            const primary = p.navn.find(n => n.brugsprioritet === 'primær') || p.navn[0];
-            name = primary?.navn || '';
-          } else if (typeof p.navn === 'string') {
-            name = p.navn;
-          }
-          name = name.trim();
+        for (const r of data) {
+          const p = r.data || {};
+          const name = (p.navn || '').trim();
+          const nr   = (p.nr || '').trim();
           if (!name) continue;
           const key = name.toLowerCase();
           if (seen.has(key)) continue;
           seen.add(key);
-          const vc = p.visueltcenter;
-          if (!vc || vc.length < 2) continue;
           items.push({
-            label: name,
+            label: r.tekst || `${nr} ${name}`,
             city:  name,
-            lat:   vc[1],
-            lng:   vc[0],
+            nr:    nr,
           });
-          if (items.length >= 12) break;
         }
-        _renderDawaDropdown(input, items, (picked) => {
+        _renderDawaDropdown(input, items, async (picked) => {
           input.value = picked.city;
-          input.dataset.dawaLat = String(picked.lat);
-          input.dataset.dawaLng = String(picked.lng);
+          // Fetch coordinates for the picked postal area
+          if (picked.nr) {
+            try {
+              const r2 = await fetch('https://api.dataforsyningen.dk/postnumre/' + picked.nr);
+              if (r2.ok) {
+                const full = await r2.json();
+                const vc = full?.visueltcenter;
+                if (vc && vc.length >= 2) {
+                  input.dataset.dawaLat = String(vc[1]);
+                  input.dataset.dawaLng = String(vc[0]);
+                }
+              }
+            } catch (_) {}
+          }
           if (typeof onSelect === 'function') onSelect(picked);
         }, 'Ingen byer fundet');
       } catch (e) {
