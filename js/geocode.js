@@ -5,21 +5,22 @@
 
 var _geocodeCache = (function() {
   try {
-    // v5: sorterer nu på befolkningstal frem for bbox-areal — rydder stale entries
-    var stored = localStorage.getItem('_geocodeCache_v5');
+    // v6: bruger /postnumre som primær kilde — rydder stale entries
+    var stored = localStorage.getItem('_geocodeCache_v6');
     if (stored) return JSON.parse(stored);
     try {
       localStorage.removeItem('_geocodeCache');
       localStorage.removeItem('_geocodeCache_v2');
       localStorage.removeItem('_geocodeCache_v3');
       localStorage.removeItem('_geocodeCache_v4');
+      localStorage.removeItem('_geocodeCache_v5');
     } catch (e) {}
     return {};
   } catch (e) { return {}; }
 })();
 
 function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache_v5', JSON.stringify(_geocodeCache)); } catch (e) {}
+  try { localStorage.setItem('_geocodeCache_v6', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
 export function invalidateGeocodeEntry(key) {
@@ -54,44 +55,45 @@ export function geocodeAddress(address, city) {
     .catch(function() { return null; });
 }
 
-// Slå dansk by op via DAWA — vælger den største match via bbox-areal,
-// falder tilbage på /postnumre hvis /steder ikke returnerer koordinater
+// Slå dansk by op via DAWA — prøver /postnumre først (mest præcist for bydele),
+// falder tilbage på /steder hvis postnumre ikke returnerer match
 export function geocodeCity(city) {
   var key = city.toLowerCase().trim();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  return fetch('https://api.dataforsyningen.dk/steder?q='
-    + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=10&format=json')
+  // Primær: /postnumre — præcist for bydele og bynavne (Valby, Frederiksberg osv.)
+  return fetch('https://api.dataforsyningen.dk/postnumre?q='
+    + encodeURIComponent(city) + '&per_side=5&format=json')
     .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var candidates = Array.isArray(data) ? data.filter(function(p) { return p.visueltcenter; }) : [];
-      if (candidates.length > 0) {
-        // Sortér primært på befolkningstal (størst = mest relevant), sekundært på bbox-areal
-        function bboxArea(p) {
-          if (!p.bbox || p.bbox.length < 4) return 0;
-          return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
-        }
-        candidates.sort(function(a, b) {
-          var popA = a.indbyggerantal || 0;
-          var popB = b.indbyggerantal || 0;
-          if (popB !== popA) return popB - popA;
-          return bboxArea(b) - bboxArea(a);
-        });
-        var best = candidates[0];
-        var coords = [best.visueltcenter[1], best.visueltcenter[0]];
-        _geocodeCache[key] = coords;
-        _saveGeocodeCache();
-        return coords;
-      }
-      // Fallback: /postnumre endpoint
-      return fetch('https://api.dataforsyningen.dk/postnumre?q='
-        + encodeURIComponent(city) + '&per_side=5&format=json')
-        .then(function(r) { return r.json(); })
-        .then(function(pdata) {
-          if (!Array.isArray(pdata) || pdata.length === 0) return null;
-          var hit = pdata.find(function(p) { return p.visueltcenter; });
-          if (!hit) return null;
+    .then(function(pdata) {
+      if (Array.isArray(pdata) && pdata.length > 0) {
+        var hit = pdata.find(function(p) { return p.visueltcenter; });
+        if (hit) {
           var coords = [hit.visueltcenter[1], hit.visueltcenter[0]];
+          _geocodeCache[key] = coords;
+          _saveGeocodeCache();
+          return coords;
+        }
+      }
+      // Fallback: /steder — dækker steder uden postnummer
+      return fetch('https://api.dataforsyningen.dk/steder?q='
+        + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=10&format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var candidates = Array.isArray(data) ? data.filter(function(p) { return p.visueltcenter; }) : [];
+          if (candidates.length === 0) return null;
+          function bboxArea(p) {
+            if (!p.bbox || p.bbox.length < 4) return 0;
+            return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
+          }
+          candidates.sort(function(a, b) {
+            var popA = a.indbyggerantal || 0;
+            var popB = b.indbyggerantal || 0;
+            if (popB !== popA) return popB - popA;
+            return bboxArea(b) - bboxArea(a);
+          });
+          var best = candidates[0];
+          var coords = [best.visueltcenter[1], best.visueltcenter[0]];
           _geocodeCache[key] = coords;
           _saveGeocodeCache();
           return coords;
