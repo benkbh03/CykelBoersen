@@ -101,7 +101,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Virksomhedsoplysninger</h3>
-      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
+      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
     `
   },
   terms: {
@@ -111,7 +111,7 @@ export const footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
-      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for:</p>
@@ -189,7 +189,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Disse vilkår er underlagt dansk ret. Eventuelle tvister skal forsøges løst i mindelighed. Hvis dette ikke er muligt, afgøres tvisten ved de danske domstole. Som forbruger kan du også klage til <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a> eller <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">EU's online klageportal</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">14. Kontakt</h3>
-      <p>Ved spørgsmål til disse vilkår kan du kontakte os på <strong>kontakt@cykelborsen.dk</strong>. Se virksomhedsoplysninger i sektion 1.</p>
+      <p>Ved spørgsmål til disse vilkår kan du kontakte os på <strong>hej@cykelbørsen.dk</strong>. Se virksomhedsoplysninger i sektion 1.</p>
     `
   },
   privacy: {
@@ -199,7 +199,7 @@ export const footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
-      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: kontakt@cykelborsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
       <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
@@ -286,7 +286,7 @@ export const footerContent = {
         <li><strong>Ret til dataportabilitet</strong> (art. 20) — Du kan anmode om at modtage dine data i et struktureret, maskinlæsbart format.</li>
         <li><strong>Ret til indsigelse</strong> (art. 21) — Du kan gøre indsigelse mod behandling baseret på legitim interesse.</li>
       </ul>
-      <p style="margin-bottom:16px;">For at udøve dine rettigheder, kontakt os på <strong>kontakt@cykelborsen.dk</strong>. Vi svarer inden for 30 dage.</p>
+      <p style="margin-bottom:16px;">For at udøve dine rettigheder, kontakt os på <strong>hej@cykelbørsen.dk</strong>. Vi svarer inden for 30 dage.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Klage til tilsynsmyndighed</h3>
       <p style="margin-bottom:16px;">Hvis du mener at vi behandler dine personoplysninger i strid med GDPR, har du ret til at klage til <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Datatilsynet</a> (datatilsynet.dk), Carl Jacobsens Vej 35, 2500 Valby, tlf. 33 19 32 00.</p>
@@ -295,7 +295,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Vi kan opdatere denne privatlivspolitik. Væsentlige ændringer meddeles via e-mail til registrerede brugere. Den gældende version er altid tilgængelig her på platformen.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Kontakt</h3>
-      <p>Spørgsmål om persondata rettes til <strong>kontakt@cykelborsen.dk</strong>. Se fulde virksomhedsoplysninger i sektion 1.</p>
+      <p>Spørgsmål om persondata rettes til <strong>hej@cykelbørsen.dk</strong>. Se fulde virksomhedsoplysninger i sektion 1.</p>
     `
   },
   cookies: {
@@ -338,7 +338,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt</h3>
-      <p>Spørgsmål om vores brug af cookies rettes til <strong>kontakt@cykelborsen.dk</strong>.</p>
+      <p>Spørgsmål om vores brug af cookies rettes til <strong>hej@cykelbørsen.dk</strong>.</p>
     `
   },
   contact: {
@@ -351,7 +351,7 @@ export const footerContent = {
           <span style="font-size:1.4rem;">📧</span>
           <div>
             <div style="font-weight:600;font-size:0.88rem;">E-mail</div>
-            <div style="color:var(--muted);font-size:0.85rem;">kontakt@cykelborsen.dk</div>
+            <div style="color:var(--muted);font-size:0.85rem;">hej@cykelbørsen.dk</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
