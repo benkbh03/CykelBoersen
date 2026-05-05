@@ -7,4 +7,5 @@ export const STATIC_PAGE_ROUTES = {
   privacy: '/privatlivspolitik',
   contact: '/kontakt',
   'guide-tjek': '/guide/tjek-brugt-cykel',
+  cookies: '/cookiepolitik',
 };

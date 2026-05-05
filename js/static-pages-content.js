@@ -95,7 +95,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Det er helt gratis at oprette en annonce som privat sælger. Upload billeder, sæt din pris, og kom i kontakt med interesserede købere direkte via vores beskedsystem.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For forhandlere</h3>
-      <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer med et abonnement. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere.</p>
+      <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer helt gratis. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere. Det kræver ingen betaling eller binding at oprette en forhandlerkonto.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt os</h3>
       <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
@@ -107,7 +107,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 5. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -136,7 +136,18 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
-      <p style="margin-bottom:16px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
+      <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 30 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres reklamationsforpligtelser</h3>
+      <p style="margin-bottom:8px;">Forhandlere der sælger brugte cykler til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning, herunder:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Reklamationsret:</strong> Forbrugere har 2 års reklamationsret på nye varer og mindst 1 års reklamationsret på brugte varer jf. købelovens § 83.</li>
+        <li><strong>Fortrydelsesret:</strong> Ved fjernsalg (fx aftaler indgået via beskedsystemet) har forbrugere 14 dages fortrydelsesret jf. forbrugeraftalelovens § 18.</li>
+        <li><strong>Oplysningspligt:</strong> Forhandlere skal tydeligt oplyse om reklamationsret, pris inkl. eventuelle gebyrer og leveringsbetingelser.</li>
+        <li><strong>Markedsføringsloven:</strong> Al kommunikation og annoncering skal være sandfærdig og ikke vildledende.</li>
+      </ul>
+      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse af ovenstående. Tvister mellem forbrugere og forhandlere skal løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
@@ -163,7 +174,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Platformen stilles til rådighed "som den er" uden garantier af nogen art, i det omfang gældende lovgivning tillader det.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Sletning af konto</h3>
-      <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent. Eventuelle aktive forhandlerabonnementer skal opsiges separat via Stripe.</p>
+      <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Fortrydelsesret</h3>
       <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, gælder der ingen fortrydelsesret for oprettelse af brugerkonti eller annoncer — disse kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger, og er underlagt købelovens almindelige regler om fortrydelsesret ved fjernsalg mellem forbruger og erhvervsdrivende (14 dages fortrydelsesret jf. forbrugeraftalelovens kap. 4). Ved private handler mellem to privatpersoner gælder fortrydelsesretten ikke.</p>
@@ -184,7 +195,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 5. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -285,6 +296,49 @@ export const footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Kontakt</h3>
       <p>Spørgsmål om persondata rettes til <strong>kontakt@cykelborsen.dk</strong>. Se fulde virksomhedsoplysninger i sektion 1.</p>
+    `
+  },
+  cookies: {
+    title: 'Cookiepolitik',
+    metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
+    body: `
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 5. maj 2026</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
+      <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. De kan bruges til at huske indstillinger, holde dig logget ind og indsamle statistik om besøg.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvilke cookies bruger vi?</h3>
+      <p style="margin-bottom:8px;">Vi bruger <strong>udelukkende teknisk nødvendige cookies</strong> — det vil sige cookies der er strengt nødvendige for at hjemmesiden kan fungere. Vi bruger <strong>ikke</strong> analyse-cookies, tracking-cookies eller markedsføringscookies.</p>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;font-weight:600;">Navn</td>
+          <td style="padding:8px 8px 8px 0;font-weight:600;">Formål</td>
+          <td style="padding:8px 0;font-weight:600;">Levetid</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">sb-* (Supabase session)</td>
+          <td style="padding:8px 8px 8px 0;">Holder dig logget ind</td>
+          <td style="padding:8px 0;">Session / 1 år</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">localStorage (browser)</td>
+          <td style="padding:8px 8px 8px 0;">Gemmer søgefiltre og præferencer lokalt</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+      </table>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kræves der samtykke?</h3>
+      <p style="margin-bottom:16px;">Da vi udelukkende anvender teknisk nødvendige cookies, kræves der ikke samtykke jf. cookiebekendtgørelsens § 4, stk. 2. Vi viser derfor ikke en cookie-banner.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Tredjepartscookies</h3>
+      <p style="margin-bottom:16px;">Vi bruger ingen tredjepartscookies til tracking eller annoncering. Vores betalingspartner Stripe kan sætte egne cookies ved besøg på betalingssider — disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Sådan sletter du cookies</h3>
+      <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt</h3>
+      <p>Spørgsmål om vores brug af cookies rettes til <strong>kontakt@cykelborsen.dk</strong>.</p>
     `
   },
   contact: {
