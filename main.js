@@ -1097,7 +1097,7 @@ function handleRoute() {
   const dealerApply  = path === '/bliv-forhandler';
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
-  const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek' }[path];
+  const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek', '/cookiepolitik': 'cookies' }[path];
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
