@@ -328,11 +328,11 @@ nav {
   background-image:
     radial-gradient(circle at 80% 90%, rgba(200,80,42,0.13) 0, transparent 48%),
     radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.09) 0, transparent 45%),
-    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.40) 0%, transparent 100%),
+    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.28) 0%, transparent 100%),
     linear-gradient(180deg,
-      rgba(14,22,15,0.30) 0%,
-      rgba(14,22,15,0.05) 48%,
-      rgba(14,22,15,0.36) 100%
+      rgba(14,22,15,0.16) 0%,
+      rgba(14,22,15,0.01) 50%,
+      rgba(14,22,15,0.20) 100%
     ),
     url('/hero.jpg.png');
   background-size: auto, auto, auto, auto, cover;
