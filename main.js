@@ -42,6 +42,7 @@ import { createProfilePages } from './js/profile-pages.js';
 import { createInbox } from './js/inbox.js';
 import { createMyProfilePage } from './js/my-profile-page.js';
 import { createDealersPage } from './js/dealers-page.js';
+import { createCykelagentCta } from './js/cykelagent-cta.js';
 
 // Global bruger-cache — hentes én gang ved init
 let currentUser    = null;
@@ -108,6 +109,8 @@ const {
   setActiveRadius:      v => { activeRadius = v; },
 });
 
+const { updateCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters });
+
 // Bike list (loadBikes/renderBikes/searchBikes/loadBikesWithFilters).
 // filterOffset deklareres længere nede; closures over for-getterne læser
 // bindingen lazy ved kald.
@@ -120,7 +123,7 @@ const {
 } = createBikesList({
   supabase, BIKES_PAGE_SIZE,
   esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML,
-  updateActiveFiltersBar, applyNearMeFilter, hasActiveFilters, describeActiveFilters,
+  updateActiveFiltersBar, updateCykelagentCta, applyNearMeFilter, hasActiveFilters, describeActiveFilters,
   getBikesOffset:       () => bikesOffset,
   setBikesOffset:       v => { bikesOffset = v; },
   getFilterOffset:      () => filterOffset,

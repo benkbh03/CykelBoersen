@@ -8,6 +8,7 @@ export function createBikesList({
   retryHTML,
   // Collaborator functions
   updateActiveFiltersBar,
+  updateCykelagentCta,
   applyNearMeFilter,
   hasActiveFilters,
   describeActiveFilters,
@@ -96,6 +97,7 @@ export function createBikesList({
 
     renderBikes(data, append, saveCounts, localUserSavedSet);
     updateActiveFiltersBar();
+    updateCykelagentCta();
 
     setBikesOffset(getBikesOffset() + data.length);
 
@@ -273,6 +275,7 @@ export function createBikesList({
 
     renderBikes(data || [], append);
     updateActiveFiltersBar();
+    updateCykelagentCta();
     setFilterOffset(getFilterOffset() + (data || []).length);
 
     const existing = document.getElementById('load-more-btn');
