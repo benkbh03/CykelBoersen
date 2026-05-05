@@ -1,3 +1,8 @@
+// Byer der dækker flere kommuner/distrikter under samme søgeord
+const CITY_GROUPS = {
+  'København': ['København', 'Frederiksberg'],
+};
+
 export function createBikesList({
   supabase,
   BIKES_PAGE_SIZE,
@@ -54,7 +59,14 @@ export function createBikesList({
       .range(offset, offset + BIKES_PAGE_SIZE - 1);
 
     if (filters.type)       query = query.eq('type', filters.type);
-    if (filters.city)       query = query.ilike('city', `%${filters.city}%`);
+    if (filters.city) {
+      const group = CITY_GROUPS[filters.city];
+      if (group) {
+        query = query.or(group.map(c => `city.ilike.%${c}%`).join(','));
+      } else {
+        query = query.ilike('city', `%${filters.city}%`);
+      }
+    }
     if (filters.maxPrice)   query = query.lte('price', filters.maxPrice);
     if (filters.search) {
       const s = filters.search.replace(/[%_\\,.()"']/g, '');
