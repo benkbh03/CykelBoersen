@@ -4,6 +4,7 @@
 
 :root {
   --sand:         #F5F0E8;
+  --sand-2:       #EDE8DF;
   --rust:         #C8502A;
   --rust-light:   #E8694A;
   --forest:       #2A3D2E;
@@ -25,6 +26,12 @@ html {
 /* Forhindrer iOS Safari auto-zoom ved fokus på inputs (sker når font-size < 16px) */
 @media (max-width: 768px) {
   input, select, textarea { font-size: 16px !important; }
+}
+
+/* Keyboard focus ring — gælder alle interaktive elementer */
+:focus-visible {
+  outline: 2px solid var(--rust-light);
+  outline-offset: 2px;
 }
 
 /* Skjult tekst kun for skærmlæsere */
@@ -54,12 +61,13 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 48px;
+  padding: 12px 48px;
   background: var(--forest-light);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(0,0,0,0.22);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+  backdrop-filter: blur(4px);
 }
 .logo {
   font-family: 'Fraunces', serif;
@@ -84,14 +92,23 @@ nav {
   background: var(--rust);
   color: #fff !important;
   opacity: 1 !important;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 9px 18px;
+  border-radius: 9px;
   font-weight: 600 !important;
   font-size: 0.88rem !important;
-  transition: background 0.2s !important;
-  box-shadow: 0 4px 14px -3px rgba(200,80,42,0.5);
+  letter-spacing: 0.01em;
+  transition: background 0.2s, transform 0.18s, box-shadow 0.18s !important;
+  box-shadow: 0 3px 12px -2px rgba(200,80,42,0.45);
 }
-.btn-sell:hover { background: var(--rust-light) !important; }
+.btn-sell:hover {
+  background: var(--rust-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55) !important;
+}
+.btn-sell:focus-visible {
+  outline: 2px solid rgba(232,105,74,0.7);
+  outline-offset: 3px;
+}
 
 /* Nav profil */
 .nav-profile { margin-left: 4px; display: flex; align-items: center; gap: 6px; }
@@ -107,6 +124,7 @@ nav {
   display: flex; align-items: center; justify-content: center;
 }
 .profile-avatar-btn:hover { background: var(--rust-light); }
+.profile-avatar-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
 
 /* Nav indbakke */
 .nav-inbox-btn {
@@ -120,6 +138,7 @@ nav {
   opacity: 0.75;
 }
 .nav-inbox-btn:hover { opacity: 1; }
+.nav-inbox-btn:focus-visible { outline-color: rgba(245,240,232,0.7); border-radius: 8px; }
 .nav-inbox-badge {
   position: absolute; top: -2px; right: -2px;
   background: var(--rust); color: #fff;
@@ -307,15 +326,18 @@ nav {
 .search-section {
   background: var(--forest);
   background-image:
-    radial-gradient(circle at 85% 100%, rgba(200,80,42,0.18) 0, transparent 55%),
-    radial-gradient(circle at 12% 0%, rgba(217,168,92,0.10) 0, transparent 50%),
-    radial-gradient(ellipse at 50% 45%, rgba(31,46,34,0.0) 0%, rgba(31,46,34,0.15) 90%),
-    linear-gradient(180deg, rgba(31,46,34,0.10) 0%, rgba(31,46,34,0.0) 45%, rgba(31,46,34,0.30) 100%),
+    radial-gradient(circle at 80% 90%, rgba(200,80,42,0.14) 0, transparent 48%),
+    radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.08) 0, transparent 45%),
+    linear-gradient(180deg,
+      rgba(14,22,15,0.52) 0%,
+      rgba(14,22,15,0.22) 45%,
+      rgba(14,22,15,0.58) 100%
+    ),
     url('/hero.jpg.png');
-  background-size: auto, auto, auto, auto, cover;
-  background-position: center, center, center, center, center 40%;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-  padding: 64px 48px 64px;
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center 40%;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  padding: 72px 48px 52px;
 }
 .search-hero-text { text-align: center; margin-bottom: 28px; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
@@ -333,17 +355,17 @@ nav {
 }
 .search-hero-title {
   font-family: 'Fraunces', serif; font-size: 3.8rem; font-weight: 600;
-  color: var(--sand); line-height: 1.02; letter-spacing: -0.045em;
-  margin: 0 0 14px; text-wrap: balance;
-  text-shadow: 0 2px 28px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.38);
+  color: #fff; line-height: 1.02; letter-spacing: -0.045em;
+  margin: 0 0 16px; text-wrap: balance;
+  text-shadow: 0 2px 36px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.5);
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: 600;
 }
 .search-hero-sub {
-  color: rgba(245,240,232,0.88); font-size: 0.97rem;
-  line-height: 1.5; max-width: 480px; margin: 0 auto;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.35);
+  color: rgba(245,240,232,0.96); font-size: 1rem; font-weight: 400;
+  line-height: 1.55; max-width: 480px; margin: 0 auto;
+  text-shadow: 0 1px 14px rgba(0,0,0,0.55);
 }
 /* ── HERO KATEGORI-CHIPS ── */
 .hero-cat-chips {
@@ -364,18 +386,25 @@ nav {
   backdrop-filter: blur(4px);
   font-family: 'DM Sans', sans-serif;
 }
-.hero-cat-chip:hover { background: rgba(245,240,232,0.16); border-color: rgba(245,240,232,0.32); }
+.hero-cat-chip:hover { background: rgba(245,240,232,0.18); border-color: rgba(245,240,232,0.38); }
+.hero-cat-chip:focus-visible { outline-color: rgba(245,240,232,0.8); }
 .hero-cat-chip.active {
-  background: var(--charcoal); border-color: var(--charcoal);
+  background: rgba(245,240,232,0.97); border-color: transparent;
+  color: var(--forest); font-weight: 600;
   backdrop-filter: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-.search-bar-wrap { max-width: 920px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+.search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
   background: var(--cream); border-radius: 999px;
-  padding: 7px 7px 7px 7px;
-  box-shadow: 0 24px 50px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(26,26,24,0.05);
+  padding: 5px;
+  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(26,26,24,0.06);
   overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.search-bar:focus-within {
+  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 2px rgba(42,61,46,0.35);
 }
 .search-bar-field {
   position: relative; display: flex; align-items: center;
@@ -385,15 +414,15 @@ nav {
 .search-bar-query > .search-bar-icon { color: var(--muted); flex-shrink: 0; width: 18px; height: 18px; }
 .search-bar input {
   flex: 1; border: none; background: transparent;
-  padding: 11px 6px; font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem; color: var(--charcoal); outline: none; min-width: 0;
+  padding: 9px 6px; font-family: 'DM Sans', sans-serif;
+  font-size: 0.93rem; color: var(--charcoal); outline: none; min-width: 0;
 }
 .search-bar select {
   flex: 1; border: none; background: transparent;
-  padding: 11px 34px 11px 18px;
-  font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+  padding: 9px 32px 9px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
   color: var(--charcoal); font-weight: 500;
-  outline: none; cursor: pointer; min-width: 150px;
+  outline: none; cursor: pointer; min-width: 140px;
   appearance: none; -webkit-appearance: none;
 }
 .search-bar-chev {
@@ -405,15 +434,16 @@ nav {
 }
 .search-pill-btn {
   background: var(--rust); color: #fff;
-  border: none; padding: 12px 28px; border-radius: 999px;
-  cursor: pointer; font-size: 0.95rem; font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
-  white-space: nowrap; transition: background 0.2s; flex-shrink: 0;
-  display: inline-flex; align-items: center; gap: 8px;
+  border: none; padding: 10px 24px; border-radius: 999px;
+  cursor: pointer; font-size: 0.93rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
+  white-space: nowrap; transition: background 0.2s, transform 0.18s, box-shadow 0.18s;
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px;
   box-shadow: 0 4px 14px -2px rgba(200,80,42,0.5);
 }
-.search-pill-btn svg { width: 16px; height: 16px; }
-.search-pill-btn:hover { background: var(--rust-light); }
+.search-pill-btn svg { width: 15px; height: 15px; }
+.search-pill-btn:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55); }
+.search-pill-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
 #save-search-btn {
   background: rgba(245,240,232,0.1) !important;
   border: 1px solid rgba(245,240,232,0.2) !important;
@@ -446,7 +476,7 @@ nav {
 .main {
   display: grid; grid-template-columns: 260px 1fr;
   gap: 36px; max-width: 1300px;
-  margin: 0 auto; padding: 36px 48px;
+  margin: 0 auto; padding: 32px 48px;
 }
 
 /* ── SIDEBAR ── */
