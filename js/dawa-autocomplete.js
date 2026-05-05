@@ -124,7 +124,6 @@ export function attachAddressAutocomplete(input, onSelect) {
 
         _renderDawaDropdown(input, items, async (picked) => {
           input.value = picked.fullAddress;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
           // If autocomplete didn't include coords, fetch from full adresse endpoint
           if ((!picked.lat || !picked.lng) && picked.adresseId) {
             try {
