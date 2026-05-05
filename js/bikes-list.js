@@ -1,6 +1,21 @@
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
-  'København': ['København', 'Frederiksberg'],
+  'København': [
+    'København', 'Frederiksberg', 'Gentofte', 'Hellerup', 'Charlottenlund',
+    'Klampenborg', 'Gladsaxe', 'Søborg', 'Lyngby', 'Herlev', 'Rødovre',
+    'Hvidovre', 'Brøndby', 'Glostrup', 'Albertslund', 'Tårnby', 'Kastrup',
+    'Dragør', 'Vallensbæk', 'Ishøj', 'Taastrup', 'Ballerup', 'Birkerød',
+  ],
+  'Aarhus': [
+    'Aarhus', 'Brabrand', 'Viby', 'Højbjerg', 'Risskov', 'Lystrup',
+    'Tilst', 'Skejby', 'Tranbjerg', 'Malling', 'Beder', 'Egå',
+  ],
+  'Odense': [
+    'Odense', 'Bellinge', 'Tarup', 'Hjallese', 'Dalum', 'Sanderum', 'Seden',
+  ],
+  'Aalborg': [
+    'Aalborg', 'Nørresundby', 'Svenstrup', 'Vejgaard', 'Frejlev', 'Gistrup',
+  ],
 };
 
 export function createBikesList({
