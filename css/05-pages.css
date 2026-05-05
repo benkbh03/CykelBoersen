@@ -432,10 +432,10 @@
   .stat-bar-item { padding: 0 20px 0 0; flex-shrink: 0; }
   .stat-bar-divider { margin: 0 20px 0 0; }
   .stat-bar-num { font-size: 1.1rem; }
-  .search-section { padding: 26px 16px 36px; }
-  .search-hero-text { margin-bottom: 18px; }
-  .search-hero-title { font-size: 2rem; letter-spacing: -0.03em; }
-  .search-hero-sub { font-size: 0.85rem; }
+  .search-section { padding: 36px 16px 44px; }
+  .search-hero-text { margin-bottom: 20px; }
+  .search-hero-title { font-size: 2.15rem; letter-spacing: -0.03em; }
+  .search-hero-sub { font-size: 0.88rem; }
   .search-hero-pill { font-size: 0.68rem; padding: 4px 10px; margin-bottom: 12px; }
   .search-bar-wrap { flex-direction: column; gap: 8px; }
   .search-bar {
@@ -517,6 +517,9 @@
   .listings-grid { grid-template-columns: repeat(2, 1fr); }
   .dealer-cards { grid-template-columns: repeat(2, 1fr); }
   .modal { max-width: 600px; }
+  .search-section { padding: 52px 32px 44px; }
+  .search-hero-title { font-size: 3.1rem; }
+  .search-bar-wrap { max-width: 720px; }
 }
 
 @media (min-width: 769px) {
