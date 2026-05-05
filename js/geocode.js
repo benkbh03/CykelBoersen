@@ -5,20 +5,21 @@
 
 var _geocodeCache = (function() {
   try {
-    // v4: rydder stale null-entries fra v3 (null blev cachet permanent ved fejl)
-    var stored = localStorage.getItem('_geocodeCache_v4');
+    // v5: sorterer nu på befolkningstal frem for bbox-areal — rydder stale entries
+    var stored = localStorage.getItem('_geocodeCache_v5');
     if (stored) return JSON.parse(stored);
     try {
       localStorage.removeItem('_geocodeCache');
       localStorage.removeItem('_geocodeCache_v2');
       localStorage.removeItem('_geocodeCache_v3');
+      localStorage.removeItem('_geocodeCache_v4');
     } catch (e) {}
     return {};
   } catch (e) { return {}; }
 })();
 
 function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache_v4', JSON.stringify(_geocodeCache)); } catch (e) {}
+  try { localStorage.setItem('_geocodeCache_v5', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
 export function invalidateGeocodeEntry(key) {
@@ -65,11 +66,17 @@ export function geocodeCity(city) {
     .then(function(data) {
       var candidates = Array.isArray(data) ? data.filter(function(p) { return p.visueltcenter; }) : [];
       if (candidates.length > 0) {
+        // Sortér primært på befolkningstal (størst = mest relevant), sekundært på bbox-areal
         function bboxArea(p) {
           if (!p.bbox || p.bbox.length < 4) return 0;
           return Math.abs((p.bbox[2] - p.bbox[0]) * (p.bbox[3] - p.bbox[1]));
         }
-        candidates.sort(function(a, b) { return bboxArea(b) - bboxArea(a); });
+        candidates.sort(function(a, b) {
+          var popA = a.indbyggerantal || 0;
+          var popB = b.indbyggerantal || 0;
+          if (popB !== popA) return popB - popA;
+          return bboxArea(b) - bboxArea(a);
+        });
         var best = candidates[0];
         var coords = [best.visueltcenter[1], best.visueltcenter[0]];
         _geocodeCache[key] = coords;
