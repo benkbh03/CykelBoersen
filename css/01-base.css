@@ -570,41 +570,52 @@ nav {
 .color-swatch-label { flex: 1; }
 .color-swatch .filter-count { font-size: 0.72rem; }
 
-/* Form-versions: lidt større layout + tydeligere farvedot */
+/* Form-versions: tile-grid */
 .form-group .color-swatch-grid,
 .sell-field .color-swatch-grid {
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 6px;
 }
-.form-group .color-swatch,
-.sell-field .color-swatch {
-  padding: 8px 10px;
-  gap: 10px;
+
+/* ── Farve-tile (sælgerflow) ─────────────────────── */
+.color-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 6px 10px;
+  border-radius: 10px;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+  min-height: 60px;
+  position: relative;
+  overflow: hidden;
 }
-.form-group .color-swatch-dot,
-.sell-field .color-swatch-dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid rgba(0,0,0,0.12);
-  box-shadow: none;
-  flex-shrink: 0;
+.color-tile:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+.color-tile[data-dark="true"]  { color: #fff; }
+.color-tile[data-dark="false"] { color: #1a1a18; }
+.color-tile input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+
+.color-tile-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
-.form-group .color-swatch[data-color="Hvid"] .color-swatch-dot,
-.sell-field .color-swatch[data-color="Hvid"] .color-swatch-dot {
-  border: 2px solid rgba(0,0,0,0.18);
-  box-shadow: none;
+.color-tile[data-dark="false"] .color-tile-label { text-shadow: none; }
+
+.color-tile-check {
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.12s;
 }
-.form-group .color-swatch.is-on,
-.sell-field .color-swatch.is-on {
-  border-color: var(--forest);
-  background: #edf4ee;
-}
-.form-group .color-swatch.is-on .color-swatch-dot,
-.sell-field .color-swatch.is-on .color-swatch-dot {
-  outline: 2px solid var(--forest);
-  outline-offset: 2px;
-}
+.color-tile.is-on .color-tile-check { opacity: 1; }
+.color-tile.is-on { border-color: currentColor; box-shadow: 0 0 0 1px currentColor; }
+.color-tile[data-dark="false"].is-on { border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
 
 /* Hjulstørrelse info */
 .wheel-info-btn {

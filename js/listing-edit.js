@@ -176,7 +176,7 @@ export function createListingEdit({
     document.getElementById('edit-city').value          = b.city || '';
     const editColorGrid = document.getElementById('edit-color-grid');
     const initialEditColors = Array.isArray(b.colors) ? b.colors : (b.color ? b.color.split(/[,/]\s*/).map(s => s.trim()).filter(Boolean) : []);
-    renderColorSwatches(editColorGrid, { selected: initialEditColors });
+    renderColorSwatches(editColorGrid, { selected: initialEditColors, variant: 'tile' });
     document.getElementById('edit-description').value   = b.description || '';
     document.getElementById('edit-type').value          = b.type || '';
     document.getElementById('edit-size').value          = b.size || '';

@@ -9,16 +9,26 @@ import { BIKE_COLORS } from './config.js';
  * Render swatches ind i et grid-element. Hvert swatch er en label med checkbox.
  * @param {HTMLElement} container — grid-elementet
  * @param {object} opts
- * @param {string[]} [opts.selected] — valgte farver fra start
+ * @param {string[]} [opts.selected]   — valgte farver fra start
  * @param {string}   [opts.filterAttr] — sæt data-filter="<value>" på checkbox (sidebar-filter)
- * @param {Function} [opts.onChange] — callback ved ændring
+ * @param {Function} [opts.onChange]   — callback ved ændring
+ * @param {string}   [opts.variant]    — 'chip' (sidebar-dot) eller 'tile' (fuld farve, form)
  */
-export function renderColorSwatches(container, { selected = [], filterAttr = null, onChange = null } = {}) {
+export function renderColorSwatches(container, { selected = [], filterAttr = null, onChange = null, variant = 'chip' } = {}) {
   if (!container) return;
   const sel = new Set(selected);
   container.innerHTML = BIKE_COLORS.map(c => {
     const isOn = sel.has(c.name);
     const filterAttrHtml = filterAttr ? `data-filter="${filterAttr}" data-value="${c.name}"` : '';
+    if (variant === 'tile') {
+      return `
+        <label class="color-swatch color-tile ${isOn ? 'is-on' : ''}" data-color="${c.name}" data-dark="${c.dark}" style="background:${c.hex};">
+          <input type="checkbox" ${filterAttrHtml} value="${c.name}" ${isOn ? 'checked' : ''}>
+          <span class="color-tile-label">${c.name}</span>
+          <span class="color-tile-check" aria-hidden="true">✓</span>
+        </label>
+      `;
+    }
     return `
       <label class="color-swatch ${isOn ? 'is-on' : ''}" data-color="${c.name}">
         <input type="checkbox" ${filterAttrHtml} value="${c.name}" ${isOn ? 'checked' : ''}>
