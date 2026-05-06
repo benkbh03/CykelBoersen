@@ -3,6 +3,9 @@
    Factory for OPRET ANNONCE MODAL + OPRET ANNONCE SIDE (#/sell)
    ============================================================ */
 
+import { BIKE_COLORS } from './config.js';
+import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
+
 /**
  * @param {object} deps
  * @param {object}   deps.supabase
@@ -67,7 +70,7 @@ export function createSellPage({
   const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-wheel-size',
-    'sell-year', 'sell-condition', 'sell-city', 'sell-color', 'sell-desc',
+    'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
     'sell-price', 'sell-warranty',
   ];
 
@@ -222,7 +225,7 @@ export function createSellPage({
       const condition = getVal('sell-condition');
       const wheelSize = getVal('sell-wheel-size') || null;
       const warranty  = getVal('sell-warranty') || null;
-      const color     = getVal('sell-color') || null;
+      const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       if (!brand || !model || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
@@ -235,7 +238,8 @@ export function createSellPage({
         type, size: size || null, condition,
         wheel_size: wheelSize || null,
         warranty: warranty || null,
-        color: color || null,
+        color: colors.length ? colors.join(', ') : null,
+        colors: colors.length ? colors : null,
         title: `${brand} ${model}`,
         is_active: true,
       };
@@ -454,8 +458,8 @@ export function createSellPage({
       </div>
 
       <div class="sell-field">
-        <label>Farve</label>
-        <input type="text" id="sell-color" placeholder="Sort, Hvid, Rød …" value="${esc(c['sell-color'] || '')}" class="${aiClass}">
+        <label>Farve(r) <span class="hint">(vælg én eller flere)</span></label>
+        <div class="color-swatch-grid" id="sell-color-grid"></div>
       </div>
 
       <div class="sell-field">
@@ -484,7 +488,7 @@ export function createSellPage({
     const wheel = c['sell-wheel-size'] || '';
     const year  = c['sell-year'] || '';
     const cond  = c['sell-condition'] || '';
-    const color = c['sell-color'] || '';
+    const colors = Array.isArray(c['sell-colors']) ? c['sell-colors'] : [];
     const price = c['sell-price'] || '';
 
     const _sf = getSelectedFiles();
@@ -500,7 +504,7 @@ export function createSellPage({
       ['Type', type || '—'],
       ['Størrelse', [size, wheel].filter(Boolean).join(' · ') || '—'],
       ['Årgang · Stand', [year, cond].filter(Boolean).join(' · ') || '—'],
-      ['Farve', color || '—'],
+      ['Farve', colors.length ? colors.join(', ') : '—'],
       ['Pris', price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—'],
       ['Billeder', `${_sf.length} uploadet`],
     ];
@@ -717,7 +721,7 @@ export function createSellPage({
   function captureSellFormCache() {
     if (_sellStep === 2) {
       ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
-       'sell-year','sell-condition','sell-color','sell-price','sell-warranty'].forEach(id => {
+       'sell-year','sell-condition','sell-price','sell-warranty'].forEach(id => {
         const el = document.getElementById(id);
         if (el) _sellFormCache[id] = el.value;
       });
@@ -768,9 +772,16 @@ export function createSellPage({
       if (_aiSuggestionPending) {
         setTimeout(() => { applyAiSuggestion(_aiSuggestionPending); _aiSuggestionPending = null; }, 50);
       }
+      // Color swatches
+      const colorGrid = document.getElementById('sell-color-grid');
+      const initialColors = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
+      renderColorSwatches(colorGrid, {
+        selected: initialColors,
+        onChange: (sel) => { _sellFormCache['sell-colors'] = sel; refreshOnChange(); },
+      });
       // Live footer + preview updates
       ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
-       'sell-year','sell-condition','sell-color','sell-price'].forEach(id => {
+       'sell-year','sell-condition','sell-price'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener('input', () => { captureSellFormCache(); refreshOnChange(); });
@@ -1111,7 +1122,13 @@ export function createSellPage({
     setField('sell-wheel-size', s.wheel_size);
     setField('sell-year', s.year);
     setField('sell-condition', s.condition);
-    setField('sell-color', s.color);
+    if (s.color) {
+      const colorList = BIKE_COLORS.map(c => c.name);
+      const matched = colorList.filter(name => s.color.toLowerCase().includes(name.toLowerCase()));
+      _sellFormCache['sell-colors'] = matched;
+      const grid = document.getElementById('sell-color-grid');
+      if (grid) setSelectedColors(grid, matched);
+    }
     setField('sell-desc', s.description);
 
     // Pris: brug midten af intervallet hvis både min og max er givet

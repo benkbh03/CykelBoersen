@@ -69,6 +69,12 @@ function bikeMatchesSearch(bike, filters) {
     if (!bike.wheel_size || !filters.wheelSizes.includes(bike.wheel_size)) return false;
   }
 
+  // Sidebar: multi-select farver (overlap med bike.colors-array)
+  if (Array.isArray(filters.colors) && filters.colors.length > 0) {
+    const bikeColors = Array.isArray(bike.colors) ? bike.colors : [];
+    if (!bikeColors.some(c => filters.colors.includes(c))) return false;
+  }
+
   // Pris
   const bikePrice = Number(bike.price);
   if (filters.minPrice != null && !isNaN(Number(filters.minPrice)) && bikePrice < Number(filters.minPrice)) return false;

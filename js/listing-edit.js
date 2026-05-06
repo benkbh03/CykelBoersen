@@ -2,6 +2,8 @@
    REDIGER ANNONCE
    ============================================================ */
 
+import { renderColorSwatches, getSelectedColors } from './color-swatches.js';
+
 const normalizeImageId = (id) => String(id ?? '').trim();
 
 export function createListingEdit({
@@ -172,7 +174,9 @@ export function createListingEdit({
     document.getElementById('edit-price').value         = b.price || '';
     document.getElementById('edit-year').value          = b.year || '';
     document.getElementById('edit-city').value          = b.city || '';
-    document.getElementById('edit-color').value         = b.color || '';
+    const editColorGrid = document.getElementById('edit-color-grid');
+    const initialEditColors = Array.isArray(b.colors) ? b.colors : (b.color ? b.color.split(/[,/]\s*/).map(s => s.trim()).filter(Boolean) : []);
+    renderColorSwatches(editColorGrid, { selected: initialEditColors });
     document.getElementById('edit-description').value   = b.description || '';
     document.getElementById('edit-type').value          = b.type || '';
     document.getElementById('edit-size').value          = b.size || '';
@@ -222,7 +226,8 @@ export function createListingEdit({
       price:       parseInt(document.getElementById('edit-price').value),
       year:        parseInt(document.getElementById('edit-year').value) || null,
       city:        document.getElementById('edit-city').value,
-      color:       document.getElementById('edit-color').value.trim() || null,
+      color:       (() => { const cs = getSelectedColors(document.getElementById('edit-color-grid')); return cs.length ? cs.join(', ') : null; })(),
+      colors:      (() => { const cs = getSelectedColors(document.getElementById('edit-color-grid')); return cs.length ? cs : null; })(),
       description: document.getElementById('edit-description').value,
       type:        document.getElementById('edit-type').value,
       size:        document.getElementById('edit-size').value,

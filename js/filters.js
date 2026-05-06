@@ -29,6 +29,7 @@ export function createFilters({
       (args.types && args.types.length > 0) ||
       (args.conditions && args.conditions.length > 0) ||
       (args.wheelSizes && args.wheelSizes.length > 0) ||
+      (args.colors && args.colors.length > 0) ||
       args.minPrice ||
       args.maxPrice ||
       args.sellerType
@@ -53,6 +54,7 @@ export function createFilters({
     if (args?.conditions?.length) parts.push(args.conditions.join(', '));
     if (args?.wheelSizes?.length) parts.push(args.wheelSizes.join(', '));
     if (args?.sizes?.length)      parts.push(args.sizes.map(s => s.split(' ')[0]).join(', '));
+    if (args?.colors?.length)     parts.push(args.colors.join(', '));
     if (args?.minPrice && args?.maxPrice) {
       parts.push(`${args.minPrice.toLocaleString('da-DK')}–${args.maxPrice.toLocaleString('da-DK')} kr.`);
     } else if (args?.minPrice) {
@@ -79,6 +81,7 @@ export function createFilters({
 
     document.querySelectorAll('.sidebar-box input[type="checkbox"]').forEach(cb => {
       cb.checked = cb.dataset.value === 'all';
+      cb.closest('.color-swatch')?.classList.remove('is-on');
     });
 
     document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
@@ -110,6 +113,7 @@ export function createFilters({
     for (const t of (args?.types || []))      pills.push({ label: t, type: 'type', value: t });
     for (const c of (args?.conditions || [])) pills.push({ label: c, type: 'condition', value: c });
     for (const w of (args?.wheelSizes || [])) pills.push({ label: w, type: 'wheel', value: w });
+    for (const c of (args?.colors || []))     pills.push({ label: c, type: 'color', value: c });
     if (args?.minPrice && args?.maxPrice) {
       pills.push({ label: `${args.minPrice.toLocaleString('da-DK')}–${args.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
     } else if (args?.minPrice) {
@@ -185,6 +189,13 @@ export function createFilters({
         break;
       case 'wheel':
         document.querySelectorAll(`[data-filter="wheel"][data-value="${value}"]`).forEach(cb => cb.checked = false);
+        applyFilters();
+        break;
+      case 'color':
+        document.querySelectorAll(`[data-filter="color"][data-value="${value}"]`).forEach(cb => {
+          cb.checked = false;
+          cb.closest('.color-swatch')?.classList.remove('is-on');
+        });
         applyFilters();
         break;
       case 'price':
@@ -308,7 +319,7 @@ export function createFilters({
   async function updateFilterCounts(data, dealerCount) {
     if (!data) {
       const [bikesRes, dealerRes] = await Promise.all([
-        supabase.from('bikes').select('type, condition, size, wheel_size, profiles(seller_type)').eq('is_active', true),
+        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles(seller_type)').eq('is_active', true),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
       ]);
       if (bikesRes.error || !bikesRes.data) {
@@ -348,6 +359,17 @@ export function createFilters({
     setCount('wheel',  '27.5" / 650b',  data.filter(b => b.wheel_size === '27.5" / 650b').length);
     setCount('wheel',  '28"',           data.filter(b => b.wheel_size === '28"').length);
     setCount('wheel',  '29"',           data.filter(b => b.wheel_size === '29"').length);
+
+    // Farve-counts: tæl hvor mange annoncer der har hver farve i deres colors-array
+    const colorCounts = {};
+    for (const b of data) {
+      const cols = Array.isArray(b.colors) ? b.colors : [];
+      for (const c of cols) colorCounts[c] = (colorCounts[c] || 0) + 1;
+    }
+    document.querySelectorAll('[data-filter="color"]').forEach(cb => {
+      const v = cb.dataset.value;
+      setCount('color', v, colorCounts[v] || 0);
+    });
 
     const countEl   = document.getElementById('listings-count');
     const statTotal = document.getElementById('stat-total');

@@ -68,7 +68,7 @@ export function createBikesList({
     const offset = getBikesOffset();
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, city, condition, year, size, color, colors, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + BIKES_PAGE_SIZE - 1);
@@ -267,12 +267,12 @@ export function createBikesList({
     loadBikes({ search, type, city });
   }
 
-  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [], sizes = [] } = {}, append = false) {
+  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [], sizes = [], colors = [] } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
     if (!append) {
       setFilterOffset(0);
-      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes, sizes });
+      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes, sizes, colors });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
       if (old) old.remove();
@@ -281,7 +281,7 @@ export function createBikesList({
     const offset = getFilterOffset();
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, city, condition, year, size, color, colors, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + BIKES_PAGE_SIZE - 1);
@@ -289,6 +289,7 @@ export function createBikesList({
     if (types.length > 0)      query = query.in('type', types);
     if (conditions.length > 0) query = query.in('condition', conditions);
     if (sizes.length > 0)      query = query.in('size', sizes);
+    if (colors.length > 0)     query = query.overlaps('colors', colors);
     if (minPrice)              query = query.gte('price', minPrice);
     if (maxPrice)              query = query.lte('price', maxPrice);
     if (dealerId)              query = query.eq('user_id', dealerId);
