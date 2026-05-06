@@ -234,6 +234,14 @@ export function createBikeDetail({
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
         <div class="bike-detail-description">${esc(b.description).replace(/\n/g, '<br>')}</div>
       </div>` : ''}
+      <a href="https://www.politi.dk/services/tjek-dit-stelnummer" target="_blank" rel="noopener" class="theft-check-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div>
+          <strong>Tjek stelnummeret</strong>
+          <span>Politiet har et gratis register over stjålne cykler — tjek inden du køber</span>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
       <div id="seller-other-listings" style="margin-top:28px;"></div>
       <div id="similar-listings" style="margin-top:24px;"></div>
       ${!isOwner ? `

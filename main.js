@@ -1204,6 +1204,88 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
 }
 
+function toggleConditionInfo() {
+  const popup = document.getElementById('condition-info-popup');
+  if (!popup) return;
+  const visible = popup.style.display !== 'none';
+  popup.style.display = visible ? 'none' : 'block';
+  if (!visible) {
+    const close = (e) => { if (!e.target.closest('#condition-info-popup') && !e.target.closest('.wheel-info-btn')) { popup.style.display = 'none'; document.removeEventListener('click', close); } };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+}
+
+let _quizA1 = null;
+function startBikeQuiz() {
+  document.getElementById('bike-quiz-intro').style.display = 'none';
+  document.getElementById('bike-quiz-steps').style.display = 'block';
+}
+function quizPick(step, val) {
+  if (step === 1) {
+    _quizA1 = val;
+    if (val === 'born') { _showQuizResult(); return; }
+    document.getElementById('quiz-step-1').style.display = 'none';
+    document.getElementById('quiz-step-2').style.display = 'block';
+  } else {
+    _quizA2 = val;
+    _showQuizResult();
+  }
+}
+let _quizA2 = null;
+function _showQuizResult() {
+  const map = {
+    pendler: { komfort: { type: 'Citybike', desc: 'Opret, behagelig og nem at vedligeholde — perfekt til daglig pendling.' }, fart: { type: 'Racercykel', desc: 'Hurtig og effektiv — kommer hurtigt frem på asfalt.' }, pris: { type: 'Citybike', desc: 'Citybikes er typisk billige i drift og robuste.' } },
+    motion:  { fart: { type: 'Racercykel', desc: 'Optimeret til fart — ideel til konditionstræning på vej.' }, komfort: { type: 'Gravel', desc: 'Alsidig og komfortabel — god til både vej og let terræn.' }, pris: { type: 'Mountainbike', desc: 'Robust og billig i vedligehold — god til motion på varieret underlag.' } },
+    tur:     { komfort: { type: 'Gravel', desc: 'Håndterer både grusveje og asfalt — perfekt til naturture.' }, fart: { type: 'Racercykel', desc: 'Hurtig på vej — god til lange distancer.' }, pris: { type: 'Mountainbike', desc: 'Robust og alsidig til naturture.' } },
+    shopping:{ komfort: { type: 'Ladcykel', desc: 'Masser af plads til indkøb og stor lasteevne.' }, pris: { type: 'Citybike', desc: 'Nem og billig løsning til daglige indkøb.' }, fart: { type: 'El-cykel', desc: 'Kom nemt frem med fuld kurv — motor tager det tunge arbejde.' } },
+    born:    { type: 'Børnecykel', desc: 'Vælg størrelse baseret på barnets højde — brug vores størrelsesguide under stelstørrelse.' },
+  };
+  const result = _quizA1 === 'born' ? map.born : (map[_quizA1]?.[_quizA2] || { type: 'Citybike', desc: 'En god alsidig løsning.' });
+  document.getElementById('quiz-step-2').style.display = 'none';
+  document.getElementById('quiz-step-1').style.display = 'none';
+  document.getElementById('quiz-result-type').textContent = result.type;
+  document.getElementById('quiz-result-desc').textContent = result.desc;
+  document.getElementById('quiz-apply-btn').dataset.type = result.type;
+  document.getElementById('quiz-result').style.display = 'block';
+}
+function quizBack() {
+  document.getElementById('quiz-step-2').style.display = 'none';
+  document.getElementById('quiz-step-1').style.display = 'block';
+}
+function resetQuiz() {
+  _quizA1 = null; _quizA2 = null;
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-step-1').style.display = 'block';
+  document.getElementById('quiz-step-2').style.display = 'none';
+  document.getElementById('bike-quiz-intro').style.display = 'flex';
+  document.getElementById('bike-quiz-steps').style.display = 'none';
+}
+function applyQuizResult() {
+  const type = document.getElementById('quiz-apply-btn').dataset.type;
+  if (!type) return;
+  const sel = document.getElementById('search-type');
+  if (sel) { sel.value = type; }
+  loadBikes({ type });
+  document.getElementById('bike-quiz-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function suggestChildBikeSize() {
+  const h = parseInt(document.getElementById('child-height-input')?.value);
+  const result = document.getElementById('child-height-result');
+  const detail = document.getElementById('child-size-detail');
+  if (!result) return;
+  if (!h || h < 85 || h > 175) { result.textContent = ''; if (detail) detail.textContent = ''; return; }
+  let label, desc;
+  if      (h < 100) { label = '12"'; desc = 'Ca. 2–3 år. Hjul: 12 tommer.'; }
+  else if (h < 115) { label = '16"'; desc = 'Ca. 4–6 år. Hjul: 16 tommer.'; }
+  else if (h < 125) { label = '18"'; desc = 'Ca. 5–7 år. Hjul: 18 tommer.'; }
+  else if (h < 140) { label = '20"'; desc = 'Ca. 6–9 år. Hjul: 20 tommer.'; }
+  else if (h < 160) { label = '24"'; desc = 'Ca. 9–12 år. Hjul: 24 tommer.'; }
+  else              { label = '26"'; desc = 'Ca. 12+ år — snart voksenstørrelse.'; }
+  result.textContent = '→ ' + label;
+  if (detail) detail.textContent = desc;
+}
+
 function toggleSizeInfo() {
   const popup = document.getElementById('size-info-popup');
   if (!popup) return;
@@ -1433,6 +1515,13 @@ window.applyFilters           = applyFilters;
 window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
+window.toggleConditionInfo    = toggleConditionInfo;
+window.startBikeQuiz          = startBikeQuiz;
+window.quizPick               = quizPick;
+window.quizBack               = quizBack;
+window.resetQuiz              = resetQuiz;
+window.applyQuizResult        = applyQuizResult;
+window.suggestChildBikeSize   = suggestChildBikeSize;
 window.toggleSidebarSection   = toggleSidebarSection;
 window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;

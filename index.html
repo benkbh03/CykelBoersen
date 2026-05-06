@@ -261,6 +261,41 @@
   <div class="main">
 
     <aside class="sidebar">
+      <div class="bike-quiz-box" id="bike-quiz-box">
+        <div class="bike-quiz-intro" id="bike-quiz-intro">
+          <div class="bike-quiz-icon">🚲</div>
+          <div class="bike-quiz-title">Hvad passer til dig?</div>
+          <div class="bike-quiz-sub">Få en anbefaling på 2 spørgsmål</div>
+          <button class="bike-quiz-start-btn" onclick="startBikeQuiz()">Start</button>
+        </div>
+        <div class="bike-quiz-steps" id="bike-quiz-steps" style="display:none">
+          <div class="bike-quiz-step" id="quiz-step-1">
+            <div class="bike-quiz-q">Hvad skal du bruge cyklen til?</div>
+            <div class="bike-quiz-opts">
+              <button class="bike-quiz-opt" onclick="quizPick(1,'pendler')">🏙️ Pendler til arbejde</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'motion')">💪 Motion og træning</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'tur')">🌿 Ture i naturen</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'born')">👶 Til mit barn</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'shopping')">🛒 Indkøb og hverdag</button>
+            </div>
+          </div>
+          <div class="bike-quiz-step" id="quiz-step-2" style="display:none">
+            <div class="bike-quiz-q">Hvad er vigtigst for dig?</div>
+            <div class="bike-quiz-opts">
+              <button class="bike-quiz-opt" onclick="quizPick(2,'pris')">💰 Lav pris</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'komfort')">😌 Komfort</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'fart')">⚡ Fart</button>
+            </div>
+            <button class="bike-quiz-back" onclick="quizBack()">← Tilbage</button>
+          </div>
+          <div class="bike-quiz-result" id="quiz-result" style="display:none">
+            <div class="bike-quiz-result-type" id="quiz-result-type"></div>
+            <div class="bike-quiz-result-desc" id="quiz-result-desc"></div>
+            <button class="bike-quiz-start-btn" onclick="applyQuizResult()" id="quiz-apply-btn">Vis disse cykler</button>
+            <button class="bike-quiz-back" onclick="resetQuiz()">Start forfra</button>
+          </div>
+        </div>
+      </div>
       <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Sælgertype</h3>
@@ -304,7 +339,28 @@
       <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Stand</h3>
-          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleConditionInfo()" aria-label="Hvad betyder stand?" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="wheel-info-popup" id="condition-info-popup" style="display:none">
+          <div class="wheel-info-row">
+            <div class="wheel-info-size" style="color:var(--forest)">Ny</div>
+            <div class="wheel-info-text"><span class="wi-pro">Ubrugt, stadig i original emballage</span></div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size" style="color:var(--forest)">Som ny</div>
+            <div class="wheel-info-text"><span class="wi-pro">Brugt meget lidt, ingen synlige ridser</span><span class="wi-use">Typisk under 1 sæson</span></div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size" style="color:#b07a2a">God stand</div>
+            <div class="wheel-info-text"><span class="wi-pro">Normale brugsspor, fungerer fejlfrit</span><span class="wi-use">Kan have mindre ridser</span></div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size" style="color:var(--rust)">Brugt</div>
+            <div class="wheel-info-text"><span class="wi-pro">Tydelige brugsspor, muligvis slid</span><span class="wi-use">Tjek beskrivelsen nøje</span></div>
+          </div>
         </div>
         <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
@@ -366,10 +422,18 @@
           <label class="filter-option"><input type="checkbox" data-filter="size" data-value="L (57–60 cm)" onchange="applyFilters()"> L <span style="color:var(--muted);font-size:0.8rem">57–60 cm</span> <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XL (61+ cm)" onchange="applyFilters()"> XL <span style="color:var(--muted);font-size:0.8rem">61+ cm</span> <span class="filter-count">–</span></label>
           <div class="height-finder">
-            <label class="height-finder-label">Find din størrelse</label>
+            <label class="height-finder-label">Find din størrelse (voksen)</label>
             <div class="height-finder-row">
               <input type="number" id="height-input" placeholder="Din højde cm" min="140" max="220" oninput="suggestFrameSize()">
               <span id="height-result"></span>
+            </div>
+            <div class="height-finder" style="margin-top:10px;">
+              <label class="height-finder-label">Børnecykel — barnets højde</label>
+              <div class="height-finder-row">
+                <input type="number" id="child-height-input" placeholder="Barnets højde cm" min="85" max="175" oninput="suggestChildBikeSize()">
+                <span id="child-height-result"></span>
+              </div>
+              <div id="child-size-detail" style="font-size:0.75rem;color:var(--muted);margin-top:4px;line-height:1.4;"></div>
             </div>
           </div>
         </div>
