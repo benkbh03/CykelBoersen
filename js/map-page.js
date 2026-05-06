@@ -97,50 +97,62 @@ export function createMapPage({
             <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>
             <span>Nær mig</span>
           </button>
-          <div class="map-pill map-pill--sel">
-            <select id="map-radius" aria-label="Radius" disabled>
-              <option value="5">5 km</option>
-              <option value="10">10 km</option>
-              <option value="25" selected>25 km</option>
-              <option value="50">50 km</option>
-              <option value="100">100 km</option>
-              <option value="">Hele landet</option>
-            </select>
-            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          <div class="map-pill map-pill--dd" id="dd-radius" data-val="25" data-disabled="true">
+            <button class="map-dd-btn" type="button" onclick="toggleMapDd(event,'dd-radius')">
+              <span class="map-dd-label">25 km</span>
+              <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="map-dd-menu" role="listbox" aria-label="Radius">
+              <button class="map-dd-item" type="button" role="option" data-val="5" onclick="pickMapDd(event,'dd-radius','5','5 km')">5 km</button>
+              <button class="map-dd-item" type="button" role="option" data-val="10" onclick="pickMapDd(event,'dd-radius','10','10 km')">10 km</button>
+              <button class="map-dd-item is-sel" type="button" role="option" data-val="25" onclick="pickMapDd(event,'dd-radius','25','25 km')">25 km</button>
+              <button class="map-dd-item" type="button" role="option" data-val="50" onclick="pickMapDd(event,'dd-radius','50','50 km')">50 km</button>
+              <button class="map-dd-item" type="button" role="option" data-val="100" onclick="pickMapDd(event,'dd-radius','100','100 km')">100 km</button>
+              <button class="map-dd-item" type="button" role="option" data-val="" onclick="pickMapDd(event,'dd-radius','','Hele landet')">Hele landet</button>
+            </div>
           </div>
-          <div class="map-pill map-pill--sel map-pill--icon">
+          <div class="map-pill map-pill--dd map-pill--icon" id="dd-bike-type" data-val="">
             <svg class="map-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="17" r="4"/><circle cx="18" cy="17" r="4"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke-linejoin="round" stroke-linecap="round"/></svg>
-            <select id="map-bike-type" aria-label="Cykeltype">
-              <option value="">Alle typer</option>
-              <option>Racercykel</option>
-              <option>Mountainbike</option>
-              <option>El-cykel</option>
-              <option>Citybike</option>
-              <option>Ladcykel</option>
-              <option>Børnecykel</option>
-              <option>Gravel</option>
-            </select>
-            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            <button class="map-dd-btn" type="button" onclick="toggleMapDd(event,'dd-bike-type')">
+              <span class="map-dd-label">Alle typer</span>
+              <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="map-dd-menu" role="listbox" aria-label="Cykeltype">
+              <button class="map-dd-item is-sel" type="button" role="option" data-val="" onclick="pickMapDd(event,'dd-bike-type','','Alle typer')">Alle typer</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Racercykel" onclick="pickMapDd(event,'dd-bike-type','Racercykel','Racercykel')">Racercykel</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Mountainbike" onclick="pickMapDd(event,'dd-bike-type','Mountainbike','Mountainbike')">Mountainbike</button>
+              <button class="map-dd-item" type="button" role="option" data-val="El-cykel" onclick="pickMapDd(event,'dd-bike-type','El-cykel','El-cykel')">El-cykel</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Citybike" onclick="pickMapDd(event,'dd-bike-type','Citybike','Citybike')">Citybike</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Ladcykel" onclick="pickMapDd(event,'dd-bike-type','Ladcykel','Ladcykel')">Ladcykel</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Børnecykel" onclick="pickMapDd(event,'dd-bike-type','Børnecykel','Børnecykel')">Børnecykel</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Gravel" onclick="pickMapDd(event,'dd-bike-type','Gravel','Gravel')">Gravel</button>
+            </div>
           </div>
-          <div class="map-pill map-pill--sel map-pill--icon">
+          <div class="map-pill map-pill--dd map-pill--icon" id="dd-seller-type" data-val="all">
             <svg class="map-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7" stroke-linecap="round"/></svg>
-            <select id="map-seller-type" aria-label="Sælgertype">
-              <option value="all">Alle sælgere</option>
-              <option value="dealer">Forhandler</option>
-              <option value="private">Privat</option>
-            </select>
-            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            <button class="map-dd-btn" type="button" onclick="toggleMapDd(event,'dd-seller-type')">
+              <span class="map-dd-label">Alle sælgere</span>
+              <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="map-dd-menu" role="listbox" aria-label="Sælgertype">
+              <button class="map-dd-item is-sel" type="button" role="option" data-val="all" onclick="pickMapDd(event,'dd-seller-type','all','Alle sælgere')">Alle sælgere</button>
+              <button class="map-dd-item" type="button" role="option" data-val="dealer" onclick="pickMapDd(event,'dd-seller-type','dealer','Forhandler')">Forhandler</button>
+              <button class="map-dd-item" type="button" role="option" data-val="private" onclick="pickMapDd(event,'dd-seller-type','private','Privat')">Privat</button>
+            </div>
           </div>
-          <div class="map-pill map-pill--sel map-pill--icon">
+          <div class="map-pill map-pill--dd map-pill--icon" id="dd-condition" data-val="">
             <svg class="map-pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <select id="map-condition" aria-label="Stand">
-              <option value="">Alle stande</option>
-              <option>Ny</option>
-              <option>Som ny</option>
-              <option>God stand</option>
-              <option>Brugt</option>
-            </select>
-            <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            <button class="map-dd-btn" type="button" onclick="toggleMapDd(event,'dd-condition')">
+              <span class="map-dd-label">Alle stande</span>
+              <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="map-dd-menu" role="listbox" aria-label="Stand">
+              <button class="map-dd-item is-sel" type="button" role="option" data-val="" onclick="pickMapDd(event,'dd-condition','','Alle stande')">Alle stande</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Ny" onclick="pickMapDd(event,'dd-condition','Ny','Ny')">Ny</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Som ny" onclick="pickMapDd(event,'dd-condition','Som ny','Som ny')">Som ny</button>
+              <button class="map-dd-item" type="button" role="option" data-val="God stand" onclick="pickMapDd(event,'dd-condition','God stand','God stand')">God stand</button>
+              <button class="map-dd-item" type="button" role="option" data-val="Brugt" onclick="pickMapDd(event,'dd-condition','Brugt','Brugt')">Brugt</button>
+            </div>
           </div>
           <div class="map-pill map-pill--price">
             <input type="number" id="map-price-min" placeholder="Min. pris" min="0" aria-label="Min pris">
@@ -184,14 +196,17 @@ export function createMapPage({
               <div class="split-list-count-label" id="split-count">Henter annoncer…</div>
             </div>
             <div class="split-list-header-actions">
-              <div class="map-pill map-pill--sel map-pill--sort">
-                <select id="map-sort" onchange="applyMapFilters()" aria-label="Sortering">
-                  <option value="newest">Nyeste</option>
-                  <option value="price_asc">Pris ↑</option>
-                  <option value="price_desc">Pris ↓</option>
-                  <option value="distance">Afstand</option>
-                </select>
-                <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              <div class="map-pill map-pill--dd map-pill--sort" id="dd-sort" data-val="newest">
+                <button class="map-dd-btn" type="button" onclick="toggleMapDd(event,'dd-sort')">
+                  <span class="map-dd-label">Nyeste</span>
+                  <svg class="map-pill-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div class="map-dd-menu map-dd-menu--right" role="listbox" aria-label="Sortering">
+                  <button class="map-dd-item is-sel" type="button" role="option" data-val="newest" onclick="pickMapDd(event,'dd-sort','newest','Nyeste')">Nyeste</button>
+                  <button class="map-dd-item" type="button" role="option" data-val="price_asc" onclick="pickMapDd(event,'dd-sort','price_asc','Pris ↑')">Pris ↑</button>
+                  <button class="map-dd-item" type="button" role="option" data-val="price_desc" onclick="pickMapDd(event,'dd-sort','price_desc','Pris ↓')">Pris ↓</button>
+                  <button class="map-dd-item" type="button" role="option" data-val="distance" onclick="pickMapDd(event,'dd-sort','distance','Afstand')">Afstand</button>
+                </div>
               </div>
               <button class="split-list-close-btn" onclick="toggleSplitList()" aria-label="Skjul liste">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -253,9 +268,11 @@ export function createMapPage({
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', debounced);
     });
-    ['map-seller-type', 'map-bike-type', 'map-condition', 'map-radius', 'map-sort'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener('change', () => { applyMapFilters(); updateMapFilterBadge(); });
+    // Custom dropdown close-on-outside-click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.map-pill--dd')) {
+        document.querySelectorAll('.map-pill--dd.dd-open').forEach(d => d.classList.remove('dd-open'));
+      }
     });
 
     await loadMapPageBikes();
@@ -281,14 +298,14 @@ export function createMapPage({
     const qMob  = (document.getElementById('map-search-mobile')?.value || '').trim();
     return {
       q:         (qDesk || qMob).toLowerCase(),
-      seller:    document.getElementById('map-seller-type')?.value || 'all',
-      type:      document.getElementById('map-bike-type')?.value || '',
-      condition: document.getElementById('map-condition')?.value || '',
+      seller:    document.getElementById('dd-seller-type')?.dataset.val || 'all',
+      type:      document.getElementById('dd-bike-type')?.dataset.val || '',
+      condition: document.getElementById('dd-condition')?.dataset.val || '',
       priceMin:  parseInt(document.getElementById('map-price-min')?.value, 10) || null,
       priceMax:  parseInt(document.getElementById('map-price-max')?.value, 10) || null,
-      radius:    _mapNearMeCoords ? (parseInt(document.getElementById('map-radius')?.value, 10) || null) : null,
+      radius:    _mapNearMeCoords ? (parseInt(document.getElementById('dd-radius')?.dataset.val, 10) || null) : null,
       nearCoords: _mapNearMeCoords,
-      sort:      document.getElementById('map-sort')?.value || 'newest',
+      sort:      document.getElementById('dd-sort')?.dataset.val || 'newest',
     };
   }
 
@@ -412,11 +429,12 @@ export function createMapPage({
     ['map-search', 'map-search-mobile', 'map-price-min', 'map-price-max'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
-    const st = document.getElementById('map-seller-type'); if (st) st.value = 'all';
-    const bt = document.getElementById('map-bike-type');   if (bt) bt.value = '';
-    const co = document.getElementById('map-condition');   if (co) co.value = '';
-    const rd = document.getElementById('map-radius');      if (rd) { rd.value = '25'; rd.disabled = true; }
-    const so = document.getElementById('map-sort');        if (so) so.value = 'newest';
+    resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
+    resetMapDd('dd-bike-type',   '',    'Alle typer');
+    resetMapDd('dd-condition',   '',    'Alle stande');
+    resetMapDd('dd-radius',      '25',  '25 km');
+    resetMapDd('dd-sort',        'newest', 'Nyeste');
+    const rd = document.getElementById('dd-radius'); if (rd) rd.dataset.disabled = 'true';
     _mapNearMeCoords = null;
     if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
     [document.getElementById('map-near-btn'), document.getElementById('map-near-btn-mobile')].forEach(b => {
@@ -444,7 +462,7 @@ export function createMapPage({
   async function toggleMapNearMe() {
     const btn    = document.getElementById('map-near-btn');
     const btnMob = document.getElementById('map-near-btn-mobile');
-    const radiusSel = document.getElementById('map-radius');
+    const radiusSel = document.getElementById('dd-radius');
     const locateFloatBtn = document.getElementById('map-locate-float-btn');
     const setBtn = (active, label) => {
       [btn, btnMob].forEach(b => {
@@ -466,7 +484,7 @@ export function createMapPage({
     if (_mapNearMeCoords) {
       _mapNearMeCoords = null;
       setBtn(false, 'Nær mig');
-      if (radiusSel) radiusSel.disabled = true;
+      if (radiusSel) radiusSel.dataset.disabled = 'true';
       if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
       applyMapFilters(); updateMapFilterBadge();
       return;
@@ -479,7 +497,7 @@ export function createMapPage({
       const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000, enableHighAccuracy: true }));
       _mapNearMeCoords = [pos.coords.latitude, pos.coords.longitude];
       setBtn(true, 'Min position');
-      if (radiusSel) radiusSel.disabled = false;
+      if (radiusSel) radiusSel.dataset.disabled = 'false';
       if (splitMapInstance) {
         // Fjern evt. gammel markør
         if (_mapUserMarker) splitMapInstance.removeLayer(_mapUserMarker);
@@ -788,10 +806,10 @@ export function createMapPage({
     if (!sheet || !body) return;
 
     const cur = {
-      type:      document.getElementById('map-bike-type')?.value || '',
-      seller:    document.getElementById('map-seller-type')?.value || 'all',
-      condition: document.getElementById('map-condition')?.value || '',
-      radius:    document.getElementById('map-radius')?.value || '25',
+      type:      document.getElementById('dd-bike-type')?.dataset.val || '',
+      seller:    document.getElementById('dd-seller-type')?.dataset.val || 'all',
+      condition: document.getElementById('dd-condition')?.dataset.val || '',
+      radius:    document.getElementById('dd-radius')?.dataset.val || '25',
       priceMin:  document.getElementById('map-price-min')?.value || '',
       priceMax:  document.getElementById('map-price-max')?.value || '',
     };
@@ -830,12 +848,9 @@ export function createMapPage({
         const v = btn.dataset.v;
         body.querySelectorAll('.msf-opt[data-g="' + g + '"]').forEach(o => o.classList.remove('active'));
         btn.classList.add('active');
-        const targetId = ({ type:'map-bike-type', seller:'map-seller-type', condition:'map-condition', radius:'map-radius' })[g];
-        const el = document.getElementById(targetId);
-        if (el) {
-          el.value = v;
-          if (g === 'radius' && _mapNearMeCoords) el.disabled = false;
-        }
+        const ddId = ({ type:'dd-bike-type', seller:'dd-seller-type', condition:'dd-condition', radius:'dd-radius' })[g];
+        const labelMap = { type: body.querySelector('.msf-opt[data-g="type"][data-v="'+v+'"]')?.textContent, seller: body.querySelector('.msf-opt[data-g="seller"][data-v="'+v+'"]')?.textContent, condition: body.querySelector('.msf-opt[data-g="condition"][data-v="'+v+'"]')?.textContent, radius: body.querySelector('.msf-opt[data-g="radius"][data-v="'+v+'"]')?.textContent };
+        if (ddId) resetMapDd(ddId, v, labelMap[g] || v);
         applyMapFilters(); updateMapFilterBadge();
       });
     });
@@ -1077,9 +1092,50 @@ export function createMapPage({
     setTimeout(function() { openBikeModal(bikeId); }, 100);
   }
 
+  /* ── Custom dropdown helpers ────────────────────────────── */
+
+  function toggleMapDd(event, id) {
+    event.stopPropagation();
+    const el = document.getElementById(id);
+    if (!el || el.dataset.disabled === 'true') return;
+    const isOpen = el.classList.contains('dd-open');
+    document.querySelectorAll('.map-pill--dd.dd-open').forEach(d => d.classList.remove('dd-open'));
+    if (!isOpen) el.classList.add('dd-open');
+  }
+
+  function pickMapDd(event, id, val, label) {
+    event.stopPropagation();
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.dataset.val = val;
+    const labelEl = el.querySelector('.map-dd-label');
+    if (labelEl) labelEl.textContent = label;
+    el.querySelectorAll('.map-dd-item').forEach(i => {
+      i.classList.toggle('is-sel', i.dataset.val === val);
+      i.setAttribute('aria-selected', i.dataset.val === val ? 'true' : 'false');
+    });
+    el.classList.remove('dd-open');
+    applyMapFilters();
+    updateMapFilterBadge();
+  }
+
+  function resetMapDd(id, val, label) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.dataset.val = val;
+    const labelEl = el.querySelector('.map-dd-label');
+    if (labelEl) labelEl.textContent = label;
+    el.querySelectorAll('.map-dd-item').forEach(i => {
+      i.classList.toggle('is-sel', i.dataset.val === val);
+    });
+    el.classList.remove('dd-open');
+  }
+
   /* ── Public API ─────────────────────────────────────────── */
 
   return {
+    toggleMapDd,
+    pickMapDd,
     setView,
     renderMapPage,
     toggleMapNearMe,
