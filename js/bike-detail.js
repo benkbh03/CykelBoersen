@@ -139,8 +139,8 @@ export function createBikeDetail({
               </div>
               <span class="bike-location-dist" id="bike-location-dist" style="display:none;"></span>
             </div>
-            <div class="bike-location-map" id="bike-location-map"></div>
-            <div class="bike-location-actions">
+            <div class="bike-location-map" id="bike-location-map" style="display:none"></div>
+            <div class="bike-location-actions" style="display:none">
               <button class="bike-location-btn bike-location-btn--locate" id="bike-location-locate-btn" onclick="showMyDistanceOnBikeMap()">📍 Vis min afstand</button>
               <a class="bike-location-btn bike-location-btn--full" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((profile.address ? profile.address + ', ' : '') + (profile.city || ''))}" target="_blank" rel="noopener">Åbn i Google Maps →</a>
             </div>
