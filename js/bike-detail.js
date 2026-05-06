@@ -232,7 +232,8 @@ export function createBikeDetail({
       ${b.description ? `
       <div style="margin-top:20px;">
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
-        <div class="bike-detail-description">${esc(b.description).replace(/\n/g, '<br>')}</div>
+        <div class="bike-detail-description is-clamped" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
+        <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
       </div>` : ''}
       ${b.size ? (() => {
         const heightMap = {
@@ -346,6 +347,7 @@ export function createBikeDetail({
 
       document.getElementById('bike-modal-body').innerHTML = html;
       attachGallerySwipe();
+      _initDescExpand();
       loadResponseTime(profile.id);
       loadSellerOtherListings(profile.id, b.id);
       loadSimilarListings(b.type, b.id);
@@ -579,6 +581,7 @@ export function createBikeDetail({
       </div>`;
 
     attachGallerySwipe();
+    _initDescExpand();
     loadResponseTime(profile.id);
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
@@ -673,6 +676,19 @@ export function createBikeDetail({
       console.error('loadResponseTime error:', e.message);
       badge.textContent = '';
     }
+  }
+
+  /* ── Beskrivelses-expand ── */
+
+  function _initDescExpand() {
+    const el  = document.getElementById('bike-desc-text');
+    const btn = document.getElementById('bike-desc-btn');
+    if (!el || !btn) return;
+    requestAnimationFrame(() => {
+      if (el.scrollHeight <= el.clientHeight + 2) {
+        btn.style.display = 'none';
+      }
+    });
   }
 
   /* ── Sælgerens andre annoncer ── */

@@ -1204,6 +1204,14 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
 }
 
+function expandBikeDesc() {
+  const el  = document.getElementById('bike-desc-text');
+  const btn = document.getElementById('bike-desc-btn');
+  if (!el || !btn) return;
+  el.classList.remove('is-clamped');
+  btn.style.display = 'none';
+}
+
 function toggleConditionInfo() {
   const popup = document.getElementById('condition-info-popup');
   if (!popup) return;
@@ -1527,6 +1535,7 @@ window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
 window.toggleConditionInfo    = toggleConditionInfo;
 window.updateConditionGuide   = updateConditionGuide;
+window.expandBikeDesc         = expandBikeDesc;
 window.startBikeQuiz          = startBikeQuiz;
 window.quizPick               = quizPick;
 window.quizBack               = quizBack;
