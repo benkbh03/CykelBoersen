@@ -489,12 +489,20 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 
 /* ── Bike-detail location map ── */
 .bike-location-card {
+  display: block;
   margin-top: 14px;
   background: var(--cream);
   border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 18px -14px rgba(42,61,46,0.18);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+}
+.bike-location-card:hover {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 2px rgba(42,61,46,0.10), 0 6px 18px -14px rgba(42,61,46,0.18);
 }
 .bike-location-header {
   display: flex;
@@ -502,7 +510,6 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
 }
 .bike-location-title {
   display: flex;
@@ -540,6 +547,16 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   overflow: hidden;
   text-overflow: ellipsis;
   margin-top: 1px;
+}
+.bike-location-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  transition: transform 0.15s, color 0.15s;
+}
+.bike-location-card:hover .bike-location-chevron {
+  color: var(--forest);
+  transform: translateX(3px);
 }
 .bike-location-dist {
   flex-shrink: 0;
