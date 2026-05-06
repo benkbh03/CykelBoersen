@@ -860,7 +860,7 @@ async function loadInitialData() {
       .eq('seller_type', 'dealer').eq('verified', true)
       .order('created_at', { ascending: true }),
     supabase.from('bikes')
-      .select('type, condition, wheel_size, user_id, profiles(seller_type)')
+      .select('type, condition, size, wheel_size, colors, user_id, profiles(seller_type)')
       .eq('is_active', true)
   ]);
   updateFilterCounts(bikesData, dealerCount);
