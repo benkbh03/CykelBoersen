@@ -94,7 +94,7 @@ export function createMyProfilePage({
       <div class="mp-top">
         <button class="mp-back-btn" onclick="navigateTo('/')">${svgBack} Forside</button>
         <h1 class="mp-title">Min konto</h1>
-        <p class="mp-subtitle">Administrér dine annoncer, Cykelagenter og kontooplysninger</p>
+        <p class="mp-subtitle">Administrér dine annoncer, cykelagenter og kontooplysninger</p>
       </div>
 
       <div class="mp-layout${hasSidebarContent ? '' : ' mp-no-sidebar'}">
