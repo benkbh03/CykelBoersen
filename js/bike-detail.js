@@ -237,7 +237,7 @@ export function createBikeDetail({
         </div>
         <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
       </div>` : ''}
-      ${b.size ? (() => {
+      ${(b.size || b.size_cm) ? (() => {
         const heightMap = {
           'XS (44–48 cm)': '148–162 cm',
           'S (49–52 cm)':  '163–170 cm',
@@ -245,7 +245,7 @@ export function createBikeDetail({
           'L (57–60 cm)':  '179–188 cm',
           'XL (61+ cm)':   '189+ cm',
         };
-        const heightRange = heightMap[b.size] || null;
+        const heightRange = b.size ? (heightMap[b.size] || null) : null;
         return `
         <div class="fit-section">
           <h3 class="fit-section-title">Størrelse og pasform</h3>
@@ -255,10 +255,16 @@ export function createBikeDetail({
               <div class="fit-card-label">Anbefalet højde</div>
               <div class="fit-card-value">${heightRange}</div>
             </div>` : ''}
+            ${b.size ? `
             <div class="fit-card">
               <div class="fit-card-label">Rammestørrelse</div>
               <div class="fit-card-value">${esc(b.size)}</div>
-            </div>
+            </div>` : ''}
+            ${b.size_cm ? `
+            <div class="fit-card">
+              <div class="fit-card-label">Præcis størrelse</div>
+              <div class="fit-card-value">${b.size_cm} cm</div>
+            </div>` : ''}
           </div>
         </div>`;
       })() : ''}
