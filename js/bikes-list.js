@@ -231,7 +231,7 @@ export function createBikesList({
               <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
             </div>
             <div class="bike-meta">
-              <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${esc(b.size) || '–'}</span>
+              <span>${esc(b.type)}</span><span>${b.year || '–'}</span>${b.size || b.size_cm ? `<span>Str. ${b.size_cm ? b.size_cm + ' cm' : esc(b.size)}</span>` : ''}
             </div>
             <div class="card-footer">
               <div class="seller-avatar">${avatarHtml}</div>
