@@ -69,6 +69,11 @@ export function createMyProfilePage({
       { label: 'Profilbillede',      done: !!p.avatar_url },
       { label: 'By tilføjet',        done: !!p.city },
       { label: 'Om mig udfyldt',     done: !!p.bio },
+      ...(isDealer ? [
+        { label: 'Telefon tilføjet',   done: !!p.phone },
+        { label: 'Finansiering',       done: !!p.offers_financing },
+        { label: 'Byttetilbud',        done: !!p.offers_tradein },
+      ] : []),
     ];
     const doneCount = completionItems.filter(i => i.done).length;
     const pct       = Math.round((doneCount / completionItems.length) * 100);
