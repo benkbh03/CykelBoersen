@@ -336,7 +336,44 @@
       <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Hjulstørrelse</h3>
-          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleWheelInfo()" aria-label="Hvad betyder hjulstørrelse?" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="wheel-info-popup" id="wheel-info-popup" style="display:none">
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">26"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Lettere at manøvrere, lavere vægt</span>
+              <span class="wi-con">− Mindre stabilt ved høj fart</span>
+              <span class="wi-use">Børnecykler, ældre MTB</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">27.5"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ God balance mellem agilitet og fart</span>
+              <span class="wi-con">− Mindre udbredt end 29"</span>
+              <span class="wi-use">Mountainbike, trail</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">28"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Hurtig og effektiv på asfalt</span>
+              <span class="wi-con">− Dårligere i ujævnt terræn</span>
+              <span class="wi-use">Racercykel, citybike, el-cykel</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">29"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Ruller lettere over forhindringer</span>
+              <span class="wi-con">− Tungere, sværere at dreje</span>
+              <span class="wi-use">Cross country MTB, gravel</span>
+            </div>
+          </div>
         </div>
         <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='26"' onchange="applyFilters()"> 26" <span class="filter-count">–</span></label>

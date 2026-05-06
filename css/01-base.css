@@ -532,6 +532,43 @@ nav {
 .filter-option input[type="checkbox"] { accent-color: var(--rust); width: 15px; height: 15px; cursor: pointer; }
 .filter-count { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
 
+/* Hjulstørrelse info */
+.wheel-info-btn {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.7rem; font-weight: 700;
+  cursor: pointer; line-height: 1;
+  padding: 0; flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+.wheel-info-btn:hover { border-color: var(--forest); color: var(--forest); }
+.wheel-info-popup {
+  margin: 0 -16px;
+  padding: 12px 16px;
+  background: var(--sand);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.wheel-info-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.wheel-info-row:last-child { border-bottom: none; }
+.wheel-info-size {
+  font-weight: 700; font-size: 0.82rem;
+  color: var(--forest); min-width: 36px;
+  padding-top: 1px;
+}
+.wheel-info-text { display: flex; flex-direction: column; gap: 2px; }
+.wi-pro, .wi-con, .wi-use { font-size: 0.78rem; line-height: 1.4; }
+.wi-pro { color: #2a6e3f; }
+.wi-con { color: var(--rust); }
+.wi-use { color: var(--muted); font-style: italic; }
+
 /* Højde-finder */
 .height-finder { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 .height-finder-label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
