@@ -569,6 +569,53 @@ nav {
 .wi-con { color: var(--rust); }
 .wi-use { color: var(--muted); font-style: italic; }
 
+/* ── Condition guide (sidebar popup + form inline) ── */
+.condition-guide {
+  margin: 0 -16px;
+  padding: 6px 16px 10px;
+  background: var(--sand);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.condition-guide--form {
+  margin: 10px 0 0;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  padding: 6px 14px 10px;
+}
+.cg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  transition: opacity 0.15s;
+}
+.cg-row:last-child { border-bottom: none; }
+.cg-row.cg-dim { opacity: 0.35; }
+.cg-row.cg-active { background: transparent; }
+.cg-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  min-width: 68px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.cg-ny    { background: #d6edd9; color: #1f6132; }
+.cg-somny { background: #d6edd9; color: #1f6132; }
+.cg-god   { background: #fdefd4; color: #8a5700; }
+.cg-brugt { background: #fde0d6; color: #8a2010; }
+.cg-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cg-main { font-size: 0.82rem; color: var(--charcoal); line-height: 1.4; }
+.cg-sub  { font-size: 0.76rem; color: var(--muted); font-style: italic; line-height: 1.3; }
+
 /* Højde-finder */
 .height-finder { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 .height-finder-label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
@@ -704,6 +751,44 @@ nav {
   color: var(--muted);
   text-align: center;
   line-height: 1.5;
+}
+
+/* ── Størrelse og pasform ────────────────────────── */
+.fit-section {
+  margin-top: 20px;
+}
+.fit-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--charcoal);
+}
+.fit-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.fit-card {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fit-card-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fit-card-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--charcoal);
 }
 
 /* ── Theft check tip ─────────────────────────────── */

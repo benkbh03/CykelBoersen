@@ -344,23 +344,11 @@
             <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
           </div>
         </div>
-        <div class="wheel-info-popup" id="condition-info-popup" style="display:none">
-          <div class="wheel-info-row">
-            <div class="wheel-info-size" style="color:var(--forest)">Ny</div>
-            <div class="wheel-info-text"><span class="wi-pro">Ubrugt, stadig i original emballage</span></div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size" style="color:var(--forest)">Som ny</div>
-            <div class="wheel-info-text"><span class="wi-pro">Brugt meget lidt, ingen synlige ridser</span><span class="wi-use">Typisk under 1 sæson</span></div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size" style="color:#b07a2a">God stand</div>
-            <div class="wheel-info-text"><span class="wi-pro">Normale brugsspor, fungerer fejlfrit</span><span class="wi-use">Kan have mindre ridser</span></div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size" style="color:var(--rust)">Brugt</div>
-            <div class="wheel-info-text"><span class="wi-pro">Tydelige brugsspor, muligvis slid</span><span class="wi-use">Tjek beskrivelsen nøje</span></div>
-          </div>
+        <div class="condition-guide" id="condition-info-popup" style="display:none">
+          <div class="cg-row"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
         </div>
         <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
@@ -670,7 +658,13 @@
           <div class="form-group"><label>Årstal</label><input type="number" placeholder="f.eks. 2021"></div>
           <div class="form-group">
             <label>Stand *</label>
-            <select><option value="">Vælg stand</option><option>Ny</option><option>Som ny</option><option>God stand</option><option>Brugt</option></select>
+            <select id="modal-condition" onchange="updateConditionGuide('modal-condition','cg-create')"><option value="">Vælg stand</option><option>Ny</option><option>Som ny</option><option>God stand</option><option>Brugt</option></select>
+            <div class="condition-guide condition-guide--form" id="cg-create">
+              <div class="cg-row" data-cond="Ny"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
+              <div class="cg-row" data-cond="Som ny"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
+              <div class="cg-row" data-cond="God stand"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
+              <div class="cg-row" data-cond="Brugt"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
+            </div>
           </div>
           <div class="form-group"><label>By *</label><input type="text" placeholder="f.eks. København"></div>
           <div class="form-group full"><label>Beskrivelse</label><textarea placeholder="Beskriv din cykel — stand, udstyr, service, historik..."></textarea></div>
@@ -1068,10 +1062,16 @@
           <div class="form-group"><label>Årstal</label><input type="number" id="edit-year" placeholder="f.eks. 2021"></div>
           <div class="form-group">
             <label>Stand *</label>
-            <select id="edit-condition">
+            <select id="edit-condition" onchange="updateConditionGuide('edit-condition','cg-edit')">
               <option value="">Vælg stand</option>
               <option>Ny</option><option>Som ny</option><option>God stand</option><option>Brugt</option>
             </select>
+            <div class="condition-guide condition-guide--form" id="cg-edit">
+              <div class="cg-row" data-cond="Ny"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
+              <div class="cg-row" data-cond="Som ny"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
+              <div class="cg-row" data-cond="God stand"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
+              <div class="cg-row" data-cond="Brugt"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
+            </div>
           </div>
           <div class="form-group"><label>By *</label><input type="text" id="edit-city" placeholder="f.eks. København"></div>
           <div class="form-group"><label>Farve</label><input type="text" id="edit-color" placeholder="f.eks. Sort, Hvid/Rød"></div>

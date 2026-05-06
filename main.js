@@ -1205,6 +1205,14 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
 }
 
+function expandBikeDesc() {
+  const el  = document.getElementById('bike-desc-text');
+  const btn = document.getElementById('bike-desc-btn');
+  if (!el || !btn) return;
+  el.classList.remove('is-clamped');
+  btn.style.display = 'none';
+}
+
 function toggleConditionInfo() {
   const popup = document.getElementById('condition-info-popup');
   if (!popup) return;
@@ -1214,6 +1222,16 @@ function toggleConditionInfo() {
     const close = (e) => { if (!e.target.closest('#condition-info-popup') && !e.target.closest('.wheel-info-btn')) { popup.style.display = 'none'; document.removeEventListener('click', close); } };
     setTimeout(() => document.addEventListener('click', close), 0);
   }
+}
+
+function updateConditionGuide(selectId, guideId) {
+  const val = document.getElementById(selectId)?.value || '';
+  const guide = document.getElementById(guideId);
+  if (!guide) return;
+  guide.querySelectorAll('.cg-row').forEach(row => {
+    row.classList.toggle('cg-active', row.dataset.cond === val);
+    row.classList.toggle('cg-dim', val !== '' && row.dataset.cond !== val);
+  });
 }
 
 let _quizA1 = null;
@@ -1517,6 +1535,8 @@ window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
 window.toggleConditionInfo    = toggleConditionInfo;
+window.updateConditionGuide   = updateConditionGuide;
+window.expandBikeDesc         = expandBikeDesc;
 window.startBikeQuiz          = startBikeQuiz;
 window.quizPick               = quizPick;
 window.quizBack               = quizBack;

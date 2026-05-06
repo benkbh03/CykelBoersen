@@ -232,9 +232,35 @@ export function createBikeDetail({
       ${b.description ? `
       <div style="margin-top:20px;">
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
-        <div class="bike-detail-description">${esc(b.description).replace(/\n/g, '<br>')}</div>
+        <div class="bike-detail-description is-clamped" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
+        <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
       </div>` : ''}
-      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="theft-check-tip">
+      ${b.size ? (() => {
+        const heightMap = {
+          'XS (44–48 cm)': '148–162 cm',
+          'S (49–52 cm)':  '163–170 cm',
+          'M (53–56 cm)':  '171–178 cm',
+          'L (57–60 cm)':  '179–188 cm',
+          'XL (61+ cm)':   '189+ cm',
+        };
+        const heightRange = heightMap[b.size] || null;
+        return `
+        <div class="fit-section">
+          <h3 class="fit-section-title">Størrelse og pasform</h3>
+          <div class="fit-cards">
+            ${heightRange ? `
+            <div class="fit-card">
+              <div class="fit-card-label">Anbefalet højde</div>
+              <div class="fit-card-value">${heightRange}</div>
+            </div>` : ''}
+            <div class="fit-card">
+              <div class="fit-card-label">Rammestørrelse</div>
+              <div class="fit-card-value">${esc(b.size)}</div>
+            </div>
+          </div>
+        </div>`;
+      })() : ''}
+      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="theft-check-tip"> origin/main
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>
           <strong>Tjek stelnummeret</strong>
@@ -244,6 +270,10 @@ export function createBikeDetail({
       </a>
       <div id="seller-other-listings" style="margin-top:28px;"></div>
       <div id="similar-listings" style="margin-top:24px;"></div>
+      <div class="listing-meta">
+        <span>Annonce-ID: ${b.id}</span>
+        ${b.updated_at ? `<span>Sidst redigeret: ${new Date(b.updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>` : `<span>Oprettet: ${new Date(b.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`}
+      </div>
       ${!isOwner ? `
       <div class="bike-sticky-bar" id="bike-sticky-bar">
         <div class="bike-sticky-price">${b.price.toLocaleString('da-DK')} kr.</div>
@@ -321,6 +351,7 @@ export function createBikeDetail({
 
       document.getElementById('bike-modal-body').innerHTML = html;
       attachGallerySwipe();
+      _initDescExpand();
       loadResponseTime(profile.id);
       loadSellerOtherListings(profile.id, b.id);
       loadSimilarListings(b.type, b.id);
@@ -554,6 +585,7 @@ export function createBikeDetail({
       </div>`;
 
     attachGallerySwipe();
+    _initDescExpand();
     loadResponseTime(profile.id);
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
@@ -648,6 +680,19 @@ export function createBikeDetail({
       console.error('loadResponseTime error:', e.message);
       badge.textContent = '';
     }
+  }
+
+  /* ── Beskrivelses-expand ── */
+
+  function _initDescExpand() {
+    const el  = document.getElementById('bike-desc-text');
+    const btn = document.getElementById('bike-desc-btn');
+    if (!el || !btn) return;
+    requestAnimationFrame(() => {
+      if (el.scrollHeight <= el.clientHeight + 2) {
+        btn.style.display = 'none';
+      }
+    });
   }
 
   /* ── Sælgerens andre annoncer ── */
