@@ -267,7 +267,7 @@ export function createBikesList({
     loadBikes({ search, type, city });
   }
 
-  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [] } = {}, append = false) {
+  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [], sizes = [] } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
     if (!append) {
@@ -288,6 +288,7 @@ export function createBikesList({
 
     if (types.length > 0)      query = query.in('type', types);
     if (conditions.length > 0) query = query.in('condition', conditions);
+    if (sizes.length > 0)      query = query.in('size', sizes);
     if (minPrice)              query = query.gte('price', minPrice);
     if (maxPrice)              query = query.lte('price', maxPrice);
     if (dealerId)              query = query.eq('user_id', dealerId);
