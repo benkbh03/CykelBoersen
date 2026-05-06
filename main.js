@@ -1188,6 +1188,10 @@ function applyFilters() {
   const wheelSizes = [...document.querySelectorAll('[data-filter="wheel"]:checked')]
     .map(el => el.dataset.value);
 
+  // Saml valgte stelstørrelser
+  const sizes = [...document.querySelectorAll('[data-filter="size"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -1197,7 +1201,24 @@ function applyFilters() {
   if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
   if (sellerPrivate?.checked && !sellerDealer?.checked) sellerType = 'private';
 
-  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes });
+  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
+}
+
+function suggestFrameSize() {
+  const h = parseInt(document.getElementById('height-input')?.value);
+  const result = document.getElementById('height-result');
+  if (!result) return;
+  if (!h || h < 140 || h > 220) { result.textContent = ''; return; }
+  let size, val;
+  if      (h <= 163) { size = 'XS'; val = 'XS (44–48 cm)'; }
+  else if (h <= 170) { size = 'S';  val = 'S (49–52 cm)'; }
+  else if (h <= 178) { size = 'M';  val = 'M (53–56 cm)'; }
+  else if (h <= 185) { size = 'L';  val = 'L (57–60 cm)'; }
+  else               { size = 'XL'; val = 'XL (61+ cm)'; }
+  result.textContent = '→ ' + size;
+  const cb = document.querySelector(`[data-filter="size"][data-value="${val}"]`);
+  document.querySelectorAll('[data-filter="size"]').forEach(c => { c.checked = false; });
+  if (cb) { cb.checked = true; applyFilters(); }
 }
 
 const debouncedLoadFilters = debounce(
@@ -1387,6 +1408,7 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.suggestFrameSize       = suggestFrameSize;
 window.toggleSidebarSection   = toggleSidebarSection;
 window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;

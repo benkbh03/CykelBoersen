@@ -315,7 +315,25 @@
       </div>
       <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
-          <h3>Hjulstørrelse</h3>
+          <h3>Stelstørrelse</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XS (44–48 cm)" onchange="applyFilters()"> XS <span style="color:var(--muted);font-size:0.8rem">44–48 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="S (49–52 cm)" onchange="applyFilters()"> S <span style="color:var(--muted);font-size:0.8rem">49–52 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="M (53–56 cm)" onchange="applyFilters()"> M <span style="color:var(--muted);font-size:0.8rem">53–56 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="L (57–60 cm)" onchange="applyFilters()"> L <span style="color:var(--muted);font-size:0.8rem">57–60 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XL (61+ cm)" onchange="applyFilters()"> XL <span style="color:var(--muted);font-size:0.8rem">61+ cm</span> <span class="filter-count">–</span></label>
+          <div class="height-finder">
+            <label class="height-finder-label">Find din størrelse</label>
+            <div class="height-finder-row">
+              <input type="number" id="height-input" placeholder="Din højde cm" min="140" max="220" oninput="suggestFrameSize()">
+              <span id="height-result"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box">
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
         <div class="filter-group sidebar-section-body">

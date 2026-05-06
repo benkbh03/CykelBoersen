@@ -532,6 +532,15 @@ nav {
 .filter-option input[type="checkbox"] { accent-color: var(--rust); width: 15px; height: 15px; cursor: pointer; }
 .filter-count { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
 
+/* Højde-finder */
+.height-finder { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.height-finder-label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+.height-finder-row { display: flex; align-items: center; gap: 8px; }
+.height-finder-row input { flex: 1; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.84rem; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); outline: none; }
+.height-finder-row input:focus { border-color: var(--forest); }
+.height-finder-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
+#height-result { font-size: 0.88rem; font-weight: 700; color: var(--forest); white-space: nowrap; min-width: 32px; }
+
 /* Pris filter */
 .price-range { display: flex; flex-direction: column; gap: 12px; }
 .price-inputs {
