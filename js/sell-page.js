@@ -778,6 +778,7 @@ export function createSellPage({
       renderColorSwatches(colorGrid, {
         selected: initialColors,
         variant: 'tile',
+        max: 3,
         onChange: (sel) => { _sellFormCache['sell-colors'] = sel; refreshOnChange(); },
       });
       // Live footer + preview updates

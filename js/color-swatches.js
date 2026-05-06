@@ -13,8 +13,9 @@ import { BIKE_COLORS } from './config.js';
  * @param {string}   [opts.filterAttr] — sæt data-filter="<value>" på checkbox (sidebar-filter)
  * @param {Function} [opts.onChange]   — callback ved ændring
  * @param {string}   [opts.variant]    — 'chip' (sidebar-dot) eller 'tile' (fuld farve, form)
+ * @param {number}   [opts.max]        — maks antal valgte (kun tile-variant)
  */
-export function renderColorSwatches(container, { selected = [], filterAttr = null, onChange = null, variant = 'chip' } = {}) {
+export function renderColorSwatches(container, { selected = [], filterAttr = null, onChange = null, variant = 'chip', max = null } = {}) {
   if (!container) return;
   const sel = new Set(selected);
   container.innerHTML = BIKE_COLORS.map(c => {
@@ -39,12 +40,59 @@ export function renderColorSwatches(container, { selected = [], filterAttr = nul
     `;
   }).join('');
 
+  if (max !== null) _updateDisabled(container, max);
+
   container.addEventListener('change', (e) => {
-    if (e.target.matches('input[type="checkbox"]')) {
-      e.target.closest('.color-swatch')?.classList.toggle('is-on', e.target.checked);
-      if (onChange) onChange(getSelectedColors(container));
+    if (!e.target.matches('input[type="checkbox"]')) return;
+    const cb = e.target;
+    const checked = getSelectedColors(container);
+
+    if (cb.checked && max !== null && checked.length > max) {
+      cb.checked = false;
+      cb.closest('.color-swatch')?.classList.remove('is-on');
+      _flashMax(container, max);
+      return;
+    }
+
+    cb.closest('.color-swatch')?.classList.toggle('is-on', cb.checked);
+    if (max !== null) _updateDisabled(container, max);
+    if (onChange) onChange(getSelectedColors(container));
+  });
+}
+
+function _updateDisabled(container, max) {
+  const checked = getSelectedColors(container);
+  const atMax = checked.length >= max;
+  container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    if (!cb.checked) {
+      cb.closest('.color-swatch')?.classList.toggle('is-maxed', atMax);
+    } else {
+      cb.closest('.color-swatch')?.classList.remove('is-maxed');
     }
   });
+  let hint = container.parentElement?.querySelector('.color-max-hint');
+  if (atMax) {
+    if (!hint) {
+      hint = document.createElement('p');
+      hint.className = 'color-max-hint';
+      container.insertAdjacentElement('afterend', hint);
+    }
+    hint.textContent = `Maks ${max} farver valgt`;
+  } else if (hint) {
+    hint.remove();
+  }
+}
+
+function _flashMax(container, max) {
+  let hint = container.parentElement?.querySelector('.color-max-hint');
+  if (!hint) {
+    hint = document.createElement('p');
+    hint.className = 'color-max-hint';
+    container.insertAdjacentElement('afterend', hint);
+  }
+  hint.textContent = `Maks ${max} farver valgt`;
+  hint.classList.add('is-flash');
+  setTimeout(() => hint?.classList.remove('is-flash'), 600);
 }
 
 export function getSelectedColors(container) {
