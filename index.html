@@ -316,7 +316,48 @@
       <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Stelstørrelse</h3>
-          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleSizeInfo()" aria-label="Størrelsesguide" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="wheel-info-popup" id="size-info-popup" style="display:none">
+          <p style="font-size:0.75rem;color:var(--muted);margin:0 0 8px">Vejledende — varierer efter cykeltype og kropsbygning</p>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">XS</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">44–48 cm stel</span>
+              <span class="wi-use">Ca. 155–162 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">S</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">49–52 cm stel</span>
+              <span class="wi-use">Ca. 163–170 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">M</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">53–56 cm stel</span>
+              <span class="wi-use">Ca. 170–178 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">L</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">57–60 cm stel</span>
+              <span class="wi-use">Ca. 179–188 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">XL</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">61+ cm stel</span>
+              <span class="wi-use">Ca. 189+ cm højde</span>
+            </div>
+          </div>
         </div>
         <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XS (44–48 cm)" onchange="applyFilters()"> XS <span style="color:var(--muted);font-size:0.8rem">44–48 cm</span> <span class="filter-count">–</span></label>

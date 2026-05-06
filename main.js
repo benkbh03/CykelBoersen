@@ -1204,6 +1204,17 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
 }
 
+function toggleSizeInfo() {
+  const popup = document.getElementById('size-info-popup');
+  if (!popup) return;
+  const visible = popup.style.display !== 'none';
+  popup.style.display = visible ? 'none' : 'block';
+  if (!visible) {
+    const close = (e) => { if (!e.target.closest('#size-info-popup') && !e.target.closest('.wheel-info-btn')) { popup.style.display = 'none'; document.removeEventListener('click', close); } };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+}
+
 function toggleWheelInfo() {
   const popup = document.getElementById('wheel-info-popup');
   if (!popup) return;
@@ -1221,10 +1232,10 @@ function suggestFrameSize() {
   if (!result) return;
   if (!h || h < 140 || h > 220) { result.textContent = ''; return; }
   let size, val;
-  if      (h <= 163) { size = 'XS'; val = 'XS (44–48 cm)'; }
+  if      (h <= 162) { size = 'XS'; val = 'XS (44–48 cm)'; }
   else if (h <= 170) { size = 'S';  val = 'S (49–52 cm)'; }
   else if (h <= 178) { size = 'M';  val = 'M (53–56 cm)'; }
-  else if (h <= 185) { size = 'L';  val = 'L (57–60 cm)'; }
+  else if (h <= 188) { size = 'L';  val = 'L (57–60 cm)'; }
   else               { size = 'XL'; val = 'XL (61+ cm)'; }
   result.textContent = '→ ' + size;
   const cb = document.querySelector(`[data-filter="size"][data-value="${val}"]`);
@@ -1421,6 +1432,7 @@ window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
 window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
+window.toggleSizeInfo         = toggleSizeInfo;
 window.toggleSidebarSection   = toggleSidebarSection;
 window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;
