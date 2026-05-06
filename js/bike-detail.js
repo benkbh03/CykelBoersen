@@ -234,6 +234,31 @@ export function createBikeDetail({
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
         <div class="bike-detail-description">${esc(b.description).replace(/\n/g, '<br>')}</div>
       </div>` : ''}
+      ${b.size ? (() => {
+        const heightMap = {
+          'XS (44–48 cm)': '148–162 cm',
+          'S (49–52 cm)':  '163–170 cm',
+          'M (53–56 cm)':  '171–178 cm',
+          'L (57–60 cm)':  '179–188 cm',
+          'XL (61+ cm)':   '189+ cm',
+        };
+        const heightRange = heightMap[b.size] || null;
+        return `
+        <div class="fit-section">
+          <h3 class="fit-section-title">Størrelse og pasform</h3>
+          <div class="fit-cards">
+            ${heightRange ? `
+            <div class="fit-card">
+              <div class="fit-card-label">Anbefalet højde</div>
+              <div class="fit-card-value">${heightRange}</div>
+            </div>` : ''}
+            <div class="fit-card">
+              <div class="fit-card-label">Rammestørrelse</div>
+              <div class="fit-card-value">${esc(b.size)}</div>
+            </div>
+          </div>
+        </div>`;
+      })() : ''}
       <a href="https://www.politi.dk/services/tjek-dit-stelnummer" target="_blank" rel="noopener" class="theft-check-tip">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>

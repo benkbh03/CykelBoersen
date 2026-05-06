@@ -706,6 +706,44 @@ nav {
   line-height: 1.5;
 }
 
+/* ── Størrelse og pasform ────────────────────────── */
+.fit-section {
+  margin-top: 20px;
+}
+.fit-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--charcoal);
+}
+.fit-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.fit-card {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fit-card-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fit-card-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+
 /* ── Theft check tip ─────────────────────────────── */
 .theft-check-tip {
   display: flex;
