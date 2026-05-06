@@ -1205,6 +1205,17 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
 }
 
+function toggleWheelInfo() {
+  const popup = document.getElementById('wheel-info-popup');
+  if (!popup) return;
+  const visible = popup.style.display !== 'none';
+  popup.style.display = visible ? 'none' : 'block';
+  if (!visible) {
+    const close = (e) => { if (!e.target.closest('#wheel-info-popup') && !e.target.closest('.wheel-info-btn')) { popup.style.display = 'none'; document.removeEventListener('click', close); } };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+}
+
 function suggestFrameSize() {
   const h = parseInt(document.getElementById('height-input')?.value);
   const result = document.getElementById('height-result');
@@ -1410,6 +1421,7 @@ window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
 window.suggestFrameSize       = suggestFrameSize;
+window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSidebarSection   = toggleSidebarSection;
 window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;
