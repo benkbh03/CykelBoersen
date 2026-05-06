@@ -146,7 +146,7 @@ export function createBikeDetail({
           <div class="bike-detail-tags">
             <span class="detail-tag">${b.type}</span>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
-            ${b.size ? `<span class="detail-tag">Str. ${b.size}</span>` : ''}
+            ${(b.size || b.size_cm) ? `<span class="detail-tag">Str. ${b.size_cm ? b.size_cm + ' cm' : esc(b.size)}${b.size_cm && b.size ? ` <span style="color:var(--muted);font-weight:400;">(${esc(b.size)})</span>` : ''}</span>` : ''}
             ${b.condition ? `<span class="detail-tag">${b.condition}</span>` : ''}
             ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
             ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
