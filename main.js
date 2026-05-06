@@ -1215,6 +1215,16 @@ function toggleConditionInfo() {
   }
 }
 
+function updateConditionGuide(selectId, guideId) {
+  const val = document.getElementById(selectId)?.value || '';
+  const guide = document.getElementById(guideId);
+  if (!guide) return;
+  guide.querySelectorAll('.cg-row').forEach(row => {
+    row.classList.toggle('cg-active', row.dataset.cond === val);
+    row.classList.toggle('cg-dim', val !== '' && row.dataset.cond !== val);
+  });
+}
+
 let _quizA1 = null;
 function startBikeQuiz() {
   document.getElementById('bike-quiz-intro').style.display = 'none';
@@ -1516,6 +1526,7 @@ window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
 window.toggleConditionInfo    = toggleConditionInfo;
+window.updateConditionGuide   = updateConditionGuide;
 window.startBikeQuiz          = startBikeQuiz;
 window.quizPick               = quizPick;
 window.quizBack               = quizBack;

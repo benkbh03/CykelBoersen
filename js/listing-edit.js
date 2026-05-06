@@ -177,6 +177,7 @@ export function createListingEdit({
     document.getElementById('edit-type').value          = b.type || '';
     document.getElementById('edit-size').value          = b.size || '';
     document.getElementById('edit-condition').value     = b.condition || '';
+    if (typeof window.updateConditionGuide === 'function') window.updateConditionGuide('edit-condition', 'cg-edit');
     document.getElementById('edit-is-active').checked   = b.is_active;
 
     const warrantyGroup = document.getElementById('edit-warranty-group');
