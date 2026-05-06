@@ -617,6 +617,26 @@ nav {
 .color-tile.is-on { border-color: currentColor; box-shadow: 0 0 0 1px currentColor; }
 .color-tile[data-dark="false"].is-on { border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
 
+.color-tile.is-maxed {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.color-max-hint {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: var(--rust);
+}
+.color-max-hint.is-flash {
+  animation: flash-hint 0.5s ease;
+}
+@keyframes flash-hint {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 /* Hjulstørrelse info */
 .wheel-info-btn {
   width: 18px; height: 18px;
