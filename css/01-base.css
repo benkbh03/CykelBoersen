@@ -608,3 +608,144 @@ nav {
 }
 .btn-apply:hover { background: var(--forest-light); }
 
+/* ── Quiz box ────────────────────────────────────── */
+.bike-quiz-box {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.bike-quiz-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.bike-quiz-icon { font-size: 1.6rem; }
+.bike-quiz-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+.bike-quiz-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.bike-quiz-start-btn {
+  background: var(--forest);
+  color: var(--sand);
+  border: none;
+  border-radius: 9px;
+  padding: 9px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+  width: 100%;
+}
+.bike-quiz-start-btn:hover { background: var(--forest-light); }
+.bike-quiz-q {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 10px;
+}
+.bike-quiz-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bike-quiz-opt {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 0.83rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  text-align: left;
+  color: var(--charcoal);
+  transition: border-color 0.15s, background 0.15s;
+}
+.bike-quiz-opt:hover {
+  border-color: var(--forest);
+  background: #edf4ee;
+}
+.bike-quiz-back {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bike-quiz-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bike-quiz-result-type {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--forest);
+  text-align: center;
+}
+.bike-quiz-result-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── Theft check tip ─────────────────────────────── */
+.theft-check-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff8e6;
+  border: 1.5px solid #f5c842;
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--charcoal);
+  margin-top: 14px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.theft-check-tip:hover {
+  background: #fff3cc;
+  border-color: #e6b800;
+}
+.theft-check-tip svg:first-child {
+  flex-shrink: 0;
+  color: #c48a00;
+}
+.theft-check-tip div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.theft-check-tip strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+.theft-check-tip span {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.theft-check-tip svg:last-child {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
