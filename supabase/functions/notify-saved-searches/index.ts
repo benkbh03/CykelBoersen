@@ -70,8 +70,9 @@ function bikeMatchesSearch(bike, filters) {
   }
 
   // Pris
-  if (filters.minPrice && typeof bike.price === "number" && bike.price < filters.minPrice) return false;
-  if (filters.maxPrice && typeof bike.price === "number" && bike.price > filters.maxPrice) return false;
+  const bikePrice = Number(bike.price);
+  if (filters.minPrice != null && !isNaN(Number(filters.minPrice)) && bikePrice < Number(filters.minPrice)) return false;
+  if (filters.maxPrice != null && !isNaN(Number(filters.maxPrice)) && bikePrice > Number(filters.maxPrice)) return false;
 
   // Sælgertype (fra profiles)
   if (filters.sellerType && bike.seller_type && bike.seller_type !== filters.sellerType) return false;
@@ -133,9 +134,14 @@ serve(async (req) => {
     }
 
     // Filtrer: kun søgninger der matcher + ekskludér cyklens ejer
-    const matching = searches.filter(s =>
-      s.user_id !== bike.user_id && bikeMatchesSearch(bike, s.filters || {})
-    );
+    console.log(`Bike: id=${bike.id} type=${bike.type} price=${bike.price} (${typeof bike.price})`);
+    const matching = searches.filter(s => {
+      const f = s.filters || {};
+      const isOwner = s.user_id === bike.user_id;
+      const matches = bikeMatchesSearch(bike, f);
+      if (!matches) console.log(`Search "${s.name}" (${s.id}): NO MATCH — filters.maxPrice=${f.maxPrice}, filters.minPrice=${f.minPrice}`);
+      return !isOwner && matches;
+    });
     if (matching.length === 0) {
       return new Response(JSON.stringify({ ok: true, sent: 0 }), {
         status: 200,
