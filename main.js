@@ -258,7 +258,7 @@ const {
 } = listingEdit;
 
 const {
-  setView, renderMapPage, toggleMapNearMe, resetMapFilters,
+  setView, renderMapPage, toggleMapNearMe, resetMapFilters, toggleMapDd, pickMapDd,
   toggleMapFilterPanel, splitCardClick, toggleSplitList,
   applyMapFilters, openMapFiltersSheet, closeMapFiltersSheet,
   mapTabSwitch, locateUser, openFromMap, _openFromMap,
@@ -1433,6 +1433,8 @@ window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
 window.renderMapPage           = renderMapPage;
 window.toggleMapNearMe         = toggleMapNearMe;
+window.toggleMapDd             = toggleMapDd;
+window.pickMapDd               = pickMapDd;
 window.resetMapFilters         = resetMapFilters;
 window.toggleMapFilterPanel    = toggleMapFilterPanel;
 window.splitCardClick          = splitCardClick;
