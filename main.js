@@ -434,6 +434,12 @@ window.sortAndRenderDealers    = sortAndRenderDealers;
    ============================================================ */
 
 async function init() {
+  // Render sidebar farve-swatches
+  import('./js/color-swatches.js').then(({ renderColorSwatches }) => {
+    const colorGrid = document.getElementById('color-filter-grid');
+    renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
+  });
+
   // Start offentlig data med det samme – venter ikke på auth
   const sessionPromise = supabase.auth.getSession();
   loadBikes();
@@ -1193,6 +1199,10 @@ function applyFilters() {
   const sizes = [...document.querySelectorAll('[data-filter="size"]:checked')]
     .map(el => el.dataset.value);
 
+  // Saml valgte farver
+  const colors = [...document.querySelectorAll('[data-filter="color"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -1202,7 +1212,7 @@ function applyFilters() {
   if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
   if (sellerPrivate?.checked && !sellerDealer?.checked) sellerType = 'private';
 
-  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes });
+  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes, colors });
 }
 
 function expandBikeDesc() {

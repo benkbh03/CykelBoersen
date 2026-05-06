@@ -200,7 +200,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, profiles(seller_type), bike_images(url, is_primary)')
+        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, profiles(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
@@ -220,6 +220,7 @@ export function createMyProfile({
             warranty:    full.warranty,
             year:        full.year,
             size:        full.size,
+            colors:      full.colors,
             seller_type: full.profiles?.seller_type || 'private',
             image:       primaryImage,
           },
@@ -246,6 +247,7 @@ export function createMyProfile({
       || fa.sellerType
       || (fa.wheelSizes?.length > 0)
       || (fa.sizes?.length > 0)
+      || (fa.colors?.length > 0)
       || warranty;
 
     if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
@@ -259,6 +261,7 @@ export function createMyProfile({
     if (fa.conditions?.length)     parts.push(...fa.conditions);
     if (fa.wheelSizes?.length)     parts.push(...fa.wheelSizes.map(w => 'Hjul ' + w));
     if (fa.sizes?.length)          parts.push(...fa.sizes.map(s => 'Str. ' + s.split(' ')[0]));
+    if (fa.colors?.length)         parts.push(...fa.colors);
     if (warranty)                  parts.push('Med garanti');
     if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
     if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);

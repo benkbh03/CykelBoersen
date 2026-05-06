@@ -475,6 +475,13 @@
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='29"' onchange="applyFilters()"> 29" <span class="filter-count">–</span></label>
         </div>
       </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Farve</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body color-swatch-grid" id="color-filter-grid"></div>
+      </div>
       <div class="sidebar-save-card">
         <h4>🔔 Cykelagent</h4>
         <p>Få besked på e-mail når nye cykler matcher din søgning</p>
@@ -1074,7 +1081,7 @@
             </div>
           </div>
           <div class="form-group"><label>By *</label><input type="text" id="edit-city" placeholder="f.eks. København"></div>
-          <div class="form-group"><label>Farve</label><input type="text" id="edit-color" placeholder="f.eks. Sort, Hvid/Rød"></div>
+          <div class="form-group full"><label>Farve(r) <small style="color:var(--muted);font-weight:400">(vælg én eller flere)</small></label><div class="color-swatch-grid" id="edit-color-grid"></div></div>
           <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..."></textarea></div>
           <div class="form-group full" id="edit-warranty-group" style="display:none;">
             <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>

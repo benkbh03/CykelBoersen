@@ -153,7 +153,7 @@ export function createBikeDetail({
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
             ${b.size ? `<span class="detail-tag">Str. ${b.size}</span>` : ''}
             ${b.condition ? `<span class="detail-tag">${b.condition}</span>` : ''}
-            ${b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : ''}
+            ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
             ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
             ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${esc(b.warranty)}</span>` : ''}
           </div>
