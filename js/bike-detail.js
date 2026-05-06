@@ -232,7 +232,9 @@ export function createBikeDetail({
       ${b.description ? `
       <div style="margin-top:20px;">
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
-        <div class="bike-detail-description is-clamped" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
+        <div class="desc-wrap is-clamped" id="bike-desc-wrap">
+          <div class="bike-detail-description" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
+        </div>
         <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
       </div>` : ''}
       ${b.size ? (() => {
@@ -685,11 +687,13 @@ export function createBikeDetail({
   /* ── Beskrivelses-expand ── */
 
   function _initDescExpand() {
-    const el  = document.getElementById('bike-desc-text');
-    const btn = document.getElementById('bike-desc-btn');
-    if (!el || !btn) return;
+    const wrap = document.getElementById('bike-desc-wrap');
+    const el   = document.getElementById('bike-desc-text');
+    const btn  = document.getElementById('bike-desc-btn');
+    if (!wrap || !el || !btn) return;
     requestAnimationFrame(() => {
-      if (el.scrollHeight <= el.clientHeight + 2) {
+      if (el.scrollHeight <= el.clientHeight + 4) {
+        wrap.classList.remove('is-clamped');
         btn.style.display = 'none';
       }
     });

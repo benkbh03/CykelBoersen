@@ -1206,10 +1206,10 @@ function applyFilters() {
 }
 
 function expandBikeDesc() {
-  const el  = document.getElementById('bike-desc-text');
-  const btn = document.getElementById('bike-desc-btn');
-  if (!el || !btn) return;
-  el.classList.remove('is-clamped');
+  const wrap = document.getElementById('bike-desc-wrap');
+  const btn  = document.getElementById('bike-desc-btn');
+  if (!wrap || !btn) return;
+  wrap.classList.remove('is-clamped');
   btn.style.display = 'none';
 }
 
