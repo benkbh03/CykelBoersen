@@ -180,6 +180,7 @@ export function createListingEdit({
     document.getElementById('edit-description').value   = b.description || '';
     document.getElementById('edit-type').value          = b.type || '';
     document.getElementById('edit-size').value          = b.size || '';
+    document.getElementById('edit-size-cm').value       = b.size_cm || '';
     document.getElementById('edit-condition').value     = b.condition || '';
     if (typeof window.updateConditionGuide === 'function') window.updateConditionGuide('edit-condition', 'cg-edit');
     document.getElementById('edit-is-active').checked   = b.is_active;
@@ -231,6 +232,7 @@ export function createListingEdit({
       description: document.getElementById('edit-description').value,
       type:        document.getElementById('edit-type').value,
       size:        document.getElementById('edit-size').value,
+      size_cm:     parseInt(document.getElementById('edit-size-cm').value) || null,
       condition:   document.getElementById('edit-condition').value,
       is_active:   document.getElementById('edit-is-active').checked,
       warranty:    (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-warranty').value.trim() : null) || null,

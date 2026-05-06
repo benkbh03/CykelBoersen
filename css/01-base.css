@@ -617,6 +617,37 @@ nav {
 .color-tile.is-on { border-color: currentColor; box-shadow: 0 0 0 1px currentColor; }
 .color-tile[data-dark="false"].is-on { border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
 
+/* Præcis stelstørrelse (cm) under str-dropdown */
+.size-cm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.size-cm-row input[type="number"] {
+  width: 80px;
+  padding: 7px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--charcoal);
+}
+.size-cm-row input[type="number"]:focus {
+  outline: none;
+  border-color: var(--forest);
+}
+.size-cm-unit {
+  font-size: 0.82rem;
+  color: var(--charcoal);
+  white-space: nowrap;
+}
+.size-cm-hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 .color-tile.is-maxed {
   opacity: 0.38;
   cursor: not-allowed;

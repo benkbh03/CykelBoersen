@@ -69,7 +69,7 @@ export function createSellPage({
 
   const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
   const SELL_DRAFT_FIELDS = [
-    'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-wheel-size',
+    'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
     'sell-price', 'sell-warranty',
   ];
@@ -222,6 +222,7 @@ export function createSellPage({
       const desc      = getVal('sell-desc');
       const type      = getVal('sell-type');
       const size      = getVal('sell-size') || null;
+      const sizeCm    = parseInt(getVal('sell-size-cm')) || null;
       const condition = getVal('sell-condition');
       const wheelSize = getVal('sell-wheel-size') || null;
       const warranty  = getVal('sell-warranty') || null;
@@ -235,7 +236,7 @@ export function createSellPage({
         user_id: currentUser.id,
         brand, model, price, year, city,
         description: desc || null,
-        type, size: size || null, condition,
+        type, size: size || null, size_cm: sizeCm, condition,
         wheel_size: wheelSize || null,
         warranty: warranty || null,
         color: colors.length ? colors.join(', ') : null,
@@ -436,6 +437,10 @@ export function createSellPage({
             <option value="">Vælg</option>
             ${opt(c['sell-size'] || '', ['XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)'])}
           </select>
+          <div class="size-cm-row">
+            <input type="number" id="sell-size-cm" placeholder="f.eks. 54" min="30" max="85" value="${c['sell-size-cm'] || ''}">
+            <span class="size-cm-unit">cm <span class="size-cm-hint">– valgfri præcis størrelse</span></span>
+          </div>
         </div>
         <div class="sell-field">
           <label>Hjulstørrelse</label>
@@ -720,7 +725,7 @@ export function createSellPage({
 
   function captureSellFormCache() {
     if (_sellStep === 2) {
-      ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
+      ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
        'sell-year','sell-condition','sell-price','sell-warranty'].forEach(id => {
         const el = document.getElementById(id);
         if (el) _sellFormCache[id] = el.value;
@@ -782,7 +787,7 @@ export function createSellPage({
         onChange: (sel) => { _sellFormCache['sell-colors'] = sel; refreshOnChange(); },
       });
       // Live footer + preview updates
-      ['sell-brand','sell-model','sell-type','sell-size','sell-wheel-size',
+      ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
        'sell-year','sell-condition','sell-price'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
