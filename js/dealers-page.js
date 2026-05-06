@@ -94,7 +94,7 @@ export function createDealersPage({
       <div class="dealer-empty-card">
         <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
         <h3>Ingen forhandlere endnu</h3>
-        <p>Bliv en af de første forhandlere på Cykelbørsen
+        <p>Bliv en af de første forhandlere på Cykelbørsen.
 Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik →</button>
       </div>`;
