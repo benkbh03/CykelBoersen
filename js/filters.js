@@ -52,6 +52,7 @@ export function createFilters({
     if (args?.types?.length)      parts.push(args.types.join(', '));
     if (args?.conditions?.length) parts.push(args.conditions.join(', '));
     if (args?.wheelSizes?.length) parts.push(args.wheelSizes.join(', '));
+    if (args?.sizes?.length)      parts.push(args.sizes.map(s => s.split(' ')[0]).join(', '));
     if (args?.minPrice && args?.maxPrice) {
       parts.push(`${args.minPrice.toLocaleString('da-DK')}–${args.maxPrice.toLocaleString('da-DK')} kr.`);
     } else if (args?.minPrice) {
@@ -307,11 +308,11 @@ export function createFilters({
   async function updateFilterCounts(data, dealerCount) {
     if (!data) {
       const [bikesRes, dealerRes] = await Promise.all([
-        supabase.from('bikes').select('type, condition, wheel_size, profiles(seller_type)').eq('is_active', true),
+        supabase.from('bikes').select('type, condition, size, wheel_size, profiles(seller_type)').eq('is_active', true),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
       ]);
       if (bikesRes.error || !bikesRes.data) {
-        const { data: fallback } = await supabase.from('bikes').select('type, condition, profiles(seller_type)').eq('is_active', true);
+        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles(seller_type)').eq('is_active', true);
         if (!fallback) return;
         data = fallback;
       } else {
@@ -338,6 +339,11 @@ export function createFilters({
     setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
     setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
     setCount('condition', 'Brugt',      data.filter(b => b.condition === 'Brugt').length);
+    setCount('size', 'XS (44–48 cm)', data.filter(b => b.size === 'XS (44–48 cm)').length);
+    setCount('size', 'S (49–52 cm)',  data.filter(b => b.size === 'S (49–52 cm)').length);
+    setCount('size', 'M (53–56 cm)',  data.filter(b => b.size === 'M (53–56 cm)').length);
+    setCount('size', 'L (57–60 cm)',  data.filter(b => b.size === 'L (57–60 cm)').length);
+    setCount('size', 'XL (61+ cm)',   data.filter(b => b.size === 'XL (61+ cm)').length);
     setCount('wheel',  '26"',           data.filter(b => b.wheel_size === '26"').length);
     setCount('wheel',  '27.5" / 650b',  data.filter(b => b.wheel_size === '27.5" / 650b').length);
     setCount('wheel',  '28"',           data.filter(b => b.wheel_size === '28"').length);

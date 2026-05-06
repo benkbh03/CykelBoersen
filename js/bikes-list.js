@@ -272,7 +272,7 @@ export function createBikesList({
 
     if (!append) {
       setFilterOffset(0);
-      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes });
+      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes, sizes });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
       if (old) old.remove();
