@@ -337,10 +337,10 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 #edit-seller-type { cursor: pointer; }
 
 /* ── ANNONCE DETALJE ── */
-.bike-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.bike-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
 .bike-detail-img { background: var(--sand); border-radius: 12px; height: 420px; display: flex; align-items: center; justify-content: center; font-size: 6rem; overflow: hidden; }
 .bike-detail-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
-.bike-detail-info { display: flex; flex-direction: column; gap: 14px; }
+.bike-detail-info { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
 .bike-detail-price { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; color: var(--rust); }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
