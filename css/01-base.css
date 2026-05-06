@@ -570,11 +570,40 @@ nav {
 .color-swatch-label { flex: 1; }
 .color-swatch .filter-count { font-size: 0.72rem; }
 
-/* Form-versions: lidt større layout */
+/* Form-versions: lidt større layout + tydeligere farvedot */
 .form-group .color-swatch-grid,
 .sell-field .color-swatch-grid {
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   gap: 8px;
+}
+.form-group .color-swatch,
+.sell-field .color-swatch {
+  padding: 8px 10px;
+  gap: 10px;
+}
+.form-group .color-swatch-dot,
+.sell-field .color-swatch-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.12);
+  box-shadow: none;
+  flex-shrink: 0;
+}
+.form-group .color-swatch[data-color="Hvid"] .color-swatch-dot,
+.sell-field .color-swatch[data-color="Hvid"] .color-swatch-dot {
+  border: 2px solid rgba(0,0,0,0.18);
+  box-shadow: none;
+}
+.form-group .color-swatch.is-on,
+.sell-field .color-swatch.is-on {
+  border-color: var(--forest);
+  background: #edf4ee;
+}
+.form-group .color-swatch.is-on .color-swatch-dot,
+.sell-field .color-swatch.is-on .color-swatch-dot {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
 }
 
 /* Hjulstørrelse info */
