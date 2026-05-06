@@ -127,7 +127,7 @@ export function createBikeDetail({
         <div>
           ${galleryHtml}
           ${(profile.city || profile.address) ? `
-          <div class="bike-location-card" id="bike-location-card">
+          <a class="bike-location-card" id="bike-location-card" href="/kort?bike=${b.id}" onclick="navigateTo('/kort?bike=${b.id}');return false;">
             <div class="bike-location-header">
               <div class="bike-location-title">
                 <span class="bike-location-pin">📍</span>
@@ -137,14 +137,9 @@ export function createBikeDetail({
                   ${profile.address ? `<div class="bike-location-address">${esc(profile.address)}</div>` : ''}
                 </div>
               </div>
-              <span class="bike-location-dist" id="bike-location-dist" style="display:none;"></span>
+              <span class="bike-location-chevron">→</span>
             </div>
-            <div class="bike-location-map" id="bike-location-map" style="display:none"></div>
-            <div class="bike-location-actions" style="display:none">
-              <button class="bike-location-btn bike-location-btn--locate" id="bike-location-locate-btn" onclick="showMyDistanceOnBikeMap()">📍 Vis min afstand</button>
-              <a class="bike-location-btn bike-location-btn--full" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((profile.address ? profile.address + ', ' : '') + (profile.city || ''))}" target="_blank" rel="noopener">Åbn i Google Maps →</a>
-            </div>
-          </div>` : ''}
+          </a>` : ''}
         </div>
         <div class="bike-detail-info">
           <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>

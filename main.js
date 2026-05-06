@@ -1121,7 +1121,10 @@ function handleRoute() {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     document.body.classList.add('map-page-view');
+    const mapBikeId = new URLSearchParams(window.location.search).get('bike');
+    if (mapBikeId) history.replaceState(null, '', '/kort');
     renderMapPage();
+    if (mapBikeId) setTimeout(() => openBikeModal(mapBikeId), 600);
   } else if (inboxMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
