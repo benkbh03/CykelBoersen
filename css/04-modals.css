@@ -349,6 +349,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .seller-detail-name { font-weight: 600; font-size: 0.95rem; }
 .seller-detail-city { font-size: 0.8rem; color: var(--muted); }
 .bike-detail-description { background: var(--sand); border-radius: 10px; padding: 16px; font-size: 0.88rem; line-height: 1.6; color: var(--charcoal); border: 1px solid var(--border); }
+.listing-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.76rem; color: var(--muted); }
 .bike-detail-description.is-clamped { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
 .desc-expand-btn { background: none; border: none; color: var(--forest); font-size: 0.84rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; padding: 6px 0 0; display: flex; align-items: center; gap: 4px; }
 .desc-expand-btn:hover { text-decoration: underline; text-underline-offset: 2px; }

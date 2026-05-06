@@ -270,6 +270,10 @@ export function createBikeDetail({
       </a>
       <div id="seller-other-listings" style="margin-top:28px;"></div>
       <div id="similar-listings" style="margin-top:24px;"></div>
+      <div class="listing-meta">
+        <span>Annonce-ID: ${b.id}</span>
+        ${b.updated_at ? `<span>Sidst redigeret: ${new Date(b.updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>` : `<span>Oprettet: ${new Date(b.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`}
+      </div>
       ${!isOwner ? `
       <div class="bike-sticky-bar" id="bike-sticky-bar">
         <div class="bike-sticky-price">${b.price.toLocaleString('da-DK')} kr.</div>
