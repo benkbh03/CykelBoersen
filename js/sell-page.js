@@ -463,10 +463,16 @@ export function createSellPage({
         </div>
         <div class="sell-field">
           <label>Stand <span class="req">*</span></label>
-          <select id="sell-condition" class="${aiClass}">
+          <select id="sell-condition" class="${aiClass}" onchange="updateConditionGuide('sell-condition','cg-sell')">
             <option value="">Vælg stand</option>
             ${opt(c['sell-condition'] || '', ['Ny','Som ny','God stand','Brugt'])}
           </select>
+          <div class="condition-guide condition-guide--form" id="cg-sell">
+            <div class="cg-row" data-cond="Ny"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
+            <div class="cg-row" data-cond="Som ny"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
+            <div class="cg-row" data-cond="God stand"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
+            <div class="cg-row" data-cond="Brugt"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
+          </div>
         </div>
       </div>
 
