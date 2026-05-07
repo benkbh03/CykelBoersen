@@ -2001,8 +2001,8 @@ window.filterByDealerCard    = filterByDealerCard;
 window.showBikeOnMap = function(bikeId) {
   closeBikeModal && closeBikeModal();
   if (window.location.pathname !== '/') {
+    window._pendingMapBikeId = bikeId;
     navigateTo('/');
-    setTimeout(() => splitCardClick && splitCardClick(bikeId), 900);
   } else {
     splitCardClick && splitCardClick(bikeId);
   }
