@@ -414,7 +414,10 @@ export function createSellPage({
       <div class="sell-form-grid-2">
         <div class="sell-field">
           <label>Mærke <span class="req">*</span></label>
-          <input type="text" id="sell-brand" placeholder="Trek" value="${esc(c['sell-brand'] || '')}" class="${aiClass}">
+          <div class="brand-autocomplete-wrap">
+            <input type="text" id="sell-brand" placeholder="Trek" value="${esc(c['sell-brand'] || '')}" class="${aiClass}" oninput="brandAutocomplete(this, 'sell-brand-list')" autocomplete="off">
+            <div id="sell-brand-list" class="brand-autocomplete-list" style="display:none"></div>
+          </div>
         </div>
         <div class="sell-field">
           <label>Model <span class="req">*</span></label>
