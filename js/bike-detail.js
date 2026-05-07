@@ -255,11 +255,6 @@ export function createBikeDetail({
               <div class="fit-card-label">Rammestørrelse</div>
               <div class="fit-card-value">${esc(b.size)}</div>
             </div>` : ''}
-            ${b.size_cm ? `
-            <div class="fit-card">
-              <div class="fit-card-label">Præcis størrelse</div>
-              <div class="fit-card-value">${b.size_cm} cm</div>
-            </div>` : ''}
           </div>
         </div>`;
       })() : ''}
