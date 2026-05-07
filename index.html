@@ -313,6 +313,65 @@
         </div>
       </div>
       <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Mærke</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" style="padding-top:10px;">
+          <input type="text" id="brand-filter-search" placeholder="Søg mærke..." oninput="filterBrandList()" class="brand-search-input">
+          <div id="brand-filter-list" class="brand-filter-list">
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Avenue" onchange="applyFilters()"> Avenue <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Batavus" onchange="applyFilters()"> Batavus <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bergamont" onchange="applyFilters()"> Bergamont <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bianchi" onchange="applyFilters()"> Bianchi <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bike by Gubi" onchange="applyFilters()"> Bike by Gubi <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="BMC" onchange="applyFilters()"> BMC <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cannondale" onchange="applyFilters()"> Cannondale <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Carqon" onchange="applyFilters()"> Carqon <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Centurion" onchange="applyFilters()"> Centurion <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cervélo" onchange="applyFilters()"> Cervélo <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cube" onchange="applyFilters()"> Cube <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Diverse" onchange="applyFilters()"> Diverse <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="E-Fly" onchange="applyFilters()"> E-Fly <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Everton" onchange="applyFilters()"> Everton <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="FACTOR" onchange="applyFilters()"> FACTOR <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Focus" onchange="applyFilters()"> Focus <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Frogbikes" onchange="applyFilters()"> Frogbikes <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Gazelle" onchange="applyFilters()"> Gazelle <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Giant" onchange="applyFilters()"> Giant <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kalkhoff" onchange="applyFilters()"> Kalkhoff <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kildemoes" onchange="applyFilters()"> Kildemoes <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Koga" onchange="applyFilters()"> Koga <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kreidler" onchange="applyFilters()"> Kreidler <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Lapierre" onchange="applyFilters()"> Lapierre <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="LOOK" onchange="applyFilters()"> LOOK <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="MBK" onchange="applyFilters()"> MBK <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Momentum" onchange="applyFilters()"> Momentum <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Motobecane" onchange="applyFilters()"> Motobecane <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Moustache" onchange="applyFilters()"> Moustache <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Nishiki" onchange="applyFilters()"> Nishiki <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Norden" onchange="applyFilters()"> Norden <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Pinarello" onchange="applyFilters()"> Pinarello <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Principia" onchange="applyFilters()"> Principia <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Puky" onchange="applyFilters()"> Puky <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Qio" onchange="applyFilters()"> Qio <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Raleigh" onchange="applyFilters()"> Raleigh <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Ridley" onchange="applyFilters()"> Ridley <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Scott" onchange="applyFilters()"> Scott <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Silverback" onchange="applyFilters()"> Silverback <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Sparta" onchange="applyFilters()"> Sparta <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Specialized" onchange="applyFilters()"> Specialized <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Superior" onchange="applyFilters()"> Superior <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Trek" onchange="applyFilters()"> Trek <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="uVelo" onchange="applyFilters()"> uVelo <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Winther" onchange="applyFilters()"> Winther <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Woom" onchange="applyFilters()"> Woom <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="YWS" onchange="applyFilters()"> YWS <span class="filter-count">–</span></label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Andre" onchange="applyFilters()"> Andre mærker <span class="filter-count">–</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Cykeltype</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>

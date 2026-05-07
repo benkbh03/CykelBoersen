@@ -531,6 +531,15 @@ nav {
 }
 .filter-option input[type="checkbox"] { accent-color: var(--rust); width: 15px; height: 15px; cursor: pointer; }
 .filter-count { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
+.brand-search-input {
+  width: 100%; box-sizing: border-box;
+  padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
+  background: #fff; color: var(--charcoal); margin-bottom: 8px;
+  outline: none;
+}
+.brand-search-input:focus { border-color: var(--forest); }
+.brand-filter-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
 
 /* ── Farve-swatches ──────────────────────────────── */
 .color-swatch-grid {

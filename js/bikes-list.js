@@ -267,12 +267,12 @@ export function createBikesList({
     loadBikes({ search, type, city });
   }
 
-  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [], sizes = [], colors = [] } = {}, append = false) {
+  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [], sizes = [], colors = [], brands = [] } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
     if (!append) {
       setFilterOffset(0);
-      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes, sizes, colors });
+      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes, sizes, colors, brands });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
       if (old) old.remove();
@@ -295,6 +295,19 @@ export function createBikesList({
     if (dealerId)              query = query.eq('user_id', dealerId);
     if (wheelSizes.length > 0) query = query.in('wheel_size', wheelSizes);
     if (sellerType && !dealerId) query = query.eq('profiles.seller_type', sellerType);
+    if (brands.length > 0) {
+      const hasAndre = brands.includes('Andre');
+      const specificBrands = brands.filter(b => b !== 'Andre');
+      if (hasAndre && specificBrands.length > 0) {
+        const knownBrands = ['Avenue','Batavus','Bergamont','Bianchi','Bike by Gubi','BMC','Cannondale','Carqon','Centurion','Cervélo','Cube','Diverse','E-Fly','Everton','FACTOR','Focus','Frogbikes','Gazelle','Giant','Kalkhoff','Kildemoes','Koga','Kreidler','Lapierre','LOOK','MBK','Momentum','Motobecane','Moustache','Nishiki','Norden','Pinarello','Principia','Puky','Qio','Raleigh','Ridley','Scott','Silverback','Sparta','Specialized','Superior','Trek','uVelo','Winther','Woom','YWS'];
+        query = query.or(`brand.in.(${specificBrands.map(b=>`"${b}"`).join(',')}),brand.not.in.(${knownBrands.map(b=>`"${b}"`).join(',')})`);
+      } else if (hasAndre) {
+        const knownBrands = ['Avenue','Batavus','Bergamont','Bianchi','Bike by Gubi','BMC','Cannondale','Carqon','Centurion','Cervélo','Cube','Diverse','E-Fly','Everton','FACTOR','Focus','Frogbikes','Gazelle','Giant','Kalkhoff','Kildemoes','Koga','Kreidler','Lapierre','LOOK','MBK','Momentum','Motobecane','Moustache','Nishiki','Norden','Pinarello','Principia','Puky','Qio','Raleigh','Ridley','Scott','Silverback','Sparta','Specialized','Superior','Trek','uVelo','Winther','Woom','YWS'];
+        query = query.not('brand', 'in', `(${knownBrands.map(b=>`"${b}"`).join(',')})`);
+      } else {
+        query = query.in('brand', specificBrands);
+      }
+    }
 
     const { data, error } = await query;
     if (error) {

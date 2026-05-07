@@ -30,6 +30,7 @@ export function createFilters({
       (args.conditions && args.conditions.length > 0) ||
       (args.wheelSizes && args.wheelSizes.length > 0) ||
       (args.colors && args.colors.length > 0) ||
+      (args.brands && args.brands.length > 0) ||
       args.minPrice ||
       args.maxPrice ||
       args.sellerType
@@ -50,6 +51,7 @@ export function createFilters({
     if (cf?.sellerType === 'dealer')  parts.push('forhandlere');
     if (cf?.sellerType === 'private') parts.push('private');
 
+    if (args?.brands?.length)     parts.push(args.brands.join(', '));
     if (args?.types?.length)      parts.push(args.types.join(', '));
     if (args?.conditions?.length) parts.push(args.conditions.join(', '));
     if (args?.wheelSizes?.length) parts.push(args.wheelSizes.join(', '));

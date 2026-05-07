@@ -1206,6 +1206,10 @@ function applyFilters() {
   const colors = [...document.querySelectorAll('[data-filter="color"]:checked')]
     .map(el => el.dataset.value);
 
+  // Saml valgte mærker
+  const brands = [...document.querySelectorAll('[data-filter="brand"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -1215,7 +1219,14 @@ function applyFilters() {
   if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
   if (sellerPrivate?.checked && !sellerDealer?.checked) sellerType = 'private';
 
-  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes, colors });
+  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes, colors, brands });
+}
+
+function filterBrandList() {
+  const q = (document.getElementById('brand-filter-search')?.value || '').toLowerCase();
+  document.querySelectorAll('#brand-filter-list .filter-option').forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
 }
 
 function expandBikeDesc() {
@@ -1544,6 +1555,7 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.filterBrandList        = filterBrandList;
 window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
