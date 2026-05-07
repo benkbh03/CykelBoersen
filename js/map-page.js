@@ -556,6 +556,9 @@ export function createMapPage({
       },
     });
     splitMapInstance.addLayer(splitClusterGroup);
+    splitMapInstance.on('zoomend', function() {
+      if (splitMapInstance.getZoom() < 11) splitMapInstance.closePopup();
+    });
     splitMarkerMap = {};
     _mapPageGeocoded = new Map();
 
@@ -894,6 +897,10 @@ export function createMapPage({
         attribution: '© <a href="https://www.openstreetmap.org">OpenStreetMap</a>',
         maxZoom: 18,
       }).addTo(mapInstance);
+
+      mapInstance.on('zoomend', function() {
+        if (mapInstance.getZoom() < 11) mapInstance.closePopup();
+      });
 
       // Tilføj "Find mig" knap
       var locateBtn = document.createElement('button');
