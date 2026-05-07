@@ -86,6 +86,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 }
 .rate-stars .star-pick {
   font-size: 2rem;
+  color: #d4c9b8;
 }
 .rate-comment {
   width: 100%;
