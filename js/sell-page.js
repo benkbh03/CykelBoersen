@@ -571,7 +571,7 @@ export function createSellPage({
     const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
     const cls = canContinue ? 'enabled' : 'disabled';
     const dis = canContinue ? '' : 'disabled';
-    return `<button class="sell-wizard-cta ${cls}" onclick="advanceSell()" ${dis}>
+    return `<button class="sell-wizard-cta ${cls}" data-step="${step}" onclick="advanceSell()" ${dis}>
       ${labels[step]}
       ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
     </button>`;
@@ -673,7 +673,7 @@ export function createSellPage({
     const backDisabled = step === 1;
     return `
       <button class="sell-desktop-back ${backDisabled ? 'disabled' : ''}" ${backDisabled ? 'disabled' : ''} onclick="backSell()">Tilbage</button>
-      <button class="sell-desktop-cta ${cls}" onclick="advanceSell()" ${dis}>
+      <button class="sell-desktop-cta ${cls}" data-step="${step}" onclick="advanceSell()" ${dis}>
         ${labels[step]}
         ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
       </button>
@@ -702,11 +702,28 @@ export function createSellPage({
     const can = canAdvanceSell();
 
     const el = document.getElementById('sell-wizard-footer');
-    if (el) el.innerHTML = renderSellFooterHTML(_sellStep, can);
+    if (el) {
+      const btn = el.querySelector('.sell-wizard-cta');
+      const stepMatches = btn && btn.dataset.step === String(_sellStep);
+      if (btn && stepMatches) {
+        btn.disabled = !can;
+        btn.classList.toggle('enabled', can);
+        btn.classList.toggle('disabled', !can);
+      } else {
+        el.innerHTML = renderSellFooterHTML(_sellStep, can);
+      }
+    }
 
     const elDesk = document.getElementById('sell-desktop-footer');
     if (elDesk) {
-      elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
+      const btn = elDesk.querySelector('.sell-desktop-cta');
+      const stepMatches = btn && btn.dataset.step === String(_sellStep);
+      if (btn && stepMatches) {
+        btn.disabled = !can;
+        btn.classList.toggle('enabled', can);
+        btn.classList.toggle('disabled', !can);
+      } else {
+        elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
     }
   }
 
