@@ -1222,7 +1222,7 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes, colors, brands });
 }
 
-const KNOWN_BRANDS = ['Avenue','Batavus','Bergamont','Bianchi','Bike by Gubi','BMC','Cannondale','Carqon','Centurion','Cervélo','Cube','Diverse','E-Fly','Everton','FACTOR','Focus','Frogbikes','Gazelle','Giant','Kalkhoff','Kildemoes','Koga','Kreidler','Lapierre','LOOK','MBK','Momentum','Motobecane','Moustache','Nishiki','Norden','Pinarello','Principia','Puky','Qio','Raleigh','Ridley','Scott','Silverback','Sparta','Specialized','Superior','Trek','uVelo','Winther','Woom','YWS'];
+const KNOWN_BRANDS = ['Amladcykler','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton','Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube','E-Fly','Early Rider','Electra','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike','Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK','Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco','Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike','Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike','Urban Arrow','VanMoof','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba'];
 
 function brandAutocomplete(input, listId) {
   const list = document.getElementById(listId);
