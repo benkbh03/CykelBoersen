@@ -213,7 +213,12 @@ export function createSellPage({
     const restore = btnLoading('sell-submit-btn', 'Opretter...');
     try {
       // Read from DOM first, fall back to _sellFormCache (step 2 fields are gone when on step 3)
-      const getVal = (id) => (document.getElementById(id)?.value ?? _sellFormCache[id] ?? '').toString().trim();
+      const getVal = (id) => {
+        const dom = document.getElementById(id)?.value;
+        const trimmed = dom != null ? String(dom).trim() : '';
+        if (trimmed) return trimmed;
+        return String(_sellFormCache[id] ?? '').trim();
+      };
       const brand     = getVal('sell-brand');
       const model     = getVal('sell-model');
       const price     = parseInt(getVal('sell-price'));
