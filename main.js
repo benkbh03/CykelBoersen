@@ -1222,6 +1222,25 @@ function applyFilters() {
   debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes, colors, brands });
 }
 
+const KNOWN_BRANDS = ['Avenue','Batavus','Bergamont','Bianchi','Bike by Gubi','BMC','Cannondale','Carqon','Centurion','Cervélo','Cube','Diverse','E-Fly','Everton','FACTOR','Focus','Frogbikes','Gazelle','Giant','Kalkhoff','Kildemoes','Koga','Kreidler','Lapierre','LOOK','MBK','Momentum','Motobecane','Moustache','Nishiki','Norden','Pinarello','Principia','Puky','Qio','Raleigh','Ridley','Scott','Silverback','Sparta','Specialized','Superior','Trek','uVelo','Winther','Woom','YWS'];
+
+function brandAutocomplete(input, listId) {
+  const list = document.getElementById(listId);
+  const q = input.value.toLowerCase().trim();
+  if (!q) { list.style.display = 'none'; return; }
+  const matches = KNOWN_BRANDS.filter(b => b.toLowerCase().startsWith(q)).slice(0, 6);
+  if (!matches.length) { list.style.display = 'none'; return; }
+  list.innerHTML = matches.map(b => `<div class="brand-autocomplete-item" onmousedown="selectBrand('${esc(b)}', '${input.id}', '${listId}')">${esc(b)}</div>`).join('');
+  list.style.display = 'block';
+}
+
+function selectBrand(brand, inputId, listId) {
+  const input = document.getElementById(inputId);
+  if (input) input.value = brand;
+  const list = document.getElementById(listId);
+  if (list) list.style.display = 'none';
+}
+
 function filterBrandList() {
   const q = (document.getElementById('brand-filter-search')?.value || '').toLowerCase();
   document.querySelectorAll('#brand-filter-list .filter-option').forEach(el => {
@@ -1556,6 +1575,8 @@ window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
 window.filterBrandList        = filterBrandList;
+window.brandAutocomplete      = brandAutocomplete;
+window.selectBrand            = selectBrand;
 window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;

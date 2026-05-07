@@ -540,6 +540,17 @@ nav {
 }
 .brand-search-input:focus { border-color: var(--forest); }
 .brand-filter-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
+.brand-autocomplete-wrap { position: relative; }
+.brand-autocomplete-list {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; margin-top: 2px;
+}
+.brand-autocomplete-item {
+  padding: 10px 14px; font-size: 0.88rem; cursor: pointer;
+  color: var(--charcoal); transition: background 0.12s;
+}
+.brand-autocomplete-item:hover { background: var(--sand); }
 
 /* ── Farve-swatches ──────────────────────────────── */
 .color-swatch-grid {
