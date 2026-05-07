@@ -730,6 +730,7 @@ export function createSellPage({
         btn.classList.toggle('disabled', !can);
       } else {
         elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
+      }
     }
   }
 
