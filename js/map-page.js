@@ -677,6 +677,12 @@ export function createMapPage({
 
     setTimeout(() => splitMapInstance && splitMapInstance.invalidateSize(), 150);
     applyMapFilters();
+
+    if (window._pendingMapBikeId) {
+      const pendingId = window._pendingMapBikeId;
+      window._pendingMapBikeId = null;
+      setTimeout(() => splitCardClick(pendingId), 300);
+    }
   }
 
   /* ── renderSplitCards ───────────────────────────────────── */
