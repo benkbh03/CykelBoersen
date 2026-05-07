@@ -1998,3 +1998,13 @@ window.openAllDealersModal   = openAllDealersModal;
 window.openDealerProfile     = openDealerProfile;
 window.filterByDealerCard    = filterByDealerCard;
 
+window.showBikeOnMap = function(bikeId) {
+  closeBikeModal && closeBikeModal();
+  if (window.location.pathname !== '/') {
+    navigateTo('/');
+    setTimeout(() => splitCardClick && splitCardClick(bikeId), 900);
+  } else {
+    splitCardClick && splitCardClick(bikeId);
+  }
+};
+

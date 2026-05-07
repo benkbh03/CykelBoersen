@@ -127,7 +127,7 @@ export function createBikeDetail({
         <div>
           ${galleryHtml}
           ${(profile.city || profile.address) ? `
-          <a class="bike-location-card" id="bike-location-card" href="/kort?bike=${b.id}" onclick="navigateTo('/kort?bike=${b.id}');return false;">
+          <a class="bike-location-card" id="bike-location-card" href="/" onclick="showBikeOnMap('${b.id}');return false;">
             <div class="bike-location-header">
               <div class="bike-location-title">
                 <span class="bike-location-pin">📍</span>
