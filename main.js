@@ -2000,9 +2000,9 @@ window.filterByDealerCard    = filterByDealerCard;
 
 window.showBikeOnMap = function(bikeId) {
   closeBikeModal && closeBikeModal();
-  if (window.location.pathname !== '/') {
+  if (window.location.pathname !== '/kort') {
     window._pendingMapBikeId = bikeId;
-    navigateTo('/');
+    navigateTo('/kort');
   } else {
     splitCardClick && splitCardClick(bikeId);
   }
