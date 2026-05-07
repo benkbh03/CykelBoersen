@@ -697,27 +697,11 @@ export function createSellPage({
     const can = canAdvanceSell();
 
     const el = document.getElementById('sell-wizard-footer');
-    if (el) {
-      const btn = el.querySelector('.sell-wizard-cta');
-      if (btn) {
-        btn.disabled = !can;
-        btn.classList.toggle('enabled', can);
-        btn.classList.toggle('disabled', !can);
-      } else {
-        el.innerHTML = renderSellFooterHTML(_sellStep, can);
-      }
-    }
+    if (el) el.innerHTML = renderSellFooterHTML(_sellStep, can);
 
     const elDesk = document.getElementById('sell-desktop-footer');
     if (elDesk) {
-      const btn = elDesk.querySelector('.sell-desktop-cta');
-      if (btn) {
-        btn.disabled = !can;
-        btn.classList.toggle('enabled', can);
-        btn.classList.toggle('disabled', !can);
-      } else {
-        elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
-      }
+      elDesk.innerHTML = renderSellDesktopFooterHTML(_sellStep, can);
     }
   }
 
