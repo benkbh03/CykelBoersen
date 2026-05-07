@@ -120,6 +120,14 @@ export function createInbox({
       if (!msg.read && msg.receiver_id === currentUser.id) threads[key].hasUnread = true;
     });
 
+    // Cache bike names while data is available; use cache as fallback when bike is deactivated (RLS blocks inactive bikes for non-owners)
+    threads && Object.values(threads).forEach(t => {
+      const cacheKey = `bike_name_${t.bikeId}`;
+      if (t.bike?.brand) {
+        localStorage.setItem(cacheKey, `${t.bike.brand} ${t.bike.model}`);
+      }
+    });
+
     const threadList  = Object.values(threads);
     const unreadCount = threadList.filter(t => t.hasUnread).length;
 
@@ -136,7 +144,7 @@ export function createInbox({
       const initials = getInitials(t.otherName);
       const preview  = lastMsg.content.length > 50 ? lastMsg.content.substring(0, 50) + '...' : lastMsg.content;
       const time     = new Date(lastMsg.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
-      const bikeName = t.bike ? `${t.bike.brand} ${t.bike.model}` : 'Ukendt cykel';
+      const bikeName = t.bike ? `${t.bike.brand} ${t.bike.model}` : (localStorage.getItem(`bike_name_${t.bikeId}`) || 'Ukendt cykel');
       return `
       <div class="inbox-row ${t.hasUnread ? 'unread' : ''}"
            onclick="openThread('${t.bikeId}', '${t.otherId}', '${(t.otherName||'Ukendt').replace(/'/g,'')}')">
@@ -174,7 +182,9 @@ export function createInbox({
 
     const isSeller   = bike?.user_id === currentUser.id;
     const bikeActive = bike?.is_active === true;
-    const bikeName   = bike ? `${bike.brand} ${bike.model}` : 'annonce';
+    const cachedName = localStorage.getItem(`bike_name_${bikeId}`);
+    if (bike?.brand) localStorage.setItem(`bike_name_${bikeId}`, `${bike.brand} ${bike.model}`);
+    const bikeName   = bike ? `${bike.brand} ${bike.model}` : (cachedName || 'annonce');
 
     activeThread.isSeller   = isSeller;
     activeThread.bikeActive = bikeActive;
@@ -477,7 +487,7 @@ export function createInbox({
       const initials = getInitials(t.otherName);
       const preview  = esc(lastMsg.content.length > 60 ? lastMsg.content.substring(0, 60) + '...' : lastMsg.content);
       const time     = formatInboxTime(lastMsg.created_at);
-      const bikeName = t.bike ? esc(t.bike.brand + ' ' + t.bike.model) : 'Ukendt cykel';
+      const bikeName = t.bike ? esc(t.bike.brand + ' ' + t.bike.model) : esc(localStorage.getItem(`bike_name_${t.bikeId}`) || 'Ukendt cykel');
       const bikeImg  = t.bike?.bike_images?.find(i => i.is_primary)?.url || t.bike?.bike_images?.[0]?.url;
       const isBid    = lastMsg.content.indexOf('💰') === 0;
       const safeName = (t.otherName || 'Ukendt').replace(/'/g, '');
@@ -532,7 +542,8 @@ export function createInbox({
     activeInboxThread.isSeller   = isSeller;
     activeInboxThread.bikeActive = bikeActive;
 
-    const bikeName  = bikeData ? esc(bikeData.brand + ' ' + bikeData.model) : 'Ukendt cykel';
+    if (bikeData?.brand) localStorage.setItem(`bike_name_${bikeId}`, `${bikeData.brand} ${bikeData.model}`);
+    const bikeName  = bikeData ? esc(bikeData.brand + ' ' + bikeData.model) : esc(localStorage.getItem(`bike_name_${bikeId}`) || 'Ukendt cykel');
     const bikePrice = bikeData ? bikeData.price.toLocaleString('da-DK') + ' kr.' : '';
     const bikeThumb = bikeData?.bike_images?.find(i => i.is_primary)?.url || bikeData?.bike_images?.[0]?.url || '';
     const isActive  = bikeData?.is_active;
