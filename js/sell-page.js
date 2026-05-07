@@ -462,12 +462,14 @@ export function createSellPage({
           <input type="number" id="sell-year" placeholder="2021" min="1950" max="2030" value="${c['sell-year'] || ''}">
         </div>
         <div class="sell-field">
-          <label>Stand <span class="req">*</span></label>
+          <label style="display:flex;align-items:center;gap:6px;">Stand <span class="req">*</span>
+            <button class="wheel-info-btn" onclick="toggleSellConditionInfo()" aria-label="Hvad betyder stand?" type="button" style="margin-left:4px;">?</button>
+          </label>
           <select id="sell-condition" class="${aiClass}" onchange="updateConditionGuide('sell-condition','cg-sell')">
             <option value="">Vælg stand</option>
             ${opt(c['sell-condition'] || '', ['Ny','Som ny','God stand','Brugt'])}
           </select>
-          <div class="condition-guide condition-guide--form" id="cg-sell">
+          <div class="condition-guide condition-guide--form" id="cg-sell" style="display:none">
             <div class="cg-row" data-cond="Ny"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
             <div class="cg-row" data-cond="Som ny"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
             <div class="cg-row" data-cond="God stand"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>

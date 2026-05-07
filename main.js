@@ -1581,6 +1581,18 @@ window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
 window.toggleConditionInfo    = toggleConditionInfo;
+window.toggleSellConditionInfo = function() {
+  const popup = document.getElementById('cg-sell');
+  if (!popup) return;
+  const isOpen = popup.style.display !== 'none';
+  popup.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    setTimeout(() => {
+      const close = (e) => { if (!e.target.closest('#cg-sell') && !e.target.closest('.wheel-info-btn')) { popup.style.display = 'none'; document.removeEventListener('click', close); } };
+      document.addEventListener('click', close);
+    }, 0);
+  }
+};
 window.updateConditionGuide   = updateConditionGuide;
 window.expandBikeDesc         = expandBikeDesc;
 window.startBikeQuiz          = startBikeQuiz;
