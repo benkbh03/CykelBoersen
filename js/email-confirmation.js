@@ -7,14 +7,15 @@ export function createEmailConfirmationActions({ supabase, getCurrentUser, getCu
 
     if (currentUser.email_confirmed_at) {
       banner.style.display = 'none';
-      // email_verified synkroniseres automatisk fra auth.users via DB-trigger.
-      // Vi opdaterer kun lokal cache her, ingen direkte profile-update.
       if (currentProfile && !currentProfile.email_verified) {
-        const p = getCurrentProfile();
-        if (p) {
-          p.email_verified = true;
-          setCurrentProfile(p);
-        }
+        // Trigger validerer at auth.users.email_confirmed_at faktisk er sat
+        supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
+          const p = getCurrentProfile();
+          if (p) {
+            p.email_verified = true;
+            setCurrentProfile(p);
+          }
+        });
       }
     } else {
       banner.style.display = 'block';

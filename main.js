@@ -910,10 +910,11 @@ async function init() {
     // init() har allerede fuldført dealer-setup hvis user_metadata.pending_dealer var sat
     const isPendingDealer = currentProfile?.seller_type === 'dealer' && currentProfile?.verified === false;
 
-    // email_verified synkroniseres automatisk fra auth.users via DB-trigger.
-    // Vi opdaterer bare lokal cache så UI'en straks afspejler det.
-    if (currentUser && !isPendingDealer && currentProfile) {
-      currentProfile.email_verified = true;
+    // Sæt email_verified=true. Trigger validerer at auth.users.email_confirmed_at er sat.
+    if (currentUser && !isPendingDealer) {
+      supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
+        if (currentProfile) currentProfile.email_verified = true;
+      });
     }
 
     if (isPendingDealer) {
