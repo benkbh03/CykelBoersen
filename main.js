@@ -1724,17 +1724,6 @@ let currentFilterArgs  = null;
    MOBIL FILTER DRAWER
    ============================================================ */
 
-function openMobileFilter() {
-  document.getElementById('mobile-filter-drawer').classList.add('open');
-  document.getElementById('mobile-filter-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeMobileFilter() {
-  document.getElementById('mobile-filter-drawer').classList.remove('open');
-  document.getElementById('mobile-filter-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
 
 
 /* ============================================================
@@ -1942,8 +1931,6 @@ window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
-window.openMobileFilter   = openMobileFilter;
-window.closeMobileFilter  = closeMobileFilter;
 window.closeResetModal    = closeResetModal;
 window.handleResetPassword = handleResetPassword;
 window.openEditModal          = openEditModal;
