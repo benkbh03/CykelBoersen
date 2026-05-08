@@ -209,6 +209,14 @@
           <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <label for="search-city" class="sr-only">By eller postnummer</label>
           <input id="search-city" type="text" placeholder="By eller postnummer" aria-label="Filtrer efter by eller postnummer" autocomplete="off">
+          <select id="search-city-radius" class="search-city-radius" aria-label="Søgeradius om byen" hidden>
+            <option value="">Kun denne by</option>
+            <option value="5">+5 km</option>
+            <option value="10">+10 km</option>
+            <option value="25">+25 km</option>
+            <option value="50">+50 km</option>
+            <option value="100">+100 km</option>
+          </select>
           <button type="button" class="search-city-clear" id="search-city-clear" aria-label="Ryd by-filter" hidden>×</button>
         </div>
         <button class="search-pill-btn" onclick="searchBikes()" aria-label="Søg efter cykler">
