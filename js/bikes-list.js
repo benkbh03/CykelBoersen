@@ -26,6 +26,7 @@ export function createBikesList({
   getInitials,
   formatLastSeen,
   retryHTML,
+  transformImageUrl,
   // Collaborator functions
   updateActiveFiltersBar,
   updateCykelagentCta,
@@ -198,12 +199,14 @@ export function createBikesList({
       const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
       const initials   = getInitials(sellerName);
       const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+      const thumbSrc = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
       const imgContent = primaryImg
-        ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
+        ? `<img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
         : '<span style="font-size:4rem">🚲</span>';
       const avatarUrl  = safeAvatarUrl(profile.avatar_url);
-      const avatarHtml = avatarUrl
-        ? `<img src="${avatarUrl}" alt="">`
+      const avatarThumb = avatarUrl ? transformImageUrl(avatarUrl, { width: 80, quality: 75 }) : null;
+      const avatarHtml = avatarThumb
+        ? `<img src="${avatarThumb}" alt="" loading="lazy" decoding="async" width="40" height="40">`
         : esc(initials);
 
       var isSold = !b.is_active;

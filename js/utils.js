@@ -65,6 +65,34 @@ export function safeAvatarUrl(url) {
   } catch { return null; }
 }
 
+/* Supabase image-transformation: konverterer en /object/public/-URL til
+   /render/image/public/ med width + quality, så browseren modtager et
+   thumbnail i passende størrelse i stedet for original-billedet.
+   Kræver Supabase Pro-plan. Returnerer original-URL hvis input ikke er en
+   Supabase storage-URL. */
+// Sættes ved init() i main.js fra config.IMAGE_TRANSFORMS_ENABLED.
+let _imageTransformsEnabled = true;
+export function setImageTransformsEnabled(v) { _imageTransformsEnabled = !!v; }
+
+export function transformImageUrl(url, { width, height, quality = 75, resize = 'cover' } = {}) {
+  if (!_imageTransformsEnabled) return url;
+  if (!url || typeof url !== 'string') return url;
+  // Match kun Supabase /storage/v1/object/public/ URLs
+  const idx = url.indexOf('/storage/v1/object/public/');
+  if (idx === -1) return url;
+  const base = url.slice(0, idx);
+  const rest = url.slice(idx + '/storage/v1/object/public/'.length);
+  // Strip eksisterende query-string fra rest
+  const qIdx = rest.indexOf('?');
+  const path = qIdx === -1 ? rest : rest.slice(0, qIdx);
+  const params = new URLSearchParams();
+  if (width)  params.set('width',  String(width));
+  if (height) params.set('height', String(height));
+  if (quality) params.set('quality', String(quality));
+  if (resize)  params.set('resize',  resize);
+  return `${base}/storage/v1/render/image/public/${path}?${params.toString()}`;
+}
+
 export function trapFocus(modalEl) {
   const focusable = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
   const els = () => Array.from(modalEl.querySelectorAll(focusable));

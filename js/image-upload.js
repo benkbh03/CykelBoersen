@@ -259,7 +259,7 @@ export function createImageUpload({
 
       const { error } = await supabase.storage
         .from('bike-images')
-        .upload(filename, item.file, { contentType: item.file.type, upsert: false });
+        .upload(filename, item.file, { contentType: item.file.type, upsert: false, cacheControl: '2592000' });
 
       if (error) { console.error('Upload fejl:', error); failed++; continue; }
 

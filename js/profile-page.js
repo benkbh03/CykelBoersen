@@ -237,7 +237,7 @@ export function createProfilePage({
 
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .upload(path, file, { upsert: true, contentType: file.type, cacheControl: '2592000' });
 
     if (uploadError) { showToast('❌ Kunne ikke uploade billede'); console.error(uploadError); return; }
 

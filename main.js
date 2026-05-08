@@ -2,10 +2,11 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm } from './js/utils.js';
+import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
-import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES } from './js/config.js';
+import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED } from './js/config.js';
+setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
@@ -164,7 +165,7 @@ const {
   loadBikesWithFilters,
 } = createBikesList({
   supabase, BIKES_PAGE_SIZE,
-  esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML,
+  esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, transformImageUrl,
   updateActiveFiltersBar, updateCykelagentCta, applyNearMeFilter, hasActiveFilters, describeActiveFilters,
   getBikesOffset:       () => bikesOffset,
   setBikesOffset:       v => { bikesOffset = v; },
@@ -403,7 +404,7 @@ const _ensureBikeDetail = lazyCtrl(
   () => ({
     supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen,
     haversineKm, BASE_URL, removeBikeJsonLd, updateSEOMeta, retryHTML,
-    stableOffset, bikeCache, geocodeAddress, geocodeCity,
+    stableOffset, bikeCache, geocodeAddress, geocodeCity, transformImageUrl,
     openUserProfile,
     openDealerProfile,
     getUserSavedSet:      () => _userSavedSet,
