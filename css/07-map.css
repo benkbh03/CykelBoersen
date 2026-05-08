@@ -522,68 +522,59 @@
 }
 
 /* ── Map-bounds-filter toggle (top-center floating) ── */
-.map-bounds-toggle {
+/* Airbnb-style "Søg dette område"-knap — vises top-center på kortet */
+.map-search-area-btn {
   position: absolute;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 500;
-  background: var(--cream);
-  border: 1px solid var(--border);
+  background: #fff;
+  border: 1.5px solid var(--charcoal);
   border-radius: 999px;
-  padding: 8px 14px 8px 8px;
-  font-size: 0.84rem;
+  padding: 9px 18px;
+  font-size: 0.88rem;
   font-weight: 600;
   font-family: 'DM Sans', sans-serif;
   color: var(--charcoal);
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  transition: background 0.12s, transform 0.12s, box-shadow 0.12s;
   white-space: nowrap;
+  animation: map-search-area-pop 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-.map-bounds-toggle:hover { background: var(--sand); }
-.map-bounds-toggle-switch {
-  width: 30px;
-  height: 18px;
-  background: var(--border);
-  border-radius: 999px;
-  position: relative;
-  transition: background 0.18s;
-  flex-shrink: 0;
+.map-search-area-btn:hover {
+  background: var(--charcoal);
+  color: #fff;
+  transform: translateX(-50%) translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
 }
-.map-bounds-toggle-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
-  transition: transform 0.18s;
-}
-.map-bounds-toggle.active {
-  border-color: var(--forest);
-  color: var(--forest);
-}
-.map-bounds-toggle.active .map-bounds-toggle-switch {
+.map-search-area-btn:active { transform: translateX(-50%) translateY(0); }
+.map-search-area-btn.is-active {
   background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
 }
-.map-bounds-toggle.active .map-bounds-toggle-knob {
-  transform: translateX(12px);
+.map-search-area-btn.is-active:hover {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+}
+@keyframes map-search-area-pop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 @media (max-width: 700px) {
-  .map-bounds-toggle {
-    top: 8px;
-    padding: 6px 12px 6px 6px;
-    font-size: 0.78rem;
+  .map-search-area-btn {
+    top: 10px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.2);
   }
-  .map-bounds-toggle-switch { width: 26px; height: 16px; }
-  .map-bounds-toggle-knob { width: 12px; height: 12px; }
-  .map-bounds-toggle.active .map-bounds-toggle-knob { transform: translateX(10px); }
 }
 
 /* Skjul bundnav og juster padding på kortvisning */

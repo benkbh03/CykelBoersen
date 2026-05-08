@@ -219,9 +219,9 @@ export function createMapPage({
           <div id="split-cards-container"></div>
         </div>
         <div id="split-map-panel">
-          <button class="map-bounds-toggle" id="map-bounds-toggle-btn" onclick="toggleMapBoundsFilter()" aria-pressed="false" title="Vis kun annoncer i det synlige kortområde">
-            <span class="map-bounds-toggle-switch"><span class="map-bounds-toggle-knob"></span></span>
-            <span class="map-bounds-toggle-label">Søg i dette område</span>
+          <button class="map-search-area-btn" id="map-search-area-btn" onclick="applyMapBoundsSearch()" type="button" style="display:none;">
+            <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6"/><line x1="13.5" y1="13.5" x2="18" y2="18"/></svg>
+            <span id="map-search-area-label">Søg dette område</span>
           </button>
           <button class="split-list-toggle-float" id="split-toggle-btn" onclick="toggleSplitList()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -539,18 +539,38 @@ export function createMapPage({
     }
   }
 
-  /* ── toggleMapBoundsFilter ──────────────────────────────── */
+  /* ── applyMapBoundsSearch / clearMapBoundsSearch ────────── */
+  // Airbnb-style: én knap der toggler mellem "Søg dette område" og "Vis alle"
 
-  function toggleMapBoundsFilter() {
-    _mapBoundsActive = !_mapBoundsActive;
-    const btn = document.getElementById('map-bounds-toggle-btn');
-    if (btn) {
-      btn.classList.toggle('active', _mapBoundsActive);
-      btn.setAttribute('aria-pressed', _mapBoundsActive ? 'true' : 'false');
+  function applyMapBoundsSearch() {
+    const btn = document.getElementById('map-search-area-btn');
+    const label = document.getElementById('map-search-area-label');
+    if (_mapBoundsActive) {
+      // Allerede aktivt → klik betyder "vis alle"
+      _mapBoundsActive = false;
+      if (btn) {
+        btn.classList.remove('is-active');
+        btn.style.display = 'none';
+      }
+    } else {
+      // Aktivér bounds-filter til synligt område
+      _mapBoundsActive = true;
+      if (btn) {
+        btn.classList.add('is-active');
+        if (label) label.textContent = 'Vis alle annoncer';
+      }
     }
     applyMapFilters();
     updateMapFilterBadge();
+    // Opdater knap-tekst med antal efter filter
+    if (_mapBoundsActive && btn && label) {
+      const count = filterMapBikes().length;
+      label.textContent = `Vis alle annoncer`;
+      btn.style.display = 'inline-flex';
+    }
   }
+
+  function toggleMapBoundsFilter() { applyMapBoundsSearch(); } // bevar legacy-navn til window-eksport
 
   /* ── initSplitMap ───────────────────────────────────────── */
 
@@ -592,9 +612,26 @@ export function createMapPage({
     splitMapInstance.on('zoomend', function() {
       if (splitMapInstance.getZoom() < 11) splitMapInstance.closePopup();
     });
-    _mapBoundsDebounced = debounce(() => {
-      if (_mapBoundsActive) { applyMapFilters(); updateMapFilterBadge(); }
-    }, 280);
+    // Auto-vis "Søg her"-knap når brugeren panorerer/zoomer kortet
+    let _initialMoveDone = false;
+    const _showSearchAreaBtn = () => {
+      if (!_initialMoveDone) { _initialMoveDone = true; return; } // skip initial fitBounds
+      const btn = document.getElementById('map-search-area-btn');
+      if (!btn) return;
+      // Hvis filter allerede er aktivt: re-apply automatisk + skjul knap
+      if (_mapBoundsActive) {
+        applyMapFilters();
+        updateMapFilterBadge();
+        btn.style.display = 'none';
+      } else {
+        // Ingen filter aktiv → vis "Søg dette område"-knap
+        const label = document.getElementById('map-search-area-label');
+        if (label) label.textContent = 'Søg dette område';
+        btn.classList.remove('is-active');
+        btn.style.display = 'inline-flex';
+      }
+    };
+    _mapBoundsDebounced = debounce(_showSearchAreaBtn, 280);
     splitMapInstance.on('moveend', _mapBoundsDebounced);
     splitMarkerMap = {};
     _mapPageGeocoded = new Map();
@@ -1190,6 +1227,7 @@ export function createMapPage({
     renderMapPage,
     toggleMapNearMe,
     toggleMapBoundsFilter,
+    applyMapBoundsSearch,
     resetMapFilters,
     toggleMapFilterPanel,
     splitCardClick,
