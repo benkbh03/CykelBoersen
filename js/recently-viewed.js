@@ -1,0 +1,102 @@
+/* ============================================================
+   SIDST SETE CYKLER — localStorage-baseret tracking
+   ============================================================
+   Gemmer op til MAX_ITEMS senest sete cykler i localStorage.
+   Vises på forsiden over "Seneste annoncer".
+   ============================================================ */
+
+import { esc } from './utils.js';
+
+const STORAGE_KEY = 'cb_recently_viewed';
+const MAX_ITEMS   = 8;
+const MAX_AGE_DAYS = 30;
+
+/* Læs liste fra localStorage. Filtrerer ældre end MAX_AGE_DAYS. */
+function _read() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list)) return [];
+    const cutoff = Date.now() - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    return list.filter(b => b && b.id && b.viewedAt && b.viewedAt > cutoff);
+  } catch {
+    return [];
+  }
+}
+
+function _write(list) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, MAX_ITEMS)));
+  } catch {
+    /* quota exceeded — ignorer */
+  }
+}
+
+/* Tilføj eller flyt en cykel øverst på listen. */
+export function addRecentlyViewed(bike) {
+  if (!bike || !bike.id) return;
+  const primaryImg = bike.bike_images?.find(i => i.is_primary)?.url
+                  || bike.bike_images?.[0]?.url
+                  || bike.image
+                  || null;
+  const item = {
+    id:    bike.id,
+    brand: bike.brand || '',
+    model: bike.model || '',
+    price: bike.price || 0,
+    type:  bike.type  || '',
+    image: primaryImg,
+    viewedAt: Date.now(),
+  };
+  const list = _read().filter(b => b.id !== bike.id);
+  list.unshift(item);
+  _write(list);
+}
+
+/* Hent listen, optionelt eksklusiv en bestemt cykel-ID (fx den nuværende detail-side). */
+export function getRecentlyViewed(excludeId = null) {
+  return _read().filter(b => b.id !== excludeId);
+}
+
+export function clearRecentlyViewed() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+}
+
+/* Render en horizontal scroll-sektion. Hvis listen er tom, skjules sektionen.
+   Bruger eksisterende navigateToBike() globalt fra main.js for routing. */
+export function renderRecentlyViewedSection(containerId, opts = {}) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const items = getRecentlyViewed(opts.excludeId);
+  if (items.length === 0) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = '';
+  const cards = items.map(b => {
+    const title = `${esc(b.brand)} ${esc(b.model)}`.trim() || 'Cykel';
+    const priceFmt = b.price ? `${b.price.toLocaleString('da-DK')} kr.` : '';
+    const imgHtml = b.image
+      ? `<img src="${esc(b.image)}" alt="${title}" loading="lazy" decoding="async">`
+      : '<span class="rv-placeholder">🚲</span>';
+    return `
+      <button class="rv-card" type="button" onclick="navigateToBike('${esc(b.id)}')" aria-label="Se ${title}">
+        <div class="rv-card-img">${imgHtml}</div>
+        <div class="rv-card-body">
+          <div class="rv-card-title">${title}</div>
+          <div class="rv-card-price">${priceFmt}</div>
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="rv-header">
+      <h2 class="rv-heading">Sidst set</h2>
+      <button type="button" class="rv-clear" onclick="clearRecentlyViewedSection()" aria-label="Ryd sidst sete">Ryd</button>
+    </div>
+    <div class="rv-scroll" role="list">${cards}</div>
+  `;
+}

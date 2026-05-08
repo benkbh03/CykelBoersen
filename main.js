@@ -153,7 +153,8 @@ const {
   setActiveRadius:      v => { activeRadius = v; },
 });
 
-const { updateCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters });
+const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters });
+window.dismissCykelagentCta = dismissCykelagentCta;
 
 // Bike list (loadBikes/renderBikes/searchBikes/loadBikesWithFilters).
 // filterOffset deklareres længere nede; closures over for-getterne læser
@@ -572,10 +573,93 @@ async function init() {
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
   });
 
+  // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
+  const searchCityInput  = document.getElementById('search-city');
+  const searchCityClear  = document.getElementById('search-city-clear');
+  const searchCityRadius = document.getElementById('search-city-radius');
+
+  // Anvend by-radius (kalder samme distance-filter som "Nær mig", men med
+  // byens DAWA-koordinater i stedet for GPS).
+  function applyCityRadius() {
+    if (!searchCityInput || !searchCityRadius) return;
+    const lat = parseFloat(searchCityInput.dataset.dawaLat);
+    const lng = parseFloat(searchCityInput.dataset.dawaLng);
+    const radius = parseInt(searchCityRadius.value);
+    if (Number.isFinite(lat) && Number.isFinite(lng) && radius > 0) {
+      // Slå evt. aktiv "Nær mig"-pille fra (mutual exclusivt)
+      const nearmePill = document.getElementById('pill-nearme');
+      if (nearmePill && nearmePill.classList.contains('active')) {
+        nearmePill.classList.remove('active');
+        const nearmeRadiusSel = document.getElementById('nearme-radius');
+        if (nearmeRadiusSel) nearmeRadiusSel.style.display = 'none';
+      }
+      userGeoCoords = [lat, lng];
+      activeRadius  = radius;
+      applyNearMeFilter();
+    } else {
+      // Ingen radius valgt — ryd evt. tidligere by-radius
+      userGeoCoords = null;
+      activeRadius  = null;
+      document.querySelectorAll('.nearme-dist').forEach(el => el.remove());
+      // Genindlæs så bortfiltrerede kort vises igen
+      loadBikes(currentFilters);
+    }
+  }
+
+  if (searchCityInput) {
+    attachCityAutocomplete(searchCityInput, () => {
+      // Bruger har valgt en by fra autocomplete → vis radius-vælger
+      if (searchCityRadius) searchCityRadius.hidden = false;
+      searchBikes();
+      // Hvis radius allerede er valgt, anvend straks
+      if (searchCityRadius && searchCityRadius.value) applyCityRadius();
+    });
+    const updateClearBtn = () => {
+      if (searchCityClear) searchCityClear.hidden = !searchCityInput.value;
+      // Skjul radius hvis bruger sletter byen manuelt
+      if (!searchCityInput.value && searchCityRadius) {
+        searchCityRadius.value = '';
+        searchCityRadius.hidden = true;
+      }
+    };
+    searchCityInput.addEventListener('input', updateClearBtn);
+    if (searchCityClear) {
+      searchCityClear.addEventListener('click', () => {
+        searchCityInput.value = '';
+        delete searchCityInput.dataset.dawaLat;
+        delete searchCityInput.dataset.dawaLng;
+        delete searchCityInput.dataset.dawaPostcode;
+        if (searchCityRadius) {
+          searchCityRadius.value = '';
+          searchCityRadius.hidden = true;
+        }
+        userGeoCoords = null;
+        activeRadius = null;
+        document.querySelectorAll('.nearme-dist').forEach(el => el.remove());
+        updateClearBtn();
+        searchBikes();
+        searchCityInput.focus();
+      });
+    }
+    if (searchCityRadius) {
+      searchCityRadius.addEventListener('change', applyCityRadius);
+    }
+    updateClearBtn();
+  }
+
   // Start offentlig data med det samme – venter ikke på auth
   const sessionPromise = supabase.auth.getSession();
   loadBikes();
   loadInitialData(); // Erstatter loadDealers() + updateFilterCounts() med 2 parallelle queries
+
+  // Render "Sidst set"-sektion på forsiden (lazy import — kun hvis bruger har localStorage-data)
+  import('./js/recently-viewed.js').then(({ renderRecentlyViewedSection, clearRecentlyViewed }) => {
+    renderRecentlyViewedSection('recently-viewed');
+    window.clearRecentlyViewedSection = () => {
+      clearRecentlyViewed();
+      renderRecentlyViewedSection('recently-viewed');
+    };
+  }).catch(() => {});
 
   const { data: { session } } = await sessionPromise;
 
@@ -1285,6 +1369,8 @@ function handleRoute() {
     renderDealerProfilePage(dealerMatch[1]);
   } else {
     showListingView();
+    // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
+    import('./js/recently-viewed.js').then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   }
 }
 
