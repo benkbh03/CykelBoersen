@@ -407,6 +407,8 @@
   display: flex; align-items: center; justify-content: center; gap: 8px;
   transition: border-color 0.15s, background 0.15s;
   position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn-mobile-filter:hover, .btn-mobile-filter:focus { border-color: var(--forest); background: #fff; }
 .btn-mobile-filter svg { color: var(--forest); }
@@ -521,9 +523,6 @@
     to   { transform: translateY(0); }
   }
   body.mobile-filters-open {
-    position: fixed;
-    left: 0; right: 0;
-    width: 100%;
     overflow: hidden;
   }
 

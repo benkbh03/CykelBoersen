@@ -1381,7 +1381,6 @@ function handleRoute() {
   if (_ov) _ov.classList.remove('open');
   if (document.body.classList.contains('mobile-filters-open')) {
     document.body.classList.remove('mobile-filters-open');
-    document.body.style.top = '';
   }
   const path = window.location.pathname;
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
@@ -1472,10 +1471,6 @@ function openMobileFilters() {
   const sidebar = document.getElementById('sidebar-filters');
   const overlay = document.getElementById('mobile-filter-overlay');
   if (!sidebar) return;
-  // Gem scroll-position så vi kan genoprette efter lukning
-  const scrollY = window.scrollY;
-  document.body.style.top = `-${scrollY}px`;
-  document.body.dataset.scrollY = String(scrollY);
   sidebar.classList.add('mobile-open');
   if (overlay) overlay.classList.add('open');
   document.body.classList.add('mobile-filters-open');
@@ -1487,10 +1482,6 @@ function closeMobileFilters() {
   if (sidebar) sidebar.classList.remove('mobile-open');
   if (overlay) overlay.classList.remove('open');
   document.body.classList.remove('mobile-filters-open');
-  // Genopret scroll-position
-  const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
-  document.body.style.top = '';
-  if (scrollY) window.scrollTo(0, scrollY);
 }
 
 function applyFilters() {
