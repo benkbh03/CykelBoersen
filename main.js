@@ -754,14 +754,52 @@ async function init() {
       if (!profile && _event === 'SIGNED_IN') {
         const meta = currentUser.user_metadata || {};
         const name = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'Ny bruger';
+        const isPendingDealer = !!meta.pending_dealer;
         await supabase.from('profiles').upsert({
           id:             currentUser.id,
-          name,
+          name:           isPendingDealer ? (meta.name || name) : name,
           email:          currentUser.email,
-          seller_type:    'private',
+          seller_type:    isPendingDealer ? 'dealer' : 'private',
+          shop_name:      isPendingDealer ? (meta.shop_name || null) : null,
+          cvr:            isPendingDealer ? (meta.cvr || null) : null,
+          phone:          isPendingDealer ? (meta.phone || null) : null,
+          address:        isPendingDealer ? (meta.address || null) : null,
+          city:           isPendingDealer ? (meta.city || null) : null,
+          lat:            isPendingDealer ? (meta.lat || null) : null,
+          lng:            isPendingDealer ? (meta.lng || null) : null,
+          postcode:       isPendingDealer ? (meta.postcode || null) : null,
+          location_precision: isPendingDealer && meta.lat && meta.lng ? 'exact' : null,
         }, { onConflict: 'id' });
         const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
         profile = newProfile;
+      }
+
+      // Eksisterende profil men pending_dealer → opgradér til dealer
+      // (kører hvis init() missede det pga. timing med URL-hash session)
+      if (profile && profile.seller_type !== 'dealer' && currentUser.user_metadata?.pending_dealer) {
+        const meta = currentUser.user_metadata;
+        const upgradeRes = await supabase.from('profiles').upsert({
+          id:                 currentUser.id,
+          email:              currentUser.email,
+          name:               meta.name || profile.name || '',
+          shop_name:          meta.shop_name || profile.shop_name || '',
+          cvr:                meta.cvr || profile.cvr || '',
+          phone:              meta.phone || profile.phone || '',
+          address:            meta.address || profile.address || '',
+          city:               meta.city || profile.city || '',
+          lat:                meta.lat || profile.lat || null,
+          lng:                meta.lng || profile.lng || null,
+          postcode:           meta.postcode || profile.postcode || null,
+          location_precision: meta.lat && meta.lng ? 'exact' : profile.location_precision,
+          seller_type:        'dealer',
+        }, { onConflict: 'id' });
+        if (upgradeRes.error) {
+          console.error('Pending dealer upgrade fejl:', upgradeRes.error);
+        } else {
+          supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
+          const { data: refreshed } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+          profile = refreshed || profile;
+        }
       }
 
       currentProfile = profile;
