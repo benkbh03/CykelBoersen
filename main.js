@@ -32,6 +32,7 @@ import { createProfilePage } from './js/profile-page.js';
 import { createImageUpload } from './js/image-upload.js';
 import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
+import { createFollowDealer } from './js/dealer-extras.js';
 
 /* ============================================================
    LAZY MODULE LOADER
@@ -337,6 +338,7 @@ const _ensureMapPage = lazyCtrl(
 const setView                = lazyMethod(_ensureMapPage, 'setView');
 const renderMapPage          = lazyMethod(_ensureMapPage, 'renderMapPage');
 const toggleMapNearMe        = lazyMethod(_ensureMapPage, 'toggleMapNearMe');
+const toggleMapBoundsFilter  = lazyMethod(_ensureMapPage, 'toggleMapBoundsFilter');
 const resetMapFilters        = lazyMethod(_ensureMapPage, 'resetMapFilters');
 const toggleMapDd            = lazyMethod(_ensureMapPage, 'toggleMapDd');
 const pickMapDd              = lazyMethod(_ensureMapPage, 'pickMapDd');
@@ -482,6 +484,7 @@ const _ensureProfilePages = lazyCtrl(
     navigateTo:         (...args) => navigateTo(...args),
     highlightStars,
     loadUserAchievements,
+    followDealer,
   }),
 );
 const renderUserProfilePage   = lazyMethod(_ensureProfilePages, 'renderUserProfilePage');
@@ -549,6 +552,7 @@ const selectDealerPlan         = lazyMethod(_ensureDealersPage, 'selectDealerPla
 const renderDealersPage        = lazyMethod(_ensureDealersPage, 'renderDealersPage');
 const toggleDealerGPS          = lazyMethod(_ensureDealersPage, 'toggleDealerGPS');
 const sortAndRenderDealers     = lazyMethod(_ensureDealersPage, 'sortAndRenderDealers');
+const toggleDealerServiceFilter = lazyMethod(_ensureDealersPage, 'toggleDealerServiceFilter');
 const renderBecomeDealerPage   = lazyMethod(_ensureDealersPage, 'renderBecomeDealerPage');
 const submitDealerApplication  = lazyMethod(_ensureDealersPage, 'submitDealerApplication');
 const openSubscriptionPortal   = lazyMethod(_ensureDealersPage, 'openSubscriptionPortal');
@@ -561,6 +565,7 @@ window.openSubscriptionPortal  = openSubscriptionPortal;
 window.renderDealersPage       = renderDealersPage;
 window.toggleDealerGPS         = toggleDealerGPS;
 window.sortAndRenderDealers    = sortAndRenderDealers;
+window.toggleDealerServiceFilter = toggleDealerServiceFilter;
 
 /* ============================================================
    INIT – hent session én gang og sæt alt op
@@ -1242,6 +1247,21 @@ document.getElementById('login-modal').addEventListener('click', e => {
 });
 
 /* ============================================================
+   FØLG FORHANDLER
+   ============================================================ */
+const followDealer = createFollowDealer({
+  supabase,
+  showToast,
+  getCurrentUser:   () => currentUser,
+  openLoginModal:   () => openLoginModal(),
+  navigateTo:       (...args) => navigateTo(...args),
+});
+async function toggleFollowDealer(dealerId, btnEl) {
+  return followDealer.toggleFollow(dealerId, btnEl);
+}
+window.toggleFollowDealer = toggleFollowDealer;
+
+/* ============================================================
    TOAST & NAVIGATION SCROLL
    ============================================================ */
 
@@ -1877,6 +1897,7 @@ window.renderUserProfilePage  = renderUserProfilePage;
 window.renderDealerProfilePage = renderDealerProfilePage;
 window.renderMapPage           = renderMapPage;
 window.toggleMapNearMe         = toggleMapNearMe;
+window.toggleMapBoundsFilter   = toggleMapBoundsFilter;
 window.toggleMapDd             = toggleMapDd;
 window.pickMapDd               = pickMapDd;
 window.resetMapFilters         = resetMapFilters;

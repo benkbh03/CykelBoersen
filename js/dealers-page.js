@@ -2,6 +2,8 @@
    FORHANDLERE SIDE + BLIV FORHANDLER
    ============================================================ */
 
+import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
+
 export function createDealersPage({
   supabase,
   showToast,
@@ -28,6 +30,7 @@ export function createDealersPage({
   let _dealersPageData = [];
   let _dealerGPSActive = false;
   let _dealerGPSCoords = null;
+  let _dealerActiveServices = new Set();
 
   // ── Thin wrappers for legacy compat ──────────────────────
 
@@ -54,6 +57,14 @@ export function createDealersPage({
     _dealerGPSActive = false;
     _dealerGPSCoords = null;
 
+    _dealerActiveServices = new Set();
+
+    const serviceChipsHtml = SERVICES.map(s => `
+      <button class="dealer-service-filter" data-svc="${s.key}" onclick="toggleDealerServiceFilter('${s.key}', this)">
+        ${s.icon} ${s.label}
+      </button>
+    `).join('');
+
     document.getElementById('detail-view').innerHTML = `
     <div class="dealers-page">
       <div class="dealers-page-header">
@@ -70,13 +81,16 @@ export function createDealersPage({
           <option value="rating">Bedste rating</option>
         </select>
       </div>
+      <div class="dealer-service-filters" id="dealer-service-filters">
+        ${serviceChipsHtml}
+      </div>
       <div id="dealers-page-grid" class="dealer-cards">
         <p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Henter forhandlere...</p>
       </div>
     </div>`;
 
     const [dealerRes, bikeRes, reviewRes] = await Promise.all([
-      supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, lat, lng, location_precision').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+      supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, lat, lng, location_precision, services, opening_hours').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
       supabase.from('bikes').select('user_id').eq('is_active', true),
       supabase.from('reviews').select('reviewed_user_id, rating'),
     ]);
@@ -182,10 +196,32 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
 
     const grid = document.getElementById('dealers-page-grid');
     if (!grid) return;
+    const filtered = _dealerActiveServices.size === 0
+      ? _dealersPageData
+      : _dealersPageData.filter(({ dealer }) =>
+          Array.isArray(dealer.services) &&
+          [..._dealerActiveServices].every(s => dealer.services.includes(s))
+        );
+
     grid.className = 'dealer-cards';
-    grid.innerHTML = _dealersPageData.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
+    if (filtered.length === 0) {
+      grid.innerHTML = '<p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Ingen forhandlere matcher de valgte services.</p>';
+      return;
+    }
+    grid.innerHTML = filtered.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
       buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm)
     ).join('');
+  }
+
+  function toggleDealerServiceFilter(serviceKey, btn) {
+    if (_dealerActiveServices.has(serviceKey)) {
+      _dealerActiveServices.delete(serviceKey);
+      btn?.classList.remove('on');
+    } else {
+      _dealerActiveServices.add(serviceKey);
+      btn?.classList.add('on');
+    }
+    sortAndRenderDealers();
   }
 
   function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) {
@@ -213,6 +249,20 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
          </a>`
       : '';
 
+    const status = openStatus(dealer.opening_hours);
+    const openHtml = status
+      ? `<div class="dealer-open-status ${status.isOpen ? 'is-open' : 'is-closed'}">
+          <span class="dealer-open-dot"></span>${esc(status.label)}
+         </div>`
+      : '';
+
+    const servicesHtml = (Array.isArray(dealer.services) && dealer.services.length)
+      ? `<div class="dealer-card-services">${dealer.services.slice(0, 3).map(key => {
+          const s = SERVICES.find(x => x.key === key);
+          return s ? `<span class="dealer-card-service" title="${esc(s.label)}">${s.icon}</span>` : '';
+        }).join('')}${dealer.services.length > 3 ? `<span class="dealer-card-service-more">+${dealer.services.length - 3}</span>` : ''}</div>`
+      : '';
+
     return `
     <div class="dealer-card" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
       <div class="dealer-card-top">
@@ -221,8 +271,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       </div>
       <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
       ${locationText ? `<div class="dealer-city">📍 ${esc(locationText)}</div>` : ''}
+      ${openHtml}
       ${starsHtml}
       <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      ${servicesHtml}
       ${mapsHtml}
     </div>`;
   }
@@ -520,6 +572,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     renderDealersPage,
     toggleDealerGPS,
     sortAndRenderDealers,
+    toggleDealerServiceFilter,
     buildDealerCardFull,
     renderStars,
     renderBecomeDealerPage,

@@ -2,6 +2,11 @@
    PROFIL MODAL + LOGOUT + SLET KONTO
    ============================================================ */
 
+import {
+  buildOpeningHoursEditor, bindOpeningHoursEditor, readOpeningHoursFromDOM,
+  buildServicesEditor, bindServicesEditor, readServicesFromDOM,
+} from './dealer-extras.js';
+
 export function createProfilePage({
   supabase,
   showToast,
@@ -106,6 +111,34 @@ export function createProfilePage({
     if (finCb) finCb.checked = !!profile.offers_financing;
     if (triCb) triCb.checked = !!profile.offers_tradein;
 
+    // Forhandler-udvidelser: services, åbningstider, sociale links
+    const servicesGroup    = document.getElementById('edit-services-group');
+    const openingGroup     = document.getElementById('edit-opening-hours-group');
+    const websiteGroup     = document.getElementById('edit-website-group');
+    const facebookGroup    = document.getElementById('edit-facebook-group');
+    const instagramGroup   = document.getElementById('edit-instagram-group');
+    const dealerExtras     = [servicesGroup, openingGroup, websiteGroup, facebookGroup, instagramGroup];
+    dealerExtras.forEach(el => { if (el) el.style.display = isDealer ? 'flex' : 'none'; });
+
+    if (isDealer) {
+      const servicesMount = document.getElementById('edit-services-mount');
+      if (servicesMount) {
+        servicesMount.innerHTML = buildServicesEditor(profile.services || []);
+        bindServicesEditor(servicesMount);
+      }
+      const ohMount = document.getElementById('edit-opening-hours-mount');
+      if (ohMount) {
+        ohMount.innerHTML = buildOpeningHoursEditor(profile.opening_hours);
+        bindOpeningHoursEditor(ohMount);
+      }
+      const wEl = document.getElementById('edit-website');
+      const fEl = document.getElementById('edit-facebook');
+      const iEl = document.getElementById('edit-instagram');
+      if (wEl) wEl.value = profile.website   || '';
+      if (fEl) fEl.value = profile.facebook  || '';
+      if (iEl) iEl.value = profile.instagram || '';
+    }
+
     // Vis sælgertype som tekst (ikke redigerbar dropdown)
     const sellerDisplay = document.getElementById('edit-seller-type-display');
     if (sellerDisplay) sellerDisplay.textContent = isDealer ? '🏪 Forhandler' : '👤 Privatperson';
@@ -186,6 +219,14 @@ export function createProfilePage({
     if (isDealer) {
       updates.offers_financing = !!document.getElementById('edit-offers-financing')?.checked;
       updates.offers_tradein   = !!document.getElementById('edit-offers-tradein')?.checked;
+
+      const servicesMount = document.getElementById('edit-services-mount');
+      const ohMount       = document.getElementById('edit-opening-hours-mount');
+      updates.services      = readServicesFromDOM(servicesMount);
+      updates.opening_hours = readOpeningHoursFromDOM(ohMount);
+      updates.website       = (document.getElementById('edit-website')?.value   || '').trim() || null;
+      updates.facebook      = (document.getElementById('edit-facebook')?.value  || '').trim() || null;
+      updates.instagram     = (document.getElementById('edit-instagram')?.value || '').trim() || null;
     }
 
     // Lokationsdata: forhandler har præcis adresse, privat har kun by
