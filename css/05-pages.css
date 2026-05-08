@@ -493,6 +493,8 @@
   .hero-cat-chip { font-size: 0.75rem; padding: 6px 12px; }
   .pill { flex-shrink: 0; font-size: 0.8rem; padding: 7px 14px; }
   .main { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+  /* Sidebar er KUN synlig som drawer når explicit åbnet — defensiv guard */
+  .sidebar:not(.mobile-open) { display: none !important; }
   /* Sidebar bliver til en bottom-sheet på mobil — kun synlig når åben */
   .sidebar {
     display: none;
