@@ -67,6 +67,14 @@ export function createSellPage({
   let _aiApplied = false;
   let _sellFormCache = {};
 
+  function notifyDealerFollowers(newBike) {
+    const profile = getCurrentProfile();
+    if (!profile || profile.seller_type !== 'dealer' || !newBike?.id) return;
+    supabase.functions.invoke('notify-followers', {
+      body: { bike_id: newBike.id, dealer_id: profile.id },
+    }).catch(() => {});
+  }
+
   const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
@@ -203,6 +211,7 @@ export function createSellPage({
 
     // Notificér brugere med matchende gemte søgninger (fire-and-forget)
     notifySavedSearches(newBike);
+    notifyDealerFollowers(newBike);
     } finally { restore(); }
   }
 
@@ -262,6 +271,7 @@ export function createSellPage({
       updateFilterCounts();
 
       notifySavedSearches(newBike);
+      notifyDealerFollowers(newBike);
 
       clearSellDraft();
       showListingSuccessModal(newBike);

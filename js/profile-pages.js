@@ -2,6 +2,10 @@
    PROFIL SIDER — Factory: renderUserProfilePage, renderDealerProfilePage
    ============================================================ */
 
+import {
+  buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
+} from './dealer-extras.js';
+
 export function createProfilePages({
   supabase,
   esc,
@@ -15,6 +19,7 @@ export function createProfilePages({
   navigateTo,
   highlightStars,
   loadUserAchievements,
+  followDealer,
 }) {
 
   function renderProfileSkeleton() {
@@ -48,7 +53,7 @@ export function createProfilePages({
     const currentUser = getCurrentUser();
     const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
     const dataPromise = Promise.all([
-      safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
+      safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio, opening_hours, website, facebook, instagram, services').eq('id', userId).single()),
       safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
       safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
@@ -72,7 +77,7 @@ export function createProfilePages({
     const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
     const [r1, r2, r3] = await Promise.race([
       Promise.all([
-        safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, avatar_url, created_at, bio, last_seen').eq('id', dealerId).single()),
+        safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, email_verified, avatar_url, created_at, bio, last_seen, opening_hours, website, facebook, instagram, services').eq('id', dealerId).single()),
         safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', dealerId).order('created_at', { ascending: false })),
       ]),
@@ -87,7 +92,27 @@ export function createProfilePages({
       );
       messagesCount = tradeMsg?.length || 0;
     }
-    return { dealer: r1.data, bikes: r2.data || [], reviews: r3.data || [], messagesCount };
+
+    let followerCount = 0;
+    let isFollowing   = false;
+    try {
+      const { count } = await supabase
+        .from('dealer_followers')
+        .select('dealer_id', { count: 'exact', head: true })
+        .eq('dealer_id', dealerId);
+      followerCount = count || 0;
+      if (currentUser) {
+        const { data: f } = await supabase
+          .from('dealer_followers')
+          .select('dealer_id')
+          .eq('user_id', currentUser.id)
+          .eq('dealer_id', dealerId)
+          .maybeSingle();
+        isFollowing = !!f;
+      }
+    } catch { /* tabel kan mangle hvis SQL-migration ikke er kørt endnu */ }
+
+    return { dealer: r1.data, bikes: r2.data || [], reviews: r3.data || [], messagesCount, followerCount, isFollowing };
   }
 
   function buildProfileBikeCards(bikes) {
@@ -268,7 +293,7 @@ export function createProfilePages({
 
   function buildDealerProfilePageHTML(data) {
     const currentUser = getCurrentUser();
-    const { dealer, bikes, reviews, messagesCount } = data;
+    const { dealer, bikes, reviews, messagesCount, followerCount = 0, isFollowing = false } = data;
     const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
     const initials     = getInitials(displayName);
     const memberSince  = dealer.created_at ? new Date(dealer.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' }) : null;
@@ -315,9 +340,16 @@ export function createProfilePages({
         <button class="btn-submit-review" onclick="submitReview('${dealer.id}')">Send vurdering</button>
       </div>` : '';
 
+    const followBtnHtml = (!isOwnProfile && followDealer)
+      ? followDealer.buildFollowButton(dealer.id, isFollowing)
+      : '';
+
     const contactHtml = (!isOwnProfile && currentUser && nActive > 0) ? `
       <div class="pp-cta-section">
-        <button class="pp-cta-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
+        <div class="pp-cta-row">
+          <button class="pp-cta-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
+          ${followBtnHtml}
+        </div>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${nActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
@@ -326,7 +358,18 @@ export function createProfilePages({
           <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
           <button class="up-contact-send-btn" onclick="sendProfileMessage('${dealer.id}')">Send besked</button>
         </div>
-      </div>` : '';
+      </div>` : (!isOwnProfile && followBtnHtml) ? `<div class="pp-cta-section"><div class="pp-cta-row">${followBtnHtml}</div></div>` : '';
+
+    const openingHtml = buildOpeningHoursDisplay(dealer.opening_hours);
+    const socialHtml  = buildSocialLinksDisplay({
+      website:   dealer.website,
+      facebook:  dealer.facebook,
+      instagram: dealer.instagram,
+    });
+    const servicesHtml = buildServicesDisplay(dealer.services);
+    const followerHtml = followerCount > 0
+      ? `<span class="pp-follower-count">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>`
+      : '';
 
     const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
 
@@ -345,6 +388,7 @@ export function createProfilePages({
             <div class="pp-badges">
               <span class="badge badge-dealer">🏪 Forhandler</span>
               ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
+              ${followerHtml}
             </div>
             ${dealer.city ? `
               <div class="pp-location">
@@ -354,7 +398,10 @@ export function createProfilePages({
                   Åbn i Google Maps
                 </a>
               </div>` : ''}
+            ${openingHtml}
             ${dealer.bio ? `<p class="pp-bio">${esc(dealer.bio)}</p>` : ''}
+            ${servicesHtml}
+            ${socialHtml}
             ${contactHtml}
           </div>
         </div>

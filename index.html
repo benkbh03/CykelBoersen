@@ -54,6 +54,7 @@
   <link rel="stylesheet" href="/css/05-pages.css">
   <link rel="stylesheet" href="/css/06-profile-page.css">
   <link rel="stylesheet" href="/css/07-map.css">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -951,6 +952,28 @@
                 </label>
               </div>
               <p class="dealer-offers-hint">Vises på dine annoncer under "Køb hos forhandler".</p>
+            </div>
+            <div class="form-group" id="edit-services-group" style="display:none;">
+              <label>Services</label>
+              <div id="edit-services-mount"></div>
+              <p class="dealer-offers-hint">Vises som badges på din forhandlerprofil og kan filtreres på /forhandlere.</p>
+            </div>
+            <div class="form-group" id="edit-opening-hours-group" style="display:none;">
+              <label>Åbningstider</label>
+              <div id="edit-opening-hours-mount"></div>
+              <p class="dealer-offers-hint">Vises på din profil — kunder kan se om du har åbent lige nu.</p>
+            </div>
+            <div class="form-group" id="edit-website-group" style="display:none;">
+              <label>Website</label>
+              <input type="url" id="edit-website" placeholder="https://dinbutik.dk">
+            </div>
+            <div class="form-group" id="edit-facebook-group" style="display:none;">
+              <label>Facebook</label>
+              <input type="url" id="edit-facebook" placeholder="https://facebook.com/dinbutik">
+            </div>
+            <div class="form-group" id="edit-instagram-group" style="display:none;">
+              <label>Instagram</label>
+              <input type="url" id="edit-instagram" placeholder="https://instagram.com/dinbutik">
             </div>
           </div>
           <button id="save-profile-btn" class="form-submit" onclick="saveProfile()">Gem ændringer</button>
