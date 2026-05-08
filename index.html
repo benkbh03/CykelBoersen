@@ -701,35 +701,6 @@
     </div>
   </div>
 
-  <!-- ── MOBIL BOTTOM NAV ── -->
-  <div id="mobile-bottom-nav" role="navigation" aria-label="Mobilnavigation">
-    <button class="mbn-btn" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" aria-label="Forside">
-      <span class="mbn-icon">🏠</span>
-      <span class="mbn-label">Hjem</span>
-    </button>
-    <button class="mbn-btn" onclick="navigateTo('/');document.getElementById('search-input')?.focus();" aria-label="Søg">
-      <span class="mbn-icon">🔍</span>
-      <span class="mbn-label">Søg</span>
-    </button>
-    <button class="mbn-btn mbn-btn--sell" onclick="openModal()" aria-label="Sæt til salg">
-      <span class="mbn-icon">＋</span>
-      <span class="mbn-label">Sælg</span>
-    </button>
-    <button class="mbn-btn" id="mbn-inbox-btn" onclick="openInboxModal()" aria-label="Indbakke">
-      <span class="mbn-icon">✉️</span>
-      <span class="mbn-label">Indbakke</span>
-      <span class="mbn-badge" id="mbn-badge" style="display:none"></span>
-    </button>
-    <button class="mbn-btn" id="mbn-profile-btn" onclick="navigateToMyProfile()" aria-label="Min profil" style="display:none">
-      <span class="mbn-icon">👤</span>
-      <span class="mbn-label">Profil</span>
-    </button>
-    <button class="mbn-btn" id="mbn-login-btn" onclick="openLoginModal()" aria-label="Log ind">
-      <span class="mbn-icon">👤</span>
-      <span class="mbn-label">Log ind</span>
-    </button>
-  </div>
-
   <!-- ── FOOTER ── -->
   <footer role="contentinfo">
     <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
