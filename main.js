@@ -1374,6 +1374,15 @@ function navigateTo(path) {
 function handleRoute() {
   document.body.classList.remove('is-mp-mobile');
   document.body.classList.remove('map-page-view');
+  // Defensiv: luk altid mobil-filter-drawer ved navigation
+  const _sb = document.getElementById('sidebar-filters');
+  const _ov = document.getElementById('mobile-filter-overlay');
+  if (_sb) _sb.classList.remove('mobile-open');
+  if (_ov) _ov.classList.remove('open');
+  if (document.body.classList.contains('mobile-filters-open')) {
+    document.body.classList.remove('mobile-filters-open');
+    document.body.style.top = '';
+  }
   const path = window.location.pathname;
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
