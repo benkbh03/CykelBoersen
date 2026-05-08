@@ -29,7 +29,18 @@ BEGIN
   -- Almindelig bruger: privilegerede kolonner må ikke ændres
   IF NEW.is_admin       IS DISTINCT FROM OLD.is_admin       THEN RAISE EXCEPTION 'Kan ikke ændre is_admin'; END IF;
   IF NEW.id_verified    IS DISTINCT FROM OLD.id_verified    THEN RAISE EXCEPTION 'Kan ikke ændre id_verified'; END IF;
-  IF NEW.email_verified IS DISTINCT FROM OLD.email_verified THEN RAISE EXCEPTION 'Kan ikke ændre email_verified'; END IF;
+
+  -- email_verified: må kun sættes til true hvis auth.users faktisk har bekræftet email
+  -- (sync_email_verified_to_profile-triggeren sætter det automatisk efter bekræftelse)
+  IF NEW.email_verified IS DISTINCT FROM OLD.email_verified THEN
+    IF NEW.email_verified = true THEN
+      IF NOT EXISTS (SELECT 1 FROM auth.users WHERE id = NEW.id AND email_confirmed_at IS NOT NULL) THEN
+        RAISE EXCEPTION 'Kan ikke selv-sætte email_verified uden faktisk bekræftelse';
+      END IF;
+    ELSE
+      RAISE EXCEPTION 'Kan ikke fjerne email_verified';
+    END IF;
+  END IF;
 
   -- verified: må aldrig sættes til true af bruger (kun admin via admin-actions edge function)
   IF NEW.verified IS DISTINCT FROM OLD.verified AND NEW.verified = true THEN
