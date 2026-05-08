@@ -1001,13 +1001,13 @@ function updateNav(loggedIn, name, avatarUrl) {
     if (sellBtn) {
       if (isPendingDealer()) {
         sellBtn.textContent = '⏳ Afventer godkendelse';
-        sellBtn.setAttribute('onclick', 'blockIfPendingDealer()');
+        sellBtn.setAttribute('onclick', 'event.preventDefault(); blockIfPendingDealer()');
         sellBtn.setAttribute('title', 'Din forhandlerprofil afventer admin-godkendelse');
         sellBtn.style.opacity = '0.6';
         sellBtn.style.cursor = 'not-allowed';
       } else {
         sellBtn.textContent = '+ Sæt til salg';
-        sellBtn.setAttribute('onclick', 'openModal()');
+        sellBtn.setAttribute('onclick', 'event.preventDefault(); openModal()');
         sellBtn.removeAttribute('title');
         sellBtn.style.opacity = '';
         sellBtn.style.cursor = '';
@@ -1019,7 +1019,7 @@ function updateNav(loggedIn, name, avatarUrl) {
     updateNavAvatar(name, avatarUrl);
     checkUnreadMessages();
   } else {
-    if (sellBtn) { sellBtn.textContent = 'Log ind / Sælg'; sellBtn.setAttribute('onclick', 'openLoginModal()'); }
+    if (sellBtn) { sellBtn.textContent = 'Log ind / Sælg'; sellBtn.setAttribute('onclick', 'event.preventDefault(); openLoginModal()'); }
     if (navProfile) navProfile.style.display = 'none';
     if (mbnProfile) mbnProfile.style.display = 'none';
     if (mbnLogin)   mbnLogin.style.display = 'flex';
