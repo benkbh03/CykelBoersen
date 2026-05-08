@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
   <title>Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark</title>
   <meta name="description" content="Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere." id="meta-description">
   <meta name="robots" content="index, follow">
@@ -47,13 +47,13 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="css/01-base.css">
-  <link rel="stylesheet" href="css/02-listings.css">
-  <link rel="stylesheet" href="css/03-profiles.css">
-  <link rel="stylesheet" href="css/04-modals.css">
-  <link rel="stylesheet" href="css/05-pages.css">
-  <link rel="stylesheet" href="css/06-profile-page.css">
-  <link rel="stylesheet" href="css/07-map.css">
+  <link rel="stylesheet" href="/css/01-base.css">
+  <link rel="stylesheet" href="/css/02-listings.css">
+  <link rel="stylesheet" href="/css/03-profiles.css">
+  <link rel="stylesheet" href="/css/04-modals.css">
+  <link rel="stylesheet" href="/css/05-pages.css">
+  <link rel="stylesheet" href="/css/06-profile-page.css">
+  <link rel="stylesheet" href="/css/07-map.css">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1515,6 +1515,6 @@
   </div>
 
   <!-- Leaflet, MarkerCluster og Cropper loades on-demand fra main.js — IKKE eagerly -->
-  <script type="module" src="main.js"></script>
+  <script type="module" src="/main.js"></script>
 </body>
 </html>

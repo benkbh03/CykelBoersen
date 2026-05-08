@@ -54,6 +54,6 @@ export function ensureCropper() {
   ]);
 }
 
-/* Route-specifik CSS */
-export function ensureProfilePageCss() { return loadCss('css/06-profile-page.css'); }
-export function ensureMapCss()         { return loadCss('css/07-map.css'); }
+/* Route-specifik CSS — absolutte paths så hard-refresh på fx /bike/:id virker */
+export function ensureProfilePageCss() { return loadCss('/css/06-profile-page.css'); }
+export function ensureMapCss()         { return loadCss('/css/07-map.css'); }
