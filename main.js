@@ -677,7 +677,8 @@ async function init() {
     // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
     const meta = currentUser.user_metadata || {};
     if (meta.pending_dealer && (!profile || profile.seller_type !== 'dealer')) {
-      await supabase.from('profiles').upsert({
+      // email_verified og verified sættes ikke her — håndteres af DB-triggers/admin-actions
+      const dealerUpsert = await supabase.from('profiles').upsert({
         id:                 currentUser.id,
         email:              currentUser.email,
         name:               meta.name || '',
@@ -691,9 +692,10 @@ async function init() {
         postcode:           meta.postcode || null,
         location_precision: meta.lat && meta.lng ? 'exact' : null,
         seller_type:        'dealer',
-        verified:           false,
-        email_verified:     true,
       }, { onConflict: 'id' });
+      if (dealerUpsert.error) {
+        console.error('Dealer upsert fejl:', dealerUpsert.error);
+      }
       const { data: freshProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = freshProfile;
       supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
@@ -748,6 +750,7 @@ async function init() {
       if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
 
       // Ny OAuth-bruger uden profil endnu — opret den automatisk
+      // email_verified synkroniseres automatisk via auth.users-trigger
       if (!profile && _event === 'SIGNED_IN') {
         const meta = currentUser.user_metadata || {};
         const name = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'Ny bruger';
@@ -756,7 +759,6 @@ async function init() {
           name,
           email:          currentUser.email,
           seller_type:    'private',
-          email_verified: true,
         }, { onConflict: 'id' });
         const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
         profile = newProfile;
