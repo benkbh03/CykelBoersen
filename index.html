@@ -862,6 +862,7 @@
             <div class="form-group"><label>Adgangskode</label><input type="password" id="register-password" placeholder="Mindst 6 tegn" onkeydown="if(event.key==='Enter')handleRegister()"></div>
           </div>
           <button id="register-btn" class="form-submit" onclick="handleRegister()">Opret konto</button>
+          <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">Ved at oprette en konto accepterer du vores <a onclick="closeLoginModal();navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="closeLoginModal();navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.</p>
         </div>
       </div>
     </div>
