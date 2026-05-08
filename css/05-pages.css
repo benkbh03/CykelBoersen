@@ -510,7 +510,13 @@
     -webkit-overflow-scrolling: touch;
   }
   .sidebar.mobile-open { transform: translateY(0); }
-  body.mobile-filters-open { overflow: hidden; }
+  /* iOS-safe scroll-lock: position fixed på body forhindrer page bagved at scrolle */
+  body.mobile-filters-open {
+    position: fixed;
+    left: 0; right: 0;
+    width: 100%;
+    overflow: hidden;
+  }
 
   /* Skjul cykel-quiz inde i sidebar på mobil — den er ikke et filter */
   .sidebar .bike-quiz-box { display: none; }
@@ -523,9 +529,6 @@
   .sidebar .sidebar-box.expanded .sidebar-section-body {
     display: block;
   }
-  .sidebar .sidebar-box.expanded:not(.collapsed) .sidebar-chevron {
-    transform: rotate(0deg);
-  }
   .sidebar .sidebar-box .sidebar-chevron {
     transform: rotate(-90deg);
   }
@@ -533,9 +536,21 @@
     transform: rotate(0deg);
   }
 
+  /* Større touch-targets for sektion-headere på mobil */
+  .sidebar .sidebar-box-header {
+    padding: 18px 18px;
+    min-height: 56px;
+  }
+  .sidebar .sidebar-box-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .sidebar .sidebar-chevron {
+    width: 18px; height: 18px;
+  }
   /* Bedre spacing mellem sektioner */
   .sidebar .sidebar-box {
-    margin-bottom: 0; /* gap fra flex */
+    margin-bottom: 0;
   }
 
   /* Mobil-header inde i sidebar (sticky øverst) */
