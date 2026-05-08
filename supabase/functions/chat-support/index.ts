@@ -5,8 +5,50 @@
 //   ANTHROPIC_API_KEY  – din Anthropic API-nøgle fra console.anthropic.com
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
+const ANTHROPIC_API_KEY    = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
+const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+// Rate-limit: max 30 beskeder pr. bruger pr. time
+const RATE_LIMIT_MAX    = 30;
+const RATE_WINDOW_MS    = 60 * 60 * 1000;
+const RATE_SCOPE        = "chat_support";
+
+async function checkAndIncrementRateLimit(
+  supa: ReturnType<typeof createClient>,
+  userId: string,
+): Promise<{ ok: boolean; remaining: number }> {
+  const now = new Date();
+  const { data: row } = await supa
+    .from("rate_limits")
+    .select("count, window_start")
+    .eq("user_id", userId)
+    .eq("scope", RATE_SCOPE)
+    .maybeSingle();
+
+  if (!row) {
+    await supa.from("rate_limits").insert({
+      user_id: userId, scope: RATE_SCOPE, count: 1, window_start: now.toISOString(),
+    });
+    return { ok: true, remaining: RATE_LIMIT_MAX - 1 };
+  }
+
+  const windowAgeMs = now.getTime() - new Date(row.window_start).getTime();
+  if (windowAgeMs > RATE_WINDOW_MS) {
+    await supa.from("rate_limits").update({
+      count: 1, window_start: now.toISOString(),
+    }).eq("user_id", userId).eq("scope", RATE_SCOPE);
+    return { ok: true, remaining: RATE_LIMIT_MAX - 1 };
+  }
+
+  if (row.count >= RATE_LIMIT_MAX) return { ok: false, remaining: 0 };
+
+  await supa.from("rate_limits").update({ count: row.count + 1 })
+    .eq("user_id", userId).eq("scope", RATE_SCOPE);
+  return { ok: true, remaining: RATE_LIMIT_MAX - row.count - 1 };
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -69,6 +111,33 @@ serve(async (req) => {
   }
 
   try {
+    // ── JWT-auth ─────────────────────────────────────────────
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace(/^Bearer\s+/i, "");
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({ error: "Log ind for at bruge support-chatten" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const { data: { user }, error: authErr } = await supa.auth.getUser(jwt);
+    if (authErr || !user) {
+      return new Response(
+        JSON.stringify({ error: "Ugyldig session" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Rate-limit ───────────────────────────────────────────
+    const limit = await checkAndIncrementRateLimit(supa, user.id);
+    if (!limit.ok) {
+      return new Response(
+        JSON.stringify({ error: "Du har sendt for mange beskeder. Prøv igen om en time." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { messages } = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
