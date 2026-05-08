@@ -1448,8 +1448,15 @@ function navigateToBike(bikeId) {
 
 function toggleSidebarSection(header) {
   const box = header.closest('.sidebar-box');
-  const expanded = box.classList.toggle('collapsed');
-  header.setAttribute('aria-expanded', !expanded);
+  // Mobile uses 'expanded' class (default-collapsed); desktop uses 'collapsed' class (default-expanded)
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (isMobile) {
+    const expanded = box.classList.toggle('expanded');
+    header.setAttribute('aria-expanded', expanded);
+  } else {
+    const expanded = box.classList.toggle('collapsed');
+    header.setAttribute('aria-expanded', !expanded);
+  }
 }
 
 function openMobileFilters() {
