@@ -268,7 +268,12 @@
   <!-- ── MAIN: SIDEBAR + ANNONCER ── -->
   <div class="main">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar-filters">
+      <!-- Mobil-only header (synlig kun på <=768px) -->
+      <div class="sidebar-mobile-header">
+        <h3>Filtre</h3>
+        <button class="sidebar-mobile-close" onclick="closeMobileFilters()" aria-label="Luk filtre">✕</button>
+      </div>
       <div class="bike-quiz-box" id="bike-quiz-box">
         <div class="bike-quiz-intro" id="bike-quiz-intro">
           <div class="bike-quiz-icon">🚲</div>
@@ -598,7 +603,10 @@
         <p>Få besked på e-mail når nye cykler matcher din søgning</p>
         <button onclick="saveCurrentSearch()">Opret Cykelagent</button>
       </div>
+      <!-- Mobil-only footer (synlig kun på <=768px) -->
+      <button class="sidebar-mobile-apply" id="sidebar-mobile-apply-btn" onclick="closeMobileFilters()">Vis cykler</button>
     </aside>
+    <div class="mobile-filter-overlay" id="mobile-filter-overlay" onclick="closeMobileFilters()"></div>
 
     <div>
       <!-- Sidst sete cykler — vises kun hvis bruger har set mindst én annonce -->
@@ -623,6 +631,14 @@
         </div>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
+      <!-- Mobil-only filter knap + sortering. Vises kun på <=768px -->
+      <div class="mobile-filter-bar">
+        <button class="btn-mobile-filter" onclick="openMobileFilters()" id="btn-open-filters">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="17" y2="6"/><line x1="6" y1="10" x2="14" y2="10"/><line x1="9" y1="14" x2="11" y2="14"/></svg>
+          <span>Filtre</span>
+          <span class="filter-count-badge" id="mobile-filter-count" style="display:none;">0</span>
+        </button>
+      </div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
       <div class="listings-grid" id="listings-grid"></div>
       <div id="listings-map" style="display:none;height:600px;border-radius:14px;overflow:hidden;border:1px solid var(--border);"></div>
