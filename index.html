@@ -51,8 +51,7 @@
   <link rel="stylesheet" href="css/03-profiles.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/04-modals.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/05-pages.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/06-profile-page.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/07-map.css" media="print" onload="this.media='all'">
+  <!-- 06-profile-page.css og 07-map.css loades først ved deres respektive ruter (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="css/03-profiles.css">
     <link rel="stylesheet" href="css/04-modals.css">
@@ -60,11 +59,7 @@
     <link rel="stylesheet" href="css/06-profile-page.css">
     <link rel="stylesheet" href="css/07-map.css">
   </noscript>
-  <!-- Ikke-kritisk CSS: load med media=print + onload-swap så de ikke blokerer first paint -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" media="print" onload="this.media='all'">
+  <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -1406,8 +1401,8 @@
       </div>
       <div id="chat-input-area">
         <textarea id="chat-input" placeholder="Skriv dit spørgsmål..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-        <button id="chat-send-btn" onclick="sendChatMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <button id="chat-send-btn" onclick="sendChatMessage()" aria-label="Send besked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
     </div>
@@ -1524,9 +1519,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js" defer></script>
+  <!-- Leaflet, MarkerCluster og Cropper loades on-demand fra main.js — IKKE eagerly -->
   <script type="module" src="main.js"></script>
 </body>
 </html>

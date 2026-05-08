@@ -19,11 +19,20 @@ export function createImageUpload({
 
   // ── Crop ──────────────────────────────────────────────────
 
-  function openCropModal(mode, index) {
+  async function openCropModal(mode, index) {
     const list = mode === 'sell' ? selectedFiles : getEditNewFiles();
     const item = list?.[index];
     if (!item || !item.url) { showToast('❌ Kunne ikke åbne beskæring'); return; }
-    if (typeof Cropper === 'undefined') { showToast('❌ Cropper-biblioteket er ikke indlæst endnu — prøv igen'); return; }
+
+    if (typeof Cropper === 'undefined') {
+      try {
+        const { ensureCropper } = await import('./asset-loader.js');
+        await ensureCropper();
+      } catch {
+        showToast('❌ Kunne ikke loade Cropper-biblioteket');
+        return;
+      }
+    }
 
     _cropContext = { mode, index, originalUrl: item.url };
 
