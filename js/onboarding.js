@@ -23,7 +23,7 @@ export function showOnboardingBanner() {
           <span style="font-size:1.3rem;line-height:1;margin-top:1px;">🤝</span>
           <div>
             <div style="font-weight:600;font-size:0.9rem;color:#1A1A18;margin-bottom:2px;">Mød op og betal ved overlevering</div>
-            <div style="font-size:0.84rem;color:#6B6760;">Al betaling foregår uden for platformen. Aftal et mødestedmed sælger, tjek cyklen og betal kontant eller via MobilePay.</div>
+            <div style="font-size:0.84rem;color:#6B6760;">Alt betaling foregår uden for platformen. Aftal et mødested med sælger, tjek cyklen og betal kontant eller via MobilePay.</div>
           </div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:14px;">
