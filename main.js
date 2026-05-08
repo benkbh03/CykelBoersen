@@ -27,6 +27,8 @@ import { createBikesList } from './js/bikes-list.js';
 import { createMyProfile } from './js/my-profile.js';
 import { createReviews } from './js/reviews.js';
 import { createProfilePage } from './js/profile-page.js';
+import { createImageUpload } from './js/image-upload.js';
+import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 
 /* ============================================================
