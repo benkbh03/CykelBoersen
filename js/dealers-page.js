@@ -486,6 +486,21 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       userId = signUpData.user?.id;
       if (!userId) { restore(); showToast('❌ Noget gik galt – prøv igen'); return; }
 
+      // Send admin-notifikation om ny forhandleransøgning (fire-and-forget)
+      supabase.functions.invoke('notify-message', {
+        body: {
+          type:      'dealer_application',
+          shop_name: shopName,
+          cvr:       cvr,
+          contact:   contact,
+          phone:     phone,
+          address:   address,
+          city:      city,
+          email:     email,
+          user_id:   userId,
+        },
+      }).catch(() => {});
+
       restore();
       document.getElementById('detail-view').innerHTML = `
       <div class="bd-page">
