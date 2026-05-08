@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
-import { ensureLeaflet, ensureCropper, ensureProfilePageCss, ensureMapCss } from './js/asset-loader.js';
+import { ensureLeaflet, ensureCropper, ensureMapCss } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
 import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED } from './js/config.js';
@@ -469,12 +469,9 @@ const sendMessage                = lazyMethod(_ensureBikeDetail, 'sendMessage');
 const sendBid                    = lazyMethod(_ensureBikeDetail, 'sendBid');
 const toggleSaveFromModal        = lazyMethod(_ensureBikeDetail, 'toggleSaveFromModal');
 
-// Profile pages — lazy-loaded (kun /profile/:id og /dealer/:id ruter). Loader også profile CSS.
+// Profile pages — lazy-loaded (kun /profile/:id og /dealer/:id ruter)
 const _ensureProfilePages = lazyCtrl(
-  () => Promise.all([
-    import('./js/profile-pages.js'),
-    ensureProfilePageCss(),
-  ]).then(([mod]) => mod),
+  () => import('./js/profile-pages.js'),
   'createProfilePages',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials, formatLastSeen,
@@ -493,12 +490,9 @@ const navigateToProfile       = lazyMethod(_ensureProfilePages, 'navigateToProfi
 const navigateToDealer        = lazyMethod(_ensureProfilePages, 'navigateToDealer');
 const renderProfileSkeleton   = lazyMethod(_ensureProfilePages, 'renderProfileSkeleton');
 
-// My profile page — lazy-loaded (kun /me route). Loader også profile CSS.
+// My profile page — lazy-loaded (kun /me route)
 const _ensureMyProfilePage = lazyCtrl(
-  () => Promise.all([
-    import('./js/my-profile-page.js'),
-    ensureProfilePageCss(),
-  ]).then(([mod]) => mod),
+  () => import('./js/my-profile-page.js'),
   'createMyProfilePage',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials,
