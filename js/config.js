@@ -2,9 +2,9 @@ export const BIKES_PAGE_SIZE = 24;
 export const MAP_PAGE_LIMIT = 500;
 
 /* Supabase image transformations kræver Pro-plan.
-   Hvis dit projekt ikke har Pro, sæt denne til false — så bruges originale
-   billeder (større, men virker uden Pro). */
-export const IMAGE_TRANSFORMS_ENABLED = true;
+   Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
+   + browser-side decoding holder dem ude af first-paint kritisk sti). */
+export const IMAGE_TRANSFORMS_ENABLED = false;
 
 // Standardiseret farveliste til opret-form og filter
 export const BIKE_COLORS = [

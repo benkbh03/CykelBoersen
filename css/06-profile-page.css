@@ -2393,28 +2393,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .onboarding-btn--primary:hover { background: var(--forest-light); }
 .onboarding-btn:not(.onboarding-btn--primary):hover { border-color: var(--forest); }
 
-/* ── SKELETON LOADING ── */
-@keyframes skeleton-shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-.skeleton-card { pointer-events: none; }
-.skeleton-img {
-  width: 100%; aspect-ratio: 4/3; border-radius: 10px;
-  background: linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%);
-  background-size: 800px 100%;
-  animation: skeleton-shimmer 1.4s infinite linear;
-}
-.skeleton-body { padding: 12px 4px 4px; display: flex; flex-direction: column; gap: 8px; }
-.skeleton-line {
-  border-radius: 6px;
-  background: linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%);
-  background-size: 800px 100%;
-  animation: skeleton-shimmer 1.4s infinite linear;
-}
-.skeleton-line--title  { height: 16px; width: 80%; }
-.skeleton-line--sub    { height: 13px; width: 55%; }
-.skeleton-line--price  { height: 18px; width: 40%; }
+/* Skeleton-loading flyttet til 02-listings.css så den er tilgængelig på forsiden */
 
 /* ── EMPTY STATES ── */
 .empty-state-box {
