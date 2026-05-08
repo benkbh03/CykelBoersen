@@ -165,8 +165,10 @@ export function createImageUpload({
         });
       }
 
-      const MAX_W = 1600;
-      const MAX_H = 1600;
+      // Max-dimensioner: bike-modal viser billeder ved op til ~800px på desktop,
+      // 1200px giver retina-kvalitet uden unødigt store filer.
+      const MAX_W = 1200;
+      const MAX_H = 1200;
       let width  = source.width  || source.naturalWidth;
       let height = source.height || source.naturalHeight;
       if (!width || !height) throw new Error('Billede har ingen dimensioner');
@@ -185,7 +187,7 @@ export function createImageUpload({
       ctx.drawImage(source, 0, 0, width, height);
       if (source.close) source.close();
 
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.82));
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.78));
       if (!blob || blob.size === 0) return file;
       if (blob.size >= file.size) return file;
 
