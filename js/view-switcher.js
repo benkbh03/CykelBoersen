@@ -24,6 +24,15 @@ export function showDetailView() {
   const pageLayout    = document.getElementById('page-layout');
   if (landingLayout) landingLayout.style.display = 'none';
   if (pageLayout)    pageLayout.style.display    = 'block';
+  // Sikr at mobil-filter-drawer er lukket når man navigerer til detail-side
+  const sidebar = document.getElementById('sidebar-filters');
+  const overlay = document.getElementById('mobile-filter-overlay');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+  if (overlay) overlay.classList.remove('open');
+  if (document.body.classList.contains('mobile-filters-open')) {
+    document.body.classList.remove('mobile-filters-open');
+    document.body.style.top = '';
+  }
 }
 
 export function showListingView({ updateSEOMeta, removeBikeJsonLd } = {}) {
