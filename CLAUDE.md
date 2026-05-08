@@ -34,6 +34,19 @@ CykelBoersen/
 - Hovedgren til deploy: læs aktuel branch fra `git branch --show-current`
 - Push altid til den aktuelle arbejdsgren: `git push -u origin <branch>`
 
+## Brugerens arbejdsmiljø — VIGTIGT
+
+Brugeren bruger **IKKE terminal/kommandolinje**. Giv altid GUI-baserede instruktioner:
+
+- **Git-operationer** (merge, PR, push): Vis trin via **github.com**-web-UI'et, ikke `git`-kommandoer.
+  Eksempel: "Gå til github.com/benkbh03/CykelBoersen → klik 'Compare & pull request' → 'Merge'."
+- **SQL-migrationer**: Sig "kopier indholdet af `<fil>.sql` ind i Supabase Dashboard → SQL Editor → Run", ikke `supabase db push`.
+- **Edge function-deploy**: Sig "Supabase Dashboard → Edge Functions → opret/rediger → indsæt kode → Deploy", ikke `supabase functions deploy`.
+- **DNS**: Cloudflare Dashboard, ikke `dig`/`nslookup`.
+- **Supabase secrets**: Dashboard → Project Settings → Edge Functions → Secrets.
+
+Hvis et problem virkelig kræver terminal, sig det eksplicit og foreslå en GUI-vej hvis muligt.
+
 ## Kodestil og filstruktur
 
 Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide eksisterende filer. Filer bør holdes under ~400 linjer. Eksportér funktioner og importér dem i `main.js` (eller den relevante modul). Husk at eksportere nye `onclick`-handlere til `window` i `main.js`.
