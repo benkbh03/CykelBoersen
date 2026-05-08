@@ -990,3 +990,12 @@ nav {
   color: var(--muted);
 }
 
+/* Kritisk: skjul mobile-bottom-nav by default (uden denne regel
+   ville navet være synligt på desktop indtil 06-profile-page.css er
+   lazy-loaded — gav CLS 0.6+). Resten af mbn-styles bor i 06. */
+#mobile-bottom-nav { display: none; }
+@media (max-width: 768px) {
+  #mobile-bottom-nav { display: flex; }
+  body { padding-bottom: 68px; }
+}
+

@@ -74,7 +74,7 @@ export function safeAvatarUrl(url) {
 let _imageTransformsEnabled = true;
 export function setImageTransformsEnabled(v) { _imageTransformsEnabled = !!v; }
 
-export function transformImageUrl(url, { width, height, quality = 75, resize = 'cover' } = {}) {
+export function transformImageUrl(url, { width, height, quality = 75, resize } = {}) {
   if (!_imageTransformsEnabled) return url;
   if (!url || typeof url !== 'string') return url;
   // Match kun Supabase /storage/v1/object/public/ URLs
@@ -89,7 +89,9 @@ export function transformImageUrl(url, { width, height, quality = 75, resize = '
   if (width)  params.set('width',  String(width));
   if (height) params.set('height', String(height));
   if (quality) params.set('quality', String(quality));
-  if (resize)  params.set('resize',  resize);
+  // Brug kun resize når BÅDE width og height er angivet — ellers kan Supabase
+  // crop-mode klippe billedet uventet (CSS object-fit klarer croppingen i UI).
+  if (resize && width && height) params.set('resize', resize);
   return `${base}/storage/v1/render/image/public/${path}?${params.toString()}`;
 }
 
