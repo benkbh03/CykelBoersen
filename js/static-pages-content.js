@@ -107,7 +107,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 5. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 8. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -195,7 +195,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 5. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 8. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -208,6 +208,8 @@ export const footerContent = {
         <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere).</li>
         <li><strong>Annoncedata:</strong> Cykelbeskrivelser, billeder, priser, kontaktoplysninger i annoncer.</li>
         <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
+        <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
+        <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
         <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>
         <li><strong>Betalingsdata:</strong> Forhandlerabonnementer håndteres af Stripe — vi gemmer ikke kortnumre eller betalingsoplysninger.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
@@ -237,6 +239,10 @@ export const footerContent = {
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Følg-forhandler-notifikationer og gemte søgninger</td>
+          <td style="padding:8px 0;">Art. 6(1)(a) — samtykke (ved aktiv tilmelding)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Håndtering af forhandlerabonnement</td>
           <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
         </tr>
@@ -258,6 +264,7 @@ export const footerContent = {
         <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
+        <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 

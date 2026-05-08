@@ -493,8 +493,11 @@
   .hero-cat-chip { font-size: 0.75rem; padding: 6px 12px; }
   .pill { flex-shrink: 0; font-size: 0.8rem; padding: 7px 14px; }
   .main { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
-  /* Sidebar bliver til en bottom-sheet på mobil */
+  /* Sidebar bliver til en bottom-sheet på mobil — kun synlig når åben */
   .sidebar {
+    display: none;
+  }
+  .sidebar.mobile-open {
     display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
@@ -506,12 +509,15 @@
     padding: 0 14px 20px;
     z-index: 1500;
     overflow-y: auto;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
+    transform: translateY(0);
     box-shadow: 0 -4px 30px rgba(0,0,0,0.18);
     -webkit-overflow-scrolling: touch;
+    animation: sidebar-slide-up 0.3s ease;
   }
-  .sidebar.mobile-open { transform: translateY(0); }
+  @keyframes sidebar-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
   body.mobile-filters-open {
     position: fixed;
     left: 0; right: 0;

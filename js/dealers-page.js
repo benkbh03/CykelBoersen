@@ -400,8 +400,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         `}
 
         <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil →</button>
-        <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;">
-          Gratis at oprette — ingen binding, ingen kreditkort.
+        <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">
+          Gratis at oprette — ingen binding, ingen kreditkort.<br>
+          Ved at oprette en forhandlerkonto accepterer du vores <a onclick="navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.
         </p>
       </div>
     </div>`;
