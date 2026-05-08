@@ -31,7 +31,6 @@ export function showDetailView() {
   if (overlay) overlay.classList.remove('open');
   if (document.body.classList.contains('mobile-filters-open')) {
     document.body.classList.remove('mobile-filters-open');
-    document.body.style.top = '';
   }
 }
 
