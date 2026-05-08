@@ -368,6 +368,32 @@ nav {
   line-height: 1.55; max-width: 480px; margin: 0 auto;
   text-shadow: 0 1px 14px rgba(0,0,0,0.55);
 }
+
+/* Mobil-tilpasninger til hero — reducerer størrelse + giver luft */
+@media (max-width: 768px) {
+  .search-hero-title {
+    font-size: 2.4rem;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin: 0 0 12px;
+    padding: 0 8px;
+  }
+  .search-hero-sub {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 0 12px;
+    max-width: 360px;
+  }
+}
+@media (max-width: 480px) {
+  .search-hero-title {
+    font-size: 2.05rem;
+    letter-spacing: -0.02em;
+  }
+  .search-hero-sub {
+    font-size: 0.9rem;
+  }
+}
 /* ── HERO KATEGORI-CHIPS ── */
 .hero-cat-chips {
   display: flex; justify-content: center; gap: 7px;
