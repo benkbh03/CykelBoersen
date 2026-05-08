@@ -516,6 +516,28 @@
   .sidebar .bike-quiz-box { display: none; }
   .sidebar .sidebar-save-card { margin-top: 8px; }
 
+  /* Default-collapse alle sektioner på mobil — bruger åbner selv */
+  .sidebar .sidebar-box .sidebar-section-body {
+    display: none;
+  }
+  .sidebar .sidebar-box.expanded .sidebar-section-body {
+    display: block;
+  }
+  .sidebar .sidebar-box.expanded:not(.collapsed) .sidebar-chevron {
+    transform: rotate(0deg);
+  }
+  .sidebar .sidebar-box .sidebar-chevron {
+    transform: rotate(-90deg);
+  }
+  .sidebar .sidebar-box.expanded .sidebar-chevron {
+    transform: rotate(0deg);
+  }
+
+  /* Bedre spacing mellem sektioner */
+  .sidebar .sidebar-box {
+    margin-bottom: 0; /* gap fra flex */
+  }
+
   /* Mobil-header inde i sidebar (sticky øverst) */
   .sidebar-mobile-header {
     display: flex !important;
