@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
-import { ensureLeaflet, ensureCropper, ensureMapCss } from './js/asset-loader.js';
+import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
 import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED } from './js/config.js';
@@ -305,12 +305,11 @@ const {
   editSetNewPrimary, editRemoveNew, saveEditedListing,
 } = listingEdit;
 
-// Map page — lazy-loaded (kun /kort route). Loader også Leaflet + map CSS samtidig.
+// Map page — lazy-loaded (kun /kort route). Loader også Leaflet samtidig.
 const _ensureMapPage = lazyCtrl(
   () => Promise.all([
     import('./js/map-page.js'),
     ensureLeaflet(),
-    ensureMapCss(),
   ]).then(([mod]) => mod),
   'createMapPage',
   () => ({
