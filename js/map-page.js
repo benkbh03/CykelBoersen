@@ -43,6 +43,8 @@ export function createMapPage({
   let _mapPageGeocoded   = null; // Map<bikeId, { coords, precise }>
   let _mapNearMeCoords   = null;
   let _mapFilterDebounce = null;
+  let _mapBoundsActive   = false; // "Søg når jeg flytter kortet" aktiveret
+  let _mapBoundsDebounced = null; // debounced applyMapFilters til moveend
 
   /* ── setView ────────────────────────────────────────────── */
 
@@ -70,6 +72,7 @@ export function createMapPage({
     _mapPageGeocoded  = null;
     _mapNearMeCoords  = null;
     _mapUserMarker    = null;
+    _mapBoundsActive  = false;
 
     document.getElementById('detail-view').innerHTML = `
     <div class="map-page">
@@ -216,6 +219,10 @@ export function createMapPage({
           <div id="split-cards-container"></div>
         </div>
         <div id="split-map-panel">
+          <button class="map-bounds-toggle" id="map-bounds-toggle-btn" onclick="toggleMapBoundsFilter()" aria-pressed="false" title="Vis kun annoncer i det synlige kortområde">
+            <span class="map-bounds-toggle-switch"><span class="map-bounds-toggle-knob"></span></span>
+            <span class="map-bounds-toggle-label">Søg i dette område</span>
+          </button>
           <button class="split-list-toggle-float" id="split-toggle-btn" onclick="toggleSplitList()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             <span>Vis liste</span>
@@ -306,6 +313,7 @@ export function createMapPage({
       radius:    _mapNearMeCoords ? (parseInt(document.getElementById('dd-radius')?.dataset.val, 10) || null) : null,
       nearCoords: _mapNearMeCoords,
       sort:      document.getElementById('dd-sort')?.dataset.val || 'newest',
+      bounds:    (_mapBoundsActive && splitMapInstance) ? splitMapInstance.getBounds() : null,
     };
   }
 
@@ -332,6 +340,11 @@ export function createMapPage({
         const dist = haversineKm(f.nearCoords, g.coords);
         if (dist > f.radius) return false;
       }
+      if (f.bounds && _mapPageGeocoded) {
+        const g = _mapPageGeocoded.get(b.id);
+        if (!g) return false;
+        if (!f.bounds.contains(g.coords)) return false;
+      }
       return true;
     });
   }
@@ -349,6 +362,7 @@ export function createMapPage({
     if (_mapNearMeCoords) n++;
     const badge = document.getElementById('map-filter-badge');
     if (!badge) return;
+    if (_mapBoundsActive) n++;
     if (n > 0) { badge.style.display = ''; badge.textContent = n; }
     else { badge.style.display = 'none'; }
   }
@@ -418,7 +432,7 @@ export function createMapPage({
       if (visibleIds.has(id)) splitClusterGroup.addLayer(splitMarkerMap[id].marker);
     });
 
-    if (visibleIds.size > 0) {
+    if (visibleIds.size > 0 && !_mapBoundsActive) {
       try { splitMapInstance.fitBounds(splitClusterGroup.getBounds().pad(0.1)); } catch (e) {}
     }
   }
@@ -436,6 +450,12 @@ export function createMapPage({
     resetMapDd('dd-sort',        'newest', 'Nyeste');
     const rd = document.getElementById('dd-radius'); if (rd) rd.dataset.disabled = 'true';
     _mapNearMeCoords = null;
+    _mapBoundsActive = false;
+    const boundsBtn = document.getElementById('map-bounds-toggle-btn');
+    if (boundsBtn) {
+      boundsBtn.classList.remove('active');
+      boundsBtn.setAttribute('aria-pressed', 'false');
+    }
     if (_mapUserMarker && splitMapInstance) { splitMapInstance.removeLayer(_mapUserMarker); _mapUserMarker = null; }
     [document.getElementById('map-near-btn'), document.getElementById('map-near-btn-mobile')].forEach(b => {
       if (!b) return;
@@ -519,6 +539,19 @@ export function createMapPage({
     }
   }
 
+  /* ── toggleMapBoundsFilter ──────────────────────────────── */
+
+  function toggleMapBoundsFilter() {
+    _mapBoundsActive = !_mapBoundsActive;
+    const btn = document.getElementById('map-bounds-toggle-btn');
+    if (btn) {
+      btn.classList.toggle('active', _mapBoundsActive);
+      btn.setAttribute('aria-pressed', _mapBoundsActive ? 'true' : 'false');
+    }
+    applyMapFilters();
+    updateMapFilterBadge();
+  }
+
   /* ── initSplitMap ───────────────────────────────────────── */
 
   async function initSplitMap() {
@@ -559,6 +592,10 @@ export function createMapPage({
     splitMapInstance.on('zoomend', function() {
       if (splitMapInstance.getZoom() < 11) splitMapInstance.closePopup();
     });
+    _mapBoundsDebounced = debounce(() => {
+      if (_mapBoundsActive) { applyMapFilters(); updateMapFilterBadge(); }
+    }, 280);
+    splitMapInstance.on('moveend', _mapBoundsDebounced);
     splitMarkerMap = {};
     _mapPageGeocoded = new Map();
 
@@ -1152,6 +1189,7 @@ export function createMapPage({
     setView,
     renderMapPage,
     toggleMapNearMe,
+    toggleMapBoundsFilter,
     resetMapFilters,
     toggleMapFilterPanel,
     splitCardClick,
