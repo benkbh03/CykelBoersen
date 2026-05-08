@@ -153,7 +153,8 @@ const {
   setActiveRadius:      v => { activeRadius = v; },
 });
 
-const { updateCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters });
+const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters });
+window.dismissCykelagentCta = dismissCykelagentCta;
 
 // Bike list (loadBikes/renderBikes/searchBikes/loadBikesWithFilters).
 // filterOffset deklareres længere nede; closures over for-getterne læser
@@ -650,6 +651,15 @@ async function init() {
   const sessionPromise = supabase.auth.getSession();
   loadBikes();
   loadInitialData(); // Erstatter loadDealers() + updateFilterCounts() med 2 parallelle queries
+
+  // Render "Sidst set"-sektion på forsiden (lazy import — kun hvis bruger har localStorage-data)
+  import('./js/recently-viewed.js').then(({ renderRecentlyViewedSection, clearRecentlyViewed }) => {
+    renderRecentlyViewedSection('recently-viewed');
+    window.clearRecentlyViewedSection = () => {
+      clearRecentlyViewed();
+      renderRecentlyViewedSection('recently-viewed');
+    };
+  }).catch(() => {});
 
   const { data: { session } } = await sessionPromise;
 
@@ -1359,6 +1369,8 @@ function handleRoute() {
     renderDealerProfilePage(dealerMatch[1]);
   } else {
     showListingView();
+    // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
+    import('./js/recently-viewed.js').then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   }
 }
 

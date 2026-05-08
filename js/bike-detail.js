@@ -59,19 +59,25 @@ export function createBikeDetail({
      ============================================================ */
 
   async function fetchBikeById(bikeId) {
+    let result;
     if (bikeCache.has(bikeId)) {
-      return { data: bikeCache.get(bikeId), error: null };
+      result = { data: bikeCache.get(bikeId), error: null };
+    } else {
+      const fetchPromise = supabase
+        .from('bikes')
+        .select('*, profiles(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary)')
+        .eq('id', bikeId)
+        .single();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout: annonceforespørgsel tog for lang tid')), 15000));
+      result = await Promise.race([fetchPromise, timeoutPromise]);
+      if (result.data && !result.error) {
+        bikeCache.set(bikeId, result.data);
+      }
     }
-    const fetchPromise = supabase
-      .from('bikes')
-      .select('*, profiles(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary)')
-      .eq('id', bikeId)
-      .single();
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout: annonceforespørgsel tog for lang tid')), 15000));
-    const result = await Promise.race([fetchPromise, timeoutPromise]);
+    // Track som "sidst set" hver gang — fire-and-forget
     if (result.data && !result.error) {
-      bikeCache.set(bikeId, result.data);
+      import('./recently-viewed.js').then(m => m.addRecentlyViewed(result.data)).catch(() => {});
     }
     return result;
   }

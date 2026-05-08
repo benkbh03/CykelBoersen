@@ -320,7 +320,9 @@ export function createBikesList({
 
     renderBikes(data || [], append);
     updateActiveFiltersBar();
-    updateCykelagentCta();
+    // Send result-count til CTA — skifter copy til "Kun X matcher" når resultater er få
+    if (!append) updateCykelagentCta((data || []).length);
+    else updateCykelagentCta();
     setFilterOffset(getFilterOffset() + (data || []).length);
 
     const existing = document.getElementById('load-more-btn');
