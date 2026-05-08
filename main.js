@@ -4,25 +4,20 @@
 
 import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm } from './js/utils.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
-import './js/support-chat.js';
 import { supabase } from './js/supabase-client.js';
 import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES } from './js/config.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
-import { footerContent } from './js/static-pages-content.js';
-import { renderStaticPageView } from './js/static-pages.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
 import { createRealtimeNotifications } from './js/realtime-notifications.js';
 import { createShareActions } from './js/share-actions.js';
-import { setMainView } from './js/view-switcher.js';
+import { setMainView, showDetailView, showListingView as _baseShowListingView } from './js/view-switcher.js';
 import { createSoldActions } from './js/sold-actions.js';
-import { createAdminPanelUI } from './js/admin-panel-ui.js';
 import { createQuickReplies } from './js/quick-replies.js';
 import { createEmailConfirmationActions } from './js/email-confirmation.js';
 import { createInboxBadgeActions } from './js/inbox-badge.js';
 import { updateNavAvatarUI } from './js/nav-avatar.js';
 import { retryHTML, showToast } from './js/ui-feedback.js';
-import { showOnboardingBanner, dismissOnboarding } from './js/onboarding.js';
 import { showSectionNavigation } from './js/section-nav.js';
 import { openBecomeDealerPage, closeBecomeDealerModalCompat, selectDealerPlanButton } from './js/dealer-modal-actions.js';
 import { isPendingDealerProfile, blockIfPendingDealerProfile } from './js/dealer-guards.js';
@@ -31,18 +26,63 @@ import { createFilters } from './js/filters.js';
 import { createBikesList } from './js/bikes-list.js';
 import { createMyProfile } from './js/my-profile.js';
 import { createReviews } from './js/reviews.js';
-import { createProfileModals } from './js/profile-modals.js';
 import { createProfilePage } from './js/profile-page.js';
-import { createImageUpload } from './js/image-upload.js';
-import { createListingEdit } from './js/listing-edit.js';
-import { createMapPage } from './js/map-page.js';
-import { createSellPage } from './js/sell-page.js';
-import { createBikeDetail } from './js/bike-detail.js';
-import { createProfilePages } from './js/profile-pages.js';
-import { createInbox } from './js/inbox.js';
-import { createMyProfilePage } from './js/my-profile-page.js';
-import { createDealersPage } from './js/dealers-page.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
+
+/* ============================================================
+   LAZY MODULE LOADER
+   ============================================================
+   Heavy/route-specific modules loades først når de bruges, så main thread
+   ikke blokeres af parsing under first paint.
+   ============================================================ */
+function lazyCtrl(loader, factoryName, getDeps, onInit) {
+  let inst = null;
+  let promise = null;
+  return function ensure() {
+    if (inst) return Promise.resolve(inst);
+    if (!promise) {
+      promise = loader().then(mod => {
+        inst = mod[factoryName](typeof getDeps === 'function' ? getDeps() : getDeps);
+        if (typeof onInit === 'function') onInit(inst);
+        return inst;
+      });
+    }
+    return promise;
+  };
+}
+
+// Wrap: returnerer en async funktion der lazy-loader controlleren og kalder en metode på den.
+function lazyMethod(ensureFn, methodName) {
+  return (...args) => ensureFn().then(c => {
+    const fn = c[methodName];
+    return typeof fn === 'function' ? fn.apply(c, args) : fn;
+  });
+}
+
+// Cached lazy loader for a single named export from et modul (bruges til små helpers)
+function lazyExport(loader, exportName) {
+  let promise = null;
+  return (...args) => {
+    if (!promise) promise = loader();
+    return promise.then(m => m[exportName](...args));
+  };
+}
+
+/* showListingView wrapper med SEO-cleanup deps */
+function showListingView() {
+  return _baseShowListingView({ updateSEOMeta, removeBikeJsonLd });
+}
+
+/* Support-chat: stub window-funktioner der lazy-loader modulet ved første klik.
+   Modulet selv overskriver disse stubs ved import. */
+let _supportChatPromise = null;
+function _ensureSupportChat() {
+  if (!_supportChatPromise) _supportChatPromise = import('./js/support-chat.js');
+  return _supportChatPromise;
+}
+window.toggleChat      = (...args) => _ensureSupportChat().then(() => window.toggleChat(...args));
+window.sendChatMessage = (...args) => _ensureSupportChat().then(() => window.sendChatMessage(...args));
+window.handleChatKey   = (...args) => _ensureSupportChat().then(() => window.handleChatKey(...args));
 
 // Global bruger-cache — hentes én gang ved init
 let currentUser    = null;
@@ -177,26 +217,30 @@ const {
 });
 
 // Profile modals (user/dealer profile views, tabs, contact, achievements).
-const {
-  filterByDealerCard,
-  openDealerProfile,
-  closeDealerProfileModal,
-  openUserProfileWithReview,
-  openUserProfile,
-  switchUserProfileTab,
-  switchDealerProfileTab,
-  toggleProfileContact,
-  sendProfileMessage,
-  loadUserAchievements,
-  closeUserProfileModal,
-} = createProfileModals({
-  supabase, esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, showToast,
-  getCurrentUser:       () => currentUser,
-  userSavedSet:         _userSavedSet,
-  closeAllDealersModal: (...args) => closeAllDealersModal(...args),
-  closeAllModals:       (...args) => closeAllModals(...args),
-  highlightStars,
-});
+// Profile modals — lazy-loaded (kun når bruger åbner et profil-kort)
+const _ensureProfileModals = lazyCtrl(
+  () => import('./js/profile-modals.js'),
+  'createProfileModals',
+  () => ({
+    supabase, esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, showToast,
+    getCurrentUser:       () => currentUser,
+    userSavedSet:         _userSavedSet,
+    closeAllDealersModal: (...args) => closeAllDealersModal(...args),
+    closeAllModals:       (...args) => closeAllModals(...args),
+    highlightStars,
+  }),
+);
+const filterByDealerCard       = lazyMethod(_ensureProfileModals, 'filterByDealerCard');
+const openDealerProfile        = lazyMethod(_ensureProfileModals, 'openDealerProfile');
+const closeDealerProfileModal  = lazyMethod(_ensureProfileModals, 'closeDealerProfileModal');
+const openUserProfileWithReview = lazyMethod(_ensureProfileModals, 'openUserProfileWithReview');
+const openUserProfile          = lazyMethod(_ensureProfileModals, 'openUserProfile');
+const switchUserProfileTab     = lazyMethod(_ensureProfileModals, 'switchUserProfileTab');
+const switchDealerProfileTab   = lazyMethod(_ensureProfileModals, 'switchDealerProfileTab');
+const toggleProfileContact     = lazyMethod(_ensureProfileModals, 'toggleProfileContact');
+const sendProfileMessage       = lazyMethod(_ensureProfileModals, 'sendProfileMessage');
+const loadUserAchievements     = lazyMethod(_ensureProfileModals, 'loadUserAchievements');
+const closeUserProfileModal    = lazyMethod(_ensureProfileModals, 'closeUserProfileModal');
 
 // Profile page (profile modal, settings, logout, delete account).
 const {
@@ -257,168 +301,245 @@ const {
   editSetNewPrimary, editRemoveNew, saveEditedListing,
 } = listingEdit;
 
-const {
-  setView, renderMapPage, toggleMapNearMe, resetMapFilters, toggleMapDd, pickMapDd,
-  toggleMapFilterPanel, splitCardClick, toggleSplitList,
-  applyMapFilters, openMapFiltersSheet, closeMapFiltersSheet,
-  mapTabSwitch, locateUser, openFromMap, _openFromMap,
-} = createMapPage({
-  supabase,
-  showToast,
-  esc,
-  haversineKm,
-  formatDistanceKm,
-  geocodeCity,
-  geocodeAddress,
-  stableOffset,
-  debounce,
-  MAP_PAGE_LIMIT,
-  updateSEOMeta,
-  setMainView,
-  navigateTo:       (...args) => navigateTo(...args),
-  showDetailView:   () => showDetailView(),
-  openBikeModal:    (...args) => openBikeModal(...args),
-  navigateToBike:   (...args) => navigateToBike(...args),
-  navigateToDealer: (...args) => navigateToDealer(...args),
-  getUserSavedSet:  () => _userSavedSet,
-});
+// Map page — lazy-loaded (kun /kort route)
+const _ensureMapPage = lazyCtrl(
+  () => import('./js/map-page.js'),
+  'createMapPage',
+  () => ({
+    supabase,
+    showToast,
+    esc,
+    haversineKm,
+    formatDistanceKm,
+    geocodeCity,
+    geocodeAddress,
+    stableOffset,
+    debounce,
+    MAP_PAGE_LIMIT,
+    updateSEOMeta,
+    setMainView,
+    navigateTo:       (...args) => navigateTo(...args),
+    showDetailView:   () => showDetailView(),
+    openBikeModal:    (...args) => openBikeModal(...args),
+    navigateToBike:   (...args) => navigateToBike(...args),
+    navigateToDealer: (...args) => navigateToDealer(...args),
+    getUserSavedSet:  () => _userSavedSet,
+  }),
+);
+const setView                = lazyMethod(_ensureMapPage, 'setView');
+const renderMapPage          = lazyMethod(_ensureMapPage, 'renderMapPage');
+const toggleMapNearMe        = lazyMethod(_ensureMapPage, 'toggleMapNearMe');
+const resetMapFilters        = lazyMethod(_ensureMapPage, 'resetMapFilters');
+const toggleMapDd            = lazyMethod(_ensureMapPage, 'toggleMapDd');
+const pickMapDd              = lazyMethod(_ensureMapPage, 'pickMapDd');
+const toggleMapFilterPanel   = lazyMethod(_ensureMapPage, 'toggleMapFilterPanel');
+const splitCardClick         = lazyMethod(_ensureMapPage, 'splitCardClick');
+const toggleSplitList        = lazyMethod(_ensureMapPage, 'toggleSplitList');
+const applyMapFilters        = lazyMethod(_ensureMapPage, 'applyMapFilters');
+const openMapFiltersSheet    = lazyMethod(_ensureMapPage, 'openMapFiltersSheet');
+const closeMapFiltersSheet   = lazyMethod(_ensureMapPage, 'closeMapFiltersSheet');
+const mapTabSwitch           = lazyMethod(_ensureMapPage, 'mapTabSwitch');
+const locateUser             = lazyMethod(_ensureMapPage, 'locateUser');
+const openFromMap            = lazyMethod(_ensureMapPage, 'openFromMap');
+const _openFromMap           = lazyMethod(_ensureMapPage, '_openFromMap');
 
-const sellPage = createSellPage({
-  supabase, showToast, esc, debounce, btnLoading,
-  enableFocusTrap, disableFocusTrap, updateSEOMeta,
-  attachCityAutocomplete,
-  blockIfPendingDealer:   () => blockIfPendingDealer(),
-  openLoginModal:         () => openLoginModal(),
-  navigateTo:             (...args) => navigateTo(...args),
-  showDetailView:         () => showDetailView(),
-  showListingView:        () => showListingView(),
-  loadBikes:              (...args) => loadBikes(...args),
-  updateFilterCounts:     (...args) => updateFilterCounts(...args),
-  notifySavedSearches:    (...args) => notifySavedSearches(...args),
-  getSelectedFiles,
-  validateImageFile,
-  uploadImages,
-  resetImageUpload,
-  openCropModal,
-  getCurrentUser:         () => currentUser,
-  getCurrentProfile:      () => currentProfile,
-});
-const {
-  openModal, _openModalLegacy, closeModal, selectType, submitListing,
-  renderSellPage, submitSellPage, previewSellImages, setSellPrimary, removeSellImage,
-  suggestListingFromImages, applyAiSuggestion, fileToBase64,
-  setSellStep, advanceSell, backSell, saveSellDraft, clearSellDraft, initSellDraft,
-  updateSellPriceSuggestion, showListingSuccessModal, closeListingSuccessModal,
-  renderSellImagePreviews, showSellTermsModal,
-} = sellPage;
+// Sell page — lazy-loaded (kun /sell route eller "+ Sæt til salg")
+const _ensureSellPage = lazyCtrl(
+  () => import('./js/sell-page.js'),
+  'createSellPage',
+  () => ({
+    supabase, showToast, esc, debounce, btnLoading,
+    enableFocusTrap, disableFocusTrap, updateSEOMeta,
+    attachCityAutocomplete,
+    blockIfPendingDealer:   () => blockIfPendingDealer(),
+    openLoginModal:         () => openLoginModal(),
+    navigateTo:             (...args) => navigateTo(...args),
+    showDetailView:         () => showDetailView(),
+    showListingView:        () => showListingView(),
+    loadBikes:              (...args) => loadBikes(...args),
+    updateFilterCounts:     (...args) => updateFilterCounts(...args),
+    notifySavedSearches:    (...args) => notifySavedSearches(...args),
+    getSelectedFiles,
+    validateImageFile,
+    uploadImages,
+    resetImageUpload,
+    openCropModal,
+    getCurrentUser:         () => currentUser,
+    getCurrentProfile:      () => currentProfile,
+  }),
+);
+const openModal                  = lazyMethod(_ensureSellPage, 'openModal');
+const _openModalLegacy           = lazyMethod(_ensureSellPage, '_openModalLegacy');
+const closeModal                 = lazyMethod(_ensureSellPage, 'closeModal');
+const selectType                 = lazyMethod(_ensureSellPage, 'selectType');
+const submitListing              = lazyMethod(_ensureSellPage, 'submitListing');
+const renderSellPage             = lazyMethod(_ensureSellPage, 'renderSellPage');
+const submitSellPage             = lazyMethod(_ensureSellPage, 'submitSellPage');
+const previewSellImages          = lazyMethod(_ensureSellPage, 'previewSellImages');
+const setSellPrimary             = lazyMethod(_ensureSellPage, 'setSellPrimary');
+const removeSellImage            = lazyMethod(_ensureSellPage, 'removeSellImage');
+const suggestListingFromImages   = lazyMethod(_ensureSellPage, 'suggestListingFromImages');
+const applyAiSuggestion          = lazyMethod(_ensureSellPage, 'applyAiSuggestion');
+const fileToBase64               = lazyMethod(_ensureSellPage, 'fileToBase64');
+const setSellStep                = lazyMethod(_ensureSellPage, 'setSellStep');
+const advanceSell                = lazyMethod(_ensureSellPage, 'advanceSell');
+const backSell                   = lazyMethod(_ensureSellPage, 'backSell');
+const saveSellDraft              = lazyMethod(_ensureSellPage, 'saveSellDraft');
+const clearSellDraft             = lazyMethod(_ensureSellPage, 'clearSellDraft');
+const initSellDraft              = lazyMethod(_ensureSellPage, 'initSellDraft');
+const updateSellPriceSuggestion  = lazyMethod(_ensureSellPage, 'updateSellPriceSuggestion');
+const showListingSuccessModal    = lazyMethod(_ensureSellPage, 'showListingSuccessModal');
+const closeListingSuccessModal   = lazyMethod(_ensureSellPage, 'closeListingSuccessModal');
+const renderSellImagePreviews    = lazyMethod(_ensureSellPage, 'renderSellImagePreviews');
+const showSellTermsModal         = lazyMethod(_ensureSellPage, 'showSellTermsModal');
 
-const bikeDetail = createBikeDetail({
-  supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen,
-  haversineKm, BASE_URL, removeBikeJsonLd, updateSEOMeta, retryHTML,
-  stableOffset, bikeCache, geocodeAddress, geocodeCity,
-  openUserProfile,
-  openDealerProfile,
-  getUserSavedSet:      () => _userSavedSet,
-  getUserGeoCoords:     () => userGeoCoords,
-  setUserGeoCoords:     v  => { userGeoCoords = v; },
-  getCurrentUser:       () => currentUser,
-  getCurrentProfile:    () => currentProfile,
-  navigateTo:           (...args) => navigateTo(...args),
-  openLoginModal:       () => openLoginModal(),
-  openShareModal:       (...args) => openShareModal(...args),
-  updateInboxBadge:     () => updateInboxBadge(),
-  loadBikes:            (...args) => loadBikes(...args),
-  closeAllModals:       () => closeAllModals(),
-  setPendingInboxThread: (t) => { _pendingInboxThread = t; },
-});
-const {
-  fetchBikeById, buildBikeBodyHTML,
-  openBikeModal, closeBikeModal,
-  renderBikePage, renderBikeSkeleton,
-  showDetailView, showListingView,
-  initBikeDetailMap, _drawUserPositionOnBikeMap, showMyDistanceOnBikeMap,
-  loadResponseTime, loadSellerOtherListings, loadSimilarListings, loadInterestedUsers,
-  startConversationWithLiker, openReportModal, closeReportModal, submitReport,
-  galleryGoto, galleryNav, attachGallerySwipe,
-  openLightbox, closeLightbox, lightboxShow, lightboxNav, lightboxResetZoom,
-  lightboxApplyTransform, lightboxClampPan, initLightboxGestures,
-  updateMeetMiddle, useMeetMiddle, toggleBidBox, insertPresetMsg,
-  toggleMessageBox, stickyBarAction, sendMessage, sendBid, toggleSaveFromModal,
-  setupLightboxEvents, registerWindowExports: registerBikeDetailWindowExports,
-} = bikeDetail;
+// Bike detail — lazy-loaded (kun ved /bike/:id route eller åbning af bike-modal)
+// Ved første load kører setupLightboxEvents + registerWindowExports.
+const _ensureBikeDetail = lazyCtrl(
+  () => import('./js/bike-detail.js'),
+  'createBikeDetail',
+  () => ({
+    supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen,
+    haversineKm, BASE_URL, removeBikeJsonLd, updateSEOMeta, retryHTML,
+    stableOffset, bikeCache, geocodeAddress, geocodeCity,
+    openUserProfile,
+    openDealerProfile,
+    getUserSavedSet:      () => _userSavedSet,
+    getUserGeoCoords:     () => userGeoCoords,
+    setUserGeoCoords:     v  => { userGeoCoords = v; },
+    getCurrentUser:       () => currentUser,
+    getCurrentProfile:    () => currentProfile,
+    navigateTo:           (...args) => navigateTo(...args),
+    openLoginModal:       () => openLoginModal(),
+    openShareModal:       (...args) => openShareModal(...args),
+    updateInboxBadge:     () => updateInboxBadge(),
+    loadBikes:            (...args) => loadBikes(...args),
+    closeAllModals:       () => closeAllModals(),
+    setPendingInboxThread: (t) => { _pendingInboxThread = t; },
+  }),
+  (inst) => {
+    // Engangs-init når modulet er loaded
+    inst.setupLightboxEvents();
+    inst.registerWindowExports();
+  },
+);
+const fetchBikeById              = lazyMethod(_ensureBikeDetail, 'fetchBikeById');
+const buildBikeBodyHTML          = lazyMethod(_ensureBikeDetail, 'buildBikeBodyHTML');
+const openBikeModal              = lazyMethod(_ensureBikeDetail, 'openBikeModal');
+const closeBikeModal             = lazyMethod(_ensureBikeDetail, 'closeBikeModal');
+const renderBikePage             = lazyMethod(_ensureBikeDetail, 'renderBikePage');
+const renderBikeSkeleton         = lazyMethod(_ensureBikeDetail, 'renderBikeSkeleton');
+const initBikeDetailMap          = lazyMethod(_ensureBikeDetail, 'initBikeDetailMap');
+const _drawUserPositionOnBikeMap = lazyMethod(_ensureBikeDetail, '_drawUserPositionOnBikeMap');
+const showMyDistanceOnBikeMap    = lazyMethod(_ensureBikeDetail, 'showMyDistanceOnBikeMap');
+const loadResponseTime           = lazyMethod(_ensureBikeDetail, 'loadResponseTime');
+const loadSellerOtherListings    = lazyMethod(_ensureBikeDetail, 'loadSellerOtherListings');
+const loadSimilarListings        = lazyMethod(_ensureBikeDetail, 'loadSimilarListings');
+const loadInterestedUsers        = lazyMethod(_ensureBikeDetail, 'loadInterestedUsers');
+const startConversationWithLiker = lazyMethod(_ensureBikeDetail, 'startConversationWithLiker');
+const openReportModal            = lazyMethod(_ensureBikeDetail, 'openReportModal');
+const closeReportModal           = lazyMethod(_ensureBikeDetail, 'closeReportModal');
+const submitReport               = lazyMethod(_ensureBikeDetail, 'submitReport');
+const galleryGoto                = lazyMethod(_ensureBikeDetail, 'galleryGoto');
+const galleryNav                 = lazyMethod(_ensureBikeDetail, 'galleryNav');
+const attachGallerySwipe         = lazyMethod(_ensureBikeDetail, 'attachGallerySwipe');
+const openLightbox               = lazyMethod(_ensureBikeDetail, 'openLightbox');
+const closeLightbox              = lazyMethod(_ensureBikeDetail, 'closeLightbox');
+const lightboxNav                = lazyMethod(_ensureBikeDetail, 'lightboxNav');
+const lightboxResetZoom          = lazyMethod(_ensureBikeDetail, 'lightboxResetZoom');
+const updateMeetMiddle           = lazyMethod(_ensureBikeDetail, 'updateMeetMiddle');
+const useMeetMiddle              = lazyMethod(_ensureBikeDetail, 'useMeetMiddle');
+const toggleBidBox               = lazyMethod(_ensureBikeDetail, 'toggleBidBox');
+const insertPresetMsg            = lazyMethod(_ensureBikeDetail, 'insertPresetMsg');
+const toggleMessageBox           = lazyMethod(_ensureBikeDetail, 'toggleMessageBox');
+const stickyBarAction            = lazyMethod(_ensureBikeDetail, 'stickyBarAction');
+const sendMessage                = lazyMethod(_ensureBikeDetail, 'sendMessage');
+const sendBid                    = lazyMethod(_ensureBikeDetail, 'sendBid');
+const toggleSaveFromModal        = lazyMethod(_ensureBikeDetail, 'toggleSaveFromModal');
 
-setupLightboxEvents();
-registerBikeDetailWindowExports();
+// Profile pages — lazy-loaded (kun /profile/:id og /dealer/:id ruter)
+const _ensureProfilePages = lazyCtrl(
+  () => import('./js/profile-pages.js'),
+  'createProfilePages',
+  () => ({
+    supabase, esc, safeAvatarUrl, getInitials, formatLastSeen,
+    updateSEOMeta,
+    getUserSavedSet:    () => _userSavedSet,
+    getCurrentUser:     () => currentUser,
+    showDetailView,
+    navigateTo:         (...args) => navigateTo(...args),
+    highlightStars,
+    loadUserAchievements,
+  }),
+);
+const renderUserProfilePage   = lazyMethod(_ensureProfilePages, 'renderUserProfilePage');
+const renderDealerProfilePage = lazyMethod(_ensureProfilePages, 'renderDealerProfilePage');
+const navigateToProfile       = lazyMethod(_ensureProfilePages, 'navigateToProfile');
+const navigateToDealer        = lazyMethod(_ensureProfilePages, 'navigateToDealer');
+const renderProfileSkeleton   = lazyMethod(_ensureProfilePages, 'renderProfileSkeleton');
 
-const {
-  renderUserProfilePage, renderDealerProfilePage,
-  navigateToProfile, navigateToDealer,
-  renderProfileSkeleton,
-} = createProfilePages({
-  supabase, esc, safeAvatarUrl, getInitials, formatLastSeen,
-  updateSEOMeta,
-  getUserSavedSet:    () => _userSavedSet,
-  getCurrentUser:     () => currentUser,
-  showDetailView,
-  navigateTo:         (...args) => navigateTo(...args),
-  highlightStars,
-  loadUserAchievements,
-});
-
-const {
-  navigateToMyProfile,
-  renderMyProfilePage,
-  buildMyProfilePageHTML,
-  switchMyProfileTab,
-  loadProfileStats,
-} = createMyProfilePage({
-  supabase, esc, safeAvatarUrl, getInitials,
-  renderProfileSkeleton,
-  showDetailView,
-  showListingView,
-  openLoginModal:    () => openLoginModal(),
-  openProfileModal:  () => openProfileModal(),
-  openEditModal:     (...args) => openEditModal(...args),
-  loadMyListings,
-  loadSavedListings,
-  loadSavedSearches,
-  loadTradeHistory,
-  checkUnreadMessages: (...args) => checkUnreadMessages(...args),
-  navigateTo:        (...args) => navigateTo(...args),
-  getCurrentUser:    () => currentUser,
-  getCurrentProfile: () => currentProfile,
-});
+// My profile page — lazy-loaded (kun /me route)
+const _ensureMyProfilePage = lazyCtrl(
+  () => import('./js/my-profile-page.js'),
+  'createMyProfilePage',
+  () => ({
+    supabase, esc, safeAvatarUrl, getInitials,
+    renderProfileSkeleton,
+    showDetailView,
+    showListingView,
+    openLoginModal:    () => openLoginModal(),
+    openProfileModal:  () => openProfileModal(),
+    openEditModal:     (...args) => openEditModal(...args),
+    loadMyListings,
+    loadSavedListings,
+    loadSavedSearches,
+    loadTradeHistory,
+    checkUnreadMessages: (...args) => checkUnreadMessages(...args),
+    navigateTo:        (...args) => navigateTo(...args),
+    getCurrentUser:    () => currentUser,
+    getCurrentProfile: () => currentProfile,
+  }),
+);
+const navigateToMyProfile    = lazyMethod(_ensureMyProfilePage, 'navigateToMyProfile');
+const renderMyProfilePage    = lazyMethod(_ensureMyProfilePage, 'renderMyProfilePage');
+const buildMyProfilePageHTML = lazyMethod(_ensureMyProfilePage, 'buildMyProfilePageHTML');
+const switchMyProfileTab     = lazyMethod(_ensureMyProfilePage, 'switchMyProfileTab');
+const loadProfileStats       = lazyMethod(_ensureMyProfilePage, 'loadProfileStats');
 
 window.navigateToMyProfile = navigateToMyProfile;
 window.renderMyProfilePage  = renderMyProfilePage;
 window.switchMyProfileTab   = switchMyProfileTab;
 window.loadProfileStats     = loadProfileStats;
 
-const {
-  openBecomeDealerModal,
-  closeBecomeDealerModal,
-  selectDealerPlan,
-  renderDealersPage,
-  toggleDealerGPS,
-  sortAndRenderDealers,
-  renderBecomeDealerPage,
-  submitDealerApplication,
-  openSubscriptionPortal,
-} = createDealersPage({
-  supabase, showToast, esc, getInitials,
-  formatDistanceKm, haversineKm, updateSEOMeta, btnLoading,
-  geocodeAddress, geocodeCity,
-  showDetailView,
-  attachAddressAutocomplete, readDawaData,
-  navigateTo:              (...args) => navigateTo(...args),
-  navigateToDealer,
-  openBecomeDealerPage,
-  closeBecomeDealerModalCompat,
-  selectDealerPlanButton,
-  getCurrentUser:    () => currentUser,
-  getCurrentProfile: () => currentProfile,
-  updateCurrentProfile: (patch) => { if (currentProfile) Object.assign(currentProfile, patch); },
-});
+// Dealers page — lazy-loaded (/forhandlere + /bliv-forhandler routes)
+const _ensureDealersPage = lazyCtrl(
+  () => import('./js/dealers-page.js'),
+  'createDealersPage',
+  () => ({
+    supabase, showToast, esc, getInitials,
+    formatDistanceKm, haversineKm, updateSEOMeta, btnLoading,
+    geocodeAddress, geocodeCity,
+    showDetailView,
+    attachAddressAutocomplete, readDawaData,
+    navigateTo:              (...args) => navigateTo(...args),
+    navigateToDealer,
+    openBecomeDealerPage,
+    closeBecomeDealerModalCompat,
+    selectDealerPlanButton,
+    getCurrentUser:    () => currentUser,
+    getCurrentProfile: () => currentProfile,
+    updateCurrentProfile: (patch) => { if (currentProfile) Object.assign(currentProfile, patch); },
+  }),
+);
+const openBecomeDealerModal    = lazyMethod(_ensureDealersPage, 'openBecomeDealerModal');
+const closeBecomeDealerModal   = lazyMethod(_ensureDealersPage, 'closeBecomeDealerModal');
+const selectDealerPlan         = lazyMethod(_ensureDealersPage, 'selectDealerPlan');
+const renderDealersPage        = lazyMethod(_ensureDealersPage, 'renderDealersPage');
+const toggleDealerGPS          = lazyMethod(_ensureDealersPage, 'toggleDealerGPS');
+const sortAndRenderDealers     = lazyMethod(_ensureDealersPage, 'sortAndRenderDealers');
+const renderBecomeDealerPage   = lazyMethod(_ensureDealersPage, 'renderBecomeDealerPage');
+const submitDealerApplication  = lazyMethod(_ensureDealersPage, 'submitDealerApplication');
+const openSubscriptionPortal   = lazyMethod(_ensureDealersPage, 'openSubscriptionPortal');
 
 window.openBecomeDealerModal   = openBecomeDealerModal;
 window.closeBecomeDealerModal  = closeBecomeDealerModal;
@@ -548,7 +669,9 @@ async function init() {
       checkEmailConfirmed();
       if (_event === 'SIGNED_IN' && isNewLogin) {
         loadBikes();
-        if (!localStorage.getItem('onboarded')) showOnboardingBanner();
+        if (!localStorage.getItem('onboarded')) {
+          import('./js/onboarding.js').then(m => m.showOnboardingBanner()).catch(() => {});
+        }
         checkSavedSearchNotifications();
       }
     } else {
@@ -1471,30 +1594,41 @@ supabase.auth.onAuthStateChange((_event, session) => {
    INDBAKKE
    ============================================================ */
 
-const {
-  renderMessages,
-  loadInbox, openThread, closeThread,
-  acceptBid, sendReply,
-  openInboxModal, closeInboxModal,
-  renderInboxPage, loadInboxPage, loadInboxModal,
-  openInboxThread, closeInboxThread,
-  updateInboxBadge,
-} = createInbox({
-  supabase, showToast, esc, safeAvatarUrl, getInitials,
-  retryHTML, btnLoading, updateSEOMeta,
-  renderQuickRepliesHTML,
-  getCurrentUser:    () => currentUser,
-  getCurrentProfile: () => currentProfile,
-  showDetailView,
-  showListingView,
-  navigateTo:        (...args) => navigateTo(...args),
-  openLoginModal:    () => openLoginModal(),
-  openRateModal:     (...args) => openRateModal(...args),
-  loadBikes:         (...args) => loadBikes(...args),
-  updateFilterCounts: (...args) => updateFilterCounts(...args),
-  getPendingInboxThread:   () => _pendingInboxThread,
-  clearPendingInboxThread: () => { _pendingInboxThread = null; },
-});
+// Inbox — lazy-loaded (kun når bruger åbner indbakke eller /inbox route)
+const _ensureInbox = lazyCtrl(
+  () => import('./js/inbox.js'),
+  'createInbox',
+  () => ({
+    supabase, showToast, esc, safeAvatarUrl, getInitials,
+    retryHTML, btnLoading, updateSEOMeta,
+    renderQuickRepliesHTML,
+    getCurrentUser:    () => currentUser,
+    getCurrentProfile: () => currentProfile,
+    showDetailView,
+    showListingView,
+    navigateTo:        (...args) => navigateTo(...args),
+    openLoginModal:    () => openLoginModal(),
+    openRateModal:     (...args) => openRateModal(...args),
+    loadBikes:         (...args) => loadBikes(...args),
+    updateFilterCounts: (...args) => updateFilterCounts(...args),
+    getPendingInboxThread:   () => _pendingInboxThread,
+    clearPendingInboxThread: () => { _pendingInboxThread = null; },
+  }),
+);
+const renderMessages   = lazyMethod(_ensureInbox, 'renderMessages');
+const loadInbox        = lazyMethod(_ensureInbox, 'loadInbox');
+const openThread       = lazyMethod(_ensureInbox, 'openThread');
+const closeThread      = lazyMethod(_ensureInbox, 'closeThread');
+const acceptBid        = lazyMethod(_ensureInbox, 'acceptBid');
+const sendReply        = lazyMethod(_ensureInbox, 'sendReply');
+const openInboxModal   = lazyMethod(_ensureInbox, 'openInboxModal');
+const closeInboxModal  = lazyMethod(_ensureInbox, 'closeInboxModal');
+const renderInboxPage  = lazyMethod(_ensureInbox, 'renderInboxPage');
+const loadInboxPage    = lazyMethod(_ensureInbox, 'loadInboxPage');
+const loadInboxModal   = lazyMethod(_ensureInbox, 'loadInboxModal');
+const openInboxThread  = lazyMethod(_ensureInbox, 'openInboxThread');
+const closeInboxThread = lazyMethod(_ensureInbox, 'closeInboxThread');
+const updateInboxBadge = lazyMethod(_ensureInbox, 'updateInboxBadge');
 
 window.loadInbox          = loadInbox;
 window.openThread         = openThread;
@@ -1545,7 +1679,7 @@ window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
-window.dismissOnboarding    = dismissOnboarding;
+window.dismissOnboarding    = lazyExport(() => import('./js/onboarding.js'), 'dismissOnboarding');
 window.useQuickReply        = useQuickReply;
 window.toggleNearMe         = toggleNearMe;
 window.updateNearMeRadius   = updateNearMeRadius;
@@ -1697,7 +1831,11 @@ window.submitContactForm       = submitContactForm;
    ============================================================ */
 
 
-function renderStaticPage(type) {
+async function renderStaticPage(type) {
+  const [{ renderStaticPageView }, { footerContent }] = await Promise.all([
+    import('./js/static-pages.js'),
+    import('./js/static-pages-content.js'),
+  ]);
   return renderStaticPageView(type, {
     footerContent,
     showListingView,
@@ -1717,11 +1855,14 @@ async function submitContactForm() { return _submitContactForm(showToast); }
    ADMIN PANEL
    ============================================================ */
 
-const { openAdminPanel, closeAdminPanel, switchAdminTab } = createAdminPanelUI({
-  loadDealerApplications,
-  loadAllUsers,
-  loadIdApplications,
-});
+const _ensureAdminPanel = lazyCtrl(
+  () => import('./js/admin-panel-ui.js'),
+  'createAdminPanelUI',
+  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications }),
+);
+const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
+const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
+const switchAdminTab  = lazyMethod(_ensureAdminPanel, 'switchAdminTab');
 
 async function loadDealerApplications() {
   var list = document.getElementById('admin-applications-list');
