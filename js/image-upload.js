@@ -19,11 +19,20 @@ export function createImageUpload({
 
   // ── Crop ──────────────────────────────────────────────────
 
-  function openCropModal(mode, index) {
+  async function openCropModal(mode, index) {
     const list = mode === 'sell' ? selectedFiles : getEditNewFiles();
     const item = list?.[index];
     if (!item || !item.url) { showToast('❌ Kunne ikke åbne beskæring'); return; }
-    if (typeof Cropper === 'undefined') { showToast('❌ Cropper-biblioteket er ikke indlæst endnu — prøv igen'); return; }
+
+    if (typeof Cropper === 'undefined') {
+      try {
+        const { ensureCropper } = await import('./asset-loader.js');
+        await ensureCropper();
+      } catch {
+        showToast('❌ Kunne ikke loade Cropper-biblioteket');
+        return;
+      }
+    }
 
     _cropContext = { mode, index, originalUrl: item.url };
 
@@ -259,7 +268,7 @@ export function createImageUpload({
 
       const { error } = await supabase.storage
         .from('bike-images')
-        .upload(filename, item.file, { contentType: item.file.type, upsert: false });
+        .upload(filename, item.file, { contentType: item.file.type, upsert: false, cacheControl: '2592000' });
 
       if (error) { console.error('Upload fejl:', error); failed++; continue; }
 

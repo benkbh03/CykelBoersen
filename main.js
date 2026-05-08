@@ -2,10 +2,12 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm } from './js/utils.js';
+import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
+import { ensureLeaflet, ensureCropper, ensureProfilePageCss, ensureMapCss } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
-import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES } from './js/config.js';
+import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED } from './js/config.js';
+setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
@@ -164,7 +166,7 @@ const {
   loadBikesWithFilters,
 } = createBikesList({
   supabase, BIKES_PAGE_SIZE,
-  esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML,
+  esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, transformImageUrl,
   updateActiveFiltersBar, updateCykelagentCta, applyNearMeFilter, hasActiveFilters, describeActiveFilters,
   getBikesOffset:       () => bikesOffset,
   setBikesOffset:       v => { bikesOffset = v; },
@@ -303,9 +305,13 @@ const {
   editSetNewPrimary, editRemoveNew, saveEditedListing,
 } = listingEdit;
 
-// Map page — lazy-loaded (kun /kort route)
+// Map page — lazy-loaded (kun /kort route). Loader også Leaflet + map CSS samtidig.
 const _ensureMapPage = lazyCtrl(
-  () => import('./js/map-page.js'),
+  () => Promise.all([
+    import('./js/map-page.js'),
+    ensureLeaflet(),
+    ensureMapCss(),
+  ]).then(([mod]) => mod),
   'createMapPage',
   () => ({
     supabase,
@@ -397,13 +403,17 @@ const showSellTermsModal         = lazyMethod(_ensureSellPage, 'showSellTermsMod
 
 // Bike detail — lazy-loaded (kun ved /bike/:id route eller åbning af bike-modal)
 // Ved første load kører setupLightboxEvents + registerWindowExports.
+// Leaflet bruges til lokations-kort i bike-modal.
 const _ensureBikeDetail = lazyCtrl(
-  () => import('./js/bike-detail.js'),
+  () => Promise.all([
+    import('./js/bike-detail.js'),
+    ensureLeaflet(),
+  ]).then(([mod]) => mod),
   'createBikeDetail',
   () => ({
     supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen,
     haversineKm, BASE_URL, removeBikeJsonLd, updateSEOMeta, retryHTML,
-    stableOffset, bikeCache, geocodeAddress, geocodeCity,
+    stableOffset, bikeCache, geocodeAddress, geocodeCity, transformImageUrl,
     openUserProfile,
     openDealerProfile,
     getUserSavedSet:      () => _userSavedSet,
@@ -459,9 +469,12 @@ const sendMessage                = lazyMethod(_ensureBikeDetail, 'sendMessage');
 const sendBid                    = lazyMethod(_ensureBikeDetail, 'sendBid');
 const toggleSaveFromModal        = lazyMethod(_ensureBikeDetail, 'toggleSaveFromModal');
 
-// Profile pages — lazy-loaded (kun /profile/:id og /dealer/:id ruter)
+// Profile pages — lazy-loaded (kun /profile/:id og /dealer/:id ruter). Loader også profile CSS.
 const _ensureProfilePages = lazyCtrl(
-  () => import('./js/profile-pages.js'),
+  () => Promise.all([
+    import('./js/profile-pages.js'),
+    ensureProfilePageCss(),
+  ]).then(([mod]) => mod),
   'createProfilePages',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials, formatLastSeen,
@@ -480,9 +493,12 @@ const navigateToProfile       = lazyMethod(_ensureProfilePages, 'navigateToProfi
 const navigateToDealer        = lazyMethod(_ensureProfilePages, 'navigateToDealer');
 const renderProfileSkeleton   = lazyMethod(_ensureProfilePages, 'renderProfileSkeleton');
 
-// My profile page — lazy-loaded (kun /me route)
+// My profile page — lazy-loaded (kun /me route). Loader også profile CSS.
 const _ensureMyProfilePage = lazyCtrl(
-  () => import('./js/my-profile-page.js'),
+  () => Promise.all([
+    import('./js/my-profile-page.js'),
+    ensureProfilePageCss(),
+  ]).then(([mod]) => mod),
   'createMyProfilePage',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials,

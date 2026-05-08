@@ -44,18 +44,22 @@
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+  <!-- Kritisk CSS (blokerer render) — kun 01-base + 02-listings er nødvendige for forsiden -->
   <link rel="stylesheet" href="css/01-base.css">
   <link rel="stylesheet" href="css/02-listings.css">
-  <link rel="stylesheet" href="css/03-profiles.css">
-  <link rel="stylesheet" href="css/04-modals.css">
-  <link rel="stylesheet" href="css/05-pages.css">
-  <link rel="stylesheet" href="css/06-profile-page.css">
-  <link rel="stylesheet" href="css/07-map.css">
-  <!-- Ikke-kritisk CSS: load med media=print + onload-swap så de ikke blokerer first paint -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" media="print" onload="this.media='all'">
+  <!-- Ikke-kritisk CSS — load med media=print swap så de ikke blokerer first paint -->
+  <link rel="stylesheet" href="css/03-profiles.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/04-modals.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/05-pages.css" media="print" onload="this.media='all'">
+  <!-- 06-profile-page.css og 07-map.css loades først ved deres respektive ruter (lazy via JS) -->
+  <noscript>
+    <link rel="stylesheet" href="css/03-profiles.css">
+    <link rel="stylesheet" href="css/04-modals.css">
+    <link rel="stylesheet" href="css/05-pages.css">
+    <link rel="stylesheet" href="css/06-profile-page.css">
+    <link rel="stylesheet" href="css/07-map.css">
+  </noscript>
+  <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -145,7 +149,7 @@
     <div class="logo" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" style="cursor:pointer;" role="link" aria-label="Cykelbørsen – gå til forsiden" tabindex="0">Cykel<span>børsen</span></div>
     <div class="nav-links">
       <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')" aria-label="Se forhandlere">Forhandlere</a>
-      <a class="btn-sell" onclick="openModal()" aria-label="Opret annonce og sæt din cykel til salg">+ Sæt til salg</a>
+      <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg">+ Sæt til salg</a>
       <div class="nav-admin" id="nav-admin" style="display:none;">
         <button class="nav-admin-btn" onclick="openAdminPanel()" aria-label="Åbn admin panel">⚙️</button>
       </div>
@@ -1397,8 +1401,8 @@
       </div>
       <div id="chat-input-area">
         <textarea id="chat-input" placeholder="Skriv dit spørgsmål..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-        <button id="chat-send-btn" onclick="sendChatMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <button id="chat-send-btn" onclick="sendChatMessage()" aria-label="Send besked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
     </div>
@@ -1515,9 +1519,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js" defer></script>
+  <!-- Leaflet, MarkerCluster og Cropper loades on-demand fra main.js — IKKE eagerly -->
   <script type="module" src="main.js"></script>
 </body>
 </html>

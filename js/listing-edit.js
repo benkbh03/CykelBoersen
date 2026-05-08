@@ -265,7 +265,7 @@ export function createListingEdit({
     for (const item of editNewFiles) {
       const ext      = item.file.name.split('.').pop();
       const filename = `${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadErr } = await supabase.storage.from('bike-images').upload(filename, item.file, { contentType: item.file.type });
+      const { error: uploadErr } = await supabase.storage.from('bike-images').upload(filename, item.file, { contentType: item.file.type, cacheControl: '2592000' });
       if (uploadErr) { showToast('❌ Kunne ikke uploade et billede'); console.error(uploadErr); return; }
       const { data: { publicUrl } } = supabase.storage.from('bike-images').getPublicUrl(filename);
       const { data: insertedRow, error: insertErr } = await supabase

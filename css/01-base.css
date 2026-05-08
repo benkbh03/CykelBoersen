@@ -12,7 +12,7 @@
   --forest-2:     #1F2E22;
   --cream:        #FEFAF3;
   --charcoal:     #1A1A18;
-  --muted:        #8A8578;
+  --muted:        #6B6557; /* WCAG AA på hvid baggrund (≥4.5:1) — tidligere #8A8578 fejlede */
   --border:       #DDD8CE;
 }
 
@@ -76,7 +76,7 @@ nav {
   color: var(--sand);
   letter-spacing: -0.5px;
 }
-.logo span { color: var(--rust-light); }
+.logo span { color: #FF8B60; } /* Lysere rust til AA-kontrast på mørk forest header */
 .nav-links { display: flex; gap: 32px; align-items: center; }
 .nav-links a {
   color: var(--sand);

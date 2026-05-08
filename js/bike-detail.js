@@ -33,6 +33,7 @@ export function createBikeDetail({
   geocodeAddress,
   geocodeCity,
   setPendingInboxThread,
+  transformImageUrl = (u) => u,
 }) {
 
   /* ── Module-local state ── */
@@ -719,11 +720,12 @@ export function createBikeDetail({
       } // Ingen andre annoncer — skjul sektionen
 
       const cards = data.map(bike => {
-        const img = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
+        const rawImg = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
+        const img = rawImg ? transformImageUrl(rawImg, { width: 300, quality: 75 }) : '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
-              ${img ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy">` : '<span style="font-size:2rem">🚲</span>'}
+              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">🚲</span>'}
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
@@ -766,11 +768,12 @@ export function createBikeDetail({
       }
 
       const cards = data.map(bike => {
-        const img = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
+        const rawImg = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
+        const img = rawImg ? transformImageUrl(rawImg, { width: 300, quality: 75 }) : '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
-              ${img ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy">` : '<span style="font-size:2rem">🚲</span>'}
+              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">🚲</span>'}
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
