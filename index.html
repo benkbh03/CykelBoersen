@@ -831,7 +831,15 @@
 
           <div class="form-grid" style="grid-template-columns:1fr;">
             <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleLogin()"></div>
-            <div class="form-group"><label>Adgangskode</label><input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+            <div class="form-group">
+              <label>Adgangskode</label>
+              <div class="pw-input-wrap">
+                <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleLogin()">
+                <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('login-password', this)" aria-label="Vis adgangskode">
+                  <svg class="pw-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
           </div>
           <button id="login-btn" class="form-submit" onclick="handleLogin()">Log ind</button>
           <button class="btn-back-login" onclick="switchTab('forgot')">Glemt adgangskode?</button>
@@ -859,7 +867,19 @@
           <div class="form-grid" style="grid-template-columns:1fr;">
             <div class="form-group"><label>Navn</label><input type="text" id="register-name" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')handleRegister()"></div>
             <div class="form-group"><label>Email</label><input type="email" id="register-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleRegister()"></div>
-            <div class="form-group"><label>Adgangskode</label><input type="password" id="register-password" placeholder="Mindst 6 tegn" onkeydown="if(event.key==='Enter')handleRegister()"></div>
+            <div class="form-group">
+              <label>Adgangskode</label>
+              <div class="pw-input-wrap">
+                <input type="password" id="register-password" placeholder="Mindst 8 tegn" oninput="updatePwStrength('register-password','register-pw-strength')" onkeydown="if(event.key==='Enter')handleRegister()">
+                <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('register-password', this)" aria-label="Vis adgangskode">
+                  <svg class="pw-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div class="pw-strength" id="register-pw-strength" style="display:none;">
+                <div class="pw-strength-bar"><div class="pw-strength-fill"></div></div>
+                <div class="pw-strength-label"></div>
+              </div>
+            </div>
           </div>
           <button id="register-btn" class="form-submit" onclick="handleRegister()">Opret konto</button>
           <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">Ved at oprette en konto accepterer du vores <a onclick="closeLoginModal();navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="closeLoginModal();navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.</p>
@@ -1086,7 +1106,16 @@
         <div class="form-grid" style="grid-template-columns:1fr;">
           <div class="form-group">
             <label>Ny adgangskode</label>
-            <input type="password" id="reset-pw1" placeholder="Mindst 6 tegn" onkeydown="if(event.key==='Enter')handleResetPassword()">
+            <div class="pw-input-wrap">
+              <input type="password" id="reset-pw1" placeholder="Mindst 8 tegn" oninput="updatePwStrength('reset-pw1','reset-pw-strength')" onkeydown="if(event.key==='Enter')handleResetPassword()">
+              <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('reset-pw1', this)" aria-label="Vis adgangskode">
+                <svg class="pw-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="reset-pw-strength" style="display:none;">
+              <div class="pw-strength-bar"><div class="pw-strength-fill"></div></div>
+              <div class="pw-strength-label"></div>
+            </div>
           </div>
           <div class="form-group">
             <label>Gentag adgangskode</label>

@@ -127,6 +127,57 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--forest); }
 .form-group textarea { resize: vertical; min-height: 90px; }
+
+/* ── Password input med vis/skjul-toggle ── */
+.pw-input-wrap { position: relative; display: block; }
+.pw-input-wrap input {
+  width: 100%;
+  padding-right: 44px !important;
+  box-sizing: border-box;
+}
+.pw-toggle {
+  position: absolute;
+  right: 4px; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.pw-toggle:hover { color: var(--charcoal); background: var(--sand); }
+.pw-toggle--shown { color: var(--forest); }
+
+/* ── Password strength indicator ── */
+.pw-strength { margin-top: 8px; }
+.pw-strength-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pw-strength-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  transition: width 0.25s, background 0.25s;
+}
+.pw-strength-fill[data-tier="too-short"] { background: #c0392b; }
+.pw-strength-fill[data-tier="weak"]      { background: #c0392b; }
+.pw-strength-fill[data-tier="medium"]    { background: #e8a82d; }
+.pw-strength-fill[data-tier="strong"]    { background: #2a7d4f; }
+.pw-strength-label {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 500;
+}
 .form-submit {
   background: var(--rust); color: #fff; border: none;
   padding: 15px; border-radius: 8px; font-size: 0.95rem;

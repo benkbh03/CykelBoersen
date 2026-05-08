@@ -1366,6 +1366,49 @@ function selectHeroCatChip(el, type) {
 }
 
 // SPA navigation helper — pushState + route handling
+/* ============================================================
+   PASSWORD UI HELPERS
+   ============================================================ */
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  if (btn) {
+    btn.setAttribute('aria-label', isHidden ? 'Skjul adgangskode' : 'Vis adgangskode');
+    btn.classList.toggle('pw-toggle--shown', isHidden);
+  }
+}
+
+function updatePwStrength(inputId, wrapId) {
+  const input = document.getElementById(inputId);
+  const wrap  = document.getElementById(wrapId);
+  if (!input || !wrap) return;
+  const v = input.value || '';
+  if (!v) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  const fill  = wrap.querySelector('.pw-strength-fill');
+  const label = wrap.querySelector('.pw-strength-label');
+  // Score: længde + variation
+  let score = 0;
+  if (v.length >= 8)  score++;
+  if (v.length >= 12) score++;
+  if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+  if (/\d/.test(v))     score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  // 0-1: weak, 2-3: medium, 4-5: strong
+  const tier = v.length < 8 ? 'too-short' : score <= 1 ? 'weak' : score <= 3 ? 'medium' : 'strong';
+  const labels = {
+    'too-short': `🔴 Mindst 8 tegn (du har ${v.length})`,
+    weak:        '🔴 Svag — gør den længere',
+    medium:      '🟡 OK — kan gøres stærkere',
+    strong:      '🟢 Stærkt password ✓',
+  };
+  const widths = { 'too-short': '20%', weak: '35%', medium: '65%', strong: '100%' };
+  if (fill)  { fill.style.width = widths[tier]; fill.dataset.tier = tier; }
+  if (label) label.textContent = labels[tier];
+}
+
 function navigateTo(path) {
   document.body.classList.remove('on-sell-page');
   history.pushState({}, '', path);
@@ -1726,7 +1769,7 @@ async function handleResetPassword() {
   const pw1 = document.getElementById('reset-pw1').value;
   const pw2 = document.getElementById('reset-pw2').value;
 
-  if (!pw1 || pw1.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
+  if (!pw1 || pw1.length < 8) { showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return; }
   if (pw1 !== pw2)             { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
 
   const btn = document.querySelector('[onclick="handleResetPassword()"]');
@@ -1849,6 +1892,8 @@ window.blockIfPendingDealer = blockIfPendingDealer;
 window.closeModal        = closeModal;
 window.selectType        = selectType;
 window.submitListing     = submitListing;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.updatePwStrength = updatePwStrength;
 window.openLoginModal    = openLoginModal;
 window.signInWithGoogle  = signInWithGoogle;
 window.closeLoginModal   = closeLoginModal;

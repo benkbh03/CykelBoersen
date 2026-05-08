@@ -63,7 +63,7 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
     const email    = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
     if (!name || !email || !password) { showToast('⚠️ Udfyld alle felter'); return; }
-    if (password.length < 6) { showToast('⚠️ Adgangskode skal være mindst 6 tegn'); return; }
+    if (password.length < 8) { showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return; }
     const restore = btnLoading('register-btn', 'Opretter konto...');
     try {
       const { error } = await supabase.auth.signUp({

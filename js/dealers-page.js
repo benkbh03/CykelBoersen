@@ -391,7 +391,19 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         </div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
           <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>Adgangskode *</label><input type="password" id="dealer-password" placeholder="Min. 6 tegn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group">
+            <label>Adgangskode *</label>
+            <div class="pw-input-wrap">
+              <input type="password" id="dealer-password" placeholder="Mindst 8 tegn" oninput="updatePwStrength('dealer-password','dealer-pw-strength')" onkeydown="if(event.key==='Enter')submitDealerApplication()">
+              <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('dealer-password', this)" aria-label="Vis adgangskode">
+                <svg class="pw-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="dealer-pw-strength" style="display:none;">
+              <div class="pw-strength-bar"><div class="pw-strength-fill"></div></div>
+              <div class="pw-strength-label"></div>
+            </div>
+          </div>
         </div>
         <p class="bd-auth-note">Vi opretter automatisk en forhandlerkonto med din email. Tjek din indbakke for at bekræfte.</p>
         ` : `
@@ -450,9 +462,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         restore();
         showToast('⚠️ Udfyld email og adgangskode'); return;
       }
-      if (password.length < 6) {
+      if (password.length < 8) {
         restore();
-        showToast('⚠️ Adgangskoden skal være mindst 6 tegn'); return;
+        showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return;
       }
 
       const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
