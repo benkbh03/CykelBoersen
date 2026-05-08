@@ -199,7 +199,7 @@ serve(async (req) => {
         </a>
       `);
 
-      await sendEmail("benkbh03@gmail.com", `🏪 Ny forhandleransøgning: ${shop_name ?? email} – Cykelbørsen`, html);
+      await sendEmail(ADMIN_EMAIL, `🏪 Ny forhandleransøgning: ${shop_name ?? email} – Cykelbørsen`, html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
