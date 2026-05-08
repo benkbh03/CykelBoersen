@@ -363,6 +363,15 @@ nav {
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: 600;
 }
+.search-hero-title .hero-brand {
+  font-style: normal;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+.search-hero-title .hero-brand-rust {
+  color: #FF8B60;
+}
 .search-hero-sub {
   color: rgba(245,240,232,0.96); font-size: 1rem; font-weight: 400;
   line-height: 1.55; max-width: 480px; margin: 0 auto;
