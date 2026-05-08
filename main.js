@@ -973,6 +973,7 @@ async function init() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     // Tjek modaler i prioriteret rækkefølge (inderste/øverste først)
+    if (document.getElementById('sidebar-filters')?.classList.contains('mobile-open')) { closeMobileFilters(); return; }
     if (document.getElementById('share-modal')?.classList.contains('open'))      { closeShareModal(); return; }
     if (document.getElementById('admin-modal')?.classList.contains('open'))      { closeAdminPanel(); return; }
     if (document.getElementById('edit-modal')?.classList.contains('open'))       { closeEditModal(); return; }
@@ -1451,6 +1452,23 @@ function toggleSidebarSection(header) {
   header.setAttribute('aria-expanded', !expanded);
 }
 
+function openMobileFilters() {
+  const sidebar = document.getElementById('sidebar-filters');
+  const overlay = document.getElementById('mobile-filter-overlay');
+  if (!sidebar) return;
+  sidebar.classList.add('mobile-open');
+  if (overlay) overlay.classList.add('open');
+  document.body.classList.add('mobile-filters-open');
+}
+
+function closeMobileFilters() {
+  const sidebar = document.getElementById('sidebar-filters');
+  const overlay = document.getElementById('mobile-filter-overlay');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+  if (overlay) overlay.classList.remove('open');
+  document.body.classList.remove('mobile-filters-open');
+}
+
 function applyFilters() {
   // Sælgertype — hvis "alle" er checket, ignorer de andre
   const sellerAll     = document.querySelector('[data-filter="seller"][data-value="all"]');
@@ -1894,6 +1912,8 @@ window.resetQuiz              = resetQuiz;
 window.applyQuizResult        = applyQuizResult;
 window.suggestChildBikeSize   = suggestChildBikeSize;
 window.toggleSidebarSection   = toggleSidebarSection;
+window.openMobileFilters      = openMobileFilters;
+window.closeMobileFilters     = closeMobileFilters;
 window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;

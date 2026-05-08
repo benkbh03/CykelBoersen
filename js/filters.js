@@ -97,7 +97,7 @@ export function createFilters({
   function updateActiveFiltersBar() {
     const bar = document.getElementById('active-filters-bar');
     if (!bar) return;
-    if (!hasActiveFilters()) { bar.style.display = 'none'; return; }
+    if (!hasActiveFilters()) { bar.style.display = 'none'; updateMobileFilterCount(0); return; }
 
     const cf = getCurrentFilters();
     const args = getCurrentFilterArgs();
@@ -133,6 +133,18 @@ export function createFilters({
       </div>
       <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
     `;
+    updateMobileFilterCount(pills.length);
+  }
+
+  function updateMobileFilterCount(count) {
+    const badge = document.getElementById('mobile-filter-count');
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = String(count);
+      badge.style.display = 'inline-flex';
+    } else {
+      badge.style.display = 'none';
+    }
   }
 
   function removeFilterPill(type, value) {
