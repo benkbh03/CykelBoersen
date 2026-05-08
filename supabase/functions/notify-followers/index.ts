@@ -50,6 +50,23 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    // ── Verificér caller-JWT ─────────────────────────────────
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace(/^Bearer\s+/i, "");
+    if (!jwt) {
+      return new Response(JSON.stringify({ error: "Ikke logget ind" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const { data: { user: caller }, error: authErr } = await supa.auth.getUser(jwt);
+    if (authErr || !caller) {
+      return new Response(JSON.stringify({ error: "Ugyldig session" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { bike_id, dealer_id } = await req.json();
     if (!bike_id || !dealer_id) {
       return new Response(JSON.stringify({ error: "bike_id og dealer_id påkrævet" }), {
@@ -57,16 +74,51 @@ serve(async (req) => {
       });
     }
 
-    const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    // ── Verificér ejerskab + once-per-bike guard ─────────────
+    const { data: bikeRow } = await supa
+      .from("bikes")
+      .select("id, user_id, brand, model, price, type, year, city, notify_sent_at, created_at")
+      .eq("id", bike_id)
+      .single();
 
-    const [{ data: bike }, { data: dealer }, { data: followers }] = await Promise.all([
-      supa.from("bikes").select("id, brand, model, price, type, year, city").eq("id", bike_id).single(),
+    if (!bikeRow) {
+      return new Response(JSON.stringify({ error: "Annonce ikke fundet" }), {
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (bikeRow.user_id !== dealer_id || caller.id !== dealer_id) {
+      return new Response(JSON.stringify({ error: "Ikke ejer af annoncen" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (bikeRow.notify_sent_at) {
+      return new Response(JSON.stringify({ ok: true, sent: 0, reason: "already_notified" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Annoncen skal være oprettet inden for sidste 10 min — forhindrer
+    // re-notifikation efter sletning/genoprettelse for samme følgere
+    const ageMs = Date.now() - new Date(bikeRow.created_at).getTime();
+    if (ageMs > 10 * 60 * 1000) {
+      return new Response(JSON.stringify({ ok: true, sent: 0, reason: "too_old" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Markér annoncen som notificeret FØR vi sender — atomic guard
+    await supa.from("bikes").update({ notify_sent_at: new Date().toISOString() }).eq("id", bike_id);
+
+    const [{ data: dealer }, { data: followers }] = await Promise.all([
       supa.from("profiles").select("id, shop_name, name").eq("id", dealer_id).single(),
       supa.from("dealer_followers").select("user_id").eq("dealer_id", dealer_id),
     ]);
 
-    if (!bike || !dealer) {
-      return new Response(JSON.stringify({ error: "Annonce eller forhandler ikke fundet" }), {
+    const bike = bikeRow;
+    if (!dealer) {
+      return new Response(JSON.stringify({ error: "Forhandler ikke fundet" }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

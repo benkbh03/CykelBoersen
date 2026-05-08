@@ -870,10 +870,10 @@ async function init() {
     // init() har allerede fuldført dealer-setup hvis user_metadata.pending_dealer var sat
     const isPendingDealer = currentProfile?.seller_type === 'dealer' && currentProfile?.verified === false;
 
-    if (currentUser && !isPendingDealer) {
-      supabase.from('profiles').update({ email_verified: true }).eq('id', currentUser.id).then(() => {
-        if (currentProfile) currentProfile.email_verified = true;
-      });
+    // email_verified synkroniseres automatisk fra auth.users via DB-trigger.
+    // Vi opdaterer bare lokal cache så UI'en straks afspejler det.
+    if (currentUser && !isPendingDealer && currentProfile) {
+      currentProfile.email_verified = true;
     }
 
     if (isPendingDealer) {
@@ -2058,9 +2058,19 @@ async function loadAllUsers() {
   }).join('');
 }
 
+async function _callAdminAction(action, targetUserId) {
+  const { data, error } = await supabase.functions.invoke('admin-actions', {
+    body: { action, target_user_id: targetUserId },
+  });
+  if (error || data?.error) {
+    return { ok: false, error: data?.error || error?.message || 'Ukendt fejl' };
+  }
+  return { ok: true };
+}
+
 async function approveDealer(userId) {
-  var err = (await supabase.from('profiles').update({ verified: true }).eq('id', userId)).error;
-  if (err) { showToast('❌ Kunne ikke godkende forhandler'); return; }
+  const res = await _callAdminAction('approve_dealer', userId);
+  if (!res.ok) { showToast('❌ ' + res.error); return; }
   showToast('✅ Forhandler godkendt og verificeret!');
   loadDealerApplications();
   loadAllUsers();
@@ -2068,16 +2078,16 @@ async function approveDealer(userId) {
 
 async function rejectDealer(userId) {
   if (!confirm('Afvis denne ansøgning og fjern forhandlerstatus?')) return;
-  var err = (await supabase.from('profiles').update({ seller_type: 'private', verified: false }).eq('id', userId)).error;
-  if (err) { showToast('❌ Kunne ikke afvise'); return; }
+  const res = await _callAdminAction('reject_dealer', userId);
+  if (!res.ok) { showToast('❌ ' + res.error); return; }
   showToast('🗑️ Ansøgning afvist');
   loadDealerApplications();
 }
 
 async function revokeDealer(userId) {
   if (!confirm('Fjern verificering fra denne forhandler?')) return;
-  var err = (await supabase.from('profiles').update({ verified: false }).eq('id', userId)).error;
-  if (err) { showToast('❌ Fejl'); return; }
+  const res = await _callAdminAction('revoke_dealer', userId);
+  if (!res.ok) { showToast('❌ ' + res.error); return; }
   showToast('Verificering fjernet');
   loadAllUsers();
 }
@@ -2206,17 +2216,13 @@ async function loadIdApplications() {
 }
 
 async function approveId(userId) {
-  var err = (await supabase.from('profiles').update({
-    id_verified: true,
-    id_pending:  false,
-  }).eq('id', userId)).error;
-  if (err) { showToast('❌ Fejl'); return; }
+  const res = await _callAdminAction('approve_id', userId);
+  if (!res.ok) { showToast('❌ ' + res.error); return; }
   showToast('✅ ID godkendt — bruger har nu et blåt badge');
   loadIdApplications();
   supabase.functions.invoke('notify-message', {
     body: { type: 'id_approved', user_id: userId },
   }).catch(() => {});
-  // Hvis den godkendte bruger er den indloggede, opdater cache
   if (currentUser && currentUser.id === userId) {
     currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
     updateVerifyUI();
@@ -2226,11 +2232,8 @@ async function approveId(userId) {
 
 async function rejectId(userId) {
   if (!confirm('Afvis denne ID-ansøgning?')) return;
-  var err = (await supabase.from('profiles').update({
-    id_pending:  false,
-    id_doc_url:  null,
-  }).eq('id', userId)).error;
-  if (err) { showToast('❌ Fejl'); return; }
+  const res = await _callAdminAction('reject_id', userId);
+  if (!res.ok) { showToast('❌ ' + res.error); return; }
   showToast('ID-ansøgning afvist');
   loadIdApplications();
   supabase.functions.invoke('notify-message', {

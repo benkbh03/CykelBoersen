@@ -75,11 +75,27 @@ async function sendChatMessage() {
   showTyping();
 
   try {
+    // Hent brugerens session-JWT — chat kræver login server-side
+    let userJwt = null;
+    try {
+      const { supabase } = await import('./supabase-client.js');
+      const { data: { session } } = await supabase.auth.getSession();
+      userJwt = session?.access_token || null;
+    } catch { /* ignorer */ }
+
+    if (!userJwt) {
+      removeTyping();
+      appendChatMsg('bot', 'Log ind for at bruge support-chatten.');
+      chatHistory.pop();
+      sendBtn.disabled = false;
+      return;
+    }
+
     const res = await fetch(CHAT_FUNCTION_URL, {
       method: 'POST',
       headers: {
         'Content-Type':  'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Authorization': `Bearer ${userJwt}`,
         'apikey':        SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({ messages: chatHistory }),
@@ -89,7 +105,10 @@ async function sendChatMessage() {
 
     removeTyping();
 
-    if (!res.ok || data.error) {
+    if (res.status === 429) {
+      appendChatMsg('bot', 'Du har sendt for mange beskeder. Prøv igen om en time.');
+      chatHistory.pop();
+    } else if (!res.ok || data.error) {
       appendChatMsg('bot', 'Beklager, noget gik galt. Prøv igen om lidt.');
       chatHistory.pop();
     } else {
