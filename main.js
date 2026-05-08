@@ -572,6 +572,29 @@ async function init() {
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
   });
 
+  // By/postnummer-autocomplete via DAWA på hero-søgefeltet
+  const searchCityInput = document.getElementById('search-city');
+  const searchCityClear = document.getElementById('search-city-clear');
+  if (searchCityInput) {
+    attachCityAutocomplete(searchCityInput, () => searchBikes());
+    const updateClearBtn = () => {
+      if (searchCityClear) searchCityClear.hidden = !searchCityInput.value;
+    };
+    searchCityInput.addEventListener('input', updateClearBtn);
+    if (searchCityClear) {
+      searchCityClear.addEventListener('click', () => {
+        searchCityInput.value = '';
+        delete searchCityInput.dataset.dawaLat;
+        delete searchCityInput.dataset.dawaLng;
+        delete searchCityInput.dataset.dawaPostcode;
+        updateClearBtn();
+        searchBikes();
+        searchCityInput.focus();
+      });
+    }
+    updateClearBtn();
+  }
+
   // Start offentlig data med det samme – venter ikke på auth
   const sessionPromise = supabase.auth.getSession();
   loadBikes();
