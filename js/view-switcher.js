@@ -18,3 +18,21 @@ export function setMainView(view, deps) {
     if (btnList)  btnList.classList.add('active');
   }
 }
+
+export function showDetailView() {
+  const landingLayout = document.getElementById('landing-layout');
+  const pageLayout    = document.getElementById('page-layout');
+  if (landingLayout) landingLayout.style.display = 'none';
+  if (pageLayout)    pageLayout.style.display    = 'block';
+}
+
+export function showListingView({ updateSEOMeta, removeBikeJsonLd } = {}) {
+  const landingLayout = document.getElementById('landing-layout');
+  const pageLayout    = document.getElementById('page-layout');
+  if (pageLayout)    pageLayout.style.display    = 'none';
+  if (landingLayout) landingLayout.style.display = '';
+  document.body.classList.remove('is-mp-mobile');
+  document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
+  if (updateSEOMeta) updateSEOMeta(null, '/');
+  if (removeBikeJsonLd) removeBikeJsonLd();
+}
