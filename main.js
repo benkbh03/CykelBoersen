@@ -1440,18 +1440,22 @@ function handleRoute() {
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderStaticPage(staticMatch);
   } else if (dealerApply) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderBecomeDealerPage();
   } else if (dealersMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderDealersPage();
   } else if (mapPageMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     document.body.classList.add('map-page-view');
     const mapBikeId = new URLSearchParams(window.location.search).get('bike');
     if (mapBikeId) history.replaceState(null, '', '/kort');
@@ -1460,26 +1464,32 @@ function handleRoute() {
   } else if (inboxMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderInboxPage();
   } else if (meMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderMyProfilePage();
   } else if (sellMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderSellPage();
   } else if (bikeMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderBikePage(bikeMatch[1]);
   } else if (profileMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderUserProfilePage(profileMatch[1]);
   } else if (dealerMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
     renderDealerProfilePage(dealerMatch[1]);
   } else {
     showListingView();
