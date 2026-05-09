@@ -1011,6 +1011,65 @@ nav {
   font-weight: 700;
   color: var(--charcoal);
 }
+.fit-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fit-info-btn {
+  background: var(--sand);
+  border: 1.5px solid var(--border);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.fit-info-btn:hover, .fit-info-btn:focus {
+  border-color: var(--forest);
+  color: var(--forest);
+  background: #fff;
+}
+.fit-disclaimer {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 10px 0 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+.fit-info-popup {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--charcoal);
+  animation: fit-info-fade-in 0.2s ease;
+}
+.fit-info-popup p { margin: 0 0 8px; }
+.fit-info-popup p:last-child { margin-bottom: 0; }
+.fit-info-popup ul {
+  margin: 6px 0 10px;
+  padding-left: 18px;
+  display: flex; flex-direction: column;
+  gap: 4px;
+}
+.fit-info-popup strong { color: var(--charcoal); }
+@keyframes fit-info-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Theft check tip ─────────────────────────────── */
 .theft-check-tip {

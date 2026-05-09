@@ -1717,6 +1717,17 @@ function toggleSizeInfo() {
   }
 }
 
+function toggleSizeFitInfo() {
+  const popup = document.getElementById('fit-info-popup');
+  if (!popup) return;
+  const visible = popup.style.display !== 'none';
+  popup.style.display = visible ? 'none' : 'block';
+  if (!visible) {
+    const close = (e) => { if (!e.target.closest('#fit-info-popup') && !e.target.closest('.fit-info-btn')) { popup.style.display = 'none'; document.removeEventListener('click', close); } };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+}
+
 function toggleWheelInfo() {
   const popup = document.getElementById('wheel-info-popup');
   if (!popup) return;
@@ -1940,6 +1951,7 @@ window.selectBrand            = selectBrand;
 window.suggestFrameSize       = suggestFrameSize;
 window.toggleWheelInfo        = toggleWheelInfo;
 window.toggleSizeInfo         = toggleSizeInfo;
+window.toggleSizeFitInfo      = toggleSizeFitInfo;
 window.toggleConditionInfo    = toggleConditionInfo;
 window.toggleSellConditionInfo = function() {
   const popup = document.getElementById('cg-sell');
