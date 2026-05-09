@@ -925,7 +925,7 @@
         <div id="profile-info">
           <div class="form-grid" style="grid-template-columns:1fr;">
             <div class="form-group"><label>Navn</label><input type="text" id="edit-name" placeholder="Dit navn"></div>
-            <div class="form-group"><label>Telefon</label><input type="text" id="edit-phone" placeholder="f.eks. 12 34 56 78"></div>
+            <div class="form-group"><label>Telefon</label><input type="tel" inputmode="tel" id="edit-phone" placeholder="f.eks. 12 34 56 78" maxlength="20" oninput="this.value=this.value.replace(/[^\d +]/g,'')"></div>
             <div class="form-group"><label>By</label><input type="text" id="edit-city" placeholder="f.eks. København"></div>
             <div class="form-group">
               <label>Om mig</label>
