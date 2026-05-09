@@ -1490,16 +1490,26 @@ function handleRoute() {
 
 window.addEventListener('popstate', handleRoute);
 
-/* Preload statiske side-moduler når browseren er idle —
-   så footer-links navigerer øjeblikkeligt uden lazy-load delay */
+/* Preload hyppigt brugte moduler når browseren er idle —
+   så klik på annoncer, "Sæt til salg", profiler og footer-links
+   navigerer øjeblikkeligt uden lazy-load delay (flicker). */
 function _preloadStaticModules() {
   // Brug requestIdleCallback hvis tilgængelig, ellers setTimeout som fallback
   const schedule = window.requestIdleCallback || (cb => setTimeout(cb, 800));
   schedule(() => {
+    // Footer-links (Om os, Vilkår, Privatlivspolitik, Kontakt)
     import('./js/static-pages.js').catch(() => {});
     import('./js/static-pages-content.js').catch(() => {});
-    // Også preload andre lazy moduler der ofte tilgås fra forsiden
+    // Profil-sider (bruger/forhandler)
     import('./js/profile-pages.js').catch(() => {});
+    import('./js/profile-modals.js').catch(() => {});
+    // Annonce-modal (klik på bike-card) + Leaflet til lokations-kort
+    import('./js/bike-detail.js').catch(() => {});
+    ensureLeaflet().catch(() => {});
+    // "Sæt til salg"-knap
+    import('./js/sell-page.js').catch(() => {});
+    // "Forhandlere"-link i topnav
+    import('./js/dealers-page.js').catch(() => {});
   });
 }
 window.addEventListener('load', _preloadStaticModules);
