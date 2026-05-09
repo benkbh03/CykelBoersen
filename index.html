@@ -612,6 +612,16 @@
       <!-- Sidst sete cykler — vises kun hvis bruger har set mindst én annonce -->
       <section id="recently-viewed" class="recently-viewed" style="display:none;" aria-label="Sidst sete cykler"></section>
 
+      <!-- Forhandler-banner — kun synlig på mobil (CSS: display: none på desktop) -->
+      <a class="dealer-banner-mobile" href="/forhandlere" onclick="event.preventDefault(); navigateTo('/forhandlere')" aria-label="Se alle verificerede forhandlere">
+        <div class="dealer-banner-icon">🏪</div>
+        <div class="dealer-banner-text">
+          <div class="dealer-banner-title">Køb hos verificeret forhandler</div>
+          <div class="dealer-banner-sub">Garanti og professionel rådgivning</div>
+        </div>
+        <svg class="dealer-banner-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+      </a>
+
       <div class="listings-header">
         <div>
           <h2>Seneste annoncer</h2>
