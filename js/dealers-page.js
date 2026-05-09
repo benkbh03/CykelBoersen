@@ -377,9 +377,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <h3 class="bd-form-title">Butiksinformation</h3>
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
           <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>CVR-nummer *</label><input type="text" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>CVR-nummer *</label><input type="text" inputmode="numeric" pattern="\d*" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>Telefon</label><input type="text" id="dealer-phone" placeholder="f.eks. 12 34 56 78" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Telefon</label><input type="tel" inputmode="tel" id="dealer-phone" placeholder="f.eks. 12 34 56 78" maxlength="20" oninput="this.value=this.value.replace(/[^\d +]/g,'')" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Adresse *</label><input type="text" id="dealer-address" placeholder="Start med at skrive gadenavn…" autocomplete="off"></div>
           <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="Udfyldes automatisk" autocomplete="off"></div>
         </div>
@@ -449,6 +449,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
 
     if (!shopName || !cvr || !contact) {
       showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
+    }
+    if (!/^\d{8}$/.test(cvr)) {
+      showToast('⚠️ CVR-nummer skal være 8 cifre'); return;
     }
     if (!address || !addrData.lat || !addrData.lng) {
       showToast('⚠️ Vælg din butiks-adresse fra listen så kortet viser jer korrekt'); return;
