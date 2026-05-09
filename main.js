@@ -1490,6 +1490,31 @@ function handleRoute() {
 
 window.addEventListener('popstate', handleRoute);
 
+/* ============================================================
+   GLOBAL LINK INTERCEPTOR
+   Fanger ALLE interne <a href="/..."> klik og bruger JS-navigation
+   i stedet for default browser-reload. Forhindrer at en glemt
+   event.preventDefault() får siden til at refreshe.
+   ============================================================ */
+document.addEventListener('click', function(e) {
+  const a = e.target.closest('a');
+  if (!a) return;
+  // Spring over hvis modifier-tast (Ctrl/Cmd/Shift = åbn i ny fane)
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Spring over hvis target="_blank" eller eksplicit eksternt
+  if (a.target && a.target !== '' && a.target !== '_self') return;
+  if (a.hasAttribute('download')) return;
+  const href = a.getAttribute('href');
+  if (!href) return;
+  // Kun interne ruter — ikke #anchor, ikke mailto:, ikke tel:, ikke fuld URL
+  if (!href.startsWith('/') || href.startsWith('//')) return;
+  // Spring over assets (images, css, js, etc.)
+  if (/\.(jpg|jpeg|png|gif|svg|webp|css|js|pdf|ico|webmanifest)(\?.*)?$/i.test(href)) return;
+  // Vi har en intern app-rute — håndter via JS
+  e.preventDefault();
+  navigateTo(href);
+});
+
 function navigateToBike(bikeId) {
   navigateTo(`/bike/${bikeId}`);
 }
