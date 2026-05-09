@@ -1490,6 +1490,20 @@ function handleRoute() {
 
 window.addEventListener('popstate', handleRoute);
 
+/* Preload statiske side-moduler når browseren er idle —
+   så footer-links navigerer øjeblikkeligt uden lazy-load delay */
+function _preloadStaticModules() {
+  // Brug requestIdleCallback hvis tilgængelig, ellers setTimeout som fallback
+  const schedule = window.requestIdleCallback || (cb => setTimeout(cb, 800));
+  schedule(() => {
+    import('./js/static-pages.js').catch(() => {});
+    import('./js/static-pages-content.js').catch(() => {});
+    // Også preload andre lazy moduler der ofte tilgås fra forsiden
+    import('./js/profile-pages.js').catch(() => {});
+  });
+}
+window.addEventListener('load', _preloadStaticModules);
+
 /* ============================================================
    GLOBAL LINK INTERCEPTOR
    Fanger ALLE interne <a href="/..."> klik og bruger JS-navigation
