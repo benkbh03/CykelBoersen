@@ -250,7 +250,7 @@ export function createBikeDetail({
         const heightRange = b.size ? (heightMap[b.size] || null) : null;
         return `
         <div class="fit-section">
-          <h3 class="fit-section-title">Størrelse og pasform</h3>
+          <h3 class="fit-section-title">Størrelse og pasform <button class="fit-info-btn" onclick="toggleSizeFitInfo()" aria-label="Hvad betyder anbefalet højde?" type="button">?</button></h3>
           <div class="fit-cards">
             ${heightRange ? `
             <div class="fit-card">
@@ -262,6 +262,18 @@ export function createBikeDetail({
               <div class="fit-card-label">Rammestørrelse</div>
               <div class="fit-card-value">${esc(b.size)}</div>
             </div>` : ''}
+          </div>
+          <p class="fit-disclaimer">Vejledende — den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>
+          <div class="fit-info-popup" id="fit-info-popup" style="display:none;">
+            <p><strong>Hvorfor er det kun vejledende?</strong></p>
+            <p>Højde er det første, men ikke det eneste, der bestemmer pasform:</p>
+            <ul>
+              <li><strong>Benlængde (inseam):</strong> To personer på 175 cm kan have benlængde der varierer 5-10 cm — det påvirker sadelhøjde</li>
+              <li><strong>Cykeltype:</strong> Racere kræver mere strakt position end citybikes — så samme rammestørrelse passer forskelligt</li>
+              <li><strong>Personlig præference:</strong> Nogle foretrækker oprejst position, andre aerodynamisk</li>
+              <li><strong>Stelfabrikantens mål:</strong> En "M" hos Trek er ikke nødvendigvis præcis "M" hos Specialized</li>
+            </ul>
+            <p><strong>Vores anbefaling:</strong> Tag altid en prøvetur. Justér sadelhøjden så benet er næsten strakt i nederste pedalposition. Tjek at du kan stå over rammen med begge fødder fladt på jorden.</p>
           </div>
         </div>`;
       })() : ''}
