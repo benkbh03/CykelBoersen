@@ -405,6 +405,8 @@
     gap: 14px;
     padding: 14px 16px;
     margin: 0 0 16px;
+    width: 100%;
+    box-sizing: border-box;
     background: linear-gradient(135deg, #2A3D2E 0%, #3A5340 100%);
     border-radius: 14px;
     color: #fff;
