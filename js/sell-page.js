@@ -199,8 +199,10 @@ export function createSellPage({
 
     // Upload billeder hvis der er valgt nogle
     if (getSelectedFiles().length > 0) {
-      showToast('⏳ Uploader billeder...');
-      await uploadImages(newBike.id);
+      await uploadImages(newBike.id, (current, total) => {
+        const btn = document.getElementById('submit-listing-btn');
+        if (btn) btn.textContent = `Uploader ${current}/${total}…`;
+      });
     }
 
     closeModal();
@@ -263,8 +265,10 @@ export function createSellPage({
       if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
 
       if (getSelectedFiles().length > 0) {
-        showToast('⏳ Uploader billeder...');
-        await uploadImages(newBike.id);
+        await uploadImages(newBike.id, (current, total) => {
+          const btn = document.getElementById('sell-submit-btn');
+          if (btn) btn.textContent = `Uploader ${current}/${total}…`;
+        });
       }
 
       loadBikes();
