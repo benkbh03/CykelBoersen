@@ -277,6 +277,30 @@ export function createBikeDetail({
           </div>
         </div>`;
       })() : ''}
+      ${(() => {
+        // Teknisk specifikation — vis kun hvis mindst ét struktureret felt er udfyldt
+        const techRows = [];
+        if (b.frame_material)              techRows.push(['Stelmaterial', esc(b.frame_material)]);
+        if (b.groupset)                    techRows.push(['Komponentgruppe', esc(b.groupset)]);
+        if (b.brake_type)                  techRows.push(['Bremser', esc(b.brake_type)]);
+        if (b.electronic_shifting === true)  techRows.push(['Gear-skifte', 'Elektronisk (Di2/eTap/AXS)']);
+        if (b.electronic_shifting === false) techRows.push(['Gear-skifte', 'Mekanisk']);
+        if (b.weight_kg != null)           techRows.push(['Vægt', `${Number(b.weight_kg).toFixed(2).replace('.', ',')} kg`]);
+        if (b.wheel_size)                  techRows.push(['Hjulstørrelse', esc(b.wheel_size)]);
+        if (techRows.length === 0) return '';
+        return `
+        <div class="fit-section" style="margin-top:24px;">
+          <h3 class="fit-section-title">Teknisk specifikation</h3>
+          <div class="fit-cards">
+            ${techRows.map(([label, value]) => `
+              <div class="fit-card">
+                <div class="fit-card-label">${label}</div>
+                <div class="fit-card-value">${value}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+      })()}
       <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="theft-check-tip">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>
