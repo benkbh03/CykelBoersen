@@ -120,7 +120,11 @@
   /* Reserver plads så siden ikke skubbes op/ned mens annoncer loader (CLS) */
   min-height: 600px;
   content-visibility: auto;
-  contain-intrinsic-size: 1200px;
+  /* KUN højde som intrinsic placeholder — ikke bredde. Hvis bredde også sættes
+     (fx 'contain-intrinsic-size: 1200px' = både W og H), forcerer den parent
+     til 1200px på mobil og banneret over grid'en bliver bredere end viewport
+     indtil content-visibility re-render'er ved scroll. */
+  contain-intrinsic-block-size: 1200px;
 }
 .bike-card {
   background: var(--cream); border-radius: 14px;
