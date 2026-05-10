@@ -185,6 +185,14 @@ export function createListingEdit({
     if (typeof window.updateConditionGuide === 'function') window.updateConditionGuide('edit-condition', 'cg-edit');
     document.getElementById('edit-is-active').checked   = b.is_active;
 
+    document.getElementById('edit-wheel-size').value         = b.wheel_size || '';
+    document.getElementById('edit-frame-material').value     = b.frame_material || '';
+    document.getElementById('edit-brake-type').value         = b.brake_type || '';
+    document.getElementById('edit-electronic-shifting').value =
+      b.electronic_shifting === true ? 'true' : (b.electronic_shifting === false ? 'false' : '');
+    document.getElementById('edit-groupset').value           = b.groupset || '';
+    document.getElementById('edit-weight-kg').value          = b.weight_kg ?? '';
+
     const warrantyGroup = document.getElementById('edit-warranty-group');
     if (warrantyGroup) warrantyGroup.style.display = getCurrentProfile()?.seller_type === 'dealer' ? '' : 'none';
     document.getElementById('edit-warranty').value = b.warranty || '';
@@ -220,6 +228,10 @@ export function createListingEdit({
     const id = document.getElementById('edit-bike-id').value;
     enforceSinglePrimaryImage();
 
+    const electronicRaw = document.getElementById('edit-electronic-shifting').value;
+    const weightRaw     = document.getElementById('edit-weight-kg').value;
+    const weightKg      = weightRaw ? parseFloat(weightRaw) : null;
+
     const updates = {
       brand:       document.getElementById('edit-brand').value,
       model:       document.getElementById('edit-model').value,
@@ -236,6 +248,12 @@ export function createListingEdit({
       condition:   document.getElementById('edit-condition').value,
       is_active:   document.getElementById('edit-is-active').checked,
       warranty:    (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-warranty').value.trim() : null) || null,
+      wheel_size:         document.getElementById('edit-wheel-size').value || null,
+      frame_material:     document.getElementById('edit-frame-material').value || null,
+      brake_type:         document.getElementById('edit-brake-type').value || null,
+      electronic_shifting: electronicRaw === 'true' ? true : (electronicRaw === 'false' ? false : null),
+      groupset:           document.getElementById('edit-groupset').value.trim() || null,
+      weight_kg:          (weightKg != null && !isNaN(weightKg)) ? weightKg : null,
     };
 
     if (!updates.brand || !updates.model || !updates.price || !updates.city) {
