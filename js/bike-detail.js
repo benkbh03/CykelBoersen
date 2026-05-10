@@ -239,7 +239,7 @@ export function createBikeDetail({
         </div>
         <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
       </div>` : ''}
-      ${(b.size || b.size_cm) ? (() => {
+      ${(b.size || b.size_cm || b.wheel_size) ? (() => {
         const heightMap = {
           'XS (44–48 cm)': '148–162 cm',
           'S (49–52 cm)':  '163–170 cm',
@@ -261,6 +261,11 @@ export function createBikeDetail({
             <div class="fit-card">
               <div class="fit-card-label">Rammestørrelse</div>
               <div class="fit-card-value">${b.size_cm ? `${b.size_cm} cm` : esc(b.size)}${b.size_cm && b.size ? ` <span style="color:var(--muted);font-weight:400;font-size:0.85em;">(${esc(b.size)})</span>` : ''}</div>
+            </div>` : ''}
+            ${b.wheel_size ? `
+            <div class="fit-card">
+              <div class="fit-card-label">Hjulstørrelse</div>
+              <div class="fit-card-value">${esc(b.wheel_size)}</div>
             </div>` : ''}
           </div>
           <p class="fit-disclaimer">Vejledende — den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>
@@ -286,7 +291,6 @@ export function createBikeDetail({
         if (b.electronic_shifting === true)  techRows.push(['Gear-skifte', 'Elektronisk (Di2/eTap/AXS)']);
         if (b.electronic_shifting === false) techRows.push(['Gear-skifte', 'Mekanisk']);
         if (b.weight_kg != null)           techRows.push(['Vægt', `${Number(b.weight_kg).toFixed(2).replace('.', ',')} kg`]);
-        if (b.wheel_size)                  techRows.push(['Hjulstørrelse', esc(b.wheel_size)]);
         if (techRows.length === 0) return '';
         return `
         <div class="fit-section" style="margin-top:24px;">
