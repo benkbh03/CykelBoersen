@@ -206,7 +206,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .img-upload p { font-size: 0.85rem; color: var(--muted); margin: 0; }
 .img-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
 .img-preview-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); }
-.img-preview-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.img-preview-item img { width: 100%; height: 100%; object-fit: contain; background: var(--sand); pointer-events: none; }
 .img-preview-item.primary { border-color: var(--forest); }
 .img-preview-item .primary-badge { position: absolute; bottom: 4px; left: 4px; background: var(--forest); color: var(--sand); font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
 .img-preview-item .remove-img { position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: auto; }
