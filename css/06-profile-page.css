@@ -2596,6 +2596,23 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   white-space: nowrap;
 }
 .ss-notif-icon { font-size: 1.1rem; }
+@media (max-width: 768px) {
+  /* Anker til venstre/højre i stedet for at centrere — så ✕-knappen
+     ikke ryger udenfor viewport når indholdet er bredere end skærmen. */
+  #ss-notification {
+    top: 60px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+  }
+  .ss-notif-content {
+    white-space: normal;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    gap: 8px;
+  }
+  .ss-notif-text { flex: 1; min-width: 0; }
+}
 
 /* ── HURTIG-SVAR SKABELONER ── */
 .quick-replies {
