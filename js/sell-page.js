@@ -1247,10 +1247,12 @@ export function createSellPage({
   }
 
   function applyAiSuggestion(s) {
-    if (!s || typeof s !== 'object') return;
+    console.log('[AI] applyAiSuggestion called with:', s);
+    if (!s || typeof s !== 'object') { console.log('[AI] Invalid suggestion, aborting'); return; }
     _aiApplied = true;
     // If step 2 fields don't exist yet, store for when step 2 renders
     if (!document.getElementById('sell-brand')) {
+      console.log('[AI] sell-brand not in DOM, storing as pending. Will apply when step 2 renders.');
       _aiSuggestionPending = s;
       // Re-render step 1 to show "AI applied" state
       const body = document.getElementById('sell-step-body');
@@ -1259,13 +1261,14 @@ export function createSellPage({
     }
 
     const setField = (id, value) => {
-      if (value == null || value === '') return;
+      if (value == null || value === '') { console.log(`[AI] ${id}: skipped (value is null/empty), got:`, value); return; }
       const el = document.getElementById(id);
-      if (!el) return;
+      if (!el) { console.log(`[AI] ${id}: skipped (element not found in DOM)`); return; }
       // Skriv ikke over hvis brugeren allerede har udfyldt feltet
-      if (el.value && el.value.trim() !== '') return;
+      if (el.value && el.value.trim() !== '') { console.log(`[AI] ${id}: skipped (field already has value: "${el.value}")`); return; }
       el.value = String(value);
       el.dispatchEvent(new Event('change', { bubbles: true }));
+      console.log(`[AI] ${id}: set to "${value}"`);
     };
 
     setField('sell-brand', s.brand);
