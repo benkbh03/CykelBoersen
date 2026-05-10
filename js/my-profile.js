@@ -98,6 +98,7 @@ export function createMyProfile({
                 ${!isSold
                   ? `<button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
+                <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
               </div>
             </div>`;
         }

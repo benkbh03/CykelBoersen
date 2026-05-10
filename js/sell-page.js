@@ -838,7 +838,7 @@ export function createSellPage({
       });
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }
 
   function advanceSell() {
