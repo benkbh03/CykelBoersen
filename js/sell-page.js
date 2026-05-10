@@ -1247,12 +1247,13 @@ export function createSellPage({
   }
 
   function applyAiSuggestion(s) {
-    console.log('[AI] applyAiSuggestion called with:', s);
-    if (!s || typeof s !== 'object') { console.log('[AI] Invalid suggestion, aborting'); return; }
+    if (!s || typeof s !== 'object') return;
     _aiApplied = true;
-    // If step 2 fields don't exist yet, store for when step 2 renders
-    if (!document.getElementById('sell-brand')) {
-      console.log('[AI] sell-brand not in DOM, storing as pending. Will apply when step 2 renders.');
+    // Vi tjekker om wizard-step-2 form er renderet ved at lede efter et felt
+    // der KUN findes i wizard'en (sell-type select). Tidligere brugte vi
+    // sell-brand, men der var en kollision med en gammel modal-input i
+    // index.html med samme id, så vi troede step 2 var klar selvom det ikke var.
+    if (!document.getElementById('sell-type')) {
       _aiSuggestionPending = s;
       // Re-render step 1 to show "AI applied" state
       const body = document.getElementById('sell-step-body');
@@ -1261,14 +1262,13 @@ export function createSellPage({
     }
 
     const setField = (id, value) => {
-      if (value == null || value === '') { console.log(`[AI] ${id}: skipped (value is null/empty), got:`, value); return; }
+      if (value == null || value === '') return;
       const el = document.getElementById(id);
-      if (!el) { console.log(`[AI] ${id}: skipped (element not found in DOM)`); return; }
+      if (!el) return;
       // Skriv ikke over hvis brugeren allerede har udfyldt feltet
-      if (el.value && el.value.trim() !== '') { console.log(`[AI] ${id}: skipped (field already has value: "${el.value}")`); return; }
+      if (el.value && el.value.trim() !== '') return;
       el.value = String(value);
       el.dispatchEvent(new Event('change', { bubbles: true }));
-      console.log(`[AI] ${id}: set to "${value}"`);
     };
 
     setField('sell-brand', s.brand);
