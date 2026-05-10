@@ -274,6 +274,7 @@ export function createBikesList({
     types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId,
     wheelSizes = [], sizes = [], colors = [], brands = [],
     frameMaterials = [], brakeTypes = [], groupsets = [], electronicShifting = null,
+    maxWeight = null,
   } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
@@ -283,6 +284,7 @@ export function createBikesList({
         types, conditions, minPrice, maxPrice, sellerType, dealerId,
         wheelSizes, sizes, colors, brands,
         frameMaterials, brakeTypes, groupsets, electronicShifting,
+        maxWeight,
       });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
@@ -319,6 +321,7 @@ export function createBikesList({
     if (electronicShifting === true || electronicShifting === false) {
       query = query.eq('electronic_shifting', electronicShifting);
     }
+    if (maxWeight != null && !isNaN(maxWeight)) query = query.lte('weight_kg', maxWeight);
     if (brands.length > 0) {
       const hasAndre = brands.includes('Andre');
       const specificBrands = brands.filter(b => b !== 'Andre');
