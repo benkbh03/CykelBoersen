@@ -33,6 +33,7 @@ export function createFilters({
       (args.brands && args.brands.length > 0) ||
       args.minPrice ||
       args.maxPrice ||
+      args.maxWeight ||
       args.sellerType
     );
     return !!(filtersSet || filterArgsSet);
@@ -69,6 +70,7 @@ export function createFilters({
     } else if (args?.maxPrice) {
       parts.push(`under ${args.maxPrice.toLocaleString('da-DK')} kr.`);
     }
+    if (args?.maxWeight) parts.push(`under ${String(args.maxWeight).replace('.', ',')} kg`);
     if (args?.sellerType === 'dealer')  parts.push('forhandlere');
     if (args?.sellerType === 'private') parts.push('private');
 
@@ -92,6 +94,7 @@ export function createFilters({
     });
 
     document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
+    { const el = document.getElementById('sidebar-max-weight'); if (el) el.value = ''; }
 
     setCurrentFilters({});
     setCurrentFilterArgs(null);
@@ -133,6 +136,7 @@ export function createFilters({
     } else if (args?.maxPrice) {
       pills.push({ label: `Under ${args.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
     }
+    if (args?.maxWeight) pills.push({ label: `Under ${String(args.maxWeight).replace('.', ',')} kg`, type: 'weight' });
     if (args?.sellerType === 'dealer')  pills.push({ label: 'Forhandlere', type: 'seller', value: 'dealer' });
     if (args?.sellerType === 'private') pills.push({ label: 'Private', type: 'seller', value: 'private' });
 
@@ -224,6 +228,10 @@ export function createFilters({
         break;
       case 'price':
         document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
+        applyFilters();
+        break;
+      case 'weight':
+        { const el = document.getElementById('sidebar-max-weight'); if (el) el.value = ''; }
         applyFilters();
         break;
       case 'seller':

@@ -1651,6 +1651,10 @@ function applyFilters() {
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
 
+  // Vægt (max kg)
+  const maxWeightRaw = document.getElementById('sidebar-max-weight')?.value;
+  const maxWeight = maxWeightRaw ? parseFloat(maxWeightRaw) : null;
+
   // Sælgertype
   let sellerType = null;
   if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
@@ -1660,6 +1664,7 @@ function applyFilters() {
     types, conditions, minPrice, maxPrice, sellerType,
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
+    maxWeight,
   });
 }
 
@@ -2028,6 +2033,12 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.setMaxWeight = function(kg) {
+  const input = document.getElementById('sidebar-max-weight');
+  if (!input) return;
+  input.value = kg;
+  applyFilters();
+};
 window.filterBrandList        = filterBrandList;
 window.brandAutocomplete      = brandAutocomplete;
 window.selectBrand            = selectBrand;

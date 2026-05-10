@@ -257,10 +257,10 @@ export function createBikeDetail({
               <div class="fit-card-label">Anbefalet højde</div>
               <div class="fit-card-value">${heightRange}</div>
             </div>` : ''}
-            ${b.size ? `
+            ${(b.size || b.size_cm) ? `
             <div class="fit-card">
               <div class="fit-card-label">Rammestørrelse</div>
-              <div class="fit-card-value">${esc(b.size)}</div>
+              <div class="fit-card-value">${b.size_cm ? `${b.size_cm} cm` : esc(b.size)}${b.size_cm && b.size ? ` <span style="color:var(--muted);font-weight:400;font-size:0.85em;">(${esc(b.size)})</span>` : ''}</div>
             </div>` : ''}
           </div>
           <p class="fit-disclaimer">Vejledende — den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>

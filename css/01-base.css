@@ -847,7 +847,7 @@ nav {
 #height-result { font-size: 0.88rem; font-weight: 700; color: var(--forest); white-space: nowrap; min-width: 32px; }
 
 /* Pris filter */
-.price-range { display: flex; flex-direction: column; gap: 12px; }
+.price-range, .weight-range { display: flex; flex-direction: column; gap: 12px; }
 .price-inputs {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -875,6 +875,15 @@ nav {
   transition: background 0.2s; width: 100%;
 }
 .btn-apply:hover { background: var(--forest-light); }
+
+.weight-preset {
+  background: var(--cream); color: var(--charcoal);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 4px 10px; font-size: 0.8rem; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.weight-preset:hover { background: var(--sand); border-color: var(--forest); }
 
 /* ── Quiz box ────────────────────────────────────── */
 .bike-quiz-box {
