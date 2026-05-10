@@ -7,9 +7,7 @@
 // Input:  { images: [{ media_type, data }], hint?: string }
 //         images er base64-data (uden "data:...;base64," prefix). Max 4 billeder.
 // Output: { suggestion: { brand, model, type, size, wheel_size, year, condition,
-//                         color, groupset, frame_material, brake_type,
-//                         electronic_shifting, weight_kg,
-//                         price_min, price_max, description } }
+//                         color, price_min, price_max, description } }
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") ?? "";
 
@@ -23,9 +21,9 @@ const ALLOWED_MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif
 const MAX_IMAGES          = 4;
 const MAX_IMAGE_BYTES     = 5 * 1024 * 1024; // 5 MB base64-decoded
 
-const SYSTEM_PROMPT = `Du er en ekspert i brugte cykler og hjælper sælgere udfylde annoncer på den danske markedsplads Cykelbørsen.
+const SYSTEM_PROMPT = `Du er en ekspert i brugte cykler og vurderer annoncer til den danske markedsplads Cykelbørsen.
 
-Brugeren uploader 1-4 billeder af en cykel. Analysér dem og udfyld så MANGE felter du kan med rimelig sikkerhed. Lad være med at være overdrevent forsigtig — gæt kvalificeret når du kan, men brug null hvis billedet er virkelig uklart eller du ikke kan se feltet.
+Brugeren uploader 1-4 billeder af en cykel. Din opgave er at analysere billederne og foreslå felter til annoncen.
 
 Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, intet andet. Brug dette præcise schema:
 
@@ -38,31 +36,18 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
   "year": "integer eller null",
   "condition": "Ny|Som ny|God stand|Brugt",
   "color": "string eller null",
-  "groupset": "string eller null",
-  "frame_material": "Carbon|Aluminium|Stål|Titanium eller null",
-  "brake_type": "Skivebremser hydrauliske|Skivebremser mekaniske|Felgbremser|Tromlebremser eller null",
-  "electronic_shifting": "true eller false eller null",
-  "weight_kg": "decimal eller null",
   "price_min": "integer - laveste realistiske pris i DKK",
   "price_max": "integer - højeste realistiske pris i DKK",
   "description": "string - 2-4 sætninger på dansk om cyklen, dens stand og særlige features"
 }
 
-Hovedregler:
-- "type" og "condition" SKAL altid forsøges udfyldt — selv på baggrund af generelt udseende. Det er kerne-felter.
-- "brand" + "model" — udfyld hvis du genkender logo eller karakteristisk design. Hvis du kun kan se brand men ikke model, returnér brand alene og null på model.
-- "color" — primærfarve(r) på rammen, fx "sort", "rød/sort", "hvid".
-- "size" + "wheel_size" — udfyld baseret på typiske størrelser for den synlige cykel.
-- "year" — kvalificeret gæt baseret på model + design-trends er OK.
-- Prisestimat: realistisk for DANSK brugtmarked i DKK, baseret på model + condition.
-- Beskrivelse: neutral og faktuel — ikke sælgende.
-
-Avancerede felter (kun hvis tydeligt synlige — ellers null):
-- "groupset" — fx "Shimano 105", "Shimano Ultegra Di2", "SRAM Rival AXS". Kun hvis derailleur/skifter-logo er læseligt.
-- "frame_material" — Carbon (vævningsmønster, organisk formgivning), Aluminium (svejsninger ved samlinger), Stål (tynde rør, ofte klassisk), Titanium (matgrå metal, sjælden).
-- "brake_type" — kig på hjulkant: skivebremser har kaliper og skive, felgbremser har klodser direkte på hjulkant.
-- "electronic_shifting" — kun true hvis Di2/eTap/AXS-logo eller batteri synligt.
-- "weight_kg" — kun hvis du kender model+spec og dens officielle vægt. Ellers null.`;
+Regler:
+- Kun felter du er rimeligt sikker på. Returnér null hvis du ikke kan se det.
+- Vær ærlig: hvis du kun ser delvist, returnér null på ukendte felter.
+- "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
+- Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
+- Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
+- Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -156,7 +141,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model:      "claude-sonnet-4-6",
-        max_tokens: 1200,
+        max_tokens: 800,
         system:     SYSTEM_PROMPT,
         messages: [
           { role: "user", content: userContent },

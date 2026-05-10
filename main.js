@@ -1628,6 +1628,25 @@ function applyFilters() {
   const brands = [...document.querySelectorAll('[data-filter="brand"]:checked')]
     .map(el => el.dataset.value);
 
+  // Cykel-specifikke strukturerede filtre
+  const frameMaterials = [...document.querySelectorAll('[data-filter="frame_material"]:checked')]
+    .map(el => el.dataset.value);
+
+  const brakeTypes = [...document.querySelectorAll('[data-filter="brake_type"]:checked')]
+    .map(el => el.dataset.value);
+
+  const groupsets = [...document.querySelectorAll('[data-filter="groupset"]:checked')]
+    .map(el => el.dataset.value);
+
+  // Elektronisk gear: 'true', 'false', begge eller ingen
+  const electronicChecked = [...document.querySelectorAll('[data-filter="electronic_shifting"]:checked')]
+    .map(el => el.dataset.value);
+  let electronicShifting = null; // null = ingen filter
+  if (electronicChecked.length === 1) {
+    electronicShifting = electronicChecked[0] === 'true';
+  }
+  // hvis begge eller ingen er checked → ingen filter (alle)
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -1637,7 +1656,11 @@ function applyFilters() {
   if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
   if (sellerPrivate?.checked && !sellerDealer?.checked) sellerType = 'private';
 
-  debouncedLoadFilters({ types, conditions, minPrice, maxPrice, sellerType, wheelSizes, sizes, colors, brands });
+  debouncedLoadFilters({
+    types, conditions, minPrice, maxPrice, sellerType,
+    wheelSizes, sizes, colors, brands,
+    frameMaterials, brakeTypes, groupsets, electronicShifting,
+  });
 }
 
 const KNOWN_BRANDS = ['Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton','Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube','E-Fly','Early Rider','Electra','Everton','FACTOR','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike','Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK','Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco','Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike','Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike','Urban Arrow','uVelo','VanMoof','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba'];

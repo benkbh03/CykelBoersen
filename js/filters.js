@@ -57,6 +57,11 @@ export function createFilters({
     if (args?.wheelSizes?.length) parts.push(args.wheelSizes.join(', '));
     if (args?.sizes?.length)      parts.push(args.sizes.map(s => s.split(' ')[0]).join(', '));
     if (args?.colors?.length)     parts.push(args.colors.join(', '));
+    if (args?.frameMaterials?.length) parts.push(args.frameMaterials.join(', '));
+    if (args?.brakeTypes?.length)     parts.push(args.brakeTypes.join(', '));
+    if (args?.groupsets?.length)      parts.push(args.groupsets.join(', '));
+    if (args?.electronicShifting === true)  parts.push('elektronisk gear');
+    if (args?.electronicShifting === false) parts.push('mekanisk gear');
     if (args?.minPrice && args?.maxPrice) {
       parts.push(`${args.minPrice.toLocaleString('da-DK')}–${args.maxPrice.toLocaleString('da-DK')} kr.`);
     } else if (args?.minPrice) {
@@ -116,6 +121,11 @@ export function createFilters({
     for (const c of (args?.conditions || [])) pills.push({ label: c, type: 'condition', value: c });
     for (const w of (args?.wheelSizes || [])) pills.push({ label: w, type: 'wheel', value: w });
     for (const c of (args?.colors || []))     pills.push({ label: c, type: 'color', value: c });
+    for (const m of (args?.frameMaterials || [])) pills.push({ label: m, type: 'frame_material', value: m });
+    for (const b of (args?.brakeTypes || []))     pills.push({ label: b, type: 'brake_type', value: b });
+    for (const g of (args?.groupsets || []))      pills.push({ label: g, type: 'groupset', value: g });
+    if (args?.electronicShifting === true)        pills.push({ label: 'Elektronisk gear', type: 'electronic_shifting', value: 'true' });
+    if (args?.electronicShifting === false)       pills.push({ label: 'Mekanisk gear', type: 'electronic_shifting', value: 'false' });
     if (args?.minPrice && args?.maxPrice) {
       pills.push({ label: `${args.minPrice.toLocaleString('da-DK')}–${args.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
     } else if (args?.minPrice) {
@@ -219,6 +229,13 @@ export function createFilters({
       case 'seller':
         document.querySelectorAll('[data-filter="seller"][data-value="all"]').forEach(cb => cb.checked = true);
         document.querySelectorAll('[data-filter="seller"]:not([data-value="all"])').forEach(cb => cb.checked = false);
+        applyFilters();
+        break;
+      case 'frame_material':
+      case 'brake_type':
+      case 'groupset':
+      case 'electronic_shifting':
+        document.querySelectorAll(`[data-filter="${type}"][data-value="${value}"]`).forEach(cb => cb.checked = false);
         applyFilters();
         break;
     }
