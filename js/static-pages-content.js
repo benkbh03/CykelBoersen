@@ -77,7 +77,7 @@ export const footerContent = {
 
       <div style="background:var(--sand);border-radius:12px;padding:20px 24px;margin-top:28px;border:1px solid var(--border);">
         <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Klar til at købe?</h3>
-        <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen — Danmarks dedikerede markedsplads for brugte cykler.</p>
+        <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen — Danmarks dedikerede markedsplads for nye og brugte cykler.</p>
         <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Se alle cykler</button>
       </div>
     `
@@ -86,7 +86,7 @@ export const footerContent = {
     title: 'Om Cykelbørsen',
     body: `
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet — hurtigt, nemt og gratis.</p>
+      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet — hurtigt, nemt og gratis.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Vores mission</h3>
       <p style="margin-bottom:16px;">Vi tror på, at en god brugt cykel fortjener en ny ejer. Ved at gøre det nemt at købe og sælge brugte cykler hjælper vi med at forlænge cyklernes levetid og reducere unødvendigt affald.</p>
