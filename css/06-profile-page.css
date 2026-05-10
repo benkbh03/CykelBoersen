@@ -401,11 +401,17 @@
   cursor: pointer;
   align-self: start;
 }
+.mp-listing-thumb-bg {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  filter: blur(18px) brightness(0.85); transform: scale(1.15); z-index: 0;
+}
 .mp-listing-thumb {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 .mp-listing-thumb--empty {
   width: 100%;
@@ -426,6 +432,7 @@
   letter-spacing: 0.03em;
   font-family: 'DM Sans', sans-serif;
   text-transform: uppercase;
+  z-index: 2;
 }
 .mp-status--active { background: rgba(61,89,66,0.14); color: var(--forest); }
 .mp-status--sold   { background: var(--charcoal); color: #fff; }
@@ -1663,7 +1670,11 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     height: 200px; background: var(--sand); position: relative;
     display: flex; align-items: center; justify-content: center;
   }
-  .sell-desktop-preview-img { width: 100%; height: 100%; object-fit: contain; }
+  .sell-desktop-preview-img-bg {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    filter: blur(18px) brightness(0.85); transform: scale(1.15); z-index: 0;
+  }
+  .sell-desktop-preview-img { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1; }
   .sell-desktop-preview-placeholder {
     color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px;
   }
