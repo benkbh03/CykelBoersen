@@ -7,7 +7,9 @@
 // Input:  { images: [{ media_type, data }], hint?: string }
 //         images er base64-data (uden "data:...;base64," prefix). Max 4 billeder.
 // Output: { suggestion: { brand, model, type, size, wheel_size, year, condition,
-//                         color, price, description } }
+//                         color, groupset, frame_material, brake_type,
+//                         electronic_shifting, weight_kg,
+//                         price_min, price_max, description } }
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") ?? "";
 
