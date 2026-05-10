@@ -211,9 +211,16 @@ export function createImageUpload({
     const toAdd = files.filter(validateImageFile).slice(0, remaining);
 
     const label = document.getElementById('upload-label');
-    if (label && toAdd.length > 0) label.textContent = 'Optimerer billeder...';
+    const total = toAdd.length;
+    let done = 0;
+    if (label && total > 0) label.textContent = `Optimerer 0 af ${total}…`;
 
-    const compressed = await Promise.all(toAdd.map(compressImage));
+    const compressed = await Promise.all(toAdd.map(async f => {
+      const result = await compressImage(f);
+      done++;
+      if (label) label.textContent = `Optimerer ${done} af ${total}…`;
+      return result;
+    }));
 
     compressed.forEach((file, i) => {
       const url = URL.createObjectURL(file);
@@ -260,11 +267,15 @@ export function createImageUpload({
       : 'Klik for at vælge billeder';
   }
 
-  async function uploadImages(bikeId) {
+  async function uploadImages(bikeId, onProgress) {
     if (selectedFiles.length === 0) return;
 
+    const total = selectedFiles.length;
     let failed = 0;
-    for (const item of selectedFiles) {
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const item = selectedFiles[i];
+      if (typeof onProgress === 'function') onProgress(i + 1, total);
+
       const ext      = item.file.name.split('.').pop();
       const filename = `${bikeId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
