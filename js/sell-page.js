@@ -80,6 +80,25 @@ export function createSellPage({
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
     'sell-price', 'sell-warranty',
+    // Cykel-specifikke strukturerede felter (kan auto-udfyldes af AI fra billeder)
+    'sell-groupset', 'sell-frame-material', 'sell-brake-type',
+    'sell-electronic-shifting', 'sell-weight-kg',
+  ];
+
+  // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
+  const _PERF_TYPES = ['Racercykel', 'Mountainbike', 'Gravel'];
+
+  // Liste til groupset-autocomplete (kan udvides senere)
+  const _GROUPSETS_HINT = [
+    'Shimano Tourney', 'Shimano Claris', 'Shimano Sora', 'Shimano Tiagra',
+    'Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace',
+    'Shimano 105 Di2', 'Shimano Ultegra Di2', 'Shimano Dura-Ace Di2',
+    'SRAM Apex', 'SRAM Rival', 'SRAM Force', 'SRAM Red',
+    'SRAM Rival AXS', 'SRAM Force AXS', 'SRAM Red AXS',
+    'Campagnolo Centaur', 'Campagnolo Chorus', 'Campagnolo Record', 'Campagnolo Super Record',
+    'Shimano Altus', 'Shimano Acera', 'Shimano Alivio', 'Shimano Deore',
+    'Shimano SLX', 'Shimano Deore XT', 'Shimano XTR',
+    'SRAM SX Eagle', 'SRAM NX Eagle', 'SRAM GX Eagle', 'SRAM X01 Eagle', 'SRAM XX1 Eagle',
   ];
 
   /* ----------------------------------------------------------
@@ -244,6 +263,15 @@ export function createSellPage({
       const warranty  = getVal('sell-warranty') || null;
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
+      // Cykel-specifikke felter
+      const groupset       = getVal('sell-groupset') || null;
+      const frameMaterial  = getVal('sell-frame-material') || null;
+      const brakeType      = getVal('sell-brake-type') || null;
+      const electronicRaw  = getVal('sell-electronic-shifting');
+      const electronicShift = electronicRaw === 'true' ? true : (electronicRaw === 'false' ? false : null);
+      const weightKgRaw    = getVal('sell-weight-kg');
+      const weightKg       = weightKgRaw ? parseFloat(weightKgRaw) : null;
+
       if (!brand || !model || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
@@ -259,6 +287,11 @@ export function createSellPage({
         colors: colors.length ? colors : null,
         title: `${brand} ${model}`,
         is_active: true,
+        groupset,
+        frame_material:      frameMaterial,
+        brake_type:          brakeType,
+        electronic_shifting: electronicShift,
+        weight_kg:           !isNaN(weightKg) ? weightKg : null,
       };
 
       const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
@@ -511,6 +544,56 @@ export function createSellPage({
         <label>Garanti <span class="hint">(valgfrit)</span></label>
         <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti" value="${esc(c['sell-warranty'] || '')}">
       </div>` : ''}
+
+      <button type="button" id="sell-advanced-toggle" class="sell-advanced-toggle" onclick="toggleAdvancedSpecs()" aria-expanded="false">
+        <span class="sell-advanced-icon">▸</span>
+        <span class="sell-advanced-label">Tekniske detaljer <span class="hint">(valgfrit — hjælper købere finde din cykel)</span></span>
+      </button>
+
+      <div id="sell-advanced-section" class="sell-advanced-section" style="display:none;">
+        <div class="sell-form-grid-2">
+          <div class="sell-field" data-perf-only>
+            <label>Stelmaterial</label>
+            <select id="sell-frame-material">
+              <option value="">Vælg</option>
+              ${opt(c['sell-frame-material'] || '', ['Carbon','Aluminium','Stål','Titanium'])}
+            </select>
+          </div>
+          <div class="sell-field">
+            <label>Bremsetype</label>
+            <select id="sell-brake-type">
+              <option value="">Vælg</option>
+              ${opt(c['sell-brake-type'] || '', ['Skivebremser hydrauliske','Skivebremser mekaniske','Felgbremser','Tromlebremser'])}
+            </select>
+          </div>
+        </div>
+
+        <div class="sell-form-grid-2">
+          <div class="sell-field" data-perf-only>
+            <label>Komponentgruppe <span class="hint">(fx Shimano 105)</span></label>
+            <input type="text" id="sell-groupset" list="sell-groupset-list" placeholder="Shimano 105" value="${esc(c['sell-groupset'] || '')}" autocomplete="off">
+            <datalist id="sell-groupset-list">
+              ${_GROUPSETS_HINT.map(g => `<option value="${esc(g)}">`).join('')}
+            </datalist>
+          </div>
+          <div class="sell-field" data-perf-only>
+            <label>Gear-skifte</label>
+            <select id="sell-electronic-shifting">
+              <option value="">Vælg</option>
+              <option value="false" ${c['sell-electronic-shifting'] === 'false' ? 'selected' : ''}>Mekanisk</option>
+              <option value="true" ${c['sell-electronic-shifting'] === 'true' ? 'selected' : ''}>Elektronisk (Di2/eTap/AXS)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sell-field">
+          <label>Vægt <span class="hint">(kg, fx 8.2)</span></label>
+          <div class="suffix-wrap">
+            <input type="number" id="sell-weight-kg" placeholder="8.2" min="2" max="50" step="0.1" value="${c['sell-weight-kg'] || ''}">
+            <span class="suffix">kg</span>
+          </div>
+        </div>
+      </div>
     `;
   }
 
@@ -804,7 +887,14 @@ export function createSellPage({
 
     if (n === 2) {
       const typeEl = document.getElementById('sell-type');
-      if (typeEl) typeEl.addEventListener('change', () => updateSellPriceSuggestion(typeEl.value));
+      if (typeEl) {
+        typeEl.addEventListener('change', () => {
+          updateSellPriceSuggestion(typeEl.value);
+          updatePerfFieldsVisibility(typeEl.value);
+        });
+        // Apply visibility for whatever is already cached
+        updatePerfFieldsVisibility(typeEl.value);
+      }
       initSellDraft();
       if (_aiSuggestionPending) {
         setTimeout(() => { applyAiSuggestion(_aiSuggestionPending); _aiSuggestionPending = null; }, 50);
@@ -820,7 +910,10 @@ export function createSellPage({
       });
       // Live footer + preview updates
       ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
-       'sell-year','sell-condition','sell-price'].forEach(id => {
+       'sell-year','sell-condition','sell-price',
+       // Avancerede felter — også gem i cache så de overlever step-skift
+       'sell-groupset','sell-frame-material','sell-brake-type',
+       'sell-electronic-shifting','sell-weight-kg'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener('input', () => { captureSellFormCache(); refreshOnChange(); });
@@ -843,6 +936,27 @@ export function createSellPage({
     }
 
     window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function toggleAdvancedSpecs() {
+    const sec = document.getElementById('sell-advanced-section');
+    const btn = document.getElementById('sell-advanced-toggle');
+    if (!sec || !btn) return;
+    const isOpen = sec.style.display !== 'none';
+    sec.style.display = isOpen ? 'none' : '';
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    const icon = btn.querySelector('.sell-advanced-icon');
+    if (icon) icon.textContent = isOpen ? '▸' : '▾';
+  }
+
+  // Skjul "performance only"-felter (groupset, frame_material, electronic_shifting)
+  // for cykeltyper hvor de ikke giver mening (citybike, ladcykel, børnecykel).
+  // Bremsetype og vægt er stadig synlige for alle typer.
+  function updatePerfFieldsVisibility(currentType) {
+    const isPerf = !currentType || _PERF_TYPES.includes(currentType);
+    document.querySelectorAll('#sell-advanced-section [data-perf-only]').forEach(el => {
+      el.style.display = isPerf ? '' : 'none';
+    });
   }
 
   function advanceSell() {
@@ -1161,6 +1275,31 @@ export function createSellPage({
     setField('sell-wheel-size', s.wheel_size);
     setField('sell-year', s.year);
     setField('sell-condition', s.condition);
+
+    // Cykel-specifikke felter — auto-udfyld + auto-vis avanceret-sektion hvis AI fandt noget
+    setField('sell-groupset',       s.groupset);
+    setField('sell-frame-material', s.frame_material);
+    setField('sell-brake-type',     s.brake_type);
+    if (s.electronic_shifting === true || s.electronic_shifting === false) {
+      setField('sell-electronic-shifting', String(s.electronic_shifting));
+    }
+    if (s.weight_kg != null) setField('sell-weight-kg', s.weight_kg);
+
+    const aiFilledAdvanced = Boolean(
+      s.groupset || s.frame_material || s.brake_type ||
+      s.electronic_shifting != null || s.weight_kg != null
+    );
+    if (aiFilledAdvanced) {
+      const sec = document.getElementById('sell-advanced-section');
+      const btn = document.getElementById('sell-advanced-toggle');
+      if (sec) sec.style.display = '';
+      if (btn) {
+        btn.setAttribute('aria-expanded', 'true');
+        const icon = btn.querySelector('.sell-advanced-icon');
+        if (icon) icon.textContent = '▾';
+      }
+    }
+
     if (s.color) {
       const colorList = BIKE_COLORS.map(c => c.name);
       const matched = colorList.filter(name => s.color.toLowerCase().includes(name.toLowerCase()));
@@ -1285,6 +1424,7 @@ export function createSellPage({
     setSellStep,
     advanceSell,
     backSell,
+    toggleAdvancedSpecs,
     saveSellDraft,
     clearSellDraft,
     initSellDraft,

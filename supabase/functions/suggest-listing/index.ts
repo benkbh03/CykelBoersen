@@ -36,6 +36,11 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
   "year": "integer eller null",
   "condition": "Ny|Som ny|God stand|Brugt",
   "color": "string eller null",
+  "groupset": "string eller null - fx 'Shimano 105', 'Shimano Ultegra Di2', 'SRAM Rival AXS', 'Shimano Deore XT'",
+  "frame_material": "Carbon|Aluminium|Stål|Titanium eller null",
+  "brake_type": "Skivebremser hydrauliske|Skivebremser mekaniske|Felgbremser|Tromlebremser eller null",
+  "electronic_shifting": "true eller false eller null - true hvis Di2/eTap/AXS synligt",
+  "weight_kg": "decimal eller null - fx 8.2 hvis vægt kan vurderes ud fra model+spec",
   "price_min": "integer - laveste realistiske pris i DKK",
   "price_max": "integer - højeste realistiske pris i DKK",
   "description": "string - 2-4 sætninger på dansk om cyklen, dens stand og særlige features"
@@ -45,6 +50,11 @@ Regler:
 - Kun felter du er rimeligt sikker på. Returnér null hvis du ikke kan se det.
 - Vær ærlig: hvis du kun ser delvist, returnér null på ukendte felter.
 - "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
+- "groupset": kun hvis du tydeligt kan se gear-skifterne, derailleurs eller kasette med læsbare tegn. Brug officielle navne (fx "Shimano 105 R7000", "SRAM Force AXS").
+- "frame_material": Carbon kender du på vævningsmønster + tykt rør / formgivning. Aluminium har ofte synlige svejsninger. Stål er tyndere rør og oftest ældre/klassiske. Returnér null hvis du er i tvivl.
+- "brake_type": "Skivebremser hydrauliske" har skivekaliber ved hjul + slangeforbindelse. "Skivebremser mekaniske" har wireforbindelse til kaliper. "Felgbremser" har bremseklodser direkte på hjulkant.
+- "electronic_shifting" sættes kun til true hvis du tydeligt ser Di2/eTap/AXS-logo eller kabelfri konfiguration.
+- "weight_kg": IKKE gæt — kun hvis du genkender model+spec og kender den officielle producentvægt. Ellers null.
 - Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
 - Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
 - Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.`;
@@ -141,7 +151,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model:      "claude-sonnet-4-6",
-        max_tokens: 800,
+        max_tokens: 1200,
         system:     SYSTEM_PROMPT,
         messages: [
           { role: "user", content: userContent },

@@ -1414,6 +1414,42 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 /* Step 2 form fields */
 .sell-field { margin-bottom: 14px; }
+
+/* Avancerede tekniske detaljer — toggle + sektion */
+.sell-advanced-toggle {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; margin: 12px 0 8px;
+  padding: 12px 14px;
+  background: var(--sand);
+  border: 1px solid var(--border); border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--charcoal); cursor: pointer;
+  text-align: left; transition: background 0.15s, border-color 0.15s;
+}
+.sell-advanced-toggle:hover {
+  background: #ebe6da;
+  border-color: var(--forest);
+}
+.sell-advanced-icon {
+  display: inline-block; width: 14px;
+  font-size: 11px; color: var(--forest);
+  transition: transform 0.18s;
+}
+.sell-advanced-label .hint {
+  font-weight: 400; color: var(--muted); font-size: 11px;
+  margin-left: 4px;
+}
+.sell-advanced-section {
+  margin-bottom: 14px;
+  padding: 14px; padding-top: 4px;
+  border-left: 2px solid var(--border);
+  margin-left: 4px;
+  animation: sell-advanced-fade 0.2s ease;
+}
+@keyframes sell-advanced-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .sell-field label {
   display: block; margin-bottom: 5px;
   font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
