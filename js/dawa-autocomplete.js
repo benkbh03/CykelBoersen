@@ -24,10 +24,40 @@ window.addEventListener('resize', () => {
   if (_dawaActive) _positionDawaDropdown(_dawaActive.input, _dawaActive.dropdown);
   document.body.classList.toggle('is-mp-mobile', window.innerWidth <= 768);
 });
+// iOS Safari fyrer kun 'resize' på window når layout-viewport ændres,
+// ikke når tastatur-popup ændrer den synlige viewport. visualViewport
+// fanger tastatur-events korrekt så dropdown kan flippe over input.
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (_dawaActive) _positionDawaDropdown(_dawaActive.input, _dawaActive.dropdown);
+  });
+  window.visualViewport.addEventListener('scroll', () => {
+    if (_dawaActive) _positionDawaDropdown(_dawaActive.input, _dawaActive.dropdown);
+  });
+}
 
 function _positionDawaDropdown(input, dropdown) {
   const rect = input.getBoundingClientRect();
-  dropdown.style.top   = (rect.bottom + 4) + 'px';
+  const vv = window.visualViewport;
+  const viewportTop    = vv ? vv.offsetTop : 0;
+  const viewportHeight = vv ? vv.height    : window.innerHeight;
+  const viewportBottom = viewportTop + viewportHeight;
+
+  // Estimer dropdown-højde — brug målt højde hvis renderet, ellers max-height fra CSS (280px)
+  const measured = dropdown.offsetHeight;
+  const dropdownHeight = (measured > 0 ? measured : 280);
+  const SPACING = 4;
+
+  const spaceBelow = viewportBottom - rect.bottom;
+  const spaceAbove = rect.top - viewportTop;
+
+  // Hvis tastatur (eller bunden af viewport) skjuler dropdown under input,
+  // og der er mere plads over input, så vend dropdown'en op.
+  if (spaceBelow < dropdownHeight + SPACING && spaceAbove > spaceBelow) {
+    dropdown.style.top = (rect.top - dropdownHeight - SPACING) + 'px';
+  } else {
+    dropdown.style.top = (rect.bottom + SPACING) + 'px';
+  }
   dropdown.style.left  = rect.left + 'px';
   dropdown.style.width = rect.width + 'px';
 }
