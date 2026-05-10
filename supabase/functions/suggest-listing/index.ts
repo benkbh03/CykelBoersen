@@ -23,9 +23,9 @@ const ALLOWED_MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif
 const MAX_IMAGES          = 4;
 const MAX_IMAGE_BYTES     = 5 * 1024 * 1024; // 5 MB base64-decoded
 
-const SYSTEM_PROMPT = `Du er en ekspert i brugte cykler og vurderer annoncer til den danske markedsplads Cykelbørsen.
+const SYSTEM_PROMPT = `Du er en ekspert i brugte cykler og hjælper sælgere udfylde annoncer på den danske markedsplads Cykelbørsen.
 
-Brugeren uploader 1-4 billeder af en cykel. Din opgave er at analysere billederne og foreslå felter til annoncen.
+Brugeren uploader 1-4 billeder af en cykel. Analysér dem og udfyld så MANGE felter du kan med rimelig sikkerhed. Lad være med at være overdrevent forsigtig — gæt kvalificeret når du kan, men brug null hvis billedet er virkelig uklart eller du ikke kan se feltet.
 
 Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, intet andet. Brug dette præcise schema:
 
@@ -38,28 +38,31 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
   "year": "integer eller null",
   "condition": "Ny|Som ny|God stand|Brugt",
   "color": "string eller null",
-  "groupset": "string eller null - fx 'Shimano 105', 'Shimano Ultegra Di2', 'SRAM Rival AXS', 'Shimano Deore XT'",
+  "groupset": "string eller null",
   "frame_material": "Carbon|Aluminium|Stål|Titanium eller null",
   "brake_type": "Skivebremser hydrauliske|Skivebremser mekaniske|Felgbremser|Tromlebremser eller null",
-  "electronic_shifting": "true eller false eller null - true hvis Di2/eTap/AXS synligt",
-  "weight_kg": "decimal eller null - fx 8.2 hvis vægt kan vurderes ud fra model+spec",
+  "electronic_shifting": "true eller false eller null",
+  "weight_kg": "decimal eller null",
   "price_min": "integer - laveste realistiske pris i DKK",
   "price_max": "integer - højeste realistiske pris i DKK",
   "description": "string - 2-4 sætninger på dansk om cyklen, dens stand og særlige features"
 }
 
-Regler:
-- Kun felter du er rimeligt sikker på. Returnér null hvis du ikke kan se det.
-- Vær ærlig: hvis du kun ser delvist, returnér null på ukendte felter.
-- "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
-- "groupset": kun hvis du tydeligt kan se gear-skifterne, derailleurs eller kasette med læsbare tegn. Brug officielle navne (fx "Shimano 105 R7000", "SRAM Force AXS").
-- "frame_material": Carbon kender du på vævningsmønster + tykt rør / formgivning. Aluminium har ofte synlige svejsninger. Stål er tyndere rør og oftest ældre/klassiske. Returnér null hvis du er i tvivl.
-- "brake_type": "Skivebremser hydrauliske" har skivekaliber ved hjul + slangeforbindelse. "Skivebremser mekaniske" har wireforbindelse til kaliper. "Felgbremser" har bremseklodser direkte på hjulkant.
-- "electronic_shifting" sættes kun til true hvis du tydeligt ser Di2/eTap/AXS-logo eller kabelfri konfiguration.
-- "weight_kg": IKKE gæt — kun hvis du genkender model+spec og kender den officielle producentvægt. Ellers null.
-- Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
-- Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
-- Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.`;
+Hovedregler:
+- "type" og "condition" SKAL altid forsøges udfyldt — selv på baggrund af generelt udseende. Det er kerne-felter.
+- "brand" + "model" — udfyld hvis du genkender logo eller karakteristisk design. Hvis du kun kan se brand men ikke model, returnér brand alene og null på model.
+- "color" — primærfarve(r) på rammen, fx "sort", "rød/sort", "hvid".
+- "size" + "wheel_size" — udfyld baseret på typiske størrelser for den synlige cykel.
+- "year" — kvalificeret gæt baseret på model + design-trends er OK.
+- Prisestimat: realistisk for DANSK brugtmarked i DKK, baseret på model + condition.
+- Beskrivelse: neutral og faktuel — ikke sælgende.
+
+Avancerede felter (kun hvis tydeligt synlige — ellers null):
+- "groupset" — fx "Shimano 105", "Shimano Ultegra Di2", "SRAM Rival AXS". Kun hvis derailleur/skifter-logo er læseligt.
+- "frame_material" — Carbon (vævningsmønster, organisk formgivning), Aluminium (svejsninger ved samlinger), Stål (tynde rør, ofte klassisk), Titanium (matgrå metal, sjælden).
+- "brake_type" — kig på hjulkant: skivebremser har kaliper og skive, felgbremser har klodser direkte på hjulkant.
+- "electronic_shifting" — kun true hvis Di2/eTap/AXS-logo eller batteri synligt.
+- "weight_kg" — kun hvis du kender model+spec og dens officielle vægt. Ellers null.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
