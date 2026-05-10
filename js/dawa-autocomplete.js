@@ -38,28 +38,38 @@ if (window.visualViewport) {
 
 function _positionDawaDropdown(input, dropdown) {
   const rect = input.getBoundingClientRect();
+
+  // Sæt bredde FØRST — så offsetHeight reflekterer den faktiske renderede
+  // højde efter items er ombrudt til kolonne-bredden. Hvis vi læste højden før
+  // bredden var sat, kunne dropdown være vidt brunden uden width-constraint
+  // og items ville måske ikke afspejle det endelige layout.
+  dropdown.style.left = rect.left + 'px';
+  dropdown.style.width = rect.width + 'px';
+
   const vv = window.visualViewport;
   const viewportTop    = vv ? vv.offsetTop : 0;
   const viewportHeight = vv ? vv.height    : window.innerHeight;
   const viewportBottom = viewportTop + viewportHeight;
 
-  // Estimer dropdown-højde — brug målt højde hvis renderet, ellers max-height fra CSS (280px)
-  const measured = dropdown.offsetHeight;
-  const dropdownHeight = (measured > 0 ? measured : 280);
   const SPACING = 4;
+  const PAD = 8; // ekstra margin fra viewport-kanter
+  const spaceBelow = viewportBottom - rect.bottom - SPACING - PAD;
+  const spaceAbove = rect.top - viewportTop - SPACING - PAD;
 
-  const spaceBelow = viewportBottom - rect.bottom;
-  const spaceAbove = rect.top - viewportTop;
+  // Faktisk indholds-højde efter bredde er sat
+  const naturalHeight = dropdown.offsetHeight || 0;
 
-  // Hvis tastatur (eller bunden af viewport) skjuler dropdown under input,
-  // og der er mere plads over input, så vend dropdown'en op.
-  if (spaceBelow < dropdownHeight + SPACING && spaceAbove > spaceBelow) {
-    dropdown.style.top = (rect.top - dropdownHeight - SPACING) + 'px';
-  } else {
+  if (spaceBelow >= naturalHeight || spaceBelow >= spaceAbove) {
+    // Placér under input (default)
     dropdown.style.top = (rect.bottom + SPACING) + 'px';
+    dropdown.style.maxHeight = Math.max(80, spaceBelow) + 'px';
+  } else {
+    // Placér over input — bunden af dropdown sidder LIGE over input
+    // (ikke 280px væk). useHeight er det mindste af faktisk indhold og plads.
+    const useHeight = Math.min(naturalHeight || 280, spaceAbove);
+    dropdown.style.top = (rect.top - useHeight - SPACING) + 'px';
+    dropdown.style.maxHeight = Math.max(80, spaceAbove) + 'px';
   }
-  dropdown.style.left  = rect.left + 'px';
-  dropdown.style.width = rect.width + 'px';
 }
 
 function _renderDawaDropdown(input, items, onPick, emptyMsg) {
