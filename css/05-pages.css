@@ -1245,7 +1245,7 @@ body:has(.map-page) #chat-widget {
   background: var(--sand);
   min-height: calc(100vh - 64px);
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   overflow-x: hidden;
 }
 .mp-inner {
