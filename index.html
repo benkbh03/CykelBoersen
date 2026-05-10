@@ -592,6 +592,56 @@
         </div>
       </div>
       <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Stelmaterial</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" style="display:none;">
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Carbon" onchange="applyFilters()"> Carbon <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Aluminium" onchange="applyFilters()"> Aluminium <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Stål" onchange="applyFilters()"> Stål <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Titanium" onchange="applyFilters()"> Titanium <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Bremser</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" style="display:none;">
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Skivebremser hydrauliske" onchange="applyFilters()"> Skivebremser hydrauliske <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Skivebremser mekaniske" onchange="applyFilters()"> Skivebremser mekaniske <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Felgbremser" onchange="applyFilters()"> Felgbremser <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Tromlebremser" onchange="applyFilters()"> Tromlebremser <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Gear-skifte</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" style="display:none;">
+          <label class="filter-option"><input type="checkbox" data-filter="electronic_shifting" data-value="true" onchange="applyFilters()"> Elektronisk (Di2/eTap/AXS) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="electronic_shifting" data-value="false" onchange="applyFilters()"> Mekanisk <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Komponentgruppe</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" style="display:none;">
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano 105" onchange="applyFilters()"> Shimano 105 <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Ultegra" onchange="applyFilters()"> Shimano Ultegra <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Dura-Ace" onchange="applyFilters()"> Shimano Dura-Ace <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Rival" onchange="applyFilters()"> SRAM Rival <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Force" onchange="applyFilters()"> SRAM Force <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Red" onchange="applyFilters()"> SRAM Red <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Deore" onchange="applyFilters()"> Shimano Deore (MTB) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano XT" onchange="applyFilters()"> Shimano XT (MTB) <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Farve</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>

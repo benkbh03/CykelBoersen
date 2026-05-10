@@ -69,7 +69,7 @@ export function createBikesList({
     const offset = getBikesOffset();
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + BIKES_PAGE_SIZE - 1);
@@ -270,12 +270,20 @@ export function createBikesList({
     loadBikes({ search, type, city });
   }
 
-  async function loadBikesWithFilters({ types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId, wheelSizes = [], sizes = [], colors = [], brands = [] } = {}, append = false) {
+  async function loadBikesWithFilters({
+    types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId,
+    wheelSizes = [], sizes = [], colors = [], brands = [],
+    frameMaterials = [], brakeTypes = [], groupsets = [], electronicShifting = null,
+  } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
     if (!append) {
       setFilterOffset(0);
-      setCurrentFilterArgs({ types, conditions, minPrice, maxPrice, sellerType, dealerId, wheelSizes, sizes, colors, brands });
+      setCurrentFilterArgs({
+        types, conditions, minPrice, maxPrice, sellerType, dealerId,
+        wheelSizes, sizes, colors, brands,
+        frameMaterials, brakeTypes, groupsets, electronicShifting,
+      });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
       if (old) old.remove();
@@ -284,7 +292,7 @@ export function createBikesList({
     const offset = getFilterOffset();
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + BIKES_PAGE_SIZE - 1);
@@ -298,6 +306,19 @@ export function createBikesList({
     if (dealerId)              query = query.eq('user_id', dealerId);
     if (wheelSizes.length > 0) query = query.in('wheel_size', wheelSizes);
     if (sellerType && !dealerId) query = query.eq('profiles.seller_type', sellerType);
+
+    // Cykel-specifikke filtre
+    if (frameMaterials.length > 0) query = query.in('frame_material', frameMaterials);
+    if (brakeTypes.length > 0)     query = query.in('brake_type', brakeTypes);
+    // Groupset er fritekst — match starter-substring så fx 'Shimano 105' matcher
+    // 'Shimano 105 R7000', 'Shimano 105 11-speed' osv. via OR-kombination.
+    if (groupsets.length > 0) {
+      const orFilter = groupsets.map(g => `groupset.ilike.${g.replace(/,/g, '\\,')}*`).join(',');
+      query = query.or(orFilter);
+    }
+    if (electronicShifting === true || electronicShifting === false) {
+      query = query.eq('electronic_shifting', electronicShifting);
+    }
     if (brands.length > 0) {
       const hasAndre = brands.includes('Andre');
       const specificBrands = brands.filter(b => b !== 'Andre');
