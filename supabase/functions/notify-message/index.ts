@@ -175,7 +175,17 @@ serve(async (req) => {
 
     // ── FORHANDLER ANSØGNING → ADMIN ─────────────────────────
     if (payload.type === "dealer_application") {
-      const { shop_name, cvr, contact, city, phone, address, email, user_id } = payload;
+      const { shop_name, cvr, contact, city, phone, address, email, user_id, source } = payload;
+
+      const sourceRows = source && (source.utm_source || source.utm_campaign || source.referrer)
+        ? `
+          <strong>Kilde:</strong> ${source.utm_source ?? "–"}<br>
+          ${source.utm_campaign ? `<strong>Kampagne:</strong> ${source.utm_campaign}<br>` : ""}
+          ${source.utm_medium   ? `<strong>Medium:</strong> ${source.utm_medium}<br>` : ""}
+          ${source.utm_content  ? `<strong>Variant:</strong> ${source.utm_content}<br>` : ""}
+          ${source.referrer     ? `<strong>Referrer:</strong> ${source.referrer}<br>` : ""}
+        `
+        : "";
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 16px;">🏪 Ny forhandleransøgning</h2>
@@ -186,7 +196,7 @@ serve(async (req) => {
           ${phone ? `<strong>Telefon:</strong> ${phone}<br>` : ""}
           ${address ? `<strong>Adresse:</strong> ${address}<br>` : ""}
           <strong>By:</strong> ${city ?? "–"}<br>
-          <strong>Email:</strong> ${email ?? "–"}
+          <strong>Email:</strong> ${email ?? "–"}${sourceRows ? `<br><br>${sourceRows}` : ""}
         </p>
         <div style="background:#FEF3E7;border-left:4px solid #C8502A;padding:12px 16px;border-radius:0 8px 8px 0;margin:0 0 20px;">
           <p style="color:#1A1A18;margin:0;font-size:0.9rem;">

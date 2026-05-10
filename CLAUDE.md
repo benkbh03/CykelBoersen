@@ -1,6 +1,8 @@
 # CykelBørsen
 
-Danmarks dedikerede markedsplads for køb og salg af brugte cykler. Single-page vanilla JS app hostet via GitHub Pages, med Supabase som backend, Stripe til forhandlerbetaling, Resend til e-mail og Anthropic Claude Haiku som support-bot.
+Danmarks dedikerede markedsplads for køb og salg af brugte cykler. Single-page vanilla JS app hostet via GitHub Pages, med Supabase som backend, Resend til e-mail og Anthropic Claude Haiku som support-bot.
+
+> **Bemærk om forhandler-betaling**: Forhandlerregistrering er **gratis lige nu** (lancering / ramp-up-fase) — målet er at få et kritisk antal forhandlere ind først. Stripe-edge-functions (`create-checkout-session`, `create-portal-session`, `stripe-webhook`) ligger klar i `supabase/functions/` til når betalt model genaktiveres, men kaldes ikke fra `/bliv-forhandler`-flowet pt. Formularen opretter direkte en `seller_type='dealer'`-profil der venter på admin-godkendelse (manuel `verified=true`).
 
 ## Projektstruktur
 
@@ -22,9 +24,9 @@ CykelBoersen/
         ├── notify-message/         # E-mail notifikationer (Resend)
         ├── notify-saved-searches/  # Match nye annoncer mod gemte søgninger
         ├── delete-account/         # Cascading sletning af konto + alle data
-        ├── create-checkout-session/ # Stripe subscription checkout
-        ├── create-portal-session/  # Stripe billing portal
-        ├── stripe-webhook/         # Stripe events → dealer status sync
+        ├── create-checkout-session/ # Stripe subscription checkout (DORMANT — forhandler er gratis pt.)
+        ├── create-portal-session/  # Stripe billing portal (DORMANT)
+        ├── stripe-webhook/         # Stripe events → dealer status sync (DORMANT)
         └── chat-support/           # Claude Haiku-baseret support-bot
 ```
 
@@ -150,9 +152,16 @@ updateSEOMeta(description, canonicalPath)   // Opdatér meta-tags ved routing
 
 ### Sælgertype-kontrol
 - Privatpersoner kan IKKE skifte til forhandler via profil-dropdown
-- Forhandleroprettelse sker KUN via "Bliv forhandler"-flowet (Stripe checkout)
+- Forhandleroprettelse sker KUN via "Bliv forhandler"-flowet (`/bliv-forhandler`)
 - `saveProfile()` låser `seller_type` til nuværende værdi
-- `stripe-webhook` sætter `verified=true` ved vellykket `checkout.session.completed`
+- **Lige nu (gratis-fase)**: `submitDealerApplication()` opretter `seller_type='dealer'` med `verified=false`. Admin godkender manuelt via admin-panelet (sætter `verified=true`).
+- **Når Stripe-modellen genaktiveres**: redirect til `create-checkout-session` efter formular-submit, og `stripe-webhook` sætter `verified=true` ved vellykket `checkout.session.completed`. Stripe-functions er stadig i `supabase/functions/` — klar til reaktivering.
+
+### Sporing af forhandler-leads
+- `/bliv-forhandler` capturer `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` + `document.referrer` ved sidevisning og gemmer i `sessionStorage` under nøglen `dealer_signup_source`.
+- UTMs sendes med i `notify-message`-payload som `source`-objekt → admin-emailen viser kilde + kampagne for hver ny forhandleransøgning.
+- `window.dataLayer.push({ event: 'view_become_dealer' | 'submit_dealer_application', ...source })` så HubSpot/GA4-tracking automatisk plukker events op når en tracking-snippet senere tilføjes til `index.html`.
+- Brug fx `?utm_source=hubspot&utm_campaign=dealer_invite_v1` på links i mail-kampagner for at kunne se konvertering pr. kanal.
 
 ### Fejl-HTML med "Prøv igen"-knap
 ```js
@@ -243,9 +252,9 @@ Storage buckets: `avatars` (profilbilleder), bike-images (annonce-billeder).
 | `notify-message` | Resend e-mail: ny besked, bud accepteret, annonce liket, ID godkendt/afvist, kontaktform, rapport |
 | `notify-saved-searches` | Match nye annoncer mod gemte søgninger → daglig e-mail pr. match |
 | `delete-account` | Cascading sletning: saved_searches → bikes → reviews → messages → bike_images → profile → auth user |
-| `create-checkout-session` | Stripe subscription checkout (månedlig/årlig, 90-dages trial) |
-| `create-portal-session` | Stripe billing portal for aktive abonnementer |
-| `stripe-webhook` | Aktiver/deaktiver forhandler-status baseret på Stripe events |
+| `create-checkout-session` | **DORMANT** — Stripe subscription checkout. Klar til reaktivering når betalt model genaktiveres. |
+| `create-portal-session` | **DORMANT** — Stripe billing portal for aktive abonnementer |
+| `stripe-webhook` | **DORMANT** — Aktiver/deaktiver forhandler-status baseret på Stripe events |
 | `chat-support` | Claude Haiku-baseret support-bot (dansk, FAQ om annoncer, konto, beskeder, forhandler) |
 
 Alle edge functions bruger Deno runtime, inkluderer CORS headers og bruger Supabase service-role key hvor nødvendigt.
