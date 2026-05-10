@@ -12,7 +12,7 @@ export function renderStaticPageView(type, deps) {
   if (!data) { showListingView(); return; }
   showDetailView();
   document.title = `${data.title} – Cykelbørsen`;
-  const metaDesc = data.metaDesc || `${data.title} – Cykelbørsen. Danmarks markedsplads for brugte cykler.`;
+  const metaDesc = data.metaDesc || `${data.title} – Cykelbørsen. Danmarks dedikerede markedsplads for nye og brugte cykler.`;
   updateSEOMeta(metaDesc, staticPageRoutes[type] || '/');
   const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
   const body = data.body.replace(/closeFooterModal\(\);openFooterModal\('contact'\)/g, "navigateTo('/kontakt')");

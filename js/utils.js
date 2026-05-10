@@ -4,7 +4,7 @@
    ============================================================ */
 
 export const BASE_URL = 'https://cykelbørsen.dk';
-const DEFAULT_DESC = 'Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
+const DEFAULT_DESC = 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
 
 // Hjælper: deaktiver knap og vis spinner, returnerer gendan-funktion
 export function btnLoading(id, label) {

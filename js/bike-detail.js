@@ -386,8 +386,8 @@ export function createBikeDetail({
         document.title = _origTitle;
         const ogImage = document.querySelector('meta[property="og:image"]');
         if (ogImage && !ogImage.dataset.static) ogImage.remove();
-        _setMeta('og:title', 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark');
-        _setMeta('og:description', 'Danmarks markedsplads for brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce.');
+        _setMeta('og:title', 'Cykelbørsen – Køb & Sælg Nye og Brugte Cykler i Danmark');
+        _setMeta('og:description', 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce.');
       };
 
       document.getElementById('bike-modal-body').innerHTML = html;

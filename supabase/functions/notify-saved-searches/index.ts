@@ -38,7 +38,7 @@ function emailWrapper(content) {
         <tr><td style="padding:32px;">${content}</td></tr>
         <tr><td style="padding:16px 32px;background:#F5F0E8;border-top:1px solid #DDD8CE;">
           <p style="color:#8A8578;font-size:0.75rem;margin:0;">
-            <a href="https://cykelbørsen.dk" style="color:#C8502A;">Cykelbørsen</a> – Danmarks markedsplads for brugte cykler
+            <a href="https://cykelbørsen.dk" style="color:#C8502A;">Cykelbørsen</a> – Danmarks dedikerede markedsplads for nye og brugte cykler
           </p>
         </td></tr>
       </table>
