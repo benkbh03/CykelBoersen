@@ -31,6 +31,45 @@ export function createDealersPage({
   let _dealerGPSActive = false;
   let _dealerGPSCoords = null;
   let _dealerActiveServices = new Set();
+  let _dealerSignupSource = null;
+
+  function captureSignupSource() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const fresh = {
+        utm_source:   params.get('utm_source')   || null,
+        utm_medium:   params.get('utm_medium')   || null,
+        utm_campaign: params.get('utm_campaign') || null,
+        utm_content:  params.get('utm_content')  || null,
+        referrer:     document.referrer || null,
+      };
+      const hasUtm = fresh.utm_source || fresh.utm_campaign;
+      if (hasUtm) {
+        sessionStorage.setItem('dealer_signup_source', JSON.stringify(fresh));
+        _dealerSignupSource = fresh;
+        return;
+      }
+      const stored = sessionStorage.getItem('dealer_signup_source');
+      _dealerSignupSource = stored ? JSON.parse(stored) : fresh;
+    } catch {
+      _dealerSignupSource = null;
+    }
+  }
+
+  async function fetchSocialProofCounts() {
+    try {
+      const [dealerRes, bikeRes] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true),
+        supabase.from('bikes').select('id', { count: 'exact', head: true }).eq('is_active', true),
+      ]);
+      return {
+        dealers: dealerRes.count ?? 0,
+        bikes:   bikeRes.count   ?? 0,
+      };
+    } catch {
+      return null;
+    }
+  }
 
   // ── Thin wrappers for legacy compat ──────────────────────
 
@@ -291,6 +330,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
   function renderBecomeDealerPage() {
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
+    captureSignupSource();
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
     document.title = 'Bliv forhandler – Cykelbørsen';
@@ -365,6 +405,26 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         🎉 <strong>Gratis for forhandlere</strong> — opret din butiksprofil uden binding eller betaling.
       </div>
 
+      <div class="bd-social-proof" id="bd-social-proof" aria-live="polite">
+        <div class="bd-social-stat">
+          <span class="bd-social-num" id="bd-stat-dealers">–</span>
+          <span class="bd-social-label">verificerede forhandlere</span>
+        </div>
+        <div class="bd-social-stat">
+          <span class="bd-social-num" id="bd-stat-bikes">–</span>
+          <span class="bd-social-label">aktive cykler til salg</span>
+        </div>
+        <div class="bd-social-stat">
+          <span class="bd-social-num">2 min</span>
+          <span class="bd-social-label">at oprette profil</span>
+        </div>
+      </div>
+
+      <p class="bd-preview-link">
+        Vil du se hvordan jeres butik kommer til at se ud?
+        <a onclick="navigateTo('/forhandlere')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">Se eksisterende forhandlere →</a>
+      </p>
+
       <div class="bd-perks">
         <div class="bd-perk">✅ <span>Ubegrænset antal annoncer</span></div>
         <div class="bd-perk">✅ <span>Verificeret forhandler-badge</span></div>
@@ -430,6 +490,22 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         }
       });
     }
+
+    fetchSocialProofCounts().then((counts) => {
+      if (!counts) return;
+      const dealerEl = document.getElementById('bd-stat-dealers');
+      const bikeEl   = document.getElementById('bd-stat-bikes');
+      if (dealerEl) dealerEl.textContent = counts.dealers > 0 ? counts.dealers : '–';
+      if (bikeEl)   bikeEl.textContent   = counts.bikes   > 0 ? counts.bikes   : '–';
+    });
+
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'view_become_dealer',
+        ...(_dealerSignupSource || {}),
+      });
+    } catch {}
   }
 
   async function submitDealerApplication() {
@@ -514,8 +590,18 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           city:      city,
           email:     email,
           user_id:   userId,
+          source:    _dealerSignupSource || null,
         },
       }).catch(() => {});
+
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'submit_dealer_application',
+          flow:  'signup',
+          ...(_dealerSignupSource || {}),
+        });
+      } catch {}
 
       restore();
       document.getElementById('detail-view').innerHTML = `
@@ -571,8 +657,18 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         city:      city,
         email:     currentUser.email,
         user_id:   currentUser.id,
+        source:    _dealerSignupSource || null,
       },
     }).catch(() => {});
+
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'submit_dealer_application',
+        flow:  'logged_in',
+        ...(_dealerSignupSource || {}),
+      });
+    } catch {}
 
     showToast('✅ Ansøgning modtaget – vi vender tilbage hurtigst muligt!');
     navigateTo('/min-profil');

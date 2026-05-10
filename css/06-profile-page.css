@@ -2073,6 +2073,44 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   text-align: center;
 }
 
+.bd-social-proof {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.bd-social-stat {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+.bd-social-num {
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  line-height: 1.1;
+}
+.bd-social-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.bd-preview-link {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
 .bd-perks {
   display: flex;
   flex-direction: column;
@@ -2142,6 +2180,10 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .bd-page-title { font-size: 1.5rem; }
   .bd-plans { grid-template-columns: 1fr; }
   .bd-form { padding: 18px 16px; }
+  .bd-social-proof { gap: 8px; }
+  .bd-social-stat { padding: 12px 4px; }
+  .bd-social-num { font-size: 1.3rem; }
+  .bd-social-label { font-size: 0.68rem; }
 }
 
 .dealers-page {
