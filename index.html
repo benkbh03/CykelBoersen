@@ -591,46 +591,46 @@
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='29"' onchange="applyFilters()"> 29" <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
+      <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Stelmaterial</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="filter-group sidebar-section-body" style="display:none;">
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Carbon" onchange="applyFilters()"> Carbon <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Aluminium" onchange="applyFilters()"> Aluminium <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Stål" onchange="applyFilters()"> Stål <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Titanium" onchange="applyFilters()"> Titanium <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
+      <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Bremser</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="filter-group sidebar-section-body" style="display:none;">
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Skivebremser hydrauliske" onchange="applyFilters()"> Skivebremser hydrauliske <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Skivebremser mekaniske" onchange="applyFilters()"> Skivebremser mekaniske <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Felgbremser" onchange="applyFilters()"> Felgbremser <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Tromlebremser" onchange="applyFilters()"> Tromlebremser <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
+      <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Gear-skifte</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="filter-group sidebar-section-body" style="display:none;">
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="electronic_shifting" data-value="true" onchange="applyFilters()"> Elektronisk (Di2/eTap/AXS) <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="electronic_shifting" data-value="false" onchange="applyFilters()"> Mekanisk <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
+      <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Komponentgruppe</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="filter-group sidebar-section-body" style="display:none;">
+        <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano 105" onchange="applyFilters()"> Shimano 105 <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Ultegra" onchange="applyFilters()"> Shimano Ultegra <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Dura-Ace" onchange="applyFilters()"> Shimano Dura-Ace <span class="filter-count">–</span></label>
@@ -1240,6 +1240,49 @@
             </div>
           </div>
           <div class="form-group"><label>By *</label><input type="text" id="edit-city" placeholder="f.eks. København"></div>
+          <div class="form-group">
+            <label>Hjulstørrelse</label>
+            <select id="edit-wheel-size">
+              <option value="">Vælg</option>
+              <option>26"</option><option>27.5" / 650b</option><option>28"</option><option>29"</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Stelmaterial</label>
+            <select id="edit-frame-material">
+              <option value="">Vælg</option>
+              <option>Carbon</option><option>Aluminium</option><option>Stål</option><option>Titanium</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Bremsetype</label>
+            <select id="edit-brake-type">
+              <option value="">Vælg</option>
+              <option>Skivebremser hydrauliske</option><option>Skivebremser mekaniske</option>
+              <option>Felgbremser</option><option>Tromlebremser</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Gear-skifte</label>
+            <select id="edit-electronic-shifting">
+              <option value="">Vælg</option>
+              <option value="false">Mekanisk</option>
+              <option value="true">Elektronisk (Di2/eTap/AXS)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Komponentgruppe <small style="color:var(--muted);font-weight:400">(fx Shimano 105)</small></label>
+            <input type="text" id="edit-groupset" list="edit-groupset-list" placeholder="Shimano 105" autocomplete="off">
+            <datalist id="edit-groupset-list">
+              <option value="Shimano 105"><option value="Shimano Ultegra"><option value="Shimano Dura-Ace">
+              <option value="SRAM Rival"><option value="SRAM Force"><option value="SRAM Red">
+              <option value="Shimano Deore"><option value="Shimano XT"><option value="Shimano SLX">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label>Vægt <small style="color:var(--muted);font-weight:400">(kg)</small></label>
+            <input type="number" id="edit-weight-kg" placeholder="f.eks. 8.2" min="2" max="50" step="0.1">
+          </div>
           <div class="form-group full"><label>Farve(r) <small style="color:var(--muted);font-weight:400">(vælg én eller flere)</small></label><div class="color-swatch-grid" id="edit-color-grid"></div></div>
           <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..."></textarea></div>
           <div class="form-group full" id="edit-warranty-group" style="display:none;">
