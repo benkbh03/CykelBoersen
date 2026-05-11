@@ -42,10 +42,6 @@ export function createImageUpload({
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    document.querySelectorAll('#crop-modal .crop-ratio-btn').forEach(b => b.classList.remove('active'));
-    const def = document.querySelector('#crop-modal .crop-ratio-btn[data-ratio="1.5"]');
-    if (def) def.classList.add('active');
-
     if (_cropperInstance) { try { _cropperInstance.destroy(); } catch (_) {} _cropperInstance = null; }
 
     _cropperInstance = new Cropper(img, {

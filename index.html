@@ -1605,13 +1605,7 @@
         <div class="crop-container"><img id="crop-target" alt="Billede der beskæres"></div>
       </div>
       <div class="crop-modal-footer">
-        <div class="crop-ratio-toggle" role="group" aria-label="Billedforhold">
-          <button type="button" class="crop-ratio-btn active" data-ratio="1.5" onclick="setCropRatio(3/2, this)">3:2 <span style="font-size:0.7em;opacity:0.7;font-weight:400;">(annonce)</span></button>
-          <button type="button" class="crop-ratio-btn" data-ratio="1.3333" onclick="setCropRatio(4/3, this)">4:3</button>
-          <button type="button" class="crop-ratio-btn" data-ratio="1" onclick="setCropRatio(1, this)">1:1</button>
-          <button type="button" class="crop-ratio-btn" data-ratio="1.7778" onclick="setCropRatio(16/9, this)">16:9</button>
-          <button type="button" class="crop-ratio-btn" data-ratio="0" onclick="setCropRatio(NaN, this)">Frit</button>
-        </div>
+        <div class="crop-modal-hint">Vælg hvilket udsnit af billedet der skal vises på annoncen (3:2 format)</div>
         <div class="crop-modal-actions">
           <button type="button" class="btn-secondary" onclick="closeCropModal()">Annuller</button>
           <button type="button" class="btn-primary" onclick="applyCrop()">Gem beskæring</button>
