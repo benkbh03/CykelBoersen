@@ -381,6 +381,20 @@ export const BRANDS_META = {
     },
     typical_price_range: '4.000 – 45.000 kr',
   },
+  centurion: {
+    name: 'Centurion',
+    country: 'Tyskland',
+    founded: 1976,
+    tagline: 'Tysk cykelkvalitet siden 1976',
+    description: 'Centurion er et tysk cykelmærke grundlagt af Wolfgang Renner i 1976 — samme person der senere grundlagde Merida-koncernen. Producerer et bredt sortiment fra MTB og racere til citybikes og e-cykler. Kendt i Danmark for god pris-kvalitet og solide trekking-/citybikes.',
+    popular_models: {
+      'Mountainbike': ['Numinis', 'Backfire', 'No Pogo'],
+      'Citybike': ['Crossline', 'Cross Tour', 'City.R'],
+      'El-cykel': ['E-Numinis', 'E-Trekking', 'E-Fire'],
+      'Racercykel': ['Hyperdrive'],
+    },
+    typical_price_range: '3.500 – 45.000 kr',
+  },
   haibike: {
     name: 'Haibike',
     country: 'Tyskland',
