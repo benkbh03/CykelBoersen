@@ -1262,11 +1262,16 @@ function closeMapBikeModal() {
 }
 
 function closeAllModals() {
+  // Modaler der bruger display:flex/none
   ['all-dealers-modal','dealer-profile-modal','user-profile-modal'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-  ['bike-modal','map-bike-modal'].forEach(id => {
+  // Modaler der bruger .open-klasse
+  ['bike-modal','map-bike-modal','modal','edit-modal','login-modal',
+   'profile-modal','inbox-modal','share-modal','report-modal',
+   'admin-modal','reset-modal','listing-success-modal',
+   'rate-now-modal','delete-account-modal'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.remove('open');
   });

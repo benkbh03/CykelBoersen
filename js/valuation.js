@@ -39,7 +39,7 @@ export function createValuation({
 
     detailView.innerHTML = `
       <div class="valuation-page">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Forsiden</button>
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
 
         <header class="valuation-hero">
           <h1 class="valuation-title">Hvad er din cykel værd?</h1>
