@@ -1530,7 +1530,15 @@ function updatePwStrength(inputId, wrapId) {
 
 function navigateTo(path) {
   document.body.classList.remove('on-sell-page');
-  history.pushState({}, '', path);
+  // Undgå duplikerede consecutive history-entries: hvis vi allerede er på
+  // samme path, brug replaceState i stedet — så browser-back ikke skal
+  // klikkes 2 gange for at komme forbi en 'no-op'-navigation.
+  const currentPath = window.location.pathname + window.location.search;
+  if (currentPath === path) {
+    history.replaceState({}, '', path);
+  } else {
+    history.pushState({}, '', path);
+  }
   handleRoute();
 }
 
