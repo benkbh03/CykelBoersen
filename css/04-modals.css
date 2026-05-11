@@ -812,24 +812,39 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   }
   .bike-sticky-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex: 1;
+    min-width: 0;
     justify-content: flex-end;
   }
   .bike-sticky-contact,
   .bike-sticky-bid {
     border: none;
     border-radius: 8px;
-    padding: 11px 14px;
-    font-size: 0.88rem;
+    padding: 11px 12px;
+    font-size: 0.85rem;
     font-weight: 600;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
     transition: opacity 0.15s;
     white-space: nowrap;
+    text-decoration: none;
+    text-align: center;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   .bike-sticky-contact { background: var(--forest); color: var(--sand); }
   .bike-sticky-bid { background: var(--rust); color: #fff; }
+  @media (max-width: 380px) {
+    .bike-sticky-price { font-size: 0.95rem; }
+    .bike-sticky-contact,
+    .bike-sticky-bid { padding: 10px 10px; font-size: 0.8rem; }
+  }
   .bike-sticky-contact:active,
   .bike-sticky-bid:active { opacity: 0.8; }
   /* Giv plads nederst så indhold ikke skjules bag baren */

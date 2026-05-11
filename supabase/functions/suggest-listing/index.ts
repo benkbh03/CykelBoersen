@@ -42,6 +42,12 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
 }
 
 Regler:
+- VIGTIGST: Kig efter logo eller brand-navn skrevet PÅ rammen. Logoer er
+  typisk placeret på down tube (røret under styret), top tube eller head tube.
+  Hvis du kan se et tydeligt navn (fx "CUBE", "Trek", "Specialized", "Cervélo",
+  "Canyon", "Giant", "Scott", "Cannondale", "Bianchi", "Focus", "Merida"),
+  brug det som primær kilde til brand-identifikation. Gæt aldrig forkert mærke
+  hvis du tydeligt kan se logoet.
 - Kun felter du er rimeligt sikker på. Returnér null hvis du ikke kan se det.
 - Vær ærlig: hvis du kun ser delvist, returnér null på ukendte felter.
 - "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
@@ -145,9 +151,9 @@ Deno.serve(async (req) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model:       "claude-sonnet-4-5-20250929",
+        model:       "claude-opus-4-1-20250805",
         max_tokens:  800,
-        temperature: 0,
+        temperature: 0.2,
         system:      SYSTEM_PROMPT,
         messages: [
           { role: "user", content: userContent },
