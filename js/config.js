@@ -29,5 +29,6 @@ export const STATIC_PAGE_ROUTES = {
   privacy: '/privatlivspolitik',
   contact: '/kontakt',
   'guide-tjek': '/guide/tjek-brugt-cykel',
+  'sikkerhedsguide': '/sikkerhedsguide',
   cookies: '/cookiepolitik',
 };

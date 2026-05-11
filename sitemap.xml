@@ -45,6 +45,23 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://xn--cykelbrsen-5cb.dk/sikkerhedsguide</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xn--cykelbrsen-5cb.dk/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Blog-artikler -->
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/undgaa-stjaalet-cykel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/cykelstoerrelse-guide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/koeb-brugt-el-cykel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/bedre-cykel-billeder</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/saelg-cykel-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/racercykler-under-15000</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <!-- Brand-landingssider — top 15 -->
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/trek</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cube</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
