@@ -53,7 +53,7 @@ export function createBrandPage({
     // Render skelet med loading-state
     detailView.innerHTML = `
       <div class="brand-page">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Forsiden</button>
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <div class="brand-page-hero">
           <h1 class="brand-page-title">${esc(brandName)}</h1>
           ${meta.tagline ? `<p class="brand-page-tagline">${esc(meta.tagline)}</p>` : ''}
@@ -315,7 +315,7 @@ export function createBrandPage({
 
     detailView.innerHTML = `
       <div class="brands-overview-page">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Forsiden</button>
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
 
         <header class="brands-overview-hero">
           <h1 class="brands-overview-title">Alle cykelmærker</h1>

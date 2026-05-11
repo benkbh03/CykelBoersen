@@ -49,7 +49,7 @@ export function createSizeFinder({
 
     detailView.innerHTML = `
       <div class="size-finder-page">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Forsiden</button>
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
 
         <header class="size-finder-hero">
           <h1 class="size-finder-title">Find din cykelstørrelse</h1>

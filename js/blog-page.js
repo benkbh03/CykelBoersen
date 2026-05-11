@@ -33,7 +33,7 @@ export function createBlogPage({
 
     detailView.innerHTML = `
       <div class="blog-page">
-        <button class="sell-back-btn" onclick="navigateTo('/')">← Forsiden</button>
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
 
         <header class="blog-hero">
           <h1 class="blog-title">Cykelbørsen Blog</h1>
@@ -109,7 +109,7 @@ export function createBlogPage({
 
     detailView.innerHTML = `
       <article class="blog-article">
-        <button class="sell-back-btn" onclick="navigateTo('/blog')">← Blog</button>
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/blog')">← Tilbage</button>
 
         <header class="blog-article-header">
           <div class="blog-article-emoji">${article.heroEmoji}</div>
