@@ -533,7 +533,7 @@ const _ensureDealersPage = lazyCtrl(
   () => import('./js/dealers-page.js'),
   'createDealersPage',
   () => ({
-    supabase, showToast, esc, getInitials,
+    supabase, showToast, esc, getInitials, safeAvatarUrl, transformImageUrl,
     formatDistanceKm, haversineKm, updateSEOMeta, btnLoading,
     geocodeAddress, geocodeCity,
     showDetailView,
