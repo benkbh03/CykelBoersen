@@ -9,7 +9,7 @@
 // Output: { suggestion: { brand, model, type, size, wheel_size, year, condition,
 //                         color, price_min, price_max, description } }
 
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") ?? "";
+const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") || Deno.env.get("ANTHROPIC_API_KEY") || "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model:      "claude-sonnet-4-6",
+        model:      "claude-haiku-4-5-20251001",
         max_tokens: 800,
         system:     SYSTEM_PROMPT,
         messages: [

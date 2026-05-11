@@ -196,8 +196,8 @@ export function createBikeDetail({
           <div class="action-buttons">
             ${b.external_url ? `
             <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-external-cta">
-              🛒 Gå til varen hos ${esc(profile.shop_name || profile.name || 'forhandler')}
-              <span class="btn-external-cta-sub">Køb direkte på forhandlerens egen webshop</span>
+              🛒 Se hos ${esc(profile.shop_name || profile.name || 'forhandler')}
+              <span class="btn-external-cta-sub">Bestil direkte hos forhandleren</span>
             </a>` : `
             <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
             <div class="bid-box" id="bid-box">
@@ -330,7 +330,7 @@ export function createBikeDetail({
         <div class="bike-sticky-actions">
           <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">✉️ Kontakt</button>
           ${b.external_url
-            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Gå til varen">🛒 Gå til varen</a>`
+            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Se hos forhandler">🛒 Se hos forhandler</a>`
             : `<button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">💰 Giv bud</button>`}
         </div>
       </div>` : ''}
