@@ -9,6 +9,8 @@ export function createDealersPage({
   showToast,
   esc,
   getInitials,
+  safeAvatarUrl,
+  transformImageUrl,
   formatDistanceKm,
   haversineKm,
   updateSEOMeta,
@@ -266,6 +268,11 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
   function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) {
     const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
     const initials     = getInitials(displayName);
+    const avatarUrl    = safeAvatarUrl ? safeAvatarUrl(dealer.avatar_url) : (dealer.avatar_url || null);
+    const avatarThumb  = avatarUrl && transformImageUrl ? transformImageUrl(avatarUrl, { width: 120, quality: 80 }) : avatarUrl;
+    const logoHtml     = avatarThumb
+      ? `<img src="${avatarThumb}" alt="${esc(displayName)}" loading="lazy" decoding="async" width="60" height="60">`
+      : initials;
     const locationText = dealer.address && dealer.city
       ? `${dealer.address}, ${dealer.city}`
       : dealer.city || '';
@@ -305,7 +312,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     return `
     <div class="dealer-card" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
       <div class="dealer-card-top">
-        <div class="dealer-logo-circle">${initials}</div>
+        <div class="dealer-logo-circle${avatarThumb ? ' dealer-logo-circle--img' : ''}">${logoHtml}</div>
         ${distHtml}
       </div>
       <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
