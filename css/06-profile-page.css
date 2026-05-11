@@ -2402,6 +2402,18 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 0 auto;
   padding: 24px 24px 80px;
 }
+.brand-bikes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 250px));
+  gap: 16px;
+  justify-content: start;
+}
+@media (max-width: 600px) {
+  .brand-bikes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
 .brand-page-hero {
   text-align: center;
   padding: 24px 0 16px;

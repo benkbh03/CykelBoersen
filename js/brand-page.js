@@ -71,7 +71,7 @@ export function createBrandPage({
 
         <div id="brand-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Cykler til salg</h2>
-          <div id="brand-bikes-grid" class="bike-grid">
+          <div id="brand-bikes-grid" class="brand-bikes-grid">
             <p style="color:var(--muted);padding:20px;">Henter ${esc(brandName)}-cykler…</p>
           </div>
         </div>
@@ -140,7 +140,6 @@ export function createBrandPage({
     }
 
     grid.innerHTML = bikes.map(b => buildBikeCard(b)).join('');
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr))';
 
     // Opdater sektion-titel med antal
     const sectionTitle = document.querySelector('#brand-bikes-section .brand-page-section-title');
