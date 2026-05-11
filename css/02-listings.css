@@ -220,7 +220,7 @@
   display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
 }
 .card-seller-bottom {
-  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
 }
 .seller-name {
   font-size: 0.78rem; color: var(--charcoal); font-weight: 600;
