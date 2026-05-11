@@ -3,6 +3,8 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
+import { brandToSlug } from './brand-data.js';
+
 export function createBikeDetail({
   supabase,
   showToast,
@@ -632,7 +634,8 @@ export function createBikeDetail({
     detailView.innerHTML = `
       <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
         <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
-        <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:20px;color:var(--charcoal);">${esc(b.brand)} ${esc(b.model)}</h1>
+        <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;color:var(--charcoal);">${esc(b.brand)} ${esc(b.model)}</h1>
+        ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler →</a>` : ''}
         ${html}
       </div>`;
 
