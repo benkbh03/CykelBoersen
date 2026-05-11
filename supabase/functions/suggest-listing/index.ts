@@ -42,12 +42,16 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
 }
 
 Regler:
-- VIGTIGST: Kig efter logo eller brand-navn skrevet PÅ rammen. Logoer er
-  typisk placeret på down tube (røret under styret), top tube eller head tube.
-  Hvis du kan se et tydeligt navn (fx "CUBE", "Trek", "Specialized", "Cervélo",
-  "Canyon", "Giant", "Scott", "Cannondale", "Bianchi", "Focus", "Merida"),
-  brug det som primær kilde til brand-identifikation. Gæt aldrig forkert mærke
-  hvis du tydeligt kan se logoet.
+- ABSOLUT VIGTIGST: Start med at zoome ind mentalt på rammens down tube
+  (det store rør mellem styr og pedaler). Næsten alle producenter sætter
+  deres navn DER. Læs hvert bogstav. Eksempler på brands der ofte står
+  skrevet: "CUBE", "Trek", "Specialized", "Cervélo", "Canyon", "Giant",
+  "Scott", "Cannondale", "Bianchi", "Focus", "Merida", "Bergamont",
+  "Kalkhoff", "Gazelle", "Kildemoes", "MBK", "Principia", "Norco", "BMC".
+  HVIS DU KAN SE ET LOGO, BRUG DET — gæt aldrig et andet brand når et
+  navn er synligt på rammen.
+- Hvis du ikke kan se logoet tydeligt, returnér null for brand frem for
+  at gætte. Det er bedre at returnere null end forkert mærke.
 - Kun felter du er rimeligt sikker på. Returnér null hvis du ikke kan se det.
 - Vær ærlig: hvis du kun ser delvist, returnér null på ukendte felter.
 - "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
@@ -151,12 +155,13 @@ Deno.serve(async (req) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model:       "claude-opus-4-1-20250805",
+        model:       "claude-sonnet-4-5-20250929",
         max_tokens:  800,
-        temperature: 0.2,
+        temperature: 0,
         system:      SYSTEM_PROMPT,
         messages: [
           { role: "user", content: userContent },
+          { role: "assistant", content: '{"brand":"' },
         ],
       }),
     });
@@ -173,8 +178,12 @@ Deno.serve(async (req) => {
     const data = await response.json();
     const rawText = data.content?.[0]?.text ?? "";
 
+    // Pga. assistant-prefill ('{"brand":"') skal vi rekonstruere JSON.
+    // Modellen fortsætter fra hvor vi stoppede, så vi prepender prefix'et.
+    const reconstructed = '{"brand":"' + rawText;
+
     // Forsøg at parse JSON – strip evt. markdown fences
-    const cleaned = rawText
+    const cleaned = reconstructed
       .trim()
       .replace(/^```json\s*/i, "")
       .replace(/^```\s*/, "")
