@@ -201,7 +201,7 @@ export function createBikesList({
       const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
       const thumbSrc = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
       const imgContent = primaryImg
-        ? `<div class="bike-card-img-bg" style="background-image:url('${thumbSrc}')"></div><img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
+        ? `<img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
         : '<span style="font-size:4rem">🚲</span>';
       const avatarUrl  = safeAvatarUrl(profile.avatar_url);
       const avatarThumb = avatarUrl ? transformImageUrl(avatarUrl, { width: 80, quality: 75 }) : null;

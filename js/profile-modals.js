@@ -116,7 +116,7 @@ export function createProfileModals({
       const avatarInit = getInitials(sellerName);
       const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
       const imgContent = primaryImg
-        ? `<div class="bike-card-img-bg" style="background-image:url('${primaryImg}')"></div><img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">`
+        ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : '<span style="font-size:4rem">🚲</span>';
       return `
         <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
