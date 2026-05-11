@@ -216,7 +216,7 @@ export function createSizeFinder({
         </p>
 
         <div class="size-finder-result-cta">
-          <button class="size-finder-cta-primary" onclick="navigateTo('${sizeFilterUrl}');window.applyPopularSearch && window.applyPopularSearch({type:'${input.type}'})">
+          <button class="size-finder-cta-primary" onclick="window.applyPopularSearch && window.applyPopularSearch({type:'${input.type}'})">
             🔍 Se ${result.sizeShort}-cykler på Cykelbørsen
           </button>
         </div>
