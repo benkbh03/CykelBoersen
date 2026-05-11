@@ -595,6 +595,23 @@ const runValuation        = lazyMethod(_ensureValuation, 'runValuation');
 window.renderValuationPage = renderValuationPage;
 window.runValuation        = runValuation;
 
+// Blog — lazy-loaded (/blog og /blog/:slug)
+const _ensureBlog = lazyCtrl(
+  () => import('./js/blog-page.js'),
+  'createBlogPage',
+  () => ({
+    esc, updateSEOMeta, showDetailView, showListingView,
+    navigateTo: (...args) => navigateTo(...args),
+    BASE_URL,
+  }),
+);
+const renderBlogOverview = lazyMethod(_ensureBlog, 'renderBlogOverview');
+const renderBlogArticle  = lazyMethod(_ensureBlog, 'renderBlogArticle');
+const filterBlogCategory = lazyMethod(_ensureBlog, 'filterBlogCategory');
+window.renderBlogOverview = renderBlogOverview;
+window.renderBlogArticle  = renderBlogArticle;
+window.filterBlogCategory = filterBlogCategory;
+
 window.openBecomeDealerModal   = openBecomeDealerModal;
 window.closeBecomeDealerModal  = closeBecomeDealerModal;
 window.submitDealerApplication = submitDealerApplication;
@@ -1470,13 +1487,15 @@ function handleRoute() {
   const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
   const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
   const valuationMatch = path === '/vurder-min-cykel';
+  const blogArticleMatch = path.match(/^\/blog\/([^/]+)$/);
+  const blogOverviewMatch = path === '/blog';
   const meMatch      = path === '/me';
   const sellMatch    = path === '/sell';
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
-  const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek', '/cookiepolitik': 'cookies' }[path];
+  const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek', '/sikkerhedsguide': 'sikkerhedsguide', '/cookiepolitik': 'cookies' }[path];
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -1546,6 +1565,16 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderValuationPage();
+  } else if (blogArticleMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderBlogArticle(decodeURIComponent(blogArticleMatch[1]));
+  } else if (blogOverviewMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderBlogOverview();
   } else {
     showListingView();
     // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit

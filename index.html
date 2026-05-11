@@ -784,19 +784,44 @@
 
   <!-- ── FOOTER ── -->
   <footer role="contentinfo">
-    <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
-    <p>© 2025–2026 Cykelbørsen · CVR: 46403568</p>
-    <nav class="footer-links" aria-label="Footernavigation">
-      <a href="/om-os" onclick="event.preventDefault();navigateTo('/om-os')">Om os</a>
-      <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')">Mærker</a>
-      <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Cykel-vurdering</a>
-      <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')">Køberguide</a>
-      <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>
-      <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')">Privatlivspolitik</a>
-      <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')">Cookiepolitik</a>
-      <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')">Kontakt</a>
-      <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
-    </nav>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h3 class="footer-col-title">Sælg cykel</h3>
+        <a href="/sell" onclick="event.preventDefault();openModal()">+ Sæt til salg</a>
+        <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Cykel-vurdering</a>
+        <a href="/blog/saelg-cykel-tips" onclick="event.preventDefault();navigateTo('/blog/saelg-cykel-tips')">Salgsguide</a>
+        <a href="/blog/bedre-cykel-billeder" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">Tag bedre billeder</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Køb cykel</h3>
+        <a href="/" onclick="event.preventDefault();navigateTo('/')">Alle annoncer</a>
+        <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')">Mærker</a>
+        <a href="/kort" onclick="event.preventDefault();navigateTo('/kort')">Kort-visning</a>
+        <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')">Køberguide</a>
+        <a href="/sikkerhedsguide" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">Sikkerhedsguide</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Forhandlere</h3>
+        <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')">Find forhandler</a>
+        <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Cykelbørsen</h3>
+        <a href="/om-os" onclick="event.preventDefault();navigateTo('/om-os')">Om os</a>
+        <a href="/blog" onclick="event.preventDefault();navigateTo('/blog')">Blog</a>
+        <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')">Kontakt</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Juridisk</h3>
+        <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>
+        <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')">Privatlivspolitik</a>
+        <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')">Cookiepolitik</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
+      <p>© 2025–2026 Cykelbørsen · CVR: 46403568 · Danmarks dedikerede markedsplads for nye og brugte cykler</p>
+    </div>
   </footer>
 
   <!-- ── OPRET ANNONCE MODAL ── -->

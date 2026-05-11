@@ -1,11 +1,71 @@
 /* ── FOOTER ── */
-footer { background: var(--forest-2); padding: 36px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+footer { background: var(--forest-2); padding: 48px 48px 24px; display: block; }
 @media (max-width: 999px) { body.on-sell-page footer, body.on-sell-page #chat-widget { display: none !important; } }
 footer .logo { font-size: 1.3rem; }
 footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
-.footer-links { display: flex; gap: 24px; background: transparent; padding: 0; position: static; }
-.footer-links a { color: rgba(245,240,232,0.55); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; cursor: pointer; }
-.footer-links a:hover { color: var(--sand); }
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto 32px;
+}
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer-col-title {
+  color: var(--sand);
+  font-family: 'Fraunces', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+.footer-col a {
+  color: rgba(245,240,232,0.65);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.15s, transform 0.1s;
+  cursor: pointer;
+}
+.footer-col a:hover {
+  color: var(--sand);
+  transform: translateX(2px);
+}
+.footer-bottom {
+  border-top: 1px solid rgba(245,240,232,0.12);
+  padding-top: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-bottom p {
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+}
+@media (max-width: 480px) {
+  footer { padding: 36px 24px 20px; }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
 
 /* ── MODALER ── */
 .modal-overlay {
