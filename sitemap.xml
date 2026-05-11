@@ -110,4 +110,14 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/avenue</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/principia</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/sco</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <!-- Niche / specialty brands -->
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/amladcykler</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/e-fly</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/nishiki</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/factor</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/motobecane</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/qio</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/uvelo</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/kreidler</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/norden</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
 </urlset>

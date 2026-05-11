@@ -755,6 +755,117 @@ export const BRANDS_META = {
     },
     typical_price_range: '2.500 – 18.000 kr',
   },
+
+  // ── Niche / specialty brands ─────────────────────────────────
+  amladcykler: {
+    name: 'Amladcykler',
+    country: 'Danmark',
+    founded: 1996,
+    tagline: 'Danske transport- og ladcykler',
+    description: 'Amladcykler er et lille dansk cykelmærke specialiseret i ladcykler og transportcykler, designet og bygget i Danmark. Mærket producerer både 2- og 3-hjulede modeller til familier og erhvervsbrug.',
+    popular_models: {
+      'Ladcykel': ['Cargo 2', 'Cargo 3', 'Mini'],
+      'El-cykel': ['Cargo E', 'City E'],
+    },
+    typical_price_range: '14.000 – 45.000 kr',
+  },
+  'e-fly': {
+    name: 'E-Fly',
+    country: 'Danmark',
+    founded: 2014,
+    tagline: 'Danske el-cykler til hverdagskørsel',
+    description: 'E-Fly er et dansk el-cykel-mærke fokuseret på at gøre el-cykling tilgængeligt for de fleste danske husstande. Mærket leverer pålidelige city- og trekking-e-cykler med god rækkevidde og kvalitet til konkurrencedygtige priser.',
+    popular_models: {
+      'El-cykel': ['Vibe', 'Move', 'Eco', 'Pro'],
+    },
+    typical_price_range: '7.000 – 22.000 kr',
+  },
+  nishiki: {
+    name: 'Nishiki',
+    country: 'Japan / USA',
+    founded: 1958,
+    tagline: 'Klassisk japansk cykelarv',
+    description: 'Nishiki blev grundlagt i Japan i 1958 og var en af de mest populære japanske cykelproducenter i 1970-80erne i USA. Producerede stålrammer der blev kult-klassikere. I dag sælges mærket primært i USA og Europa med fokus på racer- og touring-cykler.',
+    popular_models: {
+      'Racercykel': ['Maricopa', 'Pueblo', 'Tamarack'],
+      'Touring': ['Manitoba', 'Modesto'],
+      'Citybike': ['Anasazi'],
+    },
+    typical_price_range: '2.500 – 25.000 kr',
+  },
+  factor: {
+    name: 'FACTOR',
+    country: 'UK',
+    founded: 2007,
+    tagline: 'Britisk premium-racing',
+    description: 'FACTOR Bikes er et britisk cykelmærke grundlagt i 2007 med fokus på premium carbon racer- og TT-cykler. Sponsorerer World Tour-holdet Israel-Premier Tech og er kendt for ekstremt let vægt og avanceret aerodynamik. Ostro VAM og O2 er flagship-modellerne.',
+    popular_models: {
+      'Racercykel': ['Ostro VAM', 'O2', 'Hanzo', 'LS'],
+      'Triatlon': ['Slick'],
+      'Gravel': ['Ostro Gravel'],
+    },
+    typical_price_range: '30.000 – 200.000 kr',
+  },
+  motobecane: {
+    name: 'Motobecane',
+    country: 'Frankrig / USA',
+    founded: 1923,
+    tagline: 'Fransk cykelarv reborn',
+    description: 'Motobecane er et fransk mærke grundlagt i 1923, oprindeligt knyttet til knallerter og motorcykler. Mærket producerede racer- og touring-cykler gennem 1900-tallet. I dag sælges Motobecane-cykler primært via direct-to-consumer-modeller med fokus på pris-kvalitet.',
+    popular_models: {
+      'Racercykel': ['Le Champion', 'Immortal', 'Gigabike'],
+      'Mountainbike': ['Fantom', 'HAL'],
+    },
+    typical_price_range: '4.000 – 35.000 kr',
+  },
+  qio: {
+    name: 'Qio',
+    country: 'Tyskland',
+    founded: 2018,
+    tagline: 'Kompakt urban e-cykling',
+    description: 'Qio er et tysk el-cykel-mærke specialiseret i kompakte og foldbare urban e-cykler. Mærket henvender sig især til pendlere og storbyboere med mindre opbevaringsplads.',
+    popular_models: {
+      'El-cykel': ['One', 'Eins', 'Plus'],
+      'Foldecykel': ['Bend'],
+    },
+    typical_price_range: '12.000 – 28.000 kr',
+  },
+  uvelo: {
+    name: 'uVelo',
+    country: 'Danmark',
+    founded: 2015,
+    tagline: 'Danske urban el-cykler',
+    description: 'uVelo er et dansk cykelmærke fokuseret på urban el-cykler og hverdagskørsel. Mærket designer cykler i København med dansk minimalisme og praktisk anvendelse i tanke.',
+    popular_models: {
+      'El-cykel': ['City', 'Urban', 'Pro'],
+    },
+    typical_price_range: '10.000 – 25.000 kr',
+  },
+  kreidler: {
+    name: 'Kreidler',
+    country: 'Tyskland',
+    founded: 1903,
+    tagline: 'Tysk cykelarv siden 1903',
+    description: 'Kreidler er et tysk mærke grundlagt i 1903 — oprindeligt knyttet til knallerter og motorcykler. I dag fokuserer mærket på el-cykler, city- og trekking-cykler. Del af Cycle Union-gruppen og populært i Tyskland og Skandinavien.',
+    popular_models: {
+      'El-cykel': ['Vitality Eco', 'Vitality Dice', 'Eco6 Edition'],
+      'Citybike': ['Layla', 'Raise'],
+      'Touring': ['Stretch'],
+    },
+    typical_price_range: '5.000 – 35.000 kr',
+  },
+  norden: {
+    name: 'Norden',
+    country: 'Danmark',
+    founded: 1995,
+    tagline: 'Solide danske bycykler',
+    description: 'Norden er et dansk cykelmærke der producerer holdbare hverdags- og bycykler. Mærket er kendt for klassisk dansk cykeldesign med fokus på pålidelighed og lang levetid.',
+    popular_models: {
+      'Citybike': ['Classic', 'City', 'Comfort'],
+      'El-cykel': ['City E', 'Trekking E'],
+    },
+    typical_price_range: '3.000 – 20.000 kr',
+  },
 };
 
 // Brand-aliaser (forskellige stavemåder → samme slug)
