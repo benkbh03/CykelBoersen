@@ -1992,6 +1992,335 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 32px 24px 80px;
 }
 
+/* ── Cykel-vurdering (/vurder-min-cykel) ── */
+.valuation-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+.valuation-hero {
+  text-align: center;
+  margin: 16px 0 32px;
+}
+.valuation-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2.4rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 12px 0 12px;
+}
+.valuation-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; line-height: 1.6;
+  color: var(--muted);
+  max-width: 540px; margin: 0 auto;
+}
+.valuation-form {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.valuation-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.valuation-field label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+}
+.valuation-field label .req {
+  color: var(--rust);
+}
+.valuation-field label .optional {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+.valuation-field input,
+.valuation-field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  background: #fff;
+  color: var(--charcoal);
+}
+.valuation-field input:focus,
+.valuation-field select:focus {
+  outline: none;
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(42,61,46,0.08);
+}
+.valuation-submit {
+  width: 100%;
+  background: var(--rust);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem; font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.15s, transform 0.1s;
+}
+.valuation-submit:hover {
+  background: var(--rust-light);
+  transform: translateY(-1px);
+}
+.valuation-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.valuation-result {
+  margin-top: 32px;
+}
+.valuation-result-card {
+  background: #fff;
+  border: 2px solid var(--forest);
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+.valuation-result-empty {
+  border-color: var(--border);
+  text-align: center;
+}
+.valuation-result-icon {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.valuation-result-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 4px;
+  text-align: center;
+}
+.valuation-result-year {
+  text-align: center;
+  color: var(--muted);
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+}
+.valuation-result-median {
+  text-align: center;
+  background: var(--sand);
+  border-radius: 12px;
+  padding: 20px 16px;
+  margin: 0 0 24px;
+}
+.valuation-result-median-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.valuation-result-median-value {
+  font-family: 'Fraunces', serif;
+  font-size: 2.5rem; font-weight: 700;
+  color: var(--rust);
+}
+.valuation-result-range {
+  margin: 24px 0;
+}
+.valuation-range-bar {
+  position: relative;
+  height: 8px;
+  background: var(--sand);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.valuation-range-fill {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, #DDD8CE, var(--rust), #DDD8CE);
+  border-radius: 4px;
+}
+.valuation-range-marker {
+  position: absolute;
+  top: -6px;
+  width: 4px; height: 20px;
+  background: var(--forest);
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+.valuation-range-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.valuation-range-label {
+  display: flex; flex-direction: column;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+}
+.valuation-range-label-center { align-items: center; }
+.valuation-range-label-right  { align-items: flex-end; }
+.valuation-range-label-tag {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.valuation-range-label-price {
+  font-weight: 700;
+  color: var(--charcoal);
+}
+.valuation-result-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 16px 0;
+  font-style: italic;
+}
+.valuation-result-tips {
+  background: rgba(42,61,46,0.04);
+  border-left: 3px solid var(--forest);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 24px 0;
+}
+.valuation-result-tips h3 {
+  margin: 0 0 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; font-weight: 700;
+}
+.valuation-result-tips ul {
+  margin: 0; padding-left: 20px;
+  font-size: 0.9rem; line-height: 1.6;
+  color: var(--charcoal);
+}
+.valuation-result-tips li {
+  margin-bottom: 4px;
+}
+.valuation-result-cta {
+  display: flex; gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.valuation-cta-primary,
+.valuation-cta-secondary {
+  flex: 1;
+  min-width: 200px;
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.valuation-cta-primary {
+  background: var(--rust);
+  color: #fff;
+}
+.valuation-cta-primary:hover {
+  background: var(--rust-light);
+  transform: translateY(-1px);
+}
+.valuation-cta-secondary {
+  background: transparent;
+  color: var(--charcoal);
+  border: 1px solid var(--border);
+}
+.valuation-cta-secondary:hover {
+  background: var(--sand);
+}
+.valuation-info {
+  margin: 48px 0;
+}
+.valuation-info-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 18px;
+  text-align: center;
+}
+.valuation-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.valuation-info-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 18px;
+  text-align: center;
+}
+.valuation-info-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.valuation-info-card h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--charcoal);
+}
+.valuation-info-card p {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0;
+}
+.valuation-faq {
+  margin: 32px 0;
+}
+.valuation-faq-item {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.valuation-faq-item summary {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--charcoal);
+  list-style: none;
+}
+.valuation-faq-item summary::-webkit-details-marker { display: none; }
+.valuation-faq-item summary::before {
+  content: '▸ ';
+  display: inline-block;
+  margin-right: 4px;
+  color: var(--rust);
+  transition: transform 0.15s;
+}
+.valuation-faq-item[open] summary::before {
+  transform: rotate(90deg);
+}
+.valuation-faq-item p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+@media (max-width: 600px) {
+  .valuation-form-row {
+    grid-template-columns: 1fr;
+  }
+  .valuation-title {
+    font-size: 1.8rem;
+  }
+  .valuation-result-median-value {
+    font-size: 2rem;
+  }
+}
+
 /* ── Brand-landingsside (/cykler/:brand) ── */
 .brand-page {
   max-width: 1200px;
