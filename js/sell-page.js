@@ -540,6 +540,7 @@ export function createSellPage({
           <span class="suffix">DKK</span>
         </div>
         <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
+        <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
       </div>
 
       ${isDealer ? `

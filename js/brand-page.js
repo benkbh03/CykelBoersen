@@ -2,7 +2,7 @@
    BRAND-LANDINGSSIDE (/cykler/:brand)
    ============================================================ */
 
-import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META } from './brand-data.js';
+import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data.js';
 
 export function createBrandPage({
   supabase,
@@ -268,8 +268,99 @@ export function createBrandPage({
     if (el) el.remove();
   }
 
+  async function renderBrandsOverview() {
+    showDetailView();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    document.title = 'Alle cykelmærker — Brugte og nye cykler | Cykelbørsen';
+    updateSEOMeta(
+      'Browse alle cykelmærker på Cykelbørsen — fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
+      '/maerker'
+    );
+
+    const detailView = document.getElementById('detail-view');
+    if (!detailView) return;
+
+    // Hent antal aktive annoncer pr. brand (parallel)
+    const { data: bikes } = await supabase
+      .from('bikes')
+      .select('brand')
+      .eq('is_active', true);
+
+    const counts = new Map();
+    if (bikes) {
+      for (const b of bikes) {
+        if (!b.brand) continue;
+        const key = b.brand.toLowerCase();
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+    }
+
+    // Grupperinger: kurateret (har metadata) vs auto-fallback
+    const curated = [];
+    const others  = [];
+    for (const brand of KNOWN_BRANDS) {
+      const slug  = brandToSlug(brand);
+      const count = counts.get(brand.toLowerCase()) || 0;
+      const isCurated = !!BRANDS_META[slug];
+      const item = { brand, slug, count };
+      if (isCurated) curated.push(item);
+      else others.push(item);
+    }
+
+    // Sortér efter antal aktive annoncer (faldende), så fyldte mærker top
+    curated.sort((a, b) => b.count - a.count || a.brand.localeCompare(b.brand));
+    others.sort((a, b)  => b.count - a.count || a.brand.localeCompare(b.brand));
+
+    const totalActive = bikes ? bikes.length : 0;
+
+    detailView.innerHTML = `
+      <div class="brands-overview-page">
+        <button class="sell-back-btn" onclick="navigateTo('/')">← Forsiden</button>
+
+        <header class="brands-overview-hero">
+          <h1 class="brands-overview-title">Alle cykelmærker</h1>
+          <p class="brands-overview-subtitle">
+            Browse cykler fra over ${KNOWN_BRANDS.length} mærker —
+            ${totalActive.toLocaleString('da-DK')} aktive annoncer i alt.
+          </p>
+        </header>
+
+        <section class="brands-overview-section">
+          <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
+          <div class="brands-overview-grid">
+            ${curated.map(({ brand, slug, count }) => `
+              <a class="brand-tile" href="/cykler/${slug}" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
+                <div class="brand-tile-name">${esc(brand)}</div>
+                ${count > 0
+                  ? `<div class="brand-tile-count">${count} ${count === 1 ? 'cykel' : 'cykler'}</div>`
+                  : `<div class="brand-tile-count brand-tile-count-empty">Ingen aktuelle</div>`}
+              </a>
+            `).join('')}
+          </div>
+        </section>
+
+        ${others.length > 0 ? `
+        <section class="brands-overview-section">
+          <h2 class="brands-overview-section-title">Øvrige mærker</h2>
+          <div class="brands-overview-grid">
+            ${others.map(({ brand, slug, count }) => `
+              <a class="brand-tile brand-tile-compact" href="/cykler/${slug}" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
+                <div class="brand-tile-name">${esc(brand)}</div>
+                ${count > 0
+                  ? `<div class="brand-tile-count">${count} ${count === 1 ? 'cykel' : 'cykler'}</div>`
+                  : ''}
+              </a>
+            `).join('')}
+          </div>
+        </section>` : ''}
+      </div>
+    `;
+  }
+
   return {
     renderBrandPage,
+    renderBrandsOverview,
     removeBrandJsonLd,
   };
 }
