@@ -194,6 +194,11 @@ export function createBikeDetail({
           </div>`;
           })() : ''}
           <div class="action-buttons">
+            ${b.external_url ? `
+            <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-external-cta">
+              🛒 Gå til varen hos ${esc(profile.shop_name || profile.name || 'forhandler')}
+              <span class="btn-external-cta-sub">Køb direkte på forhandlerens egen webshop</span>
+            </a>` : `
             <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
             <div class="bid-box" id="bid-box">
               <div class="bid-box-inner">
@@ -204,7 +209,7 @@ export function createBikeDetail({
                 Mød i midten: <strong id="meet-middle-price"></strong>
                 <button class="meet-middle-btn" onclick="useMeetMiddle()">Brug dette bud</button>
               </div>
-            </div>
+            </div>`}
             <button class="btn-contact" onclick="toggleMessageBox()">✉️ Kontakt sælger</button>
             <div class="message-box" id="message-box">
               <div class="msg-presets">
@@ -324,7 +329,9 @@ export function createBikeDetail({
         <div class="bike-sticky-price">${b.price.toLocaleString('da-DK')} kr.</div>
         <div class="bike-sticky-actions">
           <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">✉️ Kontakt</button>
-          <button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">💰 Giv bud</button>
+          ${b.external_url
+            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Gå til varen">🛒 Gå til varen</a>`
+            : `<button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">💰 Giv bud</button>`}
         </div>
       </div>` : ''}
     `,

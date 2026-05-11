@@ -79,7 +79,7 @@ export function createSellPage({
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
-    'sell-price', 'sell-warranty',
+    'sell-price', 'sell-warranty', 'sell-external-url',
     // Cykel-specifikke strukturerede felter (kan auto-udfyldes af AI fra billeder)
     'sell-groupset', 'sell-frame-material', 'sell-brake-type',
     'sell-electronic-shifting', 'sell-weight-kg',
@@ -261,6 +261,7 @@ export function createSellPage({
       const condition = getVal('sell-condition');
       const wheelSize = getVal('sell-wheel-size') || null;
       const warranty  = getVal('sell-warranty') || null;
+      const externalUrl = (currentProfile?.seller_type === 'dealer' ? (getVal('sell-external-url') || '').trim() : '') || null;
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       // Cykel-specifikke felter
@@ -283,6 +284,7 @@ export function createSellPage({
         type, size: size || null, size_cm: sizeCm, condition,
         wheel_size: wheelSize || null,
         warranty: warranty || null,
+        external_url: externalUrl,
         color: colors.length ? colors.join(', ') : null,
         colors: colors.length ? colors : null,
         title: `${brand} ${model}`,
@@ -543,6 +545,10 @@ export function createSellPage({
       <div class="sell-field">
         <label>Garanti <span class="hint">(valgfrit)</span></label>
         <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti" value="${esc(c['sell-warranty'] || '')}">
+      </div>
+      <div class="sell-field">
+        <label>Link til din webshop <span class="hint">(valgfrit — skjuler bud-knap så købere går direkte til din side)</span></label>
+        <input type="url" id="sell-external-url" placeholder="https://din-webshop.dk/cykler/..." value="${esc(c['sell-external-url'] || '')}">
       </div>` : ''}
 
       <button type="button" id="sell-advanced-toggle" class="sell-advanced-toggle" onclick="toggleAdvancedSpecs()" aria-expanded="false">
@@ -910,7 +916,7 @@ export function createSellPage({
       });
       // Live footer + preview updates
       ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
-       'sell-year','sell-condition','sell-price',
+       'sell-year','sell-condition','sell-price','sell-warranty','sell-external-url',
        // Avancerede felter — også gem i cache så de overlever step-skift
        'sell-groupset','sell-frame-material','sell-brake-type',
        'sell-electronic-shifting','sell-weight-kg'].forEach(id => {

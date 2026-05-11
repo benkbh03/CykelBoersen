@@ -193,9 +193,14 @@ export function createListingEdit({
     document.getElementById('edit-groupset').value           = b.groupset || '';
     document.getElementById('edit-weight-kg').value          = b.weight_kg ?? '';
 
+    const isDealer = getCurrentProfile()?.seller_type === 'dealer';
     const warrantyGroup = document.getElementById('edit-warranty-group');
-    if (warrantyGroup) warrantyGroup.style.display = getCurrentProfile()?.seller_type === 'dealer' ? '' : 'none';
+    if (warrantyGroup) warrantyGroup.style.display = isDealer ? '' : 'none';
     document.getElementById('edit-warranty').value = b.warranty || '';
+
+    const extUrlGroup = document.getElementById('edit-external-url-group');
+    if (extUrlGroup) extUrlGroup.style.display = isDealer ? '' : 'none';
+    document.getElementById('edit-external-url').value = b.external_url || '';
 
     editNewFiles     = [];
     editExistingImgs = (b.bike_images || []).map(img => ({
@@ -248,6 +253,7 @@ export function createListingEdit({
       condition:   document.getElementById('edit-condition').value,
       is_active:   document.getElementById('edit-is-active').checked,
       warranty:    (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-warranty').value.trim() : null) || null,
+      external_url: (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-external-url').value.trim() : null) || null,
       wheel_size:         document.getElementById('edit-wheel-size').value || null,
       frame_material:     document.getElementById('edit-frame-material').value || null,
       brake_type:         document.getElementById('edit-brake-type').value || null,
