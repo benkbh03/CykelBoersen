@@ -249,14 +249,11 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   padding: 14px 18px; border-top: 1px solid var(--border, #DDD8CE);
   background: var(--cream, #FEFAF3);
 }
-.crop-ratio-toggle { display: inline-flex; gap: 4px; background: var(--sand, #F5F0E8); border-radius: 8px; padding: 4px; }
-.crop-ratio-btn {
-  background: transparent; border: none; font-size: 0.82rem; font-weight: 600;
-  padding: 6px 12px; border-radius: 6px; cursor: pointer;
-  color: var(--muted, #6b6b63); font-family: 'DM Sans', sans-serif;
+.crop-modal-hint {
+  font-size: 0.82rem; color: var(--muted, #6b6b63);
+  font-family: 'DM Sans', sans-serif; line-height: 1.4;
+  flex: 1; min-width: 0;
 }
-.crop-ratio-btn:hover { color: var(--ink); }
-.crop-ratio-btn.active { background: var(--forest, #2A3D2E); color: #fff; }
 .crop-modal-actions { display: inline-flex; gap: 8px; }
 @media (max-width: 560px) {
   .crop-modal-footer { flex-direction: column; align-items: stretch; }
