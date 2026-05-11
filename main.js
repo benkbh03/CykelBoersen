@@ -560,6 +560,24 @@ const renderBecomeDealerPage   = lazyMethod(_ensureDealersPage, 'renderBecomeDea
 const submitDealerApplication  = lazyMethod(_ensureDealersPage, 'submitDealerApplication');
 const openSubscriptionPortal   = lazyMethod(_ensureDealersPage, 'openSubscriptionPortal');
 
+// Brand-landingsside — lazy-loaded (/cykler/:brand)
+const _ensureBrandPage = lazyCtrl(
+  () => import('./js/brand-page.js'),
+  'createBrandPage',
+  () => ({
+    supabase, esc, updateSEOMeta,
+    showDetailView, showListingView,
+    navigateTo:       (...args) => navigateTo(...args),
+    navigateToBike:   (...args) => navigateToBike(...args),
+    navigateToDealer: (...args) => navigateToDealer(...args),
+    safeAvatarUrl, getInitials, transformImageUrl,
+    BASE_URL,
+  }),
+);
+const renderBrandPage     = lazyMethod(_ensureBrandPage, 'renderBrandPage');
+const removeBrandJsonLd   = lazyMethod(_ensureBrandPage, 'removeBrandJsonLd');
+window.renderBrandPage    = renderBrandPage;
+
 window.openBecomeDealerModal   = openBecomeDealerModal;
 window.closeBecomeDealerModal  = closeBecomeDealerModal;
 window.submitDealerApplication = submitDealerApplication;
@@ -1432,6 +1450,7 @@ function handleRoute() {
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
   const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
+  const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
   const meMatch      = path === '/me';
   const sellMatch    = path === '/sell';
   const inboxMatch   = path === '/inbox';
@@ -1493,6 +1512,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderDealerProfilePage(dealerMatch[1]);
+  } else if (brandMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderBrandPage(decodeURIComponent(brandMatch[1]));
   } else {
     showListingView();
     // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit

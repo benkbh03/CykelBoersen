@@ -30,4 +30,25 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://xn--cykelbrsen-5cb.dk/forhandlere</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <!-- Brand-landingssider -->
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/trek</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cube</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/specialized</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/canyon</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cannondale</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/giant</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/scott</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/bianchi</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/kildemoes</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/mbk</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cerv%C3%A9lo</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/pinarello</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/merida</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/kalkhoff</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/vanmoof</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
 </urlset>
