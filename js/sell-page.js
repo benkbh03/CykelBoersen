@@ -56,6 +56,7 @@ export function createSellPage({
   uploadImages,
   resetImageUpload,
   openCropModal,
+  compressForAI,
   getCurrentUser,
   getCurrentProfile,
 }) {
@@ -1204,8 +1205,13 @@ export function createSellPage({
       const ordered = sf.slice().sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
       const picks = ordered.slice(0, 4);
 
+      // Brug originalfilen (eller en højere-kvalitet AI-komprimering) i stedet
+      // for den display-komprimerede version — så CUBE-logo og lignende detaljer
+      // ikke smudses ud før AI'en analyserer dem.
       const images = await Promise.all(picks.map(async (item) => {
-        const { mediaType, base64 } = await fileToBase64(item.file);
+        const source = item.originalFile || item.file;
+        const forAI = compressForAI ? await compressForAI(source) : source;
+        const { mediaType, base64 } = await fileToBase64(forAI);
         return { media_type: mediaType, data: base64 };
       }));
 

@@ -134,6 +134,55 @@ export function createImageUpload({
   }
 
   // Komprimerer billede til WebP (max 1600px bred, kvalitet ~82%) med Canvas API
+  // Komprimering specifikt til AI-vision: højere opløsning og bedre JPEG-kvalitet
+  // så små detaljer som logoer bevares. Returnerer original hvis <4MB.
+  async function compressForAI(file) {
+    if (!file) return file;
+    if (file.size < 4 * 1024 * 1024) return file;
+    if (file.type === 'image/gif') return file;
+    let objectUrl = null;
+    try {
+      let source;
+      if (typeof createImageBitmap === 'function') {
+        try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+        catch { source = null; }
+      }
+      if (!source) {
+        objectUrl = URL.createObjectURL(file);
+        source = await new Promise((resolve, reject) => {
+          const img = new Image();
+          const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
+          img.onload  = () => { clearTimeout(timeout); resolve(img); };
+          img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
+          img.src = objectUrl;
+        });
+      }
+      const MAX = 2000;
+      let width  = source.width  || source.naturalWidth;
+      let height = source.height || source.naturalHeight;
+      if (!width || !height) return file;
+      if (width > MAX || height > MAX) {
+        const ratio = Math.min(MAX / width, MAX / height);
+        width  = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return file;
+      ctx.drawImage(source, 0, 0, width, height);
+      if (source.close) source.close();
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+      if (!blob || blob.size === 0) return file;
+      return new File([blob], (file.name || 'image') + '.jpg', { type: 'image/jpeg' });
+    } catch (e) {
+      console.warn('AI-komprimering fejlede, bruger original:', e);
+      return file;
+    } finally {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    }
+  }
+
   async function compressImage(file) {
     if (file.type === 'image/gif') return file;
     if (file.type === 'image/webp' && file.size < 500 * 1024) return file;
@@ -211,17 +260,18 @@ export function createImageUpload({
     let done = 0;
     if (label && total > 0) label.textContent = `Optimerer 0 af ${total}…`;
 
-    const compressed = await Promise.all(toAdd.map(async f => {
-      const result = await compressImage(f);
+    const processed = await Promise.all(toAdd.map(async f => {
+      const compressed = await compressImage(f);
       done++;
       if (label) label.textContent = `Optimerer ${done} af ${total}…`;
-      return result;
+      return { compressed, original: f };
     }));
 
-    compressed.forEach((file, i) => {
-      const url = URL.createObjectURL(file);
+    processed.forEach(({ compressed, original }, i) => {
+      const url = URL.createObjectURL(compressed);
       selectedFiles.push({
-        file,
+        file: compressed,
+        originalFile: original,
         url,
         isPrimary: selectedFiles.length === 0 && i === 0,
       });
@@ -311,6 +361,7 @@ export function createImageUpload({
   return {
     validateImageFile,
     compressImage,
+    compressForAI,
     previewImages,
     renderImagePreviews,
     setPrimary,

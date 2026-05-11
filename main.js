@@ -270,7 +270,7 @@ const {
 });
 
 const {
-  validateImageFile, compressImage, previewImages, renderImagePreviews,
+  validateImageFile, compressImage, compressForAI, previewImages, renderImagePreviews,
   setPrimary, removeImage, uploadImages, resetImageUpload,
   openCropModal, setCropRatio, applyCrop, closeCropModal,
   getSelectedFiles,
@@ -375,6 +375,7 @@ const _ensureSellPage = lazyCtrl(
     uploadImages,
     resetImageUpload,
     openCropModal,
+    compressForAI,
     getCurrentUser:         () => currentUser,
     getCurrentProfile:      () => currentProfile,
   }),
