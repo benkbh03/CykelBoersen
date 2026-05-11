@@ -438,7 +438,7 @@ export const BLOG_ARTICLES = {
       <h2>Hvad du SKAL undgå i denne prisklasse</h2>
       <ul>
         <li><strong>Friction-shifters</strong> — gammelt teknik (1980'er), du vil have indexed shifting</li>
-        <li><strong>Felgbremser uden hydraulik</strong> — OK på racer, men skivebremser er fremtiden</li>
+        <li><strong>Fælgbremser uden hydraulik</strong> — OK på racer, men skivebremser er fremtiden</li>
         <li><strong>26"-hjul</strong> — gamle MTB-hjul, ikke moderne racer-standard (28"/700c er normen)</li>
         <li><strong>Mærker du aldrig har hørt om</strong> — reservedele kan være umulige at finde</li>
       </ul>

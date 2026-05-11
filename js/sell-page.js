@@ -571,7 +571,7 @@ export function createSellPage({
             <label>Bremsetype</label>
             <select id="sell-brake-type">
               <option value="">Vælg</option>
-              ${opt(c['sell-brake-type'] || '', ['Skivebremser hydrauliske','Skivebremser mekaniske','Felgbremser','Tromlebremser'])}
+              ${opt(c['sell-brake-type'] || '', ['Skivebremser hydrauliske','Skivebremser mekaniske','Fælgbremser','Tromlebremser'])}
             </select>
           </div>
         </div>

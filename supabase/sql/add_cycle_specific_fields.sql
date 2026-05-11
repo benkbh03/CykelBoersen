@@ -20,6 +20,6 @@ CREATE INDEX IF NOT EXISTS idx_bikes_brake_type     ON bikes(brake_type)     WHE
 -- Kommentarer til dokumentation (vises i Supabase Dashboard)
 COMMENT ON COLUMN bikes.groupset            IS 'Komponentgruppe — fx "Shimano 105", "SRAM Rival", "Shimano Deore XT"';
 COMMENT ON COLUMN bikes.frame_material      IS 'Stelmaterial — Carbon | Aluminium | Stål | Titanium';
-COMMENT ON COLUMN bikes.brake_type          IS 'Bremsetype — Skivebremser hydrauliske | Skivebremser mekaniske | Felgbremser | Tromlebremser';
+COMMENT ON COLUMN bikes.brake_type          IS 'Bremsetype — Skivebremser hydrauliske | Skivebremser mekaniske | Fælgbremser | Tromlebremser';
 COMMENT ON COLUMN bikes.electronic_shifting IS 'TRUE for elektronisk gear (Di2, eTap, AXS), FALSE for mekanisk';
 COMMENT ON COLUMN bikes.weight_kg           IS 'Cyklens vægt i kg, fx 7.85';
