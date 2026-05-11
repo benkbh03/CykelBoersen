@@ -330,7 +330,7 @@ export function createBikeDetail({
         <div class="bike-sticky-actions">
           <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">✉️ Kontakt</button>
           ${b.external_url
-            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Se hos forhandler">🛒 Se hos forhandler</a>`
+            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Se hos forhandler">🛒 Webshop</a>`
             : `<button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">💰 Giv bud</button>`}
         </div>
       </div>` : ''}
