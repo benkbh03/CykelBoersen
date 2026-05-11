@@ -2321,6 +2321,81 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
 }
 
+/* ── Brands-oversigt (/maerker) ── */
+.brands-overview-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+.brands-overview-hero {
+  text-align: center;
+  margin: 16px 0 32px;
+}
+.brands-overview-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2.4rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 12px 0 12px;
+}
+.brands-overview-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.brands-overview-section {
+  margin: 32px 0;
+}
+.brands-overview-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 16px;
+}
+.brands-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+}
+.brand-tile {
+  display: flex; flex-direction: column;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+}
+.brand-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: var(--rust);
+}
+.brand-tile-name {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  margin-bottom: 2px;
+}
+.brand-tile-count {
+  font-size: 0.78rem;
+  color: var(--rust);
+  font-weight: 600;
+}
+.brand-tile-count-empty {
+  color: var(--muted);
+  font-weight: 400;
+  font-style: italic;
+}
+.brand-tile-compact {
+  padding: 10px 14px;
+}
+.brand-tile-compact .brand-tile-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 /* ── Brand-landingsside (/cykler/:brand) ── */
 .brand-page {
   max-width: 1200px;

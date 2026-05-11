@@ -144,6 +144,7 @@
   <nav role="navigation" aria-label="Hovednavigation">
     <div class="logo" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" style="cursor:pointer;" role="link" aria-label="Cykelbørsen – gå til forsiden" tabindex="0">Cykel<span>børsen</span></div>
     <div class="nav-links">
+      <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')" aria-label="Se alle cykelmærker">Mærker</a>
       <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')" aria-label="Se forhandlere">Forhandlere</a>
       <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg">+ Sæt til salg</a>
       <div class="nav-admin" id="nav-admin" style="display:none;">
@@ -787,6 +788,7 @@
     <p>© 2025–2026 Cykelbørsen · CVR: 46403568</p>
     <nav class="footer-links" aria-label="Footernavigation">
       <a href="/om-os" onclick="event.preventDefault();navigateTo('/om-os')">Om os</a>
+      <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')">Mærker</a>
       <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Cykel-vurdering</a>
       <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')">Køberguide</a>
       <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>

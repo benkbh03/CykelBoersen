@@ -575,8 +575,10 @@ const _ensureBrandPage = lazyCtrl(
   }),
 );
 const renderBrandPage     = lazyMethod(_ensureBrandPage, 'renderBrandPage');
+const renderBrandsOverview = lazyMethod(_ensureBrandPage, 'renderBrandsOverview');
 const removeBrandJsonLd   = lazyMethod(_ensureBrandPage, 'removeBrandJsonLd');
 window.renderBrandPage    = renderBrandPage;
+window.renderBrandsOverview = renderBrandsOverview;
 
 // Cykel-vurdering — lazy-loaded (/vurder-min-cykel)
 const _ensureValuation = lazyCtrl(
@@ -1466,6 +1468,7 @@ function handleRoute() {
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
   const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
   const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
+  const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
   const valuationMatch = path === '/vurder-min-cykel';
   const meMatch      = path === '/me';
   const sellMatch    = path === '/sell';
@@ -1533,6 +1536,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBrandPage(decodeURIComponent(brandMatch[1]));
+  } else if (brandsOverviewMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderBrandsOverview();
   } else if (valuationMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
