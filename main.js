@@ -595,6 +595,23 @@ const runValuation        = lazyMethod(_ensureValuation, 'runValuation');
 window.renderValuationPage = renderValuationPage;
 window.runValuation        = runValuation;
 
+// Stelstørrelse-finder — lazy-loaded (/stelstoerrelse-guide)
+const _ensureSizeFinder = lazyCtrl(
+  () => import('./js/size-finder.js'),
+  'createSizeFinder',
+  () => ({
+    esc, updateSEOMeta, showDetailView,
+    navigateTo: (...args) => navigateTo(...args),
+    BASE_URL,
+  }),
+);
+const renderSizeFinderPage = lazyMethod(_ensureSizeFinder, 'renderSizeFinderPage');
+const runSizeFinder        = lazyMethod(_ensureSizeFinder, 'runSizeFinder');
+const updateSizeFinderHeightLabel = lazyMethod(_ensureSizeFinder, 'updateSizeFinderHeightLabel');
+window.renderSizeFinderPage = renderSizeFinderPage;
+window.runSizeFinder        = runSizeFinder;
+window.updateSizeFinderHeightLabel = updateSizeFinderHeightLabel;
+
 // Blog — lazy-loaded (/blog og /blog/:slug)
 const _ensureBlog = lazyCtrl(
   () => import('./js/blog-page.js'),
@@ -627,6 +644,13 @@ window.toggleDealerServiceFilter = toggleDealerServiceFilter;
    ============================================================ */
 
 async function init() {
+  // Cookie consent banner — vis hvis brugeren ikke har valgt endnu
+  import('./js/cookie-banner.js').then(({ initCookieBanner, handleCookieChoice, showCookieBannerAgain }) => {
+    window.handleCookieChoice = handleCookieChoice;
+    window.showCookieBannerAgain = showCookieBannerAgain;
+    initCookieBanner();
+  });
+
   // Render sidebar farve-swatches
   import('./js/color-swatches.js').then(({ renderColorSwatches }) => {
     const colorGrid = document.getElementById('color-filter-grid');
@@ -1419,6 +1443,42 @@ function selectHeroCatChip(el, type) {
   el.setAttribute('aria-pressed', 'true');
 }
 
+// Anvend en pre-defineret 'populær søgning' fra forsiden-chips
+function applyPopularSearch({ type, maxPrice, minPrice, city } = {}) {
+  navigateTo('/');
+  // Vent til DOM er rendret, så filtrene findes
+  setTimeout(() => {
+    if (type) {
+      const sel = document.getElementById('search-type');
+      if (sel) sel.value = type;
+      const chip = document.querySelector(`.hero-cat-chip[onclick*="'${type}'"]`);
+      if (chip) {
+        document.querySelectorAll('.hero-cat-chip').forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-pressed', 'false');
+        });
+        chip.classList.add('active');
+        chip.setAttribute('aria-pressed', 'true');
+      }
+    }
+    if (maxPrice) {
+      const maxInput = document.querySelector('.price-range input:last-of-type');
+      if (maxInput) maxInput.value = maxPrice;
+    }
+    if (minPrice) {
+      const minInput = document.querySelector('.price-range input:first-of-type');
+      if (minInput) minInput.value = minPrice;
+    }
+    if (city) {
+      const cityInput = document.getElementById('search-city');
+      if (cityInput) cityInput.value = city;
+    }
+    // Scroll til listings og kør søgning
+    document.getElementById('listings-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    applyFilters();
+  }, 50);
+}
+
 // SPA navigation helper — pushState + route handling
 /* ============================================================
    PASSWORD UI HELPERS
@@ -1487,6 +1547,7 @@ function handleRoute() {
   const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
   const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
   const valuationMatch = path === '/vurder-min-cykel';
+  const sizeFinderMatch = path === '/stelstoerrelse-guide' || path === '/stelstørrelse-guide';
   const blogArticleMatch = path.match(/^\/blog\/([^/]+)$/);
   const blogOverviewMatch = path === '/blog';
   const meMatch      = path === '/me';
@@ -1565,6 +1626,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderValuationPage();
+  } else if (sizeFinderMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderSizeFinderPage();
   } else if (blogArticleMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -2106,6 +2172,7 @@ window.deleteSavedSearch  = deleteSavedSearch;
 window.loadTradeHistory   = loadTradeHistory;
 window.showSection         = showSection;
 window.selectHeroCatChip  = selectHeroCatChip;
+window.applyPopularSearch = applyPopularSearch;
 window.logout                  = logout;
 window.resendConfirmationEmail = resendConfirmationEmail;
 window.dismissEmailBanner      = dismissEmailBanner;
