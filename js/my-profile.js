@@ -69,7 +69,7 @@ export function createMyProfile({
             <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
               <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
                 ${imgUrl
-                  ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
+                  ? `<div class="mp-listing-thumb-bg" style="background-image:url('${imgUrl}')"></div><img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
                   : `<div class="mp-listing-thumb--empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`}
                 <span class="mp-status-badge ${statusClass}">${statusLabel}</span>
               </div>

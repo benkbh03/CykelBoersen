@@ -125,7 +125,7 @@ export function createProfilePages({
     return bikes.map((b, i) => {
       const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
       const imgContent = primaryImg
-        ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
+        ? `<div class="bike-card-img-bg" style="background-image:url('${primaryImg}')"></div><img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
         : '<span style="font-size:3.5rem">🚲</span>';
       return `
         <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">

@@ -727,7 +727,7 @@ export function createSellPage({
     const _sf2 = getSelectedFiles();
     const primaryImg = _sf2.find(f => f.isPrimary) || _sf2[0];
     const heroHTML = primaryImg
-      ? `<img src="${primaryImg.url}" alt="" class="sell-desktop-preview-img">`
+      ? `<div class="sell-desktop-preview-img-bg" style="background-image:url('${primaryImg.url}')"></div><img src="${primaryImg.url}" alt="" class="sell-desktop-preview-img">`
       : `<div class="sell-desktop-preview-placeholder">Billede vises her</div>`;
 
     const condBadge = cond
