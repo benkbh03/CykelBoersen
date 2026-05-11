@@ -47,7 +47,12 @@ Regler:
 - "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
 - Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
 - Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
-- Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.`;
+- Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.
+
+VIGTIGT om output:
+- Output ÉT enkelt JSON-objekt. Intet andet.
+- Ingen forklaringer, ingen kommentarer, ingen markdown.
+- Hvis du opdager en fejl undervejs, så outputtér IKKE multiple forsøg — tænk færdigt og output kun det endelige korrekte JSON.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -140,9 +145,10 @@ Deno.serve(async (req) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model:      "claude-sonnet-4-6",
-        max_tokens: 800,
-        system:     SYSTEM_PROMPT,
+        model:       "claude-sonnet-4-5-20250929",
+        max_tokens:  800,
+        temperature: 0,
+        system:      SYSTEM_PROMPT,
         messages: [
           { role: "user", content: userContent },
         ],
@@ -169,9 +175,36 @@ Deno.serve(async (req) => {
       .replace(/```\s*$/, "")
       .trim();
 
+    // Ekstrahér det sidste gyldige JSON-objekt i teksten — AI'en kan af og til
+    // udskrive et fejlbehæftet forsøg efterfulgt af det korrekte JSON.
+    function extractValidJson(text: string): any {
+      try { return JSON.parse(text); } catch (_) {}
+      const blocks: string[] = [];
+      let depth = 0, start = -1, inStr = false, esc = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inStr) {
+          if (esc) { esc = false; continue; }
+          if (c === "\\") { esc = true; continue; }
+          if (c === '"') inStr = false;
+          continue;
+        }
+        if (c === '"') { inStr = true; continue; }
+        if (c === "{") { if (depth === 0) start = i; depth++; }
+        else if (c === "}") {
+          depth--;
+          if (depth === 0 && start !== -1) { blocks.push(text.slice(start, i + 1)); start = -1; }
+        }
+      }
+      for (let i = blocks.length - 1; i >= 0; i--) {
+        try { return JSON.parse(blocks[i]); } catch (_) {}
+      }
+      throw new Error("Ingen gyldig JSON fundet i svar");
+    }
+
     let suggestion: any;
     try {
-      suggestion = JSON.parse(cleaned);
+      suggestion = extractValidJson(cleaned);
     } catch (parseErr) {
       console.error("JSON-parse fejl:", parseErr, "raw:", rawText);
       return new Response(
