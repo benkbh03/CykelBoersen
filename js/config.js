@@ -1,6 +1,12 @@
 export const BIKES_PAGE_SIZE = 24;
 export const MAP_PAGE_LIMIT = 500;
 
+/* Cache-busting version til dynamiske imports.
+   BUMP når lazy-loaded moduler ændres, så browseren henter ny version
+   i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
+   rydder ikke altid module-cachen. */
+export const ASSET_VERSION = '20261113b';
+
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
    + browser-side decoding holder dem ude af first-paint kritisk sti). */

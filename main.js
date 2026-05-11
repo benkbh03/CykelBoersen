@@ -6,7 +6,7 @@ import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAva
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
-import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED } from './js/config.js';
+import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -82,7 +82,7 @@ function showListingView() {
    Modulet selv overskriver disse stubs ved import. */
 let _supportChatPromise = null;
 function _ensureSupportChat() {
-  if (!_supportChatPromise) _supportChatPromise = import('./js/support-chat.js');
+  if (!_supportChatPromise) _supportChatPromise = import(`./js/support-chat.js?v=${ASSET_VERSION}`);
   return _supportChatPromise;
 }
 window.toggleChat      = (...args) => _ensureSupportChat().then(() => window.toggleChat(...args));
@@ -225,7 +225,7 @@ const {
 // Profile modals (user/dealer profile views, tabs, contact, achievements).
 // Profile modals — lazy-loaded (kun når bruger åbner et profil-kort)
 const _ensureProfileModals = lazyCtrl(
-  () => import('./js/profile-modals.js'),
+  () => import(`./js/profile-modals.js?v=${ASSET_VERSION}`),
   'createProfileModals',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, showToast,
@@ -310,7 +310,7 @@ const {
 // Map page — lazy-loaded (kun /kort route). Loader også Leaflet samtidig.
 const _ensureMapPage = lazyCtrl(
   () => Promise.all([
-    import('./js/map-page.js'),
+    import(`./js/map-page.js?v=${ASSET_VERSION}`),
     ensureLeaflet(),
   ]).then(([mod]) => mod),
   'createMapPage',
@@ -356,7 +356,7 @@ const _openFromMap           = lazyMethod(_ensureMapPage, '_openFromMap');
 
 // Sell page — lazy-loaded (kun /sell route eller "+ Sæt til salg")
 const _ensureSellPage = lazyCtrl(
-  () => import('./js/sell-page.js'),
+  () => import(`./js/sell-page.js?v=${ASSET_VERSION}`),
   'createSellPage',
   () => ({
     supabase, showToast, esc, debounce, btnLoading,
@@ -411,7 +411,7 @@ const showSellTermsModal         = lazyMethod(_ensureSellPage, 'showSellTermsMod
 // Leaflet bruges til lokations-kort i bike-modal.
 const _ensureBikeDetail = lazyCtrl(
   () => Promise.all([
-    import('./js/bike-detail.js'),
+    import(`./js/bike-detail.js?v=${ASSET_VERSION}`),
     ensureLeaflet(),
   ]).then(([mod]) => mod),
   'createBikeDetail',
@@ -476,7 +476,7 @@ const toggleSaveFromModal        = lazyMethod(_ensureBikeDetail, 'toggleSaveFrom
 
 // Profile pages — lazy-loaded (kun /profile/:id og /dealer/:id ruter)
 const _ensureProfilePages = lazyCtrl(
-  () => import('./js/profile-pages.js'),
+  () => import(`./js/profile-pages.js?v=${ASSET_VERSION}`),
   'createProfilePages',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials, formatLastSeen,
@@ -498,7 +498,7 @@ const renderProfileSkeleton   = lazyMethod(_ensureProfilePages, 'renderProfileSk
 
 // My profile page — lazy-loaded (kun /me route)
 const _ensureMyProfilePage = lazyCtrl(
-  () => import('./js/my-profile-page.js'),
+  () => import(`./js/my-profile-page.js?v=${ASSET_VERSION}`),
   'createMyProfilePage',
   () => ({
     supabase, esc, safeAvatarUrl, getInitials,
@@ -531,7 +531,7 @@ window.loadProfileStats     = loadProfileStats;
 
 // Dealers page — lazy-loaded (/forhandlere + /bliv-forhandler routes)
 const _ensureDealersPage = lazyCtrl(
-  () => import('./js/dealers-page.js'),
+  () => import(`./js/dealers-page.js?v=${ASSET_VERSION}`),
   'createDealersPage',
   () => ({
     supabase, showToast, esc, getInitials, safeAvatarUrl, transformImageUrl,
@@ -562,7 +562,7 @@ const openSubscriptionPortal   = lazyMethod(_ensureDealersPage, 'openSubscriptio
 
 // Brand-landingsside — lazy-loaded (/cykler/:brand)
 const _ensureBrandPage = lazyCtrl(
-  () => import('./js/brand-page.js'),
+  () => import(`./js/brand-page.js?v=${ASSET_VERSION}`),
   'createBrandPage',
   () => ({
     supabase, esc, updateSEOMeta,
@@ -582,7 +582,7 @@ window.renderBrandsOverview = renderBrandsOverview;
 
 // Cykel-vurdering — lazy-loaded (/vurder-min-cykel)
 const _ensureValuation = lazyCtrl(
-  () => import('./js/valuation.js'),
+  () => import(`./js/valuation.js?v=${ASSET_VERSION}`),
   'createValuation',
   () => ({
     supabase, esc, updateSEOMeta, showDetailView,
@@ -597,7 +597,7 @@ window.runValuation        = runValuation;
 
 // Stelstørrelse-finder — lazy-loaded (/stelstoerrelse-guide)
 const _ensureSizeFinder = lazyCtrl(
-  () => import('./js/size-finder.js'),
+  () => import(`./js/size-finder.js?v=${ASSET_VERSION}`),
   'createSizeFinder',
   () => ({
     esc, updateSEOMeta, showDetailView,
@@ -614,7 +614,7 @@ window.updateSizeFinderHeightLabel = updateSizeFinderHeightLabel;
 
 // Blog — lazy-loaded (/blog og /blog/:slug)
 const _ensureBlog = lazyCtrl(
-  () => import('./js/blog-page.js'),
+  () => import(`./js/blog-page.js?v=${ASSET_VERSION}`),
   'createBlogPage',
   () => ({
     esc, updateSEOMeta, showDetailView, showListingView,
@@ -645,14 +645,14 @@ window.toggleDealerServiceFilter = toggleDealerServiceFilter;
 
 async function init() {
   // Cookie consent banner — vis hvis brugeren ikke har valgt endnu
-  import('./js/cookie-banner.js').then(({ initCookieBanner, handleCookieChoice, showCookieBannerAgain }) => {
+  import(`./js/cookie-banner.js?v=${ASSET_VERSION}`).then(({ initCookieBanner, handleCookieChoice, showCookieBannerAgain }) => {
     window.handleCookieChoice = handleCookieChoice;
     window.showCookieBannerAgain = showCookieBannerAgain;
     initCookieBanner();
   });
 
   // Render sidebar farve-swatches
-  import('./js/color-swatches.js').then(({ renderColorSwatches }) => {
+  import(`./js/color-swatches.js?v=${ASSET_VERSION}`).then(({ renderColorSwatches }) => {
     const colorGrid = document.getElementById('color-filter-grid');
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
   });
@@ -737,7 +737,7 @@ async function init() {
   loadInitialData(); // Erstatter loadDealers() + updateFilterCounts() med 2 parallelle queries
 
   // Render "Sidst set"-sektion på forsiden (lazy import — kun hvis bruger har localStorage-data)
-  import('./js/recently-viewed.js').then(({ renderRecentlyViewedSection, clearRecentlyViewed }) => {
+  import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(({ renderRecentlyViewedSection, clearRecentlyViewed }) => {
     renderRecentlyViewedSection('recently-viewed');
     window.clearRecentlyViewedSection = () => {
       clearRecentlyViewed();
@@ -889,7 +889,7 @@ async function init() {
       if (_event === 'SIGNED_IN' && isNewLogin) {
         loadBikes();
         if (!localStorage.getItem('onboarded')) {
-          import('./js/onboarding.js').then(m => m.showOnboardingBanner()).catch(() => {});
+          import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
         }
         checkSavedSearchNotifications();
       }
@@ -1657,7 +1657,7 @@ function handleRoute() {
   } else {
     showListingView();
     // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
-    import('./js/recently-viewed.js').then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
+    import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   }
 }
 
@@ -1671,18 +1671,18 @@ function _preloadStaticModules() {
   const schedule = window.requestIdleCallback || (cb => setTimeout(cb, 800));
   schedule(() => {
     // Footer-links (Om os, Vilkår, Privatlivspolitik, Kontakt)
-    import('./js/static-pages.js').catch(() => {});
-    import('./js/static-pages-content.js').catch(() => {});
+    import(`./js/static-pages.js?v=${ASSET_VERSION}`).catch(() => {});
+    import(`./js/static-pages-content.js?v=${ASSET_VERSION}`).catch(() => {});
     // Profil-sider (bruger/forhandler)
-    import('./js/profile-pages.js').catch(() => {});
-    import('./js/profile-modals.js').catch(() => {});
+    import(`./js/profile-pages.js?v=${ASSET_VERSION}`).catch(() => {});
+    import(`./js/profile-modals.js?v=${ASSET_VERSION}`).catch(() => {});
     // Annonce-modal (klik på bike-card) + Leaflet til lokations-kort
-    import('./js/bike-detail.js').catch(() => {});
+    import(`./js/bike-detail.js?v=${ASSET_VERSION}`).catch(() => {});
     ensureLeaflet().catch(() => {});
     // "Sæt til salg"-knap
-    import('./js/sell-page.js').catch(() => {});
+    import(`./js/sell-page.js?v=${ASSET_VERSION}`).catch(() => {});
     // "Forhandlere"-link i topnav
-    import('./js/dealers-page.js').catch(() => {});
+    import(`./js/dealers-page.js?v=${ASSET_VERSION}`).catch(() => {});
   });
 }
 window.addEventListener('load', _preloadStaticModules);
@@ -2081,7 +2081,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
 
 // Inbox — lazy-loaded (kun når bruger åbner indbakke eller /inbox route)
 const _ensureInbox = lazyCtrl(
-  () => import('./js/inbox.js'),
+  () => import(`./js/inbox.js?v=${ASSET_VERSION}`),
   'createInbox',
   () => ({
     supabase, showToast, esc, safeAvatarUrl, getInitials,
@@ -2166,7 +2166,7 @@ window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
-window.dismissOnboarding    = lazyExport(() => import('./js/onboarding.js'), 'dismissOnboarding');
+window.dismissOnboarding    = lazyExport(() => import(`./js/onboarding.js?v=${ASSET_VERSION}`), 'dismissOnboarding');
 window.useQuickReply        = useQuickReply;
 window.toggleNearMe         = toggleNearMe;
 window.updateNearMeRadius   = updateNearMeRadius;
@@ -2331,8 +2331,8 @@ window.submitContactForm       = submitContactForm;
 
 async function renderStaticPage(type) {
   const [{ renderStaticPageView }, { footerContent }] = await Promise.all([
-    import('./js/static-pages.js'),
-    import('./js/static-pages-content.js'),
+    import(`./js/static-pages.js?v=${ASSET_VERSION}`),
+    import(`./js/static-pages-content.js?v=${ASSET_VERSION}`),
   ]);
   return renderStaticPageView(type, {
     footerContent,
@@ -2354,7 +2354,7 @@ async function submitContactForm() { return _submitContactForm(showToast); }
    ============================================================ */
 
 const _ensureAdminPanel = lazyCtrl(
-  () => import('./js/admin-panel-ui.js'),
+  () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
   () => ({ loadDealerApplications, loadAllUsers, loadIdApplications }),
 );
