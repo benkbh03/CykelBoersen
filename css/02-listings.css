@@ -111,6 +111,48 @@
 }
 .afb-clear-all:hover { border-color: var(--rust); color: var(--rust); }
 
+/* ── POPULÆRE SØGNINGER chips (SEO landing) ── */
+.popular-searches {
+  max-width: 1240px;
+  margin: 24px auto 8px;
+  padding: 0 24px;
+}
+.popular-searches-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin: 0 0 12px;
+}
+.popular-searches-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.popular-chip {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 8px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.popular-chip:hover {
+  background: var(--sand);
+  border-color: var(--rust);
+  transform: translateY(-1px);
+}
+@media (max-width: 600px) {
+  .popular-searches { padding: 0 16px; }
+  .popular-chip { font-size: 0.8rem; padding: 7px 12px; }
+}
+
 .listings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
