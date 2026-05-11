@@ -43,13 +43,13 @@ export function createImageUpload({
     document.body.style.overflow = 'hidden';
 
     document.querySelectorAll('#crop-modal .crop-ratio-btn').forEach(b => b.classList.remove('active'));
-    const def = document.querySelector('#crop-modal .crop-ratio-btn[data-ratio="1.3333"]');
+    const def = document.querySelector('#crop-modal .crop-ratio-btn[data-ratio="1.5"]');
     if (def) def.classList.add('active');
 
     if (_cropperInstance) { try { _cropperInstance.destroy(); } catch (_) {} _cropperInstance = null; }
 
     _cropperInstance = new Cropper(img, {
-      aspectRatio: 4 / 3,
+      aspectRatio: 3 / 2,
       viewMode:    1,
       autoCropArea: 1,
       background:  false,
