@@ -870,11 +870,6 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   transition: transform 0.18s ease;
   will-change: transform;
 }
-/* På bredere viewports (desktop/landscape) brug cover så billedet fylder
-   hele skærmen — beskærer kun baggrund (væg/gulv), ikke selve cyklen */
-@media (min-aspect-ratio: 3/2) {
-  #lightbox-img { object-fit: cover; }
-}
 #lightbox-img.dragging { transition: none; }
 .lightbox-close {
   position: absolute; top: 14px; right: 14px;
