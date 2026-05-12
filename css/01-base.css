@@ -154,12 +154,18 @@ nav {
 /* ── HERO ── */
 .hero {
   position: relative;
-  height: calc(100vh - 64px);
-  min-height: 480px;
+  height: 460px;
+  min-height: 380px;
   display: flex;
   align-items: center;
   overflow: hidden;
   background: var(--forest);
+}
+@media (max-width: 768px) {
+  .hero { height: 420px; min-height: 360px; }
+}
+@media (max-width: 480px) {
+  .hero { height: 400px; min-height: 340px; }
 }
 .hero-img-side {
   position: absolute;
@@ -338,9 +344,9 @@ nav {
   background-size: auto, auto, auto, auto, cover;
   background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
-  padding: 72px 48px 52px;
+  padding: 36px 48px 28px;
 }
-.search-hero-text { text-align: center; margin-bottom: 28px; max-width: 700px; margin-left: auto; margin-right: auto; }
+.search-hero-text { text-align: center; margin-bottom: 18px; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
   display: inline-flex; align-items: center; gap: 7px;
   background: rgba(245,240,232,0.08);
@@ -355,9 +361,9 @@ nav {
   background: #7ac97a; box-shadow: 0 0 8px #7ac97a;
 }
 .search-hero-title {
-  font-family: 'Fraunces', serif; font-size: 3.8rem; font-weight: 600;
-  color: #fff; line-height: 1.02; letter-spacing: -0.045em;
-  margin: 0 0 16px; text-wrap: balance;
+  font-family: 'Fraunces', serif; font-size: 2.6rem; font-weight: 600;
+  color: #fff; line-height: 1.05; letter-spacing: -0.035em;
+  margin: 0 0 10px; text-wrap: balance;
   text-shadow: 0 2px 36px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.5);
 }
 .search-hero-title em {
@@ -373,34 +379,34 @@ nav {
   color: #FF8B60;
 }
 .search-hero-sub {
-  color: rgba(245,240,232,0.96); font-size: 1rem; font-weight: 400;
-  line-height: 1.55; max-width: 480px; margin: 0 auto;
+  color: rgba(245,240,232,0.96); font-size: 0.95rem; font-weight: 400;
+  line-height: 1.5; max-width: 480px; margin: 0 auto;
   text-shadow: 0 1px 14px rgba(0,0,0,0.55);
 }
 
 /* Mobil-tilpasninger til hero — reducerer størrelse + giver luft */
 @media (max-width: 768px) {
   .search-hero-title {
-    font-size: 2.4rem;
+    font-size: 2rem;
     letter-spacing: -0.025em;
     line-height: 1.05;
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     padding: 0 8px;
   }
   .search-hero-sub {
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    line-height: 1.45;
     padding: 0 12px;
     max-width: 360px;
   }
 }
 @media (max-width: 480px) {
   .search-hero-title {
-    font-size: 2.05rem;
+    font-size: 1.7rem;
     letter-spacing: -0.02em;
   }
   .search-hero-sub {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 }
 /* ── HERO KATEGORI-CHIPS ── */

@@ -241,25 +241,6 @@
     </div>
   </div>
 
-  <!-- ── POPULÆRE SØGNINGER (SEO landing chips) ── -->
-  <section class="popular-searches" aria-label="Populære søgninger">
-    <h2 class="popular-searches-title">Populære søgninger</h2>
-    <div class="popular-searches-chips">
-      <a class="popular-chip" href="/cykler/trek" onclick="event.preventDefault();navigateTo('/cykler/trek')">🚴 Trek racere</a>
-      <a class="popular-chip" href="/cykler/cube" onclick="event.preventDefault();navigateTo('/cykler/cube')">🚴 Cube cykler</a>
-      <a class="popular-chip" href="/cykler/specialized" onclick="event.preventDefault();navigateTo('/cykler/specialized')">🚴 Specialized</a>
-      <a class="popular-chip" href="/?type=Racercykel&amp;maxPrice=10000" onclick="event.preventDefault();applyPopularSearch({type:'Racercykel',maxPrice:10000})">💰 Racere under 10.000</a>
-      <a class="popular-chip" href="/?type=El-cykel" onclick="event.preventDefault();applyPopularSearch({type:'El-cykel'})">⚡ El-cykler</a>
-      <a class="popular-chip" href="/?type=El-cykel&amp;city=K%C3%B8benhavn" onclick="event.preventDefault();applyPopularSearch({type:'El-cykel',city:'København'})">⚡ El-cykler i KBH</a>
-      <a class="popular-chip" href="/?type=Mountainbike" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike'})">🏔️ Mountainbikes</a>
-      <a class="popular-chip" href="/?type=Ladcykel" onclick="event.preventDefault();applyPopularSearch({type:'Ladcykel'})">📦 Ladcykler</a>
-      <a class="popular-chip" href="/?type=Børnecykel" onclick="event.preventDefault();applyPopularSearch({type:'Børnecykel'})">👶 Børnecykler</a>
-      <a class="popular-chip" href="/?maxPrice=5000" onclick="event.preventDefault();applyPopularSearch({maxPrice:5000})">💸 Under 5.000 kr</a>
-      <a class="popular-chip" href="/cykler/christiania-bikes" onclick="event.preventDefault();navigateTo('/cykler/christiania-bikes')">📦 Christiania Bikes</a>
-      <a class="popular-chip" href="/cykler/kildemoes" onclick="event.preventDefault();navigateTo('/cykler/kildemoes')">🇩🇰 Kildemoes</a>
-    </div>
-  </section>
-
   <!-- ── HURTIGFILTER PILLS (skjult — erstattet af hero-cat-chips) ── -->
   <div class="filters-row" role="group" aria-label="Hurtigfiltre">
     <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
@@ -741,6 +722,25 @@
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
       <div class="listings-grid" id="listings-grid"></div>
       <div id="listings-map" style="display:none;height:600px;border-radius:14px;overflow:hidden;border:1px solid var(--border);"></div>
+
+      <!-- ── POPULÆRE SØGNINGER (SEO landing chips) ── -->
+      <section class="popular-searches" aria-label="Populære søgninger" style="margin-top:40px;">
+        <h2 class="popular-searches-title">Populære søgninger</h2>
+        <div class="popular-searches-chips">
+          <a class="popular-chip" href="/cykler/trek" onclick="event.preventDefault();navigateTo('/cykler/trek')">🚴 Trek racere</a>
+          <a class="popular-chip" href="/cykler/cube" onclick="event.preventDefault();navigateTo('/cykler/cube')">🚴 Cube cykler</a>
+          <a class="popular-chip" href="/cykler/specialized" onclick="event.preventDefault();navigateTo('/cykler/specialized')">🚴 Specialized</a>
+          <a class="popular-chip" href="/?type=Racercykel&amp;maxPrice=10000" onclick="event.preventDefault();applyPopularSearch({type:'Racercykel',maxPrice:10000})">💰 Racere under 10.000</a>
+          <a class="popular-chip" href="/?type=El-cykel" onclick="event.preventDefault();applyPopularSearch({type:'El-cykel'})">⚡ El-cykler</a>
+          <a class="popular-chip" href="/?type=El-cykel&amp;city=K%C3%B8benhavn" onclick="event.preventDefault();applyPopularSearch({type:'El-cykel',city:'København'})">⚡ El-cykler i KBH</a>
+          <a class="popular-chip" href="/?type=Mountainbike" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike'})">🏔️ Mountainbikes</a>
+          <a class="popular-chip" href="/?type=Ladcykel" onclick="event.preventDefault();applyPopularSearch({type:'Ladcykel'})">📦 Ladcykler</a>
+          <a class="popular-chip" href="/?type=Børnecykel" onclick="event.preventDefault();applyPopularSearch({type:'Børnecykel'})">👶 Børnecykler</a>
+          <a class="popular-chip" href="/?maxPrice=5000" onclick="event.preventDefault();applyPopularSearch({maxPrice:5000})">💸 Under 5.000 kr</a>
+          <a class="popular-chip" href="/cykler/christiania-bikes" onclick="event.preventDefault();navigateTo('/cykler/christiania-bikes')">📦 Christiania Bikes</a>
+          <a class="popular-chip" href="/cykler/kildemoes" onclick="event.preventDefault();navigateTo('/cykler/kildemoes')">🇩🇰 Kildemoes</a>
+        </div>
+      </section>
     </div>
 
   </div>
