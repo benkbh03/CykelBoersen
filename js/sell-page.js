@@ -527,7 +527,7 @@ export function createSellPage({
             ${opt(c['sell-size'] || '', ['XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)'])}
           </select>
           <div class="size-cm-row">
-            <input type="number" id="sell-size-cm" placeholder="f.eks. 54" min="30" max="85" value="${c['sell-size-cm'] || ''}">
+            <input type="number" id="sell-size-cm" placeholder="f.eks. 54" min="30" max="85" value="${c['sell-size-cm'] || ''}" onwheel="this.blur()">
             <span class="size-cm-unit">cm <span class="size-cm-hint">– valgfri præcis størrelse</span></span>
           </div>
         </div>
@@ -540,7 +540,7 @@ export function createSellPage({
         </div>
         <div class="sell-field">
           <label>Årgang</label>
-          <input type="number" id="sell-year" placeholder="2021" min="1950" max="2030" value="${c['sell-year'] || ''}">
+          <input type="number" id="sell-year" placeholder="2021" min="1950" max="2030" value="${c['sell-year'] || ''}" onwheel="this.blur()">
         </div>
         <div class="sell-field">
           <label style="display:flex;align-items:center;gap:6px;">Stand <span class="req">*</span>
@@ -567,10 +567,9 @@ export function createSellPage({
       <div class="sell-field">
         <label>Pris <span class="req">*</span> <span class="hint">inkl. moms</span></label>
         <div class="suffix-wrap">
-          <input type="number" id="sell-price" placeholder="4.500" min="0" value="${c['sell-price'] || ''}">
+          <input type="number" id="sell-price" placeholder="4.500" min="0" value="${c['sell-price'] || ''}" onwheel="this.blur()">
           <span class="suffix">DKK</span>
         </div>
-        <div id="sell-price-suggestion" class="price-suggestion" style="display:none;"></div>
         <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
       </div>
 
@@ -628,7 +627,7 @@ export function createSellPage({
         <div class="sell-field">
           <label>Vægt <span class="hint">(kg, fx 8.2)</span></label>
           <div class="suffix-wrap">
-            <input type="number" id="sell-weight-kg" placeholder="8.2" min="2" max="50" step="0.1" value="${c['sell-weight-kg'] || ''}">
+            <input type="number" id="sell-weight-kg" placeholder="8.2" min="2" max="50" step="0.1" value="${c['sell-weight-kg'] || ''}" onwheel="this.blur()">
             <span class="suffix">kg</span>
           </div>
         </div>

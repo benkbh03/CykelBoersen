@@ -6,7 +6,7 @@ import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAva
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
-import { BIKES_PAGE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -167,7 +167,7 @@ const {
   searchBikes,
   loadBikesWithFilters,
 } = createBikesList({
-  supabase, BIKES_PAGE_SIZE,
+  supabase, BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE,
   esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, transformImageUrl,
   updateActiveFiltersBar, updateCykelagentCta, applyNearMeFilter, hasActiveFilters, describeActiveFilters,
   getBikesOffset:       () => bikesOffset,

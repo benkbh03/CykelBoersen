@@ -21,6 +21,7 @@ const CITY_GROUPS = {
 export function createBikesList({
   supabase,
   BIKES_PAGE_SIZE,
+  BIKES_LOAD_MORE_SIZE,
   esc,
   safeAvatarUrl,
   getInitials,
@@ -87,10 +88,14 @@ export function createBikesList({
     }
 
     const offset = getBikesOffset();
-    // På initial load: hvis ?vist=N er sat i URL'en, hent op til N stk i ét hug
-    // for at genskabe brugerens position. Subsequent appends bruger normal BIKES_PAGE_SIZE.
+    // Asymmetrisk pagination:
+    //   - Initial load: BIKES_PAGE_SIZE (kompakt landing, fx 12)
+    //   - Initial load med ?vist=N i URL: brug N for at genskabe brugerens position
+    //   - "Vis flere"-klik (append=true): BIKES_LOAD_MORE_SIZE (større batches, fx 24)
     const initialVist = !append ? readVistFromUrl() : null;
-    const fetchCount = initialVist || BIKES_PAGE_SIZE;
+    const fetchCount = append
+      ? BIKES_LOAD_MORE_SIZE
+      : (initialVist || BIKES_PAGE_SIZE);
     let query = supabase
       .from('bikes')
       .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
@@ -322,12 +327,14 @@ export function createBikesList({
     }
 
     const offset = getFilterOffset();
+    // Samme asymmetriske pagination som loadBikes: kompakt initial, større append
+    const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
     let query = supabase
       .from('bikes')
       .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .range(offset, offset + BIKES_PAGE_SIZE - 1);
+      .range(offset, offset + filterFetchCount - 1);
 
     if (types.length > 0)      query = query.in('type', types);
     if (conditions.length > 0) query = query.in('condition', conditions);
@@ -395,7 +402,7 @@ export function createBikesList({
 
     const dealerBanner = document.querySelector('.dealer-banner-mobile');
     const anchor = dealerBanner || document.getElementById('listings-map') || grid;
-    if ((data || []).length === BIKES_PAGE_SIZE) {
+    if ((data || []).length === filterFetchCount) {
       const btn = document.createElement('div');
       btn.id = 'load-more-btn';
       btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
