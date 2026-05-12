@@ -646,6 +646,8 @@ export function createMapPage({
     // Geokod i batches for at undgå at oversvømme DAWA-API'et
     const GEO_BATCH = 10;
     const toGeocode = bikes.filter(b => b.city || (b.profiles && b.profiles.lat));
+    const geocodedBikes = [];
+
     for (let i = 0; i < toGeocode.length; i += GEO_BATCH) {
       const batch = toGeocode.slice(i, i + GEO_BATCH);
       await Promise.all(batch.map(async b => {
@@ -656,7 +658,6 @@ export function createMapPage({
         let coords = null;
         let precise = false;
 
-        // Foretræk gemte koordinater fra profil (fra DAWA-autocomplete ved oprettelse)
         if (profile.lat && profile.lng) {
           coords = [profile.lat, profile.lng];
           precise = profile.location_precision === 'exact';
@@ -667,20 +668,87 @@ export function createMapPage({
         if (!coords && b.city) coords = await geocodeCity(b.city);
         if (!coords) return;
 
+        _mapPageGeocoded.set(b.id, { coords: [coords[0], coords[1]], precise });
+        geocodedBikes.push({ bike: b, profile, isDealer, coords, precise });
+      }));
+    }
+
+    // Gruppér cykler efter placering: samme bruger eller samme præcise adresse
+    // får ét pin med tæller — i stedet for 20 overlappende markører
+    const groups = new Map();
+    for (const item of geocodedBikes) {
+      const key = item.isDealer
+        ? `dealer-${item.bike.user_id}`
+        : `coord-${Math.round(item.coords[0] * 1000)}-${Math.round(item.coords[1] * 1000)}-${item.bike.user_id}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(item);
+    }
+
+    // Lav én markør pr. gruppe
+    for (const [, items] of groups) {
+      const isMulti = items.length > 1;
+      const first = items[0];
+      const { isDealer, profile, coords, precise } = first;
+
+      // Singles: lille jitter for at undgå overlap mellem forskellige brugere
+      // Grupper: ingen jitter, alle bikes vises i én popup
+      let lat = coords[0], lng = coords[1];
+      if (!isMulti) {
         const jitter = precise ? 0.0001 : 0.003;
-        const lat = coords[0] + stableOffset(b.id, 0) * jitter;
-        const lng = coords[1] + stableOffset(b.id, 1) * jitter;
+        lat += stableOffset(first.bike.id, 0) * jitter;
+        lng += stableOffset(first.bike.id, 1) * jitter;
+      }
 
-        _mapPageGeocoded.set(b.id, { coords: [lat, lng], precise });
+      const iconHtml = isMulti
+        ? '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
+          + (isDealer ? '🏪' : '🚲') + '<span class="split-marker-count">' + items.length + '</span></div>'
+        : '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
+          + (isDealer ? '🏪' : '🚲') + '</div>';
 
-        const icon = L.divIcon({
-          html: '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
-            + (isDealer ? '🏪' : '🚲') + '</div>',
-          className: '',
-          iconSize: [34, 34],
-          iconAnchor: [17, 17],
-        });
+      const icon = L.divIcon({
+        html: iconHtml,
+        className: '',
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+      });
 
+      let popupHtml;
+      if (isMulti) {
+        // Gruppe-popup: vis alle cykler på samme sted som scrollbar liste
+        const sellerName = isDealer ? profile.shop_name : profile.name;
+        const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
+        const cardsHtml = items.map(it => {
+          const b = it.bike;
+          const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+          return '<button class="split-popup-list-item" onclick="navigateToBike(\'' + b.id + '\')">'
+            + (primaryImg
+                ? '<img src="' + primaryImg + '" alt="" class="split-popup-list-img">'
+                : '<div class="split-popup-list-img-placeholder">🚲</div>')
+            + '<div class="split-popup-list-info">'
+            + '<div class="split-popup-list-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
+            + '<div class="split-popup-list-meta">' + esc(b.type || '') + (b.year ? ' · ' + b.year : '') + '</div>'
+            + '<div class="split-popup-list-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
+            + '</div>'
+            + '</button>';
+        }).join('');
+
+        popupHtml = '<div class="split-popup split-popup--group">'
+          + '<div class="split-popup-group-header">'
+          + '<div class="split-popup-group-icon">' + (isDealer ? '🏪' : '👤') + '</div>'
+          + '<div class="split-popup-group-meta">'
+          + '<div class="split-popup-group-name">' + esc(sellerName || 'Ukendt') + '</div>'
+          + '<div class="split-popup-group-sub">' + items.length + ' cykler · ' + sellerLabel + '</div>'
+          + '</div>'
+          + '<button class="split-popup-close" aria-label="Luk" onclick="event.stopPropagation();_closeMapPopup()">'
+          + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+          + '</button>'
+          + '</div>'
+          + '<div class="split-popup-list">' + cardsHtml + '</div>'
+          + (isDealer ? '<button class="split-popup-btn" onclick="navigateToDealer(\'' + first.bike.user_id + '\')">Se forhandlerens profil →</button>' : '')
+          + '</div>';
+      } else {
+        // Single-popup: som før
+        const b = first.bike;
         const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
         const sellerName = isDealer ? profile.shop_name : profile.name;
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
@@ -697,7 +765,7 @@ export function createMapPage({
         const postalCode = postalMatch ? postalMatch[1] : '';
         const approxSuffix = precise ? '' : ' <span class="split-popup-approx">(ca.)</span>';
 
-        const popupHtml = '<div class="split-popup">'
+        popupHtml = '<div class="split-popup">'
           + '<div class="split-popup-media">'
           + (primaryImg
               ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">'
@@ -734,17 +802,20 @@ export function createMapPage({
           + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce →</button>'
           + '</div>'
           + '</div>';
+      }
 
-        const marker = L.marker([lat, lng], { icon });
-        marker.bindPopup(popupHtml, { maxWidth: 300, minWidth: 280, closeButton: false });
-        marker.on('click', function() {
-          marker.openPopup();
-          splitHighlightCard(b.id);
-        });
+      const marker = L.marker([lat, lng], { icon });
+      marker.bindPopup(popupHtml, { maxWidth: 340, minWidth: 280, closeButton: false });
+      marker.on('click', function() {
+        marker.openPopup();
+        if (!isMulti) splitHighlightCard(first.bike.id);
+      });
 
-        splitMarkerMap[b.id] = { marker, lat, lng };
-        splitClusterGroup.addLayer(marker);
-      }));
+      // Track marker for each bike i gruppen (så filter-toggle stadig virker)
+      for (const it of items) {
+        splitMarkerMap[it.bike.id] = { marker, lat, lng };
+      }
+      splitClusterGroup.addLayer(marker);
     }
 
     // Zoom til alle markører
