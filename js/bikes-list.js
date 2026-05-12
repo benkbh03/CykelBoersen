@@ -47,6 +47,26 @@ export function createBikesList({
   userSavedSet,        // Set reference (mutated)
   askedAvailableSet,   // Set reference (read)
 }) {
+  // Læs ?vist=N fra URL'en — kun gyldigt på initial load, og kun til at hente
+  // en større førstesats så delelig/bookmarkbar position kan genskabes.
+  function readVistFromUrl() {
+    try {
+      const n = parseInt(new URL(window.location).searchParams.get('vist'), 10);
+      if (n && n > BIKES_PAGE_SIZE && n <= 200) return n;
+    } catch (e) {}
+    return null;
+  }
+
+  // Opdater ?vist=N i URL'en uden at tilføje history-entry (so back-knap virker).
+  function writeVistToUrl(offset) {
+    try {
+      const url = new URL(window.location);
+      if (offset > BIKES_PAGE_SIZE) url.searchParams.set('vist', String(offset));
+      else url.searchParams.delete('vist');
+      window.history.replaceState({}, '', url);
+    } catch (e) {}
+  }
+
   async function loadBikes(filters = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
@@ -67,12 +87,16 @@ export function createBikesList({
     }
 
     const offset = getBikesOffset();
+    // På initial load: hvis ?vist=N er sat i URL'en, hent op til N stk i ét hug
+    // for at genskabe brugerens position. Subsequent appends bruger normal BIKES_PAGE_SIZE.
+    const initialVist = !append ? readVistFromUrl() : null;
+    const fetchCount = initialVist || BIKES_PAGE_SIZE;
     let query = supabase
       .from('bikes')
       .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .range(offset, offset + BIKES_PAGE_SIZE - 1);
+      .range(offset, offset + fetchCount - 1);
 
     if (filters.type)       query = query.eq('type', filters.type);
     if (filters.city) {
@@ -128,13 +152,15 @@ export function createBikesList({
     updateCykelagentCta();
 
     setBikesOffset(getBikesOffset() + data.length);
+    writeVistToUrl(getBikesOffset());
 
     const existing = document.getElementById('load-more-btn');
     if (existing) existing.remove();
 
     const footer = document.createElement('div');
     footer.id = 'load-more-btn';
-    if (data.length === BIKES_PAGE_SIZE) {
+    // Fuld batch → der kan være flere → vis "Vis flere"-knap
+    if (data.length === fetchCount) {
       footer.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
     } else if (append && getBikesOffset() > BIKES_PAGE_SIZE) {
       footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
