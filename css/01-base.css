@@ -175,8 +175,9 @@ nav {
 .hero-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 35%;
+  object-fit: contain;
+  object-position: center;
+  background: var(--forest);
   display: block;
 }
 .hero-img-side::after {
