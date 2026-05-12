@@ -274,7 +274,7 @@ export function createBikesList({
     types = [], conditions = [], minPrice, maxPrice, sellerType, dealerId,
     wheelSizes = [], sizes = [], colors = [], brands = [],
     frameMaterials = [], brakeTypes = [], groupsets = [], electronicShifting = null,
-    maxWeight = null,
+    maxWeight = null, city = null, search = null,
   } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
@@ -284,7 +284,7 @@ export function createBikesList({
         types, conditions, minPrice, maxPrice, sellerType, dealerId,
         wheelSizes, sizes, colors, brands,
         frameMaterials, brakeTypes, groupsets, electronicShifting,
-        maxWeight,
+        maxWeight, city, search,
       });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
@@ -303,6 +303,17 @@ export function createBikesList({
     if (conditions.length > 0) query = query.in('condition', conditions);
     if (sizes.length > 0)      query = query.in('size', sizes);
     if (colors.length > 0)     query = query.overlaps('colors', colors);
+    if (city) {
+      const group = CITY_GROUPS[city];
+      if (group) {
+        query = query.or(group.map(c => `city.ilike.%${c}%`).join(','));
+      } else {
+        query = query.ilike('city', `%${city}%`);
+      }
+    }
+    if (search) {
+      query = query.or(`brand.ilike.%${search}%,model.ilike.%${search}%`);
+    }
     if (minPrice)              query = query.gte('price', minPrice);
     if (maxPrice)              query = query.lte('price', maxPrice);
     if (dealerId)              query = query.eq('user_id', dealerId);

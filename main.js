@@ -1448,12 +1448,22 @@ function selectHeroCatChip(el, type) {
   el.setAttribute('aria-pressed', 'true');
 }
 
-// Anvend en pre-defineret 'populær søgning' fra forsiden-chips
+// Anvend en pre-defineret 'populær søgning' fra forsiden-chips.
+// Skriver til samme felter som brugeren ville sætte manuelt — sidebar-checkboxes
+// for type, sidebar prisinputs for pris, hero-felt for by — så Cykelagenten
+// gemmer samme state som ved manuel filtrering.
 function applyPopularSearch({ type, maxPrice, minPrice, city } = {}) {
   navigateTo('/');
-  // Vent til DOM er rendret, så filtrene findes
   setTimeout(() => {
+    // Nulstil eksisterende type-checkboxes i sidebar, så vi starter rent
+    document.querySelectorAll('[data-filter="type"]').forEach(cb => { cb.checked = false; });
+
     if (type) {
+      // Sæt sidebar checkbox for type (det er den applyFilters læser)
+      const sidebarCheckbox = document.querySelector(`[data-filter="type"][data-value="${type}"]`);
+      if (sidebarCheckbox) sidebarCheckbox.checked = true;
+
+      // Sæt også hero-dropdown og chip så UI'et matcher
       const sel = document.getElementById('search-type');
       if (sel) sel.value = type;
       const chip = document.querySelector(`.hero-cat-chip[onclick*="'${type}'"]`);
@@ -1466,6 +1476,7 @@ function applyPopularSearch({ type, maxPrice, minPrice, city } = {}) {
         chip.setAttribute('aria-pressed', 'true');
       }
     }
+
     if (maxPrice) {
       const maxInput = document.querySelector('.price-range input:last-of-type');
       if (maxInput) maxInput.value = maxPrice;
@@ -1474,11 +1485,12 @@ function applyPopularSearch({ type, maxPrice, minPrice, city } = {}) {
       const minInput = document.querySelector('.price-range input:first-of-type');
       if (minInput) minInput.value = minPrice;
     }
+
     if (city) {
       const cityInput = document.getElementById('search-city');
       if (cityInput) cityInput.value = city;
     }
-    // Scroll til listings og kør søgning
+
     document.getElementById('listings-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     applyFilters();
   }, 50);
@@ -1822,11 +1834,15 @@ function applyFilters() {
   if (sellerDealer?.checked && !sellerPrivate?.checked) sellerType = 'dealer';
   if (sellerPrivate?.checked && !sellerDealer?.checked) sellerType = 'private';
 
+  // Hero-søgebar: by-/postnummer + fritekst-søgning
+  const city   = document.getElementById('search-city')?.value?.trim() || null;
+  const search = document.getElementById('search-input')?.value?.trim() || null;
+
   debouncedLoadFilters({
     types, conditions, minPrice, maxPrice, sellerType,
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
-    maxWeight,
+    maxWeight, city, search,
   });
 }
 
