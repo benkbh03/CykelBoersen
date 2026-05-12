@@ -367,6 +367,14 @@ export function createSellPage({
     _aiSuggestionPending = null;
     _sellFormCache = {};
 
+    // Forhåndsudfyld by fra profil — sparer dealers (og private brugere) for at
+    // skrive deres faste by hver gang de opretter en annonce. Brugeren kan stadig
+    // overskrive feltet hvis annoncen sælges et andet sted.
+    const _profile = getCurrentProfile();
+    if (_profile?.city) {
+      _sellFormCache['sell-city'] = _profile.city;
+    }
+
     document.getElementById('detail-view').innerHTML = `
       <div class="sell-wizard">
         <div class="sell-wizard-top">
