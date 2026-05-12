@@ -360,6 +360,20 @@ nav {
   background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
   padding: 36px 48px 28px;
+  aspect-ratio: 2400 / 845;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (max-width: 1024px) {
+  .search-section { aspect-ratio: auto; min-height: 420px; }
+}
+@media (max-width: 768px) {
+  .search-section { min-height: 380px; padding: 28px 20px 22px; }
+}
+@media (max-width: 480px) {
+  .search-section { min-height: 360px; padding: 24px 16px 18px; }
 }
 .search-hero-text { text-align: center; margin-bottom: 18px; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
