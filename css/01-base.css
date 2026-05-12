@@ -583,6 +583,12 @@ nav {
   gap: 36px; max-width: 1300px;
   margin: 0 auto; padding: 32px 48px;
 }
+/* Grid items har default min-width: auto, hvilket lader dem vokse til indhold
+   med min-content bredde. Hvis .rv-scroll har 8 kort × 192px = 1536px indhold,
+   pumper det grid-cellen op og presser listings-grid'et med — visuelt ser det
+   ud som om kortene "zoomes ind" til 2.5 stk. min-width: 0 fortæller grid'et
+   at cellerne MÅ shrinke under deres min-content. */
+.main > * { min-width: 0; }
 
 /* ── SIDEBAR ── */
 .sidebar { display: flex; flex-direction: column; gap: 10px; }

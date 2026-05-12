@@ -67,6 +67,10 @@ export function createSellPage({
   let _aiSuggestionPending = null;
   let _aiApplied = false;
   let _sellFormCache = {};
+  // Guard mod dobbelt-submit: sættes til true mens submitSellPage() kører,
+  // så hurtige klik (hvor knappen ikke når at blive deaktiveret) ikke kan
+  // oprette annoncen to gange.
+  let _submittingSell = false;
 
   function notifyDealerFollowers(newBike) {
     const profile = getCurrentProfile();
@@ -238,10 +242,21 @@ export function createSellPage({
   }
 
   async function submitSellPage() {
+    // Hård guard: kør ALDRIG to gange samtidigt
+    if (_submittingSell) return;
     const currentUser = getCurrentUser();
     if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
     if (blockIfPendingDealer()) return;
+    _submittingSell = true;
     const restore = btnLoading('sell-submit-btn', 'Opretter...');
+    // Deaktivér også de synlige CTA-knapper (mobil + desktop) så brugeren
+    // ikke kan klikke dem mens første request stadig kører
+    const visibleCtas = document.querySelectorAll('.sell-wizard-cta, .sell-desktop-cta');
+    visibleCtas.forEach(b => {
+      b.disabled = true;
+      b.dataset.origText = b.innerHTML;
+      b.innerHTML = '<span class="btn-spinner"></span>Opretter…';
+    });
     try {
       // Read from DOM first, fall back to _sellFormCache (step 2 fields are gone when on step 3)
       const getVal = (id) => {
@@ -317,6 +332,14 @@ export function createSellPage({
       showListingSuccessModal(newBike);
     } finally {
       restore();
+      visibleCtas.forEach(b => {
+        b.disabled = false;
+        if (b.dataset.origText) {
+          b.innerHTML = b.dataset.origText;
+          delete b.dataset.origText;
+        }
+      });
+      _submittingSell = false;
     }
   }
 
@@ -343,6 +366,14 @@ export function createSellPage({
     _aiApplied = false;
     _aiSuggestionPending = null;
     _sellFormCache = {};
+
+    // Forhåndsudfyld by fra profil — sparer dealers (og private brugere) for at
+    // skrive deres faste by hver gang de opretter en annonce. Brugeren kan stadig
+    // overskrive feltet hvis annoncen sælges et andet sted.
+    const _profile = getCurrentProfile();
+    if (_profile?.city) {
+      _sellFormCache['sell-city'] = _profile.city;
+    }
 
     document.getElementById('detail-view').innerHTML = `
       <div class="sell-wizard">
@@ -968,6 +999,10 @@ export function createSellPage({
   }
 
   function advanceSell() {
+    // Hård guard: hvis vi allerede er ved at oprette annoncen, ignorér klikket
+    // helt. Beskytter mod dobbelt-oprettelse hvis brugeren klikker flere gange
+    // mens første request stadig kører.
+    if (_submittingSell) return;
     if (!canAdvanceSell()) {
       showToast('⚠️ Udfyld alle påkrævede felter');
       return;
