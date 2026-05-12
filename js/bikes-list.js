@@ -199,6 +199,7 @@ export function createBikesList({
       const profile    = b.profiles || {};
       const sellerType = profile.seller_type || 'private';
       const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
+      const isDemo     = profile.shop_name === 'Cykelbørsen Demo';
       const initials   = getInitials(sellerName);
       const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
       const thumbSrc = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
@@ -223,12 +224,13 @@ export function createBikesList({
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
+              ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
               <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
-              ${b.warranty && !isSold ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+              ${b.warranty && !isSold && !isDemo ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
             </div>
-            ${saveCount > 0 ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
-            ${!isSold ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
-            ${!isSold && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
+            ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
+            ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
+            ${!isSold && !isDemo && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
           </div>
           <div class="bike-card-body">
             <div class="card-top">
