@@ -1220,6 +1220,8 @@
   min-height: calc(100vh - 64px);
   width: 100%;
   overflow-x: hidden;
+  background: var(--cream);
+  flex: 1 0 auto;
 }
 /* Kortvisning fylder hele viewport — skjul scroll/footer */
 #page-layout:has(.map-page) {
