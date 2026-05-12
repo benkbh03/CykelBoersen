@@ -355,9 +355,10 @@ nav {
       rgba(14,22,15,0.01) 50%,
       rgba(14,22,15,0.20) 100%
     ),
-    url('/hero.webp');
-  background-size: auto, auto, auto, auto, cover;
-  background-position: center, center, center, center, center 40%;
+    url('/hero.jpg');
+  background-size: auto, auto, auto, auto, contain;
+  background-position: center, center, center, center, center;
+  background-color: var(--forest);
   background-repeat: no-repeat;
   padding: 36px 48px 28px;
 }
