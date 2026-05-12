@@ -443,19 +443,20 @@
 .rv-scroll-wrap { position: relative; }
 .rv-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(255,255,255,0.96); color: var(--charcoal);
+  width: 42px; height: 42px; border-radius: 50%;
+  background: #fff; color: var(--charcoal);
   border: 1px solid var(--border);
-  font-size: 1.4rem; line-height: 1; font-weight: 600;
+  font-size: 1.6rem; line-height: 1; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 2;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  transition: opacity 0.18s, background 0.15s, transform 0.15s;
+  cursor: pointer; z-index: 5;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  transition: background 0.15s, transform 0.15s;
   font-family: 'DM Sans', sans-serif;
+  padding-bottom: 3px;
 }
-.rv-nav:hover { background: #fff; transform: translateY(-50%) scale(1.05); }
-.rv-nav-prev { left: -10px; }
-.rv-nav-next { right: -10px; }
+.rv-nav:hover { background: var(--sand-2); transform: translateY(-50%) scale(1.06); }
+.rv-nav-prev { left: 6px; }
+.rv-nav-next { right: 6px; }
 @media (max-width: 768px) { .rv-nav { display: none; } }
 .rv-scroll {
   display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
@@ -468,7 +469,8 @@
 .rv-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
 .rv-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 .rv-card {
-  flex: 0 0 160px; scroll-snap-align: start;
+  flex: 0 0 180px; width: 180px; min-width: 180px;
+  scroll-snap-align: start;
   display: flex; flex-direction: column;
   background: var(--cream); border: 1px solid var(--border);
   border-radius: 10px; padding: 0; cursor: pointer;

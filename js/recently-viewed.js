@@ -125,13 +125,28 @@ export function renderRecentlyViewedSection(containerId, opts = {}) {
   if (prev) prev.addEventListener('click', () => scrollByCards(-1));
   if (next) next.addEventListener('click', () => scrollByCards(1));
 
-  // Skjul prev/next-knapper når der ikke er mere at scrolle
+  // Vis/skjul prev/next-knapper baseret på scroll-position og om der overhovedet
+  // er noget at scrolle. Bruger visibility (ikke opacity) så knapperne ikke
+  // tager click-events når de er skjult, og display: none hvis ingen overflow.
   const updateNav = () => {
-    const max = scroller.scrollWidth - scroller.clientWidth - 1;
-    if (prev) prev.style.opacity = scroller.scrollLeft > 4 ? '1' : '0';
-    if (next) next.style.opacity = scroller.scrollLeft < max ? '1' : '0';
+    const overflow = scroller.scrollWidth - scroller.clientWidth;
+    if (overflow <= 4) {
+      if (prev) prev.style.display = 'none';
+      if (next) next.style.display = 'none';
+      return;
+    }
+    if (prev) {
+      prev.style.display = 'flex';
+      prev.style.visibility = scroller.scrollLeft > 4 ? 'visible' : 'hidden';
+    }
+    if (next) {
+      next.style.display = 'flex';
+      next.style.visibility = scroller.scrollLeft < overflow - 1 ? 'visible' : 'hidden';
+    }
   };
   scroller.addEventListener('scroll', updateNav);
-  // Initial state efter render
-  setTimeout(updateNav, 50);
+  window.addEventListener('resize', updateNav);
+  // Initial state efter render (vent på layout + billed-loading)
+  requestAnimationFrame(updateNav);
+  setTimeout(updateNav, 150);
 }
