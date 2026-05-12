@@ -53,7 +53,7 @@ export const BRANDS_META = {
     country: 'Tyskland',
     founded: 2002,
     tagline: 'Direkte fra producent til dig',
-    description: 'Canyon er kendt for sit direct-to-consumer salgsmodel — de sælger udelukkende online uden mellemled, hvilket giver høj kvalitet til konkurrencedygtige priser. Mærket leverer cykler i toppen af World Tour-feltet (Movistar, Alpecin–Deceuninck). Aeroad, Ultimate og Endurace er deres racer-modeller.',
+    description: 'Canyon er kendt for sin direct-to-consumer-model, hvor cyklerne udelukkende sælges online uden mellemled. Det giver høj kvalitet til konkurrencedygtige priser, og mærkets cykler ses i toppen af World Tour-feltet hos hold som Movistar og Alpecin–Deceuninck. Aeroad, Ultimate og Endurace er mærkets bedst kendte racermodeller.',
     popular_models: {
       'Racercykel': ['Endurace', 'Ultimate CF SL', 'Aeroad CF SL'],
       'Mountainbike': ['Spectral', 'Neuron', 'Strive'],
@@ -89,10 +89,10 @@ export const BRANDS_META = {
   },
   scott: {
     name: 'Scott',
-    country: 'Schweiz',
+    country: 'Schweiz / USA',
     founded: 1958,
-    tagline: 'Schweizisk præcision og let vægt',
-    description: 'Scott er en schweizisk cykelproducent grundlagt af ski-pioner Ed Scott. Mærket har vundet flere World Tour-etaper og er kendt for ekstremt lette rammer (Addict, Foil) og premium mountainbikes (Spark, Genius).',
+    tagline: 'Letvægts cykler med racing-DNA',
+    description: 'Scott blev grundlagt af amerikaneren Ed Scott i Sun Valley i Idaho i 1958 og flyttede senere hovedkvarteret til Schweiz. Mærket har vundet flere World Tour-etaper og er kendt for ekstremt lette rammer som Addict og Foil samt premium mountainbikes som Spark og Genius.',
     popular_models: {
       'Racercykel': ['Addict', 'Foil', 'Speedster'],
       'Mountainbike': ['Spark', 'Genius', 'Scale'],
@@ -104,8 +104,8 @@ export const BRANDS_META = {
     name: 'Bianchi',
     country: 'Italien',
     founded: 1885,
-    tagline: 'Verdens ældste cykelmærke',
-    description: 'Bianchi er verdens ældste stadig-aktive cykelmærke, grundlagt i Milano i 1885. Genkendelig på den karakteristiske "Celeste"-grønne farve. Brand kører i WorldTour og har historisk produceret cykler til mange af cykelsportens største legender. Oltre, Specialissima og Infinito er topmodellerne.',
+    tagline: 'Et af verdens ældste cykelmærker',
+    description: 'Bianchi blev grundlagt i Milano i 1885 og er et af de ældste stadig-aktive cykelmærker i verden. Mærket er nemt at genkende på den karakteristiske "Celeste"-grønne farve og har gennem mere end et århundrede produceret cykler til mange af cykelsportens største legender. I dag kører mærket stadig i WorldTour, og topmodellerne tæller Oltre, Specialissima og Infinito.',
     popular_models: {
       'Racercykel': ['Oltre XR4', 'Specialissima', 'Infinito CV', 'Sprint'],
       'Citybike': ['Spillo', 'Cortina'],
@@ -128,13 +128,12 @@ export const BRANDS_META = {
   },
   mbk: {
     name: 'MBK',
-    country: 'Danmark',
-    founded: 1972,
-    tagline: 'Klassisk dansk kvalitet',
-    description: 'MBK er et dansk cykelmærke der har leveret pålidelige hverdags- og transportcykler i Danmark siden 1970erne. Kendt for solide citybikes, ladcykler og børnecykler til konkurrencedygtige priser.',
+    country: 'Frankrig',
+    founded: null,
+    tagline: 'Klassisk hverdags- og børnecykel',
+    description: 'MBK opstod som et fransk cykel- og knallertmærke fra Motobécane-koncernen og blev senere overtaget af Yamaha. Mærket er igennem mange år solgt i Danmark som pålidelige hverdags-, ladcykler og børnecykler i mellempris-segmentet.',
     popular_models: {
       'Citybike': ['Style', 'Vision', 'Cleam'],
-      'El-cykel': ['Eco', 'Forte'],
       'Børnecykel': ['Boomer'],
     },
     typical_price_range: '2.000 – 18.000 kr',
@@ -157,7 +156,7 @@ export const BRANDS_META = {
     country: 'Italien',
     founded: 1953,
     tagline: 'Italiensk håndværk fra Treviso',
-    description: 'Pinarello er en legendarisk italiensk cykelproducent grundlagt af Giovanni Pinarello i Treviso i 1953. Cyklerne er vundet Tour de France utallige gange — særligt med Team Sky/INEOS. Karakteristisk asymmetrisk ramme og premium prislapper.',
+    description: 'Pinarello er en italiensk cykelproducent grundlagt af Giovanni Pinarello i Treviso i 1953. Cyklerne har vundet Tour de France utallige gange, særligt sammen med Team Sky og senere INEOS. Mærket genkendes på den karakteristiske asymmetriske ramme og ligger i den absolut høje ende af prismæssigt.',
     popular_models: {
       'Racercykel': ['Dogma F', 'Prince', 'Paris', 'Razha'],
       'Gravel': ['Grevil'],
@@ -233,8 +232,8 @@ export const BRANDS_META = {
     name: 'Orbea',
     country: 'Spanien',
     founded: 1840,
-    tagline: 'Baskisk cykelhåndværk siden 1840',
-    description: 'Orbea er en af verdens ældste cykelproducenter, grundlagt i Baskerlandet, Spanien i 1840 (oprindeligt som våbenproducent). I dag fokuserer mærket på premium racer- og MTB-cykler med Lab-Hub-konfiguration der lader købere customize hver cykel.',
+    tagline: 'Baskisk håndværk med rødder tilbage til 1840',
+    description: 'Orbea har sin oprindelse i Baskerlandet i Spanien i 1840, hvor virksomheden begyndte som våbenproducent. Cykelproduktionen kom til senere, og i dag er Orbea kendt for premium racer- og mountainbikes med en Lab-Hub-konfiguration der lader købere skræddersy hver enkelt cykel.',
     popular_models: {
       'Racercykel': ['Orca', 'Avant', 'Gain'],
       'Mountainbike': ['Oiz', 'Occam', 'Rallon'],
@@ -246,8 +245,8 @@ export const BRANDS_META = {
     name: 'Wilier Triestina',
     country: 'Italien',
     founded: 1906,
-    tagline: 'Storied italiensk racing-arv',
-    description: 'Wilier Triestina er et italiensk cykelmærke grundlagt i 1906 i Bassano del Grappa. Berømt for sit karakteristiske bronze-lakerede look og lang historie i Giro d\'Italia. Filante SLR, Zero SLR og Cento10 er deres topmodeller.',
+    tagline: 'Italiensk racing-arv siden 1906',
+    description: 'Wilier Triestina blev grundlagt i Bassano del Grappa i 1906 (oprindeligt under et andet navn — Wilier-navnet kom efter Anden Verdenskrig). Mærket er kendt for sit karakteristiske bronze-lakerede look og en lang historie i Giro d\'Italia. Topmodellerne tæller Filante SLR, Zero SLR og Cento10.',
     popular_models: {
       'Racercykel': ['Filante SLR', 'Zero SLR', 'Cento10 SLR', 'Triestina'],
       'Gravel': ['Rave SLR'],
@@ -347,7 +346,7 @@ export const BRANDS_META = {
     country: 'USA',
     founded: 1986,
     tagline: 'MTB-pioner fra Marin County',
-    description: 'Marin Bikes blev grundlagt i 1986 i Marin County, Californien — selve fødestedet for mountainbikes. Mærket har produceret nogle af MTB-sportens mest banebrydende modeller. Især kendt for hardtail MTB og gravel-cykler.',
+    description: 'Marin Bikes blev grundlagt i 1986 i Marin County i Californien, selve fødestedet for mountainbike-sporten. Mærket har gennem årene produceret nogle af MTB-sportens mest banebrydende modeller og er i dag særligt kendt for hardtail-mountainbikes og gravel-cykler.',
     popular_models: {
       'Mountainbike': ['Bobcat Trail', 'Rift Zone', 'Hawk Hill'],
       'Gravel': ['Headlands', 'Gestalt', 'Nicasio'],
@@ -358,9 +357,9 @@ export const BRANDS_META = {
   gt: {
     name: 'GT',
     country: 'USA',
-    founded: 1972,
+    founded: 1979,
     tagline: 'Amerikansk BMX- og MTB-legende',
-    description: 'GT Bicycles er et amerikansk cykelmærke grundlagt i 1972 i Californien. Især kendt for BMX-cykler og mountainbikes med deres karakteristiske triple-triangle frame design. Force, Sensor og Performer er deres ikoniske modeller.',
+    description: 'GT Bicycles blev grundlagt i Californien i 1979 af Gary Turner og er især kendt for BMX-cykler og mountainbikes med deres karakteristiske triple-triangle rammedesign. Force, Sensor og Performer er nogle af mærkets mest ikoniske modeller.',
     popular_models: {
       'Mountainbike': ['Force', 'Sensor', 'Zaskar'],
       'BMX': ['Performer', 'Pro Series'],
@@ -383,10 +382,10 @@ export const BRANDS_META = {
   },
   centurion: {
     name: 'Centurion',
-    country: 'Tyskland',
-    founded: 1976,
-    tagline: 'Tysk cykelkvalitet siden 1976',
-    description: 'Centurion er et tysk cykelmærke grundlagt af Wolfgang Renner i 1976 — samme person der senere grundlagde Merida-koncernen. Producerer et bredt sortiment fra MTB og racere til citybikes og e-cykler. Kendt i Danmark for god pris-kvalitet og solide trekking-/citybikes.',
+    country: 'Danmark',
+    founded: null,
+    tagline: 'Solid cykelkvalitet til hverdag og fritid',
+    description: 'Centurion er et cykelmærke der i mange år har været populært i Danmark. Sortimentet spænder bredt fra mountainbikes og racercykler til citybikes og el-cykler, og mærket er kendt for et godt forhold mellem pris og kvalitet, særligt på trekking- og citybikes.',
     popular_models: {
       'Mountainbike': ['Numinis', 'Backfire', 'No Pogo'],
       'Citybike': ['Crossline', 'Cross Tour', 'City.R'],
@@ -425,7 +424,7 @@ export const BRANDS_META = {
     country: 'Frankrig',
     founded: 1951,
     tagline: 'Franske racer-pionerer',
-    description: 'LOOK er et fransk cykelmærke grundlagt i 1951, mest kendt for at have opfundet de moderne click-pedaler i 1984 (brugt af Bernard Hinault i Tour de France). I dag producerer LOOK premium racer- og bane-cykler med karakteristisk asymmetrisk design.',
+    description: 'LOOK er et fransk mærke, der oprindeligt startede med ski-bindinger i 1951. I 1984 lancerede de de første moderne click-pedaler, der blev brugt af Bernard Hinault i Tour de France og revolutionerede cykelsporten. I dag producerer LOOK premium racer- og banecykler med deres karakteristiske asymmetriske design.',
     popular_models: {
       'Racercykel': ['795 Blade RS', '785 Huez', '795 Light Disc'],
       'Bane': ['T20', 'T96'],
@@ -435,9 +434,9 @@ export const BRANDS_META = {
   felt: {
     name: 'Felt',
     country: 'USA',
-    founded: 1991,
+    founded: null,
     tagline: 'Amerikansk performance-cykling',
-    description: 'Felt er et amerikansk cykelmærke grundlagt i 1991 af Jim Felt. Mærket har historisk fokuseret på triatlon og racer-cykler, og deres tidsstyks-cykler har vundet mange Ironman World Championships.',
+    description: 'Felt er et amerikansk cykelmærke grundlagt af cykelmekaniker Jim Felt. Mærket har historisk fokuseret på triatlon og racercykler, og deres tidskørsels-cykler har vundet adskillige Ironman World Championships.',
     popular_models: {
       'Racercykel': ['AR', 'FR', 'VR'],
       'Triatlon': ['IA Advanced'],
@@ -452,7 +451,7 @@ export const BRANDS_META = {
     country: 'Holland',
     founded: 1892,
     tagline: 'Hollandsk cykelarv siden 1892',
-    description: 'Royal Dutch Gazelle er et af verdens ældste cykelmærker, grundlagt i Dieren, Holland i 1892. Kongelig udnævnelse i 1992. Specialiseret i premium hollandske bycykler, touring og e-cykler — en favorit blandt danske pendlere.',
+    description: 'Royal Dutch Gazelle er et af verdens ældste cykelmærker, grundlagt i Dieren i Holland i 1892. Mærket fik kongelig udnævnelse i 1992 i forbindelse med sit 100-års-jubilæum og er specialiseret i premium hollandske bycykler, touring- og e-cykler. Det er en favorit blandt danske pendlere.',
     popular_models: {
       'Citybike': ['Esprit', 'Tour Populair', 'Miss Grace'],
       'El-cykel': ['Ultimate', 'Arroyo C7+', 'CityZen'],
@@ -502,7 +501,7 @@ export const BRANDS_META = {
     country: 'UK',
     founded: 1976,
     tagline: 'Britisk foldecykel-ikon',
-    description: 'Brompton er en britisk cykelproducent grundlagt i London i 1976. Verdens mest kendte foldecykel — kompakt design der folder ned til en bærbar pakke. Håndlavet i England. P-line, C-line og T-line er deres modeller.',
+    description: 'Brompton er en britisk cykelproducent grundlagt i London i 1976, og deres foldecykel er en af de mest ikoniske i verden. Det kompakte design folder ned til en bærbar pakke, og hver cykel håndsamles i England. P-line, C-line og T-line er mærkets nuværende modeller.',
     popular_models: {
       'Foldecykel': ['C Line Explore', 'P Line Urban', 'T Line One', 'Electric C Line'],
     },
@@ -563,7 +562,7 @@ export const BRANDS_META = {
     country: 'Taiwan',
     founded: 2011,
     tagline: 'Innovative foldebare cykler',
-    description: 'Tern Bicycles er et taiwanesisk cykelmærke grundlagt i 2011 med specialisering i foldecykler og kompakte e-cargobikes. Især kendt for "GSD" — en kompakt el-cargobike der har vundet flere designpriser.',
+    description: 'Tern Bicycles er et taiwanesisk cykelmærke grundlagt i 2011 med specialisering i foldecykler og kompakte e-cargobikes. Mærket er især kendt for GSD, en kompakt el-cargobike der har vundet flere internationale designpriser.',
     popular_models: {
       'Foldecykel': ['Verge', 'Vektron', 'Link'],
       'El-cargobike': ['GSD', 'HSD', 'Quick Haul'],
@@ -575,7 +574,7 @@ export const BRANDS_META = {
     country: 'Danmark',
     founded: 2016,
     tagline: 'Danske el-foldecykler',
-    description: 'Mate Bike (nu Mate.bike) er et dansk/britisk cykelmærke grundlagt i 2016 af Mate-brødrene fra Aarhus. Berømt for crowdfunding-rekorder og deres signature el-foldecykler "Mate X" og "Mate City".',
+    description: 'Mate Bike (i dag Mate.bike) er et dansk cykelmærke grundlagt i 2016 af to danske brødre. Mærket blev kendt på rekordbrydende crowdfunding-kampagner med deres signature el-foldecykler Mate X og Mate City.',
     popular_models: {
       'El-cykel': ['Mate X', 'Mate City', 'Mate S', 'Mate SUV'],
     },
@@ -600,7 +599,7 @@ export const BRANDS_META = {
     country: 'Danmark',
     founded: 2007,
     tagline: 'Hurtige danske cargobikes',
-    description: 'Larry vs Harry blev grundlagt i København i 2007 og producerer den ikoniske "Bullitt" cargobike — en lang, slank og hurtig en-styggig cargobike der har vundet kultstatus blandt cykelbude og familiær. Kendt for høj hastighed og stivt aluminium-stel.',
+    description: 'Larry vs Harry blev grundlagt i København i 2007 og producerer den ikoniske Bullitt-cargobike. Det er en lang, slank og hurtig ladcykel med stivt aluminium-stel, og den har gennem årene vundet kultstatus blandt cykelbude og familier i hele Europa.',
     popular_models: {
       'Ladcykel': ['Bullitt Clockwork', 'Bullitt Honeycomb', 'Bluebird'],
       'El-cykel': ['Bullitt E-6100', 'Bullitt E-Bullitt'],
@@ -612,7 +611,7 @@ export const BRANDS_META = {
     country: 'Holland',
     founded: 2005,
     tagline: 'Familievenlige hollandske ladcykler',
-    description: 'Babboe er et hollandsk cargobike-mærke grundlagt i 2005, specifikt designet til familier med børn. Cyklerne har stor trækassel forme, god komfort og konkurrencedygtige priser.',
+    description: 'Babboe er et hollandsk cargobike-mærke grundlagt i 2005 med fokus på familier med børn. Cyklerne har rummelige trækasser, god kørekomfort og en konkurrencedygtig pris i forhold til de fleste andre cargo-mærker.',
     popular_models: {
       'Ladcykel': ['Big', 'Curve', 'Mini', 'Pro Bike'],
       'El-cykel': ['City-E', 'Big-E', 'Curve-E'],
@@ -635,7 +634,7 @@ export const BRANDS_META = {
     country: 'Danmark',
     founded: 2013,
     tagline: 'Lænende danske 3-hjulede cargobikes',
-    description: 'Butchers & Bicycles er et dansk cargobike-mærke grundlagt i 2013 i København. Kendt for deres unikke "Mk1" og "Mk1-E" — 3-hjulede ladcykler der kan læne sig (TiltingTrike) for bedre kurvekørsel. Designet i Danmark.',
+    description: 'Butchers & Bicycles er et dansk cargobike-mærke grundlagt i 2013 i København. Mærket er kendt for de unikke Mk1- og Mk1-E-modeller — trehjulede ladcykler med TiltingTrike-systemet, der lader cyklen læne sig i kurver og dermed føles mere som en almindelig tohjulet cykel.',
     popular_models: {
       'Ladcykel': ['Mk1', 'Mk1-E Vario', 'Mk1-E Vans'],
     },
@@ -644,9 +643,9 @@ export const BRANDS_META = {
   triobike: {
     name: 'Triobike',
     country: 'Danmark',
-    founded: 2005,
-    tagline: 'Innovative danske cargo-løsninger',
-    description: 'Triobike er et dansk cargobike-mærke grundlagt i 2005. Berømt for "Mono" og "Boxter" — 2- og 3-hjulede ladcykler i moderne dansk design. Lavet i København.',
+    founded: null,
+    tagline: 'Innovative danske cargobikes',
+    description: 'Triobike er et dansk cargobike-mærke kendt for to- og trehjulede ladcykler i moderne dansk design. "Mono" og "Boxter" er to af de mest populære modeller, og cyklerne designes i København.',
     popular_models: {
       'Ladcykel': ['Mono', 'Boxter', 'Cargo Big'],
       'El-cykel': ['Mono E', 'Boxter E'],
@@ -658,7 +657,7 @@ export const BRANDS_META = {
     country: 'Danmark',
     founded: 1998,
     tagline: 'Klassisk dansk 3-hjulet ladcykel',
-    description: 'Nihola er en dansk ladcykel-producent grundlagt i 1998 i København. Specialiseret i klassiske 3-hjulede ladcykler med trækasse foran — pålidelig og populær blandt familier til daginstitutionsruter.',
+    description: 'Nihola er en dansk ladcykel-producent grundlagt i 1998 i København. Mærket har specialiseret sig i klassiske trehjulede ladcykler med trækassen foran, og det er en pålidelig og populær cykel blandt familier til daginstitutionsruter og indkøb.',
     popular_models: {
       'Ladcykel': ['Family', '4.0', 'Cigar', 'Twin'],
       'El-cykel': ['Family E', '4.0 E'],
@@ -721,9 +720,9 @@ export const BRANDS_META = {
   avenue: {
     name: 'Avenue',
     country: 'Danmark',
-    founded: 1923,
-    tagline: 'Danske kvalitetscykler i 100+ år',
-    description: 'Avenue er et dansk cykelmærke grundlagt i 1923. Producerer pålidelige hverdags-, transport- og el-cykler til den danske familie. Kendt for god kvalitet til moderat pris og bredt forhandlernet i Danmark.',
+    founded: null,
+    tagline: 'Danske hverdags- og transportcykler',
+    description: 'Avenue er et dansk cykelmærke der gennem mange år har leveret pålidelige hverdagscykler, transportcykler og el-cykler til den danske familie. Mærket er kendt for god kvalitet til en moderat pris og er bredt forhandlet i Danmark.',
     popular_models: {
       'Citybike': ['Broadway', 'Roma', 'Aalborg'],
       'El-cykel': ['Broadway E', 'Florence E'],
@@ -733,9 +732,9 @@ export const BRANDS_META = {
   principia: {
     name: 'Principia',
     country: 'Danmark',
-    founded: 1991,
+    founded: null,
     tagline: 'Danske racer- og MTB-cykler',
-    description: 'Principia er et dansk cykelmærke grundlagt i 1991. Specialiserer sig i racer-, gravel- og mountainbikes, samt e-cykler. En af de få danske mærker med rigtig sports-orientering.',
+    description: 'Principia er et dansk cykelmærke der specialiserer sig i racercykler, gravel, mountainbikes og e-cykler. Det er et af de få danske mærker med en klar sports-orientering.',
     popular_models: {
       'Racercykel': ['RSE', 'REX'],
       'Mountainbike': ['Evoke', 'Direkte'],
@@ -746,9 +745,9 @@ export const BRANDS_META = {
   sco: {
     name: 'SCO',
     country: 'Danmark',
-    founded: 1948,
+    founded: null,
     tagline: 'Klassisk dansk transportcykel',
-    description: 'SCO (Smith & Co.) er et dansk cykelmærke grundlagt i 1948. Producerer pålidelige hverdags- og transportcykler i klassisk dansk design — en favorit blandt danske pendlere og studerende.',
+    description: 'SCO er et dansk cykelmærke der har leveret hverdagscykler og transportcykler til danske husstande i mange år. Mærket er en favorit blandt pendlere og studerende takket være solid kvalitet til en overkommelig pris.',
     popular_models: {
       'Citybike': ['Premium', 'Active', 'Beachcruiser'],
       'El-cykel': ['Premium E', 'Roma E'],
@@ -760,9 +759,9 @@ export const BRANDS_META = {
   amladcykler: {
     name: 'Amladcykler',
     country: 'Danmark',
-    founded: 1996,
-    tagline: 'Danske transport- og ladcykler',
-    description: 'Amladcykler er et lille dansk cykelmærke specialiseret i ladcykler og transportcykler, designet og bygget i Danmark. Mærket producerer både 2- og 3-hjulede modeller til familier og erhvervsbrug.',
+    founded: null,
+    tagline: 'Danske ladcykler og transportcykler',
+    description: 'Amladcykler er et lille dansk cykelmærke der specialiserer sig i ladcykler og transportcykler. Sortimentet omfatter både to- og trehjulede modeller, og cyklerne er designet og bygget i Danmark til både familier og erhvervsbrug.',
     popular_models: {
       'Ladcykel': ['Cargo 2', 'Cargo 3', 'Mini'],
       'El-cykel': ['Cargo E', 'City E'],
@@ -772,9 +771,9 @@ export const BRANDS_META = {
   'e-fly': {
     name: 'E-Fly',
     country: 'Danmark',
-    founded: 2014,
+    founded: null,
     tagline: 'Danske el-cykler til hverdagskørsel',
-    description: 'E-Fly er et dansk el-cykel-mærke fokuseret på at gøre el-cykling tilgængeligt for de fleste danske husstande. Mærket leverer pålidelige city- og trekking-e-cykler med god rækkevidde og kvalitet til konkurrencedygtige priser.',
+    description: 'E-Fly er et dansk el-cykel-mærke med fokus på at gøre el-cykling tilgængeligt for de fleste danske husstande. Mærket leverer pålidelige city- og trekking-modeller med god rækkevidde til en konkurrencedygtig pris.',
     popular_models: {
       'El-cykel': ['Vibe', 'Move', 'Eco', 'Pro'],
     },
@@ -783,9 +782,9 @@ export const BRANDS_META = {
   nishiki: {
     name: 'Nishiki',
     country: 'Japan / USA',
-    founded: 1958,
-    tagline: 'Klassisk japansk cykelarv',
-    description: 'Nishiki blev grundlagt i Japan i 1958 og var en af de mest populære japanske cykelproducenter i 1970-80erne i USA. Producerede stålrammer der blev kult-klassikere. I dag sælges mærket primært i USA og Europa med fokus på racer- og touring-cykler.',
+    founded: null,
+    tagline: 'Japansk cykelarv med klassisk stil',
+    description: 'Nishiki opstod i 1960erne som et japansk-amerikansk samarbejde der i 70erne og 80erne blev kult i USA for sine stålrammer og racercykler. I dag findes mærket primært i USA og Europa med fokus på racer-, touring- og hverdagscykler.',
     popular_models: {
       'Racercykel': ['Maricopa', 'Pueblo', 'Tamarack'],
       'Touring': ['Manitoba', 'Modesto'],
@@ -821,9 +820,9 @@ export const BRANDS_META = {
   qio: {
     name: 'Qio',
     country: 'Tyskland',
-    founded: 2018,
+    founded: null,
     tagline: 'Kompakt urban e-cykling',
-    description: 'Qio er et tysk el-cykel-mærke specialiseret i kompakte og foldbare urban e-cykler. Mærket henvender sig især til pendlere og storbyboere med mindre opbevaringsplads.',
+    description: 'Qio er et tysk el-cykel-mærke der specialiserer sig i kompakte og foldbare urban e-cykler. Mærket henvender sig især til pendlere og storbyboere med begrænset opbevaringsplads.',
     popular_models: {
       'El-cykel': ['One', 'Eins', 'Plus'],
       'Foldecykel': ['Bend'],
@@ -833,9 +832,9 @@ export const BRANDS_META = {
   uvelo: {
     name: 'uVelo',
     country: 'Danmark',
-    founded: 2015,
+    founded: null,
     tagline: 'Danske urban el-cykler',
-    description: 'uVelo er et dansk cykelmærke fokuseret på urban el-cykler og hverdagskørsel. Mærket designer cykler i København med dansk minimalisme og praktisk anvendelse i tanke.',
+    description: 'uVelo er et dansk cykelmærke med fokus på urban el-cykler til hverdagskørsel. Cyklerne er designet i København med vægt på dansk minimalisme og praktisk anvendelse.',
     popular_models: {
       'El-cykel': ['City', 'Urban', 'Pro'],
     },
@@ -846,7 +845,7 @@ export const BRANDS_META = {
     country: 'Tyskland',
     founded: 1903,
     tagline: 'Tysk cykelarv siden 1903',
-    description: 'Kreidler er et tysk mærke grundlagt i 1903 — oprindeligt knyttet til knallerter og motorcykler. I dag fokuserer mærket på el-cykler, city- og trekking-cykler. Del af Cycle Union-gruppen og populært i Tyskland og Skandinavien.',
+    description: 'Kreidler er et tysk mærke grundlagt i 1903, oprindeligt knyttet til knallerter og motorcykler. I dag fokuserer mærket på el-cykler, city- og trekking-cykler, og det er en del af Cycle Union-gruppen. Kreidler er populært i Tyskland og Skandinavien.',
     popular_models: {
       'El-cykel': ['Vitality Eco', 'Vitality Dice', 'Eco6 Edition'],
       'Citybike': ['Layla', 'Raise'],
@@ -857,9 +856,9 @@ export const BRANDS_META = {
   norden: {
     name: 'Norden',
     country: 'Danmark',
-    founded: 1995,
+    founded: null,
     tagline: 'Solide danske bycykler',
-    description: 'Norden er et dansk cykelmærke der producerer holdbare hverdags- og bycykler. Mærket er kendt for klassisk dansk cykeldesign med fokus på pålidelighed og lang levetid.',
+    description: 'Norden er et dansk cykelmærke der producerer holdbare hverdagscykler og bycykler. Mærket er kendt for klassisk dansk cykeldesign med fokus på pålidelighed og lang levetid.',
     popular_models: {
       'Citybike': ['Classic', 'City', 'Comfort'],
       'El-cykel': ['City E', 'Trekking E'],
