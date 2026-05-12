@@ -440,24 +440,6 @@
   border-radius: 6px; transition: color 0.15s, background 0.15s;
 }
 .rv-clear:hover { color: var(--charcoal); background: var(--sand-2); }
-.rv-scroll-wrap { position: relative; }
-.rv-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 42px; height: 42px; border-radius: 50%;
-  background: #fff; color: var(--charcoal);
-  border: 1px solid var(--border);
-  font-size: 1.6rem; line-height: 1; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 5;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-  transition: background 0.15s, transform 0.15s;
-  font-family: 'DM Sans', sans-serif;
-  padding-bottom: 3px;
-}
-.rv-nav:hover { background: var(--sand-2); transform: translateY(-50%) scale(1.06); }
-.rv-nav-prev { left: 6px; }
-.rv-nav-next { right: 6px; }
-@media (max-width: 768px) { .rv-nav { display: none; } }
 .rv-scroll {
   display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
   scrollbar-width: auto; scrollbar-color: var(--border) transparent;

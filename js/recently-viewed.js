@@ -97,62 +97,6 @@ export function renderRecentlyViewedSection(containerId, opts = {}) {
       <h2 class="rv-heading">Sidst set</h2>
       <button type="button" class="rv-clear" onclick="clearRecentlyViewedSection()" aria-label="Ryd sidst sete">Ryd</button>
     </div>
-    <div class="rv-scroll-wrap">
-      <button type="button" class="rv-nav rv-nav-prev" aria-label="Rul tilbage" tabindex="-1">‹</button>
-      <div class="rv-scroll" role="list">${cards}</div>
-      <button type="button" class="rv-nav rv-nav-next" aria-label="Rul frem" tabindex="-1">›</button>
-    </div>
+    <div class="rv-scroll" role="list">${cards}</div>
   `;
-
-  const scroller = container.querySelector('.rv-scroll');
-  const prev = container.querySelector('.rv-nav-prev');
-  const next = container.querySelector('.rv-nav-next');
-  if (!scroller) return;
-
-  // Konverter lodret musehjul til vandret scroll på .rv-scroll
-  scroller.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      scroller.scrollLeft += e.deltaY;
-      e.preventDefault();
-    }
-  }, { passive: false });
-
-  const scrollByCards = (dir) => {
-    const firstCard = scroller.querySelector('.rv-card');
-    const step = firstCard ? (firstCard.offsetWidth + 12) * 2 : 320;
-    scroller.scrollBy({ left: dir * step, behavior: 'smooth' });
-  };
-  if (prev) prev.addEventListener('click', () => scrollByCards(-1));
-  if (next) next.addEventListener('click', () => scrollByCards(1));
-
-  // Vis/skjul prev/next-knapper baseret på scroll-position og om der overhovedet
-  // er noget at scrolle. Bruger visibility (ikke opacity) så knapperne ikke
-  // tager click-events når de er skjult, og display: none hvis ingen overflow.
-  const updateNav = () => {
-    const overflow = scroller.scrollWidth - scroller.clientWidth;
-    if (overflow <= 4) {
-      if (prev) prev.style.display = 'none';
-      if (next) next.style.display = 'none';
-      return;
-    }
-    if (prev) {
-      prev.style.display = 'flex';
-      prev.style.visibility = scroller.scrollLeft > 4 ? 'visible' : 'hidden';
-    }
-    if (next) {
-      next.style.display = 'flex';
-      next.style.visibility = scroller.scrollLeft < overflow - 1 ? 'visible' : 'hidden';
-    }
-  };
-  scroller.addEventListener('scroll', updateNav);
-  // Fjern gammel resize-listener før vi binder en ny — ellers bygger der
-  // listeners op for hver render (én pr. cykel man har klikket på).
-  if (window._rvResizeHandler) {
-    window.removeEventListener('resize', window._rvResizeHandler);
-  }
-  window._rvResizeHandler = updateNav;
-  window.addEventListener('resize', updateNav);
-  // Initial state efter render (vent på layout + billed-loading)
-  requestAnimationFrame(updateNav);
-  setTimeout(updateNav, 150);
 }
