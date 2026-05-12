@@ -21,6 +21,7 @@
 html {
   overflow-x: clip;
   max-width: 100%;
+  background: var(--forest-2);
 }
 
 /* Forhindrer iOS Safari auto-zoom ved fokus på inputs (sker når font-size < 16px) */
