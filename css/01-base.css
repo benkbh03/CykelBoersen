@@ -577,19 +577,7 @@ nav {
 }
 
 /* ── SIDEBAR ── */
-.sidebar {
-  display: flex; flex-direction: column; gap: 10px;
-  position: sticky; top: 76px;
-  align-self: start;
-  max-height: calc(100vh - 96px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
-  padding-right: 4px;
-}
-.sidebar::-webkit-scrollbar { width: 6px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar { display: flex; flex-direction: column; gap: 10px; }
 .sidebar-box {
   background: var(--sand); border-radius: 12px;
   padding: 0; border: 1px solid var(--border); overflow: hidden;
