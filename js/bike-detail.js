@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { brandToSlug } from './brand-data.js';
+import { brandToSlug } from './brand-data-v2.js';
 
 export function createBikeDetail({
   supabase,

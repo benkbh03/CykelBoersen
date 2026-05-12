@@ -2,7 +2,7 @@
    BLOG (/blog og /blog/:slug)
    ============================================================ */
 
-import { BLOG_ARTICLES, getAllArticlesSorted, getArticleBySlug } from './blog-data.js';
+import { BLOG_ARTICLES, getAllArticlesSorted, getArticleBySlug } from './blog-data-v2.js';
 
 export function createBlogPage({
   esc,

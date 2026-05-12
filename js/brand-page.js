@@ -2,7 +2,7 @@
    BRAND-LANDINGSSIDE (/cykler/:brand)
    ============================================================ */
 
-import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data.js';
+import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
 
 export function createBrandPage({
   supabase,
