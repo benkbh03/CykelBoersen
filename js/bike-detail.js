@@ -88,6 +88,7 @@ export function createBikeDetail({
     const profile    = b.profiles || {};
     const sellerType = profile.seller_type || 'private';
     const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
+    const isDemo     = profile.shop_name === 'Cykelbørsen Demo';
     const initials   = getInitials(sellerName);
     const currentUser = getCurrentUser();
     const isOwner    = currentUser && currentUser.id === profile.id;
@@ -132,6 +133,14 @@ export function createBikeDetail({
 
     return {
       html: `
+      ${isDemo ? `
+      <div class="demo-banner" role="note">
+        <span class="demo-banner-icon">📝</span>
+        <div class="demo-banner-text">
+          <strong>Dette er en eksempel-annonce</strong>
+          <span>Den er oprettet til at vise hvordan annoncer ser ud på Cykelbørsen. Cyklen er ikke til salg, og du kan ikke kontakte sælgeren.</span>
+        </div>
+      </div>` : ''}
       <div class="bike-detail-grid">
         <div>
           ${galleryHtml}
@@ -176,7 +185,14 @@ export function createBikeDetail({
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
-          ${!isOwner ? `
+          ${isDemo && !isOwner ? `
+          <div class="action-buttons">
+            <div class="demo-detail-notice">
+              Cyklen er ikke til salg — det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
+            </div>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
+          </div>
+          ` : !isOwner ? `
           ${sellerType === 'dealer' ? (() => {
             const perks = [];
             if (profile.verified) perks.push('Verificeret virksomhed');

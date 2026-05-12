@@ -216,9 +216,19 @@
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
 }
+.demo-badge {
+  background: #fff3e0; color: #bf360c;
+  border: 1px solid #ff8b60;
+  border-radius: 6px; padding: 4px 9px;
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.4px;
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 3px;
+  box-shadow: 0 2px 6px rgba(191,54,12,0.18);
+}
 @media (max-width: 560px) {
   .bike-card-badges { gap: 4px; }
   .warranty-card-badge { font-size: 0.6rem; padding: 3px 7px; }
+  .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
   .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
 }
 .save-btn {
