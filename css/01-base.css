@@ -154,18 +154,18 @@ nav {
 /* ── HERO ── */
 .hero {
   position: relative;
-  aspect-ratio: 16 / 9;
-  max-height: 720px;
+  height: 420px;
+  min-height: 360px;
   display: flex;
   align-items: center;
   overflow: hidden;
   background: var(--forest);
 }
 @media (max-width: 768px) {
-  .hero { max-height: 500px; }
+  .hero { height: 380px; min-height: 340px; }
 }
 @media (max-width: 480px) {
-  .hero { max-height: 400px; }
+  .hero { height: 360px; min-height: 320px; }
 }
 .hero-img-side {
   position: absolute;
