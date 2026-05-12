@@ -145,6 +145,12 @@ export function renderRecentlyViewedSection(containerId, opts = {}) {
     }
   };
   scroller.addEventListener('scroll', updateNav);
+  // Fjern gammel resize-listener før vi binder en ny — ellers bygger der
+  // listeners op for hver render (én pr. cykel man har klikket på).
+  if (window._rvResizeHandler) {
+    window.removeEventListener('resize', window._rvResizeHandler);
+  }
+  window._rvResizeHandler = updateNav;
   window.addEventListener('resize', updateNav);
   // Initial state efter render (vent på layout + billed-loading)
   requestAnimationFrame(updateNav);
