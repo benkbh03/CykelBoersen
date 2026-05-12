@@ -97,6 +97,41 @@ export function renderRecentlyViewedSection(containerId, opts = {}) {
       <h2 class="rv-heading">Sidst set</h2>
       <button type="button" class="rv-clear" onclick="clearRecentlyViewedSection()" aria-label="Ryd sidst sete">Ryd</button>
     </div>
-    <div class="rv-scroll" role="list">${cards}</div>
+    <div class="rv-scroll-wrap">
+      <button type="button" class="rv-nav rv-nav-prev" aria-label="Rul tilbage" tabindex="-1">‹</button>
+      <div class="rv-scroll" role="list">${cards}</div>
+      <button type="button" class="rv-nav rv-nav-next" aria-label="Rul frem" tabindex="-1">›</button>
+    </div>
   `;
+
+  const scroller = container.querySelector('.rv-scroll');
+  const prev = container.querySelector('.rv-nav-prev');
+  const next = container.querySelector('.rv-nav-next');
+  if (!scroller) return;
+
+  // Konverter lodret musehjul til vandret scroll på .rv-scroll
+  scroller.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      scroller.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  const scrollByCards = (dir) => {
+    const firstCard = scroller.querySelector('.rv-card');
+    const step = firstCard ? (firstCard.offsetWidth + 12) * 2 : 320;
+    scroller.scrollBy({ left: dir * step, behavior: 'smooth' });
+  };
+  if (prev) prev.addEventListener('click', () => scrollByCards(-1));
+  if (next) next.addEventListener('click', () => scrollByCards(1));
+
+  // Skjul prev/next-knapper når der ikke er mere at scrolle
+  const updateNav = () => {
+    const max = scroller.scrollWidth - scroller.clientWidth - 1;
+    if (prev) prev.style.opacity = scroller.scrollLeft > 4 ? '1' : '0';
+    if (next) next.style.opacity = scroller.scrollLeft < max ? '1' : '0';
+  };
+  scroller.addEventListener('scroll', updateNav);
+  // Initial state efter render
+  setTimeout(updateNav, 50);
 }
