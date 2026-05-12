@@ -520,24 +520,22 @@
   .stat-bar-item { padding: 0 20px 0 0; flex-shrink: 0; }
   .stat-bar-divider { margin: 0 20px 0 0; }
   .stat-bar-num { font-size: 1.1rem; }
-  .search-section { padding: 36px 16px 44px; }
-  .search-hero-text { margin-bottom: 20px; }
-  .search-hero-title { font-size: 2.15rem; letter-spacing: -0.03em; }
-  .search-hero-sub { font-size: 0.88rem; }
-  .search-hero-pill { font-size: 0.68rem; padding: 4px 10px; margin-bottom: 12px; }
-  .search-bar-wrap { flex-direction: column; gap: 8px; }
+  .search-section { padding: 18px 16px 16px; }
+  .search-hero-text { margin-bottom: 12px; }
+  .search-hero-pill { display: none; }
+  .search-bar-wrap { flex-direction: column; gap: 6px; }
   .search-bar {
-    border-radius: 14px; padding: 10px; gap: 8px;
+    border-radius: 14px; padding: 8px; gap: 6px;
     flex-direction: column; align-items: stretch;
     box-shadow: 0 10px 28px -8px rgba(0,0,0,0.3);
   }
-  .search-bar-field { background: var(--sand); border-radius: 10px; padding: 4px 12px; }
-  .search-bar-query { padding: 4px 12px; flex: none; }
-  .search-bar input, .search-bar select { width: 100%; padding: 10px 4px; font-size: 16px; min-width: 0; }
+  .search-bar-field { background: var(--sand); border-radius: 10px; padding: 2px 10px; }
+  .search-bar-query { padding: 2px 10px; flex: none; }
+  .search-bar input, .search-bar select { width: 100%; padding: 8px 4px; font-size: 16px; min-width: 0; }
   .search-bar select { padding-right: 30px; }
   .search-bar-chev { right: 12px; }
   .search-bar-sep { display: none; }
-  .search-pill-btn { width: 100%; border-radius: 10px; padding: 13px; justify-content: center; }
+  .search-pill-btn { width: 100%; border-radius: 10px; padding: 11px; justify-content: center; }
   #save-search-btn {
     width: 100% !important; height: 44px !important;
     border-radius: 10px !important;

@@ -412,29 +412,26 @@ nav {
   text-shadow: 0 1px 14px rgba(0,0,0,0.55);
 }
 
-/* Mobil-tilpasninger til hero — reducerer størrelse + giver luft */
+/* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
 @media (max-width: 768px) {
   .search-hero-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
     letter-spacing: -0.025em;
-    line-height: 1.05;
-    margin: 0 0 8px;
+    line-height: 1.1;
+    margin: 0 0 4px;
     padding: 0 8px;
   }
-  .search-hero-sub {
-    font-size: 0.85rem;
-    line-height: 1.45;
-    padding: 0 12px;
-    max-width: 360px;
+  .search-hero-sub,
+  .hero-cat-chips,
+  #save-search-btn {
+    display: none !important;
   }
+  .search-hero-text { margin-bottom: 10px; }
 }
 @media (max-width: 480px) {
   .search-hero-title {
-    font-size: 1.7rem;
+    font-size: 1.35rem;
     letter-spacing: -0.02em;
-  }
-  .search-hero-sub {
-    font-size: 0.8rem;
   }
 }
 /* ── HERO KATEGORI-CHIPS ── */
