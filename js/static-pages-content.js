@@ -389,117 +389,50 @@ export const footerContent = {
   },
   'sikkerhedsguide': {
     title: 'Sikkerhedsguide — handl trygt på Cykelbørsen',
-    metaDesc: 'Komplet sikkerhedsguide: tjek for stjålne cykler, undgå svindel, lav sikre handler og beskyt dig selv. Sådan handler du trygt på Cykelbørsen.',
+    metaDesc: 'Sikkerhedsguide: tjek for stjålne cykler, undgå svindel, lav sikre handler og beskyt dig selv. Sådan handler du trygt på Cykelbørsen.',
     body: `
-      <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret november 2026 · 5 min. læsning</p>
-      <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">99% af handler på Cykelbørsen forløber problemfrit. Men med ~16.000 cykeltyverier årligt i Danmark og stigende online-svindel er det værd at vide hvordan du beskytter dig. Følg denne guide — så er du på den sikre side.</p>
+      <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret 2026 · 5 min. læsning</p>
+      <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">De fleste handler på Cykelbørsen forløber uden problemer. Men med omkring 16.000 cykeltyverier i Danmark hvert år og stigende online-svindel, er det værd at vide hvordan man beskytter sig selv. Følger man de tjek der står her, er man godt på den sikre side.</p>
 
       <div style="background:rgba(200,80,42,0.08);border-left:4px solid var(--rust);padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:28px;">
-        <strong>⚠️ Røde flag der altid skal stoppe dig:</strong>
-        <ul style="margin:8px 0 0;padding-left:20px;line-height:1.7;">
-          <li>Sælger vil kun sende cyklen — aldrig mødes</li>
-          <li>Prisen er meget under markedet</li>
-          <li>Sælger har travlt, presser dig til at handle nu</li>
-          <li>Sælger nægter at give stelnummer</li>
-          <li>Sælger ønsker betaling via udenlandsk konto, krypto, eller gavekort</li>
-        </ul>
+        <strong>Røde flag der altid skal stoppe en handel:</strong>
+        <p style="margin:8px 0 0;line-height:1.7;">Sælger vil ikke mødes, men kun sende cyklen. Prisen er meget under markedet. Sælger har travlt og presser dig til at handle nu. Sælger nægter at oplyse stelnummer. Eller sælger vil betales via udenlandsk konto, krypto eller gavekort. Står du med en eller flere af disse signaler, så drop handlen.</p>
       </div>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">1. Tjek om cyklen er stjålet</h2>
-      <p style="margin-bottom:8px;">Inden du betaler — eller endda mødes — bed altid om stelnummeret. Det står normalt:</p>
-      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li>Under bundbeslaget (mellem kranken)</li>
-        <li>På styrhovedet (foran)</li>
-        <li>På sadelpinden eller bagstellet</li>
-      </ul>
-      <p style="margin-bottom:16px;">Tjek stelnummeret mod <strong>politiets gratis register</strong>:</p>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
+      <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler — det tager under et minut.</p>
       <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">🛡️ Åbn politiets register →</a>
-      <p style="margin-bottom:24px;">Hvis sælger nægter at give stelnummeret er det et <strong>massivt advarselstegn</strong>. Gå væk fra handlen.</p>
+      <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">2. Mød offentligt og i dagslys</h2>
-      <p style="margin-bottom:8px;">Aldrig mød op i sælgers hjem eller på øde steder. Foreslå:</p>
-      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>Foran en cykelhandler</strong> — neutral grund, ofte adgang til luftpumpe og service</li>
-        <li><strong>Foran en politistation</strong> — afskrækker svindlere effektivt</li>
-        <li><strong>Foran et indkøbscenter</strong> — masser af folk, kameraer</li>
-        <li><strong>Foran en cafe</strong> — du kan inspicere cyklen i ro og fred</li>
-      </ul>
-      <p style="margin-bottom:24px;">Tag <strong>altid en ven med</strong> hvis du handler for over 5.000 kr. Sælgere der ikke vil mødes offentligt har som regel noget at skjule.</p>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>
+      <p style="margin-bottom:16px;">Mød aldrig op i sælgers hjem eller på øde steder. Foreslå et offentligt sted med god trafik. Foran en cykelhandler er ofte godt, fordi der er adgang til luftpumpe og service hvis det skulle blive nødvendigt. Foran en politistation virker afskrækkende på svindlere, og foran et indkøbscenter eller en cafe har du masser af mennesker omkring dig.</p>
+      <p style="margin-bottom:24px;">Tag en ven med hvis du handler for over 5.000 kr. Sælgere der ikke vil mødes offentligt har som regel noget at skjule, og det er en lille besvær at gardere sig mod.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">3. Brug sikre betalingsformer</h2>
-      <p style="margin-bottom:16px;"><strong>✅ Anbefalede:</strong></p>
-      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>MobilePay</strong> — straksbetaling, kan dokumenteres</li>
-        <li><strong>Kontant</strong> — for handler under 5.000 kr, kun ved fysisk overdragelse</li>
-        <li><strong>Bankoverførsel</strong> — fra forhandler, hvor kontoen kan verificeres</li>
-      </ul>
-      <p style="margin-bottom:16px;"><strong>❌ Aldrig:</strong></p>
-      <ul style="margin-bottom:24px;padding-left:20px;line-height:1.8;">
-        <li>Betaling via Western Union eller udenlandske overførselstjenester</li>
-        <li>Gavekort som betalingsmiddel ("send mig 5.000 kr i Apple gift cards" = svindel)</li>
-        <li>Kryptovaluta — næsten umulig at få tilbage</li>
-        <li>"Send halvdelen før jeg sender cyklen" — fjernhandler er højrisiko</li>
-        <li>Klik på links der angiver at være Cykelbørsens betalingssystem (vi har ikke noget)</li>
-      </ul>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Brug en sikker betalingsform</h2>
+      <p style="margin-bottom:16px;">MobilePay er det mest praktiske valg ved fysisk overdragelse. Det er straksbetaling, det kan dokumenteres, og det er svært at fuske med. Kontant fungerer fint ved mindre handler under 5.000 kr, og bankoverførsel er en mulighed hvis du handler med en forhandler hvor du kan verificere kontoen.</p>
+      <p style="margin-bottom:16px;">Hold dig derimod helt fra Western Union eller andre udenlandske overførselstjenester. Gavekort som betalingsmiddel er et klassisk svindel-signal — beder nogen om betaling i Apple gift cards eller lignende, så er det 100 procent svindel. Kryptovaluta er næsten umulig at få tilbage, og fjernhandler hvor "halvdelen sendes før resten" er højrisiko og bør undgås helt.</p>
+      <p style="margin-bottom:24px;">Klik aldrig på links der angiver at være Cykelbørsens betalingssystem. Vi har ikke et sådant, og enhver kommunikation der ligner det er forsøg på phishing.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">4. Tag en prøvetur</h2>
-      <p style="margin-bottom:8px;">Tjek cyklen ordentligt INDEN du betaler:</p>
-      <ul style="margin-bottom:24px;padding-left:20px;line-height:1.8;">
-        <li><strong>Gear-skift</strong>: skift gennem alle gear — skal være jævnt og uden støj</li>
-        <li><strong>Bremser</strong>: skal kunne stoppe cyklen helt med fast greb</li>
-        <li><strong>Hjul</strong>: snurr dem — skal være snorlige, ingen wobble</li>
-        <li><strong>Kæde og kranke</strong>: ingen knirken, ingen synlige skader</li>
-        <li><strong>Rammen</strong>: tjek for revner, buler og rust ved svejsninger</li>
-        <li><strong>Dækmønster</strong>: tjek slid (vis-line på racerdæk, mønster på MTB)</li>
-      </ul>
-      <p style="margin-bottom:24px;">Læs vores fulde <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a> for detaljer.</p>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tag en prøvetur før du betaler</h2>
+      <p style="margin-bottom:16px;">Det er din mulighed for at tjekke at cyklen rent faktisk fungerer som den skal. Skift gennem alle gear — det skal være jævnt og uden støj. Bremserne skal kunne stoppe cyklen helt med fast greb. Snurr hjulene og se efter at de er snorlige uden wobble. Tjek kæden og kranken for knirken eller synlige skader. Kig rammen efter for revner, buler og rust ved svejsningerne. Og tjek dækmønstret for slid.</p>
+      <p style="margin-bottom:24px;">For en grundigere gennemgang, find vores fulde <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a>.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">5. Dokumentér handlen</h2>
-      <p style="margin-bottom:8px;">Ved køb over 5.000 kr, lav et simpelt overdragelsesbevis:</p>
-      <ul style="margin-bottom:24px;padding-left:20px;line-height:1.8;">
-        <li>Sælgers navn + adresse + CPR (bare 6 første cifre er nok)</li>
-        <li>Cyklens mærke, model, årgang og stelnummer</li>
-        <li>Aftalt pris og dato</li>
-        <li>Begge parters underskrift</li>
-      </ul>
-      <p style="margin-bottom:24px;">Tag også <strong>billeder af cyklen + stelnummeret</strong> ved handelen. Det er din dokumentation hvis cyklen senere skulle vise sig at være stjålet.</p>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentér handlen</h2>
+      <p style="margin-bottom:16px;">Ved køb over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være komplet juridisk korrekt for at være nyttigt. Sælgers navn og adresse (gerne med de første seks cifre af CPR), cyklens mærke, model, årgang og stelnummer, aftalt pris og dato, og begge parters underskrift. Det er nok.</p>
+      <p style="margin-bottom:24px;">Tag også billeder af cyklen og stelnummeret på handelsdagen. Det er din dokumentation hvis cyklen senere viser sig at være stjålet, og det er ofte forskellen mellem at få sine penge tilbage og at stå tilbage med ingenting.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">6. Typiske svindelnumre at undgå</h2>
-      <div style="background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:20px;">
-        <h3 style="font-family:'DM Sans',sans-serif;margin:0 0 6px;font-size:1rem;">🎣 Phishing-links</h3>
-        <p style="margin:0;font-size:0.95rem;line-height:1.6;">"Klik her for at modtage betaling for din cykel". Cykelbørsen sender aldrig betalingslinks. Vi har ikke et indbygget betalingssystem.</p>
-      </div>
-      <div style="background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:20px;">
-        <h3 style="font-family:'DM Sans',sans-serif;margin:0 0 6px;font-size:1rem;">📦 "Min broder henter den"</h3>
-        <p style="margin:0;font-size:0.95rem;line-height:1.6;">"Jeg er udlandet, send cyklen — min broder/firma henter den i Danmark". Klassisk svindel. Sælg eller køb aldrig uden personlig overdragelse.</p>
-      </div>
-      <div style="background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:20px;">
-        <h3 style="font-family:'DM Sans',sans-serif;margin:0 0 6px;font-size:1rem;">💸 "Overbetalt med vilje"</h3>
-        <p style="margin:0;font-size:0.95rem;line-height:1.6;">"Jeg sendte 15.000 kr i stedet for 5.000 kr — send mig 10.000 kr tilbage". Den oprindelige indbetaling vil blive trukket tilbage senere — du står med tabet.</p>
-      </div>
-      <div style="background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:32px;">
-        <h3 style="font-family:'DM Sans',sans-serif;margin:0 0 6px;font-size:1rem;">🚨 Falske MobilePay-skærmbilleder</h3>
-        <p style="margin:0;font-size:0.95rem;line-height:1.6;">Tjek altid din konto i banken — ikke kun et skærmbillede sælger viser dig. MobilePay-overførsler vises straks i banken.</p>
-      </div>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">De typiske svindelnumre</h2>
+      <p style="margin-bottom:16px;"><strong>Phishing-links.</strong> "Klik her for at modtage betaling for din cykel." Cykelbørsen sender aldrig betalingslinks. Vi har ikke et indbygget betalingssystem, så alt der ligner det er svindel.</p>
+      <p style="margin-bottom:16px;"><strong>"Min broder henter den."</strong> Sælger eller køber er angiveligt i udlandet og foreslår at en tredjepart henter cyklen i Danmark. Klassisk svindel. Sælg eller køb aldrig uden personlig overdragelse.</p>
+      <p style="margin-bottom:16px;"><strong>Overbetaling med vilje.</strong> Køberen "kommer til" at sende 15.000 kr i stedet for de aftalte 5.000 kr og beder dig sende de 10.000 retur. Det oprindelige beløb bliver trukket tilbage senere, og du står med tabet alene.</p>
+      <p style="margin-bottom:24px;"><strong>Falske MobilePay-skærmbilleder.</strong> En sælger eller køber viser et skærmbillede der ligner en gennemført overførsel. Tjek altid din egen konto i banken, ikke et skærmbillede den anden viser dig. Rigtige MobilePay-overførsler vises straks.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du har mistanke om svindel</h2>
-      <p style="margin-bottom:16px;">Hvis du er blevet snydt eller mistænker svindel:</p>
-      <ol style="margin-bottom:24px;padding-left:20px;line-height:1.8;">
-        <li><strong>Anmeld det til politiet</strong> via <a href="https://politi.dk/anmeld-online" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-online</a></li>
-        <li><strong>Rapportér annoncen</strong> til Cykelbørsen via 🚩-knappen på annoncen — vi fjerner den straks</li>
-        <li><strong>Kontakt din bank</strong> hvis du har overført penge — chargeback er muligt op til 30 dage</li>
-        <li><strong>Skriv til os</strong> på <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontakt-siden</a> — vi hjælper med dokumentation</li>
-      </ol>
+      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
+      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-online" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-online</a>. Rapportér derefter annoncen til Cykelbørsen via 🚩-knappen på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme — chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
 
       <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
-        <h3 style="font-family:'Fraunces',serif;margin:0 0 8px;color:var(--sand);">🛡️ Cykelbørsens 5-punkts sikkerhedstjek</h3>
-        <ol style="margin:0;padding-left:20px;line-height:1.9;color:rgba(245,240,232,0.9);">
-          <li>Tjek stelnummeret mod politiets register</li>
-          <li>Mød offentligt — aldrig hjem eller øde steder</li>
-          <li>Brug MobilePay eller kontant</li>
-          <li>Tag en prøvetur — tjek gear, bremser, hjul</li>
-          <li>Dokumentér med billeder + simpel overdragelseskvittering</li>
-        </ol>
+        <h3 style="font-family:'Fraunces',serif;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
+        <p style="margin:0;line-height:1.8;color:rgba(245,240,232,0.92);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant — aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
       </div>
     `
   }

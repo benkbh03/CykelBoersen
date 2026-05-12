@@ -89,10 +89,10 @@ export const BRANDS_META = {
   },
   scott: {
     name: 'Scott',
-    country: 'Schweiz',
+    country: 'Schweiz / USA',
     founded: 1958,
-    tagline: 'Schweizisk præcision og let vægt',
-    description: 'Scott er en schweizisk cykelproducent grundlagt af ski-pioner Ed Scott. Mærket har vundet flere World Tour-etaper og er kendt for ekstremt lette rammer (Addict, Foil) og premium mountainbikes (Spark, Genius).',
+    tagline: 'Letvægts cykler med racing-DNA',
+    description: 'Scott blev grundlagt af amerikaneren Ed Scott i Sun Valley i Idaho i 1958 og flyttede senere hovedkvarteret til Schweiz. Mærket har vundet flere World Tour-etaper og er kendt for ekstremt lette rammer som Addict og Foil samt premium mountainbikes som Spark og Genius.',
     popular_models: {
       'Racercykel': ['Addict', 'Foil', 'Speedster'],
       'Mountainbike': ['Spark', 'Genius', 'Scale'],
@@ -128,13 +128,12 @@ export const BRANDS_META = {
   },
   mbk: {
     name: 'MBK',
-    country: 'Danmark',
-    founded: 1972,
-    tagline: 'Klassisk dansk kvalitet',
-    description: 'MBK er et dansk cykelmærke der har leveret pålidelige hverdags- og transportcykler i Danmark siden 1970erne. Kendt for solide citybikes, ladcykler og børnecykler til konkurrencedygtige priser.',
+    country: 'Frankrig',
+    founded: null,
+    tagline: 'Klassisk hverdags- og børnecykel',
+    description: 'MBK opstod som et fransk cykel- og knallertmærke fra Motobécane-koncernen og blev senere overtaget af Yamaha. Mærket er igennem mange år solgt i Danmark som pålidelige hverdags-, ladcykler og børnecykler i mellempris-segmentet.',
     popular_models: {
       'Citybike': ['Style', 'Vision', 'Cleam'],
-      'El-cykel': ['Eco', 'Forte'],
       'Børnecykel': ['Boomer'],
     },
     typical_price_range: '2.000 – 18.000 kr',
@@ -721,9 +720,9 @@ export const BRANDS_META = {
   avenue: {
     name: 'Avenue',
     country: 'Danmark',
-    founded: 1923,
-    tagline: 'Danske kvalitetscykler i 100+ år',
-    description: 'Avenue er et dansk cykelmærke grundlagt i 1923. Producerer pålidelige hverdags-, transport- og el-cykler til den danske familie. Kendt for god kvalitet til moderat pris og bredt forhandlernet i Danmark.',
+    founded: null,
+    tagline: 'Danske hverdags- og transportcykler',
+    description: 'Avenue er et dansk cykelmærke der gennem mange år har leveret pålidelige hverdagscykler, transportcykler og el-cykler til den danske familie. Mærket er kendt for god kvalitet til en moderat pris og er bredt forhandlet i Danmark.',
     popular_models: {
       'Citybike': ['Broadway', 'Roma', 'Aalborg'],
       'El-cykel': ['Broadway E', 'Florence E'],
@@ -746,9 +745,9 @@ export const BRANDS_META = {
   sco: {
     name: 'SCO',
     country: 'Danmark',
-    founded: 1948,
+    founded: null,
     tagline: 'Klassisk dansk transportcykel',
-    description: 'SCO (Smith & Co.) er et dansk cykelmærke grundlagt i 1948. Producerer pålidelige hverdags- og transportcykler i klassisk dansk design — en favorit blandt danske pendlere og studerende.',
+    description: 'SCO er et dansk cykelmærke der har leveret hverdagscykler og transportcykler til danske husstande i mange år. Mærket er en favorit blandt pendlere og studerende takket være solid kvalitet til en overkommelig pris.',
     popular_models: {
       'Citybike': ['Premium', 'Active', 'Beachcruiser'],
       'El-cykel': ['Premium E', 'Roma E'],
@@ -760,9 +759,9 @@ export const BRANDS_META = {
   amladcykler: {
     name: 'Amladcykler',
     country: 'Danmark',
-    founded: 1996,
-    tagline: 'Danske transport- og ladcykler',
-    description: 'Amladcykler er et lille dansk cykelmærke specialiseret i ladcykler og transportcykler, designet og bygget i Danmark. Mærket producerer både 2- og 3-hjulede modeller til familier og erhvervsbrug.',
+    founded: null,
+    tagline: 'Danske ladcykler og transportcykler',
+    description: 'Amladcykler er et lille dansk cykelmærke der specialiserer sig i ladcykler og transportcykler. Sortimentet omfatter både to- og trehjulede modeller, og cyklerne er designet og bygget i Danmark til både familier og erhvervsbrug.',
     popular_models: {
       'Ladcykel': ['Cargo 2', 'Cargo 3', 'Mini'],
       'El-cykel': ['Cargo E', 'City E'],
@@ -772,9 +771,9 @@ export const BRANDS_META = {
   'e-fly': {
     name: 'E-Fly',
     country: 'Danmark',
-    founded: 2014,
+    founded: null,
     tagline: 'Danske el-cykler til hverdagskørsel',
-    description: 'E-Fly er et dansk el-cykel-mærke fokuseret på at gøre el-cykling tilgængeligt for de fleste danske husstande. Mærket leverer pålidelige city- og trekking-e-cykler med god rækkevidde og kvalitet til konkurrencedygtige priser.',
+    description: 'E-Fly er et dansk el-cykel-mærke med fokus på at gøre el-cykling tilgængeligt for de fleste danske husstande. Mærket leverer pålidelige city- og trekking-modeller med god rækkevidde til en konkurrencedygtig pris.',
     popular_models: {
       'El-cykel': ['Vibe', 'Move', 'Eco', 'Pro'],
     },
@@ -783,9 +782,9 @@ export const BRANDS_META = {
   nishiki: {
     name: 'Nishiki',
     country: 'Japan / USA',
-    founded: 1958,
-    tagline: 'Klassisk japansk cykelarv',
-    description: 'Nishiki blev grundlagt i Japan i 1958 og var en af de mest populære japanske cykelproducenter i 1970-80erne i USA. Producerede stålrammer der blev kult-klassikere. I dag sælges mærket primært i USA og Europa med fokus på racer- og touring-cykler.',
+    founded: null,
+    tagline: 'Japansk cykelarv med klassisk stil',
+    description: 'Nishiki opstod i 1960erne som et japansk-amerikansk samarbejde der i 70erne og 80erne blev kult i USA for sine stålrammer og racercykler. I dag findes mærket primært i USA og Europa med fokus på racer-, touring- og hverdagscykler.',
     popular_models: {
       'Racercykel': ['Maricopa', 'Pueblo', 'Tamarack'],
       'Touring': ['Manitoba', 'Modesto'],
@@ -821,9 +820,9 @@ export const BRANDS_META = {
   qio: {
     name: 'Qio',
     country: 'Tyskland',
-    founded: 2018,
+    founded: null,
     tagline: 'Kompakt urban e-cykling',
-    description: 'Qio er et tysk el-cykel-mærke specialiseret i kompakte og foldbare urban e-cykler. Mærket henvender sig især til pendlere og storbyboere med mindre opbevaringsplads.',
+    description: 'Qio er et tysk el-cykel-mærke der specialiserer sig i kompakte og foldbare urban e-cykler. Mærket henvender sig især til pendlere og storbyboere med begrænset opbevaringsplads.',
     popular_models: {
       'El-cykel': ['One', 'Eins', 'Plus'],
       'Foldecykel': ['Bend'],
@@ -833,9 +832,9 @@ export const BRANDS_META = {
   uvelo: {
     name: 'uVelo',
     country: 'Danmark',
-    founded: 2015,
+    founded: null,
     tagline: 'Danske urban el-cykler',
-    description: 'uVelo er et dansk cykelmærke fokuseret på urban el-cykler og hverdagskørsel. Mærket designer cykler i København med dansk minimalisme og praktisk anvendelse i tanke.',
+    description: 'uVelo er et dansk cykelmærke med fokus på urban el-cykler til hverdagskørsel. Cyklerne er designet i København med vægt på dansk minimalisme og praktisk anvendelse.',
     popular_models: {
       'El-cykel': ['City', 'Urban', 'Pro'],
     },
@@ -857,9 +856,9 @@ export const BRANDS_META = {
   norden: {
     name: 'Norden',
     country: 'Danmark',
-    founded: 1995,
+    founded: null,
     tagline: 'Solide danske bycykler',
-    description: 'Norden er et dansk cykelmærke der producerer holdbare hverdags- og bycykler. Mærket er kendt for klassisk dansk cykeldesign med fokus på pålidelighed og lang levetid.',
+    description: 'Norden er et dansk cykelmærke der producerer holdbare hverdagscykler og bycykler. Mærket er kendt for klassisk dansk cykeldesign med fokus på pålidelighed og lang levetid.',
     popular_models: {
       'Citybike': ['Classic', 'City', 'Comfort'],
       'El-cykel': ['City E', 'Trekking E'],
