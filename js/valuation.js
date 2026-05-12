@@ -4,7 +4,7 @@
    markedsværdi baseret på lignende annoncer på Cykelbørsen.
    ============================================================ */
 
-import { KNOWN_BRANDS, brandToSlug } from './brand-data.js';
+import { KNOWN_BRANDS, brandToSlug } from './brand-data-v2.js';
 
 const CONDITION_MULTIPLIER = {
   'Ny':        1.15,
