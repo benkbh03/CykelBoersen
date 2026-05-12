@@ -359,22 +359,22 @@ nav {
   background-size: auto, auto, auto, auto, cover;
   background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
-  padding: 24px 48px 20px;
-  height: clamp(300px, 22vw, 340px) !important;
+  padding: 16px 48px 14px;
+  height: clamp(240px, 17vw, 280px) !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 @media (max-width: 1024px) {
-  .search-section { height: auto !important; min-height: 300px; }
+  .search-section { height: auto !important; min-height: 240px; }
 }
 @media (max-width: 768px) {
-  .search-section { min-height: 280px; padding: 20px 20px 16px; }
+  .search-section { min-height: 220px; padding: 16px 20px 14px; }
 }
 @media (max-width: 480px) {
-  .search-section { min-height: 260px; padding: 18px 16px 14px; }
+  .search-section { min-height: 200px; padding: 14px 16px 12px; }
 }
-.search-hero-text { text-align: center; margin-bottom: 18px; max-width: 700px; margin-left: auto; margin-right: auto; }
+.search-hero-text { text-align: center; margin-bottom: 12px; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
   display: inline-flex; align-items: center; gap: 7px;
   background: rgba(245,240,232,0.08);
@@ -389,9 +389,9 @@ nav {
   background: #7ac97a; box-shadow: 0 0 8px #7ac97a;
 }
 .search-hero-title {
-  font-family: 'Fraunces', serif; font-size: 2.6rem; font-weight: 600;
+  font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600;
   color: #fff; line-height: 1.05; letter-spacing: -0.035em;
-  margin: 0 0 10px; text-wrap: balance;
+  margin: 0 0 6px; text-wrap: balance;
   text-shadow: 0 2px 36px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.5);
 }
 .search-hero-title em {
@@ -441,7 +441,7 @@ nav {
 .hero-cat-chips {
   display: flex; justify-content: center; gap: 7px;
   flex-wrap: nowrap; white-space: nowrap;
-  max-width: 960px; margin: 20px auto 0;
+  max-width: 960px; margin: 10px auto 0;
   overflow-x: auto; scrollbar-width: none;
 }
 .hero-cat-chips::-webkit-scrollbar { display: none; }
