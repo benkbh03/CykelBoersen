@@ -362,6 +362,7 @@ nav {
   padding: 36px 48px 28px;
   aspect-ratio: 2400 / 845;
   min-height: 420px;
+  max-height: 480px;
   display: flex;
   flex-direction: column;
   justify-content: center;
