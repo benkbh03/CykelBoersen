@@ -262,7 +262,7 @@ export function createSellPage({
       const condition = getVal('sell-condition');
       const wheelSize = getVal('sell-wheel-size') || null;
       const warranty  = getVal('sell-warranty') || null;
-      const externalUrl = (currentProfile?.seller_type === 'dealer' ? (getVal('sell-external-url') || '').trim() : '') || null;
+      const externalUrl = (getCurrentProfile()?.seller_type === 'dealer' ? (getVal('sell-external-url') || '').trim() : '') || null;
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       // Cykel-specifikke felter
