@@ -141,7 +141,9 @@ export function createBikesList({
     } else {
       return;
     }
-    grid.after(footer);
+    const dealerBanner = document.querySelector('.dealer-banner-mobile');
+    const anchor = dealerBanner || document.getElementById('listings-map') || grid;
+    anchor.after(footer);
   }
 
   function renderListingsEmptyState() {
@@ -363,16 +365,18 @@ export function createBikesList({
     const existing = document.getElementById('load-more-btn');
     if (existing) existing.remove();
 
+    const dealerBanner = document.querySelector('.dealer-banner-mobile');
+    const anchor = dealerBanner || document.getElementById('listings-map') || grid;
     if ((data || []).length === BIKES_PAGE_SIZE) {
       const btn = document.createElement('div');
       btn.id = 'load-more-btn';
       btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
-      grid.after(btn);
+      anchor.after(btn);
     } else if (append && getFilterOffset() > BIKES_PAGE_SIZE) {
       const msg = document.createElement('div');
       msg.id = 'load-more-btn';
       msg.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
-      grid.after(msg);
+      anchor.after(msg);
     }
   }
 
