@@ -355,7 +355,7 @@ nav {
       rgba(14,22,15,0.01) 50%,
       rgba(14,22,15,0.20) 100%
     ),
-    url('/hero.jpg');
+    url('/hero.jpg?v=20261113q');
   background-size: auto, auto, auto, auto, cover;
   background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
