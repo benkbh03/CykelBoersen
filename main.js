@@ -2253,6 +2253,7 @@ window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
+window.loadMoreBikes          = function() { loadBikes(currentFilters, true); };
 window.closeResetModal    = closeResetModal;
 window.handleResetPassword = handleResetPassword;
 window.openEditModal          = openEditModal;

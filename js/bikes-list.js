@@ -161,7 +161,7 @@ export function createBikesList({
     footer.id = 'load-more-btn';
     // Fuld batch → der kan være flere → vis "Vis flere"-knap
     if (data.length === fetchCount) {
-      footer.innerHTML = `<button onclick="loadBikes(currentFilters, true)" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
+      footer.innerHTML = `<button onclick="loadMoreBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
     } else if (append && getBikesOffset() > BIKES_PAGE_SIZE) {
       footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
     } else {
