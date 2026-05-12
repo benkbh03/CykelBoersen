@@ -77,7 +77,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 8. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -165,7 +165,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 8. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -181,7 +181,10 @@ export const footerContent = {
         <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
         <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
         <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>
-        <li><strong>Betalingsdata:</strong> Forhandlerabonnementer håndteres af Stripe — vi gemmer ikke kortnumre eller betalingsoplysninger.</li>
+        <li><strong>Sidst sete annoncer:</strong> Vi gemmer lokalt i din browser (localStorage) de seneste 8 annoncer du har klikket på, så vi kan vise dem i "Sidst set"-rækken på forsiden. Data forlader aldrig din browser og slettes når du rydder browserdata.</li>
+        <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
+        <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
+        <li><strong>Betalingsdata:</strong> Forhandlerabonnementer er gratis under platformens lanceringsfase. Når betaling senere aktiveres, håndteres den af Stripe — vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
       </ul>
 
@@ -250,8 +253,8 @@ export const footerContent = {
         <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
       </ul>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies</h3>
-      <p style="margin-bottom:16px;">Vi bruger udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage) til autentificering og sessionshåndtering. Vi anvender <strong>ikke</strong> tracking-cookies, analyse-cookies eller tredjeparts markedsføringscookies. Da vi kun bruger nødvendige cookies, kræves der ikke samtykke jf. cookiebekendtgørelsen § 4, stk. 2.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
+      <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle" — i dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Dine rettigheder</h3>
       <p style="margin-bottom:8px;">I henhold til GDPR har du følgende rettigheder:</p>
@@ -279,14 +282,15 @@ export const footerContent = {
     title: 'Cookiepolitik',
     metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 5. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
-      <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. De kan bruges til at huske indstillinger, holde dig logget ind og indsamle statistik om besøg.</p>
+      <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde — små data-poster i din browser, vi bruger til at huske dig.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvilke cookies bruger vi?</h3>
-      <p style="margin-bottom:8px;">Vi bruger <strong>udelukkende teknisk nødvendige cookies</strong> — det vil sige cookies der er strengt nødvendige for at hjemmesiden kan fungere. Vi bruger <strong>ikke</strong> analyse-cookies, tracking-cookies eller markedsføringscookies.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvilke kategorier bruger vi?</h3>
+      <p style="margin-bottom:8px;">Vi bruger primært <strong>teknisk nødvendige cookies</strong>. Vi viser en cookie-banner første gang du besøger sitet, hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen tracking eller markedsføringscookies uanset dit valg — banneret er forberedt til når vi senere måtte tilføje analyse-værktøjer.</p>
 
+      <h4 style="font-family:'Fraunces',serif;margin-top:16px;margin-bottom:8px;font-size:1rem;">Teknisk nødvendige (sættes altid)</h4>
       <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;font-weight:600;">Navn</td>
@@ -294,25 +298,43 @@ export const footerContent = {
           <td style="padding:8px 0;font-weight:600;">Levetid</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:8px 8px 8px 0;">sb-* (Supabase session)</td>
+          <td style="padding:8px 8px 8px 0;">sb-* (Supabase)</td>
           <td style="padding:8px 8px 8px 0;">Holder dig logget ind</td>
           <td style="padding:8px 0;">Session / 1 år</td>
         </tr>
-        <tr>
-          <td style="padding:8px 8px 8px 0;">localStorage (browser)</td>
-          <td style="padding:8px 8px 8px 0;">Gemmer søgefiltre og præferencer lokalt</td>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_cookie_consent</td>
+          <td style="padding:8px 8px 8px 0;">Husker dit valg fra cookie-banneret</td>
           <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_recently_viewed</td>
+          <td style="padding:8px 8px 8px 0;">Husker dine sidst sete annoncer (vises i "Sidst set"-rækken). Gemmer cykel-ID, mærke, model, pris, billede og tidspunkt. Maks 8 annoncer. Forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">30 dage</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">ss_checked_*</td>
+          <td style="padding:8px 8px 8px 0;">Cursor til notifikationer om gemte søgninger (Cykelagent), så vi ikke sender dobbeltbeskeder. Forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">dealer_signup_source (sessionStorage)</td>
+          <td style="padding:8px 8px 8px 0;">Hvis du klikker på et link med UTM-parametre (fx fra en e-mail-kampagne) til "Bliv forhandler", husker vi kilden midlertidigt, så vi kan se hvilken kanal der har skabt ansøgningen. Slettes når du lukker browseren.</td>
+          <td style="padding:8px 0;">Session</td>
         </tr>
       </table>
 
+      <h4 style="font-family:'Fraunces',serif;margin-top:16px;margin-bottom:8px;font-size:1rem;">Statistik (kun hvis du accepterer)</h4>
+      <p style="margin-bottom:16px;">Vi har endnu ikke aktiveret analyse-værktøjer. Hvis vi senere tilføjer fx Plausible Analytics eller Google Analytics, vil de først loades efter du klikker "Accepter alle" i cookie-banneret, og denne tabel bliver opdateret med præcis information.</p>
+
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kræves der samtykke?</h3>
-      <p style="margin-bottom:16px;">Da vi udelukkende anvender teknisk nødvendige cookies, kræves der ikke samtykke jf. cookiebekendtgørelsens § 4, stk. 2. Vi viser derfor ikke en cookie-banner.</p>
+      <p style="margin-bottom:16px;">Teknisk nødvendige cookies kræver ikke samtykke jf. cookiebekendtgørelsens § 4, stk. 2 og må sættes uden dit valg. Hvis vi tilføjer statistik- eller markedsføringscookies, vil de først aktiveres efter dit aktive samtykke i cookie-banneret.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Tredjepartscookies</h3>
-      <p style="margin-bottom:16px;">Vi bruger ingen tredjepartscookies til tracking eller annoncering. Vores betalingspartner Stripe kan sætte egne cookies ved besøg på betalingssider — disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
+      <p style="margin-bottom:16px;">Vi bruger i dag ingen tredjepartscookies til tracking eller annoncering. Vores fremtidige betalingspartner Stripe vil sætte egne cookies på betalingssider når forhandlerbetaling aktiveres — disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Sådan sletter du cookies</h3>
-      <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Sådan ændrer eller sletter du</h3>
+      <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies, localStorage og sessionStorage i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen. Du kan også få cookie-banneret vist igen ved at slette browserdata for cykelbørsen.dk og genindlæse siden.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt</h3>
       <p>Spørgsmål om vores brug af cookies rettes til <strong>hej@cykelbørsen.dk</strong>.</p>
