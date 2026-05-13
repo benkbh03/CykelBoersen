@@ -879,19 +879,17 @@ export function createSellPage({
   }
 
   function captureSellFormCache() {
-    if (_sellStep === 2) {
-      ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
-       'sell-year','sell-condition','sell-price','sell-warranty'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) _sellFormCache[id] = el.value;
-      });
-    }
-    if (_sellStep === 3) {
-      ['sell-desc','sell-city'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) _sellFormCache[id] = el.value;
-      });
-    }
+    // Vi capturer ALLE form-felter der findes i DOM lige nu, ikke kun det
+    // nuværende trin. Tidligere mistede vi de tekniske felter (groupset,
+    // frame_material, brake_type, electronic_shifting, weight_kg) når
+    // brugeren gik fra trin 2 → trin 3, fordi setSellStep tømmer
+    // step-body'ens HTML og rendererer nyt trin. Fix: kør gennem alle
+    // kendte felt-id'er og gem hvad der findes.
+    SELL_DRAFT_FIELDS.forEach(id => {
+      if (id === 'sell-colors') return; // håndteres separat via _sellFormCache['sell-colors']
+      const el = document.getElementById(id);
+      if (el && el.value != null) _sellFormCache[id] = el.value;
+    });
   }
 
   function setSellStep(n) {
