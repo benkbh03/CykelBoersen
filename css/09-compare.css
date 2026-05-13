@@ -39,10 +39,7 @@
   .compare-checkbox-wrap input { width: 10px; height: 10px; }
 }
 
-/* Fjernet for at give condition-tag plads i nederste venstre — checkbox flyttes til nederste hjørne i stedet */
-.bike-card { position: relative; }
-
-/* Floating compare-bar */
+/* Floating compare-bar — uændret */
 #compare-bar {
   position: fixed;
   bottom: 16px;
@@ -59,162 +56,329 @@
   min-width: 320px;
   font-family: 'DM Sans', sans-serif;
 }
-#compare-bar.compare-bar-visible {
-  transform: translateX(-50%) translateY(0);
-}
-.compare-bar-inner {
-  display: flex; align-items: center; gap: 16px;
-  flex-wrap: wrap; justify-content: space-between;
-}
+#compare-bar.compare-bar-visible { transform: translateX(-50%) translateY(0); }
+.compare-bar-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
 .compare-bar-info { font-size: 0.92rem; }
 .compare-bar-info strong { color: var(--rust-light); }
-.compare-bar-hint {
-  display: block;
-  font-size: 0.78rem;
-  opacity: 0.7;
-  margin-top: 2px;
-}
+.compare-bar-hint { display: block; font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
 .compare-bar-actions { display: flex; gap: 8px; }
 .compare-bar-clear {
-  background: transparent;
-  color: rgba(255,255,255,0.78);
+  background: transparent; color: rgba(255,255,255,0.78);
   border: 1px solid rgba(255,255,255,0.25);
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: background 0.15s;
 }
 .compare-bar-clear:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .compare-bar-go {
-  background: var(--rust);
-  color: #fff;
-  border: none;
-  padding: 9px 18px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  background: var(--rust); color: #fff;
+  border: none; padding: 9px 18px; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s;
 }
 .compare-bar-go:hover:not(:disabled) { background: var(--rust-light); transform: translateY(-1px); }
 .compare-bar-go:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (max-width: 560px) {
-  #compare-bar {
-    left: 8px; right: 8px; transform: translateY(120%);
-    min-width: 0;
-    bottom: 8px;
-  }
+  #compare-bar { left: 8px; right: 8px; transform: translateY(120%); min-width: 0; bottom: 8px; }
   #compare-bar.compare-bar-visible { transform: translateY(0); }
   .compare-bar-inner { flex-direction: column; align-items: stretch; gap: 10px; }
   .compare-bar-actions { justify-content: space-between; }
   .compare-bar-go { flex: 1; }
 }
 
-/* Compare-tabel */
-.compare-table-wrap {
-  overflow-x: auto;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: #fff;
+/* ============================================================
+   COMPARE-SIDE — redesign med grupperede sektioner
+   ============================================================ */
+
+.cmp-page {
+  background: var(--cream);
+  min-height: calc(100vh - 60px);
 }
-.compare-table {
-  width: 100%;
-  border-collapse: collapse;
+.cmp-page-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.92rem;
-  min-width: 600px;
+  color: var(--charcoal);
 }
-.compare-table th, .compare-table td {
-  padding: 14px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
+
+.cmp-back-btn {
+  background: none; border: 1px solid var(--border);
+  padding: 8px 18px; border-radius: 8px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; color: var(--charcoal);
+  margin-bottom: 22px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cmp-back-btn:hover { background: var(--sand); border-color: var(--charcoal); }
+
+.cmp-hero { margin-bottom: 28px; }
+.cmp-hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2rem; font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--charcoal);
+  letter-spacing: -0.02em;
+}
+.cmp-hero-lead {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0;
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.cmp-diff-marker {
+  display: inline-block;
+  width: 16px; height: 3px;
+  background: #ff8b60;
+  border-radius: 2px;
   vertical-align: middle;
 }
-.compare-th-spec {
-  width: 180px;
-  background: var(--sand);
+
+/* Shell — grid med 1 label-kolonne + N bike-kolonner */
+.cmp-shell {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
-.compare-th-bike {
-  text-align: center !important;
-  background: var(--sand);
-  vertical-align: top !important;
-  padding: 16px !important;
+
+.cmp-header-row {
+  display: grid;
+  grid-template-columns: 180px repeat(var(--cmp-cols), 1fr);
+  background: linear-gradient(180deg, var(--sand) 0%, rgba(239,234,224,0.6) 100%);
+  border-bottom: 1px solid var(--border);
 }
-.compare-bike-card {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+.cmp-header-spacer { padding: 24px; }
+
+/* Per-bike header card */
+.cmp-bike-header {
+  padding: 20px 18px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 10px;
+  border-left: 1px solid var(--border);
 }
-.compare-bike-card img {
+.cmp-bike-image-wrap {
+  position: relative;
   width: 100%;
   max-width: 220px;
+}
+.cmp-bike-image-wrap img,
+.cmp-bike-noimg {
+  width: 100%;
   aspect-ratio: 4/3;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 12px;
+  background: var(--sand);
+  display: block;
 }
-.compare-bike-noimg {
-  width: 100%; max-width: 220px;
-  aspect-ratio: 4/3;
-  background: var(--sand-2);
-  border-radius: 10px;
+.cmp-bike-noimg {
   display: flex; align-items: center; justify-content: center;
-  font-size: 3rem;
+  font-size: 2.6rem;
 }
-.compare-bike-name {
+.cmp-bike-remove {
+  position: absolute; top: 6px; right: 6px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  font-size: 0.85rem; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, transform 0.1s;
+}
+.cmp-bike-remove:hover { background: var(--rust); transform: scale(1.06); }
+.cmp-bike-title {
   font-family: 'Fraunces', serif;
-  font-size: 1.05rem; font-weight: 700;
+  font-size: 1.1rem; font-weight: 700;
+  margin: 0;
   color: var(--charcoal);
-  text-align: center;
   line-height: 1.2;
+  letter-spacing: -0.01em;
 }
-.compare-bike-actions { display: flex; gap: 6px; align-items: center; }
-.compare-action-go {
-  background: var(--forest); color: #fff;
-  border: none; padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.78rem; font-weight: 600;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s;
-}
-.compare-action-go:hover { background: var(--forest-light); }
-.compare-action-remove {
-  background: transparent;
+.cmp-bike-subtitle {
+  font-size: 0.78rem;
   color: var(--muted);
-  border: 1px solid var(--border);
-  width: 28px; height: 28px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s, color 0.15s;
+  margin: -4px 0 0;
 }
-.compare-action-remove:hover { background: #fdf3f3; color: var(--rust); border-color: var(--rust); }
-.compare-td-label {
+.cmp-bike-cta {
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem; font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, transform 0.1s;
+}
+.cmp-bike-cta:hover { background: var(--forest-light); transform: translateY(-1px); }
+
+/* Section */
+.cmp-section { border-bottom: 1px solid var(--border); }
+.cmp-section:last-child { border-bottom: none; }
+.cmp-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin: 0;
+  padding: 16px 24px 8px;
+  background: rgba(254,250,243,0.6);
+}
+
+.cmp-row {
+  display: grid;
+  grid-template-columns: 180px repeat(var(--cmp-cols), 1fr);
+  border-top: 1px solid rgba(0,0,0,0.04);
+  position: relative;
+}
+.cmp-row:first-of-type { border-top: none; }
+.cmp-row-label {
+  padding: 14px 24px;
+  font-size: 0.82rem;
   font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+}
+.cmp-row-value {
+  padding: 14px 18px;
+  font-size: 0.92rem;
+  color: var(--charcoal);
+  border-left: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  line-height: 1.4;
+}
+
+/* Subtil diff-indikator: orange streg langs venstre kant af label, ikke fyldfarve på hele rækken */
+.cmp-row--diff {
+  background: rgba(255, 139, 96, 0.04);
+}
+.cmp-row--diff::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: #ff8b60;
+}
+.cmp-row--diff .cmp-row-label {
+  color: var(--charcoal);
+  font-weight: 700;
+}
+
+/* Special-formatering for værdier */
+.cmp-empty {
+  color: rgba(0,0,0,0.28);
+  font-style: italic;
+  font-size: 0.88rem;
+}
+.cmp-price {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--rust);
+  line-height: 1.1;
+}
+.cmp-price-orig {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 4px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.cmp-price-save {
+  color: #2e7d32;
+  font-weight: 700;
+}
+.cmp-tag-mini {
+  display: inline-block;
   background: var(--sand);
   color: var(--charcoal);
-  width: 180px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-left: 6px;
 }
-.compare-td-value {
+.cmp-seller-cell {
+  display: flex; flex-direction: column; gap: 3px;
+}
+.cmp-seller-name {
+  font-weight: 600;
   color: var(--charcoal);
+  display: inline-flex; align-items: center; gap: 5px;
 }
-.compare-row-diff .compare-td-value {
-  background: #fff3e0;
+.cmp-verified {
+  background: var(--forest);
+  color: #fff;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
 }
-.compare-row-diff .compare-td-label {
-  border-left: 3px solid #ff8b60;
+.cmp-seller-type {
+  font-size: 0.78rem;
+  color: var(--muted);
 }
-.compare-table tr:last-child th,
-.compare-table tr:last-child td { border-bottom: none; }
 
+/* Footer-knapper */
+.cmp-footer {
+  margin-top: 28px;
+  display: flex; gap: 12px; justify-content: center;
+}
+.cmp-footer-secondary, .cmp-footer-primary {
+  padding: 12px 24px;
+  border-radius: 9px;
+  font-size: 0.92rem; font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+}
+.cmp-footer-secondary {
+  background: transparent;
+  color: var(--charcoal);
+  border: 1px solid var(--border);
+}
+.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal); }
+.cmp-footer-primary {
+  background: var(--forest);
+  color: #fff;
+  border: none;
+}
+.cmp-footer-primary:hover { background: var(--forest-light); transform: translateY(-1px); }
+
+/* Responsivt: under 768px omdannes header til vandret-scrollbar layout */
 @media (max-width: 768px) {
-  .compare-th-spec, .compare-td-label { width: 130px; font-size: 0.85rem; }
-  .compare-bike-card img, .compare-bike-noimg { max-width: 140px; }
-  .compare-bike-name { font-size: 0.92rem; }
-  .compare-action-go { font-size: 0.72rem; padding: 5px 10px; }
+  .cmp-page-inner { padding: 16px 12px 40px; }
+  .cmp-hero-title { font-size: 1.5rem; }
+  .cmp-hero-lead { font-size: 0.85rem; }
+
+  .cmp-header-row,
+  .cmp-row {
+    grid-template-columns: 130px repeat(var(--cmp-cols), minmax(140px, 1fr));
+  }
+  .cmp-header-spacer { padding: 14px; }
+  .cmp-bike-header { padding: 14px 10px; gap: 8px; }
+  .cmp-bike-title { font-size: 0.95rem; }
+  .cmp-bike-subtitle { font-size: 0.7rem; }
+  .cmp-bike-image-wrap { max-width: 140px; }
+  .cmp-bike-cta { font-size: 0.75rem; padding: 6px 12px; }
+
+  .cmp-section-title { padding: 12px 14px 6px; font-size: 0.7rem; }
+  .cmp-row-label { padding: 11px 14px; font-size: 0.78rem; }
+  .cmp-row-value { padding: 11px 12px; font-size: 0.85rem; }
+  .cmp-price { font-size: 1rem; }
+
+  .cmp-footer { flex-direction: column; }
+  .cmp-footer-secondary, .cmp-footer-primary { width: 100%; }
 }
