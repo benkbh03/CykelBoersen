@@ -263,7 +263,7 @@ export function createBikesList({
             ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
             ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
             ${!isSold && !isDemo && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn${askedAvailableSet.has(b.id) ? ' asked' : ''}" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Er den stadig til salg?">${askedAvailableSet.has(b.id) ? '✅' : '💬'}</button>` : ''}
-            ${!isSold && !isDemo ? `<label class="compare-checkbox-wrap" onclick="event.stopPropagation()" title="Vælg til sammenligning"><input type="checkbox" class="compare-checkbox" data-bike-id="${b.id}" onchange="toggleCompareBike(this,'${b.id}')">Sammenlign</label>` : ''}
+            ${!isSold && !isDemo ? `<label class="compare-checkbox-wrap" onclick="event.stopPropagation()" title="Vælg til sammenligning"><input type="checkbox" class="compare-checkbox" data-bike-id="${b.id}" onchange="toggleCompareBike(this,'${b.id}')"><span class="compare-checkbox-label">Sammenlign</span></label>` : ''}
           </div>
           <div class="bike-card-body">
             <div class="card-top">
