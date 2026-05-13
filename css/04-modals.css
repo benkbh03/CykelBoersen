@@ -713,6 +713,108 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
 .bike-detail-seller { display: flex; align-items: center; gap: 12px; background: var(--sand); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
+
+/* ── TRUST CARD: Trygt køb-badge + sælger-historik ─────────── */
+.seller-trust-card-wrap { margin-top: 10px; }
+.trust-card {
+  display: flex; flex-direction: column; gap: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'DM Sans', sans-serif;
+}
+.trust-card--trusted {
+  background: linear-gradient(135deg, #f1f7ed 0%, #e8f5e9 100%);
+  border: 1.5px solid #2e7d32;
+  box-shadow: 0 2px 12px rgba(46,125,50,0.08);
+}
+.trust-card-badge {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(46,125,50,0.18);
+}
+.trust-card-badge-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(46,125,50,0.25));
+}
+.trust-card-badge-text { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.trust-card-badge-text strong {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a5722;
+  letter-spacing: -0.01em;
+}
+.trust-card-badge-text span {
+  font-size: 0.78rem;
+  color: #2e7d32;
+  line-height: 1.3;
+}
+.trust-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.trust-stat {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+.trust-stat-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+.trust-stat-value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  line-height: 1.25;
+}
+.trust-card--trusted .trust-stat-value { color: #1a5722; }
+.trust-stat-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.trust-stat--muted .trust-stat-value {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.trust-card-tips {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.trust-card-tips-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.trust-card-tip-chip {
+  background: var(--sand);
+  color: var(--charcoal);
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+@media (max-width: 560px) {
+  .trust-card { padding: 12px 14px; gap: 10px; }
+  .trust-card-stats { grid-template-columns: 1fr 1fr; }
+  .trust-card-badge-icon { font-size: 1.4rem; }
+  .trust-card-badge-text strong { font-size: 0.98rem; }
+  .trust-card-badge-text span { font-size: 0.74rem; }
+  .trust-stat-value { font-size: 0.85rem; }
+}
+/* ───────────────────────────────────────────────────────────── */
+
 .seller-avatar-large { width: 44px; height: 44px; border-radius: 50%; background: var(--forest); color: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 700; flex-shrink: 0; overflow: hidden; }
 .seller-detail-name { font-weight: 600; font-size: 0.95rem; }
 .seller-detail-city { font-size: 0.8rem; color: var(--muted); }
