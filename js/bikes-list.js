@@ -71,6 +71,18 @@ export function createBikesList({
   async function loadBikes(filters = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
+    // Loading-state på "Vis flere"-knappen — viser spinner + "Henter…" tekst og
+    // disabler knappen så brugeren ikke kan klikke igen mens netværkskaldet kører
+    let appendBtn = null;
+    if (append) {
+      appendBtn = document.querySelector('#load-more-btn button');
+      if (appendBtn) {
+        appendBtn.disabled = true;
+        appendBtn.dataset.origText = appendBtn.innerHTML;
+        appendBtn.innerHTML = '<span class="btn-spinner"></span>Henter…';
+      }
+    }
+
     if (!append) {
       setBikesOffset(0);
       setCurrentFilters(filters);
@@ -316,6 +328,15 @@ export function createBikesList({
     maxWeight = null, city = null, search = null,
   } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
+
+    // Loading-state på "Vis flere"-knappen (same som loadBikes)
+    if (append) {
+      const appendBtn = document.querySelector('#load-more-btn button');
+      if (appendBtn) {
+        appendBtn.disabled = true;
+        appendBtn.innerHTML = '<span class="btn-spinner"></span>Henter…';
+      }
+    }
 
     if (!append) {
       setFilterOffset(0);
