@@ -680,7 +680,12 @@ async function init() {
       }
       userGeoCoords = [lat, lng];
       activeRadius  = radius;
-      applyNearMeFilter();
+      // Genindlæs UDEN city-filter — cykler i nabokommuner (fx Frederiksberg
+      // ved Valby+100km) skal være kandidater. applyNearMeFilter kører
+      // automatisk i slutningen af renderBikes når geoCoords + radius er sat.
+      const search = document.getElementById('search-input')?.value || '';
+      const type   = document.getElementById('search-type')?.value || '';
+      loadBikes({ search, type, city: null });
     } else {
       // Ingen radius valgt — ryd evt. tidligere by-radius
       userGeoCoords = null;

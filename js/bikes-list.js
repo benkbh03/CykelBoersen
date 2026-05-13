@@ -318,7 +318,12 @@ export function createBikesList({
     const search = document.getElementById('search-input').value;
     const type   = document.getElementById('search-type').value;
     const city   = document.getElementById('search-city').value;
-    loadBikes({ search, type, city });
+    const radius = document.getElementById('search-city-radius')?.value;
+    // Hvis brugeren har valgt en radius, springer vi DB'ens city-filter over.
+    // Ellers ville cykler i nabokommuner (fx Frederiksberg, når man søger
+    // Valby+100km) aldrig blive loaded, og distance-filteret ville køre på
+    // 0 kandidater. Distancen håndteres så af applyNearMeFilter via DAWA-koordinater.
+    loadBikes({ search, type, city: radius ? null : city });
   }
 
   async function loadBikesWithFilters({
