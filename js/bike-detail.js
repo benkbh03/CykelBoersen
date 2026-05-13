@@ -188,12 +188,12 @@ export function createBikeDetail({
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
                 </span>
-                <span id="seller-sold-count" style="font-size:0.75rem;color:var(--muted);"></span>
                 <span id="response-time-badge" style="font-size:0.75rem;color:var(--muted);">⏱ Henter responstid...</span>
               </div>
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
+          ${!isDemo ? `<div id="seller-trust-card" class="seller-trust-card-wrap"></div>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">
@@ -434,7 +434,7 @@ export function createBikeDetail({
       attachGallerySwipe();
       _initDescExpand();
       loadResponseTime(profile.id);
-      loadSellerSoldCount(profile.id);
+      loadSellerTrustCard(profile);
       loadSellerOtherListings(profile.id, b.id);
       loadSimilarListings(b.type, b.id);
       initPriceDropButton(b.id);
@@ -672,7 +672,7 @@ export function createBikeDetail({
     attachGallerySwipe();
     _initDescExpand();
     loadResponseTime(profile.id);
-    loadSellerSoldCount(profile.id);
+    loadSellerTrustCard(profile);
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
     initBikeDetailMap(b);
@@ -699,13 +699,6 @@ export function createBikeDetail({
     removeBikeJsonLd();
   }
 
-  /* ============================================================
-     SÆLGER-CREDIBILITY: solgte cykler-tæller
-     ============================================================
-     Viser "📦 X solgt" ved siden af forhandler/privat-badgen for
-     at give køberen et hurtigt signal om sælgers track record.
-     Kun "solgt" = bikes med is_active=false (vores soft-delete).
-     Tæller IKKE den nuværende annonce. */
   /* ============================================================
      "Er den til salg?" — håndteret via ?ask=1 i URL'en
      ============================================================
@@ -739,25 +732,109 @@ export function createBikeDetail({
     } catch (e) { /* URL parsing kan fejle på exotic browsers */ }
   }
 
-  async function loadSellerSoldCount(sellerId) {
-    const badge = document.getElementById('seller-sold-count');
-    if (!badge || !sellerId) return;
+  /* ============================================================
+     TRUST CARD — Trygt-køb-badge + sælger-historik i én UI-komponent.
+     ============================================================
+     Aggregerer al tillids-data om sælgeren. Når trustScore ≥ 5,
+     stempler vi annoncen med "🛡️ Trygt køb" — den vigtigste
+     visuelle differentiator overfor DBA.
+
+     Score-formel (max 11):
+       +1 email-verificeret
+       +2 ID-verificeret
+       +1 har solgt 1-4 cykler  /  +3 har solgt 5+
+       +3 verificeret forhandler (CVR-godkendt)
+       +2 ≥4.5★ gennemsnit på mindst 3 anmeldelser
+
+     Også vist uafhængigt af score:
+       - Medlem siden måned+år
+       - Antal solgte cykler
+       - Gennemsnits-rating (eller "Endnu ingen anmeldelser") */
+  async function loadSellerTrustCard(profile) {
+    const card = document.getElementById('seller-trust-card');
+    if (!card || !profile?.id) return;
     try {
-      const { count, error } = await supabase
-        .from('bikes')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', sellerId)
-        .eq('is_active', false);
-      if (error || !count) { badge.textContent = ''; return; }
-      if (count >= 5) {
-        badge.innerHTML = `🏆 ${count} solgte cykler`;
-        badge.style.color = '#2e7d32';
-        badge.style.fontWeight = '600';
-      } else {
-        badge.innerHTML = `📦 ${count} solgt${count === 1 ? '' : 'e'} cykler`;
-      }
+      const [soldRes, reviewsRes] = await Promise.all([
+        supabase.from('bikes')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', profile.id)
+          .eq('is_active', false),
+        supabase.from('reviews')
+          .select('rating')
+          .eq('reviewed_user_id', profile.id),
+      ]);
+
+      const soldCount   = soldRes.count || 0;
+      const reviews     = reviewsRes.data || [];
+      const reviewCount = reviews.length;
+      const avgRating   = reviewCount > 0
+        ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewCount
+        : 0;
+
+      let trustScore = 0;
+      if (profile.email_verified) trustScore += 1;
+      if (profile.id_verified)    trustScore += 2;
+      if (soldCount >= 5)          trustScore += 3;
+      else if (soldCount >= 1)     trustScore += 1;
+      if (profile.verified && profile.seller_type === 'dealer') trustScore += 3;
+      if (avgRating >= 4.5 && reviewCount >= 3) trustScore += 2;
+
+      const isTrusted = trustScore >= 5;
+
+      const memberSince = profile.created_at
+        ? new Date(profile.created_at).toLocaleDateString('da-DK', { month: 'long', year: 'numeric' })
+        : null;
+
+      const ratingHtml = reviewCount > 0
+        ? `${avgRating.toFixed(1)}★ <span class="trust-stat-sub">(${reviewCount} anmeldelse${reviewCount === 1 ? '' : 'r'})</span>`
+        : null;
+
+      const tips = [];
+      if (!profile.email_verified)  tips.push('Email-verifikation');
+      if (!profile.id_verified)     tips.push('ID-verifikation');
+      if (soldCount < 5)             tips.push(`${Math.max(1, 5 - soldCount)} flere salg`);
+      if (profile.seller_type === 'dealer' && !profile.verified) tips.push('CVR-godkendelse');
+      if (reviewCount < 3)           tips.push('Flere anmeldelser');
+
+      card.innerHTML = `
+        <div class="trust-card ${isTrusted ? 'trust-card--trusted' : 'trust-card--neutral'}">
+          ${isTrusted ? `
+          <div class="trust-card-badge" title="Trust-score: ${trustScore}/11. Bygges på verifikationer, handelshistorik og anmeldelser.">
+            <span class="trust-card-badge-icon" aria-hidden="true">🛡️</span>
+            <div class="trust-card-badge-text">
+              <strong>Trygt køb</strong>
+              <span>Verificeret sælger med god handelshistorik</span>
+            </div>
+          </div>` : ''}
+          <div class="trust-card-stats">
+            ${memberSince ? `
+            <div class="trust-stat">
+              <span class="trust-stat-label">Medlem siden</span>
+              <span class="trust-stat-value">${esc(memberSince)}</span>
+            </div>` : ''}
+            <div class="trust-stat">
+              <span class="trust-stat-label">Solgte cykler</span>
+              <span class="trust-stat-value">${soldCount}</span>
+            </div>
+            ${ratingHtml ? `
+            <div class="trust-stat">
+              <span class="trust-stat-label">Vurdering</span>
+              <span class="trust-stat-value">${ratingHtml}</span>
+            </div>` : `
+            <div class="trust-stat trust-stat--muted">
+              <span class="trust-stat-label">Vurdering</span>
+              <span class="trust-stat-value">Endnu ingen anmeldelser</span>
+            </div>`}
+          </div>
+          ${!isTrusted && tips.length ? `
+          <div class="trust-card-tips" title="Mangler for at få Trygt-køb-stempel">
+            <span class="trust-card-tips-label">Bygger tillid via:</span>
+            ${tips.slice(0, 3).map(t => `<span class="trust-card-tip-chip">${esc(t)}</span>`).join('')}
+          </div>` : ''}
+        </div>
+      `;
     } catch (e) {
-      badge.textContent = '';
+      card.innerHTML = '';
     }
   }
 
