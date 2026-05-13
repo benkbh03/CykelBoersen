@@ -206,6 +206,7 @@ export function createSellPage({
     const bikeData = {
       user_id:     currentUser.id,
       brand, model, price, year, city,
+      original_price: price,  // Sættes ved create, opdateres aldrig — driver "Reduceret fra X → Y"-badge
       description: desc,
       type, size, condition,
       wheel_size:  wheelSize || null,
@@ -296,6 +297,7 @@ export function createSellPage({
       const bikeData = {
         user_id: currentUser.id,
         brand, model, price, year, city,
+        original_price: price,  // Sættes ved create, opdateres aldrig — driver "Reduceret fra X → Y"-badge
         description: desc || null,
         type, size: size || null, size_cm: sizeCm, condition,
         wheel_size: wheelSize || null,

@@ -34,6 +34,24 @@ export function formatLastSeen(dateStr) {
   return 'Aktiv for over en uge siden';
 }
 
+/* Relativ tid til annonce-historik ("Oprettet for X dage siden").
+   Forskellig fra formatLastSeen ved at den ikke har "Netop aktiv"-prefix
+   og dækker længere tidsspænd op til "over et år siden". */
+export function formatRelativeAge(dateStr) {
+  if (!dateStr) return null;
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60)  return mins <= 1 ? 'lige nu' : `for ${mins} min. siden`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)   return `for ${hrs} ${hrs === 1 ? 'time' : 'timer'} siden`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30)  return `for ${days} ${days === 1 ? 'dag' : 'dage'} siden`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `for ${months} ${months === 1 ? 'måned' : 'måneder'} siden`;
+  const years = Math.floor(days / 365);
+  return `for ${years} ${years === 1 ? 'år' : 'år'} siden`;
+}
+
 export function esc(str) {
   if (str == null) return '';
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');

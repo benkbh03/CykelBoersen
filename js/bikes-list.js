@@ -98,7 +98,7 @@ export function createBikesList({
       : (initialVist || BIKES_PAGE_SIZE);
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + fetchCount - 1);
@@ -258,6 +258,7 @@ export function createBikesList({
               ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
               <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
               ${b.warranty && !isSold && !isDemo ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+              ${!isSold && !isDemo && b.original_price && b.original_price > b.price ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>` : ''}
             </div>
             ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
             ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
@@ -331,7 +332,7 @@ export function createBikesList({
     const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + filterFetchCount - 1);
