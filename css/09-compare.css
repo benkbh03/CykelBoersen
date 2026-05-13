@@ -331,7 +331,8 @@
   color: var(--muted);
 }
 
-/* Footer-knapper */
+/* Footer-knapper — får eksplicit baggrund så de fungerer på både cream og
+   dark-green omgivelser (sektionen kan ende oppe mod den grønne site-footer). */
 .cmp-footer {
   margin-top: 28px;
   display: flex; gap: 12px; justify-content: center;
@@ -342,20 +343,21 @@
   font-size: 0.92rem; font-weight: 600;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 .cmp-footer-secondary {
-  background: transparent;
+  background: #fff;
   color: var(--charcoal);
   border: 1px solid var(--border);
 }
-.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal); }
+.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal); transform: translateY(-1px); }
 .cmp-footer-primary {
-  background: var(--forest);
+  background: var(--rust);
   color: #fff;
   border: none;
 }
-.cmp-footer-primary:hover { background: var(--forest-light); transform: translateY(-1px); }
+.cmp-footer-primary:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,80,42,0.35); }
 
 /* Responsivt: under 768px omdannes header til vandret-scrollbar layout */
 @media (max-width: 768px) {

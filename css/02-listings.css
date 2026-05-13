@@ -370,13 +370,7 @@
   border-radius: 18px; padding: 36px 44px;
   display: grid; grid-template-columns: 1fr auto;
   gap: 32px; align-items: center;
-  position: relative; overflow: hidden;
-}
-.sell-cta-inner::before {
-  content: ''; position: absolute; top: -40px; right: -40px;
-  width: 220px; height: 220px; border-radius: 50%;
-  background: rgba(200,80,42,0.20); filter: blur(50px);
-  pointer-events: none;
+  position: relative;
 }
 .sell-cta-label {
   font-size: 0.7rem; font-weight: 600; color: var(--rust-light);
