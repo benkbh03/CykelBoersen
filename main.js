@@ -2261,8 +2261,19 @@ window.closeMobileFilters     = closeMobileFilters;
 window.clearAllFilters        = clearAllFilters;
 window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;
-window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
-window.loadMoreBikes          = function() { loadBikes(currentFilters, true); };
+// Guard mod dobbelt-klik: hvis knappen allerede er disabled (loader), ignorér klikket.
+// Knappens disabled-tilstand sættes synkront af loadBikes/loadBikesWithFilters når
+// append-flowet starter, så et hurtigt andet klik når at fange disabled=true.
+window.loadMoreFilteredBikes  = function() {
+  const btn = document.querySelector('#load-more-btn button');
+  if (btn && btn.disabled) return;
+  loadBikesWithFilters(currentFilterArgs, true);
+};
+window.loadMoreBikes          = function() {
+  const btn = document.querySelector('#load-more-btn button');
+  if (btn && btn.disabled) return;
+  loadBikes(currentFilters, true);
+};
 window.toggleCompareBike      = toggleCompareBike;
 window.clearCompareIds        = clearCompareIds;
 window.syncCompareCheckboxes  = syncCompareCheckboxes;
