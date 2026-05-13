@@ -249,6 +249,7 @@ export function createBikeDetail({
             </div>
             <div class="antiscam-tip">🔒 Mød op personligt og betal ved levering. Del aldrig kontooplysninger.</div>
             <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
+            <button class="btn-save-listing" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})">🔔 Få besked ved prisfald</button>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
             <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${b.brand} ${b.model}')">🚩 Rapporter annonce</button>
           </div>
@@ -436,6 +437,7 @@ export function createBikeDetail({
       loadSellerSoldCount(profile.id);
       loadSellerOtherListings(profile.id, b.id);
       loadSimilarListings(b.type, b.id);
+      initPriceDropButton(b.id);
       initBikeDetailMap(b);
       if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
     } catch (renderErr) {
@@ -673,6 +675,7 @@ export function createBikeDetail({
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
     initBikeDetailMap(b);
+    initPriceDropButton(b.id);
     if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
   }
 
@@ -1499,6 +1502,89 @@ export function createBikeDetail({
   }
 
   /* ============================================================
+     PRIS-DROP-ALERT — "Få besked ved prisfald"
+     ============================================================
+     Bruger watcher en specifik bike ved nuværende pris. Når
+     sælgeren senere reducerer prisen, sender en edge function
+     en email-notifikation til alle watchere.
+     Unique-constraint på (user_id, bike_id) gør at insert/delete
+     er en toggle. Knappens tilstand opdateres synkront. */
+  async function togglePriceDropWatch(btn, bikeId, currentPrice) {
+    const currentUser = getCurrentUser();
+    if (!currentUser) { showToast('⚠️ Log ind for at få prisfaldsbeskeder'); return; }
+    const isWatching = btn.dataset.watching === '1';
+    btn.disabled = true;
+    try {
+      if (isWatching) {
+        const { error } = await supabase
+          .from('price_drop_watches')
+          .delete()
+          .eq('user_id', currentUser.id)
+          .eq('bike_id', bikeId);
+        if (error) { showToast('❌ Kunne ikke fjerne prisalarm'); return; }
+        btn.dataset.watching = '0';
+        btn.textContent = '🔔 Få besked ved prisfald';
+        showToast('🔕 Prisalarm fjernet');
+      } else {
+        // Tjek at brugeren ikke watcher sin egen annonce
+        const { data: bike } = await supabase.from('bikes').select('user_id').eq('id', bikeId).single();
+        if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke watche din egen annonce'); return; }
+        const { error } = await supabase
+          .from('price_drop_watches')
+          .insert({
+            user_id: currentUser.id,
+            bike_id: bikeId,
+            watched_at_price: currentPrice,
+          });
+        if (error) {
+          if (error.code === '23505') {
+            // Allerede watcher (race condition) — sæt knap til watching-state
+            btn.dataset.watching = '1';
+            btn.textContent = '🔔 Prisalarm aktiv';
+          } else {
+            showToast('❌ Kunne ikke oprette prisalarm');
+          }
+          return;
+        }
+        btn.dataset.watching = '1';
+        btn.textContent = '🔔 Prisalarm aktiv';
+        showToast(`🔔 Du får besked hvis prisen falder under ${currentPrice.toLocaleString('da-DK')} kr.`);
+      }
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  /* Initialiser pris-drop-knap tilstand når bike-detail loader.
+     Tjekker om brugeren allerede watcher denne bike og opdaterer knappens
+     tekst + dataset.watching tilsvarende. */
+  async function initPriceDropButton(bikeId) {
+    const btn = document.getElementById(`price-drop-btn-${bikeId}`);
+    if (!btn) return;
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      btn.dataset.watching = '0';
+      return;
+    }
+    try {
+      const { data } = await supabase
+        .from('price_drop_watches')
+        .select('id')
+        .eq('user_id', currentUser.id)
+        .eq('bike_id', bikeId)
+        .maybeSingle();
+      if (data) {
+        btn.dataset.watching = '1';
+        btn.textContent = '🔔 Prisalarm aktiv';
+      } else {
+        btn.dataset.watching = '0';
+      }
+    } catch (e) {
+      btn.dataset.watching = '0';
+    }
+  }
+
+  /* ============================================================
      INITIALISER LIGHTBOX GESTURES + KEYBOARD EVENTS
      Skal kaldes efter DOM er klar — eksporteret så main.js kan
      kalde det (eller kald initLightboxGestures() direkte herfra
@@ -1553,6 +1639,7 @@ export function createBikeDetail({
     window.sendMessage                = sendMessage;
     window.sendBid                    = sendBid;
     window.toggleSaveFromModal        = toggleSaveFromModal;
+    window.togglePriceDropWatch       = togglePriceDropWatch;
     window.startConversationWithLiker = startConversationWithLiker;
   }
 

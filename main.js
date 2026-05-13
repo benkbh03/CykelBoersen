@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { esc, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
+import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
@@ -1555,6 +1556,8 @@ function navigateTo(path) {
 }
 
 function handleRoute() {
+  // Genrender compare-bar ved hver route — syncs synlighed på sammenligningssiden vs alle andre sider
+  setTimeout(() => { try { renderCompareBar(); } catch {} }, 50);
   document.body.classList.remove('is-mp-mobile');
   document.body.classList.remove('map-page-view');
   // Defensiv: luk altid mobil-filter-drawer ved navigation
@@ -1573,6 +1576,7 @@ function handleRoute() {
   const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
   const valuationMatch = path === '/vurder-min-cykel';
   const sizeFinderMatch = path === '/stelstoerrelse-guide' || path === '/stelstørrelse-guide';
+  const compareMatch = path === '/sammenlign';
   const blogArticleMatch = path.match(/^\/blog\/([^/]+)$/);
   const blogOverviewMatch = path === '/blog';
   const meMatch      = path === '/me';
@@ -1656,6 +1660,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderSizeFinderPage();
+  } else if (compareMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderComparePage();
   } else if (blogArticleMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -2254,6 +2263,11 @@ window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 window.loadMoreFilteredBikes  = function() { loadBikesWithFilters(currentFilterArgs, true); };
 window.loadMoreBikes          = function() { loadBikes(currentFilters, true); };
+window.toggleCompareBike      = toggleCompareBike;
+window.clearCompareIds        = clearCompareIds;
+window.syncCompareCheckboxes  = syncCompareCheckboxes;
+const { renderComparePage }   = createComparePage({ supabase, navigateTo, showToast });
+window.renderComparePage      = renderComparePage;
 window.closeResetModal    = closeResetModal;
 window.handleResetPassword = handleResetPassword;
 window.openEditModal          = openEditModal;
