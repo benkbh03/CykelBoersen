@@ -266,8 +266,31 @@ export function createListingEdit({
       showToast('⚠️ Udfyld alle påkrævede felter'); return;
     }
 
+    // Hent den gamle pris så vi kan opdage et prisfald og trigge alarmer
+    const { data: oldBike } = await supabase
+      .from('bikes')
+      .select('price, brand, model')
+      .eq('id', id)
+      .single();
+    const oldPrice = oldBike?.price ?? null;
+
     const { error } = await supabase.from('bikes').update(updates).eq('id', id);
     if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+
+    // Prisfald-trigger: hvis sælgeren har sat prisen ned, send notifikation til
+    // alle der watcher annoncen ved en pris HØJERE end den nye pris.
+    if (oldPrice != null && updates.price < oldPrice) {
+      supabase.functions.invoke('notify-message', {
+        body: {
+          type: 'price_drop',
+          bike_id: id,
+          bike_brand: updates.brand,
+          bike_model: updates.model,
+          old_price: oldPrice,
+          new_price: updates.price,
+        },
+      }).catch(() => { /* fire-and-forget */ });
+    }
 
     const toDelete = editExistingImgs.filter(img => img.toDelete);
     const toKeep   = editExistingImgs.filter(img => !img.toDelete);

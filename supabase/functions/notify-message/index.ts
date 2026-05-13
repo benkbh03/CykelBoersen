@@ -282,6 +282,83 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // ── PRIS-DROP ALARM ─────────────────────────────────────
+    // Sælger har reduceret prisen på en annonce. Vi finder alle brugere
+    // der har "watchet" annoncen ved en pris HØJERE end den nye, sender
+    // dem en email-notifikation, og opdaterer last_notified_at.
+    if (payload.type === "price_drop") {
+      const { bike_id, bike_brand, bike_model, old_price, new_price } = payload;
+      if (!bike_id || old_price == null || new_price == null) {
+        return new Response("Manglende felter", { status: 400, headers: corsHeaders });
+      }
+      if (new_price >= old_price) {
+        return new Response(JSON.stringify({ ok: true, note: "no drop" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      const { data: watches, error: watchErr } = await supabase
+        .from("price_drop_watches")
+        .select("user_id, watched_at_price")
+        .eq("bike_id", bike_id)
+        .gt("watched_at_price", new_price);
+
+      if (watchErr) {
+        console.error("Watches query failed:", watchErr.message);
+        return new Response("Watches query failed", { status: 500, headers: corsHeaders });
+      }
+      if (!watches || watches.length === 0) {
+        return new Response(JSON.stringify({ ok: true, notified: 0 }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      const bikeName = `${bike_brand || "Cyklen"} ${bike_model || ""}`.trim();
+      const savings = old_price - new_price;
+      let notified = 0;
+
+      for (const w of watches) {
+        const { data: { user: watcherUser }, error: authErr } = await supabase.auth.admin.getUserById(w.user_id);
+        if (authErr || !watcherUser?.email) continue;
+
+        const { data: watcherProfile } = await supabase.from("profiles").select("name").eq("id", w.user_id).single();
+        const watcherName = watcherProfile?.name ?? "der";
+
+        const html = emailWrapper(`
+          <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🔔 Prisen er faldet!</h2>
+          <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
+            Hej ${watcherName},<br><br>
+            En cykel du følger har lige fået ny pris:<br><br>
+            <strong style="color:#1A1A18;font-size:1.05rem;">${bikeName}</strong><br>
+            <span style="text-decoration:line-through;color:#8A8578;">${old_price.toLocaleString("da-DK")} kr.</span>
+            →
+            <strong style="color:#C8302A;font-size:1.1rem;">${new_price.toLocaleString("da-DK")} kr.</strong>
+            <span style="color:#2e7d32;font-weight:bold;"> (spar ${savings.toLocaleString("da-DK")} kr.)</span>
+          </p>
+          <a href="https://cykelbørsen.dk/bike/${bike_id}"
+             style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+            Se annonce →
+          </a>
+          <p style="color:#8A8578;font-size:0.78rem;margin-top:20px;">
+            Du modtog denne mail fordi du klikkede "Få besked ved prisfald" på annoncen.
+            Du kan altid afmelde alarmen ved at klikke knappen igen på annoncen.
+          </p>
+        `);
+
+        try {
+          await sendEmail(watcherUser.email, `🔔 Prisen på ${bikeName} er faldet ${savings.toLocaleString("da-DK")} kr.`, html);
+          notified++;
+        } catch (e) {
+          console.error("price_drop send fejl:", e);
+        }
+      }
+
+      // Markér alle notificerede watches så vi ikke spam'er ved næste lille prisjustering
+      await supabase
+        .from("price_drop_watches")
+        .update({ last_notified_at: new Date().toISOString() })
+        .eq("bike_id", bike_id)
+        .gt("watched_at_price", new_price);
+
+      return new Response(JSON.stringify({ ok: true, notified }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── BUD ACCEPTERET ──────────────────────────────────────
     if (payload.type === "bid_accepted") {
       const { bike_id, bike_brand, bike_model, bid_amount, bidder_id, seller_name } = payload;
