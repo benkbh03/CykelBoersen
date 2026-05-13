@@ -13,6 +13,7 @@ export function createBikeDetail({
   safeAvatarUrl,
   getInitials,
   formatLastSeen,
+  formatRelativeAge,
   haversineKm,
   BASE_URL,
   removeBikeJsonLd,
@@ -162,6 +163,12 @@ export function createBikeDetail({
         </div>
         <div class="bike-detail-info">
           <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
+          ${b.original_price && b.original_price > b.price ? `
+          <div class="price-reduced-badge" title="Sælger har sat prisen ned">
+            <span class="price-reduced-old">${b.original_price.toLocaleString('da-DK')} kr.</span>
+            <span class="price-reduced-arrow">↓</span>
+            <span class="price-reduced-save">Spar ${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>
+          </div>` : ''}
           <div class="bike-detail-tags">
             <span class="detail-tag">${b.type}</span>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
@@ -342,7 +349,8 @@ export function createBikeDetail({
       <div id="similar-listings" style="margin-top:24px;"></div>
       <div class="listing-meta">
         <span>Annonce-ID: ${b.id}</span>
-        ${b.updated_at ? `<span>Sidst redigeret: ${new Date(b.updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>` : `<span>Oprettet: ${new Date(b.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`}
+        <span title="${new Date(b.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}">Oprettet ${formatRelativeAge(b.created_at)}</span>
+        ${b.updated_at && new Date(b.updated_at) - new Date(b.created_at) > 60000 ? `<span title="${new Date(b.updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}">Sidst redigeret ${formatRelativeAge(b.updated_at)}</span>` : ''}
       </div>
       ${!isOwner ? `
       <div class="bike-sticky-bar" id="bike-sticky-bar">

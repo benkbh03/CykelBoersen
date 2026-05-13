@@ -2,7 +2,7 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, debounce, formatLastSeen, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
+import { esc, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase } from './js/supabase-client.js';
@@ -416,7 +416,7 @@ const _ensureBikeDetail = lazyCtrl(
   ]).then(([mod]) => mod),
   'createBikeDetail',
   () => ({
-    supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen,
+    supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen, formatRelativeAge,
     haversineKm, BASE_URL, removeBikeJsonLd, updateSEOMeta, retryHTML,
     stableOffset, bikeCache, geocodeAddress, geocodeCity, transformImageUrl,
     openUserProfile,

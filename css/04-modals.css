@@ -696,6 +696,20 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .bike-detail-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
 .bike-detail-info { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
 .bike-detail-price { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; color: var(--rust); }
+.price-reduced-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: -4px 0 12px;
+  padding: 6px 12px;
+  background: #fff3e0;
+  border: 1px solid #ff8b60;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  color: #6e2410;
+}
+.price-reduced-old { text-decoration: line-through; opacity: 0.7; }
+.price-reduced-arrow { color: #c8302a; font-weight: 700; font-size: 1rem; }
+.price-reduced-save { font-weight: 700; color: #2e7d32; }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
 .bike-detail-seller { display: flex; align-items: center; gap: 12px; background: var(--sand); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
