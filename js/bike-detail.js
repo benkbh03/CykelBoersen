@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { brandToSlug } from './brand-data-v2.js';
+import { maybeShowScamWarning } from './scam-warning.js';
 
 export function createBikeDetail({
   supabase,
@@ -1342,6 +1343,10 @@ export function createBikeDetail({
     const content = document.getElementById('message-text').value.trim();
     if (!content) { showToast('⚠️ Skriv en besked først'); return; }
 
+    // Vis anti-scam-advarsel første gang en bruger sender besked til en sælger
+    const ack = await maybeShowScamWarning();
+    if (!ack) return;
+
     const btn = document.querySelector('#message-box button');
     if (btn) { btn.disabled = true; btn.textContent = 'Sender...'; }
     try {
@@ -1381,6 +1386,10 @@ export function createBikeDetail({
     if (!currentUser) { showToast('⚠️ Log ind for at give bud'); return; }
     const amount = document.getElementById('bid-amount').value;
     if (!amount || isNaN(parseInt(amount)) || parseInt(amount) <= 0) { showToast('⚠️ Indtast et gyldigt bud'); return; }
+
+    // Vis anti-scam-advarsel første gang en bruger sender bud til en sælger
+    const ack = await maybeShowScamWarning();
+    if (!ack) return;
 
     const content = `💰 Bud: ${parseInt(amount).toLocaleString('da-DK')} kr.`;
 
