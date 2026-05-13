@@ -2,19 +2,21 @@
    SAMMENLIGNINGSVÆRKTØJ
    ============================================================ */
 
-/* Checkbox på bike-card */
+/* Checkbox på bike-card — placeret i nederst-højre hjørne så den ikke
+   overlapper condition-badgen (top-venstre), hjertet (top-højre) eller
+   "er den til salg?"-bobblen (bund-venstre). */
 .compare-checkbox-wrap {
-  position: absolute; top: 8px; left: 8px;
+  position: absolute; bottom: 8px; right: 8px;
   z-index: 3;
   background: rgba(255,255,255,0.94);
   border-radius: 6px;
   padding: 3px 7px 3px 5px;
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2px;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
   transition: background 0.15s;
   color: var(--charcoal);
 }
@@ -22,15 +24,19 @@
 .compare-checkbox-wrap input {
   cursor: pointer;
   accent-color: var(--forest);
-  width: 13px; height: 13px;
+  width: 12px; height: 12px;
   margin: 0;
 }
 .compare-checkbox-wrap input:checked + .compare-checkbox-label {
   color: var(--forest);
 }
+.compare-checkbox-wrap input:checked ~ .compare-checkbox-label,
+.compare-checkbox-wrap:has(input:checked) {
+  background: rgba(232, 245, 233, 0.96);
+}
 @media (max-width: 560px) {
-  .compare-checkbox-wrap { font-size: 0.6rem; padding: 2px 6px 2px 4px; }
-  .compare-checkbox-wrap input { width: 11px; height: 11px; }
+  .compare-checkbox-wrap { font-size: 0.58rem; padding: 2px 6px 2px 4px; bottom: 6px; right: 6px; }
+  .compare-checkbox-wrap input { width: 10px; height: 10px; }
 }
 
 /* Fjernet for at give condition-tag plads i nederste venstre — checkbox flyttes til nederste hjørne i stedet */
