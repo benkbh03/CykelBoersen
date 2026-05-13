@@ -181,6 +181,7 @@ export function createBikeDetail({
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
                 </span>
+                <span id="seller-sold-count" style="font-size:0.75rem;color:var(--muted);"></span>
                 <span id="response-time-badge" style="font-size:0.75rem;color:var(--muted);">⏱ Henter responstid...</span>
               </div>
             </div>
@@ -424,6 +425,7 @@ export function createBikeDetail({
       attachGallerySwipe();
       _initDescExpand();
       loadResponseTime(profile.id);
+      loadSellerSoldCount(profile.id);
       loadSellerOtherListings(profile.id, b.id);
       loadSimilarListings(b.type, b.id);
       initBikeDetailMap(b);
@@ -659,6 +661,7 @@ export function createBikeDetail({
     attachGallerySwipe();
     _initDescExpand();
     loadResponseTime(profile.id);
+    loadSellerSoldCount(profile.id);
     loadSellerOtherListings(profile.id, b.id);
     loadSimilarListings(b.type, b.id);
     initBikeDetailMap(b);
@@ -681,6 +684,35 @@ export function createBikeDetail({
     document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
     updateSEOMeta(null, '/');
     removeBikeJsonLd();
+  }
+
+  /* ============================================================
+     SÆLGER-CREDIBILITY: solgte cykler-tæller
+     ============================================================
+     Viser "📦 X solgt" ved siden af forhandler/privat-badgen for
+     at give køberen et hurtigt signal om sælgers track record.
+     Kun "solgt" = bikes med is_active=false (vores soft-delete).
+     Tæller IKKE den nuværende annonce. */
+  async function loadSellerSoldCount(sellerId) {
+    const badge = document.getElementById('seller-sold-count');
+    if (!badge || !sellerId) return;
+    try {
+      const { count, error } = await supabase
+        .from('bikes')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', sellerId)
+        .eq('is_active', false);
+      if (error || !count) { badge.textContent = ''; return; }
+      if (count >= 5) {
+        badge.innerHTML = `🏆 ${count} solgte cykler`;
+        badge.style.color = '#2e7d32';
+        badge.style.fontWeight = '600';
+      } else {
+        badge.innerHTML = `📦 ${count} solgt${count === 1 ? '' : 'e'} cykler`;
+      }
+    } catch (e) {
+      badge.textContent = '';
+    }
   }
 
   /* ============================================================
