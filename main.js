@@ -1285,23 +1285,14 @@ function closeAllModals() {
    ============================================================ */
 
 
-async function askIfAvailable(bikeId, sellerId, btn) {
+async function askIfAvailable(bikeId, sellerId, _btn) {
   if (!currentUser) { openLoginModal(); return; }
   if (sellerId === currentUser.id) return;
-  if (askedAvailableSet.has(bikeId)) { showToast('Du har allerede spurgt om denne cykel'); return; }
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
-  const { error } = await supabase.from('messages').insert({
-    bike_id: bikeId, sender_id: currentUser.id, receiver_id: sellerId,
-    content: '👋 Er cyklen stadig til salg?',
-  });
-  if (error) { showToast('❌ Kunne ikke sende besked'); if (btn) { btn.disabled = false; btn.style.opacity = ''; } return; }
-  askedAvailableSet.add(bikeId);
-  if (btn) { btn.textContent = '✅'; btn.style.opacity = '1'; }
-  showToast('✅ Besked sendt til sælgeren!');
-
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'message_id', bikeId, senderId: currentUser.id, receiverId: sellerId },
-  }).catch(() => {});
+  // Naviger til annoncen med ?ask=1 — bike-detail-siden detekterer flaget,
+  // åbner kontakt-boksen og pre-fylder beskeden. Brugeren skal selv trykke
+  // Send. Tidligere POSTede vi straks, hvilket overraskede brugere der bare
+  // troede de åbnede en samtale-rude.
+  navigateTo(`/bike/${bikeId}?ask=1`);
 }
 
 

@@ -173,77 +173,130 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
 function renderCompareTable(bikes, _navigateTo) {
   const cols = bikes.length; // 2 eller 3
 
-  // Definér rækker — { label, key, format(b) }
-  const rows = [
-    { label: 'Pris', fn: b => `<strong style="color:var(--rust);font-size:1.1rem;">${b.price.toLocaleString('da-DK')} kr.</strong>${b.original_price && b.original_price > b.price ? `<br><span style="text-decoration:line-through;color:var(--muted);font-size:0.82rem;">${b.original_price.toLocaleString('da-DK')} kr.</span>` : ''}` },
-    { label: 'Type', fn: b => esc(b.type || '–') },
-    { label: 'Stand', fn: b => esc(b.condition || '–') },
-    { label: 'Årgang', fn: b => b.year || '–' },
-    { label: 'Stelstørrelse', fn: b => b.size_cm ? `${b.size_cm} cm` : (esc(b.size) || '–') },
-    { label: 'Hjulstørrelse', fn: b => esc(b.wheel_size || '–') },
-    { label: 'Vægt', fn: b => b.weight_kg ? `${b.weight_kg} kg` : '–' },
-    { label: 'Stelmateriale', fn: b => esc(b.frame_material || '–') },
-    { label: 'Bremser', fn: b => esc(b.brake_type || '–') },
-    { label: 'Gear', fn: b => esc(b.groupset || '–') + (b.electronic_shifting ? ' (elektronisk)' : '') },
-    { label: 'Farve', fn: b => esc(b.color || '–') },
-    { label: 'Garanti', fn: b => b.warranty ? `🛡️ ${esc(b.warranty)}` : '–' },
-    { label: 'By', fn: b => esc(b.city || '–') },
-    { label: 'Sælger', fn: b => {
-      const p = b.profiles || {};
-      const name = p.seller_type === 'dealer' ? p.shop_name : p.name;
-      const badge = p.seller_type === 'dealer' ? '🏪' : '👤';
-      const verified = p.verified ? ' ✓' : '';
-      return `${badge} ${esc(name || 'Ukendt')}${verified}`;
-    }},
-  ];
-
-  // Fremhæv forskelle: tjek om alle bikes har samme værdi for en række
-  const isDifferent = (row) => {
-    const values = bikes.map(b => row.fn(b));
-    return new Set(values).size > 1;
+  // Hjælpere
+  const emptyVal = '<span class="cmp-empty">Ikke angivet</span>';
+  const priceFn = b => `<div class="cmp-price">${b.price.toLocaleString('da-DK')} kr.</div>${b.original_price && b.original_price > b.price ? `<div class="cmp-price-orig">var ${b.original_price.toLocaleString('da-DK')} kr.<span class="cmp-price-save">Spar ${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span></div>` : ''}`;
+  const sellerFn = b => {
+    const p = b.profiles || {};
+    const name = p.seller_type === 'dealer' ? p.shop_name : p.name;
+    const badge = p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat';
+    const verified = p.verified ? '<span class="cmp-verified" title="Verificeret">✓</span>' : '';
+    return `<div class="cmp-seller-cell"><span class="cmp-seller-name">${esc(name || 'Ukendt')}${verified}</span><span class="cmp-seller-type">${badge}</span></div>`;
   };
 
+  // Grupperede sektioner
+  const sections = [
+    {
+      title: 'Pris og overblik',
+      rows: [
+        { label: 'Pris', fn: priceFn },
+        { label: 'Type', fn: b => esc(b.type) || emptyVal },
+        { label: 'Stand', fn: b => esc(b.condition) || emptyVal },
+        { label: 'Årgang', fn: b => b.year || emptyVal },
+      ],
+    },
+    {
+      title: 'Mål og vægt',
+      rows: [
+        { label: 'Stelstørrelse', fn: b => b.size_cm ? `${b.size_cm} cm` : (esc(b.size) || emptyVal) },
+        { label: 'Hjulstørrelse', fn: b => esc(b.wheel_size) || emptyVal },
+        { label: 'Vægt', fn: b => b.weight_kg ? `${b.weight_kg} kg` : emptyVal },
+      ],
+    },
+    {
+      title: 'Tekniske specs',
+      rows: [
+        { label: 'Stelmateriale', fn: b => esc(b.frame_material) || emptyVal },
+        { label: 'Bremser', fn: b => esc(b.brake_type) || emptyVal },
+        { label: 'Gear', fn: b => {
+          const gs = esc(b.groupset);
+          if (!gs && !b.electronic_shifting) return emptyVal;
+          return (gs || '–') + (b.electronic_shifting ? ' <span class="cmp-tag-mini">elektronisk</span>' : '');
+        }},
+        { label: 'Farve', fn: b => esc(b.color) || emptyVal },
+      ],
+    },
+    {
+      title: 'Køb og sælger',
+      rows: [
+        { label: 'Garanti', fn: b => b.warranty ? `🛡️ ${esc(b.warranty)}` : emptyVal },
+        { label: 'By', fn: b => esc(b.city) || emptyVal },
+        { label: 'Sælger', fn: sellerFn },
+      ],
+    },
+  ];
+
+  // Fremhæv forskelle: rå strenge for diff-detection (ikke HTML)
+  const rawValue = (b, label) => {
+    switch (label) {
+      case 'Pris': return String(b.price);
+      case 'Type': return b.type || '';
+      case 'Stand': return b.condition || '';
+      case 'Årgang': return String(b.year || '');
+      case 'Stelstørrelse': return b.size_cm ? `${b.size_cm}cm` : (b.size || '');
+      case 'Hjulstørrelse': return b.wheel_size || '';
+      case 'Vægt': return String(b.weight_kg || '');
+      case 'Stelmateriale': return b.frame_material || '';
+      case 'Bremser': return b.brake_type || '';
+      case 'Gear': return (b.groupset || '') + (b.electronic_shifting ? 'e' : '');
+      case 'Farve': return b.color || '';
+      case 'Garanti': return b.warranty || '';
+      case 'By': return b.city || '';
+      case 'Sælger': return (b.profiles?.shop_name || b.profiles?.name || '');
+      default: return '';
+    }
+  };
+  const isDifferent = (label) => new Set(bikes.map(b => rawValue(b, label))).size > 1;
+
+  const headerCells = bikes.map(b => {
+    const img = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url;
+    return `
+      <div class="cmp-bike-header">
+        <div class="cmp-bike-image-wrap">
+          ${img ? `<img src="${esc(img)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">` : '<div class="cmp-bike-noimg">🚲</div>'}
+          <button onclick="event.stopPropagation();toggleCompareBike(null, '${b.id}');navigateTo('/sammenlign')" class="cmp-bike-remove" title="Fjern fra sammenligning" aria-label="Fjern">✕</button>
+        </div>
+        <h2 class="cmp-bike-title">${esc(b.brand)} ${esc(b.model)}</h2>
+        <div class="cmp-bike-subtitle">${esc(b.type || '')}${b.year ? ` · ${b.year}` : ''}</div>
+        <button onclick="navigateTo('/bike/${b.id}')" class="cmp-bike-cta">Se annonce →</button>
+      </div>`;
+  }).join('');
+
   return `
-    <div style="max-width:1100px;margin:0 auto;padding:20px 16px;">
-      <button onclick="history.back()" style="margin-bottom:18px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
-      <h1 style="font-family:'Fraunces',serif;font-size:1.9rem;margin-bottom:6px;">Sammenlign ${cols} cykler</h1>
-      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">Forskelle er fremhævet med <span style="background:#fff3e0;padding:1px 6px;border-radius:4px;">orange</span>.</p>
+    <div class="cmp-page">
+      <div class="cmp-page-inner">
+        <button onclick="history.back()" class="cmp-back-btn">← Tilbage</button>
 
-      <div class="compare-table-wrap">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th class="compare-th-spec"></th>
-              ${bikes.map(b => {
-                const img = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url;
+        <header class="cmp-hero">
+          <h1 class="cmp-hero-title">Sammenlign ${cols} cykler</h1>
+          <p class="cmp-hero-lead">Specifikationer side-om-side. Felter med <span class="cmp-diff-marker"></span> forskelle har en orange streg.</p>
+        </header>
+
+        <div class="cmp-shell" style="--cmp-cols:${cols};">
+          <div class="cmp-header-row">
+            <div class="cmp-header-spacer"></div>
+            ${headerCells}
+          </div>
+
+          ${sections.map(section => `
+            <section class="cmp-section">
+              <h3 class="cmp-section-title">${section.title}</h3>
+              ${section.rows.map(row => {
+                const diff = isDifferent(row.label);
                 return `
-                <th class="compare-th-bike">
-                  <div class="compare-bike-card">
-                    ${img ? `<img src="${esc(img)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">` : '<div class="compare-bike-noimg">🚲</div>'}
-                    <div class="compare-bike-name">${esc(b.brand)} ${esc(b.model)}</div>
-                    <div class="compare-bike-actions">
-                      <button onclick="navigateTo('/bike/${b.id}')" class="compare-action-go">Se annonce →</button>
-                      <button onclick="toggleCompareBike(null, '${b.id}')" class="compare-action-remove" title="Fjern fra sammenligning">✕</button>
-                    </div>
-                  </div>
-                </th>`;
+                <div class="cmp-row ${diff ? 'cmp-row--diff' : ''}">
+                  <div class="cmp-row-label">${row.label}</div>
+                  ${bikes.map(b => `<div class="cmp-row-value">${row.fn(b)}</div>`).join('')}
+                </div>`;
               }).join('')}
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(row => `
-              <tr class="${isDifferent(row) ? 'compare-row-diff' : ''}">
-                <td class="compare-td-label">${row.label}</td>
-                ${bikes.map(b => `<td class="compare-td-value">${row.fn(b)}</td>`).join('')}
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
+            </section>
+          `).join('')}
+        </div>
 
-      <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;">
-        <button onclick="clearCompareIds();navigateTo('/')" style="background:none;border:1px solid var(--border);padding:11px 22px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--charcoal);">Ryd og find flere</button>
-        <button onclick="navigateTo('/')" style="background:var(--forest);color:#fff;border:none;padding:11px 22px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">Tilbage til søgning</button>
+        <footer class="cmp-footer">
+          <button onclick="clearCompareIds();navigateTo('/')" class="cmp-footer-secondary">Ryd og find flere</button>
+          <button onclick="navigateTo('/')" class="cmp-footer-primary">Tilbage til søgning</button>
+        </footer>
       </div>
     </div>
   `;

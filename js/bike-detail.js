@@ -438,6 +438,7 @@ export function createBikeDetail({
       loadSellerOtherListings(profile.id, b.id);
       loadSimilarListings(b.type, b.id);
       initPriceDropButton(b.id);
+      maybeOpenAskBox();
       initBikeDetailMap(b);
       if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
     } catch (renderErr) {
@@ -676,6 +677,7 @@ export function createBikeDetail({
     loadSimilarListings(b.type, b.id);
     initBikeDetailMap(b);
     initPriceDropButton(b.id);
+    maybeOpenAskBox();
     if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
   }
 
@@ -704,6 +706,39 @@ export function createBikeDetail({
      at give køberen et hurtigt signal om sælgers track record.
      Kun "solgt" = bikes med is_active=false (vores soft-delete).
      Tæller IKKE den nuværende annonce. */
+  /* ============================================================
+     "Er den til salg?" — håndteret via ?ask=1 i URL'en
+     ============================================================
+     Når brugeren klikker 💬-boblen på et bike-card kaldes askIfAvailable
+     i main.js, som navigerer til /bike/<id>?ask=1. Her åbner vi besked-
+     boksen, pre-fylder teksten, og scroller hen til den så brugeren kan
+     reviewe og selv trykke Send. Ingen besked sendes automatisk. */
+  function maybeOpenAskBox() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('ask') !== '1') return;
+      // Fjern flaget fra URL'en så et reload ikke åbner boksen igen
+      params.delete('ask');
+      const newSearch = params.toString();
+      const cleanUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
+      window.history.replaceState({}, '', cleanUrl);
+
+      // Åbn besked-boksen og pre-fyld
+      const box = document.getElementById('message-box');
+      const textArea = document.getElementById('message-text');
+      if (!box || !textArea) return;
+      box.style.display = 'block';
+      textArea.value = 'Hej! Er cyklen stadig til salg?';
+      // Scroll hen til boksen + giv fokus så brugeren ser den straks
+      setTimeout(() => {
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        textArea.focus();
+        // Sæt cursor i slutningen så brugeren kan tilføje
+        textArea.setSelectionRange(textArea.value.length, textArea.value.length);
+      }, 120);
+    } catch (e) { /* URL parsing kan fejle på exotic browsers */ }
+  }
+
   async function loadSellerSoldCount(sellerId) {
     const badge = document.getElementById('seller-sold-count');
     if (!badge || !sellerId) return;
