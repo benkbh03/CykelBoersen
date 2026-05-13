@@ -417,6 +417,134 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   .crop-modal-actions { justify-content: flex-end; }
 }
 
+/* ── ANTI-SCAM ADVARSEL (vises før første besked/bud) ── */
+.scam-overlay {
+  position: fixed; inset: 0;
+  background: rgba(14, 22, 15, 0.6);
+  z-index: 11500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  backdrop-filter: blur(2px);
+}
+.scam-overlay-visible { opacity: 1; }
+.scam-card {
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 28px 28px 22px;
+  max-width: 460px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal);
+  transform: translateY(8px);
+  transition: transform 0.22s ease;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+.scam-overlay-visible .scam-card { transform: translateY(0); }
+.scam-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2A3D2E 0%, #3A5340 100%);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.7rem;
+  margin: 0 auto 14px;
+  box-shadow: 0 6px 18px rgba(42,61,46,0.3);
+}
+.scam-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.45rem; font-weight: 700;
+  text-align: center;
+  margin: 0 0 8px;
+  color: var(--charcoal);
+  letter-spacing: -0.02em;
+}
+.scam-lede {
+  text-align: center;
+  font-size: 0.92rem; line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+.scam-rules {
+  list-style: none; padding: 0; margin: 0 0 22px;
+  display: flex; flex-direction: column; gap: 12px;
+  counter-reset: scam-counter;
+}
+.scam-rules li {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 14px 12px 48px;
+  background: var(--sand);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  position: relative;
+  counter-increment: scam-counter;
+}
+.scam-rules li::before {
+  content: counter(scam-counter);
+  position: absolute;
+  left: 12px; top: 12px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  font-weight: 700; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+}
+.scam-rules strong {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  letter-spacing: -0.01em;
+}
+.scam-rules span {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.scam-link {
+  font-size: 0.78rem;
+  color: var(--rust);
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.scam-link:hover { text-decoration: underline; }
+.scam-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.scam-cancel, .scam-confirm {
+  padding: 11px 18px;
+  border-radius: 9px;
+  font-size: 0.9rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.scam-cancel {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.scam-cancel:hover { background: var(--sand-2); color: var(--charcoal); }
+.scam-confirm {
+  background: var(--forest);
+  color: #fff;
+}
+.scam-confirm:hover { background: var(--forest-light); transform: translateY(-1px); }
+@media (max-width: 480px) {
+  .scam-card { padding: 22px 18px 18px; }
+  .scam-title { font-size: 1.25rem; }
+  .scam-rules li { padding: 10px 12px 10px 42px; }
+  .scam-rules li::before { width: 22px; height: 22px; font-size: 0.78rem; left: 10px; top: 10px; }
+  .scam-actions { flex-direction: column-reverse; }
+  .scam-cancel, .scam-confirm { width: 100%; padding: 12px; }
+}
+
 /* ── TOAST ── */
 .toast {
   position: fixed; bottom: 28px; right: 28px;
