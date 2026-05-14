@@ -1134,15 +1134,17 @@ const { checkUnreadMessages } = createInboxBadgeActions({
    ============================================================ */
 
 async function loadDealers(dealers, bikeRows) {
-  const container = document.getElementById('dealer-cards-container');
-  if (!container) return;
+  const container        = document.getElementById('dealer-cards-container');
+  const promotedSection  = document.getElementById('promoted-dealers');
+  const promotedGrid     = document.getElementById('promoted-dealers-grid');
+  if (!container && !promotedSection) return;
 
   let error;
   if (!dealers || !bikeRows) {
     // Standalone kald – hent data selv
     let dealerRes, bikeRes;
     [dealerRes, bikeRes] = await Promise.all([
-      supabase.from('profiles').select('id, shop_name, city, address, name, featured_until').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+      supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, featured_until').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
       supabase.from('bikes').select('user_id').eq('is_active', true)
     ]);
     dealers  = dealerRes.data;
@@ -1193,25 +1195,50 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     return (countMap[b.id] || 0) - (countMap[a.id] || 0);
   });
 
-  const top3    = dealers.slice(0, 3);
-  const rest    = dealers.slice(3);
+  // Split: anbefalede forhandlere (featured_until > NOW()) får dedikeret
+  // sektion. Slot-cap: max 3 — flere featured-forhandlere end det er en
+  // editorial-fejl der bør rettes manuelt; vi viser alligevel kun de 3
+  // nyeste her, så frontend-cap er garanteret.
+  const promoted = dealers.filter(isFeatured).slice(0, 3);
+  const promotedIds = new Set(promoted.map(d => d.id));
+  const regular  = dealers.filter(d => !promotedIds.has(d.id));
 
-  container.className = 'dealer-cards';
-  container.innerHTML = top3.map(dealer => buildDealerCard(dealer, countMap, true)).join('');
+  // Render anbefalede forhandlere i den dedikerede sektion på forsiden
+  if (promotedGrid && promotedSection) {
+    if (promoted.length > 0) {
+      promotedSection.style.display = '';
+      promotedGrid.innerHTML = promoted.map(d => buildPromotedDealerCard(d, countMap)).join('');
+    } else {
+      promotedSection.style.display = 'none';
+      promotedGrid.innerHTML = '';
+    }
+  }
 
-  // Resten vises inline under en "Se resten"-knap
-  if (rest.length > 0) {
-    const restHtml = rest.map(d => buildDealerCard(d, countMap, false)).join('');
-    const restWrap = document.createElement('div');
-    restWrap.innerHTML = `
-      <button class="btn-see-all-dealers" id="toggle-rest-dealers" onclick="toggleRestDealers()">
-        Se resten (${rest.length} forhandlere) ↓
-      </button>
-      <div class="dealer-cards dealer-rest-grid" id="rest-dealers-grid" style="display:none;margin-top:16px;">
-        ${restHtml}
-      </div>
-    `;
-    container.after(restWrap);
+  // Render normal forhandler-liste (uden de anbefalede — de er allerede vist ovenfor)
+  if (container) {
+    const top3 = regular.slice(0, 3);
+    const rest = regular.slice(3);
+    container.className = 'dealer-cards';
+    container.innerHTML = top3.map(dealer => buildDealerCard(dealer, countMap, true)).join('');
+
+    // Ryd evt. gammel "Se resten"-wrap fra tidligere render
+    const oldRest = container.parentElement?.querySelector('.dealer-rest-wrap');
+    if (oldRest) oldRest.remove();
+
+    if (rest.length > 0) {
+      const restHtml = rest.map(d => buildDealerCard(d, countMap, false)).join('');
+      const restWrap = document.createElement('div');
+      restWrap.className = 'dealer-rest-wrap';
+      restWrap.innerHTML = `
+        <button class="btn-see-all-dealers" id="toggle-rest-dealers" onclick="toggleRestDealers()">
+          Se resten (${rest.length} forhandlere) ↓
+        </button>
+        <div class="dealer-cards dealer-rest-grid" id="rest-dealers-grid" style="display:none;margin-top:16px;">
+          ${restHtml}
+        </div>
+      `;
+      container.after(restWrap);
+    }
   }
 
   // Gem alle forhandlere til modal brug
@@ -1232,6 +1259,33 @@ async function loadInitialData() {
   ]);
   updateFilterCounts(bikesData, dealerCount);
   loadDealers(dealers, bikesData);
+}
+
+// Større version af dealer-card til "⭐ Anbefalede forhandlere"-sektionen.
+// Mere prominent visuel behandling end almindelige forhandler-kort —
+// det er pointen med at have betalt for pladsen.
+function buildPromotedDealerCard(dealer, countMap) {
+  const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
+  const initials     = getInitials(displayName);
+  const bikeCount    = countMap[dealer.id] || 0;
+  const locationText = dealer.address && dealer.city
+    ? `${dealer.address}, ${dealer.city}`
+    : dealer.city || dealer.address || '';
+  const avatarUrl    = safeAvatarUrl ? safeAvatarUrl(dealer.avatar_url) : (dealer.avatar_url || null);
+  const avatarThumb  = avatarUrl && transformImageUrl ? transformImageUrl(avatarUrl, { width: 160, quality: 80 }) : avatarUrl;
+  const logoHtml     = avatarThumb
+    ? `<img src="${esc(avatarThumb)}" alt="${esc(displayName)}" loading="lazy" decoding="async" width="84" height="84">`
+    : esc(initials);
+  return `
+    <article class="promoted-dealer-card" onclick="navigateToDealer('${dealer.id}')" title="Se ${esc(displayName)}s profil">
+      <div class="promoted-dealer-card-badge">⭐ Anbefalet</div>
+      <div class="promoted-dealer-card-logo${avatarThumb ? ' promoted-dealer-card-logo--img' : ''}">${logoHtml}</div>
+      <div class="promoted-dealer-card-name">${esc(displayName)}<span class="promoted-dealer-card-verified" title="Verificeret forhandler">✓</span></div>
+      ${locationText ? `<div class="promoted-dealer-card-loc">📍 ${esc(locationText)}</div>` : ''}
+      <div class="promoted-dealer-card-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      <div class="promoted-dealer-card-cta">Se butik →</div>
+    </article>
+  `;
 }
 
 function buildDealerCard(dealer, countMap, featured = false) {

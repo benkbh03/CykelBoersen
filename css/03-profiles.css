@@ -256,6 +256,154 @@
   .dealer-profile-bikes-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
 }
 
+/* ── ANBEFALEDE FORHANDLERE — premium-sektion på forsiden ─────────
+   Vises kun når mindst én forhandler har featured_until > NOW().
+   Max 3 slots. Mere prominent visuel behandling end de almindelige
+   forhandler-kort så det er den BETALENDE plads værd.
+   Testet: ≤480 (iPhone SE), ≤768 (iPhone Plus), 769-1024 (iPad), ≥1025 */
+.promoted-dealers {
+  margin: 0 0 28px;
+  padding: 22px 24px 24px;
+  background: linear-gradient(135deg, rgba(212,160,23,0.06) 0%, rgba(212,160,23,0.12) 100%);
+  border: 1px solid rgba(212,160,23,0.32);
+  border-radius: 16px;
+  position: relative;
+}
+.promoted-dealers-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.promoted-dealers-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #6e4e00;
+  letter-spacing: -0.01em;
+}
+.promoted-dealers-sub {
+  font-size: 0.75rem;
+  color: #8a6817;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.promoted-dealers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.promoted-dealer-card {
+  position: relative;
+  background: #fff;
+  border: 1.5px solid rgba(212,160,23,0.4);
+  border-radius: 12px;
+  padding: 22px 18px 18px;
+  cursor: pointer;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 6px;
+  box-shadow: 0 4px 14px rgba(212,160,23,0.15);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  min-width: 0;
+}
+.promoted-dealer-card:hover {
+  transform: translateY(-2px);
+  border-color: #d4a017;
+  box-shadow: 0 8px 22px rgba(212,160,23,0.28);
+}
+.promoted-dealer-card-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+  box-shadow: 0 3px 8px rgba(212,160,23,0.45);
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.promoted-dealer-card-logo {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.promoted-dealer-card-logo--img { background: var(--sand); }
+.promoted-dealer-card-logo img { width: 100%; height: 100%; object-fit: cover; }
+.promoted-dealer-card-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-top: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
+  line-height: 1.2;
+  text-align: center;
+}
+.promoted-dealer-card-verified {
+  background: #2e7d32;
+  color: #fff;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.promoted-dealer-card-loc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+}
+.promoted-dealer-card-count {
+  font-size: 0.88rem;
+  color: var(--rust);
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 2px;
+}
+.promoted-dealer-card-cta {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(212,160,23,0.35);
+  color: #6e4e00;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  width: 100%;
+}
+@media (max-width: 768px) {
+  .promoted-dealers { padding: 18px 16px 20px; }
+  .promoted-dealers-title { font-size: 1.1rem; }
+  .promoted-dealers-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .promoted-dealer-card { padding: 20px 14px 14px; }
+  .promoted-dealer-card-logo { width: 64px; height: 64px; font-size: 1.3rem; }
+  .promoted-dealer-card-name { font-size: 0.95rem; }
+}
+@media (max-width: 480px) {
+  .promoted-dealers { padding: 16px 14px 18px; margin-bottom: 22px; }
+  .promoted-dealers-title { font-size: 1rem; }
+  .promoted-dealers-sub { display: none; }
+  .promoted-dealers-grid { grid-template-columns: 1fr; gap: 10px; }
+  .promoted-dealer-card { padding: 18px 14px 12px; gap: 4px; }
+  .promoted-dealer-card-loc { font-size: 0.78rem; }
+  .promoted-dealer-card-count { font-size: 0.82rem; }
+  .promoted-dealer-card-cta { font-size: 0.78rem; }
+}
+
 /* Fremhævede forhandler-kort (top 3) */
 .dealer-card--featured {
   background: rgba(200,130,42,0.13);
