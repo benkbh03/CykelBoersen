@@ -224,8 +224,12 @@ export function createInbox({
       .eq('id', thread.bikeId)
       .single();
 
+    // Bud-accept = platform-salg per definition: identificerbar køber, dokumenteret
+    // pris i bud-beskeden, anmeldelse mulig bagefter. Derfor sold_via='platform' og
+    // ingen 24h-cooldown (cooldown'en ligger kun på manuel "Sæt solgt" hvor der ikke
+    // er en køber-tråd at læne sig op ad).
     const { error: soldErr } = await supabase.from('bikes')
-      .update({ is_active: false })
+      .update({ is_active: false, sold_via: 'platform' })
       .eq('id', thread.bikeId)
       .eq('user_id', currentUser.id);
 
