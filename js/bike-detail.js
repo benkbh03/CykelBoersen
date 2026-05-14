@@ -754,18 +754,27 @@ export function createBikeDetail({
     const card = document.getElementById('seller-trust-card');
     if (!card || !profile?.id) return;
     try {
-      const [soldRes, reviewsRes] = await Promise.all([
-        supabase.from('bikes')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', profile.id)
-          .eq('is_active', false),
+      // Anti-gaming: kun cykler hvor der findes en anmeldelse fra en ANDEN
+      // bruger tæller som "verificeret salg". En sælger kan ikke selv lave
+      // anmeldelser, så fake-handler (markér 5 cykler solgt med det samme)
+      // boost'er ikke længere trust-scoren.
+      const [reviewsRes, allReviewsRes] = await Promise.all([
+        // Anmeldelser fra ANDRE brugere, linket til specifik bike → verificeret salg
+        supabase.from('reviews')
+          .select('bike_id, rating')
+          .eq('reviewed_user_id', profile.id)
+          .neq('reviewer_id', profile.id)
+          .not('bike_id', 'is', null),
+        // Alle anmeldelser (til avg rating + count display)
         supabase.from('reviews')
           .select('rating')
           .eq('reviewed_user_id', profile.id),
       ]);
 
-      const soldCount   = soldRes.count || 0;
-      const reviews     = reviewsRes.data || [];
+      // Unikke bike_ids = antal verificerede salg
+      const verifiedBikeIds = new Set((reviewsRes.data || []).map(r => r.bike_id));
+      const soldCount   = verifiedBikeIds.size;
+      const reviews     = allReviewsRes.data || [];
       const reviewCount = reviews.length;
       const avgRating   = reviewCount > 0
         ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewCount
