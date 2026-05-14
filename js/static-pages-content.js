@@ -71,7 +71,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Virksomhedsoplysninger</h3>
-      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
+      <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>E-mail: hej@cykelbørsen.dk</p>
     `
   },
   terms: {
