@@ -5,6 +5,9 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
+import {
+  computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
+} from './trust-score.js';
 
 export function createProfilePages({
   supabase,
@@ -285,6 +288,13 @@ export function createProfilePages({
           <div class="up-sold-list">${soldRows}</div>
         </div>
         <div id="up-tab-reviews" class="up-tab-panel" style="display:none;">
+          <div class="pp-trust-breakdown-wrap">
+            ${(() => {
+              const stats = computeTrustStatsFromReviews(profile.id, reviewList);
+              const score = calculateTrustScore(profile, stats);
+              return buildTrustBreakdownHTML(profile, stats, score);
+            })()}
+          </div>
           <div class="up-reviews-list">${reviewCards}</div>
           ${writeReviewHtml}
         </div>
@@ -428,6 +438,13 @@ export function createProfilePages({
           <div class="pp-bikes-grid">${bikeCards}</div>
         </div>
         <div id="dp-tab-reviews" class="up-tab-panel" style="display:none;">
+          <div class="pp-trust-breakdown-wrap">
+            ${(() => {
+              const stats = computeTrustStatsFromReviews(dealer.id, reviewList);
+              const score = calculateTrustScore(dealer, stats);
+              return buildTrustBreakdownHTML(dealer, stats, score);
+            })()}
+          </div>
           <div class="up-reviews-list">${reviewCards}</div>
           ${writeReviewHtml}
         </div>

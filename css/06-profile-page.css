@@ -3035,6 +3035,32 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     gap: 10px;
   }
 }
+/* Initielt kollapset: kun de første 4 cykler/forhandlere — resten åbnes
+   med en "Vis alle"-knap nedenfor. Holder mærkesiden kompakt selv for
+   store mærker som Trek, Specialized osv. */
+.brand-bikes-grid--collapsed > .bike-card:nth-child(n+5) { display: none; }
+.brand-dealers-list--collapsed > .brand-dealer-card:nth-child(n+5) { display: none; }
+.brand-show-more-wrap {
+  display: flex; justify-content: center;
+  margin-top: 18px;
+}
+.brand-show-more-wrap:empty { display: none; }
+.brand-show-more-btn {
+  background: var(--cream); color: var(--charcoal);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.brand-show-more-btn:hover {
+  background: #fff;
+  border-color: var(--rust);
+  color: var(--rust);
+}
+.brand-show-more-btn:active { transform: translateY(1px); }
 .brand-page-hero {
   text-align: center;
   padding: 24px 0 16px;

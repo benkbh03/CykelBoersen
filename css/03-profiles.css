@@ -412,7 +412,7 @@
 }
 .dealer-card--featured:hover { background: rgba(200,130,42,0.2); }
 
-/* Anbefalet-forhandler — featured_until > NOW(). Subtilt design: ren hvid
+/* Fremhævet-forhandler — featured_until > NOW(). Subtilt design: ren hvid
    card med kun guldfarvet kant + udskiftet top-stripe + lille pille inde i
    selve cardet. Ingen tung baggrundsfarve der overdøver indholdet.
    Testet: ≤480 (iPhone SE), ≤768 (iPhone Plus), 769-1024 (iPad), ≥1025 */

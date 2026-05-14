@@ -5,6 +5,7 @@
 
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
+import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
 
 export function createBikeDetail({
   supabase,
@@ -188,12 +189,12 @@ export function createBikeDetail({
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
                 </span>
+                ${!isDemo ? '<span id="seller-trust-pill-slot"></span>' : ''}
                 <span id="response-time-badge" style="font-size:0.75rem;color:var(--muted);">⏱ Henter responstid...</span>
               </div>
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
-          ${!isDemo ? `<div id="seller-trust-card" class="seller-trust-card-wrap"></div>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">
@@ -751,99 +752,17 @@ export function createBikeDetail({
        - Antal solgte cykler
        - Gennemsnits-rating (eller "Endnu ingen anmeldelser") */
   async function loadSellerTrustCard(profile) {
-    const card = document.getElementById('seller-trust-card');
-    if (!card || !profile?.id) return;
+    // Kompakt pill ved sælger-badges. Fuld trust-breakdown findes på
+    // sælgers profil → Vurderinger-tab — bike-detail behøver kun det
+    // ét-blik tillids-signal.
+    const slot = document.getElementById('seller-trust-pill-slot');
+    if (!slot || !profile?.id) return;
     try {
-      // Anti-gaming: kun cykler hvor der findes en anmeldelse fra en ANDEN
-      // bruger tæller som "verificeret salg". En sælger kan ikke selv lave
-      // anmeldelser, så fake-handler (markér 5 cykler solgt med det samme)
-      // boost'er ikke længere trust-scoren.
-      const [reviewsRes, allReviewsRes] = await Promise.all([
-        // Anmeldelser fra ANDRE brugere, linket til specifik bike → verificeret salg
-        supabase.from('reviews')
-          .select('bike_id, rating')
-          .eq('reviewed_user_id', profile.id)
-          .neq('reviewer_id', profile.id)
-          .not('bike_id', 'is', null),
-        // Alle anmeldelser (til avg rating + count display)
-        supabase.from('reviews')
-          .select('rating')
-          .eq('reviewed_user_id', profile.id),
-      ]);
-
-      // Unikke bike_ids = antal verificerede salg
-      const verifiedBikeIds = new Set((reviewsRes.data || []).map(r => r.bike_id));
-      const soldCount   = verifiedBikeIds.size;
-      const reviews     = allReviewsRes.data || [];
-      const reviewCount = reviews.length;
-      const avgRating   = reviewCount > 0
-        ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewCount
-        : 0;
-
-      let trustScore = 0;
-      if (profile.email_verified) trustScore += 1;
-      if (profile.id_verified)    trustScore += 2;
-      if (soldCount >= 5)          trustScore += 3;
-      else if (soldCount >= 1)     trustScore += 1;
-      if (profile.verified && profile.seller_type === 'dealer') trustScore += 3;
-      if (avgRating >= 4.5 && reviewCount >= 3) trustScore += 2;
-
-      const isTrusted = trustScore >= 5;
-
-      const memberSince = profile.created_at
-        ? new Date(profile.created_at).toLocaleDateString('da-DK', { month: 'long', year: 'numeric' })
-        : null;
-
-      const ratingHtml = reviewCount > 0
-        ? `${avgRating.toFixed(1)}★ <span class="trust-stat-sub">(${reviewCount} anmeldelse${reviewCount === 1 ? '' : 'r'})</span>`
-        : null;
-
-      const tips = [];
-      if (!profile.email_verified)  tips.push('Email-verifikation');
-      if (!profile.id_verified)     tips.push('ID-verifikation');
-      if (soldCount < 5)             tips.push(`${Math.max(1, 5 - soldCount)} flere salg`);
-      if (profile.seller_type === 'dealer' && !profile.verified) tips.push('CVR-godkendelse');
-      if (reviewCount < 3)           tips.push('Flere anmeldelser');
-
-      card.innerHTML = `
-        <div class="trust-card ${isTrusted ? 'trust-card--trusted' : 'trust-card--neutral'}">
-          ${isTrusted ? `
-          <div class="trust-card-badge" title="Trust-score: ${trustScore}/11. Bygges på verifikationer, handelshistorik og anmeldelser.">
-            <span class="trust-card-badge-icon" aria-hidden="true">🛡️</span>
-            <div class="trust-card-badge-text">
-              <strong>Trygt køb</strong>
-              <span>Verificeret sælger med god handelshistorik</span>
-            </div>
-          </div>` : ''}
-          <div class="trust-card-stats">
-            ${memberSince ? `
-            <div class="trust-stat">
-              <span class="trust-stat-label">Medlem siden</span>
-              <span class="trust-stat-value">${esc(memberSince)}</span>
-            </div>` : ''}
-            <div class="trust-stat">
-              <span class="trust-stat-label">Solgte cykler</span>
-              <span class="trust-stat-value">${soldCount}</span>
-            </div>
-            ${ratingHtml ? `
-            <div class="trust-stat">
-              <span class="trust-stat-label">Vurdering</span>
-              <span class="trust-stat-value">${ratingHtml}</span>
-            </div>` : `
-            <div class="trust-stat trust-stat--muted">
-              <span class="trust-stat-label">Vurdering</span>
-              <span class="trust-stat-value">Endnu ingen anmeldelser</span>
-            </div>`}
-          </div>
-          ${!isTrusted && tips.length ? `
-          <div class="trust-card-tips" title="Mangler for at få Trygt-køb-stempel">
-            <span class="trust-card-tips-label">Bygger tillid via:</span>
-            ${tips.slice(0, 3).map(t => `<span class="trust-card-tip-chip">${esc(t)}</span>`).join('')}
-          </div>` : ''}
-        </div>
-      `;
+      const stats = await fetchTrustData(supabase, profile.id);
+      const score = calculateTrustScore(profile, stats);
+      slot.outerHTML = buildTrustPillHTML(score) || '';
     } catch (e) {
-      card.innerHTML = '';
+      slot.outerHTML = '';
     }
   }
 
