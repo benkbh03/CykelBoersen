@@ -1,7 +1,12 @@
 export function createSoldActions({ supabase, getCurrentUser, showToast, reloadMyListings, loadBikes, updateFilterCounts, openUserProfileWithReview }) {
   async function markBikeSold(bikeId, buyerId, buyerName) {
     const currentUser = getCurrentUser();
-    const err = (await supabase.from('bikes').update({ is_active: false }).eq('id', bikeId)).error;
+    // Anti-gaming fase 2: skelner mellem platform-salg (med valgt køber-bruger
+    // — kan reviewes og tæller i trust-scoren) og ekstern handel (uden køber-
+    // bruger — kan IKKE reviewes og tæller IKKE i trust-scoren). Forhindrer
+    // selvhandel-cykler i at booste sælgers track record.
+    const soldVia = buyerId ? 'platform' : 'external';
+    const err = (await supabase.from('bikes').update({ is_active: false, sold_via: soldVia }).eq('id', bikeId)).error;
     if (err) { showToast('❌ Kunne ikke markere som solgt'); return; }
 
     if (buyerId) {
@@ -14,7 +19,7 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
       reloadMyListings(); loadBikes(); updateFilterCounts();
       openUserProfileWithReview(buyerId);
     } else {
-      showToast('🏷️ Annonce markeret som solgt');
+      showToast('🏷️ Annonce markeret som solgt eksternt');
       reloadMyListings(); loadBikes(); updateFilterCounts();
     }
   }
@@ -35,6 +40,7 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
       const safe = (name || 'Ukendt').replace(/'/g, "\\'");
       return `<button class="buyer-pick-btn" onclick="confirmBuyerSelection('${bikeId}','${m.sender_id}','${safe}')">
         <span style="font-weight:600;">${name || 'Ukendt'}</span>
+        <span style="display:block;font-size:0.74rem;color:var(--muted);font-weight:400;margin-top:2px;">📨 Skrev til dig om denne cykel</span>
       </button>`;
     }).join('');
 
@@ -42,14 +48,18 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     el.id = 'buyer-picker-modal';
     el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:center;justify-content:center;padding:16px;';
     el.innerHTML = `
-      <div style="background:#fff;border-radius:16px;padding:24px;max-width:360px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
-        <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;">Hvem købte cyklen?</h3>
-        <p style="color:var(--muted);font-size:0.88rem;margin:0 0 16px;">Vælg køber, så I begge kan vurdere hinanden.</p>
+      <div style="background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+        <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:1.2rem;">Hvem købte cyklen?</h3>
+        <p style="color:var(--muted);font-size:0.86rem;line-height:1.5;margin:0 0 18px;">Vælg den faktiske køber. Salg via Cykelbørsen tæller i din track record og I kan begge anmelde hinanden bagefter.</p>
         <div style="display:flex;flex-direction:column;gap:8px;">
           ${options}
-          <button class="buyer-pick-btn" style="color:var(--muted);border-color:var(--border);" onclick="confirmBuyerSelection('${bikeId}',null,null)">
-            Ingen af disse / ekstern handel
+        </div>
+        <div style="margin:18px 0 0;padding:14px 14px 12px;background:var(--sand);border-radius:10px;">
+          <button class="buyer-pick-btn" style="color:var(--charcoal);border:1px solid var(--border);background:#fff;width:100%;" onclick="confirmBuyerSelection('${bikeId}',null,null)">
+            <span style="font-weight:600;">Solgt eksternt</span>
+            <span style="display:block;font-size:0.74rem;color:var(--muted);font-weight:400;margin-top:2px;">Facebook, ven, butik osv.</span>
           </button>
+          <p style="font-size:0.74rem;color:var(--muted);margin:8px 0 0;line-height:1.4;">Eksterne salg markerer kun annoncen som solgt. De tæller ikke i dit Trygt-køb-badge.</p>
         </div>
       </div>`;
     document.body.appendChild(el);
