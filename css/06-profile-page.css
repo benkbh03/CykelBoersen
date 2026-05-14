@@ -3409,7 +3409,29 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: inline-flex;
 }
 .dealers-page .dealer-cards {
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  /* Låst til præcis 3 kolonner på desktop — undgår at flere forhandlere
+     skubber cards ud over viewport (samme bug som listings-grid havde) */
+  grid-template-columns: repeat(3, 1fr);
+}
+.dealers-page .dealer-cards > * { min-width: 0; }
+.see-all-dealers-cta {
+  display: block;
+  margin: 28px auto 0;
+  padding: 13px 32px;
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 2px 10px rgba(42,61,46,0.15);
+}
+.see-all-dealers-cta:hover {
+  background: var(--forest-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(42,61,46,0.25);
 }
 .dealers-toolbar {
   display: flex;

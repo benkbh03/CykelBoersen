@@ -31,6 +31,11 @@ export function createDealersPage({
 }) {
   let _dealersPageData = [];
   let _dealerGPSActive = false;
+  // "Se alle forhandlere"-toggle. Vises kun de første DEALERS_INITIAL_LIMIT
+  // forhandlere indtil brugeren klikker knappen. Forhindrer at siden bliver
+  // for lang og overvældende når der er mange forhandlere.
+  let _dealersShowAll = false;
+  const DEALERS_INITIAL_LIMIT = 3;
   let _dealerGPSCoords = null;
   let _dealerActiveServices = new Set();
   let _dealerSignupSource = null;
@@ -97,6 +102,7 @@ export function createDealersPage({
     _dealersPageData = [];
     _dealerGPSActive = false;
     _dealerGPSCoords = null;
+    _dealersShowAll = false;
 
     _dealerActiveServices = new Set();
 
@@ -247,11 +253,34 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     grid.className = 'dealer-cards';
     if (filtered.length === 0) {
       grid.innerHTML = '<p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Ingen forhandlere matcher de valgte services.</p>';
+      // Fjern evt. "Se alle"-knap fra forrige render
+      const oldBtn = document.getElementById('see-all-dealers-btn');
+      if (oldBtn) oldBtn.remove();
       return;
     }
-    grid.innerHTML = filtered.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
+
+    // Begræns til de første DEALERS_INITIAL_LIMIT indtil brugeren har klikket "Se alle"
+    const visible = _dealersShowAll ? filtered : filtered.slice(0, DEALERS_INITIAL_LIMIT);
+    grid.innerHTML = visible.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
       buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm)
     ).join('');
+
+    // Tilføj/opdater "Se alle forhandlere (X)"-knap hvis der er flere end limit
+    const oldBtn = document.getElementById('see-all-dealers-btn');
+    if (oldBtn) oldBtn.remove();
+    if (!_dealersShowAll && filtered.length > DEALERS_INITIAL_LIMIT) {
+      const remaining = filtered.length - DEALERS_INITIAL_LIMIT;
+      const btn = document.createElement('div');
+      btn.id = 'see-all-dealers-btn';
+      btn.innerHTML = `<button onclick="expandAllDealers()" class="see-all-dealers-cta">Se alle forhandlere (${remaining} flere) →</button>`;
+      grid.after(btn);
+    }
+  }
+
+  // Klikket fra "Se alle forhandlere"-knappen
+  function expandAllDealers() {
+    _dealersShowAll = true;
+    sortAndRenderDealers();
   }
 
   function toggleDealerServiceFilter(serviceKey, btn) {
@@ -707,6 +736,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     toggleDealerGPS,
     sortAndRenderDealers,
     toggleDealerServiceFilter,
+    expandAllDealers,
     buildDealerCardFull,
     renderStars,
     renderBecomeDealerPage,
