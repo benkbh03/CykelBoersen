@@ -920,16 +920,28 @@ async function init() {
   const REFRESH_THROTTLE_MS = 5000; // mindst 5s mellem refreshes
 
   function _isAnyModalOpen() {
-    // Check display='flex' modals
-    for (const id of ['dealer-profile-modal', 'user-profile-modal', 'all-dealers-modal', 'login-modal', 'share-modal', 'report-modal', 'inbox-modal']) {
+    // Display: flex modals — kun dem der faktisk åbnes via inline style.
+    for (const id of ['dealer-profile-modal', 'user-profile-modal', 'all-dealers-modal', 'report-modal', 'listing-success-modal', 'rate-now-modal', 'delete-account-modal', 'buyer-picker-modal']) {
       const el = document.getElementById(id);
       if (el && el.style.display === 'flex') return true;
     }
-    // Check classList='open' modals
-    for (const id of ['bike-modal', 'map-bike-modal']) {
+    // ClassList: 'open' modals — disse bruger classList.add('open'), ikke style.display
+    for (const id of ['bike-modal', 'map-bike-modal', 'login-modal', 'reset-modal', 'modal', 'edit-modal', 'profile-modal', 'admin-modal', 'inbox-modal', 'share-modal']) {
       const el = document.getElementById(id);
       if (el && el.classList.contains('open')) return true;
     }
+    return false;
+  }
+
+  // Guard mod refresh mens brugeren aktivt skriver — selv hvis ingen modal er
+  // åben, skal vi ikke smide hans halv-udfyldte sell-form eller signup-form væk
+  // når han kort tabber væk til en email-bekræftelse eller andet.
+  function _userIsTyping() {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = el.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    if (el.isContentEditable) return true;
     return false;
   }
 
@@ -942,6 +954,9 @@ async function init() {
     _visibilityTimeout = setTimeout(async () => {
       // Guard: skip if a modal is open
       if (_isAnyModalOpen()) return;
+      // Guard: skip hvis brugeren aktivt skriver (form-input fokuseret) — bevarer
+      // halv-udfyldte felter når han kort tabber til mail/anden fane og tilbage
+      if (_userIsTyping()) return;
       // Guard: throttle
       const now = Date.now();
       if (now - _lastRefreshTime < REFRESH_THROTTLE_MS) return;

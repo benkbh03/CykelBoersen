@@ -227,37 +227,39 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
 
   function sortAndRenderDealers() {
     const sort = document.getElementById('dealers-sort')?.value || 'bikes';
-    const data = [..._dealersPageData];
 
-    // Helper: anbefalede forhandlere (featured_until > NOW()) ryger ALTID til
-    // toppen, uanset hvilken sortering brugeren har valgt. Inden for featured-
-    // gruppen sorteres efter senest featured_until (nyeste paid først).
+    // Split: anbefalede forhandlere ryger ALTID i toppen (sorteret efter senest
+    // featured_until — nyeste paid først). De øvrige sorteres efter brugerens
+    // valgte filter (Flest cykler / Tættest / Bedste rating). Brugeren styrer
+    // ALTID rækkefølgen af de ikke-anbefalede, mens de anbefalede pladser
+    // forbliver konstante i toppen.
     const now = Date.now();
     const isPromoted = d => {
       const t = d.dealer?.featured_until ? new Date(d.dealer.featured_until).getTime() : 0;
       return t > now;
     };
-    const sortByFeaturedThen = (cmp) => (a, b) => {
-      const aP = isPromoted(a), bP = isPromoted(b);
-      if (aP && !bP) return -1;
-      if (!aP && bP) return 1;
-      if (aP && bP) {
-        return new Date(b.dealer.featured_until).getTime() - new Date(a.dealer.featured_until).getTime();
-      }
-      return cmp(a, b);
-    };
 
+    const promoted = _dealersPageData.filter(isPromoted);
+    const regular  = _dealersPageData.filter(d => !isPromoted(d));
+
+    // Promoted-gruppen: nyeste featured_until først (relevant når Stripe-paid
+    // — den der lige har betalt får øverst placering)
+    promoted.sort((a, b) =>
+      new Date(b.dealer.featured_until).getTime() - new Date(a.dealer.featured_until).getTime()
+    );
+
+    // Regular-gruppen: brugerens valgte filter
     if (sort === 'nearest') {
-      const withDist    = data.filter(d => d.distKm !== null).sort(sortByFeaturedThen((a, b) => a.distKm - b.distKm));
-      const withoutDist = data.filter(d => d.distKm === null).sort(sortByFeaturedThen((a, b) => b.bikeCount - a.bikeCount));
-      _dealersPageData.splice(0, _dealersPageData.length, ...withDist, ...withoutDist);
+      const withDist    = regular.filter(d => d.distKm !== null).sort((a, b) => a.distKm - b.distKm);
+      const withoutDist = regular.filter(d => d.distKm === null).sort((a, b) => b.bikeCount - a.bikeCount);
+      regular.splice(0, regular.length, ...withDist, ...withoutDist);
     } else if (sort === 'rating') {
-      data.sort(sortByFeaturedThen((a, b) => (b.avgRating || 0) - (a.avgRating || 0)));
-      _dealersPageData.splice(0, _dealersPageData.length, ...data);
+      regular.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
     } else {
-      data.sort(sortByFeaturedThen((a, b) => b.bikeCount - a.bikeCount));
-      _dealersPageData.splice(0, _dealersPageData.length, ...data);
+      regular.sort((a, b) => b.bikeCount - a.bikeCount);
     }
+
+    _dealersPageData.splice(0, _dealersPageData.length, ...promoted, ...regular);
 
     const grid = document.getElementById('dealers-page-grid');
     if (!grid) return;
