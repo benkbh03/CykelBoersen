@@ -317,7 +317,11 @@
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 22px 20px 20px;
+  /* Top-padding 38px (ikke 22) reserverer en vertikal "lane" øverst hvor
+     fremhævet-badgen (absolut placeret) bor uden at skubbe logo/navn/adresse
+     nedad. Konsekvensen: logo + navn + adresse starter på samme y-position
+     på fremhævede og almindelige kort i samme grid. */
+  padding: 38px 20px 20px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(42,61,46,0.06);
