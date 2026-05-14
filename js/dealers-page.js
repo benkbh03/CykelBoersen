@@ -211,7 +211,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       await Promise.all(_dealersPageData.map(async d => {
         const { dealer } = d;
         let coords = null;
-        if (dealer.lat && dealer.lng)           coords = [dealer.lat, dealer.lng];
+        // Kun stol på lat/lng når det er præcis (rigtig adresse-geocoded).
+        // For 'city'-precision er polygon-centeret muligvis i havet for kystbyer.
+        if (dealer.lat && dealer.lng && dealer.location_precision === 'exact') coords = [dealer.lat, dealer.lng];
         else if (dealer.address && dealer.city) coords = await geocodeAddress(dealer.address, dealer.city);
         if (!coords && dealer.city)             coords = await geocodeCity(dealer.city);
         d.distKm = coords ? haversineKm(_dealerGPSCoords, coords) : null;
