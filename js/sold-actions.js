@@ -66,6 +66,24 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
       return;
     }
 
+    // Anti-gaming: 24-timers cooldown på "Sæt solgt" — forhindrer den hurtige
+    // "post + markér solgt"-loop hvor sælgere prøver at boost'e deres trust-
+    // score uden faktisk at have en handel. Legitime salg sker sjældent under
+    // 24 timer (køber skal kontakte, aftale møde, mødes, betale, anmelde).
+    const { data: bikeInfo, error: bikeErr } = await supabase
+      .from('bikes')
+      .select('created_at')
+      .eq('id', bikeId)
+      .single();
+    if (bikeErr || !bikeInfo) { showToast('❌ Kunne ikke hente annoncedata'); return; }
+    const ageMs = Date.now() - new Date(bikeInfo.created_at).getTime();
+    const cooldownMs = 24 * 60 * 60 * 1000;
+    if (ageMs < cooldownMs) {
+      const hoursLeft = Math.ceil((cooldownMs - ageMs) / (60 * 60 * 1000));
+      showToast(`⏱️ Annoncen skal være aktiv i 24 timer før den kan markeres som solgt (${hoursLeft} ${hoursLeft === 1 ? 'time' : 'timer'} tilbage)`);
+      return;
+    }
+
     const { data: threads } = await supabase.from('messages')
       .select('sender_id, sender:profiles!messages_sender_id_fkey(name, shop_name, seller_type)')
       .eq('bike_id', bikeId)
