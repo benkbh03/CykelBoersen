@@ -1079,6 +1079,7 @@ async function init() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     // Tjek modaler i prioriteret rækkefølge (inderste/øverste først)
+    if (document.getElementById('buyer-picker-modal')) { closeBuyerPickerModal(); return; }
     if (document.getElementById('sidebar-filters')?.classList.contains('mobile-open')) { closeMobileFilters(); return; }
     if (document.getElementById('share-modal')?.classList.contains('open'))      { closeShareModal(); return; }
     if (document.getElementById('admin-modal')?.classList.contains('open'))      { closeAdminPanel(); return; }
@@ -2629,7 +2630,7 @@ bindOutsideClickClose();
    SÆT SOM SOLGT
    ============================================================ */
 
-const { toggleSold, showBuyerPickerModal, confirmBuyerSelection, markBikeSold } = createSoldActions({
+const { toggleSold, showBuyerPickerModal, confirmBuyerSelection, markBikeSold, closeBuyerPickerModal } = createSoldActions({
   supabase,
   getCurrentUser: () => currentUser,
   showToast,
@@ -2658,6 +2659,7 @@ window.selectAutocomplete = selectAutocomplete;
 window.handleSearchKey    = handleSearchKey;
 window.toggleSold             = toggleSold;
 window.confirmBuyerSelection  = confirmBuyerSelection;
+window.closeBuyerPickerModal  = closeBuyerPickerModal;
 window.openShareModal     = openShareModal;
 window.closeShareModal    = closeShareModal;
 window.copyShareLink      = copyShareLink;
