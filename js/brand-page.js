@@ -4,6 +4,11 @@
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
 
+// Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
+// for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
+const BRAND_INITIAL_BIKES   = 4;
+const BRAND_INITIAL_DEALERS = 4;
+
 export function createBrandPage({
   supabase,
   esc,
@@ -74,6 +79,7 @@ export function createBrandPage({
           <div id="brand-bikes-grid" class="brand-bikes-grid">
             <p style="color:var(--muted);padding:20px;">Henter ${esc(brandName)}-cykler…</p>
           </div>
+          <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
 
         ${meta.popular_models ? `
@@ -94,6 +100,7 @@ export function createBrandPage({
         <div id="brand-dealers-section" class="brand-page-section" style="display:none;">
           <h2 class="brand-page-section-title">Forhandlere der sælger ${esc(brandName)}</h2>
           <div id="brand-dealers-list" class="brand-dealers-list"></div>
+          <div id="brand-dealers-more" class="brand-show-more-wrap"></div>
         </div>
 
         <div class="brand-page-section">
@@ -114,6 +121,7 @@ export function createBrandPage({
 
   async function loadBrandBikes(brandName) {
     const grid = document.getElementById('brand-bikes-grid');
+    const moreSlot = document.getElementById('brand-bikes-more');
     if (!grid) return;
 
     const { data: bikes, error } = await supabase
@@ -122,7 +130,7 @@ export function createBrandPage({
       .eq('is_active', true)
       .ilike('brand', brandName)
       .order('created_at', { ascending: false })
-      .limit(24);
+      .limit(60);
 
     if (error) {
       grid.innerHTML = `<p style="color:var(--muted);padding:20px;">Kunne ikke hente cykler. <button onclick="renderBrandPage('${brandToSlug(brandName)}')" style="background:var(--rust);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">Prøv igen</button></p>`;
@@ -141,11 +149,28 @@ export function createBrandPage({
 
     grid.innerHTML = bikes.map(b => buildBikeCard(b)).join('');
 
+    // Collapse-knap når der er flere end den initielle visning
+    if (bikes.length > BRAND_INITIAL_BIKES) {
+      grid.classList.add('brand-bikes-grid--collapsed');
+      if (moreSlot) {
+        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandBrandBikes()">Vis alle ${bikes.length} ${brandName}-cykler →</button>`;
+      }
+    } else if (moreSlot) {
+      moreSlot.innerHTML = '';
+    }
+
     // Opdater sektion-titel med antal
     const sectionTitle = document.querySelector('#brand-bikes-section .brand-page-section-title');
     if (sectionTitle) {
       sectionTitle.textContent = `${bikes.length} ${brandName}${bikes.length === 1 ? '-cykel' : '-cykler'} til salg`;
     }
+  }
+
+  function expandBrandBikes() {
+    const grid = document.getElementById('brand-bikes-grid');
+    const slot = document.getElementById('brand-bikes-more');
+    if (grid) grid.classList.remove('brand-bikes-grid--collapsed');
+    if (slot) slot.innerHTML = '';
   }
 
   function buildBikeCard(b) {
@@ -183,6 +208,7 @@ export function createBrandPage({
   async function loadBrandDealers(brandName) {
     const section = document.getElementById('brand-dealers-section');
     const list = document.getElementById('brand-dealers-list');
+    const moreSlot = document.getElementById('brand-dealers-more');
     if (!section || !list) return;
 
     // Find unique dealers der har annoncer med dette brand
@@ -192,7 +218,7 @@ export function createBrandPage({
       .eq('is_active', true)
       .eq('profiles.seller_type', 'dealer')
       .ilike('brand', brandName)
-      .limit(50);
+      .limit(200);
 
     if (!bikes || bikes.length === 0) return;
 
@@ -207,7 +233,7 @@ export function createBrandPage({
     if (dealers.length === 0) return;
 
     section.style.display = '';
-    list.innerHTML = dealers.slice(0, 6).map(d => {
+    list.innerHTML = dealers.map(d => {
       const name = d.shop_name || d.name || 'Forhandler';
       const avatar = safeAvatarUrl(d.avatar_url);
       return `
@@ -221,6 +247,22 @@ export function createBrandPage({
           </div>
         </a>`;
     }).join('');
+
+    if (dealers.length > BRAND_INITIAL_DEALERS) {
+      list.classList.add('brand-dealers-list--collapsed');
+      if (moreSlot) {
+        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandBrandDealers()">Vis alle ${dealers.length} forhandlere →</button>`;
+      }
+    } else if (moreSlot) {
+      moreSlot.innerHTML = '';
+    }
+  }
+
+  function expandBrandDealers() {
+    const list = document.getElementById('brand-dealers-list');
+    const slot = document.getElementById('brand-dealers-more');
+    if (list) list.classList.remove('brand-dealers-list--collapsed');
+    if (slot) slot.innerHTML = '';
   }
 
   function getRelatedBrands(brandName) {
@@ -361,5 +403,7 @@ export function createBrandPage({
     renderBrandPage,
     renderBrandsOverview,
     removeBrandJsonLd,
+    expandBrandBikes,
+    expandBrandDealers,
   };
 }

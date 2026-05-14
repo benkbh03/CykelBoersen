@@ -579,8 +579,12 @@ const _ensureBrandPage = lazyCtrl(
 const renderBrandPage     = lazyMethod(_ensureBrandPage, 'renderBrandPage');
 const renderBrandsOverview = lazyMethod(_ensureBrandPage, 'renderBrandsOverview');
 const removeBrandJsonLd   = lazyMethod(_ensureBrandPage, 'removeBrandJsonLd');
+const expandBrandBikes    = lazyMethod(_ensureBrandPage, 'expandBrandBikes');
+const expandBrandDealers  = lazyMethod(_ensureBrandPage, 'expandBrandDealers');
 window.renderBrandPage    = renderBrandPage;
 window.renderBrandsOverview = renderBrandsOverview;
+window.expandBrandBikes   = expandBrandBikes;
+window.expandBrandDealers = expandBrandDealers;
 
 // Cykel-vurdering — lazy-loaded (/vurder-min-cykel)
 const _ensureValuation = lazyCtrl(
