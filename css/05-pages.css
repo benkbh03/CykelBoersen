@@ -783,6 +783,15 @@
   font-family: 'DM Sans', sans-serif; transition: all 0.15s;
 }
 .btn-reject:hover { border-color: var(--rust); color: var(--rust); }
+/* Slet-bruger-knap: rød-tonet for at signalere destructive action */
+.btn-delete-user {
+  background: none; border: 1.5px solid #d44a35;
+  border-radius: 6px; padding: 7px 14px;
+  font-size: 0.78rem; color: #d44a35; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  margin-left: 4px;
+}
+.btn-delete-user:hover { background: #d44a35; color: #fff; }
 
 /* Verificeret badge */
 .verified-badge {

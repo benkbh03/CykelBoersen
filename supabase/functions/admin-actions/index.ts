@@ -22,6 +22,7 @@ const corsHeaders = {
 const ALLOWED_ACTIONS = new Set([
   "approve_dealer", "reject_dealer", "revoke_dealer",
   "approve_id",     "reject_id",
+  "delete_user",
 ]);
 
 function jsonResponse(body: unknown, status = 200) {
@@ -82,6 +83,44 @@ serve(async (req) => {
       case "reject_id":
         updates = { id_pending: false, id_doc_url: null };
         break;
+      case "delete_user": {
+        // Beskyt mod selvsletning — admin kan ikke slette sig selv
+        // (ville miste admin-access og kunne ikke gendannes uden DB-adgang)
+        if (target_user_id === caller.id) {
+          return jsonResponse({ error: "Du kan ikke slette dig selv" }, 400);
+        }
+
+        // Cascading sletning — samme logik som delete-account men gated til admin
+        const { data: bikes } = await supa
+          .from("bikes").select("id").eq("user_id", target_user_id);
+        const bikeIds = (bikes || []).map((b: { id: string }) => b.id);
+
+        if (bikeIds.length > 0) {
+          await supa.from("saved_bikes").delete().in("bike_id", bikeIds);
+          await supa.from("bike_images").delete().in("bike_id", bikeIds);
+        }
+        await supa.from("saved_searches").delete().eq("user_id", target_user_id);
+        await supa.from("saved_bikes").delete().eq("user_id", target_user_id);
+        await supa.from("reviews").delete()
+          .or(`reviewer_id.eq.${target_user_id},reviewed_user_id.eq.${target_user_id}`);
+        await supa.from("messages").delete()
+          .or(`sender_id.eq.${target_user_id},receiver_id.eq.${target_user_id}`);
+        await supa.from("dealer_applications").delete().eq("user_id", target_user_id);
+        await supa.from("id_applications").delete().eq("user_id", target_user_id);
+        if (bikeIds.length > 0) {
+          await supa.from("bikes").delete().eq("user_id", target_user_id);
+        }
+        await supa.from("profiles").delete().eq("id", target_user_id);
+
+        const { error: deleteAuthErr } = await supa.auth.admin.deleteUser(target_user_id);
+        if (deleteAuthErr) {
+          console.error("Delete auth user error:", deleteAuthErr);
+          return jsonResponse({ error: "Kunne ikke slette auth-bruger: " + deleteAuthErr.message }, 500);
+        }
+
+        console.log(`Admin ${caller.id} slettede bruger ${target_user_id}`);
+        return jsonResponse({ ok: true, action, target_user_id });
+      }
     }
 
     const { error: updateErr } = await supa
