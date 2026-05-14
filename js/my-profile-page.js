@@ -64,6 +64,9 @@ export function createMyProfilePage({
       ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       : initials;
 
+    // Completion-checklisten måler reelle profil-felter — ikke produkttilbud
+    // som finansiering/byttetilbud, der varierer pr. forhandler og ikke bør
+    // forhindre en butik der ikke tilbyder dem i at nå 100%.
     const completionItems = [
       { label: 'E-mail verificeret', done: !!u?.email_confirmed_at },
       { label: 'Profilbillede',      done: !!p.avatar_url },
@@ -71,8 +74,6 @@ export function createMyProfilePage({
       { label: 'Om mig udfyldt',     done: !!p.bio },
       ...(isDealer ? [
         { label: 'Telefon tilføjet',   done: !!p.phone },
-        { label: 'Finansiering',       done: !!p.offers_financing },
-        { label: 'Byttetilbud',        done: !!p.offers_tradein },
       ] : []),
     ];
     const doneCount = completionItems.filter(i => i.done).length;
