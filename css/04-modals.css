@@ -716,6 +716,24 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 
 /* ── TRUST CARD: Trygt køb-badge + sælger-historik ─────────── */
 .seller-trust-card-wrap { margin-top: 10px; }
+/* Wrapper når trust-card lever på profilsidens Vurderinger-tab */
+.pp-trust-breakdown-wrap { margin-bottom: 16px; }
+
+/* Kompakt trust-pill: vises inline ved sælger-badges på bike-detail.
+   Fuld trust-breakdown lever på sælgers profil → Vurderinger-tab. */
+.trust-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px;
+  font-size: 0.74rem; font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  background: #e8f5e9;
+  color: #1a5722;
+  border: 1px solid rgba(26,87,34,0.2);
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: -0.005em;
+}
+
 .trust-card {
   display: flex; flex-direction: column; gap: 12px;
   background: #fff;
