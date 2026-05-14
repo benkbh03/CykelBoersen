@@ -228,10 +228,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
   function sortAndRenderDealers() {
     const sort = document.getElementById('dealers-sort')?.value || 'bikes';
 
-    // Split: anbefalede forhandlere ryger ALTID i toppen (sorteret efter senest
+    // Split: fremhævede forhandlere ryger ALTID i toppen (sorteret efter senest
     // featured_until — nyeste paid først). De øvrige sorteres efter brugerens
     // valgte filter (Flest cykler / Tættest / Bedste rating). Brugeren styrer
-    // ALTID rækkefølgen af de ikke-anbefalede, mens de anbefalede pladser
+    // ALTID rækkefølgen af de ikke-fremhævede, mens de fremhævede pladser
     // forbliver konstante i toppen.
     const now = Date.now();
     const isPromoted = d => {
@@ -359,7 +359,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       : '';
 
     const isPromoted = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
-    const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Anbefalet forhandler">⭐ Anbefalet</span>' : '';
+    const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Fremhævet forhandler">⭐ Fremhævet</span>' : '';
     const promotedClass = isPromoted ? ' dealer-card--promoted' : '';
 
     return `
