@@ -3325,93 +3325,40 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 28px;
 }
 
-/* "Hvad må jeg sælge?"-boks på /bliv-forhandler — sikrer ansøgere
-   forstår scope INDEN de søger. Testet: ≤480, ≤768, 769-1024, ≥1025 */
-.bd-scope {
+/* Diskret link på /bliv-forhandler der åbner /tilladt-sortiment. Skal IKKE
+   skræmme forhandlere — det er kun en henvisning, ikke en advarsel.
+   Testet: ≤480, ≤768, 769-1024, ≥1025 */
+.bd-scope-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  margin-bottom: 28px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 22px 24px;
-  margin-bottom: 28px;
-  font-family: 'DM Sans', sans-serif;
-}
-.bd-scope-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin: 0 0 6px;
-  color: var(--charcoal);
-  letter-spacing: -0.01em;
-}
-.bd-scope-lead {
-  font-size: 0.92rem;
-  color: var(--muted);
-  margin: 0 0 18px;
-  line-height: 1.5;
-}
-.bd-scope-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-.bd-scope-col {
-  background: #fff;
-  border: 1.5px solid var(--border);
   border-radius: 10px;
-  padding: 14px 16px;
-}
-.bd-scope-col--yes { border-color: #c8e6c9; }
-.bd-scope-col--no  { border-color: #ffccbc; }
-.bd-scope-col-header {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 10px;
-  font-family: 'Fraunces', serif;
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-.bd-scope-col--yes .bd-scope-col-header { color: #2e7d32; }
-.bd-scope-col--no  .bd-scope-col-header { color: #c8302a; }
-.bd-scope-col-icon { font-size: 1rem; line-height: 1; }
-.bd-scope-col ul {
-  margin: 0; padding-left: 18px;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.bd-scope-col li {
-  font-size: 0.85rem;
-  color: var(--charcoal);
-  line-height: 1.45;
-}
-.bd-scope-col--yes li::marker { color: #2e7d32; }
-.bd-scope-col--no  li::marker { color: #c8302a; }
-.bd-scope-note {
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin: 8px 0 0;
-  line-height: 1.5;
-}
-.bd-scope-note--link {
-  text-align: right;
-  margin-top: 6px;
-}
-.bd-scope-note--link a {
-  color: var(--rust);
-  font-weight: 600;
   text-decoration: none;
+  color: var(--charcoal);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
-.bd-scope-note--link a:hover { text-decoration: underline; }
-
-@media (max-width: 768px) {
-  .bd-scope { padding: 18px 16px; }
-  .bd-scope-title { font-size: 1.05rem; }
-  .bd-scope-grid { grid-template-columns: 1fr; gap: 12px; }
-  .bd-scope-col { padding: 12px 14px; }
-  .bd-scope-col li { font-size: 0.82rem; }
+.bd-scope-mini:hover {
+  background: #fff;
+  border-color: var(--charcoal);
+  transform: translateY(-1px);
+}
+.bd-scope-mini-icon { font-size: 1rem; line-height: 1; }
+.bd-scope-mini-text { color: var(--charcoal); }
+.bd-scope-mini-arrow {
+  color: var(--rust);
+  font-weight: 700;
+  margin-left: 2px;
 }
 @media (max-width: 480px) {
-  .bd-scope { padding: 16px 14px; }
-  .bd-scope-title { font-size: 1rem; }
-  .bd-scope-lead { font-size: 0.85rem; }
+  .bd-scope-mini { font-size: 0.82rem; padding: 9px 14px; width: 100%; justify-content: space-between; }
 }
 
 .bd-form {

@@ -469,39 +469,11 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
       </div>
 
-      <div class="bd-scope">
-        <h3 class="bd-scope-title">📋 Hvad må jeg sælge på Cykelbørsen?</h3>
-        <p class="bd-scope-lead">Vi er <strong>kun for cykler</strong>. Læs vores afgrænsning inden du opretter dig som forhandler.</p>
-        <div class="bd-scope-grid">
-          <div class="bd-scope-col bd-scope-col--yes">
-            <div class="bd-scope-col-header">
-              <span class="bd-scope-col-icon">✅</span>
-              <span class="bd-scope-col-label">Må sælges</span>
-            </div>
-            <ul>
-              <li>Alle slags cykler (racer, MTB, gravel, citybike, ladcykel, børnecykel, BMX, tandem)</li>
-              <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
-            </ul>
-          </div>
-          <div class="bd-scope-col bd-scope-col--no">
-            <div class="bd-scope-col-header">
-              <span class="bd-scope-col-icon">❌</span>
-              <span class="bd-scope-col-label">Må IKKE sælges</span>
-            </div>
-            <ul>
-              <li>El-løbehjul og el-scootere</li>
-              <li>Speed pedelecs (250-1000W eller over 25 km/t) — kræver registrering</li>
-              <li>El-motocross, el-motorcykler og el-mopeder</li>
-              <li>Almindelige knallerter og motorcykler</li>
-              <li>Cykelreservedele eller tilbehør alene (uden cykel)</li>
-            </ul>
-          </div>
-        </div>
-        <p class="bd-scope-note">El-cykler over 250W er juridisk en knallert eller motorcykel i Danmark og kræver registrering, nummerplade og forsikring. Vi tillader dem ikke fordi det forvirrer købere og lægger juridisk risiko på dig som sælger.</p>
-        <p class="bd-scope-note bd-scope-note--link">
-          <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Læs hele § 4a om tilladt sortiment →</a>
-        </p>
-      </div>
+      <a href="/tilladt-sortiment" onclick="event.preventDefault();navigateTo('/tilladt-sortiment')" class="bd-scope-mini">
+        <span class="bd-scope-mini-icon" aria-hidden="true">🚴</span>
+        <span class="bd-scope-mini-text">Hvad må jeg sælge på Cykelbørsen?</span>
+        <span class="bd-scope-mini-arrow" aria-hidden="true">→</span>
+      </a>
 
       <div class="bd-form">
         <h3 class="bd-form-title">Butiksinformation</h3>

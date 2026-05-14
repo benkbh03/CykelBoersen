@@ -9,7 +9,7 @@ export const MAP_PAGE_LIMIT = 500;
    BUMP når lazy-loaded moduler ændres, så browseren henter ny version
    i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
    rydder ikke altid module-cachen. */
-export const ASSET_VERSION = '20261113bk';
+export const ASSET_VERSION = '20261113bl';
 
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
@@ -41,4 +41,5 @@ export const STATIC_PAGE_ROUTES = {
   'guide-tjek': '/guide/tjek-brugt-cykel',
   'sikkerhedsguide': '/sikkerhedsguide',
   cookies: '/cookiepolitik',
+  sortiment: '/tilladt-sortiment',
 };

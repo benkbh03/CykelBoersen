@@ -356,6 +356,51 @@ export const footerContent = {
       <p>Spørgsmål om vores brug af cookies rettes til <strong>hej@cykelbørsen.dk</strong>.</p>
     `
   },
+  sortiment: {
+    title: 'Tilladt sortiment',
+    metaDesc: 'Hvad må sælges på Cykelbørsen? Alle cykler og el-cykler op til 250W. Ikke el-løbehjul, knallerter eller motorcykler.',
+    body: `
+      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler. Her er hvad der må sælges, og hvad der ikke gør — så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <div style="background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:18px 20px;">
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#2e7d32;margin:0 0 12px;display:flex;align-items:center;gap:8px;">✅ Må sælges</h3>
+          <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
+            <li>Alle slags cykler — racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
+            <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
+          </ul>
+        </div>
+        <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#c8302a;margin:0 0 12px;display:flex;align-items:center;gap:8px;">❌ Må IKKE sælges</h3>
+          <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
+            <li>El-løbehjul og el-scootere</li>
+            <li>Speed pedelecs (250-1000W eller over 25 km/t)</li>
+            <li>El-motocross, el-motorcykler, el-mopeder</li>
+            <li>Almindelige knallerter og motorcykler</li>
+            <li>Cykelreservedele eller tilbehør alene (uden cykel)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Hvorfor er grænsen ved 250W og 25 km/t?</h3>
+      <p style="margin-bottom:16px;">Det er Færdselslovens definition af en "cykel". En el-cykel med motor på højst 250W og maksimal hastighed 25 km/t med pedal-assist betragtes juridisk som en cykel og kræver ikke registrering, nummerplade, kørekort eller forsikring.</p>
+      <p style="margin-bottom:16px;">Så snart en cykel overstiger 250W eller kan køre over 25 km/t på motorkraft, klassificeres den som <strong>lille knallert (L1e)</strong> eller motorcykel. Det betyder registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring, og at føreren skal have kørekort til kategorien.</p>
+      <p style="margin-bottom:24px;">Vi tillader ikke disse på Cykelbørsen fordi det forvirrer købere (mange ved ikke at en 1000W "el-cykel" er en knallert juridisk) og lægger juridisk risiko på dig som sælger.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Oplysningspligt ved salg af el-cykler</h3>
+      <p style="margin-bottom:16px;">Sælger du en el-cykel, skal du i selve annonceteksten oplyse:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Motoreffekt</strong> i watt (fx "250W")</li>
+        <li><strong>Max hastighed</strong> med pedal-assist (fx "25 km/t")</li>
+        <li><strong>Batterikapacitet</strong> i Wh eller Ah (fx "504 Wh / 14 Ah")</li>
+      </ul>
+      <p style="margin-bottom:16px;">Det giver køberen tryghed for at cyklen falder inden for cykel-definitionen og ikke kræver registrering.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Tvivlstilfælde</h3>
+      <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs — så svarer vi indenfor et par timer.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Du kan altid læse den fulde paragraf i <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')" style="color:var(--rust);text-decoration:underline;">vilkår § 4a</a>.</p>
+    `
+  },
   contact: {
     title: 'Kontakt os',
     body: `
