@@ -263,6 +263,38 @@
   position: relative;
 }
 .dealer-card--featured:hover { background: rgba(200,130,42,0.2); }
+
+/* Anbefalet-forhandler — featured_until > NOW(). Manuelt sat via Supabase
+   Dashboard nu, automatisk via Stripe-webhook senere. Testet: ≤480, ≤768, ≥769 */
+.dealer-card--promoted {
+  position: relative;
+  border: 1.5px solid #d4a017;
+  background: linear-gradient(135deg, rgba(212,160,23,0.08) 0%, rgba(212,160,23,0.16) 100%);
+  box-shadow: 0 4px 14px rgba(212,160,23,0.18);
+}
+.dealer-card--promoted:hover {
+  background: linear-gradient(135deg, rgba(212,160,23,0.12) 0%, rgba(212,160,23,0.22) 100%);
+}
+.dealer-promoted-badge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 3px 8px rgba(212,160,23,0.4);
+  z-index: 2;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .dealer-promoted-badge { font-size: 0.62rem; padding: 3px 8px; right: 8px; top: -8px; }
+}
 /* "Se resten" knap under top-forhandlere */
 .dealer-see-all-wrap {
   display: flex; justify-content: center;

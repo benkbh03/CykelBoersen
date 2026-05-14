@@ -137,7 +137,7 @@ export function createDealersPage({
     </div>`;
 
     const [dealerRes, bikeRes, reviewRes] = await Promise.all([
-      supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, lat, lng, location_precision, services, opening_hours').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+      supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, lat, lng, location_precision, services, opening_hours, featured_until').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
       supabase.from('bikes').select('user_id').eq('is_active', true),
       supabase.from('reviews').select('reviewed_user_id, rating'),
     ]);
@@ -229,15 +229,33 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     const sort = document.getElementById('dealers-sort')?.value || 'bikes';
     const data = [..._dealersPageData];
 
+    // Helper: anbefalede forhandlere (featured_until > NOW()) ryger ALTID til
+    // toppen, uanset hvilken sortering brugeren har valgt. Inden for featured-
+    // gruppen sorteres efter senest featured_until (nyeste paid først).
+    const now = Date.now();
+    const isPromoted = d => {
+      const t = d.dealer?.featured_until ? new Date(d.dealer.featured_until).getTime() : 0;
+      return t > now;
+    };
+    const sortByFeaturedThen = (cmp) => (a, b) => {
+      const aP = isPromoted(a), bP = isPromoted(b);
+      if (aP && !bP) return -1;
+      if (!aP && bP) return 1;
+      if (aP && bP) {
+        return new Date(b.dealer.featured_until).getTime() - new Date(a.dealer.featured_until).getTime();
+      }
+      return cmp(a, b);
+    };
+
     if (sort === 'nearest') {
-      const withDist    = data.filter(d => d.distKm !== null).sort((a, b) => a.distKm - b.distKm);
-      const withoutDist = data.filter(d => d.distKm === null).sort((a, b) => b.bikeCount - a.bikeCount);
+      const withDist    = data.filter(d => d.distKm !== null).sort(sortByFeaturedThen((a, b) => a.distKm - b.distKm));
+      const withoutDist = data.filter(d => d.distKm === null).sort(sortByFeaturedThen((a, b) => b.bikeCount - a.bikeCount));
       _dealersPageData.splice(0, _dealersPageData.length, ...withDist, ...withoutDist);
     } else if (sort === 'rating') {
-      data.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+      data.sort(sortByFeaturedThen((a, b) => (b.avgRating || 0) - (a.avgRating || 0)));
       _dealersPageData.splice(0, _dealersPageData.length, ...data);
     } else {
-      data.sort((a, b) => b.bikeCount - a.bikeCount);
+      data.sort(sortByFeaturedThen((a, b) => b.bikeCount - a.bikeCount));
       _dealersPageData.splice(0, _dealersPageData.length, ...data);
     }
 
@@ -338,8 +356,13 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         }).join('')}${dealer.services.length > 3 ? `<span class="dealer-card-service-more">+${dealer.services.length - 3}</span>` : ''}</div>`
       : '';
 
+    const isPromoted = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
+    const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Anbefalet forhandler">⭐ Anbefalet</span>' : '';
+    const promotedClass = isPromoted ? ' dealer-card--promoted' : '';
+
     return `
-    <div class="dealer-card" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
+    <div class="dealer-card${promotedClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
+      ${promotedBadge}
       <div class="dealer-card-top">
         <div class="dealer-logo-circle${avatarThumb ? ' dealer-logo-circle--img' : ''}">${logoHtml}</div>
         ${distHtml}

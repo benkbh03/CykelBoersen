@@ -1142,7 +1142,7 @@ async function loadDealers(dealers, bikeRows) {
     // Standalone kald – hent data selv
     let dealerRes, bikeRes;
     [dealerRes, bikeRes] = await Promise.all([
-      supabase.from('profiles').select('id, shop_name, city, address, name').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
+      supabase.from('profiles').select('id, shop_name, city, address, name, featured_until').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
       supabase.from('bikes').select('user_id').eq('is_active', true)
     ]);
     dealers  = dealerRes.data;
@@ -1175,8 +1175,23 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     }
   }
 
-  // Sorter efter antal cykler (flest først)
-  dealers.sort((a, b) => (countMap[b.id] || 0) - (countMap[a.id] || 0));
+  // Sorter: featured_until > NOW() først (efter nyeste featured-dato),
+  // derefter resten efter antal cykler (flest først).
+  // Featured-systemet driver "⭐ Anbefalet"-placering — manuelt sat i
+  // Supabase Dashboard nu, senere automatiseret via Stripe-webhook.
+  const now = Date.now();
+  const isFeatured = d => d.featured_until && new Date(d.featured_until).getTime() > now;
+  dealers.sort((a, b) => {
+    const aF = isFeatured(a);
+    const bF = isFeatured(b);
+    if (aF && !bF) return -1;
+    if (!aF && bF) return 1;
+    if (aF && bF) {
+      // Begge featured → den med senest featured_until først (nyeste betaling)
+      return new Date(b.featured_until).getTime() - new Date(a.featured_until).getTime();
+    }
+    return (countMap[b.id] || 0) - (countMap[a.id] || 0);
+  });
 
   const top3    = dealers.slice(0, 3);
   const rest    = dealers.slice(3);
@@ -1225,8 +1240,14 @@ function buildDealerCard(dealer, countMap, featured = false) {
   const bikeCount     = countMap[dealer.id] || 0;
   const locationText  = dealer.address && dealer.city ? `${dealer.address}, ${dealer.city}` : dealer.address || dealer.city || '';
   const featuredClass = featured ? ' dealer-card--featured' : '';
+  // "⭐ Anbefalet"-badge når featured_until er fremtidigt (manuel kontrol via
+  // Supabase Dashboard nu, automatisk via Stripe-webhook senere)
+  const isPromoted    = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
+  const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Anbefalet forhandler">⭐ Anbefalet</span>' : '';
+  const promotedClass = isPromoted ? ' dealer-card--promoted' : '';
   return `
-    <div class="dealer-card${featuredClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${displayName}s profil">
+    <div class="dealer-card${featuredClass}${promotedClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${displayName}s profil">
+      ${promotedBadge}
       <div class="dealer-logo-circle">${initials}</div>
       <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
       ${locationText ? `<div class="dealer-city">📍 ${locationText}</div>` : ''}
