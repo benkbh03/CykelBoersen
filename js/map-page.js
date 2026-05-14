@@ -658,9 +658,14 @@ export function createMapPage({
         let coords = null;
         let precise = false;
 
-        if (profile.lat && profile.lng) {
+        // Stol kun på profile.lat/lng når det er en præcis adresse-geocoding
+        // (forhandler med adresse). For privates med location_precision='city'
+        // er saved lat/lng baseret på postnummer-polygon-center fra DAWA
+        // autocomplete — som kan ligge i havet for kystbyer. Brug geocodeCity
+        // i stedet, som har hardcoded by-centre for kendte byer.
+        if (profile.lat && profile.lng && profile.location_precision === 'exact') {
           coords = [profile.lat, profile.lng];
-          precise = profile.location_precision === 'exact';
+          precise = true;
         } else if (hasAddr) {
           coords = await geocodeAddress(profile.address, b.city);
           if (coords) precise = true;
@@ -1123,9 +1128,11 @@ export function createMapPage({
         var isDealer = profile.seller_type === 'dealer';
         var dealerAddress = isDealer && profile.address && profile.address.trim();
 
-        // Foretræk gemte koordinater fra profil (fra DAWA-autocomplete)
+        // Stol kun på profile.lat/lng når det er præcis (forhandler-adresse).
+        // For private med 'city'-precision bruger vi geocodeCity som har
+        // hardcoded centre for kystbyer hvor DAWA's polygon-center er forkert.
         var lookup;
-        if (profile.lat && profile.lng) {
+        if (profile.lat && profile.lng && profile.location_precision === 'exact') {
           lookup = Promise.resolve([profile.lat, profile.lng]);
         } else if (dealerAddress) {
           lookup = geocodeAddress(profile.address, b.city).then(function(coords) {
@@ -1154,7 +1161,8 @@ export function createMapPage({
       var dealerOnlyPromises = dealerProfileResult.data
         .filter(function(d) { return !dealersWithMarkers.has(d.id) && (d.lat || (d.address && d.city)); })
         .map(function(d) {
-          var lookup = (d.lat && d.lng)
+          // Som ovenfor: kun stol på lat/lng når det er præcis adresse-geocoding
+          var lookup = (d.lat && d.lng && d.location_precision === 'exact')
             ? Promise.resolve([d.lat, d.lng])
             : geocodeAddress(d.address, d.city).then(function(coords) { return coords || geocodeCity(d.city); });
           return lookup

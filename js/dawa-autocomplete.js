@@ -1,4 +1,5 @@
 import { esc } from './utils.js';
+import { KNOWN_CITY_CENTERS } from './geocode.js';
 
 const _dawaDebounce = new WeakMap();
 let _dawaActive = null; // { input, dropdown }
@@ -227,8 +228,17 @@ export function attachCityAutocomplete(input, onSelect) {
           if (seen.has(key)) continue;
           seen.add(key);
           const vc  = r.visueltcenter; // [lng, lat]
-          const lat = Array.isArray(vc) ? vc[1] : null;
-          const lng = Array.isArray(vc) ? vc[0] : null;
+          let lat = Array.isArray(vc) ? vc[1] : null;
+          let lng = Array.isArray(vc) ? vc[0] : null;
+          // Override DAWA's postnummer-polygon center med hardcoded by-centrum
+          // for kendte byer. Polygon-centeret for kystbyer (Hvidovre 2650,
+          // Greve 2670, København S 2300 mfl.) lander i havet — hardcoded
+          // centrum peger på den faktiske by hvor folk bor.
+          const known = KNOWN_CITY_CENTERS[cityName.toLowerCase().trim()];
+          if (known) {
+            lat = known[0];
+            lng = known[1];
+          }
           items.push({ label: `${postnr} ${cityName}`, city: cityName, postcode: postnr, lat, lng });
         }
 

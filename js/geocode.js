@@ -11,7 +11,7 @@
    byens centrum/torv — ikke postnummer-polygonens midtpunkt.
    Nøgler er lowercase + trimmed.
    Værdier er [lat, lng] (WGS84). */
-const KNOWN_CITY_CENTERS = {
+export const KNOWN_CITY_CENTERS = {
   // ── Storkøbenhavn ───────────────────────────────────
   'københavn':       [55.6761, 12.5683],
   'kobenhavn':       [55.6761, 12.5683],
