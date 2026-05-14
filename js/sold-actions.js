@@ -31,6 +31,12 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     await markBikeSold(bikeId, buyerId, buyerName);
   }
 
+  function closeBuyerPickerModal() {
+    const modal = document.getElementById('buyer-picker-modal');
+    if (modal) modal.remove();
+    document.body.style.overflow = '';
+  }
+
   function showBuyerPickerModal(bikeId, buyers) {
     const existing = document.getElementById('buyer-picker-modal');
     if (existing) existing.remove();
@@ -47,9 +53,12 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     const el = document.createElement('div');
     el.id = 'buyer-picker-modal';
     el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:center;justify-content:center;padding:16px;';
+    // Overlay-klik (uden for selve dialogen) lukker modalen — standardmønster
+    el.onclick = (ev) => { if (ev.target === el) closeBuyerPickerModal(); };
     el.innerHTML = `
-      <div style="background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
-        <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:1.2rem;">Hvem købte cyklen?</h3>
+      <div style="position:relative;background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+        <button aria-label="Luk" title="Luk" onclick="closeBuyerPickerModal()" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:var(--sand);color:var(--charcoal);font-size:1.1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--sand)'">×</button>
+        <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:1.2rem;padding-right:32px;">Hvem købte cyklen?</h3>
         <p style="color:var(--muted);font-size:0.86rem;line-height:1.5;margin:0 0 18px;">Vælg den faktiske køber. Salg via Cykelbørsen tæller i din track record og I kan begge anmelde hinanden bagefter.</p>
         <div style="display:flex;flex-direction:column;gap:8px;">
           ${options}
@@ -111,5 +120,5 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     else await markBikeSold(bikeId, null, null);
   }
 
-  return { toggleSold, showBuyerPickerModal, confirmBuyerSelection, markBikeSold };
+  return { toggleSold, showBuyerPickerModal, confirmBuyerSelection, markBikeSold, closeBuyerPickerModal };
 }

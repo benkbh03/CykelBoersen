@@ -445,12 +445,16 @@
   box-shadow: 0 2px 6px rgba(212,160,23,0.32);
   font-family: 'DM Sans', sans-serif;
   white-space: nowrap;
-  /* Inde i cardet, ikke negativ top — så bliver ikke clippet af overflow:hidden */
-  margin: -2px 0 12px;
-  align-self: flex-start;
+  /* Absolut position så badgen IKKE tager flow-plads — uden dette ville
+     navn + adresse på fremhævede kort sidde lavere end på kort uden badge,
+     hvilket bryder visuel justering i et grid med blandede card-typer.
+     .dealer-card padding-top: 38px reserverer plads til badgen i sin egen
+     vertikale lane (y=12-34) over content-området (y=38+). */
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
 }
-/* Hvis cardet ikke er flex-column (det er det dog som regel), giv badgen
-   eksplicit margin-top istedet for align-self */
 .dealer-card:not([class*="flex"]) .dealer-promoted-badge {
   position: relative;
   display: inline-flex;
