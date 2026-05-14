@@ -105,6 +105,22 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
 
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4a. Tilladt sortiment</h3>
+      <p style="margin-bottom:8px;">Cykelbørsen er udelukkende en markedsplads for cykler. Følgende må sælges på platformen:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Almindelige cykler</strong> i alle kategorier — racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
+        <li><strong>El-cykler (pedelec)</strong> med motor op til 250W og max 25 km/t med pedal-assist. Det er det færdselsloven definerer som "cykel" og kræver ikke registrering, kørekort eller forsikring.</li>
+      </ul>
+      <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke er cykler jvf. dansk lovgivning:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>El-løbehjul og el-scootere</strong> — andet køretøj-segment.</li>
+        <li><strong>Speed pedelecs</strong> (cykler med motor 250-1000W eller hastighed over 25 km/t med pedal-assist) — kræver registrering som lille knallert (L1e), nummerplade og ansvarsforsikring.</li>
+        <li><strong>El-motocross, el-motorcykler og el-mopeder</strong> over 1000W eller over 45 km/t — kræver kørekort og fuld registrering som motorkøretøj.</li>
+        <li><strong>Almindelige knallerter, scootere og motorcykler.</strong></li>
+        <li><strong>Cykelreservedele eller tilbehør uden tilhørende cykel</strong> (kan ændres i en fremtidig version af platformen).</li>
+      </ul>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist, så køber kan verificere at cyklen falder inden for cykel-definitionen.</p>
+
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
       <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 30 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>

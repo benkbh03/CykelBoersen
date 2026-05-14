@@ -31,6 +31,11 @@ export function createDealersPage({
 }) {
   let _dealersPageData = [];
   let _dealerGPSActive = false;
+  // "Se alle forhandlere"-toggle. Vises kun de første DEALERS_INITIAL_LIMIT
+  // forhandlere indtil brugeren klikker knappen. Forhindrer at siden bliver
+  // for lang og overvældende når der er mange forhandlere.
+  let _dealersShowAll = false;
+  const DEALERS_INITIAL_LIMIT = 3;
   let _dealerGPSCoords = null;
   let _dealerActiveServices = new Set();
   let _dealerSignupSource = null;
@@ -97,6 +102,7 @@ export function createDealersPage({
     _dealersPageData = [];
     _dealerGPSActive = false;
     _dealerGPSCoords = null;
+    _dealersShowAll = false;
 
     _dealerActiveServices = new Set();
 
@@ -247,11 +253,34 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     grid.className = 'dealer-cards';
     if (filtered.length === 0) {
       grid.innerHTML = '<p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Ingen forhandlere matcher de valgte services.</p>';
+      // Fjern evt. "Se alle"-knap fra forrige render
+      const oldBtn = document.getElementById('see-all-dealers-btn');
+      if (oldBtn) oldBtn.remove();
       return;
     }
-    grid.innerHTML = filtered.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
+
+    // Begræns til de første DEALERS_INITIAL_LIMIT indtil brugeren har klikket "Se alle"
+    const visible = _dealersShowAll ? filtered : filtered.slice(0, DEALERS_INITIAL_LIMIT);
+    grid.innerHTML = visible.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
       buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm)
     ).join('');
+
+    // Tilføj/opdater "Se alle forhandlere (X)"-knap hvis der er flere end limit
+    const oldBtn = document.getElementById('see-all-dealers-btn');
+    if (oldBtn) oldBtn.remove();
+    if (!_dealersShowAll && filtered.length > DEALERS_INITIAL_LIMIT) {
+      const remaining = filtered.length - DEALERS_INITIAL_LIMIT;
+      const btn = document.createElement('div');
+      btn.id = 'see-all-dealers-btn';
+      btn.innerHTML = `<button onclick="expandAllDealers()" class="see-all-dealers-cta">Se alle forhandlere (${remaining} flere) →</button>`;
+      grid.after(btn);
+    }
+  }
+
+  // Klikket fra "Se alle forhandlere"-knappen
+  function expandAllDealers() {
+    _dealersShowAll = true;
+    sortAndRenderDealers();
   }
 
   function toggleDealerServiceFilter(serviceKey, btn) {
@@ -438,6 +467,40 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <div class="bd-perk">✅ <span>Direkte beskeder fra købere</span></div>
         <div class="bd-perk">✅ <span>Prioriteret placering i søgning</span></div>
         <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
+      </div>
+
+      <div class="bd-scope">
+        <h3 class="bd-scope-title">📋 Hvad må jeg sælge på Cykelbørsen?</h3>
+        <p class="bd-scope-lead">Vi er <strong>kun for cykler</strong>. Læs vores afgrænsning inden du opretter dig som forhandler.</p>
+        <div class="bd-scope-grid">
+          <div class="bd-scope-col bd-scope-col--yes">
+            <div class="bd-scope-col-header">
+              <span class="bd-scope-col-icon">✅</span>
+              <span class="bd-scope-col-label">Må sælges</span>
+            </div>
+            <ul>
+              <li>Alle slags cykler (racer, MTB, gravel, citybike, ladcykel, børnecykel, BMX, tandem)</li>
+              <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
+            </ul>
+          </div>
+          <div class="bd-scope-col bd-scope-col--no">
+            <div class="bd-scope-col-header">
+              <span class="bd-scope-col-icon">❌</span>
+              <span class="bd-scope-col-label">Må IKKE sælges</span>
+            </div>
+            <ul>
+              <li>El-løbehjul og el-scootere</li>
+              <li>Speed pedelecs (250-1000W eller over 25 km/t) — kræver registrering</li>
+              <li>El-motocross, el-motorcykler og el-mopeder</li>
+              <li>Almindelige knallerter og motorcykler</li>
+              <li>Cykelreservedele eller tilbehør alene (uden cykel)</li>
+            </ul>
+          </div>
+        </div>
+        <p class="bd-scope-note">El-cykler over 250W er juridisk en knallert eller motorcykel i Danmark og kræver registrering, nummerplade og forsikring. Vi tillader dem ikke fordi det forvirrer købere og lægger juridisk risiko på dig som sælger.</p>
+        <p class="bd-scope-note bd-scope-note--link">
+          <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Læs hele § 4a om tilladt sortiment →</a>
+        </p>
       </div>
 
       <div class="bd-form">
@@ -707,6 +770,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     toggleDealerGPS,
     sortAndRenderDealers,
     toggleDealerServiceFilter,
+    expandAllDealers,
     buildDealerCardFull,
     renderStars,
     renderBecomeDealerPage,

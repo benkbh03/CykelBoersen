@@ -557,6 +557,7 @@ const renderDealersPage        = lazyMethod(_ensureDealersPage, 'renderDealersPa
 const toggleDealerGPS          = lazyMethod(_ensureDealersPage, 'toggleDealerGPS');
 const sortAndRenderDealers     = lazyMethod(_ensureDealersPage, 'sortAndRenderDealers');
 const toggleDealerServiceFilter = lazyMethod(_ensureDealersPage, 'toggleDealerServiceFilter');
+const expandAllDealers         = lazyMethod(_ensureDealersPage, 'expandAllDealers');
 const renderBecomeDealerPage   = lazyMethod(_ensureDealersPage, 'renderBecomeDealerPage');
 const submitDealerApplication  = lazyMethod(_ensureDealersPage, 'submitDealerApplication');
 const openSubscriptionPortal   = lazyMethod(_ensureDealersPage, 'openSubscriptionPortal');
@@ -639,6 +640,7 @@ window.renderDealersPage       = renderDealersPage;
 window.toggleDealerGPS         = toggleDealerGPS;
 window.sortAndRenderDealers    = sortAndRenderDealers;
 window.toggleDealerServiceFilter = toggleDealerServiceFilter;
+window.expandAllDealers        = expandAllDealers;
 
 /* ============================================================
    INIT – hent session én gang og sæt alt op
