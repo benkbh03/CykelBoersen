@@ -1,0 +1,274 @@
+/* ============================================================
+   BRAND-SIDER
+   - Brands-oversigt (/maerker): grid med kuraterede og øvrige mærker
+   - Brand-landingsside (/cykler/:brand): hero + cykler + forhandlere + 
+     populære modeller + relaterede mærker
+   Extraheret fra 06-profile-page.css for at holde det modul under ~3000
+   linjer. Loaded efter 06 så cascade-ordningen er bevaret.
+   ============================================================ */
+
+
+/* ── Brands-oversigt (/maerker) ── */
+.brands-overview-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+.brands-overview-hero {
+  text-align: center;
+  margin: 16px 0 32px;
+}
+.brands-overview-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2.4rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 12px 0 12px;
+}
+.brands-overview-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.brands-overview-section {
+  margin: 32px 0;
+}
+.brands-overview-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 16px;
+}
+.brands-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+}
+.brand-tile {
+  display: flex; flex-direction: column;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+}
+.brand-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: var(--rust);
+}
+.brand-tile-name {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  margin-bottom: 2px;
+}
+.brand-tile-count {
+  font-size: 0.78rem;
+  color: var(--rust);
+  font-weight: 600;
+}
+.brand-tile-count-empty {
+  color: var(--muted);
+  font-weight: 400;
+  font-style: italic;
+}
+.brand-tile-compact {
+  padding: 10px 14px;
+}
+.brand-tile-compact .brand-tile-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ── Brand-landingsside (/cykler/:brand) ── */
+.brand-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+.brand-bikes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 250px));
+  gap: 16px;
+  justify-content: start;
+}
+@media (max-width: 600px) {
+  .brand-bikes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+/* Initielt kollapset: kun de første 4 cykler/forhandlere — resten åbnes
+   med en "Vis alle"-knap nedenfor. Holder mærkesiden kompakt selv for
+   store mærker som Trek, Specialized osv. */
+.brand-bikes-grid--collapsed > .bike-card:nth-child(n+5) { display: none; }
+.brand-dealers-list--collapsed > .brand-dealer-card:nth-child(n+5) { display: none; }
+.brand-show-more-wrap {
+  display: flex; justify-content: center;
+  margin-top: 18px;
+}
+.brand-show-more-wrap:empty { display: none; }
+.brand-show-more-btn {
+  background: var(--cream); color: var(--charcoal);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.brand-show-more-btn:hover {
+  background: #fff;
+  border-color: var(--rust);
+  color: var(--rust);
+}
+.brand-show-more-btn:active { transform: translateY(1px); }
+.brand-page-hero {
+  text-align: center;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.brand-page-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2.4rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 16px 0 6px;
+}
+.brand-page-tagline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; color: var(--muted);
+  margin: 0 0 16px;
+  font-style: italic;
+}
+.brand-page-meta {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  justify-content: center;
+}
+.brand-meta-chip {
+  background: var(--sand);
+  color: var(--charcoal);
+  font-size: 0.85rem; font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-family: 'DM Sans', sans-serif;
+}
+.brand-page-body {
+  max-width: 720px; margin: 0 auto 32px;
+}
+.brand-page-description {
+  font-size: 1.02rem; line-height: 1.7;
+  color: var(--charcoal);
+}
+.brand-page-section {
+  margin: 36px 0;
+}
+.brand-page-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 16px;
+}
+.brand-models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.brand-models-group {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+.brand-models-group-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; font-weight: 700;
+  color: var(--forest);
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.brand-models-list {
+  list-style: none; padding: 0; margin: 0;
+}
+.brand-models-list li {
+  font-size: 0.9rem; color: var(--charcoal);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.brand-models-list li:last-child { border-bottom: none; }
+.brand-dealers-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.brand-dealer-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.brand-dealer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.brand-dealer-logo {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--rust); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-weight: 700;
+  flex-shrink: 0; overflow: hidden;
+}
+.brand-dealer-logo img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.brand-dealer-name {
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal);
+}
+.brand-dealer-city {
+  font-size: 0.82rem; color: var(--muted);
+  margin-top: 2px;
+}
+.brand-related-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.brand-related-chip {
+  background: var(--sand);
+  color: var(--charcoal);
+  padding: 8px 16px;
+  border-radius: 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.brand-related-chip:hover {
+  background: var(--rust);
+  color: #fff;
+}
+.brand-empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--muted);
+}
+.brand-cta-btn {
+  background: var(--rust); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 12px 24px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600; cursor: pointer;
+  margin-top: 12px;
+}
+
+

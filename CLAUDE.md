@@ -8,9 +8,10 @@ Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Singl
 
 ```
 CykelBoersen/
-├── index.html          # Al HTML og modal-markup (~1175 linjer)
-├── main.js             # Al applogik (~7600+ linjer vanilla JS)
-├── style.css           # Al styling (~3600 linjer)
+├── index.html          # Al HTML og modal-markup (~1.700 linjer)
+├── main.js             # App-bootstrap + orchestration (~2.800 linjer — feature-logik er splittet ud i js/*.js)
+├── js/                 # 36 feature-moduler (~17.000 linjer total) — se ARCHITECTURE.md
+├── css/                # 9 nummererede stylesheets (01-base → 09-compare, ~11.000 linjer total)
 ├── CNAME               # GitHub Pages domæne (xn--cykelbrsen-5cb.dk)
 ├── _redirects          # SPA routing: /* → /index.html 200
 ├── robots.txt          # Tillader alle crawlers + sitemap-link
