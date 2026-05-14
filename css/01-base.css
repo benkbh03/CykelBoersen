@@ -430,8 +430,7 @@ nav {
     padding: 0 8px;
   }
   .search-hero-sub,
-  .hero-cat-chips,
-  #save-search-btn {
+  .hero-cat-chips {
     display: none !important;
   }
   .search-hero-text { margin-bottom: 10px; }
@@ -549,18 +548,32 @@ nav {
 .search-pill-btn svg { width: 15px; height: 15px; }
 .search-pill-btn:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55); }
 .search-pill-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
+/* Cykelagent-pill: synlig peer til Søg-knappen, ikke konkurrent.
+   Cream-baggrund + charcoal-tekst gør den læselig over hero-billedet
+   uden at stjæle visuel vægt fra rust-Søg-knappen. */
 #save-search-btn {
-  background: rgba(245,240,232,0.1) !important;
-  border: 1px solid rgba(245,240,232,0.2) !important;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cream) !important;
+  border: 1px solid rgba(26,26,24,0.08) !important;
   border-radius: 999px !important;
-  width: 46px; height: 46px;
-  padding: 0 !important;
-  cursor: pointer; font-size: 1.05rem;
-  color: rgba(245,240,232,0.8) !important;
-  transition: background 0.15s, color 0.15s; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
+  height: 46px;
+  padding: 0 18px !important;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; font-weight: 600;
+  color: var(--charcoal) !important;
+  white-space: nowrap; flex-shrink: 0;
+  box-shadow: 0 10px 28px -10px rgba(0,0,0,0.45);
+  transition: transform 0.15s, box-shadow 0.2s, background 0.15s;
 }
-#save-search-btn:hover { background: rgba(245,240,232,0.2) !important; color: var(--cream) !important; }
+#save-search-btn .save-search-icon { font-size: 1.05rem; line-height: 1; }
+#save-search-btn .save-search-text { letter-spacing: -0.005em; }
+#save-search-btn:hover {
+  background: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px -10px rgba(0,0,0,0.5);
+}
+#save-search-btn:focus-visible { outline: 2px solid rgba(232,105,74,0.7); outline-offset: 3px; }
 
 /* ── HURTIGFILTER ── */
 .filters-row {
