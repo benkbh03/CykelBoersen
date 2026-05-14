@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113cf" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113cg" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,15 +47,15 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cf">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cf">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cg">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cg">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -316,17 +316,89 @@
       </div>
       <div class="sidebar-box">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
-          <h3>Sælgertype</h3>
+          <h3>Pris</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="filter-group sidebar-section-body">
-          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="applyFilters()"> Alle sælgere <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="applyFilters()"> 🏪 Forhandlere <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="applyFilters()"> 👤 Private <span class="filter-count">–</span></label>
+        <div class="price-range sidebar-section-body">
+          <div class="price-inputs">
+            <input type="number" placeholder="Min kr." min="0">
+            <span>–</span>
+            <input type="number" placeholder="Max kr." min="0">
+          </div>
+          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
       <div class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Stelstørrelse</h3>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleSizeInfo()" aria-label="Størrelsesguide" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="wheel-info-popup" id="size-info-popup" style="display:none">
+          <p style="font-size:0.75rem;color:var(--muted);margin:0 0 8px">Vejledende — varierer efter cykeltype og kropsbygning</p>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">XS</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">44–48 cm stel</span>
+              <span class="wi-use">Ca. 155–162 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">S</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">49–52 cm stel</span>
+              <span class="wi-use">Ca. 163–170 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">M</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">53–56 cm stel</span>
+              <span class="wi-use">Ca. 170–178 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">L</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">57–60 cm stel</span>
+              <span class="wi-use">Ca. 179–188 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">XL</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">61+ cm stel</span>
+              <span class="wi-use">Ca. 189+ cm højde</span>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XS (44–48 cm)" onchange="applyFilters()"> XS <span style="color:var(--muted);font-size:0.8rem">44–48 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="S (49–52 cm)" onchange="applyFilters()"> S <span style="color:var(--muted);font-size:0.8rem">49–52 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="M (53–56 cm)" onchange="applyFilters()"> M <span style="color:var(--muted);font-size:0.8rem">53–56 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="L (57–60 cm)" onchange="applyFilters()"> L <span style="color:var(--muted);font-size:0.8rem">57–60 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XL (61+ cm)" onchange="applyFilters()"> XL <span style="color:var(--muted);font-size:0.8rem">61+ cm</span> <span class="filter-count">–</span></label>
+          <div class="height-finder">
+            <label class="height-finder-label">Find din størrelse (voksen)</label>
+            <div class="height-finder-row">
+              <input type="number" id="height-input" placeholder="Din højde cm" min="140" max="220" oninput="suggestFrameSize()">
+              <span id="height-result"></span>
+            </div>
+            <div class="height-finder" style="margin-top:10px;">
+              <label class="height-finder-label">Børnecykel — barnets højde</label>
+              <div class="height-finder-row">
+                <input type="number" id="child-height-input" placeholder="Barnets højde cm" min="85" max="175" oninput="suggestChildBikeSize()">
+                <span id="child-height-result"></span>
+              </div>
+              <div id="child-size-detail" style="font-size:0.75rem;color:var(--muted);margin-top:4px;line-height:1.4;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Mærke</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
@@ -429,7 +501,7 @@
         </div>
       </div>
       <div class="sidebar-box collapsed">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Cykeltype</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
@@ -443,29 +515,8 @@
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Gravel" onchange="applyFilters()"> Gravel <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
-          <h3>Pris</h3>
-          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
-        </div>
-        <div class="price-range sidebar-section-body">
-          <div class="price-inputs">
-            <input type="number" placeholder="Min kr." min="0">
-            <span>–</span>
-            <input type="number" placeholder="Max kr." min="0">
-          </div>
-          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
-        </div>
-      </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
-          <h3>Farve</h3>
-          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
-        </div>
-        <div class="filter-group sidebar-section-body color-swatch-grid" id="color-filter-grid"></div>
-      </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Stand</h3>
           <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
             <button class="wheel-info-btn" onclick="event.stopPropagation();toggleConditionInfo()" aria-label="Hvad betyder stand?" type="button">?</button>
@@ -485,77 +536,26 @@
           <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Brugt" onchange="applyFilters()"> Brugt <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
-          <h3>Stelstørrelse</h3>
-          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleSizeInfo()" aria-label="Størrelsesguide" type="button">?</button>
-            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
-          </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Farve</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="wheel-info-popup" id="size-info-popup" style="display:none">
-          <p style="font-size:0.75rem;color:var(--muted);margin:0 0 8px">Vejledende — varierer efter cykeltype og kropsbygning</p>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size">XS</div>
-            <div class="wheel-info-text">
-              <span class="wi-pro">44–48 cm stel</span>
-              <span class="wi-use">Ca. 155–162 cm højde</span>
-            </div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size">S</div>
-            <div class="wheel-info-text">
-              <span class="wi-pro">49–52 cm stel</span>
-              <span class="wi-use">Ca. 163–170 cm højde</span>
-            </div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size">M</div>
-            <div class="wheel-info-text">
-              <span class="wi-pro">53–56 cm stel</span>
-              <span class="wi-use">Ca. 170–178 cm højde</span>
-            </div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size">L</div>
-            <div class="wheel-info-text">
-              <span class="wi-pro">57–60 cm stel</span>
-              <span class="wi-use">Ca. 179–188 cm højde</span>
-            </div>
-          </div>
-          <div class="wheel-info-row">
-            <div class="wheel-info-size">XL</div>
-            <div class="wheel-info-text">
-              <span class="wi-pro">61+ cm stel</span>
-              <span class="wi-use">Ca. 189+ cm højde</span>
-            </div>
-          </div>
+        <div class="filter-group sidebar-section-body color-swatch-grid" id="color-filter-grid"></div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Sælgertype</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
         <div class="filter-group sidebar-section-body">
-          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XS (44–48 cm)" onchange="applyFilters()"> XS <span style="color:var(--muted);font-size:0.8rem">44–48 cm</span> <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="S (49–52 cm)" onchange="applyFilters()"> S <span style="color:var(--muted);font-size:0.8rem">49–52 cm</span> <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="M (53–56 cm)" onchange="applyFilters()"> M <span style="color:var(--muted);font-size:0.8rem">53–56 cm</span> <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="L (57–60 cm)" onchange="applyFilters()"> L <span style="color:var(--muted);font-size:0.8rem">57–60 cm</span> <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XL (61+ cm)" onchange="applyFilters()"> XL <span style="color:var(--muted);font-size:0.8rem">61+ cm</span> <span class="filter-count">–</span></label>
-          <div class="height-finder">
-            <label class="height-finder-label">Find din størrelse (voksen)</label>
-            <div class="height-finder-row">
-              <input type="number" id="height-input" placeholder="Din højde cm" min="140" max="220" oninput="suggestFrameSize()">
-              <span id="height-result"></span>
-            </div>
-            <div class="height-finder" style="margin-top:10px;">
-              <label class="height-finder-label">Børnecykel — barnets højde</label>
-              <div class="height-finder-row">
-                <input type="number" id="child-height-input" placeholder="Barnets højde cm" min="85" max="175" oninput="suggestChildBikeSize()">
-                <span id="child-height-result"></span>
-              </div>
-              <div id="child-size-detail" style="font-size:0.75rem;color:var(--muted);margin-top:4px;line-height:1.4;"></div>
-            </div>
-          </div>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="applyFilters()"> Alle sælgere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="applyFilters()"> 🏪 Forhandlere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="applyFilters()"> 👤 Private <span class="filter-count">–</span></label>
         </div>
       </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Hjulstørrelse</h3>
           <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
             <button class="wheel-info-btn" onclick="event.stopPropagation();toggleWheelInfo()" aria-label="Hvad betyder hjulstørrelse?" type="button">?</button>
