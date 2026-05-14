@@ -2569,6 +2569,7 @@ async function loadAllUsers() {
       + '<div class="admin-row-actions">'
       + (isDealer && !isVerified ? '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Verificer</button>' : '')
       + (isVerified ? '<button class="btn-reject" onclick="revokeDealer(\'' + p.id + '\')">Fjern verificering</button>' : '')
+      + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + (p.name || 'Ukendt').replace(/'/g, "\\'") + '\')" title="Slet bruger permanent">🗑️ Slet</button>'
       + '</div></div>';
   }).join('');
 }
@@ -2607,12 +2608,25 @@ async function revokeDealer(userId) {
   loadAllUsers();
 }
 
+async function deleteUserAsAdmin(userId, name) {
+  const displayName = name || 'denne bruger';
+  // Dobbelt-bekræftelse fordi handlingen er irreversibel og sletter ALLE
+  // brugerens data (cykler, billeder, beskeder, anmeldelser, gemte søgninger)
+  if (!confirm(`⚠️ Slet ${displayName} permanent?\n\nDette sletter:\n• Profil + auth-konto\n• Alle deres annoncer + billeder\n• Beskeder sendt eller modtaget\n• Anmeldelser de har givet eller fået\n• Gemte søgninger og favoritter\n\nHandlingen kan IKKE fortrydes.`)) return;
+  if (!confirm(`Sidste chance: bekræft permanent sletning af ${displayName}`)) return;
+  const res = await _callAdminAction('delete_user', userId);
+  if (!res.ok) { showToast('❌ ' + res.error); return; }
+  showToast('🗑️ Bruger slettet');
+  loadAllUsers();
+}
+
 window.openAdminPanel       = openAdminPanel;
 window.closeAdminPanel      = closeAdminPanel;
 window.switchAdminTab       = switchAdminTab;
 window.approveDealer        = approveDealer;
 window.rejectDealer         = rejectDealer;
 window.revokeDealer         = revokeDealer;
+window.deleteUserAsAdmin    = deleteUserAsAdmin;
 
 /* ============================================================
    AUTOCOMPLETE SØGNING
