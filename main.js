@@ -254,6 +254,7 @@ const {
   openProfileModal, closeProfileModal, showProfileData, switchProfileTab,
   saveProfile, uploadAvatar, logout, deleteAccount, closeDeleteAccountModal,
   onDeleteConfirmInput, confirmDeleteAccount, onSellerTypeChange,
+  grantAdminOnboarding, revokeAdminOnboarding,
 } = createProfilePage({
   supabase, showToast, btnLoading, enableFocusTrap, disableFocusTrap,
   safeAvatarUrl, getInitials, invalidateGeocodeEntry,
@@ -2292,6 +2293,8 @@ window.askIfAvailable       = askIfAvailable;
 window.switchDealerProfileTab = switchDealerProfileTab;
 window.saveProfile          = saveProfile;
 window.onSellerTypeChange   = onSellerTypeChange;
+window.grantAdminOnboarding = grantAdminOnboarding;
+window.revokeAdminOnboarding = revokeAdminOnboarding;
 window.uploadAvatar      = uploadAvatar;
 window.deleteListing     = deleteListing;
 window.togglePill        = togglePill;

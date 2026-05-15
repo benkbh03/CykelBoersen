@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113ci" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113cj" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,16 +47,16 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113ci">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113ci">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cj">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113cj">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1129,6 +1129,35 @@
             </div>
           </div>
           <button id="save-profile-btn" class="form-submit" onclick="saveProfile()">Gem ændringer</button>
+
+          <!-- Cykelbørsen onboarding-service (admin opretter annoncer på forhandlers vegne) -->
+          <div class="onboarding-service-box" id="admin-onboarding-box" style="display:none;">
+            <div class="onboarding-service-title">🛠️ Cykelbørsen onboarding-service</div>
+            <p class="onboarding-service-desc">Lad Cykelbørsen oprette annoncer på dine vegne mens du kommer i gang. Vi kan KUN oprette annoncer — vi har ikke adgang til dine beskeder, indstillinger eller andet på din profil.</p>
+            <a href="/databehandleraftale" onclick="event.preventDefault();navigateTo('/databehandleraftale')" class="onboarding-service-dpa-link">Læs databehandleraftalen →</a>
+
+            <!-- Vises når IKKE opt-in -->
+            <div id="admin-onboarding-grant">
+              <label class="onboarding-service-consent">
+                <input type="checkbox" id="admin-onboarding-consent-cb">
+                <span>Jeg har læst databehandleraftalen og giver tilladelse</span>
+              </label>
+              <button class="onboarding-service-btn-grant" id="admin-onboarding-grant-btn" onclick="grantAdminOnboarding()" disabled>Aktivér onboarding-service</button>
+            </div>
+
+            <!-- Vises når opt-in -->
+            <div id="admin-onboarding-active" style="display:none;">
+              <div class="onboarding-service-status">
+                <span class="onboarding-service-status-icon">✓</span>
+                <div>
+                  <div class="onboarding-service-status-title">Aktiveret</div>
+                  <div class="onboarding-service-status-sub" id="admin-onboarding-activated-at"></div>
+                </div>
+              </div>
+              <div class="onboarding-service-audit" id="admin-onboarding-audit"></div>
+              <button class="onboarding-service-btn-revoke" onclick="revokeAdminOnboarding()">Tilbagekald tilladelse</button>
+            </div>
+          </div>
 
           <!-- Forhandlerabonnement -->
           <div class="subscription-box" id="subscription-box" style="display:none;">

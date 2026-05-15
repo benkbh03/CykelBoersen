@@ -101,10 +101,15 @@ export function createProfilePage({
     const shopGroup    = document.getElementById('edit-shop-group');
     const addressGroup = document.getElementById('edit-address-group');
     const offersGroup  = document.getElementById('edit-dealer-offers-group');
+    const onboardingBox = document.getElementById('admin-onboarding-box');
     const isDealer = profile.seller_type === 'dealer';
     shopGroup.style.display    = isDealer ? 'flex' : 'none';
     addressGroup.style.display = isDealer ? 'flex' : 'none';
     if (offersGroup) offersGroup.style.display = isDealer ? 'flex' : 'none';
+    if (onboardingBox) {
+      onboardingBox.style.display = isDealer ? '' : 'none';
+      if (isDealer) _renderAdminOnboardingState(profile);
+    }
 
     const finCb = document.getElementById('edit-offers-financing');
     const triCb = document.getElementById('edit-offers-tradein');
@@ -371,6 +376,95 @@ export function createProfilePage({
     }
   }
 
+  /* ============================================================
+     ONBOARDING-SERVICE: forhandler-opt-in til admin-create-bike
+     ============================================================ */
+
+  function _renderAdminOnboardingState(profile) {
+    const grantSection  = document.getElementById('admin-onboarding-grant');
+    const activeSection = document.getElementById('admin-onboarding-active');
+    const cb            = document.getElementById('admin-onboarding-consent-cb');
+    const grantBtn      = document.getElementById('admin-onboarding-grant-btn');
+    if (!grantSection || !activeSection) return;
+
+    if (profile.admin_can_create_listings) {
+      grantSection.style.display  = 'none';
+      activeSection.style.display = '';
+      const at = profile.admin_authorized_at
+        ? new Date(profile.admin_authorized_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'ukendt dato';
+      const activatedAt = document.getElementById('admin-onboarding-activated-at');
+      if (activatedAt) activatedAt.textContent = `Tilladelse givet ${at}`;
+      _loadAdminCreatedListingsCount(profile.id);
+    } else {
+      grantSection.style.display  = '';
+      activeSection.style.display = 'none';
+      if (cb) cb.checked = false;
+      if (grantBtn) grantBtn.disabled = true;
+      if (cb && !cb._adminOnboardingBound) {
+        cb._adminOnboardingBound = true;
+        cb.addEventListener('change', () => {
+          if (grantBtn) grantBtn.disabled = !cb.checked;
+        });
+      }
+    }
+  }
+
+  async function _loadAdminCreatedListingsCount(userId) {
+    const auditEl = document.getElementById('admin-onboarding-audit');
+    if (!auditEl) return;
+    const { count } = await supabase
+      .from('bikes')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .not('created_by_admin_id', 'is', null);
+    if (count && count > 0) {
+      auditEl.textContent = `${count} annonce${count === 1 ? '' : 'r'} oprettet af Cykelbørsen-admin på dine vegne`;
+    } else {
+      auditEl.textContent = 'Ingen annoncer er endnu oprettet på dine vegne';
+    }
+  }
+
+  async function grantAdminOnboarding() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    const cb = document.getElementById('admin-onboarding-consent-cb');
+    if (!cb?.checked) { showToast('⚠️ Marker checkboksen for at bekræfte samtykke'); return; }
+    const btn = document.getElementById('admin-onboarding-grant-btn');
+    const restore = btnLoading('admin-onboarding-grant-btn', 'Aktiverer...');
+    const { error } = await supabase.from('profiles').update({
+      admin_can_create_listings: true,
+      admin_authorized_at: new Date().toISOString(),
+    }).eq('id', currentUser.id);
+    restore();
+    if (error) {
+      console.error('grantAdminOnboarding fejl:', error);
+      showToast('❌ Kunne ikke aktivere — prøv igen');
+      return;
+    }
+    showToast('✓ Onboarding-service aktiveret');
+    // Refresh profile state + UI
+    const { data: fresh } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (fresh) _renderAdminOnboardingState(fresh);
+  }
+
+  async function revokeAdminOnboarding() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    if (!confirm('Tilbagekald tilladelsen til at Cykelbørsen opretter annoncer på dine vegne?\n\nEksisterende annoncer påvirkes ikke — de forbliver dine og kan redigeres som normalt. Vi kan bare ikke oprette nye på dine vegne efter dette punkt.')) return;
+    const { error } = await supabase.from('profiles').update({
+      admin_can_create_listings: false,
+    }).eq('id', currentUser.id);
+    if (error) {
+      console.error('revokeAdminOnboarding fejl:', error);
+      showToast('❌ Kunne ikke tilbagekalde — prøv igen');
+      return;
+    }
+    showToast('Tilladelse tilbagekaldt');
+    const { data: fresh } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (fresh) _renderAdminOnboardingState(fresh);
+  }
+
   return {
     openProfileModal,
     closeProfileModal,
@@ -384,5 +478,7 @@ export function createProfilePage({
     onDeleteConfirmInput,
     confirmDeleteAccount,
     onSellerTypeChange,
+    grantAdminOnboarding,
+    revokeAdminOnboarding,
   };
 }

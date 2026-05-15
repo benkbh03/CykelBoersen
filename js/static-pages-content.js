@@ -488,6 +488,64 @@ export const footerContent = {
         <p style="margin:0;line-height:1.8;color:rgba(245,240,232,0.92);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant — aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
       </div>
     `
+  },
+  databehandleraftale: {
+    title: 'Databehandleraftale — Cykelbørsen onboarding-service',
+    metaDesc: 'Databehandleraftale for forhandlere der ønsker at Cykelbørsen opretter annoncer på deres vegne under onboarding.',
+    bodyHtml: `
+      <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 14. maj 2026</p>
+      <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Formål og omfang</h3>
+      <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette annoncer på dine vegne i en begrænset onboarding-fase. Konkret må Cykelbørsen:</p>
+      <ul style="margin-bottom:16px;">
+        <li>Indsætte rækker i tabellen <code>bikes</code> med dit bruger-id som ejer</li>
+        <li>Indsætte rækker i tabellen <code>bike_images</code> linket til disse annoncer</li>
+      </ul>
+      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette dine annoncer eller andre data, ændre din pris efter oprettelse, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge function (<code>admin-create-bike</code>) — der findes ingen genvej til andre handlinger.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Forhandlerens ansvar (Dataansvarlig)</h3>
+      <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes på dine vegne. Det betyder konkret:</p>
+      <ul style="margin-bottom:16px;">
+        <li>Du skal selv reviewe annoncen efter oprettelse — vi anbefaler du gør det inden for 48 timer</li>
+        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig</li>
+        <li>Du er ansvarlig for kommunikation med købere og opfølgning på handler</li>
+        <li>Du kan til enhver tid redigere eller slette enhver annonce der er oprettet på dine vegne</li>
+        <li>Du er forbrugerretsligt ansvarlig sælger jf. Købeloven og Markedsføringsloven</li>
+      </ul>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Cykelbørsens forpligtelser (Databehandler)</h3>
+      <p style="margin-bottom:8px;">Cykelbørsen forpligter sig til:</p>
+      <ul style="margin-bottom:16px;">
+        <li>Kun at behandle dine data inden for ovennævnte scope</li>
+        <li>At føre audit-log for hver handling: hvilken admin oprettede hvilken annonce hvornår (logges i <code>bikes.created_by_admin_id</code> + Supabase function-logs i 90 dage)</li>
+        <li>At gøre audit-loggen tilgængelig for dig på forespørgsel — du kan altid kontakte os på <strong>hej@cykelbørsen.dk</strong> for udtræk</li>
+        <li>At sikre at kun verificerede Cykelbørsen-administratorer har adgang til funktionen</li>
+        <li>At underrette dig hvis Aftalens omfang ændres</li>
+      </ul>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Tilbagekaldelse</h3>
+      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå "Tillad Cykelbørsen at oprette annoncer på mine vegne" fra. Tilbagekaldelse træder i kraft med det samme — vi kan ikke oprette nye annoncer efter det tidspunkt. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Varighed</h3>
+      <p style="margin-bottom:16px;">Aftalen gælder fra du aktiverer onboarding-servicen og indtil du selv tilbagekalder den. Der er ingen automatisk udløb. Cykelbørsen anbefaler dog at du tilbagekalder tilladelsen når du selv er fortrolig med at oprette annoncer (typisk efter 1-2 ugers brug af platformen).</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Underdatabehandlere</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen bruger Supabase (database + edge functions) og Resend (e-mail) som underdatabehandlere. Disse er underlagt deres egne databehandleraftaler med EU-baseret hosting. Vi tilføjer ikke nye underdatabehandlere uden at give dig 14 dages varsel via e-mail.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Sikkerhedsbrud</h3>
+      <p style="margin-bottom:16px;">Ved sikkerhedsbrud der involverer dine data underretter Cykelbørsen dig uden ugrundet ophold og senest 72 timer efter vi har fået kendskab til bruddet, jf. GDPR art. 33.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Lovvalg og værneting</h3>
+      <p style="margin-bottom:16px;">Aftalen er underlagt dansk ret og enhver tvist afgøres ved Københavns Byret.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Kontakt</h3>
+      <p style="margin-bottom:8px;">Cykelbørsen ApS<br>
+      E-mail: <strong>hej@cykelbørsen.dk</strong><br>
+      For udtræk af audit-log eller spørgsmål om denne aftale, kontakt os på ovenstående e-mail.</p>
+
+      <p style="margin-top:24px;padding:14px;background:var(--sand);border-radius:10px;font-size:0.88rem;color:var(--muted);">Ved at aktivere onboarding-servicen i dine profilindstillinger bekræfter du at du har læst og accepteret denne databehandleraftale.</p>
+    `
   }
 };
 
