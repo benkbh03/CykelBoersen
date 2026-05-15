@@ -28,6 +28,7 @@ import { renderColorSwatches, getSelectedColors, setSelectedColors } from './col
  * @param {Function} deps.getSelectedFiles           - () => Array
  * @param {Function} deps.validateImageFile          - (file) => boolean
  * @param {Function} deps.uploadImages               - (...args) => Promise
+ * @param {Function} deps.uploadImagesNoInsert       - (adminId, onProgress) => Promise<Array<{url,is_primary}>>
  * @param {Function} deps.resetImageUpload           - () => void
  * @param {Function} deps.openCropModal              - (...args) => void
  * @param {Function} deps.getCurrentUser             - () => object|null
@@ -54,6 +55,7 @@ export function createSellPage({
   getSelectedFiles,
   validateImageFile,
   uploadImages,
+  uploadImagesNoInsert,
   resetImageUpload,
   openCropModal,
   compressForAI,
@@ -294,8 +296,15 @@ export function createSellPage({
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
 
+      // Tjek om admin opretter på vegne af en forhandler (sessionStorage-flag)
+      let actingAs = null;
+      try {
+        const raw = sessionStorage.getItem('_adminActingAs');
+        if (raw) actingAs = JSON.parse(raw);
+      } catch {}
+
       const bikeData = {
-        user_id: currentUser.id,
+        user_id: actingAs ? actingAs.id : currentUser.id,
         brand, model, price, year, city,
         original_price: price,  // Sættes ved create, opdateres aldrig — driver "Reduceret fra X → Y"-badge
         description: desc || null,
@@ -314,14 +323,42 @@ export function createSellPage({
         weight_kg:           !isNaN(weightKg) ? weightKg : null,
       };
 
-      const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
-      if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
-
-      if (getSelectedFiles().length > 0) {
-        await uploadImages(newBike.id, (current, total) => {
-          const btn = document.getElementById('sell-submit-btn');
-          if (btn) btn.textContent = `Uploader ${current}/${total}…`;
+      let newBike;
+      if (actingAs) {
+        // Admin-flow: upload billeder først (returnerer URLs), send alt til
+        // admin-create-bike edge function der atomisk opretter bike + bike_images
+        // med service-role (omgår RLS der ellers ville blokere admin-insert)
+        let images = [];
+        if (getSelectedFiles().length > 0) {
+          images = await uploadImagesNoInsert(currentUser.id, (current, total) => {
+            const btn = document.getElementById('sell-submit-btn');
+            if (btn) btn.textContent = `Uploader ${current}/${total}…`;
+          });
+        }
+        const { data, error } = await supabase.functions.invoke('admin-create-bike', {
+          body: { target_user_id: actingAs.id, bike: bikeData, images },
         });
+        if (error || data?.error) {
+          showToast('❌ ' + (data?.error || error?.message || 'Kunne ikke oprette på vegne af forhandler'));
+          console.error('admin-create-bike fejl:', error || data?.error);
+          restore();
+          return;
+        }
+        newBike = { id: data.bike_id, ...bikeData };
+        // Ryd acting-as efter succesfuld oprettelse — admin må starte forfra
+        // for at oprette næste annonce, så de tager et bevidst valg pr. annonce
+        sessionStorage.removeItem('_adminActingAs');
+        showToast(`✓ Annonce oprettet på vegne af ${actingAs.name}`);
+      } else {
+        const res = await supabase.from('bikes').insert(bikeData).select().single();
+        if (res.error) { showToast('❌ Noget gik galt – prøv igen'); console.error(res.error); restore(); return; }
+        newBike = res.data;
+        if (getSelectedFiles().length > 0) {
+          await uploadImages(newBike.id, (current, total) => {
+            const btn = document.getElementById('sell-submit-btn');
+            if (btn) btn.textContent = `Uploader ${current}/${total}…`;
+          });
+        }
       }
 
       loadBikes();
@@ -377,8 +414,28 @@ export function createSellPage({
       _sellFormCache['sell-city'] = _profile.city;
     }
 
+    // Banner når admin opretter på vegne af forhandler (acting-as-mode)
+    let actingAs = null;
+    try {
+      const raw = sessionStorage.getItem('_adminActingAs');
+      if (raw) actingAs = JSON.parse(raw);
+    } catch {}
+    const actingAsBanner = actingAs ? `
+      <div class="sell-acting-as-banner">
+        <div class="sell-acting-as-content">
+          <span class="sell-acting-as-icon">🛠️</span>
+          <div>
+            <div class="sell-acting-as-title">Du opretter annonce på vegne af <strong>${esc(actingAs.name)}</strong></div>
+            <div class="sell-acting-as-sub">Annoncen tilhører forhandleren — ikke dig. Du kan ikke svare på beskeder eller redigere bagefter.</div>
+          </div>
+          <button class="sell-acting-as-stop" onclick="stopActingAsDealer()" title="Stop acting-as-tilstand">✕ Stop</button>
+        </div>
+      </div>
+    ` : '';
+
     document.getElementById('detail-view').innerHTML = `
       <div class="sell-wizard">
+        ${actingAsBanner}
         <div class="sell-wizard-top">
           <button class="sell-wizard-back-btn" onclick="backSell()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>

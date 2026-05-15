@@ -348,6 +348,42 @@ export function createImageUpload({
     selectedFiles = [];
   }
 
+  /* Variant til admin-on-behalf-of: uploader til storage men indsætter IKKE
+     i bike_images-tabellen. Returnerer array af { url, is_primary } som så
+     sendes til admin-create-bike edge function der laver insertet med
+     service-role (forhandler ejer bike, admin er ikke owner, så direct
+     insert fra admin ville blive blokeret af RLS).
+     Storage-path er admin-id-scoped så vi kan spore hvem der uploadede. */
+  async function uploadImagesNoInsert(adminUserId, onProgress) {
+    if (selectedFiles.length === 0) return [];
+    const total = selectedFiles.length;
+    const urls = [];
+    let failed = 0;
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const item = selectedFiles[i];
+      if (typeof onProgress === 'function') onProgress(i + 1, total);
+
+      const ext      = item.file.name.split('.').pop();
+      const filename = `admin-onbehalf/${adminUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const { error } = await supabase.storage
+        .from('bike-images')
+        .upload(filename, item.file, { contentType: item.file.type, upsert: false, cacheControl: '2592000' });
+
+      if (error) { console.error('Upload fejl:', error); failed++; continue; }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('bike-images')
+        .getPublicUrl(filename);
+
+      urls.push({ url: publicUrl, is_primary: item.isPrimary });
+    }
+    if (failed > 0) showToast(`⚠️ ${failed} billede${failed > 1 ? 'r' : ''} kunne ikke uploades`);
+    selectedFiles.forEach(f => URL.revokeObjectURL(f.url));
+    selectedFiles = [];
+    return urls;
+  }
+
   function resetImageUpload() {
     selectedFiles = [];
     const grid  = document.getElementById('img-preview-grid');
@@ -367,6 +403,7 @@ export function createImageUpload({
     setPrimary,
     removeImage,
     uploadImages,
+    uploadImagesNoInsert,
     resetImageUpload,
     openCropModal,
     setCropRatio,

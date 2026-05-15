@@ -792,6 +792,77 @@
   margin-left: 4px;
 }
 .btn-delete-user:hover { background: #d44a35; color: #fff; }
+/* "Opret annonce på vegne af"-knap i admin-panel — kun synlig for dealers
+   med admin_can_create_listings=true. Forest-grøn for at signalere konstruktiv
+   handling (i kontrast til den røde Slet-knap). */
+.btn-onboard-create {
+  background: var(--forest); color: var(--cream);
+  border: none;
+  border-radius: 6px; padding: 7px 14px;
+  font-size: 0.78rem; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  margin-left: 4px;
+}
+.btn-onboard-create:hover { background: var(--forest-light); }
+.admin-row-no-onboard {
+  font-size: 0.72rem; color: var(--muted);
+  padding: 5px 10px;
+  background: var(--sand);
+  border-radius: 6px;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+.onboard-indicator {
+  font-size: 0.85rem;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Banner på sell-page når admin opretter på vegne af forhandler */
+.sell-acting-as-banner {
+  background: linear-gradient(135deg, var(--forest) 0%, #1f3322 100%);
+  color: var(--cream);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 0 0 16px;
+}
+.sell-acting-as-content {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'DM Sans', sans-serif;
+}
+.sell-acting-as-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.sell-acting-as-title {
+  font-size: 0.92rem;
+  margin-bottom: 2px;
+}
+.sell-acting-as-title strong { color: #fff; font-weight: 700; }
+.sell-acting-as-sub {
+  font-size: 0.78rem;
+  color: rgba(245,240,232,0.8);
+  line-height: 1.4;
+}
+.sell-acting-as-stop {
+  background: rgba(255,255,255,0.15);
+  color: var(--cream);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.sell-acting-as-stop:hover { background: rgba(255,255,255,0.28); }
+@media (max-width: 600px) {
+  .sell-acting-as-content { flex-wrap: wrap; gap: 10px; }
+  .sell-acting-as-stop { width: 100%; }
+}
 
 /* Verificeret badge */
 .verified-badge {

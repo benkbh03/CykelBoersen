@@ -273,7 +273,7 @@ const {
 
 const {
   validateImageFile, compressImage, compressForAI, previewImages, renderImagePreviews,
-  setPrimary, removeImage, uploadImages, resetImageUpload,
+  setPrimary, removeImage, uploadImages, uploadImagesNoInsert, resetImageUpload,
   openCropModal, setCropRatio, applyCrop, closeCropModal,
   getSelectedFiles,
 } = createImageUpload({
@@ -375,6 +375,7 @@ const _ensureSellPage = lazyCtrl(
     getSelectedFiles,
     validateImageFile,
     uploadImages,
+    uploadImagesNoInsert,
     resetImageUpload,
     openCropModal,
     compressForAI,
@@ -2561,20 +2562,50 @@ async function loadAllUsers() {
   list.innerHTML = result.data.map(function(p) {
     var isVerified = p.verified;
     var isDealer   = p.seller_type === 'dealer';
+    var canOnboard = isDealer && !!p.admin_can_create_listings;
+    var safeName   = (p.shop_name || p.name || 'Ukendt').replace(/'/g, "\\'");
+    var onboardBtn = canOnboard
+      ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
+      : (isDealer ? '<span class="admin-row-no-onboard" title="Forhandler skal selv aktivere onboarding-service i deres indstillinger">📋 Ikke aktiveret</span>' : '');
     return '<div class="admin-row">'
       + '<div class="admin-row-info">'
       + '<div class="admin-row-name">'
       + (p.name || 'Ukendt')
       + (isVerified ? ' <span class="verified-badge">✓</span>' : '')
+      + (canOnboard ? ' <span class="onboard-indicator" title="Forhandler har givet tilladelse til at admin opretter annoncer på deres vegne">🛠️</span>' : '')
       + '</div>'
       + '<div class="admin-row-meta">' + (p.email || '') + ' · ' + (isDealer ? '🏪 Forhandler' : '👤 Privat') + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'
       + (isDealer && !isVerified ? '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Verificer</button>' : '')
       + (isVerified ? '<button class="btn-reject" onclick="revokeDealer(\'' + p.id + '\')">Fjern verificering</button>' : '')
+      + onboardBtn
       + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + (p.name || 'Ukendt').replace(/'/g, "\\'") + '\')" title="Slet bruger permanent">🗑️ Slet</button>'
       + '</div></div>';
   }).join('');
+}
+
+function startActingAsDealer(dealerId, dealerName) {
+  // Gem acting-as state i sessionStorage så det overlever navigation
+  // til sell-page men forsvinder ved browser-luk
+  sessionStorage.setItem('_adminActingAs', JSON.stringify({ id: dealerId, name: dealerName }));
+  closeAdminPanel();
+  navigateTo('/saelg');
+  showToast('🛠️ Opretter annonce på vegne af ' + dealerName);
+}
+
+function stopActingAsDealer() {
+  sessionStorage.removeItem('_adminActingAs');
+  showToast('Acting-as-tilstand stoppet');
+  // Reload sell-page så banner forsvinder og normal-flow gælder
+  if (location.pathname === '/saelg') location.reload();
+}
+
+function getActingAsDealer() {
+  try {
+    const raw = sessionStorage.getItem('_adminActingAs');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
 }
 
 async function _callAdminAction(action, targetUserId) {
@@ -2630,6 +2661,8 @@ window.approveDealer        = approveDealer;
 window.rejectDealer         = rejectDealer;
 window.revokeDealer         = revokeDealer;
 window.deleteUserAsAdmin    = deleteUserAsAdmin;
+window.startActingAsDealer  = startActingAsDealer;
+window.stopActingAsDealer   = stopActingAsDealer;
 
 /* ============================================================
    AUTOCOMPLETE SØGNING
