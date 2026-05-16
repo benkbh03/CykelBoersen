@@ -676,28 +676,68 @@ export function createBikeDetail({
     // Inject Product JSON-LD for rich search results
     removeBikeJsonLd();
     const primaryImg = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
-    const jsonLd = document.createElement('script');
-    jsonLd.type = 'application/ld+json';
-    jsonLd.id = 'bike-jsonld';
-    jsonLd.textContent = JSON.stringify({
+    const allImages = (b.bike_images || []).map(i => i.url).filter(Boolean);
+    const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+
+    const buildBikeJsonLd = (sellerRating) => ({
       '@context': 'https://schema.org',
       '@type': 'Product',
       'name': bikeTitle(b.brand, b.model),
+      'sku': b.id,
+      'productID': b.id,
       'description': b.description || `${b.type} – ${b.condition}`,
-      'image': primaryImg,
+      'image': allImages.length ? allImages : (primaryImg ? [primaryImg] : []),
       'brand': { '@type': 'Brand', 'name': b.brand },
+      'category': b.type,
+      'url': `${BASE_URL}/bike/${bikeId}`,
       'offers': {
         '@type': 'Offer',
         'price': b.price,
         'priceCurrency': 'DKK',
+        'priceValidUntil': priceValidUntil,
         'availability': 'https://schema.org/InStock',
         'itemCondition': b.condition === 'Ny' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
-        'seller': { '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person', 'name': b.profiles?.shop_name || b.profiles?.name || 'Sælger' }
-      },
-      'category': b.type,
-      'url': `${BASE_URL}/bike/${bikeId}`
+        'url': `${BASE_URL}/bike/${bikeId}`,
+        'seller': {
+          '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
+          'name': b.profiles?.shop_name || b.profiles?.name || 'Sælger',
+          ...(sellerRating && sellerRating.reviewCount > 0 ? {
+            'aggregateRating': {
+              '@type': 'AggregateRating',
+              'ratingValue': sellerRating.avgRating.toFixed(1),
+              'reviewCount': sellerRating.reviewCount,
+              'bestRating': 5,
+              'worstRating': 1
+            }
+          } : {})
+        }
+      }
     });
-    document.head.appendChild(jsonLd);
+
+    const injectJsonLd = (data) => {
+      removeBikeJsonLd();
+      const node = document.createElement('script');
+      node.type = 'application/ld+json';
+      node.id = 'bike-jsonld';
+      node.textContent = JSON.stringify(data);
+      document.head.appendChild(node);
+    };
+
+    injectJsonLd(buildBikeJsonLd(null));
+
+    // Re-inject med sælger-rating når trust-data ankommer (non-blocking).
+    // Promise deles med loadSellerTrustCard så vi kun fetcher én gang.
+    if (b.profiles?.id) {
+      const trustPromise = fetchTrustData(supabase, b.profiles.id);
+      window._bikeDetailTrustPromise = trustPromise;
+      trustPromise
+        .then(stats => {
+          if (stats && stats.reviewCount > 0 && document.getElementById('bike-jsonld')) {
+            injectJsonLd(buildBikeJsonLd(stats));
+          }
+        })
+        .catch(() => {});
+    }
 
     const { html, profile } = buildBikeBodyHTML(b);
     const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
@@ -797,7 +837,7 @@ export function createBikeDetail({
     const slot = document.getElementById('seller-trust-pill-slot');
     if (!slot || !profile?.id) return;
     try {
-      const stats = await fetchTrustData(supabase, profile.id);
+      const stats = await (window._bikeDetailTrustPromise || fetchTrustData(supabase, profile.id));
       const score = calculateTrustScore(profile, stats);
       slot.outerHTML = buildTrustPillHTML(score) || '';
     } catch (e) {
