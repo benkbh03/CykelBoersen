@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113ck" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113cl" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,16 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113ck">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113ck">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113cl">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113cl">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -147,6 +148,7 @@
     <div class="logo" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" style="cursor:pointer;" role="link" aria-label="Cykelbørsen – gå til forsiden" tabindex="0">Cykel<span>børsen</span></div>
     <div class="nav-links">
       <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')" aria-label="Se alle cykelmærker">Mærker</a>
+      <a href="/cykelagenter" onclick="event.preventDefault();navigateTo('/cykelagenter')" aria-label="Opret eller administrer Cykelagenter">Cykelagenter</a>
       <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')" aria-label="Se forhandlere">Forhandlere</a>
       <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg">+ Sæt til salg</a>
       <div class="nav-admin" id="nav-admin" style="display:none;">
