@@ -588,6 +588,36 @@ window.renderBrandsOverview = renderBrandsOverview;
 window.expandBrandBikes   = expandBrandBikes;
 window.expandBrandDealers = expandBrandDealers;
 
+// Cykelagent-side — lazy-loaded (/cykelagenter)
+const _ensureCykelagentPage = lazyCtrl(
+  () => import(`./js/cykelagent-page.js?v=${ASSET_VERSION}`),
+  'createCykelagentPage',
+  () => ({
+    supabase, esc, showToast, updateSEOMeta,
+    showDetailView,
+    navigateTo:    (...args) => navigateTo(...args),
+    getCurrentUser: () => currentUser,
+    openLoginModal: (...args) => openLoginModal(...args),
+  }),
+);
+const renderCykelagentPage     = lazyMethod(_ensureCykelagentPage, 'renderCykelagentPage');
+const openCykelagentEditor     = lazyMethod(_ensureCykelagentPage, 'openCykelagentEditor');
+const closeCykelagentEditor    = lazyMethod(_ensureCykelagentPage, 'closeCykelagentEditor');
+const updateCykelagentField    = lazyMethod(_ensureCykelagentPage, 'updateCykelagentField');
+const toggleCykelagentArray    = lazyMethod(_ensureCykelagentPage, 'toggleCykelagentArray');
+const setCykelagentSellerType  = lazyMethod(_ensureCykelagentPage, 'setCykelagentSellerType');
+const saveCykelagentForm       = lazyMethod(_ensureCykelagentPage, 'saveCykelagentForm');
+const deleteCykelagentFromEditor = lazyMethod(_ensureCykelagentPage, 'deleteCykelagentFromEditor');
+const flushPendingCykelagent   = lazyMethod(_ensureCykelagentPage, 'flushPendingCykelagent');
+window.renderCykelagentPage    = renderCykelagentPage;
+window.openCykelagentEditor    = openCykelagentEditor;
+window.closeCykelagentEditor   = closeCykelagentEditor;
+window.updateCykelagentField   = updateCykelagentField;
+window.toggleCykelagentArray   = toggleCykelagentArray;
+window.setCykelagentSellerType = setCykelagentSellerType;
+window.saveCykelagentForm      = saveCykelagentForm;
+window.deleteCykelagentFromEditor = deleteCykelagentFromEditor;
+
 // Cykel-vurdering — lazy-loaded (/vurder-min-cykel)
 const _ensureValuation = lazyCtrl(
   () => import(`./js/valuation.js?v=${ASSET_VERSION}`),
@@ -906,6 +936,12 @@ async function init() {
           import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
         }
         checkSavedSearchNotifications();
+        // Hvis brugeren havde en pending Cykelagent fra et "udfyld før login"-flow,
+        // aktivér den nu. localStorage-check er billig — kører hver gang men er no-op
+        // hvis nøglen ikke findes.
+        if (localStorage.getItem('_pendingCykelagent')) {
+          flushPendingCykelagent().catch(() => {});
+        }
       }
     } else {
       _hasHadSession = false;
@@ -1669,6 +1705,7 @@ function handleRoute() {
   const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
   const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
   const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
+  const cykelagentMatch = path === '/cykelagenter' || path === '/cykelagent';
   const valuationMatch = path === '/vurder-min-cykel';
   const sizeFinderMatch = path === '/stelstoerrelse-guide' || path === '/stelstørrelse-guide';
   const compareMatch = path === '/sammenlign';
@@ -1745,6 +1782,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBrandsOverview();
+  } else if (cykelagentMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderCykelagentPage();
   } else if (valuationMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
