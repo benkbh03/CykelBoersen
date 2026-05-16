@@ -6,12 +6,13 @@
    overlapper condition-badgen (top-venstre), hjertet (top-højre) eller
    "er den til salg?"-bobblen (bund-venstre). */
 .compare-checkbox-wrap {
+  display: none;
   position: absolute; bottom: 8px; right: 8px;
   z-index: 3;
   background: rgba(255,255,255,0.94);
   border-radius: 6px;
   padding: 3px 7px 3px 5px;
-  display: inline-flex; align-items: center; gap: 4px;
+  align-items: center; gap: 4px;
   font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
   text-transform: uppercase;
   cursor: pointer;
@@ -20,6 +21,10 @@
   transition: background 0.15s;
   color: var(--charcoal);
 }
+body.compare-mode .compare-checkbox-wrap { display: inline-flex; }
+body.compare-mode .bike-card { outline: 2px dashed transparent; transition: outline-color 0.15s; }
+body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var(--forest); }
+#btn-compare-mode.active { background: var(--forest); color: #fff; border-color: var(--forest); }
 .compare-checkbox-wrap:hover { background: #fff; }
 .compare-checkbox-wrap input {
   cursor: pointer;

@@ -2419,6 +2419,18 @@ window.loadMoreBikes          = function() {
 window.toggleCompareBike      = toggleCompareBike;
 window.clearCompareIds        = clearCompareIds;
 window.syncCompareCheckboxes  = syncCompareCheckboxes;
+window.toggleCompareMode = function() {
+  const body = document.body;
+  const nowOn = !body.classList.contains('compare-mode');
+  body.classList.toggle('compare-mode', nowOn);
+  const btn = document.getElementById('btn-compare-mode');
+  if (btn) {
+    btn.classList.toggle('active', nowOn);
+    btn.setAttribute('aria-pressed', String(nowOn));
+  }
+  if (!nowOn) clearCompareIds();
+  showToast(nowOn ? '✓ Vælg cykler at sammenligne' : 'Sammenligning slået fra');
+};
 const { renderComparePage }   = createComparePage({ supabase, navigateTo, showToast });
 window.renderComparePage      = renderComparePage;
 window.closeResetModal    = closeResetModal;

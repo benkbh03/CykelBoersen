@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113cu" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113cv" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113cu">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113cu">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113cv">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113cv">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -705,6 +705,9 @@
           <button class="view-toggle active" id="btn-list-view" onclick="setView('list')" aria-label="Skift til listevisning" aria-pressed="true">☰</button>
           <button class="view-toggle" id="btn-map-page" onclick="navigateTo('/kort')" aria-label="Åbn kortvisning" title="Kortvisning med liste">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2L1 5v13l6-3 6 3 6-3V2l-6 3-6-3z"/><path d="M7 2v13M13 5v13"/></svg>
+          </button>
+          <button class="view-toggle" id="btn-compare-mode" onclick="toggleCompareMode()" aria-label="Slå sammenligning til" aria-pressed="false" title="Vælg cykler at sammenligne">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="6" height="12" rx="1"/><rect x="12" y="4" width="6" height="12" rx="1"/><path d="M9 10h2"/></svg>
           </button>
           <label for="sort-select" class="sr-only">Sorter annoncer</label>
           <select class="sort-select" id="sort-select" onchange="sortBikes(this.value)" aria-label="Sorter annoncer">
