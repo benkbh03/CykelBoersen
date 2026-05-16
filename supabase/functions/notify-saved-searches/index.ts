@@ -69,10 +69,49 @@ function bikeMatchesSearch(bike, filters) {
     if (!bike.wheel_size || !filters.wheelSizes.includes(bike.wheel_size)) return false;
   }
 
+  // Sidebar: multi-select stelstørrelser
+  // STRICT: bike.size NULL → ingen match. Brugeren har bedt om specifik størrelse,
+  // og en cykel uden størrelsesinfo er ikke "sikker" at sende notifikation om.
+  if (Array.isArray(filters.sizes) && filters.sizes.length > 0) {
+    if (!bike.size || !filters.sizes.includes(bike.size)) return false;
+  }
+
   // Sidebar: multi-select farver (overlap med bike.colors-array)
   if (Array.isArray(filters.colors) && filters.colors.length > 0) {
     const bikeColors = Array.isArray(bike.colors) ? bike.colors : [];
     if (!bikeColors.some(c => filters.colors.includes(c))) return false;
+  }
+
+  // ── TEKNISKE SPECS ───────────────────────────────────────
+  // STRICT-MATCH-POLITIK: Hvis brugeren har bedt om en specifik teknisk spec
+  // (carbon-stel, hydrauliske bremser, elektronisk gear osv.) og bike-feltet
+  // er NULL eller ikke matcher → ingen notifikation. Brugeren skal aldrig
+  // skuffes ved at åbne en notifikation og opdage at cyklen mangler det info
+  // de bad om.
+
+  if (Array.isArray(filters.frameMaterials) && filters.frameMaterials.length > 0) {
+    if (!bike.frame_material || !filters.frameMaterials.includes(bike.frame_material)) return false;
+  }
+
+  if (Array.isArray(filters.brakeTypes) && filters.brakeTypes.length > 0) {
+    if (!bike.brake_type || !filters.brakeTypes.includes(bike.brake_type)) return false;
+  }
+
+  if (Array.isArray(filters.groupsets) && filters.groupsets.length > 0) {
+    if (!bike.groupset || !filters.groupsets.includes(bike.groupset)) return false;
+  }
+
+  // electronicShifting: '' = ligegyldigt, 'true' = elektronisk, 'false' = mekanisk
+  if (filters.electronicShifting === "true" || filters.electronicShifting === "false") {
+    const wantElectronic = filters.electronicShifting === "true";
+    if (bike.electronic_shifting === null || bike.electronic_shifting === undefined) return false;
+    if (!!bike.electronic_shifting !== wantElectronic) return false;
+  }
+
+  // maxWeightKg: bike.weight_kg skal være sat OG <= grænsen
+  if (filters.maxWeightKg != null && !isNaN(Number(filters.maxWeightKg))) {
+    if (bike.weight_kg === null || bike.weight_kg === undefined) return false;
+    if (Number(bike.weight_kg) > Number(filters.maxWeightKg)) return false;
   }
 
   // Pris

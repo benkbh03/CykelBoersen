@@ -12,6 +12,9 @@ const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcy
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
 const SIZES      = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
 const WHEELS     = ['26"', '27.5" / 650b', '28"', '29"'];
+const FRAME_MATERIALS = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
+const BRAKE_TYPES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
+const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano Deore', 'Shimano XT'];
 
 export function createCykelagentPage({
   supabase,
@@ -42,6 +45,12 @@ export function createCykelagentPage({
       minPrice: null,
       maxPrice: null,
       warranty: false,
+      // Tekniske specs
+      frameMaterials: [],
+      brakeTypes: [],
+      groupsets: [],
+      electronicShifting: '', // '' | 'true' | 'false'
+      maxWeightKg: null,
     };
   }
 
@@ -147,6 +156,12 @@ export function createCykelagentPage({
     if (f.maxPrice)                   chips.push(`Op til ${Number(f.maxPrice).toLocaleString('da-DK')} kr.`);
     if (f.warranty)                   chips.push('🛡️ Med garanti');
     if (f.city)                       chips.push('📍 ' + esc(f.city));
+    if (Array.isArray(f.frameMaterials)) f.frameMaterials.forEach(m => chips.push('🔩 ' + esc(m)));
+    if (Array.isArray(f.brakeTypes))     f.brakeTypes.forEach(b => chips.push('🛑 ' + esc(b)));
+    if (Array.isArray(f.groupsets))      f.groupsets.forEach(g => chips.push('⚙️ ' + esc(g)));
+    if (f.electronicShifting === 'true')  chips.push('⚡ Elektronisk gear');
+    if (f.electronicShifting === 'false') chips.push('🔧 Mekanisk gear');
+    if (f.maxWeightKg)                chips.push(`Maks ${Number(f.maxWeightKg)} kg`);
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -194,6 +209,11 @@ export function createCykelagentPage({
           minPrice:   f.minPrice || null,
           maxPrice:   f.maxPrice || null,
           warranty:   !!f.warranty,
+          frameMaterials:     Array.isArray(f.frameMaterials) ? f.frameMaterials : [],
+          brakeTypes:         Array.isArray(f.brakeTypes)     ? f.brakeTypes     : [],
+          groupsets:          Array.isArray(f.groupsets)      ? f.groupsets      : [],
+          electronicShifting: f.electronicShifting || '',
+          maxWeightKg:        f.maxWeightKg || null,
         };
       }
     }
@@ -296,6 +316,57 @@ export function createCykelagentPage({
           </label>
         </div>
 
+        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg ? 'open' : ''}>
+          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs <span class="cykelagent-advanced-hint">(valgfrit — vi sender kun notifikation hvis cyklen har præcis disse specs)</span></summary>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Stelmaterial</label>
+            <div class="cykelagent-chips-row">
+              ${FRAME_MATERIALS.map(m => `
+                <button type="button" class="cykelagent-chip-btn${_form.frameMaterials.includes(m) ? ' active' : ''}" onclick="toggleCykelagentArray('frameMaterials', '${esc(m)}')">${esc(m)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Bremser</label>
+            <div class="cykelagent-chips-row">
+              ${BRAKE_TYPES.map(b => `
+                <button type="button" class="cykelagent-chip-btn${_form.brakeTypes.includes(b) ? ' active' : ''}" onclick="toggleCykelagentArray('brakeTypes', '${esc(b)}')">${esc(b)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Gear-skifte</label>
+            <div class="cykelagent-chips-row">
+              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === '' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', '')">Alle</button>
+              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'true' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'true')">⚡ Elektronisk (Di2/eTap/AXS)</button>
+              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'false' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'false')">🔧 Mekanisk</button>
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Komponentgruppe</label>
+            <div class="cykelagent-chips-row">
+              ${GROUPSETS.map(g => `
+                <button type="button" class="cykelagent-chip-btn${_form.groupsets.includes(g) ? ' active' : ''}" onclick="toggleCykelagentArray('groupsets', '${esc(g)}')">${esc(g)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Maks. vægt (kg)</label>
+            <input type="number" min="2" max="50" step="0.1" class="cykelagent-input" id="cyk-max-weight" placeholder="fx 9" value="${_form.maxWeightKg ?? ''}" oninput="updateCykelagentField('maxWeightKg', this.value ? parseFloat(this.value) : null)">
+            <div class="cykelagent-hint">Relevant for racere — efterlad tomt for cykler hvor vægt ikke betyder noget.</div>
+          </div>
+        </details>
+
+        <div class="cykelagent-strict-notice">
+          <span class="cykelagent-strict-icon">🎯</span>
+          <span>Jo flere filtre du sætter, jo mere præcist matcher vi. Vi sender <strong>kun</strong> notifikation om cykler der opfylder ALLE dine kriterier — så du aldrig spilder tid på "tæt-på"-matches.</span>
+        </div>
+
         <div class="cykelagent-editor-actions">
           <button class="cykelagent-save-btn" onclick="saveCykelagentForm()">${isNew ? 'Opret Cykelagent' : 'Gem ændringer'}</button>
           <button class="cykelagent-cancel-btn" onclick="closeCykelagentEditor()">Annuller</button>
@@ -336,11 +407,23 @@ export function createCykelagentPage({
     }
   }
 
+  /* Bruges til enkelt-værdi felter (electronicShifting osv.) — modsat
+     updateCykelagentField som ikke re-renderer, så valg-chips opdaterer visuelt */
+  function setCykelagentField(field, value) {
+    _form[field] = value;
+    if (_editingId !== null) {
+      const mount = document.getElementById('cykelagent-editor-mount');
+      if (mount) mount.innerHTML = _buildEditorHTML(_editingId === 'new');
+    }
+  }
+
   async function saveCykelagentForm() {
     // Validering: mindst ét meningsfuldt filter
     const hasFilter = _form.brand || _form.types.length || _form.conditions.length
       || _form.sizes.length || _form.wheelSizes.length || _form.colors.length
-      || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty;
+      || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty
+      || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length
+      || _form.electronicShifting || _form.maxWeightKg;
     if (!hasFilter) {
       showToast('⚠️ Tilføj mindst ét filter til din Cykelagent');
       return;
@@ -359,6 +442,12 @@ export function createCykelagentPage({
       minPrice: _form.minPrice,
       maxPrice: _form.maxPrice,
       warranty: _form.warranty,
+      // Tekniske specs (strict-match i edge function)
+      frameMaterials:     _form.frameMaterials,
+      brakeTypes:         _form.brakeTypes,
+      groupsets:          _form.groupsets,
+      electronicShifting: _form.electronicShifting || '',
+      maxWeightKg:        _form.maxWeightKg,
     };
 
     const currentUser = getCurrentUser();
@@ -451,6 +540,7 @@ export function createCykelagentPage({
     updateCykelagentField,
     toggleCykelagentArray,
     setCykelagentSellerType,
+    setCykelagentField,
     saveCykelagentForm,
     deleteCykelagentFromEditor,
     flushPendingCykelagent,

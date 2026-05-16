@@ -201,7 +201,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, profiles!user_id(seller_type), bike_images(url, is_primary)')
+        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles!user_id(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
@@ -209,21 +209,27 @@ export function createMyProfile({
       supabase.functions.invoke('notify-saved-searches', {
         body: {
           bike: {
-            id:          full.id,
-            user_id:     newBike.user_id || null,
-            brand:       full.brand,
-            model:       full.model,
-            type:        full.type,
-            city:        full.city,
-            price:       full.price,
-            condition:   full.condition,
-            wheel_size:  full.wheel_size,
-            warranty:    full.warranty,
-            year:        full.year,
-            size:        full.size,
-            colors:      full.colors,
-            seller_type: full.profiles?.seller_type || 'private',
-            image:       primaryImage,
+            id:                  full.id,
+            user_id:             newBike.user_id || null,
+            brand:               full.brand,
+            model:               full.model,
+            type:                full.type,
+            city:                full.city,
+            price:               full.price,
+            condition:           full.condition,
+            wheel_size:          full.wheel_size,
+            warranty:            full.warranty,
+            year:                full.year,
+            size:                full.size,
+            colors:              full.colors,
+            // Tekniske specs — bruges af strict-match i edge function
+            frame_material:      full.frame_material,
+            brake_type:          full.brake_type,
+            groupset:            full.groupset,
+            electronic_shifting: full.electronic_shifting,
+            weight_kg:           full.weight_kg,
+            seller_type:         full.profiles?.seller_type || 'private',
+            image:               primaryImage,
           },
         },
       }).catch(() => {});
