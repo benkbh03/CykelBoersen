@@ -86,7 +86,7 @@ export function createProfileModals({
     try {
       const bikesFetch = supabase
         .from('bikes')
-        .select('*, profiles(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+        .select('*, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
         .eq('user_id', dealerId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });

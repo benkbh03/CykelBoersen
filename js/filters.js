@@ -358,11 +358,11 @@ export function createFilters({
   async function updateFilterCounts(data, dealerCount) {
     if (!data) {
       const [bikesRes, dealerRes] = await Promise.all([
-        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles(seller_type)').eq('is_active', true),
+        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles!user_id(seller_type)').eq('is_active', true),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
       ]);
       if (bikesRes.error || !bikesRes.data) {
-        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles(seller_type)').eq('is_active', true);
+        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles!user_id(seller_type)').eq('is_active', true);
         if (!fallback) return;
         data = fallback;
       } else {

@@ -201,7 +201,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, profiles(seller_type), bike_images(url, is_primary)')
+        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, profiles!user_id(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
