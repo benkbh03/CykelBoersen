@@ -57,6 +57,15 @@ export function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Trim brand+model. Behandler '-', '.', '?', tomme strenge og kun-whitespace
+// som "ingen model" så vi ikke får 'MBK -' eller 'Trek ?' i kortet.
+export function bikeTitle(brand, model) {
+  const b = (brand == null ? '' : String(brand)).trim();
+  const m = (model == null ? '' : String(model)).trim();
+  if (!m || /^[-.?_/\\]+$/.test(m)) return b;
+  return `${b} ${m}`.trim();
+}
+
 export function removeBikeJsonLd() {
   const old = document.getElementById('bike-jsonld');
   if (old) old.remove();

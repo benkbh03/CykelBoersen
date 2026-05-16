@@ -1,3 +1,5 @@
+import { bikeTitle } from './utils.js';
+
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
   'København': [
@@ -279,7 +281,7 @@ export function createBikesList({
           </div>
           <div class="bike-card-body">
             <div class="card-top">
-              <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
+              <div class="bike-title">${esc(bikeTitle(b.brand, b.model))}</div>
               <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
             </div>
             <div class="bike-meta">

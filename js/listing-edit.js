@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { renderColorSwatches, getSelectedColors } from './color-swatches.js';
+import { bikeTitle } from './utils.js';
 
 const normalizeImageId = (id) => String(id ?? '').trim();
 
@@ -231,6 +232,10 @@ export function createListingEdit({
 
   async function saveEditedListing() {
     const id = document.getElementById('edit-bike-id').value;
+    const editModel = document.getElementById('edit-model').value.trim();
+    if (!editModel && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du gemme uden model alligevel?')) {
+      return;
+    }
     enforceSinglePrimaryImage();
 
     const electronicRaw = document.getElementById('edit-electronic-shifting').value;
@@ -240,7 +245,7 @@ export function createListingEdit({
     const updates = {
       brand:       document.getElementById('edit-brand').value,
       model:       document.getElementById('edit-model').value,
-      title:       document.getElementById('edit-brand').value + ' ' + document.getElementById('edit-model').value,
+      title:       bikeTitle(document.getElementById('edit-brand').value, document.getElementById('edit-model').value),
       price:       parseInt(document.getElementById('edit-price').value),
       year:        parseInt(document.getElementById('edit-year').value) || null,
       city:        document.getElementById('edit-city').value,

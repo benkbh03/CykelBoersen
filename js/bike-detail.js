@@ -3,6 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
+import { bikeTitle } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -238,7 +239,7 @@ export function createBikeDetail({
             <div class="demo-detail-notice">
               Cyklen er ikke til salg — det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
             </div>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
           </div>
           ` : !isOwner ? `
           ${sellerType === 'dealer' ? (() => {
@@ -289,8 +290,8 @@ export function createBikeDetail({
             <div class="antiscam-tip">🔒 Mød op personligt og betal ved levering. Del aldrig kontooplysninger.</div>
             <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
             <button class="btn-save-listing" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})">🔔 Få besked ved prisfald</button>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${b.brand} ${b.model}')">🔗 Del annonce</button>
-            <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${b.brand} ${b.model}')">🚩 Rapporter annonce</button>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
+            <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🚩 Rapporter annonce</button>
           </div>
           ` : `
           <div class="owner-panel">
@@ -448,17 +449,17 @@ export function createBikeDetail({
 
     try {
       const { html, profile, allImages } = buildBikeBodyHTML(b);
-      document.getElementById('bike-modal-title').textContent = `${b.brand} ${b.model}`;
+      document.getElementById('bike-modal-title').textContent = bikeTitle(b.brand, b.model);
 
       // Dynamisk SEO: opdater document.title og OG-tags
       const _origTitle = document.title;
-      document.title = `${b.brand} ${b.model} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
+      document.title = `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
       const _setMeta = (prop, val) => {
         let el = document.querySelector(`meta[property="${prop}"]`);
         if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
         el.setAttribute('content', val);
       };
-      _setMeta('og:title', `${b.brand} ${b.model} – ${b.price.toLocaleString('da-DK')} kr.`);
+      _setMeta('og:title', `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr.`);
       _setMeta('og:description', b.description || `${b.type} · ${b.condition}${b.city ? ' · ' + b.city : ''} – til salg på Cykelbørsen`);
       if (allImages[0]?.url) _setMeta('og:image', allImages[0].url);
       document.getElementById('bike-modal')._restoreTitle = () => {
@@ -669,8 +670,8 @@ export function createBikeDetail({
       supabase.rpc('increment_bike_views', { bike_id: bikeId }).then(null, () => {});
     }
 
-    document.title = `${b.brand} ${b.model} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
-    updateSEOMeta(`${b.brand} ${b.model} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`, `/bike/${bikeId}`);
+    document.title = `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
+    updateSEOMeta(`${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`, `/bike/${bikeId}`);
 
     // Inject Product JSON-LD for rich search results
     removeBikeJsonLd();
@@ -681,7 +682,7 @@ export function createBikeDetail({
     jsonLd.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Product',
-      'name': `${b.brand} ${b.model}`,
+      'name': bikeTitle(b.brand, b.model),
       'description': b.description || `${b.type} – ${b.condition}`,
       'image': primaryImg,
       'brand': { '@type': 'Brand', 'name': b.brand },
@@ -703,7 +704,7 @@ export function createBikeDetail({
     detailView.innerHTML = `
       <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
         <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
-        <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;color:var(--charcoal);">${esc(b.brand)} ${esc(b.model)}</h1>
+        <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;color:var(--charcoal);">${esc(bikeTitle(b.brand, b.model))}</h1>
         ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler →</a>` : ''}
         ${html}
       </div>`;

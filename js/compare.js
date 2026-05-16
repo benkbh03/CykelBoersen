@@ -7,7 +7,7 @@
    - State i sessionStorage (slettes når browseren lukkes)
    ============================================================ */
 
-import { esc } from './utils.js';
+import { esc, bikeTitle } from './utils.js';
 
 const STORAGE_KEY = 'cb_compare_ids';
 const MAX_COMPARE = 3;
@@ -256,7 +256,7 @@ function renderCompareTable(bikes, _navigateTo) {
           ${img ? `<img src="${esc(img)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">` : '<div class="cmp-bike-noimg">🚲</div>'}
           <button onclick="event.stopPropagation();toggleCompareBike(null, '${b.id}');navigateTo('/sammenlign')" class="cmp-bike-remove" title="Fjern fra sammenligning" aria-label="Fjern">✕</button>
         </div>
-        <h2 class="cmp-bike-title">${esc(b.brand)} ${esc(b.model)}</h2>
+        <h2 class="cmp-bike-title">${esc(bikeTitle(b.brand, b.model))}</h2>
         <div class="cmp-bike-subtitle">${esc(b.type || '')}${b.year ? ` · ${b.year}` : ''}</div>
         <button onclick="navigateTo('/bike/${b.id}')" class="cmp-bike-cta">Se annonce →</button>
       </div>`;

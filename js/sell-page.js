@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { BIKE_COLORS } from './config.js';
+import { bikeTitle } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
 
 /**
@@ -213,12 +214,15 @@ export function createSellPage({
       type, size, condition,
       wheel_size:  wheelSize || null,
       warranty:    warranty || null,
-      title:       `${brand} ${model}`,
+      title:       bikeTitle(brand, model),
       is_active:   true,
     };
 
-    if (!bikeData.brand || !bikeData.model || !bikeData.price || !bikeData.city) {
+    if (!bikeData.brand || !bikeData.price || !bikeData.city) {
       showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
+    }
+    if (!bikeData.model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
+      restore(); return;
     }
 
     const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
@@ -292,8 +296,17 @@ export function createSellPage({
       const weightKgRaw    = getVal('sell-weight-kg');
       const weightKg       = weightKgRaw ? parseFloat(weightKgRaw) : null;
 
-      if (!brand || !model || !price || !city || !type || !condition) {
+      if (!brand || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
+      }
+      if (!model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
+        visibleCtas.forEach(b => {
+          b.disabled = false;
+          if (b.dataset.origText) b.innerHTML = b.dataset.origText;
+        });
+        _submittingSell = false;
+        restore();
+        return;
       }
 
       // Tjek om admin opretter på vegne af en forhandler (sessionStorage-flag)
@@ -314,7 +327,7 @@ export function createSellPage({
         external_url: externalUrl,
         color: colors.length ? colors.join(', ') : null,
         colors: colors.length ? colors : null,
-        title: `${brand} ${model}`,
+        title: bikeTitle(brand, model),
         is_active: true,
         groupset,
         frame_material:      frameMaterial,
@@ -565,7 +578,7 @@ export function createSellPage({
           </div>
         </div>
         <div class="sell-field">
-          <label>Model <span class="req">*</span></label>
+          <label>Model <span class="optional-hint">(anbefales)</span></label>
           <input type="text" id="sell-model" placeholder="FX 3 Disc" value="${esc(c['sell-model'] || '')}" class="${aiClass}">
         </div>
       </div>
