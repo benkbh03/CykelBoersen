@@ -1854,6 +1854,7 @@ window.addEventListener('load', _preloadStaticModules);
    event.preventDefault() får siden til at refreshe.
    ============================================================ */
 document.addEventListener('click', function(e) {
+  if (e.defaultPrevented) return;
   const a = e.target.closest('a');
   if (!a) return;
   // Spring over hvis modifier-tast (Ctrl/Cmd/Shift = åbn i ny fane)
