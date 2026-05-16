@@ -268,13 +268,13 @@ export function createBikesList({
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
               ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
-              <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
+              ${!isSold && !isDemo && b.original_price && b.original_price > b.price
+                ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>`
+                : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
               ${b.warranty && !isSold && !isDemo ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
-              ${!isSold && !isDemo && b.original_price && b.original_price > b.price ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>` : ''}
             </div>
             ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
             ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
-            ${!isSold && !isDemo && b.profiles?.id !== currentUser?.id ? `<button class="ask-available-btn" onclick="event.stopPropagation();askIfAvailable('${b.id}','${b.user_id}',this)" title="Skriv til sælger om denne cykel">💬</button>` : ''}
             ${!isSold && !isDemo ? `<label class="compare-checkbox-wrap" onclick="event.stopPropagation()" title="Vælg til sammenligning"><input type="checkbox" class="compare-checkbox" data-bike-id="${b.id}" onchange="toggleCompareBike(this,'${b.id}')"><span class="compare-checkbox-label">Sammenlign</span></label>` : ''}
           </div>
           <div class="bike-card-body">
