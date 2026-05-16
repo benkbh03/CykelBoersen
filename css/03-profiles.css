@@ -678,6 +678,104 @@
   letter-spacing: 0.03em;
 }
 
+/* ── CYKELBØRSEN ONBOARDING-SERVICE (admin opretter på forhandlers vegne) ── */
+.onboarding-service-box {
+  background: var(--sand);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.onboarding-service-title {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+}
+.onboarding-service-desc {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.onboarding-service-dpa-link {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: var(--rust);
+  text-decoration: none;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.onboarding-service-dpa-link:hover { text-decoration: underline; }
+.onboarding-service-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.86rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.onboarding-service-consent input[type="checkbox"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.onboarding-service-btn-grant {
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--forest);
+  color: var(--cream);
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.onboarding-service-btn-grant:hover:not(:disabled) { background: var(--forest-light); }
+.onboarding-service-btn-grant:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+.onboarding-service-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #e8f5e9;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.onboarding-service-status-icon {
+  width: 28px; height: 28px;
+  background: #2e7d32; color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.onboarding-service-status-title { font-weight: 700; font-size: 0.88rem; color: #1a5722; }
+.onboarding-service-status-sub   { font-size: 0.76rem; color: #2e7d32; margin-top: 2px; }
+.onboarding-service-audit {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.onboarding-service-btn-revoke {
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.onboarding-service-btn-revoke:hover { border-color: var(--rust); color: var(--rust); }
+
 /* ── ABONNEMENTSBOKS I PROFIL ── */
 .subscription-box {
   background: var(--sand);
