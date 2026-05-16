@@ -1719,7 +1719,7 @@ function handleRoute() {
   const dealerApply  = path === '/bliv-forhandler';
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
-  const staticMatch  = { '/om-os': 'about', '/vilkaar': 'terms', '/privatlivspolitik': 'privacy', '/kontakt': 'contact', '/guide/tjek-brugt-cykel': 'guide-tjek', '/sikkerhedsguide': 'sikkerhedsguide', '/cookiepolitik': 'cookies', '/tilladt-sortiment': 'sortiment' }[path];
+  const staticMatch  = Object.keys(STATIC_PAGE_ROUTES).find(key => STATIC_PAGE_ROUTES[key] === path);
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
