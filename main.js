@@ -606,6 +606,7 @@ const closeCykelagentEditor    = lazyMethod(_ensureCykelagentPage, 'closeCykelag
 const updateCykelagentField    = lazyMethod(_ensureCykelagentPage, 'updateCykelagentField');
 const toggleCykelagentArray    = lazyMethod(_ensureCykelagentPage, 'toggleCykelagentArray');
 const setCykelagentSellerType  = lazyMethod(_ensureCykelagentPage, 'setCykelagentSellerType');
+const setCykelagentField       = lazyMethod(_ensureCykelagentPage, 'setCykelagentField');
 const saveCykelagentForm       = lazyMethod(_ensureCykelagentPage, 'saveCykelagentForm');
 const deleteCykelagentFromEditor = lazyMethod(_ensureCykelagentPage, 'deleteCykelagentFromEditor');
 const flushPendingCykelagent   = lazyMethod(_ensureCykelagentPage, 'flushPendingCykelagent');
@@ -615,6 +616,7 @@ window.closeCykelagentEditor   = closeCykelagentEditor;
 window.updateCykelagentField   = updateCykelagentField;
 window.toggleCykelagentArray   = toggleCykelagentArray;
 window.setCykelagentSellerType = setCykelagentSellerType;
+window.setCykelagentField      = setCykelagentField;
 window.saveCykelagentForm      = saveCykelagentForm;
 window.deleteCykelagentFromEditor = deleteCykelagentFromEditor;
 

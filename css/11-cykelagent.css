@@ -254,6 +254,69 @@
   display: inline-block;
 }
 
+/* ── ADVANCED-FOLDOUT (tekniske specs) ── */
+.cykelagent-advanced {
+  background: var(--sand);
+  border-radius: 12px;
+  padding: 14px 18px 6px;
+  margin: 18px 0;
+}
+.cykelagent-advanced-summary {
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--charcoal);
+  padding: 4px 0;
+  list-style: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cykelagent-advanced-summary::-webkit-details-marker { display: none; }
+.cykelagent-advanced-summary::before {
+  content: '▸';
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.cykelagent-advanced[open] .cykelagent-advanced-summary::before {
+  transform: rotate(90deg);
+}
+.cykelagent-advanced-hint {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.cykelagent-advanced[open] {
+  padding-bottom: 14px;
+}
+.cykelagent-advanced .cykelagent-field {
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+/* ── STRICT-MATCH NOTICE ── */
+.cykelagent-strict-notice {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: #f0f7e8;
+  border: 1px solid rgba(46,125,50,0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 18px 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #1a5722;
+}
+.cykelagent-strict-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
 /* ── TOGGLE ── */
 .cykelagent-toggle {
   display: flex; align-items: center; gap: 10px;
