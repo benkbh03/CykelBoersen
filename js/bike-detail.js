@@ -153,15 +153,17 @@ export function createBikeDetail({
     if (allImages.length === 0) {
       galleryHtml = `<div class="bike-detail-img"><span style="font-size:4rem">🚲</span></div>`;
     } else if (allImages.length === 1) {
-      galleryHtml = `<div class="bike-detail-img" style="cursor:zoom-in;" onclick="openLightbox(0)"><img src="${allImages[0].url}" alt="${b.brand} ${b.model}" loading="lazy"></div>`;
+      galleryHtml = `<div class="bike-detail-img" style="cursor:zoom-in;" onclick="openLightbox(0)"><img src="${allImages[0].url}" alt="${esc(bikeTitle(b.brand, b.model))} – ${esc(b.type)}${b.city ? ' i ' + esc(b.city) : ''}" loading="lazy"></div>`;
     } else {
       const maxThumbs = 5;
       const visibleImages = allImages.slice(0, maxThumbs);
       const extraCount = allImages.length > maxThumbs ? allImages.length - maxThumbs : 0;
+      const altBase = `${bikeTitle(b.brand, b.model)} – ${b.type}${b.city ? ' i ' + b.city : ''}`;
       const thumbsHtml = visibleImages.map((img, i) => {
         const isLast = extraCount > 0 && i === maxThumbs - 1;
-        return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="Billede ${i + 1}" style="position:relative;">
-          <img src="${img.url}" alt="Billede ${i + 1}" loading="lazy">
+        const thumbAlt = i === 0 ? `${altBase} – hovedbillede` : `${altBase} – billede ${i + 1}`;
+        return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="${esc(thumbAlt)}" style="position:relative;">
+          <img src="${img.url}" alt="${esc(thumbAlt)}" loading="lazy">
           ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:'DM Sans',sans-serif;border-radius:5px;">+${extraCount}</span>` : ''}
         </button>`;
       }).join('');
@@ -169,7 +171,7 @@ export function createBikeDetail({
         <div class="bike-gallery">
           <div class="gallery-main">
             <div class="gallery-main-bg" id="gallery-main-bg" style="background-image:url('${allImages[0].url}')"></div>
-            <img id="gallery-main-img" src="${allImages[0].url}" alt="${b.brand} ${b.model}" onclick="openLightbox(window._galleryIndex || 0)">
+            <img id="gallery-main-img" src="${allImages[0].url}" alt="${esc(altBase)} – hovedbillede" onclick="openLightbox(window._galleryIndex || 0)">
             <button class="gallery-nav-btn gallery-prev" onclick="galleryNav(-1)" aria-label="Forrige billede">&#8249;</button>
             <button class="gallery-nav-btn gallery-next" onclick="galleryNav(1)" aria-label="Næste billede">&#8250;</button>
             <span class="gallery-counter" id="gallery-counter">1 / ${allImages.length}</span>
@@ -670,14 +672,23 @@ export function createBikeDetail({
       supabase.rpc('increment_bike_views', { bike_id: bikeId }).then(null, () => {});
     }
 
-    document.title = `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
-    updateSEOMeta(`${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`, `/bike/${bikeId}`);
-
-    // Inject Product JSON-LD for rich search results
-    removeBikeJsonLd();
     const primaryImg = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
     const allImages = (b.bike_images || []).map(i => i.url).filter(Boolean);
     const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+
+    document.title = `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
+    updateSEOMeta(
+      `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`,
+      `/bike/${bikeId}`,
+      {
+        title: `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`,
+        image: primaryImg || undefined,
+        imageAlt: `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}`,
+      }
+    );
+
+    // Inject Product JSON-LD for rich search results
+    removeBikeJsonLd();
 
     const buildBikeJsonLd = (sellerRating) => ({
       '@context': 'https://schema.org',

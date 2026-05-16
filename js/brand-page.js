@@ -50,7 +50,7 @@ export function createBrandPage({
     const title = `Brugte og nye ${brandName} cykler til salg | Cykelbørsen`;
     const desc  = meta.description.slice(0, 155);
     document.title = title;
-    updateSEOMeta(desc, `/cykler/${brandSlug}`);
+    updateSEOMeta(desc, `/cykler/${brandSlug}`, { title });
 
     // Tilføj brand-specifik JSON-LD
     addBrandJsonLd(brandName, meta);
@@ -316,7 +316,8 @@ export function createBrandPage({
     document.title = 'Alle cykelmærker — Brugte og nye cykler | Cykelbørsen';
     updateSEOMeta(
       'Browse alle cykelmærker på Cykelbørsen — fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
-      '/maerker'
+      '/maerker',
+      { title: 'Alle cykelmærker — Brugte og nye cykler | Cykelbørsen' }
     );
 
     const detailView = document.getElementById('detail-view');
