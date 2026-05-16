@@ -71,16 +71,38 @@ export function removeBikeJsonLd() {
   if (old) old.remove();
 }
 
-export function updateSEOMeta(description, canonicalPath) {
+export function updateSEOMeta(description, canonicalPath, opts) {
   const desc = description || DEFAULT_DESC;
+  const url = canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/';
   const metaDesc = document.getElementById('meta-description');
   if (metaDesc) metaDesc.setAttribute('content', desc);
   const canonical = document.getElementById('canonical-link');
-  if (canonical) canonical.setAttribute('href', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
-  const ogDesc = document.querySelector('meta[property="og:description"]');
-  if (ogDesc) ogDesc.setAttribute('content', desc);
-  const ogUrl = document.querySelector('meta[property="og:url"]');
-  if (ogUrl) ogUrl.setAttribute('content', canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/');
+  if (canonical) canonical.setAttribute('href', url);
+  const setProp = (prop, val) => {
+    if (val == null) return;
+    let el = document.querySelector(`meta[property="${prop}"]`);
+    if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
+    el.setAttribute('content', val);
+  };
+  const setName = (name, val) => {
+    if (val == null) return;
+    let el = document.querySelector(`meta[name="${name}"]`);
+    if (!el) { el = document.createElement('meta'); el.setAttribute('name', name); document.head.appendChild(el); }
+    el.setAttribute('content', val);
+  };
+  setProp('og:description', desc);
+  setProp('og:url', url);
+  setName('twitter:description', desc);
+  const title = (opts && opts.title) || document.title;
+  if (title) {
+    setProp('og:title', title);
+    setName('twitter:title', title);
+  }
+  if (opts && opts.image) {
+    setProp('og:image', opts.image);
+    setName('twitter:image', opts.image);
+    if (opts.imageAlt) setProp('og:image:alt', opts.imageAlt);
+  }
 }
 
 export function safeAvatarUrl(url) {

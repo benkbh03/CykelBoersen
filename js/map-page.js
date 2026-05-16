@@ -2,6 +2,8 @@
    KORTVISNING MED LEAFLET — factory module
    ============================================================ */
 
+import { bikeTitle } from './utils.js';
+
 export function createMapPage({
   supabase,
   showToast,
@@ -727,7 +729,7 @@ export function createMapPage({
           const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
           return '<button class="split-popup-list-item" onclick="navigateToBike(\'' + b.id + '\')">'
             + (primaryImg
-                ? '<img src="' + primaryImg + '" alt="" class="split-popup-list-img">'
+                ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + '" class="split-popup-list-img">'
                 : '<div class="split-popup-list-img-placeholder">🚲</div>')
             + '<div class="split-popup-list-info">'
             + '<div class="split-popup-list-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
@@ -773,7 +775,7 @@ export function createMapPage({
         popupHtml = '<div class="split-popup">'
           + '<div class="split-popup-media">'
           + (primaryImg
-              ? '<img src="' + primaryImg + '" alt="" class="split-popup-img">'
+              ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + ' i ' + esc(b.city || 'Danmark') + '" class="split-popup-img">'
               : '<div class="split-popup-img-placeholder">🚲</div>')
           + '<button class="split-popup-close" aria-label="Luk" onclick="event.stopPropagation();_closeMapPopup()">'
           + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
@@ -869,7 +871,7 @@ export function createMapPage({
 
       return '<div class="split-card" data-bike-id="' + b.id + '" onclick="splitCardClick(\'' + b.id + '\')">'
         + '<div class="split-card-img">'
-        + (primaryImg ? '<img src="' + primaryImg + '" alt="" loading="lazy">' : '<div class="split-card-img-placeholder">🚲</div>')
+        + (primaryImg ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + ' i ' + esc(b.city || 'Danmark') + '" loading="lazy">' : '<div class="split-card-img-placeholder">🚲</div>')
         + sellerBadge
         + '<button class="split-card-heart" onclick="event.stopPropagation();toggleSave(this,\'' + b.id + '\')" aria-label="Gem annonce">'
         + (_userSavedSet && _userSavedSet.has(b.id) ? '❤️' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20.8s-7.5-4.6-7.5-11A4.5 4.5 0 0112 6a4.5 4.5 0 017.5 3.8c0 6.4-7.5 11-7.5 11z"/></svg>')
