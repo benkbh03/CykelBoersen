@@ -492,7 +492,7 @@ export const footerContent = {
   databehandleraftale: {
     title: 'Databehandleraftale — Cykelbørsen onboarding-service',
     metaDesc: 'Databehandleraftale for forhandlere der ønsker at Cykelbørsen opretter annoncer på deres vegne under onboarding.',
-    bodyHtml: `
+    body: `
       <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 14. maj 2026</p>
       <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
 
