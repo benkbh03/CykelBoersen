@@ -126,7 +126,7 @@ export function createBrandPage({
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles(name, seller_type, shop_name, verified, avatar_url), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, avatar_url), bike_images(url, is_primary)')
       .eq('is_active', true)
       .ilike('brand', brandName)
       .order('created_at', { ascending: false })
@@ -214,7 +214,7 @@ export function createBrandPage({
     // Find unique dealers der har annoncer med dette brand
     const { data: bikes } = await supabase
       .from('bikes')
-      .select('user_id, profiles!inner(id, shop_name, name, city, address, avatar_url, verified, seller_type)')
+      .select('user_id, profiles!user_id!inner(id, shop_name, name, city, address, avatar_url, verified, seller_type)')
       .eq('is_active', true)
       .eq('profiles.seller_type', 'dealer')
       .ilike('brand', brandName)

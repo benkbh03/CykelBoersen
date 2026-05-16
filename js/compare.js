@@ -153,7 +153,7 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, warranty, frame_material, brake_type, groupset, electronic_shifting, weight_kg, wheel_size, is_active, profiles(name, shop_name, seller_type, verified, avatar_url, city), bike_images(url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, warranty, frame_material, brake_type, groupset, electronic_shifting, weight_kg, wheel_size, is_active, profiles!user_id(name, shop_name, seller_type, verified, avatar_url, city), bike_images(url, is_primary)')
       .in('id', ids);
 
     if (error || !bikes || bikes.length === 0) {

@@ -291,7 +291,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
@@ -1067,7 +1067,7 @@ export function createMapPage({
     // Hent annoncer med by
     var result = await supabase
       .from('bikes')
-      .select('*, profiles(name, seller_type, shop_name, verified, address, lat, lng, location_precision)')
+      .select('*, profiles!user_id(name, seller_type, shop_name, verified, address, lat, lng, location_precision)')
       .eq('is_active', true);
 
     if (!result.data || result.data.length === 0) return;
