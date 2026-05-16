@@ -540,7 +540,9 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Aftalen er underlagt dansk ret og enhver tvist afgøres ved Københavns Byret.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Kontakt</h3>
-      <p style="margin-bottom:8px;">Cykelbørsen ApS<br>
+      <p style="margin-bottom:8px;">Cykelbørsen v/ Benjamin Vojdeman<br>
+      CVR: 46403568<br>
+      Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>
       E-mail: <strong>hej@cykelbørsen.dk</strong><br>
       For udtræk af audit-log eller spørgsmål om denne aftale, kontakt os på ovenstående e-mail.</p>
 
