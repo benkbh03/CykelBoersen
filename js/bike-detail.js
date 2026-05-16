@@ -65,7 +65,7 @@ export function createBikeDetail({
     } else {
       const fetchPromise = supabase
         .from('bikes')
-        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary)')
+        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
         .eq('id', bikeId)
         .single();
       const timeoutPromise = new Promise((_, reject) =>
@@ -80,6 +80,54 @@ export function createBikeDetail({
       import('./recently-viewed.js').then(m => m.addRecentlyViewed(result.data)).catch(() => {});
     }
     return result;
+  }
+
+  function renderPriceHistory(b) {
+    const history = Array.isArray(b.bike_price_history) ? [...b.bike_price_history] : [];
+    history.sort((a, z) => new Date(a.changed_at) - new Date(z.changed_at));
+
+    const drops = history.filter(h => h.new_price < h.old_price);
+    const peak = history.length
+      ? Math.max(history[0].old_price, ...history.map(h => h.new_price))
+      : (b.original_price || b.price);
+    const totalDrop = peak - b.price;
+
+    if (totalDrop <= 0) return '';
+
+    const dropCount = drops.length || 1;
+    const dropLabel = dropCount === 1 ? 'sænkning' : 'sænkninger';
+    const dropsHtml = drops.length >= 2 ? drops.slice().reverse().map(h => {
+      const diff = h.old_price - h.new_price;
+      const sign = diff > 0 ? '−' : '+';
+      const date = new Date(h.changed_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
+      return `
+        <li class="price-history-item">
+          <span class="price-history-date">${date}</span>
+          <span class="price-history-change">${h.old_price.toLocaleString('da-DK')} → <strong>${h.new_price.toLocaleString('da-DK')}</strong> kr.</span>
+          <span class="price-history-diff">${sign}${Math.abs(diff).toLocaleString('da-DK')} kr.</span>
+        </li>`;
+    }).join('') : '';
+
+    const expandable = drops.length >= 2;
+    const detailsAttr = expandable ? '' : ' style="pointer-events:none;"';
+
+    return `
+      <div class="price-history-card" data-drops="${dropCount}">
+        <div class="price-history-summary">
+          <span class="price-history-icon">📉</span>
+          <span class="price-history-text">
+            Prisen er sat ned fra <span class="price-history-from">${peak.toLocaleString('da-DK')} kr.</span>
+            <span class="price-history-arrow">→</span>
+            <strong>${b.price.toLocaleString('da-DK')} kr.</strong>
+            <span class="price-history-meta">(${dropCount} ${dropLabel}, spar ${totalDrop.toLocaleString('da-DK')} kr.)</span>
+          </span>
+        </div>
+        ${expandable ? `
+          <details class="price-history-details"${detailsAttr}>
+            <summary class="price-history-toggle">Se prisudvikling</summary>
+            <ol class="price-history-list">${dropsHtml}</ol>
+          </details>` : ''}
+      </div>`;
   }
 
   function buildBikeBodyHTML(b) {
@@ -159,12 +207,7 @@ export function createBikeDetail({
         </div>
         <div class="bike-detail-info">
           <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
-          ${b.original_price && b.original_price > b.price ? `
-          <div class="price-reduced-badge" title="Sælger har sat prisen ned">
-            <span class="price-reduced-old">${b.original_price.toLocaleString('da-DK')} kr.</span>
-            <span class="price-reduced-arrow">↓</span>
-            <span class="price-reduced-save">Spar ${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>
-          </div>` : ''}
+          ${renderPriceHistory(b)}
           <div class="bike-detail-tags">
             <span class="detail-tag">${b.type}</span>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
