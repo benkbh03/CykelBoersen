@@ -385,8 +385,14 @@ export function createAdminBulkImport({ supabase, showToast }) {
       '12 mdr forhandlergaranti', 'København', 'Veligholdt racercykel, kørt ca. 2000 km.', '',
       'https://eksempel.dk/billede1.jpg', 'https://eksempel.dk/billede2.jpg', '', '', '',
     ];
-    const csv = headers.join(',') + '\n' +
-      sample.map(v => v.includes(',') ? `"${v}"` : v).join(',') + '\n';
+    // CSV-escape: hvis værdi indeholder komma, quote eller newline, wrap i quotes og dobl interne quotes
+    const csvEscape = (v) => {
+      const s = String(v);
+      if (/[,"\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    };
+    const csv = headers.map(csvEscape).join(',') + '\n' +
+      sample.map(csvEscape).join(',') + '\n';
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
