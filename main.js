@@ -2549,10 +2549,17 @@ async function submitContactForm() { return _submitContactForm(showToast); }
    ADMIN PANEL
    ============================================================ */
 
+const _ensureBulkImport = lazyCtrl(
+  () => import(`./js/admin-bulk-import.js?v=${ASSET_VERSION}`),
+  'createAdminBulkImport',
+  () => ({ supabase, showToast }),
+);
+const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications }),
+  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');

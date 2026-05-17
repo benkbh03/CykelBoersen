@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113cy" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113cz" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113cy">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113cy">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113cz">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113cz">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1485,6 +1485,7 @@
           <button class="profile-tab active" id="atab-applications" onclick="switchAdminTab('applications')">Forhandler ansøgninger</button>
           <button class="profile-tab" id="atab-users" onclick="switchAdminTab('users')">Alle brugere</button>
           <button class="profile-tab" id="atab-id" onclick="switchAdminTab('id')">ID ansøgninger</button>
+          <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
         </div>
         <div id="admin-applications">
           <div id="admin-applications-list">
@@ -1500,6 +1501,9 @@
           <div id="admin-id-list">
             <p style="color:var(--muted)">Indlæser...</p>
           </div>
+        </div>
+        <div id="admin-bulk-import" style="display:none;">
+          <p style="color:var(--muted)">Indlæser…</p>
         </div>
       </div>
     </div>
