@@ -379,10 +379,12 @@ export function createAdminBulkImport({ supabase, showToast }) {
       'warranty', 'city', 'description', 'external_url',
       'image_1', 'image_2', 'image_3', 'image_4', 'image_5',
     ];
+    // Bemærk: wheel_size som '28' (ikke '28"'). Excel/copy-paste roder ofte med
+    // tomme-symbolet og bryder CSV-parsing. Skriv kun tallet — UI'et viser '28 tommer'.
     const sample = [
-      'Trek', 'Madone SL 6', 'Racercykel', '32000', '2023', 'Som ny', 'M', '54', '28"',
+      'Trek', 'Madone SL 6', 'Racercykel', '32000', '2023', 'Som ny', 'M', '54', '28',
       'Sort', 'Carbon', 'Skivebremser hydraulisk', 'Shimano 105 Di2', 'true', '8.2',
-      '12 mdr forhandlergaranti', 'København', 'Veligholdt racercykel, kørt ca. 2000 km.', '',
+      '12 mdr forhandlergaranti', 'København', 'Veligholdt racercykel kørt ca. 2000 km.', '',
       'https://eksempel.dk/billede1.jpg', 'https://eksempel.dk/billede2.jpg', '', '', '',
     ];
     // CSV-escape: hvis værdi indeholder komma, quote eller newline, wrap i quotes og dobl interne quotes
