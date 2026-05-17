@@ -159,11 +159,23 @@ export function createAdminBulkImport({ supabase, showToast }) {
       </div>
 
       <div class="bulk-import-step" style="margin-top:24px;">
-        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">2. Upload CSV</h3>
-        <p style="margin:0 0 10px;color:var(--muted);font-size:0.85rem;">
-          Excel: Gem som "CSV UTF-8 (Comma delimited)".
-          <button id="bulk-download-template" type="button" style="background:none;border:none;color:var(--rust);text-decoration:underline;cursor:pointer;padding:0;font-family:inherit;font-size:inherit;">Download eksempel-CSV →</button>
+        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">2. Download template til forhandleren</h3>
+        <p style="margin:0 0 10px;color:var(--muted);font-size:0.85rem;">Send forhandleren den template der passer til deres lager. De udfylder rækkerne og sender CSV tilbage.</p>
+        <div class="bulk-template-buttons" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <button type="button" data-tpl="racercykel" class="bulk-tpl-btn">🏁 Racercykel</button>
+          <button type="button" data-tpl="mountainbike" class="bulk-tpl-btn">🏔️ Mountainbike</button>
+          <button type="button" data-tpl="el-cykel" class="bulk-tpl-btn">⚡ El-cykel</button>
+          <button type="button" data-tpl="citybike" class="bulk-tpl-btn">🚲 Citybike</button>
+          <button type="button" data-tpl="universal" class="bulk-tpl-btn bulk-tpl-btn--universal">📦 Universal (alle felter)</button>
+        </div>
+        <p style="margin:0 0 10px;color:var(--muted);font-size:0.78rem;line-height:1.5;">
+          <strong>Tips til forhandleren:</strong>
+          Skriv hjulstørrelse som tal (28, ikke 28"). Wrap beskrivelser med kommaer i "...". Gem fra Excel som "CSV UTF-8 (Comma delimited)".
         </p>
+      </div>
+
+      <div class="bulk-import-step" style="margin-top:24px;">
+        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">3. Upload udfyldt CSV</h3>
         <div id="bulk-drop-zone" style="border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;background:var(--sand);transition:all 0.15s;">
           <input type="file" id="bulk-file-input" accept=".csv,text/csv" style="display:none;">
           <p style="margin:0 0 8px;font-size:1.5rem;">📄</p>
@@ -180,7 +192,9 @@ export function createAdminBulkImport({ supabase, showToast }) {
     document.getElementById('bulk-dealer-select').onchange = (e) => {
       _selectedDealerId = e.target.value || null;
     };
-    document.getElementById('bulk-download-template').onclick = downloadTemplate;
+    container.querySelectorAll('.bulk-tpl-btn').forEach(btn => {
+      btn.onclick = () => downloadTemplate(btn.dataset.tpl);
+    });
     setupDropZone();
   }
 
@@ -233,7 +247,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
 
     section.style.display = 'block';
     section.innerHTML = `
-      <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">3. Gennemgå rækker</h3>
+      <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">4. Gennemgå rækker</h3>
       <p style="margin:0 0 12px;color:var(--muted);font-size:0.85rem;">
         <strong style="color:var(--charcoal);">${validated.length}</strong> rækker fundet —
         <span style="color:#2e7d32;font-weight:600;">${validCount} klar</span>
@@ -300,7 +314,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
     const progress = document.getElementById('bulk-progress-section');
     progress.style.display = 'block';
     progress.innerHTML = `
-      <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">4. Import-status</h3>
+      <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">5. Import-status</h3>
       <div style="background:var(--sand);border-radius:10px;padding:16px;">
         <div style="margin-bottom:10px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.85rem;">
@@ -371,35 +385,76 @@ export function createAdminBulkImport({ supabase, showToast }) {
     showToast(`✓ ${success} cykler importeret${failed > 0 ? ` · ${failed} fejlede` : ''}`);
   }
 
-  // ── Download eksempel-CSV ────────────────────────────────
-  function downloadTemplate() {
-    const headers = [
-      'brand', 'model', 'type', 'price', 'year', 'condition', 'size', 'size_cm', 'wheel_size',
-      'color', 'frame_material', 'brake_type', 'groupset', 'electronic_shifting', 'weight_kg',
-      'warranty', 'city', 'description', 'external_url',
-      'image_1', 'image_2', 'image_3', 'image_4', 'image_5',
-    ];
-    // Bemærk: wheel_size som '28' (ikke '28"'). Excel/copy-paste roder ofte med
-    // tomme-symbolet og bryder CSV-parsing. Skriv kun tallet — UI'et viser '28 tommer'.
-    const sample = [
-      'Trek', 'Madone SL 6', 'Racercykel', '32000', '2023', 'Som ny', 'M', '54', '28',
-      'Sort', 'Carbon', 'Skivebremser hydraulisk', 'Shimano 105 Di2', 'true', '8.2',
-      '12 mdr forhandlergaranti', 'København', 'Veligholdt racercykel kørt ca. 2000 km.', '',
-      'https://eksempel.dk/billede1.jpg', 'https://eksempel.dk/billede2.jpg', '', '', '',
-    ];
+  // ── Type-specifikke CSV-templates ────────────────────────
+  // Hver type har headers + 2-3 sample-rækker så forhandler ser præcis
+  // hvad de skal udfylde. Tomme-symbol skrives som tal (28 ikke 28")
+  // for at undgå CSV-escape-bøvl.
+  const TEMPLATES = {
+    racercykel: {
+      label: 'Racercykel',
+      filename: 'cykelboersen-template-racercykel.csv',
+      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','groupset','electronic_shifting','weight_kg','warranty','city','description','image_1','image_2','image_3'],
+      samples: [
+        ['Trek','Madone SL 6','Racercykel','32000','2023','Som ny','M','54','28','Sort','Carbon','Skivebremser hydraulisk','Shimano 105 Di2','true','8.2','12 mdr forhandlergaranti','København','Veligholdt racercykel kørt ca. 2000 km','https://eksempel.dk/madone-1.jpg','https://eksempel.dk/madone-2.jpg',''],
+        ['Specialized','Allez Sprint','Racercykel','18500','2022','God stand','L','56','28','Hvid','Aluminium','Skivebremser hydraulisk','Shimano 105','false','8.8','','Aarhus','Race-cykel i god stand kørt 4500 km','https://eksempel.dk/allez-1.jpg','',''],
+      ],
+    },
+    mountainbike: {
+      label: 'Mountainbike',
+      filename: 'cykelboersen-template-mountainbike.csv',
+      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','groupset','weight_kg','warranty','city','description','image_1','image_2','image_3'],
+      samples: [
+        ['Cube','Reaction Race','Mountainbike','8500','2021','God stand','M','','29','Sort','Aluminium','Skivebremser hydraulisk','Shimano Deore','12.5','','Odense','Hardtail MTB velegnet til skov og trails','https://eksempel.dk/cube-1.jpg','https://eksempel.dk/cube-2.jpg',''],
+        ['Specialized','Stumpjumper','Mountainbike','24000','2022','Som ny','L','','27.5','Rød','Carbon','Skivebremser hydraulisk','SRAM GX Eagle','13.1','24 mdr','Aalborg','Fuld-affjedret trail-bike kørt sparsomt','https://eksempel.dk/stumpjumper-1.jpg','',''],
+      ],
+    },
+    'el-cykel': {
+      label: 'El-cykel',
+      filename: 'cykelboersen-template-elcykel.csv',
+      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','weight_kg','warranty','city','description','image_1','image_2','image_3'],
+      samples: [
+        ['Gazelle','Ultimate C8 HMB','El-cykel','22000','2023','Som ny','M','51','28','Antracit','Aluminium','Skivebremser hydraulisk','24.5','24 mdr','København','El-citybike med Bosch Active Line motor (50Nm), 400Wh batteri, rækkevidde 60-100 km. Belt-drive Enviolo 8-trins gear.','https://eksempel.dk/gazelle-1.jpg','https://eksempel.dk/gazelle-2.jpg',''],
+        ['Trek','Verve+ 2','El-cykel','17500','2022','God stand','L','55','28','Blå','Aluminium','Skivebremser hydraulisk','22.8','','Aarhus','Pendler-elcykel med Hyena motor 250W, 400Wh batteri rækkevidde 80 km, Shimano Altus 8-gear, lygter og skærme inkluderet','https://eksempel.dk/verve-1.jpg','',''],
+      ],
+    },
+    citybike: {
+      label: 'Citybike',
+      filename: 'cykelboersen-template-citybike.csv',
+      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','warranty','city','description','image_1','image_2','image_3'],
+      samples: [
+        ['MBK','City Lux 7g','Citybike','3500','2020','God stand','M','','28','Sort','Aluminium','V-bremser','','København','Klassisk dansk pendler-cykel, Shimano 7-gear, lygter og skærme, lås medfølger','https://eksempel.dk/mbk-1.jpg','',''],
+        ['Trek','Verve 2 Disc','Citybike','5500','2021','Som ny','L','','28','Grøn','Aluminium','Skivebremser mekanisk','','Aarhus','Komfortabel hybrid med Shimano Altus 8-gear, ergonomisk geometri','https://eksempel.dk/verve-c-1.jpg','',''],
+      ],
+    },
+    universal: {
+      label: 'Universal (alle felter)',
+      filename: 'cykelboersen-template-universal.csv',
+      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','groupset','electronic_shifting','weight_kg','warranty','city','description','external_url','image_1','image_2','image_3','image_4','image_5'],
+      samples: [
+        ['Trek','Madone SL 6','Racercykel','32000','2023','Som ny','M','54','28','Sort','Carbon','Skivebremser hydraulisk','Shimano 105 Di2','true','8.2','12 mdr','København','Veligholdt racercykel kørt ca. 2000 km','','https://eksempel.dk/madone-1.jpg','https://eksempel.dk/madone-2.jpg','','',''],
+      ],
+    },
+  };
+
+  function downloadTemplate(typeKey) {
+    const tpl = TEMPLATES[typeKey];
+    if (!tpl) return;
     // CSV-escape: hvis værdi indeholder komma, quote eller newline, wrap i quotes og dobl interne quotes
     const csvEscape = (v) => {
       const s = String(v);
       if (/[,"\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
       return s;
     };
-    const csv = headers.map(csvEscape).join(',') + '\n' +
-      sample.map(csvEscape).join(',') + '\n';
+    const lines = [tpl.headers.map(csvEscape).join(',')];
+    for (const sample of tpl.samples) {
+      lines.push(sample.map(csvEscape).join(','));
+    }
+    const csv = lines.join('\n') + '\n';
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'cykelboersen-bulk-import-template.csv';
+    a.download = tpl.filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
