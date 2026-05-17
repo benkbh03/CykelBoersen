@@ -163,10 +163,13 @@ export function createAdminBulkImport({ supabase, showToast }) {
         <p style="margin:0 0 10px;color:var(--muted);font-size:0.85rem;">Send forhandleren den template der passer til deres lager. De udfylder rækkerne og sender CSV tilbage.</p>
         <div class="bulk-template-buttons" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
           <button type="button" data-tpl="racercykel" class="bulk-tpl-btn">🏁 Racercykel</button>
+          <button type="button" data-tpl="gravel" class="bulk-tpl-btn">🌾 Gravel</button>
           <button type="button" data-tpl="mountainbike" class="bulk-tpl-btn">🏔️ Mountainbike</button>
           <button type="button" data-tpl="el-cykel" class="bulk-tpl-btn">⚡ El-cykel</button>
           <button type="button" data-tpl="citybike" class="bulk-tpl-btn">🚲 Citybike</button>
-          <button type="button" data-tpl="universal" class="bulk-tpl-btn bulk-tpl-btn--universal">📦 Universal (alle felter)</button>
+          <button type="button" data-tpl="ladcykel" class="bulk-tpl-btn">📦 Ladcykel</button>
+          <button type="button" data-tpl="boernecykel" class="bulk-tpl-btn">👶 Børnecykel</button>
+          <button type="button" data-tpl="universal" class="bulk-tpl-btn bulk-tpl-btn--universal">🎯 Universal (alle felter)</button>
         </div>
         <p style="margin:0 0 10px;color:var(--muted);font-size:0.78rem;line-height:1.5;">
           <strong>Tips til forhandleren:</strong>
@@ -399,6 +402,15 @@ export function createAdminBulkImport({ supabase, showToast }) {
         ['Specialized','Allez Sprint','Racercykel','18500','2022','God stand','L','56','28','Hvid','Aluminium','Skivebremser hydraulisk','Shimano 105','false','8.8','','Aarhus','Race-cykel i god stand kørt 4500 km','https://eksempel.dk/allez-1.jpg','',''],
       ],
     },
+    gravel: {
+      label: 'Gravel',
+      filename: 'cykelboersen-template-gravel.csv',
+      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','groupset','electronic_shifting','weight_kg','warranty','city','description','image_1','image_2','image_3'],
+      samples: [
+        ['Specialized','Diverge Sport Carbon','Gravel','29000','2023','Som ny','M','54','28','Tan','Carbon','Skivebremser hydraulisk','Shimano GRX 600','false','9.1','24 mdr','København','Gravel-cykel med Future Shock plads til 47mm dæk','https://eksempel.dk/diverge-1.jpg','https://eksempel.dk/diverge-2.jpg',''],
+        ['Trek','Checkpoint ALR 5','Gravel','19500','2022','God stand','L','56','28','Grøn','Aluminium','Skivebremser hydraulisk','Shimano GRX 400','false','10.2','','Aarhus','Allround gravel-bike velegnet til grus og asfalt','https://eksempel.dk/checkpoint-1.jpg','',''],
+      ],
+    },
     mountainbike: {
       label: 'Mountainbike',
       filename: 'cykelboersen-template-mountainbike.csv',
@@ -424,6 +436,26 @@ export function createAdminBulkImport({ supabase, showToast }) {
       samples: [
         ['MBK','City Lux 7g','Citybike','3500','2020','God stand','M','','28','Sort','Aluminium','V-bremser','','København','Klassisk dansk pendler-cykel, Shimano 7-gear, lygter og skærme, lås medfølger','https://eksempel.dk/mbk-1.jpg','',''],
         ['Trek','Verve 2 Disc','Citybike','5500','2021','Som ny','L','','28','Grøn','Aluminium','Skivebremser mekanisk','','Aarhus','Komfortabel hybrid med Shimano Altus 8-gear, ergonomisk geometri','https://eksempel.dk/verve-c-1.jpg','',''],
+      ],
+    },
+    ladcykel: {
+      label: 'Ladcykel',
+      filename: 'cykelboersen-template-ladcykel.csv',
+      headers: ['brand','model','type','price','year','condition','size','wheel_size','color','frame_material','brake_type','weight_kg','warranty','city','description','image_1','image_2','image_3'],
+      samples: [
+        ['Christiania Bikes','Light','Ladcykel','18000','2022','Som ny','','24','Sort','Stål','V-bremser','32','','København','3-hjulet klassisk dansk ladcykel med kasse til 2 børn eller varer. Plads til regnslag (medfølger ikke). Shimano Nexus 7-gear','https://eksempel.dk/christiania-1.jpg','https://eksempel.dk/christiania-2.jpg',''],
+        ['Larry vs Harry','Bullitt','Ladcykel','22000','2021','God stand','','26','Hvid','Aluminium','Skivebremser hydraulisk','22','','Aarhus','Hurtig 2-hjulet long-john ladcykel med Shimano 9-gear plads til store laster eller 2 børn med sæde','https://eksempel.dk/bullitt-1.jpg','',''],
+        ['Babboe','Curve-E Mountain','Ladcykel','38000','2023','Som ny','','26','Antracit','Stål','Skivebremser hydraulisk','50','24 mdr','Odense','3-hjulet el-ladcykel med Yamaha PWseries motor 250W og 500Wh batteri rækkevidde 60-80 km. Plads til 4 børn','https://eksempel.dk/babboe-1.jpg','',''],
+      ],
+    },
+    'boernecykel': {
+      label: 'Børnecykel',
+      filename: 'cykelboersen-template-boernecykel.csv',
+      headers: ['brand','model','type','price','year','condition','wheel_size','color','frame_material','brake_type','weight_kg','warranty','city','description','image_1','image_2'],
+      samples: [
+        ['Woom','3','Børnecykel','2800','2023','Som ny','16','Rød','Aluminium','V-bremser','5.4','','København','Børnecykel til 4-6 år (104-119 cm). Letvægt med 2 gear, sikre bremsegreb tilpasset børnehænder. Sparsomt brugt','https://eksempel.dk/woom-1.jpg','https://eksempel.dk/woom-2.jpg'],
+        ['Frog Bikes','52','Børnecykel','3200','2022','God stand','20','Grøn','Aluminium','V-bremser','7.8','','Aarhus','Børnecykel til 5-8 år (115-128 cm). 8 gear letvægt geometri designet til børn','https://eksempel.dk/frog-1.jpg',''],
+        ['Puky','Z2','Børnecykel','1200','2021','God stand','12','Blå','Stål','Bagpedalbremse','5.2','','Aalborg','Begynder-cykel til 2-4 år (85-105 cm). Med støttehjul - perfekt første cykel','https://eksempel.dk/puky-1.jpg',''],
       ],
     },
     universal: {
