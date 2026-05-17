@@ -56,12 +56,41 @@ const BLOG_SLUGS = [
   "racercykler-under-15000",
 ];
 
+// Alle kendte cykelmærker — speglet fra js/brand-data-v2.js KNOWN_BRANDS.
+// Hver brand har en dedikeret /cykler/<slug>-landingsside med indhold (beskrivelse,
+// model-eksempler, relaterede mærker) selv uden aktive annoncer. SEO-værdi for at
+// have dem alle i sitemap så Google kan ranke os på brand-navns-søgninger.
+// Opdater listen når et nyt brand tilføjes i brand-data-v2.js.
+const KNOWN_BRANDS = [
+  "Amladcykler","Avenue","Babboe","Batavus","Bergamont","Bianchi",
+  "Bike by Gubi","Black Iron Horse","BMC","Brompton",
+  "Butchers & Bicycles","Cannondale","Canyon","Carqon","Centurion",
+  "Cervélo","Christiania Bikes","Colnago","Conway","Corratec","Cube",
+  "E-Fly","Early Rider","Electra","Everton","FACTOR","Felt","Focus",
+  "Frog Bikes","Gazelle","Ghost","Giant","GT","Gudereit","Haibike",
+  "Husqvarna","Kalkhoff","Kildemoes","Koga","Kona","Kreidler",
+  "Lapierre","Larry vs Harry / Bullitt","Lindebjerg","Liv","LOOK",
+  "Marin","Mate Bike","MBK","Merida","Momentum","Mondraker",
+  "Motobecane","Moustache","Nihola","Nishiki","Norden","Norco",
+  "Omnium","Orbea","Pegasus","Pinarello","Principia","Puky","Qio",
+  "QWIC","Raleigh","Riese & Müller","Ridley","Royal Cargobike",
+  "Santa Cruz","SCO","Scott","Seaside Bike","Silverback","Sparta",
+  "Specialized","Stevens","Superior","Tern","Trek","Triobike",
+  "Urban Arrow","uVelo","VanMoof","Velo de Ville","Victoria","Wilier",
+  "Winther","Woom","Yuba",
+];
+
+// Skal matche brandToSlug() i js/brand-data-v2.js præcist
 function brandToSlug(name: string): string {
+  if (!name) return "";
   return name
     .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\-æøåéüöäñ]/gi, "");
+    .trim()
+    .replace(/&/g, "-")
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue")
+    .replace(/[^\wæøåéèáàíóú-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function xmlEscape(s: string): string {
@@ -100,18 +129,27 @@ serve(async (req: Request) => {
     entries.push(urlEntry(`${BASE_URL}/blog/${slug}`, { changefreq: "monthly", priority: "0.6" }));
   }
 
-  // 3. Brands med aktive annoncer
+  // 3. Brands — alle kendte brand-landingssider + højere prioritet/changefreq
+  //    for brands med aktive annoncer (de er "varmere" content)
   const { data: brandRows } = await supa
     .from("bikes")
     .select("brand")
     .eq("is_active", true)
     .not("brand", "is", null);
-  const brandSet = new Set<string>();
+  const activeBrandSlugs = new Set<string>();
   for (const row of brandRows || []) {
-    if (row.brand) brandSet.add(String(row.brand).trim());
+    if (row.brand) activeBrandSlugs.add(brandToSlug(String(row.brand).trim()));
   }
-  for (const brand of brandSet) {
-    entries.push(urlEntry(`${BASE_URL}/cykler/${brandToSlug(brand)}`, { changefreq: "daily", priority: "0.7" }));
+  const seenSlugs = new Set<string>();
+  for (const brand of KNOWN_BRANDS) {
+    const slug = brandToSlug(brand);
+    if (!slug || seenSlugs.has(slug)) continue;
+    seenSlugs.add(slug);
+    const isActive = activeBrandSlugs.has(slug);
+    entries.push(urlEntry(`${BASE_URL}/cykler/${slug}`, {
+      changefreq: isActive ? "daily" : "weekly",
+      priority: isActive ? "0.8" : "0.6",
+    }));
   }
 
   // 4. Aktive bike-detail-sider
