@@ -1,4 +1,4 @@
-export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadIdApplications }) {
+export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport }) {
   function openAdminPanel() {
     document.getElementById('admin-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -11,16 +11,18 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadI
   }
 
   function switchAdminTab(tab) {
-    document.getElementById('admin-applications').style.display = tab === 'applications' ? 'block' : 'none';
-    document.getElementById('admin-users').style.display        = tab === 'users' ? 'block' : 'none';
-    document.getElementById('admin-id').style.display           = tab === 'id' ? 'block' : 'none';
-    document.getElementById('atab-applications').classList.toggle('active', tab === 'applications');
-    document.getElementById('atab-users').classList.toggle('active', tab === 'users');
-    document.getElementById('atab-id').classList.toggle('active', tab === 'id');
+    const panels = ['applications', 'users', 'id', 'bulk-import'];
+    for (const t of panels) {
+      const panel = document.getElementById('admin-' + t);
+      const tabBtn = document.getElementById('atab-' + t);
+      if (panel) panel.style.display = tab === t ? 'block' : 'none';
+      if (tabBtn) tabBtn.classList.toggle('active', tab === t);
+    }
 
     if (tab === 'applications') loadDealerApplications();
     if (tab === 'users') loadAllUsers();
     if (tab === 'id') loadIdApplications();
+    if (tab === 'bulk-import' && loadBulkImport) loadBulkImport();
   }
 
   return { openAdminPanel, closeAdminPanel, switchAdminTab };
