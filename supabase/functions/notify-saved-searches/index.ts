@@ -217,9 +217,19 @@ serve(async (req) => {
         const searchNames = userSearches.map(s => `<li style="margin-bottom:4px;">${s.name}</li>`).join("");
 
         const bikeUrl  = `https://xn--cykelbrsen-5cb.dk/bike/${bike.id}`;
-        const imgHtml  = bike.image
+        // Filter ud kendte placeholder/test-URLs (fake bulk-import data)
+        const isValidImageUrl = (u: string | null | undefined): boolean => {
+          if (!u || typeof u !== "string") return false;
+          if (!/^https:\/\//.test(u)) return false;
+          if (/eksempel\.dk|placeholder|example\.(com|dk|org)|test\.dk/i.test(u)) return false;
+          return true;
+        };
+        const placeholderHtml = `<a href="${bikeUrl}" style="text-decoration:none;display:block;">
+          <div style="width:100%;max-width:536px;height:200px;background:#F5F0E8;border:1px solid #E5DCC9;display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-radius:10px;margin:0 0 16px;text-align:center;line-height:200px;">🚲</div>
+        </a>`;
+        const imgHtml  = isValidImageUrl(bike.image)
           ? `<a href="${bikeUrl}" style="text-decoration:none;"><img src="${bike.image}" alt="${bikeName}" style="width:100%;max-width:536px;height:auto;max-height:320px;object-fit:cover;border-radius:10px;display:block;margin:0 0 16px;"></a>`
-          : "";
+          : placeholderHtml;
 
         const html = emailWrapper(`
           <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🔔 Ny annonce matcher din søgning!</h2>
