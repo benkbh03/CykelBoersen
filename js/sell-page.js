@@ -899,11 +899,10 @@ export function createSellPage({
     if (_sellStep === 1) return getSelectedFiles().length > 0;
     if (_sellStep === 2) {
       const brand = document.getElementById('sell-brand')?.value.trim();
-      const model = document.getElementById('sell-model')?.value.trim();
       const type  = document.getElementById('sell-type')?.value;
       const cond  = document.getElementById('sell-condition')?.value;
       const price = document.getElementById('sell-price')?.value;
-      return !!(brand && model && type && cond && price);
+      return !!(brand && type && cond && price);
     }
     if (_sellStep === 3) {
       const desc = document.getElementById('sell-desc')?.value.trim();
