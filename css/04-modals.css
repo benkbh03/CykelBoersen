@@ -1604,3 +1604,19 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .action-card-body { flex: 1; }
 .action-card-title { font-weight: 600; font-size: 0.92rem; color: var(--charcoal); margin-bottom: 3px; }
 .action-card-sub   { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+/* Inline spinner til logout-knapper og andre actions */
+.btn-spinner-inline {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btnSpin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
