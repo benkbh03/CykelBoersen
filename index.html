@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113dh" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113di" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113dh">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113dh">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113di">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113di">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113di">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113di">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113di">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113di">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113di">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113di">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113di">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113di">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113di">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1104,6 +1104,10 @@
                   <span>↻ Byttetilbud</span>
                 </label>
               </div>
+              <label class="optout-check" data-optout-for="offers">
+                <input type="checkbox" id="edit-offers-optout">
+                <span>Vi tilbyder hverken finansiering eller byttetilbud</span>
+              </label>
               <p class="dealer-offers-hint">Vises på dine annoncer under "Køb hos forhandler".</p>
             </div>
             <div class="form-group" id="edit-services-group" style="display:none;">
@@ -1127,6 +1131,12 @@
             <div class="form-group" id="edit-instagram-group" style="display:none;">
               <label>Instagram</label>
               <input type="url" id="edit-instagram" placeholder="https://instagram.com/dinbutik">
+            </div>
+            <div class="form-group" id="edit-social-optout-group" style="display:none;">
+              <label class="optout-check" data-optout-for="social">
+                <input type="checkbox" id="edit-social-optout">
+                <span>Vi har ikke website eller social media-profiler</span>
+              </label>
             </div>
           </div>
           <button id="save-profile-btn" class="form-submit" onclick="saveProfile()">Gem ændringer</button>

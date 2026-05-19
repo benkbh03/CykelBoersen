@@ -115,6 +115,8 @@ export function createProfilePage({
     const triCb = document.getElementById('edit-offers-tradein');
     if (finCb) finCb.checked = !!profile.offers_financing;
     if (triCb) triCb.checked = !!profile.offers_tradein;
+    const offersOptCb = document.getElementById('edit-offers-optout');
+    if (offersOptCb) offersOptCb.checked = !!profile.offers_optout;
 
     // Forhandler-udvidelser: services, åbningstider, sociale links
     const servicesGroup    = document.getElementById('edit-services-group');
@@ -122,18 +124,19 @@ export function createProfilePage({
     const websiteGroup     = document.getElementById('edit-website-group');
     const facebookGroup    = document.getElementById('edit-facebook-group');
     const instagramGroup   = document.getElementById('edit-instagram-group');
-    const dealerExtras     = [servicesGroup, openingGroup, websiteGroup, facebookGroup, instagramGroup];
+    const socialOptGroup   = document.getElementById('edit-social-optout-group');
+    const dealerExtras     = [servicesGroup, openingGroup, websiteGroup, facebookGroup, instagramGroup, socialOptGroup];
     dealerExtras.forEach(el => { if (el) el.style.display = isDealer ? 'flex' : 'none'; });
 
     if (isDealer) {
       const servicesMount = document.getElementById('edit-services-mount');
       if (servicesMount) {
-        servicesMount.innerHTML = buildServicesEditor(profile.services || []);
+        servicesMount.innerHTML = buildServicesEditor(profile.services || [], profile.services_optout);
         bindServicesEditor(servicesMount);
       }
       const ohMount = document.getElementById('edit-opening-hours-mount');
       if (ohMount) {
-        ohMount.innerHTML = buildOpeningHoursEditor(profile.opening_hours);
+        ohMount.innerHTML = buildOpeningHoursEditor(profile.opening_hours, profile.hours_optout);
         bindOpeningHoursEditor(ohMount);
       }
       const wEl = document.getElementById('edit-website');
@@ -142,6 +145,8 @@ export function createProfilePage({
       if (wEl) wEl.value = profile.website   || '';
       if (fEl) fEl.value = profile.facebook  || '';
       if (iEl) iEl.value = profile.instagram || '';
+      const socialOptCb = document.getElementById('edit-social-optout');
+      if (socialOptCb) socialOptCb.checked = !!profile.social_optout;
     }
 
     // Vis sælgertype som tekst (ikke redigerbar dropdown)
@@ -232,6 +237,13 @@ export function createProfilePage({
       updates.website       = (document.getElementById('edit-website')?.value   || '').trim() || null;
       updates.facebook      = (document.getElementById('edit-facebook')?.value  || '').trim() || null;
       updates.instagram     = (document.getElementById('edit-instagram')?.value || '').trim() || null;
+
+      // Completion opt-outs: forhandler markerer aktivt "vi har ikke dette"
+      // i de 4 grupper, så de kan nå 100% komplet uden falsk data.
+      updates.hours_optout    = !!document.getElementById('edit-hours-optout')?.checked;
+      updates.offers_optout   = !!document.getElementById('edit-offers-optout')?.checked;
+      updates.services_optout = !!document.getElementById('edit-services-optout')?.checked;
+      updates.social_optout   = !!document.getElementById('edit-social-optout')?.checked;
     }
 
     // Lokationsdata: forhandler har præcis adresse, privat har kun by
