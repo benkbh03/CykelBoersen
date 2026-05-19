@@ -320,6 +320,21 @@ export function createProfilePage({
      ============================================================ */
 
   async function logout() {
+    // Visuel feedback: disable alle log-ud-knapper + vis spinner
+    const logoutButtons = document.querySelectorAll('button[onclick*="logout"], .btn-logout, .mp-action-logout');
+    logoutButtons.forEach(btn => {
+      btn.disabled = true;
+      btn.dataset.origHtml = btn.innerHTML;
+      btn.innerHTML = '<span class="btn-spinner-inline"></span> Logger ud…';
+      btn.style.opacity = '0.85';
+      btn.style.cursor = 'wait';
+    });
+
+    // Toast som backup hvis brugeren ikke ser knappen
+    if (typeof window.showToast === 'function') {
+      window.showToast('Logger ud…');
+    }
+
     // Forsøg signOut men vent max 3 sekunder
     await Promise.race([
       supabase.auth.signOut().catch(() => {}),
