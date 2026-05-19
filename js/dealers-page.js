@@ -508,7 +508,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>CVR-nummer *</label><input type="text" inputmode="numeric" pattern="\d*" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>Telefon</label><input type="tel" inputmode="tel" id="dealer-phone" placeholder="f.eks. 12 34 56 78" maxlength="20" oninput="this.value=this.value.replace(/[^\d +]/g,'')" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>Telefon</label><input type="tel" inputmode="tel" id="dealer-phone" placeholder="f.eks. 12 34 56 78" maxlength="20" autocomplete="tel" data-1p-ignore="true" data-lpignore="true" data-form-type="other" data-bwignore="true" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Adresse *</label><input type="text" id="dealer-address" placeholder="Start med at skrive gadenavn…" autocomplete="off"></div>
           <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="Udfyldes automatisk" autocomplete="off"></div>
         </div>
