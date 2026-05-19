@@ -267,7 +267,7 @@ export function createListingEdit({
       weight_kg:          (weightKg != null && !isNaN(weightKg)) ? weightKg : null,
     };
 
-    if (!updates.brand || !updates.model || !updates.price || !updates.city) {
+    if (!updates.brand || !updates.price || !updates.city) {
       showToast('⚠️ Udfyld alle påkrævede felter'); return;
     }
 
