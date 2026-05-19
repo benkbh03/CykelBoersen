@@ -197,6 +197,9 @@ export function createMyProfilePage({
           <!-- Insight-banner (vises kun når vi har data) -->
           <div class="mp-insight" id="mp-insight" style="display:none"></div>
 
+          <!-- Forhandler attention-banner (stale bikes der trænger handling) -->
+          ${isDealer ? `<div class="mp-attention" id="mp-attention" style="display:none"></div>` : ''}
+
           <!-- Tabs + indhold -->
           <div class="mp-tabs-panel">
             <div class="mp-tabs">
@@ -212,6 +215,9 @@ export function createMyProfilePage({
               <button class="mp-tab" data-tab="trades" onclick="switchMyProfileTab('trades')">
                 Handler <span class="mp-tab-count" id="mp-count-trades">–</span>
               </button>
+              ${isDealer ? `<button class="mp-tab" data-tab="insights" onclick="switchMyProfileTab('insights')">
+                📊 Indsigt
+              </button>` : ''}
             </div>
             <div id="mp-panel-listings" class="mp-tab-panel">
               <div id="mp-listings-grid"><p style="color:var(--muted);padding:20px 0">Henter annoncer…</p></div>
@@ -228,6 +234,9 @@ export function createMyProfilePage({
             <div id="mp-panel-trades" class="mp-tab-panel" style="display:none;">
               <div id="mp-trades-list"><p style="color:var(--muted);padding:20px 0">Henter handler…</p></div>
             </div>
+            ${isDealer ? `<div id="mp-panel-insights" class="mp-tab-panel" style="display:none;">
+              <div id="mp-insights-content"><p style="color:var(--muted);padding:20px 0">Henter indsigt…</p></div>
+            </div>` : ''}
           </div>
         </div>
 
@@ -275,7 +284,7 @@ export function createMyProfilePage({
       const count = btn.querySelector('.mp-tab-count');
       if (count) count.classList.toggle('active', on);
     });
-    ['listings', 'saved', 'searches', 'trades'].forEach(t => {
+    ['listings', 'saved', 'searches', 'trades', 'insights'].forEach(t => {
       const panel = document.getElementById(`mp-panel-${t}`);
       if (panel) panel.style.display = t === tab ? '' : 'none';
     });
@@ -283,6 +292,7 @@ export function createMyProfilePage({
     if (tab === 'saved')    loadSavedListings('mp-saved-grid');
     if (tab === 'searches') loadSavedSearches('mp-searches-list');
     if (tab === 'trades')   loadTradeHistory('mp-trades-list');
+    if (tab === 'insights') loadDealerInsights('mp-insights-content');
   }
 
   async function loadProfileStats() {
@@ -405,6 +415,230 @@ export function createMyProfilePage({
     } catch (e) {
       console.error('loadProfileStats fejl:', e);
     }
+
+    // Forhandler-eksklusiv: Attention-items (stale bikes etc.)
+    if (currentProfile?.seller_type === 'dealer') {
+      loadAttentionItems().catch(() => {});
+    }
+  }
+
+  // ── Attention-card: stale bikes der trænger handling ──
+  async function loadAttentionItems() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    const el = document.getElementById('mp-attention');
+    if (!el) return;
+
+    const fourteenDaysAgo = new Date(Date.now() - 14 * 86400000).toISOString();
+    const { data: bikes } = await supabase
+      .from('bikes')
+      .select('id, brand, model, views, created_at, updated_at, bike_images(url, is_primary)')
+      .eq('user_id', currentUser.id)
+      .eq('is_active', true);
+
+    if (!bikes || bikes.length === 0) { el.style.display = 'none'; return; }
+
+    const stale = bikes.filter(b => {
+      const isOld = (b.updated_at || b.created_at || '') < fourteenDaysAgo;
+      const lowViews = (b.views || 0) < 5;
+      return isOld && lowViews;
+    });
+    const noImages = bikes.filter(b => !(b.bike_images || []).length);
+
+    if (stale.length === 0 && noImages.length === 0) {
+      el.style.display = 'none';
+      return;
+    }
+
+    const issues = [];
+    if (stale.length > 0) {
+      issues.push(`<strong>${stale.length}</strong> ${stale.length === 1 ? 'cykel har' : 'cykler har'} fået under 5 visninger på 14+ dage`);
+    }
+    if (noImages.length > 0) {
+      issues.push(`<strong>${noImages.length}</strong> ${noImages.length === 1 ? 'cykel mangler' : 'cykler mangler'} billeder`);
+    }
+
+    el.innerHTML = `
+      <div class="mp-attention-icon">⚠️</div>
+      <div class="mp-attention-body">
+        <div class="mp-attention-title">Brug for opmærksomhed</div>
+        <ul class="mp-attention-list">
+          ${issues.map(i => `<li>${i}</li>`).join('')}
+        </ul>
+      </div>
+      <button class="mp-attention-cta" onclick="switchMyProfileTab('insights')">Se detaljer →</button>
+    `;
+    el.style.display = '';
+  }
+
+  // ── Indsigt-tab: per-cykel performance + highlights ──
+  async function loadDealerInsights(containerId) {
+    const currentUser    = getCurrentUser();
+    const currentProfile = getCurrentProfile();
+    if (!currentUser) return;
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = `<p style="color:var(--muted);padding:20px 0">Henter indsigt…</p>`;
+
+    try {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+      const [bikesRes, savedRes, msgsRes] = await Promise.all([
+        supabase.from('bikes')
+          .select('id, brand, model, type, price, views, created_at, updated_at, is_active, bike_images(url, is_primary)')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false }),
+        supabase.from('saved_bikes')
+          .select('bike_id, bikes!inner(user_id)')
+          .eq('bikes.user_id', currentUser.id),
+        supabase.from('messages')
+          .select('bike_id, created_at')
+          .eq('receiver_id', currentUser.id),
+      ]);
+
+      const bikes = bikesRes.data || [];
+      if (bikes.length === 0) {
+        el.innerHTML = `<div class="mp-insight-empty">
+          <p style="color:var(--muted);padding:32px 0;text-align:center;">
+            Når du har annoncer, vises dybtgående indsigt her — visninger per cykel, sammenligninger, og forslag til hvad du kan optimere.
+          </p>
+        </div>`;
+        return;
+      }
+
+      const savedByBike = {};
+      (savedRes.data || []).forEach(r => { savedByBike[r.bike_id] = (savedByBike[r.bike_id] || 0) + 1; });
+      const msgsByBike = {};
+      const recentMsgsByBike = {};
+      (msgsRes.data || []).forEach(m => {
+        msgsByBike[m.bike_id] = (msgsByBike[m.bike_id] || 0) + 1;
+        if (m.created_at >= sevenDaysAgo) recentMsgsByBike[m.bike_id] = (recentMsgsByBike[m.bike_id] || 0) + 1;
+      });
+
+      const active = bikes.filter(b => b.is_active);
+      const totalViews = active.reduce((s, b) => s + (b.views || 0), 0);
+      const totalSaved = active.reduce((s, b) => s + (savedByBike[b.id] || 0), 0);
+      const totalMsgs  = active.reduce((s, b) => s + (msgsByBike[b.id] || 0), 0);
+
+      // Highlights
+      const topByViews = [...active].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+      const topBySaves = [...active].sort((a, b) => (savedByBike[b.id] || 0) - (savedByBike[a.id] || 0))[0];
+      const fourteenDays = new Date(Date.now() - 14 * 86400000).toISOString();
+      const stale = active.filter(b => (b.updated_at || b.created_at || '') < fourteenDays && (b.views || 0) < 5);
+      const noPics = active.filter(b => !(b.bike_images || []).length);
+      const fewPics = active.filter(b => (b.bike_images || []).length > 0 && (b.bike_images || []).length < 3);
+
+      const conversionViews   = totalViews;
+      const conversionSaves   = totalSaved;
+      const conversionMsgs    = totalMsgs;
+      const savePct = conversionViews > 0 ? Math.round((conversionSaves / conversionViews) * 100) : 0;
+      const msgPct  = conversionViews > 0 ? Math.round((conversionMsgs / conversionViews) * 100) : 0;
+
+      const tableRows = active
+        .map(b => {
+          const views = b.views || 0;
+          const saves = savedByBike[b.id] || 0;
+          const msgs  = msgsByBike[b.id] || 0;
+          const daysActive = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
+          const updatedDays = b.updated_at ? Math.floor((Date.now() - new Date(b.updated_at)) / 86400000) : daysActive;
+          let status = '<span class="bike-status-ok">📊 OK</span>';
+          if (views >= 50 && msgs >= 2) status = '<span class="bike-status-hot">🔥 Hot</span>';
+          else if (updatedDays >= 14 && views < 5) status = '<span class="bike-status-stale">⚠️ Stille</span>';
+          else if (views > 30 && msgs === 0) status = '<span class="bike-status-prislejet">💰 Pris-tjek</span>';
+          return `
+            <tr onclick="openEditModal('${b.id}')" style="cursor:pointer;">
+              <td>${esc(b.brand)} ${esc(b.model || '')}</td>
+              <td>${daysActive}d</td>
+              <td>${views}</td>
+              <td>${saves}</td>
+              <td>${msgs}</td>
+              <td>${status}</td>
+            </tr>`;
+        })
+        .sort((a, b) => b.localeCompare(a))
+        .join('');
+
+      el.innerHTML = `
+        <div class="insights-grid">
+          <div class="insight-card insight-card--accent">
+            <div class="insight-card-label">🔥 Top cykel (visninger)</div>
+            <div class="insight-card-value">${topByViews ? esc(topByViews.brand + ' ' + (topByViews.model || '')) : '—'}</div>
+            <div class="insight-card-sub">${topByViews ? (topByViews.views || 0).toLocaleString('da-DK') + ' visninger' : 'Ingen data endnu'}</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-card-label">❤️ Mest gemt</div>
+            <div class="insight-card-value">${topBySaves && savedByBike[topBySaves.id] ? esc(topBySaves.brand + ' ' + (topBySaves.model || '')) : '—'}</div>
+            <div class="insight-card-sub">${topBySaves && savedByBike[topBySaves.id] ? savedByBike[topBySaves.id] + ' personer' : 'Ingen gemte endnu'}</div>
+          </div>
+          <div class="insight-card ${stale.length > 0 ? 'insight-card--warn' : ''}">
+            <div class="insight-card-label">⚠️ Stille cykler</div>
+            <div class="insight-card-value">${stale.length}</div>
+            <div class="insight-card-sub">${stale.length > 0 ? 'Under 5 visninger på 14+ dage' : 'Ingen — flot!'}</div>
+          </div>
+          <div class="insight-card ${noPics.length > 0 ? 'insight-card--warn' : ''}">
+            <div class="insight-card-label">📷 Mangler billeder</div>
+            <div class="insight-card-value">${noPics.length + fewPics.length}</div>
+            <div class="insight-card-sub">${(noPics.length + fewPics.length) > 0 ? 'Cykler med under 3 billeder' : 'Alle har gode billeder'}</div>
+          </div>
+        </div>
+
+        <h3 class="insights-h3">Konverteringstragt</h3>
+        <div class="conversion-funnel">
+          <div class="funnel-step">
+            <div class="funnel-label">👁 Visninger</div>
+            <div class="funnel-bar" style="width:100%"><span>${conversionViews.toLocaleString('da-DK')}</span></div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">❤️ Gemte</div>
+            <div class="funnel-bar" style="width:${Math.max(savePct, 5)}%;background:#e8a4c4"><span>${conversionSaves} (${savePct}%)</span></div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-label">💬 Beskeder</div>
+            <div class="funnel-bar" style="width:${Math.max(msgPct, 3)}%;background:var(--rust)"><span>${conversionMsgs} (${msgPct}%)</span></div>
+          </div>
+        </div>
+
+        <h3 class="insights-h3">Per cykel</h3>
+        <div class="insights-table-wrap">
+          <table class="insights-table">
+            <thead>
+              <tr>
+                <th>Cykel</th>
+                <th>Online</th>
+                <th>👁 Visninger</th>
+                <th>❤️ Gemt</th>
+                <th>💬 Beskeder</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+
+        ${stale.length > 0 || noPics.length > 0 ? `
+          <h3 class="insights-h3">Forslag til handling</h3>
+          <div class="insight-actions">
+            ${stale.length > 0 ? `
+              <div class="action-card">
+                <div class="action-card-icon">🔄</div>
+                <div class="action-card-body">
+                  <div class="action-card-title">${stale.length} ${stale.length === 1 ? 'cykel' : 'cykler'} trænger til opmærksomhed</div>
+                  <div class="action-card-sub">De har fået under 5 visninger på 14+ dage. Overvej at sænke prisen eller tilføje flere billeder.</div>
+                </div>
+              </div>` : ''}
+            ${(noPics.length + fewPics.length) > 0 ? `
+              <div class="action-card">
+                <div class="action-card-icon">📷</div>
+                <div class="action-card-body">
+                  <div class="action-card-title">Tilføj flere billeder</div>
+                  <div class="action-card-sub">Annoncer med 5+ billeder får i gennemsnit 3× flere beskeder. Du har ${noPics.length + fewPics.length} med under 3 billeder.</div>
+                </div>
+              </div>` : ''}
+          </div>` : ''}
+      `;
+    } catch (e) {
+      console.error('loadDealerInsights fejl:', e);
+      el.innerHTML = `<p style="color:var(--rust);padding:20px 0">Kunne ikke hente indsigt — prøv igen.</p>`;
+    }
   }
 
   return {
@@ -413,5 +647,7 @@ export function createMyProfilePage({
     buildMyProfilePageHTML,
     switchMyProfileTab,
     loadProfileStats,
+    loadDealerInsights,
+    loadAttentionItems,
   };
 }

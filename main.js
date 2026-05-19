@@ -526,11 +526,13 @@ const renderMyProfilePage    = lazyMethod(_ensureMyProfilePage, 'renderMyProfile
 const buildMyProfilePageHTML = lazyMethod(_ensureMyProfilePage, 'buildMyProfilePageHTML');
 const switchMyProfileTab     = lazyMethod(_ensureMyProfilePage, 'switchMyProfileTab');
 const loadProfileStats       = lazyMethod(_ensureMyProfilePage, 'loadProfileStats');
+const loadDealerInsights     = lazyMethod(_ensureMyProfilePage, 'loadDealerInsights');
 
 window.navigateToMyProfile = navigateToMyProfile;
 window.renderMyProfilePage  = renderMyProfilePage;
 window.switchMyProfileTab   = switchMyProfileTab;
 window.loadProfileStats     = loadProfileStats;
+window.loadDealerInsights   = loadDealerInsights;
 
 // Dealers page — lazy-loaded (/forhandlere + /bliv-forhandler routes)
 const _ensureDealersPage = lazyCtrl(
