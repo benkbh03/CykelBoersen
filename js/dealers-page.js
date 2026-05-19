@@ -644,8 +644,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         return;
       }
 
-      userId = signUpData.user?.id;
-      if (!userId) { restore(); showToast('❌ Noget gik galt – prøv igen'); return; }
+      userId = signUpData.user?.id || null;
+      // userId KAN være null hvis Supabase venter på email-confirmation —
+      // det er ikke en fejl. Vi sender stadig admin-notifikation, viser
+      // "check inbox"-side, og lader email-confirmation gøre resten.
 
       // Send admin-notifikation om ny forhandleransøgning (fire-and-forget)
       supabase.functions.invoke('notify-message', {
