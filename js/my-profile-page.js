@@ -76,16 +76,16 @@ export function createMyProfilePage({
     const hasSocialLinks  = !!p.website || !!p.facebook || !!p.instagram;
 
     const completionItems = [
-      { label: 'E-mail verificeret', done: !!u?.email_confirmed_at },
-      { label: 'Profilbillede',      done: !!p.avatar_url },
-      { label: 'By tilføjet',        done: !!p.city },
-      { label: 'Om mig udfyldt',     done: !!p.bio },
+      { label: 'E-mail verificeret', done: !!u?.email_confirmed_at, action: 'email' },
+      { label: 'Profilbillede',      done: !!p.avatar_url,          action: 'avatar' },
+      { label: 'By tilføjet',        done: !!p.city,                action: 'city' },
+      { label: 'Om mig udfyldt',     done: !!p.bio,                 action: 'bio' },
       ...(isDealer ? [
-        { label: 'Telefon tilføjet',  done: !!p.phone },
-        { label: 'Åbningstider',      done: hasOpeningHours || !!p.hours_optout },
-        { label: 'Tilbud markeret',   done: hasOffers       || !!p.offers_optout },
-        { label: 'Services valgt',    done: hasServices     || !!p.services_optout },
-        { label: 'Online tilstedeværelse', done: hasSocialLinks || !!p.social_optout },
+        { label: 'Telefon tilføjet',  done: !!p.phone,                                action: 'phone' },
+        { label: 'Åbningstider',      done: hasOpeningHours || !!p.hours_optout,      action: 'hours' },
+        { label: 'Tilbud markeret',   done: hasOffers       || !!p.offers_optout,     action: 'offers' },
+        { label: 'Services valgt',    done: hasServices     || !!p.services_optout,   action: 'services' },
+        { label: 'Online tilstedeværelse', done: hasSocialLinks || !!p.social_optout, action: 'social' },
       ] : []),
     ];
     const doneCount = completionItems.filter(i => i.done).length;
@@ -241,12 +241,16 @@ export function createMyProfilePage({
             <div class="mp-completion-bar">
               <div class="mp-completion-fill" style="width:${pct}%"></div>
             </div>
-            ${completionItems.map(x => `
-              <div class="mp-completion-item">
-                <span class="mp-completion-check${x.done ? ' done' : ''}">${x.done ? '✓' : ''}</span>
-                <span style="${x.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${x.label}</span>
-              </div>`).join('')}
-            ${!u?.email_confirmed_at ? `<button class="mp-completion-cta" onclick="openProfileModal()">Bekræft e-mail →</button>` : ''}
+            ${completionItems.map(x => x.done ? `
+              <div class="mp-completion-item mp-completion-item--done">
+                <span class="mp-completion-check done">✓</span>
+                <span class="mp-completion-label-done">${x.label}</span>
+              </div>` : `
+              <button class="mp-completion-item mp-completion-item--clickable" onclick="openProfileCompletion('${x.action}')">
+                <span class="mp-completion-check"></span>
+                <span class="mp-completion-label">${x.label}</span>
+                <span class="mp-completion-arrow">→</span>
+              </button>`).join('')}
           </div>` : ''}
 
           ${isDealer && !p.verified ? `

@@ -2329,6 +2329,39 @@ window.handleRegister    = handleRegister;
 window.handleForgotPassword = handleForgotPassword;
 window.openProfileModal  = openProfileModal;
 window.closeProfileModal = closeProfileModal;
+
+// Genvej fra "Profil X% komplet"-checklisten: åbn profil-modal +
+// scroll til det relevante felt + giv det visuel fokus
+window.openProfileCompletion = function(action) {
+  openProfileModal();
+  // Vent på modal-render før vi scroller
+  setTimeout(() => {
+    const targetMap = {
+      email:    null,                            // håndteres via e-mail-confirm CTA
+      avatar:   '#avatar-upload-input',
+      city:     '#edit-city',
+      bio:      '#edit-bio',
+      phone:    '#edit-phone',
+      hours:    '#edit-opening-hours-group',
+      offers:   '#edit-dealer-offers-group',
+      services: '#edit-services-group',
+      social:   '#edit-website-group',
+    };
+    const sel = targetMap[action];
+    if (!sel) return;
+    const el = document.querySelector(sel);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Visuel fokus-puls
+    el.classList.add('profile-field-highlight');
+    setTimeout(() => el.classList.remove('profile-field-highlight'), 2400);
+    // Hvis det er et input, sæt cursor i det
+    const focusable = el.matches('input, textarea') ? el : el.querySelector('input, textarea');
+    if (focusable && typeof focusable.focus === 'function') {
+      try { focusable.focus({ preventScroll: true }); } catch {}
+    }
+  }, 250);
+};
 window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
 window.dismissOnboarding    = lazyExport(() => import(`./js/onboarding.js?v=${ASSET_VERSION}`), 'dismissOnboarding');
