@@ -1421,3 +1421,41 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 @media (max-width: 480px) {
   .bulk-tpl-btn { font-size: 0.78rem; padding: 8px 12px; }
 }
+
+/* ── OPT-OUT CHECKBOXES (Profil-komplet tracking) ───────────── */
+.optout-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--sand);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted);
+  font-style: italic;
+  user-select: none;
+  transition: all 0.15s;
+}
+.optout-check:hover {
+  background: var(--cream);
+  color: var(--charcoal);
+}
+.optout-check input[type="checkbox"] {
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--forest);
+}
+.optout-check input[type="checkbox"]:checked + span {
+  color: var(--forest);
+  font-weight: 600;
+  font-style: normal;
+}
+.services-editor.is-optout .services-chips,
+.oh-editor.is-optout .oh-row {
+  opacity: 0.4;
+  pointer-events: none;
+}

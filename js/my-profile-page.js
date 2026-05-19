@@ -64,16 +64,28 @@ export function createMyProfilePage({
       ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       : initials;
 
-    // Completion-checklisten måler reelle profil-felter — ikke produkttilbud
-    // som finansiering/byttetilbud, der varierer pr. forhandler og ikke bør
-    // forhindre en butik der ikke tilbyder dem i at nå 100%.
+    // Completion-checklisten. For forhandlere udvides med 4 ekstra items
+    // hvor opt-out ('vi tilbyder ikke dette') tæller som 'done' — så
+    // butikker uden fx finansiering kan stadig nå 100% ved aktivt at
+    // markere det.
+    const hasOpeningHours = p.opening_hours && Object.values(p.opening_hours).some(
+      d => d && !d.closed && d.open && d.close
+    );
+    const hasOffers       = !!p.offers_financing || !!p.offers_tradein;
+    const hasServices     = Array.isArray(p.services) && p.services.length > 0;
+    const hasSocialLinks  = !!p.website || !!p.facebook || !!p.instagram;
+
     const completionItems = [
       { label: 'E-mail verificeret', done: !!u?.email_confirmed_at },
       { label: 'Profilbillede',      done: !!p.avatar_url },
       { label: 'By tilføjet',        done: !!p.city },
       { label: 'Om mig udfyldt',     done: !!p.bio },
       ...(isDealer ? [
-        { label: 'Telefon tilføjet',   done: !!p.phone },
+        { label: 'Telefon tilføjet',  done: !!p.phone },
+        { label: 'Åbningstider',      done: hasOpeningHours || !!p.hours_optout },
+        { label: 'Tilbud markeret',   done: hasOffers       || !!p.offers_optout },
+        { label: 'Services valgt',    done: hasServices     || !!p.services_optout },
+        { label: 'Online tilstedeværelse', done: hasSocialLinks || !!p.social_optout },
       ] : []),
     ];
     const doneCount = completionItems.filter(i => i.done).length;

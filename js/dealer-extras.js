@@ -84,10 +84,11 @@ export function openStatus(hours, now = new Date()) {
 }
 
 /** HTML-blok til editor i profil-modal. */
-export function buildOpeningHoursEditor(hours) {
+export function buildOpeningHoursEditor(hours, optout) {
   const h = { ...defaultOpeningHours(), ...(hours || {}) };
+  const isOptedOut = !!optout;
   return `
-    <div class="oh-editor">
+    <div class="oh-editor ${isOptedOut ? 'is-optout' : ''}" data-optout="${isOptedOut ? '1' : '0'}">
       ${DAYS.map(({ key, label }) => {
         const d = h[key] || { open: '', close: '', closed: true };
         return `
@@ -102,6 +103,10 @@ export function buildOpeningHoursEditor(hours) {
             <input type="time" class="oh-time" data-oh-close value="${esc(d.close || '')}" ${d.closed ? 'disabled' : ''}>
           </div>`;
       }).join('')}
+      <label class="optout-check" data-optout-for="hours">
+        <input type="checkbox" id="edit-hours-optout" ${isOptedOut ? 'checked' : ''}>
+        <span>Vi har ikke faste åbningstider (kun efter aftale)</span>
+      </label>
     </div>`;
 }
 
@@ -199,16 +204,23 @@ export function buildSocialLinksDisplay({ website, facebook, instagram }) {
 
 // ── Services-chips ───────────────────────────────────────────
 
-export function buildServicesEditor(selected) {
+export function buildServicesEditor(selected, optout) {
   const set = new Set(Array.isArray(selected) ? selected : []);
+  const isOptedOut = !!optout;
   return `
-    <div class="services-chips" id="services-chips">
-      ${SERVICES.map(s => `
-        <label class="service-chip ${set.has(s.key) ? 'on' : ''}">
-          <input type="checkbox" value="${s.key}" ${set.has(s.key) ? 'checked' : ''}>
-          <span>${s.icon} ${s.label}</span>
-        </label>
-      `).join('')}
+    <div class="services-editor ${isOptedOut ? 'is-optout' : ''}">
+      <div class="services-chips" id="services-chips">
+        ${SERVICES.map(s => `
+          <label class="service-chip ${set.has(s.key) ? 'on' : ''}">
+            <input type="checkbox" value="${s.key}" ${set.has(s.key) ? 'checked' : ''}>
+            <span>${s.icon} ${s.label}</span>
+          </label>
+        `).join('')}
+      </div>
+      <label class="optout-check" data-optout-for="services">
+        <input type="checkbox" id="edit-services-optout" ${isOptedOut ? 'checked' : ''}>
+        <span>Vi tilbyder ikke nogen af disse services</span>
+      </label>
     </div>`;
 }
 
