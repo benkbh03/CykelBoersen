@@ -1,4 +1,4 @@
-export function createSoldActions({ supabase, getCurrentUser, showToast, reloadMyListings, loadBikes, updateFilterCounts, openUserProfileWithReview }) {
+export function createSoldActions({ supabase, getCurrentUser, showToast, reloadMyListings, loadBikes, updateFilterCounts, openUserProfileWithReview, loadTradeHistory }) {
   async function markBikeSold(bikeId, buyerId, buyerName) {
     const currentUser = getCurrentUser();
     // Anti-gaming fase 2: skelner mellem platform-salg (med valgt køber-bruger
@@ -78,10 +78,22 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
   async function toggleSold(bikeId, currentlySold) {
     const currentUser = getCurrentUser();
     if (currentlySold) {
+      // Genaktivering annullerer den registrerede handel — men KUN hvis køber
+      // endnu ikke har anmeldt (en afgiven anmeldelse beviser at handlen fandt
+      // sted og må ikke kunne slettes). Selve annulleringen (sletning af accept-
+      // beskeder + nulstilling af sold_via) håndteres af DB-triggeren
+      // void_trade_on_reactivation; her bruges review-tjekket kun til UI-teksten.
+      const { data: existingReviews } = await supabase
+        .from('reviews').select('id').eq('bike_id', bikeId).limit(1);
+      const hasReview = (existingReviews?.length || 0) > 0;
+
       const err = (await supabase.from('bikes').update({ is_active: true }).eq('id', bikeId)).error;
       if (err) { showToast('❌ Kunne ikke opdatere status'); return; }
-      showToast('✅ Annonce aktiv igen');
+      showToast(hasReview
+        ? '✅ Annonce aktiv igen'
+        : '✅ Annonce aktiv igen – den registrerede handel blev annulleret');
       reloadMyListings(); loadBikes(); updateFilterCounts();
+      if (!hasReview && loadTradeHistory) loadTradeHistory();
       return;
     }
 

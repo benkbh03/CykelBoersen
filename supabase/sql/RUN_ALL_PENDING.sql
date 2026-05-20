@@ -136,6 +136,40 @@ CREATE TRIGGER trg_prevent_sold_bike_edits
   FOR EACH ROW
   EXECUTE FUNCTION prevent_sold_bike_edits();
 
+
+-- ════════════════════════════════════════════════════════════
+-- 5/5 — Annullér handel ved genaktivering (kun hvis ingen anmeldelse)
+-- ════════════════════════════════════════════════════════════
+-- Genaktivering af en solgt annonce annullerer den registrerede handel
+-- (fjerner accept-besked → forsvinder fra "Handler" + ungater anmeldelse,
+-- og nulstiller sold_via). MEN kun hvis køber endnu ikke har anmeldt —
+-- en afgiven anmeldelse beviser handlen og kan ikke slettes.
+
+CREATE OR REPLACE FUNCTION void_trade_on_reactivation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF OLD.is_active = false AND NEW.is_active = true THEN
+    IF NOT EXISTS (SELECT 1 FROM reviews WHERE bike_id = NEW.id) THEN
+      DELETE FROM messages
+       WHERE bike_id = NEW.id
+         AND content ILIKE '%accepteret%';
+      NEW.sold_via := NULL;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_void_trade_on_reactivation ON bikes;
+CREATE TRIGGER trg_void_trade_on_reactivation
+  BEFORE UPDATE ON bikes
+  FOR EACH ROW
+  EXECUTE FUNCTION void_trade_on_reactivation();
+
 -- ============================================================
--- FÆRDIG. Hvis du ikke fik fejl, er alle 4 features klar.
+-- FÆRDIG. Hvis du ikke fik fejl, er alle 5 features klar.
 -- ============================================================
