@@ -287,6 +287,7 @@ const {
 const listingEdit = createListingEdit({
   supabase,
   showToast,
+  btnLoading,
   bikeCache,
   validateImageFile,
   compressImage,
