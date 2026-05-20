@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113eb" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113ec" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113eb">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113eb">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113ec">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113ec">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -861,10 +861,30 @@
     </div>
   </div>
 
-  <!-- ── MODAL-PARTIALS injiceres her af main.js (partials/modals.html) ── -->
+  <!-- ── MODAL-PARTIALS injiceres her FØR main.js (partials/modals.html) ── -->
   <div id="modals-root"></div>
 
   <!-- Leaflet, MarkerCluster og Cropper loades on-demand fra main.js — IKKE eagerly -->
-  <script type="module" src="/main.js"></script>
+  <!-- Modal-partials SKAL injiceres før main.js evalueres: factory-funktioner i
+       main.js tilknytter listeners til modal-elementer på modul-niveau, så
+       elementerne skal findes i DOM før importen. Derfor: hent partials, injicér,
+       og importér FØRST derefter main.js (sekventielt via await). -->
+  <script type="module">
+    // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
+    // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
+    // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
+    const V = '20261113ec';
+    const root = document.getElementById('modals-root');
+    try {
+      const res = await fetch(`/partials/modals.html?v=${V}`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      root.innerHTML = await res.text();
+      root.dataset.loaded = '1';
+    } catch (e) {
+      console.error('Kunne ikke indlæse modal-partials:', e);
+      // Fail-safe: importér main.js alligevel — appen kører, modaler mangler.
+    }
+    await import(`/main.js?v=${V}`);
+  </script>
 </body>
 </html>
