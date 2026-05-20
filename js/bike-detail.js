@@ -280,7 +280,7 @@ export function createBikeDetail({
             <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
             <div class="bid-box" id="bid-box">
               <div class="bid-box-inner">
-                <input type="number" id="bid-amount" placeholder="Dit bud i kr." oninput="updateMeetMiddle(${b.price})">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="bid-amount" placeholder="Dit bud i kr." oninput="updateMeetMiddle(${b.price})">
                 <button onclick="sendBid('${b.id}', '${profile.id}')">Send bud</button>
               </div>
               <div class="meet-middle" id="meet-middle" style="display:none">
