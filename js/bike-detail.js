@@ -139,6 +139,7 @@ export function createBikeDetail({
     const initials   = getInitials(sellerName);
     const currentUser = getCurrentUser();
     const isOwner    = currentUser && currentUser.id === profile.id;
+    const isSold     = b.is_active === false;
     const avatarUrl  = safeAvatarUrl(profile.avatar_url);
     const avatarContent = avatarUrl
       ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
@@ -240,6 +241,14 @@ export function createBikeDetail({
           <div class="action-buttons">
             <div class="demo-detail-notice">
               Cyklen er ikke til salg — det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
+            </div>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
+          </div>
+          ` : (!isOwner && isSold) ? `
+          <div class="action-buttons">
+            <div class="sold-detail-notice">
+              <span class="sold-detail-badge">SOLGT</span>
+              Denne cykel er solgt og er ikke længere til salg.
             </div>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
           </div>
