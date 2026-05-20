@@ -1393,3 +1393,20 @@ body.map-page-view { padding-bottom: 0 !important; }
   }
 }
 
+
+/* ── Mobil: kompakt popup så kortet stadig er synligt ──────── */
+@media (max-width: 760px) {
+  .leaflet-popup-content:has(.split-popup) {
+    width: min(290px, 74vw) !important;
+  }
+  .split-popup-list {
+    max-height: 34vh;
+  }
+  .split-popup-media {
+    height: 130px;
+  }
+  /* Sørg for popup ikke kan blive bredere end skærmen */
+  .leaflet-popup {
+    max-width: 80vw;
+  }
+}
