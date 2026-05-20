@@ -287,6 +287,7 @@ const {
 const listingEdit = createListingEdit({
   supabase,
   showToast,
+  btnLoading,
   bikeCache,
   validateImageFile,
   compressImage,
@@ -1713,6 +1714,9 @@ function handleRoute() {
   setTimeout(() => { try { renderCompareBar(); } catch {} }, 50);
   document.body.classList.remove('is-mp-mobile');
   document.body.classList.remove('map-page-view');
+  // Skjul-flag for chat-widget på annonce-detalje ryddes ved hver navigation;
+  // renderBikePage/openBikeModal sætter det igen hvis vi lander på en annonce.
+  document.body.classList.remove('viewing-bike-page');
   // Defensiv: luk altid mobil-filter-drawer ved navigation
   const _sb = document.getElementById('sidebar-filters');
   const _ov = document.getElementById('mobile-filter-overlay');

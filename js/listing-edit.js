@@ -10,6 +10,7 @@ const normalizeImageId = (id) => String(id ?? '').trim();
 export function createListingEdit({
   supabase,
   showToast,
+  btnLoading,
   bikeCache,
   validateImageFile,
   compressImage,
@@ -271,6 +272,8 @@ export function createListingEdit({
       showToast('⚠️ Udfyld alle påkrævede felter'); return;
     }
 
+    const restore = btnLoading('edit-save-btn', 'Gemmer annonce...');
+    try {
     // Hent den gamle pris så vi kan opdage et prisfald og trigge alarmer
     const { data: oldBike } = await supabase
       .from('bikes')
@@ -362,6 +365,9 @@ export function createListingEdit({
     if (bikeModalOpen) openBikeModal(id);
     if (profileMatch && profileMatch[1] === getCurrentUser()?.id) renderUserProfilePage(profileMatch[1]);
     if (dealerMatch  && dealerMatch[1]  === getCurrentUser()?.id) renderDealerProfilePage(dealerMatch[1]);
+    } finally {
+      restore();
+    }
   }
 
   return {

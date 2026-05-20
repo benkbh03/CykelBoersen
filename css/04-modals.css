@@ -564,6 +564,9 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 /* ── AI SUPPORT CHAT WIDGET ── */
 #chat-widget { position: fixed; bottom: 28px; right: 28px; z-index: 9999; pointer-events: none; }
 #chat-toggle { pointer-events: auto; }
+/* Skjul chat-widget på annonce-detalje — den overlappede den sticky
+   "Giv bud"/"Kontakt"-bar i bunden (sat via body.viewing-bike-page). */
+body.viewing-bike-page #chat-widget { display: none; }
 
 #chat-toggle {
   width: 56px; height: 56px; border-radius: 50%;
