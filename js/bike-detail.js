@@ -276,7 +276,7 @@ export function createBikeDetail({
               </div>
               <div class="meet-middle" id="meet-middle" style="display:none">
                 Mød i midten: <strong id="meet-middle-price"></strong>
-                <button class="meet-middle-btn" onclick="useMeetMiddle()">Brug dette bud</button>
+                <button class="meet-middle-btn" onclick="useMeetMiddle('${b.id}', '${profile.id}')">Send dette bud</button>
               </div>
             </div>`}
             <button class="btn-contact" onclick="toggleMessageBox()">✉️ Kontakt sælger</button>
@@ -1237,13 +1237,15 @@ export function createBikeDetail({
     el.style.display = 'flex';
   }
 
-  function useMeetMiddle() {
+  function useMeetMiddle(bikeId, receiverId) {
     const priceEl = document.getElementById('meet-middle-price');
     const input   = document.getElementById('bid-amount');
     if (!priceEl || !input) return;
     const val = priceEl.textContent.replace(/[^\d]/g, '');
     input.value = val;
     document.getElementById('meet-middle').style.display = 'none';
+    // Send buddet med det samme (tidligere udfyldte den kun feltet)
+    if (bikeId && receiverId) sendBid(bikeId, receiverId);
   }
 
   function toggleBidBox() {
