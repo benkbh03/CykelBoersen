@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113dt" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113du" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113dt">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113dt">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113du">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113du">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113du">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113du">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113du">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113du">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113du">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113du">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113du">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113du">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113du">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1617,111 +1617,8 @@
     </div>
   </div>
 
-  <!-- Rapporter annonce modal -->
-  <div class="modal-overlay" id="report-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeReportModal()">
-    <div class="modal" style="max-width:440px;">
-      <div class="modal-header">
-        <h2>Rapporter annonce</h2>
-        <button class="modal-close" onclick="closeReportModal()">✕</button>
-      </div>
-      <div class="modal-body" style="padding:24px;">
-        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">
-          Hjælp os med at holde Cykelbørsen tryg. Vi gennemgår alle rapporter manuelt.
-        </p>
-        <div class="form-group">
-          <label>Årsag</label>
-          <select id="report-reason">
-            <option value="">Vælg årsag...</option>
-            <option value="Mistænkelig annonce / mulig svindel">Mistænkelig annonce / mulig svindel</option>
-            <option value="Forkert eller vildledende beskrivelse">Forkert eller vildledende beskrivelse</option>
-            <option value="Stjålet cykel">Stjålet cykel</option>
-            <option value="Spam eller duplikat">Spam eller duplikat</option>
-            <option value="Upassende indhold">Upassende indhold</option>
-            <option value="Andet">Andet</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Yderligere detaljer (valgfrit)</label>
-          <textarea id="report-details" rows="3" placeholder="Beskriv hvad der er galt..."></textarea>
-        </div>
-        <button id="report-submit-btn" onclick="submitReport()" style="width:100%;padding:12px;border-radius:8px;border:none;background:var(--rust);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;">
-          Send rapport
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slet konto bekræftelsesmodal -->
-  <div class="modal-overlay" id="delete-account-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
-    <div class="modal" style="max-width:420px;">
-      <div class="modal-header">
-        <h2>Slet konto</h2>
-        <button class="modal-close" onclick="closeDeleteAccountModal()">✕</button>
-      </div>
-      <div class="modal-body" style="padding:24px;">
-        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;">
-          Dette sletter permanent din profil, alle dine annoncer og beskeder. Handlingen kan ikke fortrydes.
-        </p>
-        <div class="form-group">
-          <label style="font-size:0.85rem;">Skriv <strong>slet</strong> for at bekræfte</label>
-          <input type="text" id="delete-confirm-input" placeholder="slet" oninput="onDeleteConfirmInput()" onkeydown="if(event.key==='Enter')confirmDeleteAccount()" autocomplete="off">
-        </div>
-        <div style="display:flex;gap:10px;margin-top:20px;">
-          <button class="btn-logout" style="flex:1;margin-top:0;" onclick="closeDeleteAccountModal()">Annuller</button>
-          <button id="delete-account-confirm-btn" onclick="confirmDeleteAccount()" disabled
-            style="flex:1;padding:12px;border-radius:8px;border:none;background:#e0e0e0;color:#aaa;font-size:0.9rem;font-weight:600;cursor:not-allowed;font-family:'DM Sans',sans-serif;transition:background 0.2s,color 0.2s;">
-            Slet konto
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rating modal - pops up after bid acceptance -->
-  <div class="modal-overlay" id="rate-now-modal" role="dialog" aria-modal="true" style="display:none;z-index:5500;" onclick="if(event.target===this)closeRateModal()">
-    <div class="modal rate-modal" style="max-width:480px;">
-      <div class="modal-header">
-        <h2>Giv en vurdering</h2>
-        <button class="modal-close" onclick="closeRateModal()">✕</button>
-      </div>
-      <div class="modal-body" style="padding:24px;">
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">
-          Nu kan I begge vurdere hinanden for denne handel. Det hjælper os med at opbygge en troværdig community.
-        </p>
-        <div id="rate-modal-content">
-          <!-- Dynamically filled: buyer/seller names and rating form -->
-        </div>
-        <div style="display:flex;gap:12px;margin-top:24px;">
-          <button class="btn-secondary" style="flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--charcoal);font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;" onclick="closeRateModal()">
-            Skip for nu
-          </button>
-          <button id="rate-submit-btn" style="flex:1;padding:12px;border-radius:8px;border:none;background:var(--rust);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;" onclick="submitRatingFromModal()">
-            Send vurdering
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Crop billede modal -->
-  <div class="modal-overlay" id="crop-modal" role="dialog" aria-modal="true" style="display:none;z-index:6500;" onclick="if(event.target===this)closeCropModal()">
-    <div class="crop-modal-box">
-      <div class="crop-modal-header">
-        <h3>Beskær billede</h3>
-        <button type="button" class="crop-modal-close" onclick="closeCropModal()" aria-label="Luk">✕</button>
-      </div>
-      <div class="crop-modal-body">
-        <div class="crop-container"><img id="crop-target" alt="Billede der beskæres"></div>
-      </div>
-      <div class="crop-modal-footer">
-        <div class="crop-modal-hint">Vælg hvilket udsnit af billedet der skal vises på annoncen (3:2 format)</div>
-        <div class="crop-modal-actions">
-          <button type="button" class="btn-secondary" onclick="closeCropModal()">Annuller</button>
-          <button type="button" class="btn-primary" onclick="applyCrop()">Gem beskæring</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- ── MODAL-PARTIALS injiceres her af main.js (partials/modals.html) ── -->
+  <div id="modals-root"></div>
 
   <!-- Leaflet, MarkerCluster og Cropper loades on-demand fra main.js — IKKE eagerly -->
   <script type="module" src="/main.js"></script>
