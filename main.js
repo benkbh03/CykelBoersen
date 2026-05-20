@@ -2805,7 +2805,6 @@ const { toggleSold, showBuyerPickerModal, confirmBuyerSelection, markBikeSold, c
   loadBikes,
   updateFilterCounts,
   openUserProfileWithReview,
-  loadTradeHistory,
 });
 
 
