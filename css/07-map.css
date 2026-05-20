@@ -278,7 +278,7 @@
   height: 34px;
   padding: 0 28px 0 12px;
   font-size: 0.8rem;
-  overflow: hidden;
+  overflow: visible;
 }
 .map-pill--sort select { min-width: 0; font-size: 0.8rem; }
 
