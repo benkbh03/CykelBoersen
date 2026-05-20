@@ -686,7 +686,25 @@ window.expandAllDealers        = expandAllDealers;
    INIT – hent session én gang og sæt alt op
    ============================================================ */
 
+async function injectModalPartials() {
+  const root = document.getElementById('modals-root');
+  if (!root || root.dataset.loaded === '1') return;
+  try {
+    const res = await fetch(`/partials/modals.html?v=${ASSET_VERSION}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    root.innerHTML = await res.text();
+    root.dataset.loaded = '1';
+  } catch (e) {
+    console.error('Kunne ikke indlæse modal-partials:', e);
+    // Fail-safe: appen fortsætter, men de udflyttede modaler vil mangle.
+  }
+}
+
 async function init() {
+  // Injicér modal-partials FØR alt andet — modaler skal være i DOM før
+  // routing/auth kan forsøge at åbne dem. Same-origin statisk fil = pålidelig.
+  await injectModalPartials();
+
   // Cookie consent banner — vis hvis brugeren ikke har valgt endnu
   import(`./js/cookie-banner.js?v=${ASSET_VERSION}`).then(({ initCookieBanner, handleCookieChoice, showCookieBannerAgain }) => {
     window.handleCookieChoice = handleCookieChoice;
