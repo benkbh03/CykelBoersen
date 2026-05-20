@@ -324,40 +324,70 @@
 /* Bud-bobler — tydeligt visuelt skel fra almindelige beskeder */
 .message-bubble.bid-bubble {
   position: relative;
-  border-left: 4px solid var(--rust);
-  padding-left: 14px;
-  margin-top: 14px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  background: #fffaf2;
+  border: 1.5px solid var(--rust);
+  border-radius: 14px;
+  padding: 20px 16px 12px;
+  margin-top: 16px;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--charcoal);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.message-bubble.bid-bubble.received {
-  background: #fff8ec;
-  border-color: var(--rust);
-  border-left: 4px solid var(--rust);
-  color: #6B3410;
-}
-.message-bubble.bid-bubble.sent {
-  background: #C97A3F;
-  color: #fff;
-  border-left: 4px solid #6B3410;
-}
+.message-bubble.bid-bubble.sent  { align-self: flex-end; }
+.message-bubble.bid-bubble.received { align-self: flex-start; }
 .message-bubble.bid-bubble::before {
   content: 'BUD';
   position: absolute;
-  top: -8px;
-  left: 8px;
+  top: -11px;
+  left: 14px;
   background: var(--rust);
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 2px 7px;
-  border-radius: 4px;
+  letter-spacing: 0.6px;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 2px 6px rgba(200,80,42,0.3);
 }
-.message-bubble.accepted-bubble { background: #edf7ed; border-color: #4caf50; color: #2e7d32; font-weight: 600; align-self: stretch; border-radius: 10px; border: 1.5px solid #4caf50; text-align: center; }
+.message-bubble.accepted-bubble {
+  background: rgba(46,125,50,0.08);
+  border: 1.5px solid #4caf50;
+  color: #2e7d32;
+  font-weight: 600;
+  align-self: stretch;
+  border-radius: 12px;
+  text-align: center;
+  padding: 14px;
+}
 .message-bubble.accepted-bubble::before { display: none; }
-.btn-accept-bid { display: block; width: 100%; margin-top: 10px; padding: 9px 0; background: var(--forest); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
-.btn-accept-bid:hover { background: var(--rust); }
+.btn-accept-bid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 11px 0;
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.18s, transform 0.1s;
+}
+.btn-accept-bid:hover { background: var(--rust); transform: translateY(-1px); }
+.message-bubble.bid-bubble .msg-time {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 0.7rem;
+}
 .thread-reply { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border); padding-top: 14px; }
 .thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .thread-reply textarea:focus { border-color: var(--forest); }
