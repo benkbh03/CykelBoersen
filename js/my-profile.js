@@ -85,18 +85,18 @@ export function createMyProfile({
                 <div class="mp-listing-price">${priceStr}</div>
                 <div class="mp-listing-actions">
                   <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
-                  <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                   ${!isSold
-                    ? `<button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
+                    ? `<button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                       <button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
                     : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                   <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
                 </div>
               </div>
               <div class="mp-listing-actions-mobile">
                 <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
-                <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                 ${!isSold
-                  ? `<button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
+                  ? `<button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                     <button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                 <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
               </div>
@@ -111,8 +111,10 @@ export function createMyProfile({
           </div>
           <div class="my-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            ${!isSold ? `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : `<button class="btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
-            <button class="btn-edit" onclick="openEditModal('${b.id}')">✏️</button>
+            ${!isSold
+              ? `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>
+                 <button class="btn-edit" onclick="openEditModal('${b.id}')">✏️</button>`
+              : `<button class="btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
             <button class="btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
           </div>
         </div>`;
