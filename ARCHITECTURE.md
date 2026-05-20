@@ -6,6 +6,16 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `main.js`
   - App bootstrap and cross-feature orchestration.
   - Imports feature modules and wires global handlers.
+  - `injectModalPartials()` henter `partials/modals.html` ved boot (awaited,
+    før routing) og indsætter i `<div id="modals-root">`.
+
+## HTML-struktur
+- `index.html` (~870 linjer): kun side-struktur — nav, hero, søgebar,
+  kategori-chips, sidebar-filtre, annonce-grid, sælg-CTA, `#detail-view`
+  (routing-target), footer, toast, chat-widget, `#modals-root`.
+- `partials/modals.html` (~870 linjer): ALLE 19 modaler. Hentes + injiceres
+  af `main.js` ved app-start. Rediger som normal HTML; husk cache-bump.
+  Ingen build-step — bare en runtime `fetch()` af en statisk fil.
 
 ## Core shared modules
 - `js/supabase-client.js`: shared Supabase client instance.
@@ -38,6 +48,21 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/my-profile.js`: brugerens egne annoncer, gemte annoncer, gemte søgninger, handelshistorik, slet/fjern-actions + notifySavedSearches.
 - `js/reviews.js`: stjerne-picker, submitReview, rate-now-modal flow (open/close/submit).
 - `js/profile-modals.js`: user/dealer profile views (open/close/tabs), contact form, message send, achievements, filterByDealerCard.
+- `js/admin-bulk-import.js`: admin bulk-import af forhandler-lager via CSV — type-specifikke templates, preview/validering, sequential import via `admin-create-bike`.
+- `js/my-profile-page.js`: Min konto-side (`/me`) — stat-kort, profil-komplethed (med opt-outs), forhandler-attention-card + `loadDealerInsights` (📊 Indsigt-tab).
+- `js/dealer-extras.js`: åbningstider-editor, services-chips, sociale links, følg-forhandler — alle med opt-out-støtte for completion-tracking.
+
+## Edge Functions (Supabase, Deno)
+- `notify-message`: e-mail-notifikationer (Resend) — beskeder, bud, forhandler-ansøgning, rapport.
+- `notify-saved-searches`: Cykelagent-match → e-mail (med billede-fallback).
+- `admin-create-bike`: opret annonce på vegne af forhandler (opt-in + audit-trail).
+- `sitemap`: dynamisk sitemap.xml fra DB (statiske + brand + bikes + dealers + profiler).
+- `suggest-listing`: AI-billedanalyse (Claude Vision) → foreslår felter ved upload.
+- `chat-support`: support-bot (Claude Haiku).
+
+## Cache-busting
+- `js/config.js` → `ASSET_VERSION`. Bumpes ved HVER kode-ændring. Alle dynamiske
+  imports + CSS-links + `partials/modals.html`-fetch bruger `?v=${ASSET_VERSION}`.
 
 ## Practical rule of thumb
 When adding/changing functionality:
