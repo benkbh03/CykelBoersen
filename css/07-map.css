@@ -1505,3 +1505,23 @@ body.map-page-view { padding-bottom: 0 !important; }
     max-width: 80vw;
   }
 }
+
+/* Søgefelt i filter-modal (mærke) */
+.msf-search {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  background: #fff;
+  outline: none;
+  margin-bottom: 10px;
+}
+.msf-search:focus { border-color: var(--rust); }
+/* Mærke-chips i scroll-boks så de 99 ikke fylder hele modalen */
+#msf-brand-opts {
+  max-height: 168px;
+  overflow-y: auto;
+  padding: 2px;
+}

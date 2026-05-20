@@ -4,6 +4,24 @@
 
 import { bikeTitle } from './utils.js';
 
+// Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
+const MAP_FILTER_SIZES = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
+const MAP_FILTER_WHEELS = ['26"', '27.5" / 650b', '28"', '29"'];
+const MAP_FILTER_FRAME = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
+const MAP_FILTER_BRAKES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
+const MAP_FILTER_GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano Deore', 'Shimano XT'];
+const MAP_FILTER_COLORS = ['Sort', 'Hvid', 'Grå', 'Sølv', 'Rød', 'Blå', 'Grøn', 'Gul', 'Orange', 'Lyserød', 'Lilla', 'Brun', 'Beige'];
+const MAP_FILTER_BRANDS = [
+  'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton',
+  'Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube',
+  'E-Fly','Early Rider','Electra','Everton','FACTOR','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike',
+  'Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK',
+  'Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco',
+  'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike',
+  'Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike',
+  'Urban Arrow','uVelo','VanMoof','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba',
+];
+
 export function createMapPage({
   supabase,
   showToast,
@@ -1044,16 +1062,16 @@ export function createMapPage({
       { key:'radius',    title:'Afstand',    opts:[['5','5 km'],['10','10 km'],['25','25 km'],['50','50 km'],['100','100 km'],['','Hele landet']] },
     ];
 
-    // Multi-select avancerede grupper (skriver til _mapAdvFilters)
-    // value-mapping: viste label vs gemt værdi. electronic_shifting er specielt.
+    // Multi-select avancerede grupper (skriver til _mapAdvFilters).
+    // Bruger fulde kanoniske lister så man kan være specifik — ikke kun
+    // værdier der findes i de aktuelt loadede annoncer.
     const advGroups = [
-      { key:'brand',          title:'Mærke',          vals:_distinct('brand') },
-      { key:'size',           title:'Stelstørrelse',  vals:_distinct('size') },
-      { key:'wheel_size',     title:'Hjulstørrelse',  vals:_distinct('wheel_size') },
-      { key:'color',          title:'Farve',          vals:_distinct('color') },
-      { key:'frame_material', title:'Stelmateriale',  vals:_distinct('frame_material') },
-      { key:'brake_type',     title:'Bremser',        vals:_distinct('brake_type') },
-      { key:'groupset',       title:'Komponentgruppe',vals:_distinct('groupset') },
+      { key:'size',           title:'Stelstørrelse',  vals:MAP_FILTER_SIZES },
+      { key:'wheel_size',     title:'Hjulstørrelse',  vals:MAP_FILTER_WHEELS },
+      { key:'color',          title:'Farve',          vals:MAP_FILTER_COLORS },
+      { key:'frame_material', title:'Stelmateriale',  vals:MAP_FILTER_FRAME },
+      { key:'brake_type',     title:'Bremser',        vals:MAP_FILTER_BRAKES },
+      { key:'groupset',       title:'Komponentgruppe',vals:MAP_FILTER_GROUPSETS },
     ];
 
     let html = singleGroups.map(g => {
@@ -1074,9 +1092,18 @@ export function createMapPage({
       + '<span class="msf-price-unit">kr.</span>'
       + '</div></div>';
 
-    // Avancerede multi-select grupper — kun vis hvis der findes værdier
+    // Mærke — egen gruppe med søgefelt (99 muligheder)
+    html += '<div class="msf-group"><div class="msf-group-title">MÆRKE</div>'
+      + '<input type="search" id="msf-brand-search" class="msf-search" placeholder="Søg mærke…" autocomplete="off">'
+      + '<div class="msf-opts" id="msf-brand-opts">'
+      + MAP_FILTER_BRANDS.map(v => {
+          const active = _mapAdvFilters.brand.has(v);
+          return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="brand" data-v="' + esc(v) + '">' + esc(v) + '</button>';
+        }).join('')
+      + '</div></div>';
+
+    // Avancerede multi-select grupper (fulde kanoniske lister)
     advGroups.forEach(g => {
-      if (!g.vals.length) return;
       html += '<div class="msf-group"><div class="msf-group-title">' + g.title.toUpperCase() + '</div><div class="msf-opts">'
         + g.vals.map(v => {
             const active = _mapAdvFilters[g.key].has(v);
@@ -1085,9 +1112,8 @@ export function createMapPage({
         + '</div></div>';
     });
 
-    // Gear-skifte (electronic_shifting) — kun hvis nogen bikes har værdien sat
-    const hasElectronic = _mapPageBikes.some(b => b.electronic_shifting === true || b.electronic_shifting === false);
-    if (hasElectronic) {
+    // Gear-skifte (electronic_shifting) — vis altid
+    {
       html += '<div class="msf-group"><div class="msf-group-title">GEAR-SKIFTE</div><div class="msf-opts">'
         + [['true','Elektronisk'],['false','Mekanisk']].map(([v,label]) => {
             const active = _mapAdvFilters.electronic_shifting.has(v);
@@ -1096,16 +1122,25 @@ export function createMapPage({
         + '</div></div>';
     }
 
-    // Vægt (max)
-    const hasWeight = _mapPageBikes.some(b => b.weight_kg != null);
-    if (hasWeight) {
-      html += '<div class="msf-group"><div class="msf-group-title">MAX VÆGT</div><div class="msf-price">'
-        + '<input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="' + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '">'
-        + '<span class="msf-price-unit">kg</span>'
-        + '</div></div>';
-    }
+    // Vægt (max) — vis altid
+    html += '<div class="msf-group"><div class="msf-group-title">MAX VÆGT</div><div class="msf-price">'
+      + '<input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="' + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '">'
+      + '<span class="msf-price-unit">kg</span>'
+      + '</div></div>';
 
     body.innerHTML = html;
+
+    // Mærke-søgefelt: filtrér synlige brand-chips live
+    const brandSearch = document.getElementById('msf-brand-search');
+    if (brandSearch) {
+      brandSearch.addEventListener('input', () => {
+        const q = brandSearch.value.trim().toLowerCase();
+        document.querySelectorAll('#msf-brand-opts .msf-opt').forEach(chip => {
+          const match = chip.dataset.v.toLowerCase().includes(q);
+          chip.style.display = match ? '' : 'none';
+        });
+      });
+    }
 
     // Single-select handlers (synkroniserer til dd-* pills)
     body.querySelectorAll('.msf-opt:not(.msf-opt--multi)').forEach(btn => {
