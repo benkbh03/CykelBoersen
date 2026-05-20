@@ -244,7 +244,11 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .rate-stars .star-pick {
   font-size: 2rem;
   color: #d4c9b8;
+  cursor: pointer;
+  transition: color 0.1s, transform 0.1s;
 }
+.rate-stars .star-pick:hover { transform: scale(1.12); }
+.rate-stars .star-pick.active { color: #f5a623; }
 .rate-comment {
   width: 100%;
   min-height: 70px;
