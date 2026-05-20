@@ -48,6 +48,14 @@ export function createMapPage({
   let _mapBoundsActive   = false; // "Søg når jeg flytter kortet" aktiveret
   let _mapBoundsDebounced = null; // debounced applyMapFilters til moveend
 
+  // Avancerede filtre (multi-select) — sat via filter-modal, læses i getMapFilters.
+  // Tomme sets = ingen begrænsning. weight_max null = ingen vægt-grænse.
+  let _mapAdvFilters = {
+    brand: new Set(), size: new Set(), wheel_size: new Set(), color: new Set(),
+    frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
+    groupset: new Set(), weight_max: null,
+  };
+
   /* ── setView ────────────────────────────────────────────── */
 
   function setView(view) {
@@ -160,11 +168,16 @@ export function createMapPage({
             </div>
           </div>
           <div class="map-pill map-pill--price">
-            <input type="number" id="map-price-min" placeholder="Min. pris" min="0" aria-label="Min pris">
+            <input type="number" id="map-price-min" placeholder="Min." min="0" aria-label="Min pris">
             <span class="map-pill-sep">—</span>
-            <input type="number" id="map-price-max" placeholder="Max. pris" min="0" aria-label="Max pris">
+            <input type="number" id="map-price-max" placeholder="Max." min="0" aria-label="Max pris">
             <span class="map-pill-unit">kr.</span>
           </div>
+          <button class="map-pill map-pill--more" onclick="openMapFiltersSheet()" title="Flere filtre">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 6h11M4 18h7M15 6a2 2 0 114 0 2 2 0 01-4 0zM11 18a2 2 0 114 0 2 2 0 01-4 0zM4 12h5m10 0h-5M9 12a2 2 0 104 0 2 2 0 00-4 0z"/></svg>
+            <span>Flere filtre</span>
+            <span class="map-chip-badge" id="map-filter-badge-desktop" style="display:none;">0</span>
+          </button>
           <button class="map-reset-btn" onclick="resetMapFilters()" title="Nulstil filtre">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115-6.7L21 8M21 3v5h-5M21 12a9 9 0 01-15 6.7L3 16M3 21v-5h5"/></svg>
             Nulstil
@@ -293,7 +306,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
@@ -316,6 +329,7 @@ export function createMapPage({
       nearCoords: _mapNearMeCoords,
       sort:      document.getElementById('dd-sort')?.dataset.val || 'newest',
       bounds:    (_mapBoundsActive && splitMapInstance) ? splitMapInstance.getBounds() : null,
+      adv:       _mapAdvFilters,
     };
   }
 
@@ -336,6 +350,24 @@ export function createMapPage({
       if (f.condition && b.condition !== f.condition) return false;
       if (f.priceMin != null && b.price < f.priceMin) return false;
       if (f.priceMax != null && b.price > f.priceMax) return false;
+
+      // Avancerede multi-select filtre
+      const adv = f.adv;
+      if (adv.brand.size && !adv.brand.has(b.brand)) return false;
+      if (adv.size.size && !adv.size.has(b.size)) return false;
+      if (adv.wheel_size.size && !adv.wheel_size.has(b.wheel_size)) return false;
+      if (adv.color.size) {
+        const cols = Array.isArray(b.colors) ? b.colors : (b.color ? [b.color] : []);
+        if (!cols.some(c => adv.color.has(c))) return false;
+      }
+      if (adv.frame_material.size && !adv.frame_material.has(b.frame_material)) return false;
+      if (adv.brake_type.size && !adv.brake_type.has(b.brake_type)) return false;
+      if (adv.electronic_shifting.size) {
+        const v = b.electronic_shifting === true ? 'true' : (b.electronic_shifting === false ? 'false' : '');
+        if (!adv.electronic_shifting.has(v)) return false;
+      }
+      if (adv.groupset.size && !adv.groupset.has(b.groupset)) return false;
+      if (adv.weight_max != null && (b.weight_kg == null || b.weight_kg > adv.weight_max)) return false;
       if (f.nearCoords && f.radius && _mapPageGeocoded) {
         const g = _mapPageGeocoded.get(b.id);
         if (!g) return false;
@@ -362,11 +394,20 @@ export function createMapPage({
     if (f.priceMin != null) n++;
     if (f.priceMax != null) n++;
     if (_mapNearMeCoords) n++;
-    const badge = document.getElementById('map-filter-badge');
-    if (!badge) return;
     if (_mapBoundsActive) n++;
-    if (n > 0) { badge.style.display = ''; badge.textContent = n; }
-    else { badge.style.display = 'none'; }
+    // Avancerede filtre
+    const adv = _mapAdvFilters;
+    n += adv.brand.size + adv.size.size + adv.wheel_size.size + adv.color.size
+       + adv.frame_material.size + adv.brake_type.size + adv.electronic_shifting.size
+       + adv.groupset.size + (adv.weight_max != null ? 1 : 0);
+
+    // Opdater alle badge-elementer (mobil-chip + desktop "Flere filtre"-knap)
+    ['map-filter-badge', 'map-filter-badge-desktop'].forEach(id => {
+      const badge = document.getElementById(id);
+      if (!badge) return;
+      if (n > 0) { badge.style.display = ''; badge.textContent = n; }
+      else { badge.style.display = 'none'; }
+    });
   }
 
   /* ── toggleMapFilterPanel ───────────────────────────────── */
@@ -445,6 +486,12 @@ export function createMapPage({
     ['map-search', 'map-search-mobile', 'map-price-min', 'map-price-max'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
+    // Nulstil avancerede filtre
+    _mapAdvFilters = {
+      brand: new Set(), size: new Set(), wheel_size: new Set(), color: new Set(),
+      frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
+      groupset: new Set(), weight_max: null,
+    };
     resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
     resetMapDd('dd-bike-type',   '',    'Alle typer');
     resetMapDd('dd-condition',   '',    'Alle stande');
@@ -961,6 +1008,20 @@ export function createMapPage({
   /* ── openMapFiltersSheet ────────────────────────────────── */
 
   // Mobil filter-sheet: populeret dynamisk ud fra eksisterende filter-state
+  // Distinkte værdier af et felt fra de loadede bikes (sorteret)
+  function _distinct(field) {
+    const set = new Set();
+    _mapPageBikes.forEach(b => {
+      if (field === 'color') {
+        const cols = Array.isArray(b.colors) ? b.colors : (b.color ? [b.color] : []);
+        cols.forEach(c => { if (c) set.add(c); });
+      } else if (b[field]) {
+        set.add(b[field]);
+      }
+    });
+    return [...set].sort((a, z) => String(a).localeCompare(String(z), 'da'));
+  }
+
   function openMapFiltersSheet() {
     const sheet = document.getElementById('map-filter-sheet');
     const body  = document.getElementById('map-filter-sheet-body');
@@ -975,46 +1036,102 @@ export function createMapPage({
       priceMax:  document.getElementById('map-price-max')?.value || '',
     };
 
-    const groups = [
+    // Single-select grupper (synkroniserer med dd-* desktop-pills)
+    const singleGroups = [
       { key:'type',      title:'Cykeltype',  opts:[['','Alle'],['Racercykel','Racercykel'],['Mountainbike','Mountainbike'],['Citybike','Citybike'],['El-cykel','El-cykel'],['Gravel','Gravel'],['Ladcykel','Ladcykel'],['Børnecykel','Børnecykel']] },
       { key:'seller',    title:'Sælger',     opts:[['all','Alle'],['private','Privat'],['dealer','Forhandler']] },
       { key:'condition', title:'Stand',      opts:[['','Alle'],['Ny','Ny'],['Som ny','Som ny'],['God stand','God stand'],['Brugt','Brugt']] },
       { key:'radius',    title:'Afstand',    opts:[['5','5 km'],['10','10 km'],['25','25 km'],['50','50 km'],['100','100 km'],['','Hele landet']] },
     ];
 
-    body.innerHTML = groups.map(g => {
+    // Multi-select avancerede grupper (skriver til _mapAdvFilters)
+    // value-mapping: viste label vs gemt værdi. electronic_shifting er specielt.
+    const advGroups = [
+      { key:'brand',          title:'Mærke',          vals:_distinct('brand') },
+      { key:'size',           title:'Stelstørrelse',  vals:_distinct('size') },
+      { key:'wheel_size',     title:'Hjulstørrelse',  vals:_distinct('wheel_size') },
+      { key:'color',          title:'Farve',          vals:_distinct('color') },
+      { key:'frame_material', title:'Stelmateriale',  vals:_distinct('frame_material') },
+      { key:'brake_type',     title:'Bremser',        vals:_distinct('brake_type') },
+      { key:'groupset',       title:'Komponentgruppe',vals:_distinct('groupset') },
+    ];
+
+    let html = singleGroups.map(g => {
       const current = cur[g.key];
-      return '<div class="msf-group">'
-        + '<div class="msf-group-title">' + g.title.toUpperCase() + '</div>'
-        + '<div class="msf-opts">'
+      return '<div class="msf-group"><div class="msf-group-title">' + g.title.toUpperCase() + '</div><div class="msf-opts">'
         + g.opts.map(([val,label]) => {
             const selected = String(current) === String(val);
             return '<button type="button" class="msf-opt' + (selected ? ' active' : '') + '" data-g="' + g.key + '" data-v="' + esc(val) + '">' + esc(label) + '</button>';
           }).join('')
-        + '</div>'
-        + '</div>';
-    }).join('')
-    + '<div class="msf-group">'
-    + '<div class="msf-group-title">PRIS</div>'
-    + '<div class="msf-price">'
-    + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
-    + '<span>—</span>'
-    + '<input type="number" id="msf-price-max" placeholder="Max kr" value="' + esc(cur.priceMax) + '">'
-    + '</div>'
-    + '</div>';
+        + '</div></div>';
+    }).join('');
 
-    body.querySelectorAll('.msf-opt').forEach(btn => {
+    // Pris
+    html += '<div class="msf-group"><div class="msf-group-title">PRIS</div><div class="msf-price">'
+      + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
+      + '<span class="msf-price-sep">—</span>'
+      + '<input type="number" id="msf-price-max" placeholder="Max kr" value="' + esc(cur.priceMax) + '">'
+      + '<span class="msf-price-unit">kr.</span>'
+      + '</div></div>';
+
+    // Avancerede multi-select grupper — kun vis hvis der findes værdier
+    advGroups.forEach(g => {
+      if (!g.vals.length) return;
+      html += '<div class="msf-group"><div class="msf-group-title">' + g.title.toUpperCase() + '</div><div class="msf-opts">'
+        + g.vals.map(v => {
+            const active = _mapAdvFilters[g.key].has(v);
+            return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="' + g.key + '" data-v="' + esc(v) + '">' + esc(v) + '</button>';
+          }).join('')
+        + '</div></div>';
+    });
+
+    // Gear-skifte (electronic_shifting) — kun hvis nogen bikes har værdien sat
+    const hasElectronic = _mapPageBikes.some(b => b.electronic_shifting === true || b.electronic_shifting === false);
+    if (hasElectronic) {
+      html += '<div class="msf-group"><div class="msf-group-title">GEAR-SKIFTE</div><div class="msf-opts">'
+        + [['true','Elektronisk'],['false','Mekanisk']].map(([v,label]) => {
+            const active = _mapAdvFilters.electronic_shifting.has(v);
+            return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="electronic_shifting" data-v="' + v + '">' + label + '</button>';
+          }).join('')
+        + '</div></div>';
+    }
+
+    // Vægt (max)
+    const hasWeight = _mapPageBikes.some(b => b.weight_kg != null);
+    if (hasWeight) {
+      html += '<div class="msf-group"><div class="msf-group-title">MAX VÆGT</div><div class="msf-price">'
+        + '<input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="' + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '">'
+        + '<span class="msf-price-unit">kg</span>'
+        + '</div></div>';
+    }
+
+    body.innerHTML = html;
+
+    // Single-select handlers (synkroniserer til dd-* pills)
+    body.querySelectorAll('.msf-opt:not(.msf-opt--multi)').forEach(btn => {
       btn.addEventListener('click', () => {
         const g = btn.dataset.g;
         const v = btn.dataset.v;
         body.querySelectorAll('.msf-opt[data-g="' + g + '"]').forEach(o => o.classList.remove('active'));
         btn.classList.add('active');
         const ddId = ({ type:'dd-bike-type', seller:'dd-seller-type', condition:'dd-condition', radius:'dd-radius' })[g];
-        const labelMap = { type: body.querySelector('.msf-opt[data-g="type"][data-v="'+v+'"]')?.textContent, seller: body.querySelector('.msf-opt[data-g="seller"][data-v="'+v+'"]')?.textContent, condition: body.querySelector('.msf-opt[data-g="condition"][data-v="'+v+'"]')?.textContent, radius: body.querySelector('.msf-opt[data-g="radius"][data-v="'+v+'"]')?.textContent };
-        if (ddId) resetMapDd(ddId, v, labelMap[g] || v);
+        if (ddId) resetMapDd(ddId, v, btn.textContent);
         applyMapFilters(); updateMapFilterBadge();
       });
     });
+
+    // Multi-select handlers (toggler _mapAdvFilters)
+    body.querySelectorAll('.msf-opt--multi').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.adv;
+        const v   = btn.dataset.v;
+        const set = _mapAdvFilters[key];
+        if (set.has(v)) { set.delete(v); btn.classList.remove('active'); }
+        else { set.add(v); btn.classList.add('active'); }
+        applyMapFilters(); updateMapFilterBadge();
+      });
+    });
+
     const syncPrice = (src, dst) => {
       if (!dst) return;
       dst.value = src.value;
@@ -1024,6 +1141,13 @@ export function createMapPage({
     const msfMax = document.getElementById('msf-price-max');
     if (msfMin) msfMin.addEventListener('input', () => syncPrice(msfMin, document.getElementById('map-price-min')));
     if (msfMax) msfMax.addEventListener('input', () => syncPrice(msfMax, document.getElementById('map-price-max')));
+
+    const msfWeight = document.getElementById('msf-weight-max');
+    if (msfWeight) msfWeight.addEventListener('input', () => {
+      const val = parseFloat(msfWeight.value);
+      _mapAdvFilters.weight_max = (!isNaN(val) && val > 0) ? val : null;
+      applyMapFilters(); updateMapFilterBadge();
+    });
 
     sheet.classList.add('open');
     document.body.style.overflow = 'hidden';

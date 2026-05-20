@@ -616,8 +616,103 @@ body.map-page-view { padding-bottom: 0 !important; }
 /* ── Mobil tab bar: Kort/Liste ── */
 .map-tab-bar { display: none; }
 
-/* ── Mobil filter-sheet overlay ── */
+/* ── Filter-modal overlay (default skjult) ── */
 .map-filter-sheet-overlay { display: none; }
+
+/* Desktop: centreret modal (≥761px). Mobil bottom-sheet håndteres i media query nedenfor. */
+@media (min-width: 761px) {
+  .map-filter-sheet-overlay.open {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,24,0.55);
+    backdrop-filter: blur(3px);
+    z-index: 3500;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .map-filter-sheet-overlay.open .map-filter-sheet {
+    background: var(--cream);
+    width: 100%;
+    max-width: 560px;
+    max-height: 86vh;
+    overflow: auto;
+    border-radius: 16px;
+    padding: 24px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    animation: modalIn 0.22s ease;
+  }
+  .map-filter-sheet-overlay.open .map-filter-sheet-handle { display: none; }
+}
+
+/* Shared modal-indhold (begge viewports) */
+.map-filter-sheet-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 18px;
+}
+.map-filter-sheet-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.3rem; color: var(--charcoal); }
+.map-filter-sheet-close {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--sand);
+  border: none; color: var(--muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.map-filter-sheet-close:hover { background: var(--border); color: var(--charcoal); }
+.map-filter-sheet-footer {
+  display: flex; gap: 12px; margin-top: 16px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.map-filter-reset {
+  flex: 0 0 auto; background: none; border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 22px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; color: var(--charcoal);
+}
+.map-filter-apply {
+  flex: 1; background: var(--rust); color: #fff; border: none;
+  border-radius: 10px; padding: 12px 22px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.95rem;
+}
+.map-filter-apply:hover { background: var(--rust-light); }
+
+.msf-group { margin-bottom: 18px; }
+.msf-group-title {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--muted); margin-bottom: 8px;
+}
+.msf-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.msf-opt {
+  background: var(--sand); border: 1.5px solid var(--border); border-radius: 999px;
+  padding: 8px 14px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal); cursor: pointer; transition: all 0.12s;
+}
+.msf-opt:hover { border-color: var(--rust); }
+.msf-opt.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+.msf-opt--multi.active { background: var(--rust); border-color: var(--rust); }
+.msf-price { display: flex; align-items: center; gap: 10px; }
+.msf-price input {
+  flex: 1; min-width: 0; padding: 11px 14px; border: 1.5px solid var(--border);
+  border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  background: #fff; outline: none;
+}
+.msf-price input:focus { border-color: var(--rust); }
+.msf-price-sep { color: var(--muted); flex-shrink: 0; }
+.msf-price-unit { color: var(--muted); font-size: 0.85rem; flex-shrink: 0; }
+
+/* "Flere filtre"-knap i desktop-bar */
+.map-pill--more {
+  cursor: pointer; gap: 6px; font-weight: 600; position: relative;
+  border: 1.5px solid var(--border); background: var(--cream);
+}
+.map-pill--more:hover { border-color: var(--rust); color: var(--rust); }
+.map-pill--more .map-chip-badge {
+  background: var(--rust); color: #fff; border-radius: 999px;
+  min-width: 18px; height: 18px; padding: 0 5px; font-size: 0.72rem; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* Pris-pill input — undgå overflow af placeholder */
+.map-pill--price input { width: 58px; }
 
 /* ── Split-markers ── */
 .split-marker {
