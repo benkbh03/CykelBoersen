@@ -428,6 +428,7 @@ export function createBikeDetail({
     const myToken = ++_bikeModalToken;
     closeAllModals();
     document.getElementById('bike-modal').classList.add('open');
+    document.body.classList.add('viewing-bike-page');
     document.body.style.overflow = 'hidden';
     document.getElementById('bike-modal-body').innerHTML = '<p style="color:var(--muted)">Indlæser...</p>';
     document.getElementById('bike-modal-title').textContent = '';
@@ -656,6 +657,7 @@ export function createBikeDetail({
 
   async function renderBikePage(bikeId) {
     showDetailView();
+    document.body.classList.add('viewing-bike-page');
     const detailView = document.getElementById('detail-view');
     detailView.innerHTML = renderBikeSkeleton();
 
@@ -1176,6 +1178,7 @@ export function createBikeDetail({
   function closeBikeModal() {
     const modal = document.getElementById('bike-modal');
     modal.classList.remove('open');
+    document.body.classList.remove('viewing-bike-page');
     document.body.style.overflow = '';
     if (typeof modal._restoreTitle === 'function') {
       modal._restoreTitle();
