@@ -364,6 +364,7 @@ export function createMyProfile({
     const currentUser = getCurrentUser();
     if (!currentUser) return;
     const list = document.getElementById(containerId);
+    if (!list) return;
 
     try {
       const { data: tradeMessages, error } = await supabase
