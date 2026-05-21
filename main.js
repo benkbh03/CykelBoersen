@@ -2049,8 +2049,16 @@ function expandBikeDesc() {
   const wrap = document.getElementById('bike-desc-wrap');
   const btn  = document.getElementById('bike-desc-btn');
   if (!wrap || !btn) return;
-  wrap.classList.remove('is-clamped');
-  btn.style.display = 'none';
+  const nowClamped = wrap.classList.toggle('is-clamped');
+  if (nowClamped) {
+    btn.textContent = '+ Vis fuld beskrivelse';
+    // Scroll tilbage til beskrivelsen hvis den nu er rullet op over viewporten
+    if (wrap.getBoundingClientRect().top < 0) {
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  } else {
+    btn.textContent = '− Vis mindre';
+  }
 }
 
 function toggleConditionInfo() {
