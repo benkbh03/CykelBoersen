@@ -57,6 +57,17 @@ export function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Escape en værdi til brug som JS-streng inde i et inline on*-attribut (dobbelt-quoted),
+// fx onclick="fn('HER')". Forhindrer BÅDE attribut-breakout (") og JS-string-breakout
+// (' og \). Brug esc() til almindeligt tekst-indhold; escAttr() KUN til on*-handler-args.
+export function escAttr(str) {
+  return String(str ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+}
+
 // Trim brand+model. Behandler '-', '.', '?', tomme strenge og kun-whitespace
 // som "ingen model" så vi ikke får 'MBK -' eller 'Trek ?' i kortet.
 export function bikeTitle(brand, model) {

@@ -2,6 +2,8 @@
    INDBAKKE (modal + side)
    ============================================================ */
 
+import { escAttr } from './utils.js';
+
 export function createInbox({
   supabase,
   showToast,
@@ -50,7 +52,7 @@ export function createInbox({
       const isAccepted = msg.content.startsWith('✅ Bud på');
       const time       = new Date(msg.created_at).toLocaleString('da-DK', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       const acceptBtn  = (isBid && !isSent && isSeller && bikeActive)
-        ? `<button class="btn-accept-bid" onclick="acceptBid('${msg.content.replace(/'/g, "\\'")}', ${isInbox})">✅ Accepter bud</button>`
+        ? `<button class="btn-accept-bid" onclick="acceptBid('${escAttr(msg.content)}', ${isInbox})">✅ Accepter bud</button>`
         : '';
       const readReceipt = (isSent && !isAccepted)
         ? (msg.read
