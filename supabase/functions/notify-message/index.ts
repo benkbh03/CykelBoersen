@@ -26,6 +26,12 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+// HTML-escape af bruger-leveret indhold før indsættelse i e-mail-HTML (anti-injection).
+function esc(v: unknown): string {
+  return String(v ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+}
+
 async function sendEmail(to: string, subject: string, html: string) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -95,6 +101,29 @@ serve(async (req) => {
     const payload = await req.json();
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    // ── Admin-gating af privilegerede notifikationstyper ──────
+    // id_approved/id_rejected sender en troværdig "dit ID er godkendt/afvist"-mail.
+    // Kun en admin må udløse dem — ellers er det en phishing-vektor (hvem som helst
+    // kunne sende en falsk "ID godkendt"-mail til enhver bruger).
+    const ADMIN_ONLY_TYPES = new Set(["id_approved", "id_rejected"]);
+    if (ADMIN_ONLY_TYPES.has(payload.type)) {
+      const callerJwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+      let callerIsAdmin = false;
+      if (callerJwt) {
+        const { data: { user: caller } } = await supabase.auth.getUser(callerJwt);
+        if (caller) {
+          const { data: callerProfile } = await supabase
+            .from("profiles").select("is_admin").eq("id", caller.id).single();
+          callerIsAdmin = Boolean(callerProfile?.is_admin);
+        }
+      }
+      if (!callerIsAdmin) {
+        return new Response(JSON.stringify({ error: "Kræver admin-rettigheder" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     // ── ID VERIFICERING GODKENDT ──────────────────────────────
     if (payload.type === "id_approved") {
       const { data: { user }, error } = await supabase.auth.admin.getUserById(payload.user_id);
@@ -102,7 +131,7 @@ serve(async (req) => {
         return new Response("User not found", { status: 400, headers: corsHeaders });
       }
       const { data: profile } = await supabase.from("profiles").select("name").eq("id", payload.user_id).single();
-      const name = profile?.name ?? "bruger";
+      const name = esc(profile?.name ?? "bruger");
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Tillykke – dit ID er godkendt! 🪪</h2>
@@ -129,7 +158,7 @@ serve(async (req) => {
         return new Response("User not found", { status: 400, headers: corsHeaders });
       }
       const { data: profile } = await supabase.from("profiles").select("name").eq("id", payload.user_id).single();
-      const name = profile?.name ?? "bruger";
+      const name = esc(profile?.name ?? "bruger");
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Din ID-ansøgning er afvist</h2>
@@ -158,13 +187,13 @@ serve(async (req) => {
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Ny henvendelse via kontaktformularen</h2>
-        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;"><strong style="color:#1A1A18;">Fra:</strong> ${name} (${email})</p>
+        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;"><strong style="color:#1A1A18;">Fra:</strong> ${esc(name)} (${esc(email)})</p>
         <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
-          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${message}</p>
+          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${esc(message)}</p>
         </div>
-        <a href="mailto:${email}"
+        <a href="mailto:${esc(email)}"
            style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Svar til ${name} →
+          Svar til ${esc(name)} →
         </a>
       `);
 
@@ -179,24 +208,24 @@ serve(async (req) => {
 
       const sourceRows = source && (source.utm_source || source.utm_campaign || source.referrer)
         ? `
-          <strong>Kilde:</strong> ${source.utm_source ?? "–"}<br>
-          ${source.utm_campaign ? `<strong>Kampagne:</strong> ${source.utm_campaign}<br>` : ""}
-          ${source.utm_medium   ? `<strong>Medium:</strong> ${source.utm_medium}<br>` : ""}
-          ${source.utm_content  ? `<strong>Variant:</strong> ${source.utm_content}<br>` : ""}
-          ${source.referrer     ? `<strong>Referrer:</strong> ${source.referrer}<br>` : ""}
+          <strong>Kilde:</strong> ${esc(source.utm_source ?? "–")}<br>
+          ${source.utm_campaign ? `<strong>Kampagne:</strong> ${esc(source.utm_campaign)}<br>` : ""}
+          ${source.utm_medium   ? `<strong>Medium:</strong> ${esc(source.utm_medium)}<br>` : ""}
+          ${source.utm_content  ? `<strong>Variant:</strong> ${esc(source.utm_content)}<br>` : ""}
+          ${source.referrer     ? `<strong>Referrer:</strong> ${esc(source.referrer)}<br>` : ""}
         `
         : "";
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 16px;">🏪 Ny forhandleransøgning</h2>
         <p style="color:#1A1A18;margin:0 0 16px;font-size:0.95rem;line-height:1.6;">
-          <strong>Butik:</strong> ${shop_name ?? "–"}<br>
-          <strong>CVR:</strong> ${cvr ?? "–"}<br>
-          <strong>Kontaktperson:</strong> ${contact ?? "–"}<br>
-          ${phone ? `<strong>Telefon:</strong> ${phone}<br>` : ""}
-          ${address ? `<strong>Adresse:</strong> ${address}<br>` : ""}
-          <strong>By:</strong> ${city ?? "–"}<br>
-          <strong>Email:</strong> ${email ?? "–"}${sourceRows ? `<br><br>${sourceRows}` : ""}
+          <strong>Butik:</strong> ${esc(shop_name ?? "–")}<br>
+          <strong>CVR:</strong> ${esc(cvr ?? "–")}<br>
+          <strong>Kontaktperson:</strong> ${esc(contact ?? "–")}<br>
+          ${phone ? `<strong>Telefon:</strong> ${esc(phone)}<br>` : ""}
+          ${address ? `<strong>Adresse:</strong> ${esc(address)}<br>` : ""}
+          <strong>By:</strong> ${esc(city ?? "–")}<br>
+          <strong>Email:</strong> ${esc(email ?? "–")}${sourceRows ? `<br><br>${sourceRows}` : ""}
         </p>
         <div style="background:#FEF3E7;border-left:4px solid #C8502A;padding:12px 16px;border-radius:0 8px 8px 0;margin:0 0 20px;">
           <p style="color:#1A1A18;margin:0;font-size:0.9rem;">
@@ -223,13 +252,13 @@ serve(async (req) => {
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🚩 Annonce rapporteret</h2>
         <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;">
-          <strong style="color:#1A1A18;">Annonce:</strong> ${bike_title ?? bike_id}<br>
-          <strong style="color:#1A1A18;">Årsag:</strong> ${reason}<br>
-          ${reporter_name ? `<strong style="color:#1A1A18;">Rapporteret af:</strong> ${reporter_name} (${reporter_email ?? "ingen email"})` : "Rapporteret af: anonym"}
+          <strong style="color:#1A1A18;">Annonce:</strong> ${esc(bike_title ?? bike_id)}<br>
+          <strong style="color:#1A1A18;">Årsag:</strong> ${esc(reason)}<br>
+          ${reporter_name ? `<strong style="color:#1A1A18;">Rapporteret af:</strong> ${esc(reporter_name)} (${esc(reporter_email ?? "ingen email")})` : "Rapporteret af: anonym"}
         </p>
         ${details ? `
         <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0 24px;">
-          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${details}</p>
+          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${esc(details)}</p>
         </div>` : ""}
         <a href="https://cykelbørsen.dk?bike=${bike_id}"
            style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
@@ -261,14 +290,14 @@ serve(async (req) => {
       }
 
       const { data: ownerProfile } = await supabase.from("profiles").select("name").eq("id", bike_owner_id).single();
-      const ownerName = ownerProfile?.name ?? "sælger";
-      const bikeName = `${bike_brand || "Din cykel"} ${bike_model || ""}`.trim();
+      const ownerName = esc(ownerProfile?.name ?? "sælger");
+      const bikeName = esc(`${bike_brand || "Din cykel"} ${bike_model || ""}`.trim());
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">❤️ Din annonce er blevet gemt!</h2>
         <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
           Hej ${ownerName},<br><br>
-          <strong style="color:#1A1A18;">${liker_name || "En bruger"}</strong> har gemt din annonce: <strong style="color:#1A1A18;">${bikeName}</strong><br>
+          <strong style="color:#1A1A18;">${esc(liker_name || "En bruger")}</strong> har gemt din annonce: <strong style="color:#1A1A18;">${bikeName}</strong><br>
           Det er en god tegn – interesserede købere følger annoncerne tæt!
         </p>
         <a href="https://cykelbørsen.dk/#/bike/${bike_id}"
@@ -318,14 +347,14 @@ serve(async (req) => {
         if (authErr || !watcherUser?.email) continue;
 
         const { data: watcherProfile } = await supabase.from("profiles").select("name").eq("id", w.user_id).single();
-        const watcherName = watcherProfile?.name ?? "der";
+        const watcherName = esc(watcherProfile?.name ?? "der");
 
         const html = emailWrapper(`
           <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🔔 Prisen er faldet!</h2>
           <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
             Hej ${watcherName},<br><br>
             En cykel du følger har lige fået ny pris:<br><br>
-            <strong style="color:#1A1A18;font-size:1.05rem;">${bikeName}</strong><br>
+            <strong style="color:#1A1A18;font-size:1.05rem;">${esc(bikeName)}</strong><br>
             <span style="text-decoration:line-through;color:#8A8578;">${old_price.toLocaleString("da-DK")} kr.</span>
             →
             <strong style="color:#C8302A;font-size:1.1rem;">${new_price.toLocaleString("da-DK")} kr.</strong>
@@ -373,15 +402,15 @@ serve(async (req) => {
       }
 
       const { data: bidderProfile } = await supabase.from("profiles").select("name").eq("id", bidder_id).single();
-      const bidderName = bidderProfile?.name ?? "køber";
+      const bidderName = esc(bidderProfile?.name ?? "køber");
       const bikeName = `${bike_brand || "cykel"} ${bike_model || ""}`.trim();
 
       const html = emailWrapper(`
         <h2 style="color:#2A7D4F;font-size:1.1rem;margin:0 0 12px;">✅ Dit bud blev accepteret! 🎉</h2>
         <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
           Hej ${bidderName},<br><br>
-          <strong style="color:#1A1A18;">${seller_name || "Sælger"}</strong> har accepteret dit bud på
-          <strong style="color:#1A1A18;">${bikeName}</strong> for <strong style="color:#2A7D4F;">${bid_amount}</strong>!<br><br>
+          <strong style="color:#1A1A18;">${esc(seller_name || "Sælger")}</strong> har accepteret dit bud på
+          <strong style="color:#1A1A18;">${esc(bikeName)}</strong> for <strong style="color:#2A7D4F;">${esc(bid_amount)}</strong>!<br><br>
           Nu er det tid til at kontakte hinanden og aftale overdragelsen.
         </p>
         <a href="https://cykelbørsen.dk/#/inbox"
@@ -437,7 +466,7 @@ serve(async (req) => {
 
     const isBid        = message.content?.startsWith("💰 Bud:");
     const bikeName     = bike ? `${bike.brand} ${bike.model}` : "din cykel";
-    const receiverName = receiverProfile?.name ?? "sælger";
+    const receiverName = esc(receiverProfile?.name ?? "sælger");
 
     const subject = isBid
       ? `💰 Nyt bud på din ${bikeName} – Cykelbørsen`
@@ -449,12 +478,12 @@ serve(async (req) => {
       </h2>
       <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
         Hej ${receiverName},<br><br>
-        <strong style="color:#1A1A18;">${senderName ?? "En bruger"}</strong>
+        <strong style="color:#1A1A18;">${esc(senderName ?? "En bruger")}</strong>
         ${isBid ? " har givet et bud" : " har sendt dig en besked"}
-        om din annonce: <strong style="color:#1A1A18;">${bikeName}</strong>
+        om din annonce: <strong style="color:#1A1A18;">${esc(bikeName)}</strong>
       </p>
       <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
-        <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;">${message.content}</p>
+        <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;">${esc(message.content)}</p>
       </div>
       <a href="https://cykelbørsen.dk?inbox=true"
          style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">

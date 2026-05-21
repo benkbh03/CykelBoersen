@@ -2,7 +2,7 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
+import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
@@ -1381,11 +1381,11 @@ function buildDealerCard(dealer, countMap, featured = false) {
   const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Fremhævet forhandler">⭐ Fremhævet</span>' : '';
   const promotedClass = isPromoted ? ' dealer-card--promoted' : '';
   return `
-    <div class="dealer-card${featuredClass}${promotedClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${displayName}s profil">
+    <div class="dealer-card${featuredClass}${promotedClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
       ${promotedBadge}
-      <div class="dealer-logo-circle">${initials}</div>
-      <div class="dealer-name">${displayName} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
-      ${locationText ? `<div class="dealer-city">📍 ${locationText}</div>` : ''}
+      <div class="dealer-logo-circle">${esc(initials)}</div>
+      <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
+      ${locationText ? `<div class="dealer-city">📍 ${esc(locationText)}</div>` : ''}
       <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
     </div>
   `;
@@ -2662,11 +2662,11 @@ async function loadDealerApplications() {
   list.innerHTML = result.data.map(function(p) {
     return '<div class="admin-row">'
       + '<div class="admin-row-info">'
-      + '<div class="admin-row-name">' + (p.shop_name || p.name) + '</div>'
+      + '<div class="admin-row-name">' + esc(p.shop_name || p.name) + '</div>'
       + '<div class="admin-row-meta">'
-      + (p.name ? p.name + ' · ' : '')
-      + (p.email || '') + (p.cvr ? ' · CVR: ' + p.cvr : '')
-      + (p.city ? ' · ' + p.city : '') + '</div>'
+      + (p.name ? esc(p.name) + ' · ' : '')
+      + esc(p.email || '') + (p.cvr ? ' · CVR: ' + esc(p.cvr) : '')
+      + (p.city ? ' · ' + esc(p.city) : '') + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'
       + '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Godkend</button>'
@@ -2699,24 +2699,24 @@ async function loadAllUsers() {
     var isVerified = p.verified;
     var isDealer   = p.seller_type === 'dealer';
     var canOnboard = isDealer && !!p.admin_can_create_listings;
-    var safeName   = (p.shop_name || p.name || 'Ukendt').replace(/'/g, "\\'");
+    var safeName   = escAttr(p.shop_name || p.name || 'Ukendt');
     var onboardBtn = canOnboard
       ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
       : (isDealer ? '<span class="admin-row-no-onboard" title="Forhandler skal selv aktivere onboarding-service i deres indstillinger">📋 Ikke aktiveret</span>' : '');
     return '<div class="admin-row">'
       + '<div class="admin-row-info">'
       + '<div class="admin-row-name">'
-      + (p.name || 'Ukendt')
+      + esc(p.name || 'Ukendt')
       + (isVerified ? ' <span class="verified-badge">✓</span>' : '')
       + (canOnboard ? ' <span class="onboard-indicator" title="Forhandler har givet tilladelse til at admin opretter annoncer på deres vegne">🛠️</span>' : '')
       + '</div>'
-      + '<div class="admin-row-meta">' + (p.email || '') + ' · ' + (isDealer ? '🏪 Forhandler' : '👤 Privat') + '</div>'
+      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (isDealer ? '🏪 Forhandler' : '👤 Privat') + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'
       + (isDealer && !isVerified ? '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Verificer</button>' : '')
       + (isVerified ? '<button class="btn-reject" onclick="revokeDealer(\'' + p.id + '\')">Fjern verificering</button>' : '')
       + onboardBtn
-      + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + (p.name || 'Ukendt').replace(/'/g, "\\'") + '\')" title="Slet bruger permanent">🗑️ Slet</button>'
+      + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + escAttr(p.name || 'Ukendt') + '\')" title="Slet bruger permanent">🗑️ Slet</button>'
       + '</div></div>';
   }).join('');
 }
@@ -2905,10 +2905,10 @@ async function loadIdApplications() {
 
   list.innerHTML = result.data.map(function(p) {
     return '<div class="admin-row">'
-      + '<img class="admin-id-img" src="' + (p.id_doc_url || '') + '" onclick="window.open(\'' + (p.id_doc_url || '') + '\',\'_blank\')" title="Klik for at se fuldt billede">'
+      + '<img class="admin-id-img" src="' + esc(p.id_doc_url || '') + '" onclick="window.open(\'' + escAttr(p.id_doc_url || '') + '\',\'_blank\')" title="Klik for at se fuldt billede">'
       + '<div class="admin-row-info">'
-      + '<div class="admin-row-name">' + (p.name || 'Ukendt') + '</div>'
-      + '<div class="admin-row-meta">' + (p.email || '') + ' · ' + (p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat') + '</div>'
+      + '<div class="admin-row-name">' + esc(p.name || 'Ukendt') + '</div>'
+      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat') + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'
       + '<button class="btn-approve" onclick="approveId(\'' + p.id + '\')">✓ Godkend ID</button>'
