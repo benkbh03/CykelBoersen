@@ -1607,7 +1607,7 @@ function selectHeroCatChip(el, type) {
 // Skriver til samme felter som brugeren ville sætte manuelt — sidebar-checkboxes
 // for type, sidebar prisinputs for pris, hero-felt for by — så Cykelagenten
 // gemmer samme state som ved manuel filtrering.
-function applyPopularSearch({ type, maxPrice, minPrice, city } = {}) {
+function applyPopularSearch({ type, size, maxPrice, minPrice, city } = {}) {
   navigateTo('/');
   setTimeout(() => {
     // Nulstil eksisterende type-checkboxes i sidebar, så vi starter rent
@@ -1630,6 +1630,13 @@ function applyPopularSearch({ type, maxPrice, minPrice, city } = {}) {
         chip.classList.add('active');
         chip.setAttribute('aria-pressed', 'true');
       }
+    }
+
+    if (size) {
+      // Nulstil eksisterende størrelses-checkboxes og sæt den anbefalede
+      document.querySelectorAll('[data-filter="size"]').forEach(cb => { cb.checked = false; });
+      const sizeCheckbox = document.querySelector(`[data-filter="size"][data-value="${size}"]`);
+      if (sizeCheckbox) sizeCheckbox.checked = true;
     }
 
     if (maxPrice) {
