@@ -9,7 +9,46 @@
 // Output: { suggestion: { brand, model, type, size, wheel_size, year, condition,
 //                         color, price_min, price_max, description } }
 
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY_ANNONCE") || Deno.env.get("ANTHROPIC_API_KEY") || "";
+const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+// Rate-limit: max 40 AI-analyser pr. bruger pr. time (Claude Vision koster penge).
+const RATE_LIMIT_MAX = 40;
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+const RATE_SCOPE     = "suggest_listing";
+
+async function checkAndIncrementRateLimit(
+  supa: ReturnType<typeof createClient>,
+  userId: string,
+): Promise<{ ok: boolean }> {
+  const now = new Date();
+  const { data: row } = await supa
+    .from("rate_limits")
+    .select("count, window_start")
+    .eq("user_id", userId)
+    .eq("scope", RATE_SCOPE)
+    .maybeSingle();
+
+  if (!row) {
+    await supa.from("rate_limits").insert({
+      user_id: userId, scope: RATE_SCOPE, count: 1, window_start: now.toISOString(),
+    });
+    return { ok: true };
+  }
+  const windowAgeMs = now.getTime() - new Date(row.window_start as string).getTime();
+  if (windowAgeMs > RATE_WINDOW_MS) {
+    await supa.from("rate_limits").update({ count: 1, window_start: now.toISOString() })
+      .eq("user_id", userId).eq("scope", RATE_SCOPE);
+    return { ok: true };
+  }
+  if ((row.count as number) >= RATE_LIMIT_MAX) return { ok: false };
+  await supa.from("rate_limits").update({ count: (row.count as number) + 1 })
+    .eq("user_id", userId).eq("scope", RATE_SCOPE);
+  return { ok: true };
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -82,6 +121,33 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // ── JWT-auth: kun loggede-ind brugere må bruge AI-analysen (omkostningsbeskyttelse) ──
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const jwt = authHeader.replace(/^Bearer\s+/i, "");
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({ error: "Log ind for at bruge AI-forslag" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const { data: { user }, error: authErr } = await supa.auth.getUser(jwt);
+    if (authErr || !user) {
+      return new Response(
+        JSON.stringify({ error: "Ugyldig session" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Rate-limit pr. bruger ──
+    const limit = await checkAndIncrementRateLimit(supa, user.id);
+    if (!limit.ok) {
+      return new Response(
+        JSON.stringify({ error: "For mange AI-forslag på kort tid. Prøv igen om lidt." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { images, hint } = await req.json();
 
     if (!Array.isArray(images) || images.length === 0) {

@@ -13,17 +13,6 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-function parseJwtPayload(token: string): Record<string, unknown> | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(atob(payload));
-  } catch {
-    return null;
-  }
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -32,7 +21,9 @@ serve(async (req) => {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
 
-  // Supabase gateway verificerer JWT — vi udtrækker blot user id fra payload
+  // Verificér JWT KRYPTOGRAFISK via Supabase Auth — ikke kun base64-afkodning af
+  // payloaden. userId stammer udelukkende fra det verificerede token, så en bruger
+  // kan kun slette sin EGEN konto (ingen forfalskning af 'sub' → ingen IDOR).
   const authHeader = req.headers.get("Authorization") ?? "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
   if (!token) {
@@ -41,16 +32,15 @@ serve(async (req) => {
     });
   }
 
-  const payload = parseJwtPayload(token);
-  const userId = payload?.sub as string | undefined;
+  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-  if (!userId) {
+  const { data: { user }, error: authErr } = await adminClient.auth.getUser(token);
+  if (authErr || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-
-  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const userId = user.id;
 
   try {
     // 1. Hent brugerens cykler
