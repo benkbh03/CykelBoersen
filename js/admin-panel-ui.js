@@ -1,4 +1,4 @@
-export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport }) {
+export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport, initInviteForm }) {
   function openAdminPanel() {
     document.getElementById('admin-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -23,6 +23,7 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadI
     if (tab === 'users') loadAllUsers();
     if (tab === 'id') loadIdApplications();
     if (tab === 'bulk-import' && loadBulkImport) loadBulkImport();
+    if (tab === 'invite' && initInviteForm) initInviteForm();
   }
 
   return { openAdminPanel, closeAdminPanel, switchAdminTab };
