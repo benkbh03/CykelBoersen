@@ -2033,6 +2033,14 @@ function applyFilters() {
   }
   // hvis begge eller ingen er checked → ingen filter (alle)
 
+  // El-cykel-filtre
+  const motors = [...document.querySelectorAll('[data-filter="motor"]:checked')]
+    .map(el => el.dataset.value);
+  const motorPositions = [...document.querySelectorAll('[data-filter="motor_position"]:checked')]
+    .map(el => el.dataset.value);
+  const batteryMin = parseInt(document.getElementById('battery-min')?.value) || null;
+  const batteryMax = parseInt(document.getElementById('battery-max')?.value) || null;
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -2054,6 +2062,7 @@ function applyFilters() {
     types, conditions, minPrice, maxPrice, sellerType,
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
+    motors, motorPositions, batteryMin, batteryMax,
     maxWeight, city, search,
   });
 }

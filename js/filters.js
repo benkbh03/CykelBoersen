@@ -137,6 +137,15 @@ export function createFilters({
       pills.push({ label: `Under ${args.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
     }
     if (args?.maxWeight) pills.push({ label: `Under ${String(args.maxWeight).replace('.', ',')} kg`, type: 'weight' });
+    for (const m of (args?.motors || []))         pills.push({ label: `Motor: ${m}`, type: 'motor', value: m });
+    for (const p of (args?.motorPositions || [])) pills.push({ label: p, type: 'motor_position', value: p });
+    if (args?.batteryMin && args?.batteryMax) {
+      pills.push({ label: `${args.batteryMin}–${args.batteryMax} Wh`, type: 'battery' });
+    } else if (args?.batteryMin) {
+      pills.push({ label: `Fra ${args.batteryMin} Wh`, type: 'battery' });
+    } else if (args?.batteryMax) {
+      pills.push({ label: `Under ${args.batteryMax} Wh`, type: 'battery' });
+    }
     if (args?.sellerType === 'dealer')  pills.push({ label: 'Forhandlere', type: 'seller', value: 'dealer' });
     if (args?.sellerType === 'private') pills.push({ label: 'Private', type: 'seller', value: 'private' });
 
@@ -243,7 +252,14 @@ export function createFilters({
       case 'brake_type':
       case 'groupset':
       case 'electronic_shifting':
+      case 'motor':
+      case 'motor_position':
         document.querySelectorAll(`[data-filter="${type}"][data-value="${value}"]`).forEach(cb => cb.checked = false);
+        applyFilters();
+        break;
+      case 'battery':
+        { const a = document.getElementById('battery-min'); if (a) a.value = '';
+          const b = document.getElementById('battery-max'); if (b) b.value = ''; }
         applyFilters();
         break;
     }
