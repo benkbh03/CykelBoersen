@@ -417,7 +417,7 @@ export const footerContent = {
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
           <span style="font-size:1.4rem;">⏱️</span>
           <div>
-            <div style="font-weight:600;font-size:0.88rem;">Svartid</div>
+            <div style="font-weight:600;font-size:0.88rem;">Du hører fra os</div>
             <div style="color:var(--muted);font-size:0.85rem;">Hverdage kl. 9–17</div>
           </div>
         </div>
