@@ -1096,8 +1096,11 @@ async function init() {
         import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
       }
     }
-  } else if (hashParams.get('type') === 'recovery') {
+  } else if (hashParams.get('type') === 'recovery' || hashParams.get('type') === 'invite') {
     history.replaceState(null, '', window.location.pathname);
+    if (hashParams.get('type') === 'invite') {
+      showToast('👋 Velkommen! Vælg en adgangskode for at aktivere din konto.');
+    }
     document.getElementById('reset-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -1138,7 +1141,7 @@ async function init() {
   }
 
   // Pathname routing: håndter initial route (køres efter Supabase hash-params er tjekket)
-  if (!_initHash.includes('type=signup') && !_initHash.includes('type=recovery')) {
+  if (!_initHash.includes('type=signup') && !_initHash.includes('type=recovery') && !_initHash.includes('type=invite')) {
     handleRoute();
   }
 
@@ -2949,6 +2952,35 @@ async function rejectId(userId) {
   }).catch(() => {});
 }
 
+async function submitDealerInvite() {
+  const email = document.getElementById('di-email')?.value.trim();
+  if (!email) { showToast('⚠️ Email er påkrævet'); return; }
+  const restore = btnLoading('di-submit', 'Sender invitation...');
+  const body = {
+    email,
+    shop_name: document.getElementById('di-shop')?.value.trim()    || null,
+    contact:   document.getElementById('di-contact')?.value.trim() || null,
+    city:      document.getElementById('di-city')?.value.trim()    || null,
+    address:   document.getElementById('di-address')?.value.trim() || null,
+  };
+  const { data, error } = await supabase.functions.invoke('admin-invite-dealer', { body });
+  restore();
+  const result = document.getElementById('di-result');
+  if (error || data?.error) {
+    if (result) result.innerHTML = `<span style="color:#c0392b;">❌ ${esc(data?.error || error?.message || 'Ukendt fejl')}</span>`;
+    return;
+  }
+  showToast('✅ Invitation sendt til ' + email);
+  if (result) {
+    result.innerHTML = `<span style="color:#2A7D4F;">✅ Forhandler oprettet og inviteret — de får en mail hvor de vælger password.</span>`
+      + `<br><span style="color:var(--muted);font-size:0.82rem;">Bruger-ID (til bulk-import): <code>${esc(data.user_id)}</code></span>`;
+  }
+  ['di-email','di-shop','di-contact','di-city','di-address'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
+window.submitDealerInvite   = submitDealerInvite;
 window.updateVerifyUI       = updateVerifyUI;
 window.approveId          = approveId;
 window.rejectId           = rejectId;
