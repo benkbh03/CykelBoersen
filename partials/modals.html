@@ -802,6 +802,7 @@
           <button class="profile-tab" id="atab-id" onclick="switchAdminTab('id')">ID ansøgninger</button>
           <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
           <button class="profile-tab" id="atab-invite" onclick="switchAdminTab('invite')">➕ Invitér forhandler</button>
+          <button class="profile-tab" id="atab-stats" onclick="switchAdminTab('stats')">📊 Statistik</button>
         </div>
         <div id="admin-applications">
           <div id="admin-applications-list">
@@ -833,6 +834,9 @@
           <div class="form-group"><label>Adresse</label><input type="text" id="di-address" placeholder="Vej + nr."></div>
           <button id="di-submit" class="form-submit" onclick="submitDealerInvite()">Send invitation</button>
           <div id="di-result" style="margin-top:14px;font-size:0.9rem;line-height:1.5;"></div>
+        </div>
+        <div id="admin-stats" style="display:none;">
+          <p style="color:var(--muted)">Indlæser…</p>
         </div>
       </div>
     </div>
