@@ -220,8 +220,30 @@ export function createListingEdit({
     const editCityInput = document.getElementById('edit-city');
     if (editCityInput) attachCityAutocomplete(editCityInput);
 
+    // Type-tilpassede tekniske felter (som salg-formen): vis kun de relevante.
+    updateEditFieldsVisibility(b.type);
+    const editTypeEl = document.getElementById('edit-type');
+    if (editTypeEl && !editTypeEl._visBound) {
+      editTypeEl.addEventListener('change', () => updateEditFieldsVisibility(editTypeEl.value));
+      editTypeEl._visBound = true;
+    }
+
     document.getElementById('edit-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+  }
+
+  // Vis kun de tekniske felter der giver mening for cykeltypen (spejler salg-formen).
+  // Skjulte felter beholder deres værdi i DOM'en, så data ikke mistes ved gem.
+  function updateEditFieldsVisibility(type) {
+    const PERF = ['Racercykel', 'Mountainbike', 'Gravel'];
+    const isPerf  = PERF.includes(type);
+    const isEbike = type === 'El-cykel';
+    document.querySelectorAll('#edit-modal [data-perf-only]').forEach(el => {
+      el.style.display = isPerf ? '' : 'none';
+    });
+    document.querySelectorAll('#edit-modal [data-ebike-only]').forEach(el => {
+      el.style.display = isEbike ? '' : 'none';
+    });
   }
 
   function closeEditModal() {
