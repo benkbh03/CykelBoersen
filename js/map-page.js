@@ -706,6 +706,20 @@ export function createMapPage({
     };
     _mapBoundsDebounced = debounce(_showSearchAreaBtn, 280);
     splitMapInstance.on('moveend', _mapBoundsDebounced);
+
+    // Skjul "Søg dette område"-knappen mens en popup er åben (de overlappede
+    // visuelt i toppen). Gendan knappens tidligere tilstand når popup'en lukkes.
+    let _searchBtnWasVisible = false;
+    splitMapInstance.on('popupopen', function() {
+      const btn = document.getElementById('map-search-area-btn');
+      if (!btn) return;
+      _searchBtnWasVisible = btn.style.display !== 'none';
+      btn.style.display = 'none';
+    });
+    splitMapInstance.on('popupclose', function() {
+      const btn = document.getElementById('map-search-area-btn');
+      if (btn && _searchBtnWasVisible) btn.style.display = 'inline-flex';
+    });
     splitMarkerMap = {};
     _mapPageGeocoded = new Map();
 
