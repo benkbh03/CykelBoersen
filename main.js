@@ -2275,7 +2275,10 @@ async function handleResetPassword() {
       setTimeout(() => reject(new Error('Timeout')), 10000)
     );
 
-    await Promise.race([updatePromise, timeoutPromise]);
+    // updateUser KASTER ikke ved fejl — den returnerer { error }. Tjek den eksplicit,
+    // ellers vises "success" selvom det fejlede (eller en intetsigende fejl).
+    const { error: updErr } = await Promise.race([updatePromise, timeoutPromise]);
+    if (updErr) throw updErr;
 
     history.replaceState(null, '', window.location.pathname);
     showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
@@ -2284,8 +2287,10 @@ async function handleResetPassword() {
     document.getElementById('reset-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
     if (btn) { btn.textContent = originalText; btn.disabled = false; }
-    showToast('❌ Kunne ikke opdatere adgangskode');
-    console.error(error);
+    const msg = error?.message || '';
+    // Vis den FAKTISKE årsag (fx udløbet session) så det kan diagnosticeres
+    showToast(msg ? '❌ Kunne ikke opdatere: ' + msg : '❌ Kunne ikke opdatere adgangskode');
+    console.error('Reset password fejl:', error);
   }
 }
 
