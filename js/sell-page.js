@@ -91,10 +91,21 @@ export function createSellPage({
     // Cykel-specifikke strukturerede felter (kan auto-udfyldes af AI fra billeder)
     'sell-groupset', 'sell-frame-material', 'sell-brake-type',
     'sell-electronic-shifting', 'sell-weight-kg',
+    // El-cykel-specifikke felter
+    'sell-motor', 'sell-motor-position', 'sell-battery-wh',
   ];
 
   // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
   const _PERF_TYPES = ['Racercykel', 'Mountainbike', 'Gravel'];
+
+  // Gængse el-cykel motor-mærker (Promovec er dansk-udbredt)
+  const _MOTORS_HINT = [
+    'Bosch Active Line', 'Bosch Active Line Plus', 'Bosch Performance Line',
+    'Bosch Performance Line CX', 'Bosch Performance Line Speed',
+    'Shimano STEPS E5000', 'Shimano STEPS E6100', 'Shimano STEPS E7000',
+    'Shimano STEPS E8000', 'Shimano EP6', 'Shimano EP8',
+    'Promovec', 'Yamaha', 'Bafang', 'Mahle', 'Brose', 'Fazua',
+  ];
 
   // Liste til groupset-autocomplete (kan udvides senere)
   const _GROUPSETS_HINT = [
@@ -298,6 +309,13 @@ export function createSellPage({
       const weightKgRaw    = getVal('sell-weight-kg');
       const weightKg       = weightKgRaw ? parseFloat(weightKgRaw) : null;
 
+      // El-cykel-felter (kun relevante når type = El-cykel)
+      const isEbike        = type === 'El-cykel';
+      const motor          = isEbike ? (getVal('sell-motor') || null) : null;
+      const motorPosition  = isEbike ? (getVal('sell-motor-position') || null) : null;
+      const batteryWhRaw   = getVal('sell-battery-wh');
+      const batteryWh      = isEbike && batteryWhRaw ? (parseInt(batteryWhRaw) || null) : null;
+
       if (!brand || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
@@ -336,6 +354,9 @@ export function createSellPage({
         brake_type:          brakeType,
         electronic_shifting: electronicShift,
         weight_kg:           !isNaN(weightKg) ? weightKg : null,
+        motor,
+        motor_position:      motorPosition,
+        battery_wh:          batteryWh,
       };
 
       let newBike;
@@ -705,6 +726,30 @@ export function createSellPage({
             <span class="suffix">kg</span>
           </div>
         </div>
+
+        <div class="sell-form-grid-2" data-ebike-only>
+          <div class="sell-field">
+            <label>Motor <span class="hint">(fx Bosch Performance Line CX)</span></label>
+            <input type="text" id="sell-motor" list="sell-motor-list" placeholder="Bosch / Shimano / Promovec…" value="${esc(c['sell-motor'] || '')}" autocomplete="off">
+            <datalist id="sell-motor-list">
+              ${_MOTORS_HINT.map(m => `<option value="${esc(m)}">`).join('')}
+            </datalist>
+          </div>
+          <div class="sell-field">
+            <label>Motor-placering</label>
+            <select id="sell-motor-position">
+              <option value="">Vælg</option>
+              ${opt(c['sell-motor-position'] || '', ['Midtermotor','Forhjulsmotor','Baghjulsmotor'])}
+            </select>
+          </div>
+        </div>
+        <div class="sell-field" data-ebike-only>
+          <label>Batteri <span class="hint">(Wh, fx 500)</span></label>
+          <div class="suffix-wrap">
+            <input type="number" id="sell-battery-wh" placeholder="500" min="100" max="2000" step="1" value="${c['sell-battery-wh'] || ''}" onwheel="this.blur()">
+            <span class="suffix">Wh</span>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -1065,6 +1110,11 @@ export function createSellPage({
     const isPerf = !currentType || _PERF_TYPES.includes(currentType);
     document.querySelectorAll('#sell-advanced-section [data-perf-only]').forEach(el => {
       el.style.display = isPerf ? '' : 'none';
+    });
+    // El-cykel-felter (motor/placering/batteri) vises kun for El-cykel
+    const isEbike = currentType === 'El-cykel';
+    document.querySelectorAll('#sell-advanced-section [data-ebike-only]').forEach(el => {
+      el.style.display = isEbike ? '' : 'none';
     });
   }
 

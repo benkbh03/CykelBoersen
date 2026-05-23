@@ -37,7 +37,7 @@
   <meta name="twitter:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Gratis at oprette annonce.">
   <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
 
-  <link rel="preload" href="/hero.jpg?v=20261113ev" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preload" href="/hero.jpg?v=20261113ew" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113ev">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113ev">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113ew">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113ew">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -657,6 +657,44 @@
       </div>
       <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Motor (el-cykel)</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Bosch" onchange="applyFilters()"> Bosch <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Shimano" onchange="applyFilters()"> Shimano (STEPS) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Promovec" onchange="applyFilters()"> Promovec <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Yamaha" onchange="applyFilters()"> Yamaha <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Bafang" onchange="applyFilters()"> Bafang <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Mahle" onchange="applyFilters()"> Mahle <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Motor-placering</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="motor_position" data-value="Midtermotor" onchange="applyFilters()"> Midtermotor <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor_position" data-value="Forhjulsmotor" onchange="applyFilters()"> Forhjulsmotor <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor_position" data-value="Baghjulsmotor" onchange="applyFilters()"> Baghjulsmotor <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Batteri (Wh)</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="price-range sidebar-section-body">
+          <div class="price-inputs">
+            <input type="number" id="battery-min" placeholder="Min Wh" min="100" max="2000" step="1" onchange="applyFilters()">
+            <span>–</span>
+            <input type="number" id="battery-max" placeholder="Max Wh" min="100" max="2000" step="1" onchange="applyFilters()">
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Vægt</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
@@ -876,7 +914,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20261113ev';
+    const V = '20261113ew';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

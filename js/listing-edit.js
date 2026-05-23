@@ -194,6 +194,9 @@ export function createListingEdit({
       b.electronic_shifting === true ? 'true' : (b.electronic_shifting === false ? 'false' : '');
     document.getElementById('edit-groupset').value           = b.groupset || '';
     document.getElementById('edit-weight-kg').value          = b.weight_kg ?? '';
+    document.getElementById('edit-motor').value              = b.motor || '';
+    document.getElementById('edit-motor-position').value     = b.motor_position || '';
+    document.getElementById('edit-battery-wh').value         = b.battery_wh ?? '';
 
     const isDealer = getCurrentProfile()?.seller_type === 'dealer';
     const warrantyGroup = document.getElementById('edit-warranty-group');
@@ -266,6 +269,9 @@ export function createListingEdit({
       electronic_shifting: electronicRaw === 'true' ? true : (electronicRaw === 'false' ? false : null),
       groupset:           document.getElementById('edit-groupset').value.trim() || null,
       weight_kg:          (weightKg != null && !isNaN(weightKg)) ? weightKg : null,
+      motor:              document.getElementById('edit-motor').value.trim() || null,
+      motor_position:     document.getElementById('edit-motor-position').value || null,
+      battery_wh:         parseInt(document.getElementById('edit-battery-wh').value) || null,
     };
 
     if (!updates.brand || !updates.price || !updates.city) {

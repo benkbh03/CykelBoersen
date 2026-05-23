@@ -692,6 +692,26 @@
             <label>Vægt <small style="color:var(--muted);font-weight:400">(kg)</small></label>
             <input type="number" id="edit-weight-kg" placeholder="f.eks. 8.2" min="2" max="50" step="0.1">
           </div>
+          <div class="form-group">
+            <label>Motor <small style="color:var(--muted);font-weight:400">(el-cykel)</small></label>
+            <input type="text" id="edit-motor" list="edit-motor-list" placeholder="Bosch / Shimano / Promovec…" autocomplete="off">
+            <datalist id="edit-motor-list">
+              <option value="Bosch Performance Line CX"><option value="Bosch Active Line Plus"><option value="Shimano STEPS E6100"><option value="Shimano EP8"><option value="Promovec"><option value="Yamaha"><option value="Bafang"><option value="Mahle">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label>Motor-placering <small style="color:var(--muted);font-weight:400">(el-cykel)</small></label>
+            <select id="edit-motor-position">
+              <option value="">Vælg</option>
+              <option value="Midtermotor">Midtermotor</option>
+              <option value="Forhjulsmotor">Forhjulsmotor</option>
+              <option value="Baghjulsmotor">Baghjulsmotor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Batteri <small style="color:var(--muted);font-weight:400">(Wh, el-cykel)</small></label>
+            <input type="number" id="edit-battery-wh" placeholder="f.eks. 500" min="100" max="2000" step="1">
+          </div>
           <div class="form-group full"><label>Farve(r) <small style="color:var(--muted);font-weight:400">(vælg én eller flere)</small></label><div class="color-swatch-grid" id="edit-color-grid"></div></div>
           <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..."></textarea></div>
           <div class="form-group full" id="edit-warranty-group" style="display:none;">
