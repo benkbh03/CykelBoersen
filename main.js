@@ -885,7 +885,12 @@ async function init() {
   // Opdater nav når bruger logger ind/ud
   // _hasHadSession forhindrer at token-refresh (der fyrer SIGNED_IN) kalder loadBikes() unødvendigt
   let _hasHadSession = !!currentUser;
-  supabase.auth.onAuthStateChange(async (_event, session) => {
+  supabase.auth.onAuthStateChange((_event, session) => {
+    // Defer alt async-arbejde UD af callbacken. supabase-js holder en intern lås
+    // mens auth-state-callbacks kører; await'er på supabase-kald heri (DB-forespørgsler
+    // henter selv sessionen → tager låsen) deadlocker andre auth-operationer som
+    // updateUser ved password-reset (→ "Timeout"). setTimeout(0) frigiver låsen straks.
+    setTimeout(async () => {
     if (session) {
       const isNewLogin = !_hasHadSession;
       _hasHadSession = true;
@@ -983,6 +988,7 @@ async function init() {
         window.location.href = window.location.pathname;
       }
     }
+    }, 0);
   });
 
   // --- Idle/refresh guards ---
