@@ -1088,7 +1088,13 @@ async function init() {
       showToast('✅ Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.');
       navigateTo('/min-profil');
     } else {
-      showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
+      showToast('✅ Din e-mail er bekræftet!');
+      // Førstegangs-velkomst: vis onboarding-modalen når brugeren lander logget ind
+      // efter email-bekræftelse. showOnboardingBanner er idempotent (viser ikke dobbelt),
+      // og 'onboarded'-guarden sikrer den ikke dukker op igen ved senere logins.
+      if (!localStorage.getItem('onboarded')) {
+        import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
+      }
     }
   } else if (hashParams.get('type') === 'recovery') {
     history.replaceState(null, '', window.location.pathname);
