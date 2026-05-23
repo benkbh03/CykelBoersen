@@ -680,7 +680,7 @@ export function createSellPage({
 
       <button type="button" id="sell-advanced-toggle" class="sell-advanced-toggle" onclick="toggleAdvancedSpecs()" aria-expanded="false">
         <span class="sell-advanced-icon">▸</span>
-        <span class="sell-advanced-label">Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB og gravel — købere filtrerer på gear, bremser og vægt)</span></span>
+        <span class="sell-advanced-label" id="sell-advanced-label">Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB og gravel — købere filtrerer på gear, bremser og vægt)</span></span>
       </button>
 
       <div id="sell-advanced-section" class="sell-advanced-section" style="display:none;">
@@ -1107,15 +1107,41 @@ export function createSellPage({
   // for cykeltyper hvor de ikke giver mening (citybike, ladcykel, børnecykel).
   // Bremsetype og vægt er stadig synlige for alle typer.
   function updatePerfFieldsVisibility(currentType) {
-    const isPerf = !currentType || _PERF_TYPES.includes(currentType);
+    const isPerf  = !currentType || _PERF_TYPES.includes(currentType);
+    const isEbike = currentType === 'El-cykel';
+
     document.querySelectorAll('#sell-advanced-section [data-perf-only]').forEach(el => {
       el.style.display = isPerf ? '' : 'none';
     });
     // El-cykel-felter (motor/placering/batteri) vises kun for El-cykel
-    const isEbike = currentType === 'El-cykel';
     document.querySelectorAll('#sell-advanced-section [data-ebike-only]').forEach(el => {
       el.style.display = isEbike ? '' : 'none';
     });
+
+    // Dynamisk overskrift efter type
+    const label = document.getElementById('sell-advanced-label');
+    if (label) {
+      if (isEbike) {
+        label.innerHTML = 'El-cykel-detaljer <span class="hint">(motor, batteri og placering — købere filtrerer på dem)</span>';
+      } else if (currentType && _PERF_TYPES.includes(currentType)) {
+        label.innerHTML = 'Tekniske detaljer <span class="hint">(gear, bremser og vægt — købere filtrerer på dem)</span>';
+      } else {
+        label.innerHTML = 'Tekniske detaljer <span class="hint">(valgfrit)</span>';
+      }
+    }
+
+    // Auto-udfold sektionen når en relevant type vælges (el-cykel eller racer/MTB/gravel),
+    // så de relevante felter "popper op" af sig selv. Folder aldrig sammen automatisk.
+    if (currentType && (isEbike || _PERF_TYPES.includes(currentType))) {
+      const sec = document.getElementById('sell-advanced-section');
+      const btn = document.getElementById('sell-advanced-toggle');
+      if (sec && sec.style.display === 'none') {
+        sec.style.display = '';
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        const icon = btn?.querySelector('.sell-advanced-icon');
+        if (icon) icon.textContent = '▾';
+      }
+    }
   }
 
   function advanceSell() {
