@@ -2677,7 +2677,7 @@ const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport, initInviteForm }),
+  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport, initInviteForm, loadAdminStats }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -2989,6 +2989,108 @@ async function rejectId(userId) {
   }).catch(() => {});
 }
 
+async function loadAdminStats() {
+  const el = document.getElementById('admin-stats');
+  if (!el) return;
+  el.innerHTML = '<p style="color:var(--muted)">Indlæser statistik…</p>';
+  try {
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+    const [profRes, bikeRes, revRes, searchRes] = await Promise.all([
+      supabase.from('profiles').select('seller_type, verified, created_at'),
+      supabase.from('bikes').select('type, price, is_active, sold_via, views, created_at'),
+      supabase.from('reviews').select('rating'),
+      supabase.from('search_logs').select('query, result_count').order('created_at', { ascending: false }).limit(2000),
+    ]);
+    const profiles = profRes.data || [];
+    const bikes    = bikeRes.data || [];
+    const reviews  = revRes.data || [];
+    const searches = searchRes.data || [];
+
+    const dealers   = profiles.filter(p => p.seller_type === 'dealer');
+    const verified  = dealers.filter(p => p.verified).length;
+    const privates  = profiles.filter(p => p.seller_type !== 'dealer').length;
+    const newUsers7 = profiles.filter(p => p.created_at && p.created_at >= weekAgo).length;
+
+    const activeBikes = bikes.filter(b => b.is_active);
+    const sold        = bikes.filter(b => !b.is_active).length;
+    const newBikes7   = bikes.filter(b => b.created_at && b.created_at >= weekAgo).length;
+    const totalViews  = bikes.reduce((s, b) => s + (b.views || 0), 0);
+    const avgPrice    = activeBikes.length
+      ? Math.round(activeBikes.reduce((s, b) => s + (b.price || 0), 0) / activeBikes.length)
+      : 0;
+
+    const typeCounts = {};
+    activeBikes.forEach(b => { const t = b.type || 'Ukendt'; typeCounts[t] = (typeCounts[t] || 0) + 1; });
+    const topTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+
+    const avgRating = reviews.length
+      ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1)
+      : '–';
+
+    // Søge-statistik: top-søgninger + nul-resultat-søgninger (umødt efterspørgsel)
+    const allCounts = {}, zeroCounts = {};
+    searches.forEach(s => {
+      const q = (s.query || '').trim().toLowerCase();
+      if (!q) return;
+      allCounts[q] = (allCounts[q] || 0) + 1;
+      if ((s.result_count ?? 0) === 0) zeroCounts[q] = (zeroCounts[q] || 0) + 1;
+    });
+    const topSearches = Object.entries(allCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const topZero     = Object.entries(zeroCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const searchRow = ([q, n], accent) => `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;">
+        <span style="color:${accent || 'var(--charcoal)'};">${esc(q)}</span>
+        <span style="color:var(--muted);font-weight:600;">${n}×</span>
+      </div>`;
+
+    const card = (label, value, sub) => `
+      <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;color:var(--charcoal);line-height:1;">${value}</div>
+        <div style="font-size:0.82rem;color:var(--charcoal);margin-top:6px;font-weight:600;">${label}</div>
+        ${sub ? `<div style="font-size:0.76rem;color:var(--muted);margin-top:2px;">${sub}</div>` : ''}
+      </div>`;
+
+    const typeRows = topTypes.length
+      ? topTypes.map(([t, n]) => `
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;">
+            <span style="color:var(--charcoal);">${esc(t)}</span>
+            <span style="color:var(--muted);font-weight:600;">${n}</span>
+          </div>`).join('')
+      : '<p style="color:var(--muted);font-size:0.86rem;">Ingen aktive annoncer endnu.</p>';
+
+    el.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;">
+        ${card('Brugere i alt', profiles.length, `${newUsers7} nye seneste 7 dage`)}
+        ${card('Forhandlere', dealers.length, `${verified} verificerede`)}
+        ${card('Private', privates, '')}
+        ${card('Aktive annoncer', activeBikes.length, `${newBikes7} nye seneste 7 dage`)}
+        ${card('Solgte/inaktive', sold, '')}
+        ${card('Visninger i alt', totalViews.toLocaleString('da-DK'), '')}
+        ${card('Gns. pris (aktive)', avgPrice ? avgPrice.toLocaleString('da-DK') + ' kr.' : '–', '')}
+        ${card('Anmeldelser', reviews.length, `Gns. ${avgRating} ★`)}
+      </div>
+      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">Aktive annoncer pr. type</h3>
+      <div>${typeRows}</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:22px;">
+        <div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">🔍 Mest søgte</h3>
+          ${topSearches.length ? topSearches.map(r => searchRow(r)).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen søgninger logget endnu.</p>'}
+        </div>
+        <div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">⚠️ Søgt — 0 resultater</h3>
+          <p style="font-size:0.76rem;color:var(--muted);margin:0 0 6px;">Umødt efterspørgsel — cykler folk leder efter, men ikke finder.</p>
+          ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
+        </div>
+      </div>
+      <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger logges anonymt (uden bruger-id).</p>
+    `;
+  } catch (e) {
+    console.error('loadAdminStats fejl:', e);
+    el.innerHTML = retryHTML('Kunne ikke hente statistik.', 'loadAdminStats');
+  }
+}
+
 let _inviteFormInited = false;
 function initInviteForm() {
   if (_inviteFormInited) return;
@@ -3033,6 +3135,7 @@ async function submitDealerInvite() {
 }
 
 window.submitDealerInvite   = submitDealerInvite;
+window.loadAdminStats       = loadAdminStats;
 window.updateVerifyUI       = updateVerifyUI;
 window.approveId          = approveId;
 window.rejectId           = rejectId;
