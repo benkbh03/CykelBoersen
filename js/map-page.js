@@ -683,6 +683,12 @@ export function createMapPage({
     let _initialMoveDone = false;
     const _showSearchAreaBtn = () => {
       if (!_initialMoveDone) { _initialMoveDone = true; return; } // skip initial fitBounds
+      // Spring auto-gensøgning over hvis en popup eller annonce-modal er åben:
+      // moveend her stammer fra openPopup's autoPan (marker-klik), ikke fra at
+      // brugeren panorerer for at søge. Ellers re-renderer vi og lukker det
+      // brugeren lige åbnede (symptom: skal klikke 2 gange).
+      if (document.querySelector('.leaflet-popup') ||
+          document.getElementById('bike-modal')?.classList.contains('open')) return;
       const btn = document.getElementById('map-search-area-btn');
       if (!btn) return;
       // Hvis filter allerede er aktivt: re-apply automatisk + skjul knap
