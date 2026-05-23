@@ -2640,7 +2640,7 @@ const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport }),
+  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport, initInviteForm }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -2950,6 +2950,21 @@ async function rejectId(userId) {
   supabase.functions.invoke('notify-message', {
     body: { type: 'id_rejected', user_id: userId },
   }).catch(() => {});
+}
+
+let _inviteFormInited = false;
+function initInviteForm() {
+  if (_inviteFormInited) return;
+  const cityInput    = document.getElementById('di-city');
+  const addressInput = document.getElementById('di-address');
+  if (!cityInput || !addressInput) return;
+  // Samme DAWA-autocomplete som resten af appen → præcis, standardiseret adresse
+  // (kortet geokoder adresse-strengen ved visning, ligesom for andre forhandlere).
+  attachAddressAutocomplete(addressInput, (picked) => {
+    if (picked.city) cityInput.value = picked.city;
+  });
+  attachCityAutocomplete(cityInput);
+  _inviteFormInited = true;
 }
 
 async function submitDealerInvite() {
