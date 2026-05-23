@@ -680,7 +680,7 @@ export function createSellPage({
 
       <button type="button" id="sell-advanced-toggle" class="sell-advanced-toggle" onclick="toggleAdvancedSpecs()" aria-expanded="false">
         <span class="sell-advanced-icon">▸</span>
-        <span class="sell-advanced-label" id="sell-advanced-label">Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB og gravel — købere filtrerer på gear, bremser og vægt)</span></span>
+        <span class="sell-advanced-label" id="sell-advanced-label">Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB, gravel og el-cykler — købere filtrerer på dem)</span></span>
       </button>
 
       <div id="sell-advanced-section" class="sell-advanced-section" style="display:none;">
@@ -1126,7 +1126,7 @@ export function createSellPage({
       } else if (currentType && _PERF_TYPES.includes(currentType)) {
         label.innerHTML = 'Tekniske detaljer <span class="hint">(gear, bremser og vægt — købere filtrerer på dem)</span>';
       } else {
-        label.innerHTML = 'Tekniske detaljer <span class="hint">(valgfrit)</span>';
+        label.innerHTML = 'Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB, gravel og el-cykler — købere filtrerer på dem)</span>';
       }
     }
 
