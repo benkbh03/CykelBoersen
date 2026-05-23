@@ -35,6 +35,12 @@ import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
 
+// Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
+// supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
+// Ellers er window.location.hash typisk tom når init() senere læser den, og
+// signup/invite-flowet (der ikke har et dedikeret auth-event som recovery) misses.
+const _initialAuthType = new URLSearchParams(window.location.hash.slice(1)).get('type');
+
 /* ============================================================
    LAZY MODULE LOADER
    ============================================================
@@ -1067,9 +1073,10 @@ async function init() {
     setTimeout(() => switchAdminTab(target), 100);
   }
 
-  // Håndter email-bekræftelse og password reset (Supabase sætter type i hash)
-  const hashParams = new URLSearchParams(window.location.hash.slice(1));
-  if (hashParams.get('type') === 'signup') {
+  // Håndter email-bekræftelse, invitation og password reset. Vi bruger den TIDLIGT
+  // fangede _initialAuthType (ikke window.location.hash, som supabase-js kan have nået
+  // at rydde async, så signup/invite ellers blev misset).
+  if (_initialAuthType === 'signup') {
     history.replaceState(null, '', window.location.pathname);
     dismissEmailBanner();
     localStorage.removeItem('_pending_dealer');
@@ -1096,9 +1103,9 @@ async function init() {
         import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
       }
     }
-  } else if (hashParams.get('type') === 'recovery' || hashParams.get('type') === 'invite') {
+  } else if (_initialAuthType === 'recovery' || _initialAuthType === 'invite') {
     history.replaceState(null, '', window.location.pathname);
-    if (hashParams.get('type') === 'invite') {
+    if (_initialAuthType === 'invite') {
       showToast('👋 Velkommen! Vælg en adgangskode for at aktivere din konto.');
     }
     document.getElementById('reset-modal').classList.add('open');
@@ -1141,7 +1148,7 @@ async function init() {
   }
 
   // Pathname routing: håndter initial route (køres efter Supabase hash-params er tjekket)
-  if (!_initHash.includes('type=signup') && !_initHash.includes('type=recovery') && !_initHash.includes('type=invite')) {
+  if (_initialAuthType !== 'signup' && _initialAuthType !== 'recovery' && _initialAuthType !== 'invite') {
     handleRoute();
   }
 
