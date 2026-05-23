@@ -1105,10 +1105,17 @@ async function init() {
     }
   } else if (_initialAuthType === 'recovery' || _initialAuthType === 'invite') {
     history.replaceState(null, '', window.location.pathname);
+    const resetModal = document.getElementById('reset-modal');
+    const resetClose = resetModal.querySelector('.modal-close');
     if (_initialAuthType === 'invite') {
       showToast('👋 Velkommen! Vælg en adgangskode for at aktivere din konto.');
+      // Inviteret bruger har INGEN adgangskode endnu — gør det obligatorisk:
+      // skjul luk-knappen (modalen kan i forvejen ikke lukkes via Escape/klik-udenfor).
+      if (resetClose) resetClose.style.display = 'none';
+    } else if (resetClose) {
+      resetClose.style.display = '';
     }
-    document.getElementById('reset-modal').classList.add('open');
+    resetModal.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
