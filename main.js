@@ -1042,8 +1042,11 @@ async function init() {
       _refreshInProgress = true;
       _lastRefreshTime = now;
       try {
-        const { data, error } = await supabase.auth.getSession();
-        loadBikes();
+        // Refresh kun sessionen (usynligt) + last_seen ved fane-skift.
+        // IKKE loadBikes() — det genindlæste hele annonce-grid'et og nulstillede
+        // scroll/paginering hver gang man kort tabbede væk og tilbage. Unødvendigt
+        // forstyrrende på en lav-trafik-side; brugeren kan refreshe manuelt.
+        await supabase.auth.getSession();
         // Opdater last_seen når brugeren vender tilbage til fanen
         if (currentUser) {
           supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id).then(() => {}, (err) => {});
