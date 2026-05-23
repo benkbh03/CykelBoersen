@@ -70,6 +70,24 @@ export function createBikesList({
     } catch (e) {}
   }
 
+  // Log fritekst-søgninger (anonymt) til search_logs, så admin kan se hvad folk
+  // leder efter — især nul-resultat-søgninger = umødt efterspørgsel. Dedupéres så
+  // samme søgning ikke logges flere gange i træk (fx ved re-render).
+  let _lastLoggedSearch = '';
+  function logSearch(term, type, city, count) {
+    const q = (term || '').trim();
+    if (!q) return;
+    const key = q.toLowerCase() + '|' + (type || '') + '|' + (city || '');
+    if (key === _lastLoggedSearch) return;
+    _lastLoggedSearch = key;
+    supabase.from('search_logs').insert({
+      query: q.slice(0, 100),
+      type: type || null,
+      city: city || null,
+      result_count: count,
+    }).then(() => {}, () => {}); // fire-and-forget
+  }
+
   async function loadBikes(filters = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
@@ -145,6 +163,8 @@ export function createBikesList({
     const data = filters.sellerType
       ? rawData.filter(b => b.profiles?.seller_type === filters.sellerType)
       : rawData;
+
+    if (!append && filters.search) logSearch(filters.search, filters.type, filters.city, data.length);
 
     const bikeIds = data.map(b => b.id);
     let saveCounts = {};

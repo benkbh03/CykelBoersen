@@ -2995,14 +2995,16 @@ async function loadAdminStats() {
   el.innerHTML = '<p style="color:var(--muted)">Indlæser statistik…</p>';
   try {
     const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-    const [profRes, bikeRes, revRes] = await Promise.all([
+    const [profRes, bikeRes, revRes, searchRes] = await Promise.all([
       supabase.from('profiles').select('seller_type, verified, created_at'),
       supabase.from('bikes').select('type, price, is_active, sold_via, views, created_at'),
       supabase.from('reviews').select('rating'),
+      supabase.from('search_logs').select('query, result_count').order('created_at', { ascending: false }).limit(2000),
     ]);
     const profiles = profRes.data || [];
     const bikes    = bikeRes.data || [];
     const reviews  = revRes.data || [];
+    const searches = searchRes.data || [];
 
     const dealers   = profiles.filter(p => p.seller_type === 'dealer');
     const verified  = dealers.filter(p => p.verified).length;
@@ -3024,6 +3026,22 @@ async function loadAdminStats() {
     const avgRating = reviews.length
       ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1)
       : '–';
+
+    // Søge-statistik: top-søgninger + nul-resultat-søgninger (umødt efterspørgsel)
+    const allCounts = {}, zeroCounts = {};
+    searches.forEach(s => {
+      const q = (s.query || '').trim().toLowerCase();
+      if (!q) return;
+      allCounts[q] = (allCounts[q] || 0) + 1;
+      if ((s.result_count ?? 0) === 0) zeroCounts[q] = (zeroCounts[q] || 0) + 1;
+    });
+    const topSearches = Object.entries(allCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const topZero     = Object.entries(zeroCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const searchRow = ([q, n], accent) => `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;">
+        <span style="color:${accent || 'var(--charcoal)'};">${esc(q)}</span>
+        <span style="color:var(--muted);font-weight:600;">${n}×</span>
+      </div>`;
 
     const card = (label, value, sub) => `
       <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
@@ -3053,7 +3071,19 @@ async function loadAdminStats() {
       </div>
       <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">Aktive annoncer pr. type</h3>
       <div>${typeRows}</div>
-      <p style="font-size:0.74rem;color:var(--muted);margin-top:14px;">Beregnet live fra databasen. Søge-statistik (hvad folk leder efter) kræver et separat logging-system — sig til hvis du vil have det.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:22px;">
+        <div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">🔍 Mest søgte</h3>
+          ${topSearches.length ? topSearches.map(r => searchRow(r)).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen søgninger logget endnu.</p>'}
+        </div>
+        <div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">⚠️ Søgt — 0 resultater</h3>
+          <p style="font-size:0.76rem;color:var(--muted);margin:0 0 6px;">Umødt efterspørgsel — cykler folk leder efter, men ikke finder.</p>
+          ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
+        </div>
+      </div>
+      <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger logges anonymt (uden bruger-id).</p>
     `;
   } catch (e) {
     console.error('loadAdminStats fejl:', e);
