@@ -103,6 +103,8 @@ export function createSellPage({
     'Shimano 105 Di2', 'Shimano Ultegra Di2', 'Shimano Dura-Ace Di2',
     'SRAM Apex', 'SRAM Rival', 'SRAM Force', 'SRAM Red',
     'SRAM Rival AXS', 'SRAM Force AXS', 'SRAM Red AXS',
+    'Shimano GRX 400', 'Shimano GRX 600', 'Shimano GRX 800', 'Shimano GRX Di2',
+    'SRAM Apex XPLR', 'SRAM Rival XPLR', 'SRAM Force XPLR',
     'Campagnolo Centaur', 'Campagnolo Chorus', 'Campagnolo Record', 'Campagnolo Super Record',
     'Shimano Altus', 'Shimano Acera', 'Shimano Alivio', 'Shimano Deore',
     'Shimano SLX', 'Shimano Deore XT', 'Shimano XTR',
