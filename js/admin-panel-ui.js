@@ -11,7 +11,7 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadI
   }
 
   function switchAdminTab(tab) {
-    const panels = ['applications', 'users', 'id', 'bulk-import'];
+    const panels = ['applications', 'users', 'id', 'bulk-import', 'invite'];
     for (const t of panels) {
       const panel = document.getElementById('admin-' + t);
       const tabBtn = document.getElementById('atab-' + t);

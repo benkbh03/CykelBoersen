@@ -781,6 +781,7 @@
           <button class="profile-tab" id="atab-users" onclick="switchAdminTab('users')">Alle brugere</button>
           <button class="profile-tab" id="atab-id" onclick="switchAdminTab('id')">ID ansøgninger</button>
           <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
+          <button class="profile-tab" id="atab-invite" onclick="switchAdminTab('invite')">➕ Invitér forhandler</button>
         </div>
         <div id="admin-applications">
           <div id="admin-applications-list">
@@ -799,6 +800,19 @@
         </div>
         <div id="admin-bulk-import" style="display:none;">
           <p style="color:var(--muted)">Indlæser…</p>
+        </div>
+        <div id="admin-invite" style="display:none;">
+          <p style="color:var(--muted);font-size:0.9rem;margin:0 0 16px;line-height:1.5;">
+            Opret en forhandler uden at kende deres adgangskode. De får en mail hvor de
+            <strong>selv vælger password</strong> — du sætter resten op (logo/cykler via bulk-import).
+          </p>
+          <div class="form-group"><label>Email *</label><input type="email" id="di-email" placeholder="forhandler@eksempel.dk"></div>
+          <div class="form-group"><label>Butiksnavn</label><input type="text" id="di-shop" placeholder="f.eks. Lindebjerg Cykler"></div>
+          <div class="form-group"><label>Kontaktperson</label><input type="text" id="di-contact" placeholder="f.eks. Anders"></div>
+          <div class="form-group"><label>By</label><input type="text" id="di-city" placeholder="f.eks. Odense"></div>
+          <div class="form-group"><label>Adresse</label><input type="text" id="di-address" placeholder="Vej + nr."></div>
+          <button id="di-submit" class="form-submit" onclick="submitDealerInvite()">Send invitation</button>
+          <div id="di-result" style="margin-top:14px;font-size:0.9rem;line-height:1.5;"></div>
         </div>
       </div>
     </div>
