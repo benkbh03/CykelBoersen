@@ -683,6 +683,12 @@ export function createMapPage({
     let _initialMoveDone = false;
     const _showSearchAreaBtn = () => {
       if (!_initialMoveDone) { _initialMoveDone = true; return; } // skip initial fitBounds
+      // Spring auto-gensøgning over hvis en popup eller annonce-modal er åben:
+      // moveend her stammer fra openPopup's autoPan (marker-klik), ikke fra at
+      // brugeren panorerer for at søge. Ellers re-renderer vi og lukker det
+      // brugeren lige åbnede (symptom: skal klikke 2 gange).
+      if (document.querySelector('.leaflet-popup') ||
+          document.getElementById('bike-modal')?.classList.contains('open')) return;
       const btn = document.getElementById('map-search-area-btn');
       if (!btn) return;
       // Hvis filter allerede er aktivt: re-apply automatisk + skjul knap
@@ -700,6 +706,20 @@ export function createMapPage({
     };
     _mapBoundsDebounced = debounce(_showSearchAreaBtn, 280);
     splitMapInstance.on('moveend', _mapBoundsDebounced);
+
+    // Skjul "Søg dette område"-knappen mens en popup er åben (de overlappede
+    // visuelt i toppen). Gendan knappens tidligere tilstand når popup'en lukkes.
+    let _searchBtnWasVisible = false;
+    splitMapInstance.on('popupopen', function() {
+      const btn = document.getElementById('map-search-area-btn');
+      if (!btn) return;
+      _searchBtnWasVisible = btn.style.display !== 'none';
+      btn.style.display = 'none';
+    });
+    splitMapInstance.on('popupclose', function() {
+      const btn = document.getElementById('map-search-area-btn');
+      if (btn && _searchBtnWasVisible) btn.style.display = 'inline-flex';
+    });
     splitMarkerMap = {};
     _mapPageGeocoded = new Map();
 
