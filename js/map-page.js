@@ -10,6 +10,8 @@ const MAP_FILTER_WHEELS = ['26"', '27.5" / 650b', '28"', '29"'];
 const MAP_FILTER_FRAME = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const MAP_FILTER_BRAKES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
 const MAP_FILTER_GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'Shimano Deore', 'Shimano XT'];
+const MAP_FILTER_MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
+const MAP_FILTER_MOTOR_POS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
 const MAP_FILTER_COLORS = ['Sort', 'Hvid', 'Grå', 'Sølv', 'Rød', 'Blå', 'Grøn', 'Gul', 'Orange', 'Lyserød', 'Lilla', 'Brun', 'Beige'];
 const MAP_FILTER_BRANDS = [
   'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton',
@@ -72,6 +74,7 @@ export function createMapPage({
     brand: new Set(), size: new Set(), wheel_size: new Set(), color: new Set(),
     frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
     groupset: new Set(), weight_max: null,
+    motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
   };
 
   /* ── setView ────────────────────────────────────────────── */
@@ -324,7 +327,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
@@ -386,6 +389,11 @@ export function createMapPage({
       }
       if (adv.groupset.size && !adv.groupset.has(b.groupset)) return false;
       if (adv.weight_max != null && (b.weight_kg == null || b.weight_kg > adv.weight_max)) return false;
+      // El-cykel: motor-mærke som prefix (fx "Bosch" matcher "Bosch Performance Line CX")
+      if (adv.motor.size && !(b.motor && [...adv.motor].some(m => b.motor.toLowerCase().startsWith(m.toLowerCase())))) return false;
+      if (adv.motor_position.size && !adv.motor_position.has(b.motor_position)) return false;
+      if (adv.battery_min != null && (b.battery_wh == null || b.battery_wh < adv.battery_min)) return false;
+      if (adv.battery_max != null && (b.battery_wh == null || b.battery_wh > adv.battery_max)) return false;
       if (f.nearCoords && f.radius && _mapPageGeocoded) {
         const g = _mapPageGeocoded.get(b.id);
         if (!g) return false;
@@ -417,7 +425,9 @@ export function createMapPage({
     const adv = _mapAdvFilters;
     n += adv.brand.size + adv.size.size + adv.wheel_size.size + adv.color.size
        + adv.frame_material.size + adv.brake_type.size + adv.electronic_shifting.size
-       + adv.groupset.size + (adv.weight_max != null ? 1 : 0);
+       + adv.groupset.size + (adv.weight_max != null ? 1 : 0)
+       + adv.motor.size + adv.motor_position.size
+       + (adv.battery_min != null ? 1 : 0) + (adv.battery_max != null ? 1 : 0);
 
     // Opdater alle badge-elementer (mobil-chip + desktop "Flere filtre"-knap)
     ['map-filter-badge', 'map-filter-badge-desktop'].forEach(id => {
@@ -509,6 +519,7 @@ export function createMapPage({
       brand: new Set(), size: new Set(), wheel_size: new Set(), color: new Set(),
       frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
       groupset: new Set(), weight_max: null,
+      motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
     };
     resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
     resetMapDd('dd-bike-type',   '',    'Alle typer');
@@ -1092,6 +1103,8 @@ export function createMapPage({
       { key:'frame_material', title:'Stelmateriale',  vals:MAP_FILTER_FRAME },
       { key:'brake_type',     title:'Bremser',        vals:MAP_FILTER_BRAKES },
       { key:'groupset',       title:'Komponentgruppe',vals:MAP_FILTER_GROUPSETS },
+      { key:'motor',          title:'Motor (el-cykel)',vals:MAP_FILTER_MOTORS },
+      { key:'motor_position', title:'Motor-placering', vals:MAP_FILTER_MOTOR_POS },
     ];
 
     let html = singleGroups.map(g => {
@@ -1148,6 +1161,14 @@ export function createMapPage({
       + '<span class="msf-price-unit">kg</span>'
       + '</div></div>';
 
+    // Batteri (Wh, el-cykel) — vis altid
+    html += '<div class="msf-group"><div class="msf-group-title">BATTERI (WH)</div><div class="msf-price">'
+      + '<input type="number" id="msf-battery-min" placeholder="Min Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_min != null ? _mapAdvFilters.battery_min : '') + '">'
+      + '<span class="msf-price-sep">—</span>'
+      + '<input type="number" id="msf-battery-max" placeholder="Max Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_max != null ? _mapAdvFilters.battery_max : '') + '">'
+      + '<span class="msf-price-unit">Wh</span>'
+      + '</div></div>';
+
     body.innerHTML = html;
 
     // Mærke-søgefelt: filtrér synlige brand-chips live
@@ -1201,6 +1222,19 @@ export function createMapPage({
     if (msfWeight) msfWeight.addEventListener('input', () => {
       const val = parseFloat(msfWeight.value);
       _mapAdvFilters.weight_max = (!isNaN(val) && val > 0) ? val : null;
+      applyMapFilters(); updateMapFilterBadge();
+    });
+
+    const msfBatMin = document.getElementById('msf-battery-min');
+    if (msfBatMin) msfBatMin.addEventListener('input', () => {
+      const val = parseInt(msfBatMin.value, 10);
+      _mapAdvFilters.battery_min = (!isNaN(val) && val > 0) ? val : null;
+      applyMapFilters(); updateMapFilterBadge();
+    });
+    const msfBatMax = document.getElementById('msf-battery-max');
+    if (msfBatMax) msfBatMax.addEventListener('input', () => {
+      const val = parseInt(msfBatMax.value, 10);
+      _mapAdvFilters.battery_max = (!isNaN(val) && val > 0) ? val : null;
       applyMapFilters(); updateMapFilterBadge();
     });
 
