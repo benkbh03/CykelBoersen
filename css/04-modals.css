@@ -189,6 +189,9 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 
 /* Rapport-modal skal ligge over cykel-modalen */
 #report-modal { z-index: 3000; }
+
+/* Slet-konto-bekræftelse åbnes oven på Min profil-modalen (z 1500) — skal ligge øverst */
+#delete-account-modal { z-index: 3500; }
 .modal {
   background: var(--cream); border-radius: 16px;
   max-width: 600px; width: 100%;
