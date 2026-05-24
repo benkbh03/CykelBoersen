@@ -50,6 +50,37 @@ Brugeren bruger **IKKE terminal/kommandolinje**. Giv altid GUI-baserede instrukt
 
 Hvis et problem virkelig kræver terminal, sig det eksplicit og foreslå en GUI-vej hvis muligt.
 
+## Deploy-tjekliste (manuel) — VIGTIGT for hver ændring
+
+**Git push / merge deployer KUN frontend** (HTML/CSS/JS via GitHub Pages). Det
+deployer IKKE database-ændringer eller edge functions — de skal køres MANUELT i
+Supabase Dashboard. Derfor:
+
+> **REGEL: Hver gang en ændring rører `supabase/sql/*.sql` eller
+> `supabase/functions/*/index.ts`, SKAL svaret afsluttes med en "Deploy-tjekliste"
+> der lister de præcise filer + trin. Ellers tror brugeren ændringen er live, men
+> den er kun i koden.**
+
+Deploy-tjeklisten skal altid have tre dele (udelad dem der ikke er relevante):
+
+1. **SQL** (hvis `supabase/sql/` rørt): "Kopiér indholdet af `supabase/sql/<fil>.sql`
+   → Supabase Dashboard → SQL Editor → Run." Indsæt SQL'en inline i svaret så den er
+   nem at kopiere. Alle migrationer er idempotente (`IF NOT EXISTS`) = sikre at køre igen.
+2. **Edge functions** (hvis `supabase/functions/` rørt): list hvilke functions + 
+   "Supabase Dashboard → Edge Functions → vælg function → indsæt HELE filens indhold → Deploy."
+   Tilbyd at indsætte den komplette aktuelle fil (brugeren copy-paster hele indholdet —
+   giv aldrig kun en diff medmindre brugeren bekræfter at den forrige version er deployet).
+3. **Merge + hard-refresh**: github.com/benkbh03/CykelBoersen → Compare & pull request →
+   Merge → Ctrl+Shift+R.
+
+**Edge functions der findes (alle kræver manuel deploy):** `notify-message`,
+`notify-saved-searches`, `delete-account`, `chat-support`, `suggest-listing`,
+`admin-create-bike`, `admin-invite-dealer`, samt DORMANT Stripe-functions.
+`notify-message` skal have "Verify JWT" **slået fra** (anonyme kontaktformularer).
+
+**SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
+(fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
+
 ## Kodestil og filstruktur
 
 Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide eksisterende filer. Filer bør holdes under ~400 linjer. Eksportér funktioner og importér dem i `main.js` (eller den relevante modul). Husk at eksportere nye `onclick`-handlere til `window` i `main.js`.
