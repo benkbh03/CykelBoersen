@@ -154,7 +154,10 @@ export function createFilters({
       <div class="afb-pills">
         ${pills.map(p => `<span class="afb-pill">${esc(p.label)}<button class="afb-pill-remove" onclick="removeFilterPill('${p.type}','${(p.value || '').replace(/'/g, "\\'")}')">✕</button></span>`).join('')}
       </div>
-      <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
+      <div class="afb-actions">
+        <button class="afb-save-agent" onclick="saveCurrentSearch()" title="Få besked på e-mail når nye cykler matcher netop disse filtre">🔔 Opret Cykelagent</button>
+        <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
+      </div>
     `;
     updateMobileFilterCount(pills.length);
   }
