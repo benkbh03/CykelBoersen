@@ -1985,21 +1985,24 @@ function closeMobileFilters() {
   document.body.classList.remove('mobile-filters-open');
 }
 
+function sellerToggle(el) {
+  const all     = document.querySelector('[data-filter="seller"][data-value="all"]');
+  const dealer  = document.querySelector('[data-filter="seller"][data-value="dealer"]');
+  const priv    = document.querySelector('[data-filter="seller"][data-value="private"]');
+  if (el === all) {
+    if (all.checked) { if (dealer) dealer.checked = false; if (priv) priv.checked = false; }
+    else { all.checked = true; }
+  } else {
+    if (el.checked && all) all.checked = false;
+    if (!dealer?.checked && !priv?.checked && all) all.checked = true;
+  }
+  applyFilters();
+}
+
 function applyFilters() {
-  // Sælgertype — hvis "alle" er checket, ignorer de andre
   const sellerAll     = document.querySelector('[data-filter="seller"][data-value="all"]');
   const sellerDealer  = document.querySelector('[data-filter="seller"][data-value="dealer"]');
   const sellerPrivate = document.querySelector('[data-filter="seller"][data-value="private"]');
-
-  // Hvis "Alle sælgere" klikkes på, fjern de andre
-  if (sellerAll?.checked) {
-    if (sellerDealer)  sellerDealer.checked  = false;
-    if (sellerPrivate) sellerPrivate.checked = false;
-  }
-  // Hvis en specifik sælger vælges, fjern "alle"
-  if ((sellerDealer?.checked || sellerPrivate?.checked) && sellerAll?.checked) {
-    sellerAll.checked = false;
-  }
 
   // Saml valgte typer
   const types = [...document.querySelectorAll('[data-filter="type"]:checked')]
@@ -2497,6 +2500,7 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.sellerToggle           = sellerToggle;
 window.setMaxWeight = function(kg) {
   const input = document.getElementById('sidebar-max-weight');
   if (!input) return;
