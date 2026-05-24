@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113fm">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113fm">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113fo">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113fo">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -645,7 +645,6 @@
         <div class="filter-group sidebar-section-body">
           <label class="filter-option"><input type="checkbox" data-filter="suspension" data-value="Forgaffel (hardtail)" onchange="applyFilters()"> Forgaffel (hardtail) <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="suspension" data-value="Fuld affjedring (fully)" onchange="applyFilters()"> Fuld affjedring (fully) <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="suspension" data-value="Ingen (stiv)" onchange="applyFilters()"> Ingen (stiv) <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box collapsed">
@@ -662,6 +661,10 @@
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Red" onchange="applyFilters()"> SRAM Red <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano GRX" onchange="applyFilters()"> Shimano GRX (gravel) <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Apex" onchange="applyFilters()"> SRAM Apex (gravel) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Rival XPLR" onchange="applyFilters()"> SRAM Rival XPLR (gravel) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Force XPLR" onchange="applyFilters()"> SRAM Force XPLR (gravel) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Red XPLR" onchange="applyFilters()"> SRAM Red XPLR (gravel) <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Campagnolo Ekar" onchange="applyFilters()"> Campagnolo Ekar (gravel) <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Deore" onchange="applyFilters()"> Shimano Deore (MTB) <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano XT" onchange="applyFilters()"> Shimano XT (MTB) <span class="filter-count">–</span></label>
         </div>
@@ -925,7 +928,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20261113fm';
+    const V = '20261113fo';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

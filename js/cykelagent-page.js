@@ -14,12 +14,12 @@ const SIZES      = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (5
 const WHEELS     = ['26"', '27.5" / 650b', '28"', '29"'];
 const FRAME_MATERIALS = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const BRAKE_TYPES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
-const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'Shimano Deore', 'Shimano XT'];
+const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'SRAM Rival XPLR', 'SRAM Force XPLR', 'SRAM Red XPLR', 'Campagnolo Ekar', 'Shimano Deore', 'Shimano XT'];
 // El-cykel: motor-mærke matches som prefix (bike.motor starter med fx "Bosch ...").
 // Samme værdier som sidebar-filteret i index.html.
 const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
 const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
-const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)', 'Ingen (stiv)'];
+const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
 
 export function createCykelagentPage({
   supabase,
