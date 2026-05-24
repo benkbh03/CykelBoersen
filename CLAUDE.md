@@ -272,7 +272,7 @@ spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs 
 - Motor-mærker: `Bosch, Shimano, Promovec, Yamaha, Bafang, Mahle` (matches som **prefix** — `bike.motor` starter med mærket)
 - Motor-placering: `Midtermotor, Forhjulsmotor, Baghjulsmotor` (eksakt)
 - Groupset: `Shimano 105, Shimano Ultegra, Shimano Dura-Ace, SRAM Rival, SRAM Force, SRAM Red, Shimano GRX, SRAM Apex, Shimano Deore, Shimano XT` (matches som **prefix**)
-- Affjedring: `Forgaffel (hardtail), Fuld affjedring (fully), Ingen (stiv)` (eksakt; vises for Mountainbike/Gravel/El-cykel)
+- Affjedring: `Forgaffel (hardtail), Fuld affjedring (fully)` (eksakt; vises for Mountainbike/Gravel/El-cykel. Stiv cykel = felt tomt)
 
 **Tjekliste — et nyt filter skal tilføjes i ALLE disse:**
 1. **DB**: kolonne + index via `supabase/sql/*.sql` (kør i Dashboard)

@@ -102,7 +102,7 @@ export function createSellPage({
   // Cykeltyper hvor affjedring giver mening (hardtail/fully)
   const _SUSPENSION_TYPES = ['Mountainbike', 'Gravel', 'El-cykel'];
   // Kanonisk affjedrings-liste — skal matche filter/kort/Cykelagent (eksakt match)
-  const _SUSPENSION_OPTS = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)', 'Ingen (stiv)'];
+  const _SUSPENSION_OPTS = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
 
   // Gængse el-cykel motor-mærker (Promovec er dansk-udbredt)
   const _MOTORS_HINT = [

@@ -19,7 +19,7 @@ const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM R
 // Samme værdier som sidebar-filteret i index.html.
 const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
 const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
-const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)', 'Ingen (stiv)'];
+const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
 
 export function createCykelagentPage({
   supabase,
