@@ -47,7 +47,7 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113fp">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261113fq">
   <link rel="stylesheet" href="/css/02-listings.css?v=20261113fp">
   <link rel="stylesheet" href="/css/03-profiles.css?v=20261113fp">
   <link rel="stylesheet" href="/css/04-modals.css?v=20261113fp">
@@ -549,9 +549,9 @@
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
         <div class="filter-group sidebar-section-body">
-          <label class="filter-option filter-option--full"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="applyFilters()"> Alle sælgere <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="applyFilters()"> 👤 Private <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="applyFilters()"> 🏪 Forhandlere <span class="filter-count">–</span></label>
+          <label class="filter-option filter-option--full"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="sellerToggle(this)"> Alle sælgere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="sellerToggle(this)"> 👤 Private <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="sellerToggle(this)"> 🏪 Forhandlere <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box collapsed">

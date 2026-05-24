@@ -35,7 +35,6 @@ export function renderColorSwatches(container, { selected = [], filterAttr = nul
         <input type="checkbox" ${filterAttrHtml} value="${c.name}" ${isOn ? 'checked' : ''}>
         <span class="color-swatch-dot" style="background:${c.hex};"></span>
         <span class="color-swatch-label">${c.name}</span>
-        <span class="filter-count">–</span>
       </label>
     `;
   }).join('');
