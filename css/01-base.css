@@ -633,6 +633,9 @@ nav {
   justify-content: center;
   text-align: center;
 }
+.filter-group .filter-option--full {
+  flex: 1 1 100%;
+}
 /* "Gem din søgning" card */
 .sidebar-save-card {
   background: var(--forest); border-radius: 12px;
