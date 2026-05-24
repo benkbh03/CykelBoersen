@@ -110,6 +110,15 @@
   white-space: nowrap; transition: border-color 0.15s, color 0.15s;
 }
 .afb-clear-all:hover { border-color: var(--rust); color: var(--rust); }
+.afb-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+.afb-save-agent {
+  flex-shrink: 0; background: var(--rust); border: 1.5px solid var(--rust);
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 0.78rem; font-weight: 700; color: #fff;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  white-space: nowrap; transition: background 0.15s, border-color 0.15s;
+}
+.afb-save-agent:hover { background: #a63f1f; border-color: #a63f1f; }
 
 /* ── POPULÆRE SØGNINGER chips (SEO landing) ── */
 .popular-searches {
