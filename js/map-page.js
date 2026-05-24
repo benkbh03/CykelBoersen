@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { bikeTitle } from './utils.js';
+import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
 const MAP_FILTER_SIZES = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
@@ -1117,7 +1118,7 @@ export function createMapPage({
         + '</div></div>';
     }).join('');
 
-    // Pris
+    // Pris (altid synlig — primært filter)
     html += '<div class="msf-group"><div class="msf-group-title">PRIS</div><div class="msf-price">'
       + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
       + '<span class="msf-price-sep">—</span>'
@@ -1125,49 +1126,63 @@ export function createMapPage({
       + '<span class="msf-price-unit">kr.</span>'
       + '</div></div>';
 
-    // Mærke — egen gruppe med søgefelt (99 muligheder)
-    html += '<div class="msf-group"><div class="msf-group-title">MÆRKE</div>'
-      + '<input type="search" id="msf-brand-search" class="msf-search" placeholder="Søg mærke…" autocomplete="off">'
+    // ── Avancerede filtre i kollapsible sektioner ──
+    // Mindre visuel støj: hver gruppe er foldet sammen som standard og åbner
+    // kun hvis den har aktive valg. Tæller-badge viser antal valgte.
+    const COLOR_HEX = Object.fromEntries(BIKE_COLORS.map(c => [c.name, c.hex]));
+    const acc = (title, inner, count) =>
+      '<details class="msf-acc"' + (count ? ' open' : '') + '>'
+      + '<summary class="msf-acc-head"><span class="msf-acc-title">' + esc(title) + '</span>'
+      + (count ? '<span class="msf-acc-count">' + count + '</span>' : '')
+      + '<svg class="msf-acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>'
+      + '</summary><div class="msf-acc-body">' + inner + '</div></details>';
+
+    // Multi-select chips for en advGroup. Farve-gruppen får farve-swatch.
+    const advChips = (key, vals) => '<div class="msf-opts">' + vals.map(v => {
+      const active = _mapAdvFilters[key].has(v);
+      if (key === 'color') {
+        const hex = COLOR_HEX[v] || '#cccccc';
+        return '<button type="button" class="msf-opt msf-opt--multi msf-opt--color' + (active ? ' active' : '') + '" data-adv="color" data-v="' + esc(v) + '"><span class="msf-color-dot" style="background:' + hex + '"></span>' + esc(v) + '</button>';
+      }
+      return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="' + esc(key) + '" data-v="' + esc(v) + '">' + esc(v) + '</button>';
+    }).join('') + '</div>';
+
+    // Mærke — søgefelt + chips (99 muligheder)
+    const brandInner = '<input type="search" id="msf-brand-search" class="msf-search" placeholder="Søg mærke…" autocomplete="off">'
       + '<div class="msf-opts" id="msf-brand-opts">'
       + MAP_FILTER_BRANDS.map(v => {
           const active = _mapAdvFilters.brand.has(v);
           return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="brand" data-v="' + esc(v) + '">' + esc(v) + '</button>';
         }).join('')
-      + '</div></div>';
+      + '</div>';
+    html += acc('Mærke', brandInner, _mapAdvFilters.brand.size);
 
     // Avancerede multi-select grupper (fulde kanoniske lister)
     advGroups.forEach(g => {
-      html += '<div class="msf-group"><div class="msf-group-title">' + g.title.toUpperCase() + '</div><div class="msf-opts">'
-        + g.vals.map(v => {
-            const active = _mapAdvFilters[g.key].has(v);
-            return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="' + g.key + '" data-v="' + esc(v) + '">' + esc(v) + '</button>';
-          }).join('')
-        + '</div></div>';
+      html += acc(g.title, advChips(g.key, g.vals), _mapAdvFilters[g.key].size);
     });
 
-    // Gear-skifte (electronic_shifting) — vis altid
-    {
-      html += '<div class="msf-group"><div class="msf-group-title">GEAR-SKIFTE</div><div class="msf-opts">'
-        + [['true','Elektronisk'],['false','Mekanisk']].map(([v,label]) => {
-            const active = _mapAdvFilters.electronic_shifting.has(v);
-            return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="electronic_shifting" data-v="' + v + '">' + label + '</button>';
-          }).join('')
-        + '</div></div>';
-    }
+    // Gear-skifte (label ≠ value, derfor ikke advChips)
+    const gearInner = '<div class="msf-opts">'
+      + [['true','Elektronisk'],['false','Mekanisk']].map(([v,label]) => {
+          const active = _mapAdvFilters.electronic_shifting.has(v);
+          return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="electronic_shifting" data-v="' + v + '">' + label + '</button>';
+        }).join('')
+      + '</div>';
+    html += acc('Gear-skifte', gearInner, _mapAdvFilters.electronic_shifting.size);
 
-    // Vægt (max) — vis altid
-    html += '<div class="msf-group"><div class="msf-group-title">MAX VÆGT</div><div class="msf-price">'
-      + '<input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="' + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '">'
-      + '<span class="msf-price-unit">kg</span>'
-      + '</div></div>';
+    // Max vægt
+    const weightInner = '<div class="msf-price"><input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="'
+      + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '"><span class="msf-price-unit">kg</span></div>';
+    html += acc('Max vægt', weightInner, _mapAdvFilters.weight_max != null ? 1 : 0);
 
-    // Batteri (Wh, el-cykel) — vis altid
-    html += '<div class="msf-group"><div class="msf-group-title">BATTERI (WH)</div><div class="msf-price">'
+    // Batteri (Wh, el-cykel)
+    const batteryInner = '<div class="msf-price">'
       + '<input type="number" id="msf-battery-min" placeholder="Min Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_min != null ? _mapAdvFilters.battery_min : '') + '">'
       + '<span class="msf-price-sep">—</span>'
       + '<input type="number" id="msf-battery-max" placeholder="Max Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_max != null ? _mapAdvFilters.battery_max : '') + '">'
-      + '<span class="msf-price-unit">Wh</span>'
-      + '</div></div>';
+      + '<span class="msf-price-unit">Wh</span></div>';
+    html += acc('Batteri (Wh)', batteryInner, (_mapAdvFilters.battery_min != null || _mapAdvFilters.battery_max != null) ? 1 : 0);
 
     body.innerHTML = html;
 
