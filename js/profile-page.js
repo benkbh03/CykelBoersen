@@ -392,14 +392,12 @@ export function createProfilePage({
       // Ryd Supabase-session lokalt så den slettede konto ikke efterlader en død token
       Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
       Object.keys(sessionStorage).filter(k => k.startsWith('sb-')).forEach(k => sessionStorage.removeItem(k));
-      closeDeleteAccountModal();
-      closeProfileModal();
-      var adminBtn = document.getElementById('nav-admin');
-      if (adminBtn) adminBtn.style.display = 'none';
-      updateNav(false);
-      showToast('Din konto er slettet');
-      // Fuld redirect til forsiden — ellers står den nu-tomme /me-side tilbage bag modalen
-      setTimeout(() => { window.location.href = '/'; }, 1200);
+      // Behold modalen åben (den dækker hele siden) og redirect straks til forsiden.
+      // Lukker vi modalen først, blinker den nu-tomme /me-side frem bagved.
+      btn.textContent = '✓ Konto slettet';
+      btn.style.background = '#2A7D4F';
+      btn.style.color = '#fff';
+      setTimeout(() => { window.location.replace('/'); }, 600);
     } catch (err) {
       console.error('Sletning fejlede:', err);
       btn.disabled = false;
