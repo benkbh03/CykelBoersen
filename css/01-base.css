@@ -627,6 +627,12 @@ nav {
 .sidebar-section-body { padding: 0 18px 16px; }
 .sidebar-box.collapsed .sidebar-section-body { display: none; }
 .filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-group .filter-option {
+  flex: 1 1 calc(50% - 4px);
+  min-width: 0;
+  justify-content: center;
+  text-align: center;
+}
 /* "Gem din søgning" card */
 .sidebar-save-card {
   background: var(--forest); border-radius: 12px;
