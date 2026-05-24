@@ -626,7 +626,7 @@ nav {
 .sidebar-box.collapsed .sidebar-chevron { transform: rotate(-90deg); }
 .sidebar-section-body { padding: 0 18px 16px; }
 .sidebar-box.collapsed .sidebar-section-body { display: none; }
-.filter-group { display: flex; flex-direction: column; gap: 8px; }
+.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
 /* "Gem din søgning" card */
 .sidebar-save-card {
   background: var(--forest); border-radius: 12px;
@@ -648,12 +648,24 @@ nav {
   width: 100%;
 }
 .sidebar-save-card button:hover { background: var(--rust-light); }
+/* Filter-chips: checkbox skjult, label styles som pille — konsistent med
+   kort-sheet og Cykelagent. Logikken læser stadig input:checked. */
 .filter-option {
-  display: flex; align-items: center; gap: 10px;
-  cursor: pointer; font-size: 0.88rem; color: var(--charcoal); padding: 4px 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; font-size: 0.85rem; color: var(--charcoal);
+  background: var(--sand); border: 1.5px solid var(--border);
+  border-radius: 999px; padding: 7px 13px; user-select: none;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
-.filter-option input[type="checkbox"] { accent-color: var(--rust); width: 15px; height: 15px; cursor: pointer; }
-.filter-count { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
+.filter-option:hover { border-color: var(--rust); }
+.filter-option input[type="checkbox"] {
+  position: absolute; opacity: 0; width: 0; height: 0; margin: 0; pointer-events: none;
+}
+.filter-option:has(input:checked) {
+  background: var(--rust); border-color: var(--rust); color: #fff;
+}
+.filter-count { color: var(--muted); font-size: 0.74rem; }
+.filter-option:has(input:checked) .filter-count { color: rgba(255,255,255,0.82); }
 .brand-search-input {
   width: 100%; box-sizing: border-box;
   padding: 7px 10px; border: 1px solid var(--border);
