@@ -139,6 +139,7 @@ export function createFilters({
     if (args?.maxWeight) pills.push({ label: `Under ${String(args.maxWeight).replace('.', ',')} kg`, type: 'weight' });
     for (const m of (args?.motors || []))         pills.push({ label: `Motor: ${m}`, type: 'motor', value: m });
     for (const p of (args?.motorPositions || [])) pills.push({ label: p, type: 'motor_position', value: p });
+    for (const s of (args?.suspensions || []))    pills.push({ label: s, type: 'suspension', value: s });
     if (args?.batteryMin && args?.batteryMax) {
       pills.push({ label: `${args.batteryMin}–${args.batteryMax} Wh`, type: 'battery' });
     } else if (args?.batteryMin) {
@@ -257,6 +258,7 @@ export function createFilters({
       case 'electronic_shifting':
       case 'motor':
       case 'motor_position':
+      case 'suspension':
         document.querySelectorAll(`[data-filter="${type}"][data-value="${value}"]`).forEach(cb => cb.checked = false);
         applyFilters();
         break;

@@ -19,6 +19,7 @@ const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM R
 // Samme værdier som sidebar-filteret i index.html.
 const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
 const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
+const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)', 'Ingen (stiv)'];
 
 export function createCykelagentPage({
   supabase,
@@ -60,6 +61,8 @@ export function createCykelagentPage({
       motorPositions: [],
       batteryMin: null,
       batteryMax: null,
+      // Affjedring (MTB/gravel/el-MTB)
+      suspensions: [],
     };
   }
 
@@ -176,6 +179,7 @@ export function createCykelagentPage({
     if (f.batteryMin && f.batteryMax) chips.push(`🔋 ${f.batteryMin}–${f.batteryMax} Wh`);
     else if (f.batteryMin)            chips.push(`🔋 Fra ${f.batteryMin} Wh`);
     else if (f.batteryMax)            chips.push(`🔋 Op til ${f.batteryMax} Wh`);
+    if (Array.isArray(f.suspensions)) f.suspensions.forEach(s => chips.push('🚵 ' + esc(s)));
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -232,6 +236,7 @@ export function createCykelagentPage({
           motorPositions: Array.isArray(f.motorPositions) ? f.motorPositions : [],
           batteryMin:     f.batteryMin || null,
           batteryMax:     f.batteryMax || null,
+          suspensions:    Array.isArray(f.suspensions)    ? f.suspensions    : [],
         };
       }
     }
@@ -334,7 +339,7 @@ export function createCykelagentPage({
           </label>
         </div>
 
-        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax ? 'open' : ''}>
+        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length ? 'open' : ''}>
           <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs <span class="cykelagent-advanced-hint">(valgfrit — vi sender kun notifikation hvis cyklen har præcis disse specs)</span></summary>
 
           <div class="cykelagent-field">
@@ -393,6 +398,15 @@ export function createCykelagentPage({
             <div class="cykelagent-chips-row">
               ${MOTOR_POSITIONS.map(p => `
                 <button type="button" class="cykelagent-chip-btn${_form.motorPositions.includes(p) ? ' active' : ''}" onclick="toggleCykelagentArray('motorPositions', '${esc(p)}')">${esc(p)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Affjedring</label>
+            <div class="cykelagent-chips-row">
+              ${SUSPENSION.map(s => `
+                <button type="button" class="cykelagent-chip-btn${_form.suspensions.includes(s) ? ' active' : ''}" onclick="toggleCykelagentArray('suspensions', '${esc(s)}')">${esc(s)}</button>
               `).join('')}
             </div>
           </div>
@@ -471,7 +485,8 @@ export function createCykelagentPage({
       || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty
       || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length
       || _form.electronicShifting || _form.maxWeightKg
-      || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax;
+      || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax
+      || _form.suspensions.length;
     if (!hasFilter) {
       showToast('⚠️ Tilføj mindst ét filter til din Cykelagent');
       return;
@@ -501,6 +516,8 @@ export function createCykelagentPage({
       motorPositions: _form.motorPositions,
       batteryMin:     _form.batteryMin,
       batteryMax:     _form.batteryMax,
+      // Affjedring (strict-match i edge function)
+      suspensions:    _form.suspensions,
     };
 
     const currentUser = getCurrentUser();

@@ -135,6 +135,11 @@ function bikeMatchesSearch(bike, filters) {
     if (bike.battery_wh == null || Number(bike.battery_wh) > Number(filters.batteryMax)) return false;
   }
 
+  // Affjedring: eksakt match (Forgaffel/Fuld/Ingen)
+  if (Array.isArray(filters.suspensions) && filters.suspensions.length > 0) {
+    if (!bike.suspension || !filters.suspensions.includes(bike.suspension)) return false;
+  }
+
   // Pris
   const bikePrice = Number(bike.price);
   if (filters.minPrice != null && !isNaN(Number(filters.minPrice)) && bikePrice < Number(filters.minPrice)) return false;

@@ -1639,7 +1639,7 @@ function selectHeroCatChip(el, type) {
 // Skriver til samme felter som brugeren ville sætte manuelt — sidebar-checkboxes
 // for type, sidebar prisinputs for pris, hero-felt for by — så Cykelagenten
 // gemmer samme state som ved manuel filtrering.
-function applyPopularSearch({ type, size, maxPrice, minPrice, city } = {}) {
+function applyPopularSearch({ type, size, maxPrice, minPrice, city, suspension } = {}) {
   navigateTo('/');
   setTimeout(() => {
     // Nulstil eksisterende type-checkboxes i sidebar, så vi starter rent
@@ -1683,6 +1683,17 @@ function applyPopularSearch({ type, size, maxPrice, minPrice, city } = {}) {
     if (city) {
       const cityInput = document.getElementById('search-city');
       if (cityInput) cityInput.value = city;
+    }
+
+    if (suspension) {
+      // Åbn Affjedring-sektionen (collapsed som standard) + sæt chip
+      document.querySelectorAll('[data-filter="suspension"]').forEach(cb => { cb.checked = false; });
+      const susCb = document.querySelector(`[data-filter="suspension"][data-value="${suspension}"]`);
+      if (susCb) {
+        susCb.checked = true;
+        const box = susCb.closest('.sidebar-box');
+        if (box) box.classList.remove('collapsed');
+      }
     }
 
     document.getElementById('listings-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2041,6 +2052,10 @@ function applyFilters() {
   const batteryMin = parseInt(document.getElementById('battery-min')?.value) || null;
   const batteryMax = parseInt(document.getElementById('battery-max')?.value) || null;
 
+  // Affjedring (eksakt match)
+  const suspensions = [...document.querySelectorAll('[data-filter="suspension"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -2063,6 +2078,7 @@ function applyFilters() {
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
     motors, motorPositions, batteryMin, batteryMax,
+    suspensions,
     maxWeight, city, search,
   });
 }
