@@ -689,6 +689,34 @@ body.map-page-view { padding-bottom: 0 !important; }
 .msf-opt:hover { border-color: var(--rust); }
 .msf-opt.active { background: var(--forest); color: #fff; border-color: var(--forest); }
 .msf-opt--multi.active { background: var(--rust); border-color: var(--rust); }
+
+/* Farve-chip med swatch */
+.msf-opt--color { display: inline-flex; align-items: center; gap: 7px; }
+.msf-color-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.18); flex-shrink: 0;
+}
+.msf-opt--color.active .msf-color-dot { border-color: rgba(255,255,255,0.7); }
+
+/* Kollapsible avancerede filter-sektioner — mindre visuel støj */
+.msf-acc { border-top: 1px solid var(--border); padding: 14px 0; }
+.msf-acc-head {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--muted);
+  list-style: none; user-select: none;
+}
+.msf-acc-head::-webkit-details-marker { display: none; }
+.msf-acc-title { flex: 1; }
+.msf-acc-count {
+  background: var(--rust); color: #fff; border-radius: 999px;
+  min-width: 18px; height: 18px; padding: 0 6px;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.msf-acc-chevron { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; transition: transform 0.18s ease; }
+.msf-acc[open] .msf-acc-chevron { transform: rotate(180deg); }
+.msf-acc-body { margin-top: 12px; }
 .msf-price { display: flex; align-items: center; gap: 10px; }
 .msf-price input {
   flex: 1; min-width: 0; padding: 11px 14px; border: 1.5px solid var(--border);
