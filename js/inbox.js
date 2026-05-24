@@ -168,7 +168,7 @@ export function createInbox({
     document.getElementById('thread-header').innerHTML      =
       `<strong>${otherName}</strong> — <span style="color:var(--muted)">Henter...</span>`;
 
-    const [{ data, error }, { data: bike }] = await Promise.all([
+    const [{ data, error }, { data: bike }, { data: otherProf }] = await Promise.all([
       supabase.from('messages')
         .select('*')
         .eq('bike_id', bikeId)
@@ -177,6 +177,10 @@ export function createInbox({
       supabase.from('bikes')
         .select('user_id, is_active, brand, model')
         .eq('id', bikeId)
+        .single(),
+      supabase.from('profiles')
+        .select('seller_type')
+        .eq('id', otherId)
         .single()
     ]);
 
@@ -189,8 +193,9 @@ export function createInbox({
     activeThread.isSeller   = isSeller;
     activeThread.bikeActive = bikeActive;
 
+    const openProfileFn = otherProf?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`;
     document.getElementById('thread-header').innerHTML =
-      `<strong>${otherName}</strong> — <span style="color:var(--muted)">${bikeName}</span>`;
+      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button> — <span style="color:var(--muted)">${esc(bikeName)}</span>`;
 
     const threadEl = document.getElementById('thread-messages');
     if (error || !data) {
@@ -531,11 +536,10 @@ export function createInbox({
     const activeRow = document.querySelector('[data-thread="' + bikeId + '_' + otherId + '"]');
     if (activeRow) activeRow.classList.add('active');
 
-    const { data: bikeData } = await supabase
-      .from('bikes')
-      .select('user_id, is_active, brand, model, price, bike_images(url, is_primary)')
-      .eq('id', bikeId)
-      .single();
+    const [{ data: bikeData }, { data: otherProfile }] = await Promise.all([
+      supabase.from('bikes').select('user_id, is_active, brand, model, price, bike_images(url, is_primary)').eq('id', bikeId).single(),
+      supabase.from('profiles').select('seller_type').eq('id', otherId).single(),
+    ]);
 
     const isSeller   = bikeData && bikeData.user_id === currentUser.id;
     const bikeActive = bikeData && bikeData.is_active;
@@ -552,7 +556,7 @@ export function createInbox({
       headerEl.innerHTML = `
       <div class="inbox-chat-header-info">
         <button class="inbox-chat-back" onclick="closeInboxThread()" aria-label="Tilbage">←</button>
-        <strong>${esc(otherName)}</strong>
+        <button onclick="${otherProfile?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>
       </div>
       <div class="inbox-chat-bike-preview" onclick="navigateTo('/bike/${bikeId}')" role="button" tabindex="0">
         ${bikeThumb ? `<img src="${bikeThumb}" alt="" class="inbox-chat-bike-thumb">` : '<span class="inbox-chat-bike-icon">🚲</span>'}
