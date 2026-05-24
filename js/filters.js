@@ -28,9 +28,19 @@ export function createFilters({
     const filterArgsSet = args && (
       (args.types && args.types.length > 0) ||
       (args.conditions && args.conditions.length > 0) ||
+      (args.sizes && args.sizes.length > 0) ||
       (args.wheelSizes && args.wheelSizes.length > 0) ||
       (args.colors && args.colors.length > 0) ||
       (args.brands && args.brands.length > 0) ||
+      (args.frameMaterials && args.frameMaterials.length > 0) ||
+      (args.brakeTypes && args.brakeTypes.length > 0) ||
+      (args.groupsets && args.groupsets.length > 0) ||
+      (args.motors && args.motors.length > 0) ||
+      (args.motorPositions && args.motorPositions.length > 0) ||
+      (args.suspensions && args.suspensions.length > 0) ||
+      args.electronicShifting === true || args.electronicShifting === false ||
+      args.batteryMin ||
+      args.batteryMax ||
       args.minPrice ||
       args.maxPrice ||
       args.maxWeight ||
@@ -71,6 +81,12 @@ export function createFilters({
       parts.push(`under ${args.maxPrice.toLocaleString('da-DK')} kr.`);
     }
     if (args?.maxWeight) parts.push(`under ${String(args.maxWeight).replace('.', ',')} kg`);
+    if (args?.motors?.length)         parts.push(args.motors.map(m => `motor: ${m}`).join(', '));
+    if (args?.motorPositions?.length) parts.push(args.motorPositions.join(', '));
+    if (args?.batteryMin && args?.batteryMax) parts.push(`${args.batteryMin}–${args.batteryMax} Wh`);
+    else if (args?.batteryMin) parts.push(`fra ${args.batteryMin} Wh`);
+    else if (args?.batteryMax) parts.push(`under ${args.batteryMax} Wh`);
+    if (args?.suspensions?.length)    parts.push(args.suspensions.join(', '));
     if (args?.sellerType === 'dealer')  parts.push('forhandlere');
     if (args?.sellerType === 'private') parts.push('private');
 
