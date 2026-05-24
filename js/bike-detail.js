@@ -375,6 +375,9 @@ export function createBikeDetail({
         if (b.electronic_shifting === true)  techRows.push(['Gear-skifte', 'Elektronisk (Di2/eTap/AXS)']);
         if (b.electronic_shifting === false) techRows.push(['Gear-skifte', 'Mekanisk']);
         if (b.weight_kg != null)           techRows.push(['Vægt', `${Number(b.weight_kg).toFixed(2).replace('.', ',')} kg`]);
+        if (b.motor)                       techRows.push(['Motor', esc(b.motor)]);
+        if (b.motor_position)              techRows.push(['Motor-placering', esc(b.motor_position)]);
+        if (b.battery_wh != null)          techRows.push(['Batteri', `${b.battery_wh} Wh`]);
         if (techRows.length === 0) return '';
         return `
         <div class="fit-section" style="margin-top:24px;">

@@ -14,7 +14,11 @@ const SIZES      = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (5
 const WHEELS     = ['26"', '27.5" / 650b', '28"', '29"'];
 const FRAME_MATERIALS = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const BRAKE_TYPES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
-const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano Deore', 'Shimano XT'];
+const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'Shimano Deore', 'Shimano XT'];
+// El-cykel: motor-mærke matches som prefix (bike.motor starter med fx "Bosch ...").
+// Samme værdier som sidebar-filteret i index.html.
+const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
+const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
 
 export function createCykelagentPage({
   supabase,
@@ -51,6 +55,11 @@ export function createCykelagentPage({
       groupsets: [],
       electronicShifting: '', // '' | 'true' | 'false'
       maxWeightKg: null,
+      // El-cykel
+      motors: [],
+      motorPositions: [],
+      batteryMin: null,
+      batteryMax: null,
     };
   }
 
@@ -162,6 +171,11 @@ export function createCykelagentPage({
     if (f.electronicShifting === 'true')  chips.push('⚡ Elektronisk gear');
     if (f.electronicShifting === 'false') chips.push('🔧 Mekanisk gear');
     if (f.maxWeightKg)                chips.push(`Maks ${Number(f.maxWeightKg)} kg`);
+    if (Array.isArray(f.motors))         f.motors.forEach(m => chips.push('🔋 ' + esc(m)));
+    if (Array.isArray(f.motorPositions)) f.motorPositions.forEach(p => chips.push('⚙️ ' + esc(p)));
+    if (f.batteryMin && f.batteryMax) chips.push(`🔋 ${f.batteryMin}–${f.batteryMax} Wh`);
+    else if (f.batteryMin)            chips.push(`🔋 Fra ${f.batteryMin} Wh`);
+    else if (f.batteryMax)            chips.push(`🔋 Op til ${f.batteryMax} Wh`);
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -214,6 +228,10 @@ export function createCykelagentPage({
           groupsets:          Array.isArray(f.groupsets)      ? f.groupsets      : [],
           electronicShifting: f.electronicShifting || '',
           maxWeightKg:        f.maxWeightKg || null,
+          motors:         Array.isArray(f.motors)         ? f.motors         : [],
+          motorPositions: Array.isArray(f.motorPositions) ? f.motorPositions : [],
+          batteryMin:     f.batteryMin || null,
+          batteryMax:     f.batteryMax || null,
         };
       }
     }
@@ -316,7 +334,7 @@ export function createCykelagentPage({
           </label>
         </div>
 
-        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg ? 'open' : ''}>
+        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax ? 'open' : ''}>
           <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs <span class="cykelagent-advanced-hint">(valgfrit — vi sender kun notifikation hvis cyklen har præcis disse specs)</span></summary>
 
           <div class="cykelagent-field">
@@ -359,6 +377,35 @@ export function createCykelagentPage({
             <label class="cykelagent-label">Maks. vægt (kg)</label>
             <input type="number" min="2" max="50" step="0.1" class="cykelagent-input" id="cyk-max-weight" placeholder="fx 9" value="${_form.maxWeightKg ?? ''}" oninput="updateCykelagentField('maxWeightKg', this.value ? parseFloat(this.value) : null)">
             <div class="cykelagent-hint">Relevant for racere — efterlad tomt for cykler hvor vægt ikke betyder noget.</div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Motor (el-cykel)</label>
+            <div class="cykelagent-chips-row">
+              ${MOTORS.map(m => `
+                <button type="button" class="cykelagent-chip-btn${_form.motors.includes(m) ? ' active' : ''}" onclick="toggleCykelagentArray('motors', '${esc(m)}')">${esc(m)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Motor-placering</label>
+            <div class="cykelagent-chips-row">
+              ${MOTOR_POSITIONS.map(p => `
+                <button type="button" class="cykelagent-chip-btn${_form.motorPositions.includes(p) ? ' active' : ''}" onclick="toggleCykelagentArray('motorPositions', '${esc(p)}')">${esc(p)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field-row">
+            <div class="cykelagent-field">
+              <label class="cykelagent-label">Batteri min. (Wh)</label>
+              <input type="number" min="100" max="2000" step="1" class="cykelagent-input" id="cyk-battery-min" placeholder="fx 400" value="${_form.batteryMin ?? ''}" oninput="updateCykelagentField('batteryMin', this.value ? parseInt(this.value) : null)">
+            </div>
+            <div class="cykelagent-field">
+              <label class="cykelagent-label">Batteri maks. (Wh)</label>
+              <input type="number" min="100" max="2000" step="1" class="cykelagent-input" id="cyk-battery-max" placeholder="fx 750" value="${_form.batteryMax ?? ''}" oninput="updateCykelagentField('batteryMax', this.value ? parseInt(this.value) : null)">
+            </div>
           </div>
         </details>
 
@@ -423,7 +470,8 @@ export function createCykelagentPage({
       || _form.sizes.length || _form.wheelSizes.length || _form.colors.length
       || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty
       || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length
-      || _form.electronicShifting || _form.maxWeightKg;
+      || _form.electronicShifting || _form.maxWeightKg
+      || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax;
     if (!hasFilter) {
       showToast('⚠️ Tilføj mindst ét filter til din Cykelagent');
       return;
@@ -448,6 +496,11 @@ export function createCykelagentPage({
       groupsets:          _form.groupsets,
       electronicShifting: _form.electronicShifting || '',
       maxWeightKg:        _form.maxWeightKg,
+      // El-cykel (strict-match i edge function)
+      motors:         _form.motors,
+      motorPositions: _form.motorPositions,
+      batteryMin:     _form.batteryMin,
+      batteryMax:     _form.batteryMax,
     };
 
     const currentUser = getCurrentUser();

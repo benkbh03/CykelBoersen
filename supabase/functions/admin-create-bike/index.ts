@@ -37,7 +37,7 @@ const ALLOWED_BIKE_FIELDS = new Set([
   "city", "description", "type", "size", "size_cm", "condition",
   "wheel_size", "warranty", "external_url", "color", "colors",
   "groupset", "frame_material", "brake_type", "electronic_shifting",
-  "weight_kg",
+  "weight_kg", "motor", "motor_position", "battery_wh",
 ]);
 
 const REQUIRED_BIKE_FIELDS = ["brand", "model", "price", "city", "type", "condition"];

@@ -231,6 +231,33 @@ Eksporter er samlet i blokke omkring linje 4184, 5433-5537, 5829-5838 og 6350-63
 - `object-fit: contain` + blurred background (`.gallery-main-bg`) for at undgå cropping
 - `galleryGoto()` opdaterer baggrund: `bg.style.backgroundImage = url(...)`
 
+## Filter-konsistens (VIGTIGT — differentiering)
+
+Filtre er CykelBørsens kerne-differentiering. Et filter SKAL wires op ALLE steder — ellers
+opstår "filtrér her, men ikke der"-fejl. Når du tilføjer/ændrer et filter (fx ny teknisk
+spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs af alle flader.
+
+**Kanoniske lister (skal være identiske overalt):**
+- Motor-mærker: `Bosch, Shimano, Promovec, Yamaha, Bafang, Mahle` (matches som **prefix** — `bike.motor` starter med mærket)
+- Motor-placering: `Midtermotor, Forhjulsmotor, Baghjulsmotor` (eksakt)
+- Groupset: `Shimano 105, Shimano Ultegra, Shimano Dura-Ace, SRAM Rival, SRAM Force, SRAM Red, Shimano GRX, SRAM Apex, Shimano Deore, Shimano XT` (matches som **prefix**)
+
+**Tjekliste — et nyt filter skal tilføjes i ALLE disse:**
+1. **DB**: kolonne + index via `supabase/sql/*.sql` (kør i Dashboard)
+2. **Sidebar-filter (forsiden)**: `index.html` (filter-UI med `data-filter`/`data-value` eller inputs), `main.js applyFilters()` (indsaml værdier), `js/bikes-list.js loadBikesWithFilters()` (query: prefix=`ilike 'X*'` via `.or`, eksakt=`.in`, range=`.gte/.lte`) + `setCurrentFilterArgs()` + `.select()`-felter, `js/filters.js` (aktive-filter-pills + ryd-handlers), `updateFilterCounts()` hvis tæller vises
+3. **Kort** (`js/map-page.js`): `MAP_FILTER_*`-liste, `_mapAdvFilters` (init + reset), `.select()`, filter-logik i bike-filter, badge-tæller, filter-sheet-UI (advGroups eller input + handler)
+4. **Sælg-flow** (`js/sell-page.js`): form-felt (+ datalist/select), `updatePerfFieldsVisibility` (type-tilpasning), submit-payload
+5. **Rediger-annonce** (`js/listing-edit.js` + `partials/modals.html`): populér felt, `updateEditFieldsVisibility`, datalist (samme værdier som sælg), save-payload
+6. **Cykelagent** (`js/cykelagent-page.js`): `_form` default, editor-UI (chips/inputs), migration ved load (`openCykelagentEditor`), `hasFilter`-validering, gemt `filters`-objekt, kort-chip-summary
+7. **Cykelagent-match** (`supabase/functions/notify-saved-searches/index.ts`): `bikeMatchesSearch()` (samme semantik: prefix/eksakt/range) — **manuel deploy**
+8. **Match-payload** (`js/my-profile.js notifySavedSearches`): `.select()` + bike-payload-felter (ellers ser matchen feltet som null)
+9. **Gem-søgning** (`js/my-profile.js saveCurrentSearch`): `hasFilters`-guard + navn-`parts` (persistering sker via `...fa`-spread)
+10. **Visning**: `js/bike-detail.js` (techRows), `js/compare.js` (`.select()` + rows + `rawValue`)
+11. **Admin-oprettelse**: `js/admin-bulk-import.js OPTIONAL_FIELDS`, `supabase/functions/admin-create-bike ALLOWED_BIKE_FIELDS`
+12. Bump `ASSET_VERSION` (config.js) + CSS-`?v=` i `index.html` hvis CSS rørt
+
+Bemærk: edge functions (#7) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
+
 ## Database-tabeller (Supabase)
 
 - `profiles` — brugere/forhandlere (id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, is_admin, avatar_url, bio, last_seen, created_at)
