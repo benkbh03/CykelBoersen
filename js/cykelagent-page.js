@@ -340,7 +340,7 @@ export function createCykelagentPage({
         </div>
 
         <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length ? 'open' : ''}>
-          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs <span class="cykelagent-advanced-hint">(valgfrit — vi sender kun notifikation hvis cyklen har præcis disse specs)</span></summary>
+          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt — helt valgfrit, men giver dig mere præcise match</span></summary>
 
           <div class="cykelagent-field">
             <label class="cykelagent-label">Stelmaterial</label>

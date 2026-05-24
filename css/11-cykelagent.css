@@ -291,6 +291,14 @@
   font-size: 0.78rem;
   color: var(--muted);
 }
+.cykelagent-advanced-preview {
+  flex-basis: 100%;
+  margin-left: 22px;
+  font-weight: 400;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
 .cykelagent-advanced[open] {
   padding-bottom: 14px;
 }
