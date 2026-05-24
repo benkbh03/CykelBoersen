@@ -5,6 +5,50 @@
    ============================================================ */
 
 export const BLOG_ARTICLES = {
+  'mtb-affjedring-guide': {
+    slug: 'mtb-affjedring-guide',
+    title: 'Hardtail eller fully? Vælg den rigtige affjedring til din mountainbike',
+    excerpt: 'Den vigtigste beslutning når du køber en MTB er ikke mærket, men affjedringen. Sådan vælger du mellem hardtail og fuld affjedring.',
+    metaDesc: 'Hardtail vs fuld affjedring (fully): hvad passer til din kørsel, dit budget og dit vedligehold. Komplet MTB-affjedringsguide fra Cykelbørsen.',
+    category: 'Guides',
+    readTime: 6,
+    publishedAt: '2026-05-24',
+    heroEmoji: '🚵',
+    body: `
+      <p>Når folk skal købe deres første rigtige mountainbike, går de ofte direkte til mærke og pris. Men den beslutning der betyder mest for hvordan cyklen føles under dig, er affjedringen. Valget står typisk mellem en hardtail med affjedring kun foran og en fully med affjedring både for og bag, og det rigtige svar afhænger næsten udelukkende af hvor og hvordan du kører.</p>
+
+      <h2>De tre typer kort fortalt</h2>
+      <p><strong>Forgaffel (hardtail)</strong> betyder at cyklen kun har affjedring i forgaflen. Bagenden er stiv. Det er den mest udbredte type til alt fra skovveje til lettere stier.</p>
+      <p><strong>Fuld affjedring (fully)</strong> har både en affjedret forgaffel og en bagdæmper. Bagenden bevæger sig, så begge hjul kan følge terrænet uafhængigt. Det er standarden til teknisk kørsel, downhill og enduro.</p>
+      <p><strong>Ingen (stiv)</strong> er en helt ufjedret ramme. Den ses sjældent på moderne MTB, men findes på dirt jump-cykler og nogle robuste pendlercykler.</p>
+
+      <h2>Hardtail: let, billig og driftssikker</h2>
+      <p>En hardtail giver dig mest cykel for pengene. Fordi der ikke skal betales for en bagdæmper og de tilhørende lejer, går flere af dine kroner til gear, bremser og hjul. En hardtail til 10.000 kr har næsten altid bedre komponenter end en fully til samme pris.</p>
+      <p>Den er også lettere, kræver mindre vedligehold og tråder mere effektivt i opstigninger og på fast underlag. Hvis du primært kører på grusveje, skovveje, lettere singletrack eller bruger cyklen som en hurtig allround-cykel, er en hardtail oftest det rigtige valg. Det er også den klogeste start for de fleste begyndere.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;">
+        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Forgaffel (hardtail)'})" style="background:var(--rust);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se hardtail-mountainbikes →</a>
+      </div>
+
+      <h2>Fully: kontrol og komfort på det tekniske</h2>
+      <p>En fully kommer til sin ret når terrænet bliver groft. Bagdæmperen holder baghjulet i kontakt med jorden over rødder, sten og trapper, og det giver markant mere greb, kontrol og komfort på stejle og tekniske nedkørsler. Kører du rigtige trails, enduro eller downhill, er fuld affjedring svær at undvære.</p>
+      <p>Prisen er vægt, kroner og vedligehold. En fully er tungere, dyrere ved samme komponentniveau, og bagdæmper, lejer og pivotpunkter skal serviceres og slides over tid. Det er ikke afskrækkende, men det er en omkostning du skal regne med.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;">
+        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Fuld affjedring (fully)'})" style="background:var(--forest);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se fuldaffjedrede mountainbikes →</a>
+      </div>
+
+      <h2>Sådan vælger du efter din kørsel</h2>
+      <p>Kører du mest by, grus og skovveje, eller har du et stramt budget og vil have mest muligt for pengene, så peger alt mod en <strong>hardtail</strong>. Kører du teknisk singletrack, stejle nedkørsler, enduro eller downhill, og vil du have maksimal kontrol, så er en <strong>fully</strong> pengene værd. Er du i tvivl og kører blandet, er en god hardtail næsten altid det mere fornuftige førstevalg, og du kan altid rykke op i en fully senere når du ved hvad du har brug for.</p>
+
+      <h2>Ekstra tjek når du køber brugt</h2>
+      <p>På en brugt fully skal du være ekstra grundig. Tag fat i baghjulet og vrik fra side til side for at mærke efter slør i pivotlejerne. Tryk dæmperen sammen og lyt efter raslen eller utætheder, og kig efter olie omkring dæmperen og forgaflen, da det kan betyde at en service er på vej. På en hardtail er der færre bevægelige dele at bekymre sig om, hvilket er endnu en grund til at den ofte er et trygt brugtkøb. Læs vores generelle <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);text-decoration:underline;">guide til at tjekke en brugt cykel</a> inden du handler.</p>
+
+      <h2>Find din næste MTB</h2>
+      <p>Når du har besluttet dig for affjedringstype, kan du filtrere direkte på den her på Cykelbørsen sammen med gear, bremser, stelstørrelse og pris. Og dukker den rigtige cykel ikke op endnu, så <a href="/cykelagenter" onclick="event.preventDefault();navigateTo('/cykelagenter')" style="color:var(--rust);text-decoration:underline;">opret en Cykelagent</a>, så får du en mail så snart en MTB der matcher netop dine kriterier bliver sat til salg.</p>
+    `,
+  },
+
   'undgaa-stjaalet-cykel': {
     slug: 'undgaa-stjaalet-cykel',
     title: 'Sådan undgår du at købe en stjålet cykel',

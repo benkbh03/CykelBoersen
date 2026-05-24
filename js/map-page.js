@@ -13,6 +13,7 @@ const MAP_FILTER_BRAKES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske',
 const MAP_FILTER_GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'Shimano Deore', 'Shimano XT'];
 const MAP_FILTER_MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
 const MAP_FILTER_MOTOR_POS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
+const MAP_FILTER_SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)', 'Ingen (stiv)'];
 const MAP_FILTER_COLORS = ['Sort', 'Hvid', 'Grå', 'Sølv', 'Rød', 'Blå', 'Grøn', 'Gul', 'Orange', 'Lyserød', 'Lilla', 'Brun', 'Beige'];
 const MAP_FILTER_BRANDS = [
   'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton',
@@ -76,6 +77,7 @@ export function createMapPage({
     frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
     groupset: new Set(), weight_max: null,
     motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
+    suspension: new Set(),
   };
 
   /* ── setView ────────────────────────────────────────────── */
@@ -328,7 +330,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
@@ -395,6 +397,7 @@ export function createMapPage({
       if (adv.motor_position.size && !adv.motor_position.has(b.motor_position)) return false;
       if (adv.battery_min != null && (b.battery_wh == null || b.battery_wh < adv.battery_min)) return false;
       if (adv.battery_max != null && (b.battery_wh == null || b.battery_wh > adv.battery_max)) return false;
+      if (adv.suspension.size && !adv.suspension.has(b.suspension)) return false;
       if (f.nearCoords && f.radius && _mapPageGeocoded) {
         const g = _mapPageGeocoded.get(b.id);
         if (!g) return false;
@@ -427,7 +430,7 @@ export function createMapPage({
     n += adv.brand.size + adv.size.size + adv.wheel_size.size + adv.color.size
        + adv.frame_material.size + adv.brake_type.size + adv.electronic_shifting.size
        + adv.groupset.size + (adv.weight_max != null ? 1 : 0)
-       + adv.motor.size + adv.motor_position.size
+       + adv.motor.size + adv.motor_position.size + adv.suspension.size
        + (adv.battery_min != null ? 1 : 0) + (adv.battery_max != null ? 1 : 0);
 
     // Opdater alle badge-elementer (mobil-chip + desktop "Flere filtre"-knap)
@@ -521,6 +524,7 @@ export function createMapPage({
       frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
       groupset: new Set(), weight_max: null,
       motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
+    suspension: new Set(),
     };
     resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
     resetMapDd('dd-bike-type',   '',    'Alle typer');
@@ -1106,6 +1110,7 @@ export function createMapPage({
       { key:'groupset',       title:'Komponentgruppe',vals:MAP_FILTER_GROUPSETS },
       { key:'motor',          title:'Motor (el-cykel)',vals:MAP_FILTER_MOTORS },
       { key:'motor_position', title:'Motor-placering', vals:MAP_FILTER_MOTOR_POS },
+      { key:'suspension',     title:'Affjedring',      vals:MAP_FILTER_SUSPENSION },
     ];
 
     let html = singleGroups.map(g => {

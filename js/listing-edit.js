@@ -196,6 +196,7 @@ export function createListingEdit({
     document.getElementById('edit-weight-kg').value          = b.weight_kg ?? '';
     document.getElementById('edit-motor').value              = b.motor || '';
     document.getElementById('edit-motor-position').value     = b.motor_position || '';
+    { const s = document.getElementById('edit-suspension'); if (s) s.value = b.suspension || ''; }
     document.getElementById('edit-battery-wh').value         = b.battery_wh ?? '';
 
     const isDealer = getCurrentProfile()?.seller_type === 'dealer';
@@ -236,6 +237,7 @@ export function createListingEdit({
   // Skjulte felter beholder deres værdi i DOM'en, så data ikke mistes ved gem.
   function updateEditFieldsVisibility(type) {
     const PERF = ['Racercykel', 'Mountainbike', 'Gravel'];
+    const SUSPENSION = ['Mountainbike', 'Gravel', 'El-cykel'];
     const isPerf  = PERF.includes(type);
     const isEbike = type === 'El-cykel';
     document.querySelectorAll('#edit-modal [data-perf-only]').forEach(el => {
@@ -243,6 +245,9 @@ export function createListingEdit({
     });
     document.querySelectorAll('#edit-modal [data-ebike-only]').forEach(el => {
       el.style.display = isEbike ? '' : 'none';
+    });
+    document.querySelectorAll('#edit-modal [data-suspension-only]').forEach(el => {
+      el.style.display = SUSPENSION.includes(type) ? '' : 'none';
     });
   }
 
@@ -294,6 +299,7 @@ export function createListingEdit({
       motor:              document.getElementById('edit-motor').value.trim() || null,
       motor_position:     document.getElementById('edit-motor-position').value || null,
       battery_wh:         parseInt(document.getElementById('edit-battery-wh').value) || null,
+      suspension:         document.getElementById('edit-suspension')?.value || null,
     };
 
     if (!updates.brand || !updates.price || !updates.city) {

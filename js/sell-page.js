@@ -93,10 +93,16 @@ export function createSellPage({
     'sell-electronic-shifting', 'sell-weight-kg',
     // El-cykel-specifikke felter
     'sell-motor', 'sell-motor-position', 'sell-battery-wh',
+    // Affjedring (MTB/gravel/el-MTB)
+    'sell-suspension',
   ];
 
   // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
   const _PERF_TYPES = ['Racercykel', 'Mountainbike', 'Gravel'];
+  // Cykeltyper hvor affjedring giver mening (hardtail/fully)
+  const _SUSPENSION_TYPES = ['Mountainbike', 'Gravel', 'El-cykel'];
+  // Kanonisk affjedrings-liste — skal matche filter/kort/Cykelagent (eksakt match)
+  const _SUSPENSION_OPTS = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)', 'Ingen (stiv)'];
 
   // Gængse el-cykel motor-mærker (Promovec er dansk-udbredt)
   const _MOTORS_HINT = [
@@ -316,6 +322,10 @@ export function createSellPage({
       const batteryWhRaw   = getVal('sell-battery-wh');
       const batteryWh      = isEbike && batteryWhRaw ? (parseInt(batteryWhRaw) || null) : null;
 
+      // Affjedring (kun relevante typer: MTB/gravel/el-cykel)
+      const isSusp         = _SUSPENSION_TYPES.includes(type);
+      const suspension     = isSusp ? (getVal('sell-suspension') || null) : null;
+
       if (!brand || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
@@ -357,6 +367,7 @@ export function createSellPage({
         motor,
         motor_position:      motorPosition,
         battery_wh:          batteryWh,
+        suspension,
       };
 
       let newBike;
@@ -699,6 +710,14 @@ export function createSellPage({
               ${opt(c['sell-brake-type'] || '', ['Skivebremser hydrauliske','Skivebremser mekaniske','Fælgbremser','Tromlebremser'])}
             </select>
           </div>
+        </div>
+
+        <div class="sell-field" data-suspension-only>
+          <label>Affjedring <span class="hint">(hardtail = kun forgaffel, fully = for + bag)</span></label>
+          <select id="sell-suspension">
+            <option value="">Vælg</option>
+            ${opt(c['sell-suspension'] || '', _SUSPENSION_OPTS)}
+          </select>
         </div>
 
         <div class="sell-form-grid-2">
@@ -1117,6 +1136,11 @@ export function createSellPage({
     document.querySelectorAll('#sell-advanced-section [data-ebike-only]').forEach(el => {
       el.style.display = isEbike ? '' : 'none';
     });
+    // Affjedring vises for MTB/gravel/el-cykel
+    const isSuspension = _SUSPENSION_TYPES.includes(currentType);
+    document.querySelectorAll('#sell-advanced-section [data-suspension-only]').forEach(el => {
+      el.style.display = isSuspension ? '' : 'none';
+    });
 
     // Dynamisk overskrift efter type
     const label = document.getElementById('sell-advanced-label');
@@ -1481,10 +1505,11 @@ export function createSellPage({
       setField('sell-electronic-shifting', String(s.electronic_shifting));
     }
     if (s.weight_kg != null) setField('sell-weight-kg', s.weight_kg);
+    setField('sell-suspension', s.suspension);
 
     const aiFilledAdvanced = Boolean(
       s.groupset || s.frame_material || s.brake_type ||
-      s.electronic_shifting != null || s.weight_kg != null
+      s.electronic_shifting != null || s.weight_kg != null || s.suspension
     );
     if (aiFilledAdvanced) {
       const sec = document.getElementById('sell-advanced-section');
