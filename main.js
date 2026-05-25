@@ -725,6 +725,13 @@ async function init() {
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
   });
 
+  // Mobil hamburger-menu (top-nav-links skjult på ≤768px)
+  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu }) => {
+    window.toggleMobileMenu = toggleMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+    initMobileMenu();
+  });
+
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
   const searchCityInput  = document.getElementById('search-city');
   const searchCityClear  = document.getElementById('search-city-clear');

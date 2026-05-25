@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20261113fq">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261113fp">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261113fp">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260525mn">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -163,6 +163,14 @@
           <span id="nav-initials" aria-hidden="true">?</span>
         </button>
       </div>
+      <button class="nav-hamburger" id="nav-hamburger" type="button" onclick="toggleMobileMenu()" aria-label="Åbn menu" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" hidden>
+      <a href="/maerker" onclick="event.preventDefault();closeMobileMenu();navigateTo('/maerker')">Mærker</a>
+      <a href="/forhandlere" onclick="event.preventDefault();closeMobileMenu();navigateTo('/forhandlere')">Forhandlere</a>
+      <a href="/cykelagenter" onclick="event.preventDefault();closeMobileMenu();navigateTo('/cykelagenter')">Cykelagenter</a>
     </div>
   </nav>
 
@@ -756,7 +764,12 @@
           <h2>Seneste annoncer</h2>
           <span id="listings-count">– cykler til salg</span>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
+        <div class="listings-controls">
+          <button class="btn-mobile-filter" onclick="openMobileFilters()" id="btn-open-filters">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="17" y2="6"/><line x1="6" y1="10" x2="14" y2="10"/><line x1="9" y1="14" x2="11" y2="14"/></svg>
+            <span>Filtre</span>
+            <span class="filter-count-badge" id="mobile-filter-count" style="display:none;">0</span>
+          </button>
           <button class="view-toggle active" id="btn-list-view" onclick="setView('list')" aria-label="Skift til listevisning" aria-pressed="true">☰</button>
           <button class="view-toggle" id="btn-map-page" onclick="navigateTo('/kort')" aria-label="Åbn kortvisning" title="Kortvisning med liste">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2L1 5v13l6-3 6 3 6-3V2l-6 3-6-3z"/><path d="M7 2v13M13 5v13"/></svg>
@@ -773,14 +786,6 @@
         </div>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
-      <!-- Mobil-only filter knap + sortering. Vises kun på <=768px -->
-      <div class="mobile-filter-bar">
-        <button class="btn-mobile-filter" onclick="openMobileFilters()" id="btn-open-filters">
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="17" y2="6"/><line x1="6" y1="10" x2="14" y2="10"/><line x1="9" y1="14" x2="11" y2="14"/></svg>
-          <span>Filtre</span>
-          <span class="filter-count-badge" id="mobile-filter-count" style="display:none;">0</span>
-        </button>
-      </div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
       <div class="listings-grid" id="listings-grid"></div>
       <div id="listings-map" style="display:none;height:600px;border-radius:14px;overflow:hidden;border:1px solid var(--border);"></div>
@@ -926,7 +931,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20261113fp';
+    const V = '20260525mn';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
