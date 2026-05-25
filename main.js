@@ -213,6 +213,7 @@ const {
   updateFilterCounts:  (...args) => updateFilterCounts(...args),
   searchBikes:         (...args) => searchBikes(...args),
   closeProfileModal:   (...args) => closeProfileModal(...args),
+  openLoginModal:      (...args) => openLoginModal(...args),
 });
 
 // Reviews (rating modal + submit-flow).
