@@ -716,10 +716,11 @@
   /* Én samlet kontrol-bar på mobil: [Filtre] [Sorter] [Kort].
      Liste-toggle + sammenlign skjules (liste er default; sammenlign er en desktop-power-feature). */
   .listings-controls { width: 100%; gap: 8px; }
-  .btn-mobile-filter { display: inline-flex; flex: 1 1 0; order: 1; min-height: 44px; padding: 0 14px; }
-  .listings-controls .sort-select { width: auto; flex: 1 1 0; order: 2; height: 44px; }
-  #btn-list-view, #btn-compare-mode { display: none; }
+  .btn-mobile-filter { display: inline-flex; flex: 1 1 auto; order: 1; min-height: 44px; padding: 0 14px; }
+  .listings-controls .sort-select { width: auto; flex: 1 1 auto; order: 2; height: 44px; min-width: 0; }
+  #btn-list-view { display: none; }
   #btn-map-page { order: 3; flex: 0 0 auto; width: 44px; height: 44px; }
+  #btn-compare-mode { display: flex; order: 4; flex: 0 0 auto; width: 44px; height: 44px; }
   .bike-card-body { padding: 10px 12px 12px; }
   .bike-title { font-size: 0.9rem; }
   .bike-price { font-size: 1.05rem; }
