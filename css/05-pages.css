@@ -480,14 +480,15 @@
     margin-left: auto;
   }
 }
-/* Bar over listingsne med "Filtre"-knap. Vises kun på mobil (toggled i media query nedenfor). */
-.mobile-filter-bar { display: none; gap: 10px; margin-bottom: 14px; align-items: center; }
+/* Kontrol-række i listings-header (Filtre + view-toggles + sortering). */
+.listings-controls { display: flex; gap: 8px; align-items: center; }
+/* "Filtre"-knappen vises kun på mobil (sidebar er synlig inline på desktop). */
 .btn-mobile-filter {
-  flex: 1; background: var(--cream); border: 1.5px solid var(--border);
+  display: none; background: var(--cream); border: 1.5px solid var(--border);
   border-radius: 10px; padding: 12px 14px;
   font-size: 0.92rem; font-weight: 600; color: var(--charcoal);
   cursor: pointer; font-family: 'DM Sans', sans-serif;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  align-items: center; justify-content: center; gap: 8px;
   transition: border-color 0.15s, background 0.15s;
   position: relative;
   touch-action: manipulation;
@@ -710,10 +711,15 @@
   }
   .sidebar-mobile-apply:hover { background: var(--rust-light); }
 
-  .mobile-filter-bar { display: flex !important; }
   .listings-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .listings-header { flex-direction: column; gap: 10px; align-items: flex-start; }
-  .sort-select { width: 100%; }
+  /* Én samlet kontrol-bar på mobil: [Filtre] [Sorter] [Kort].
+     Liste-toggle + sammenlign skjules (liste er default; sammenlign er en desktop-power-feature). */
+  .listings-controls { width: 100%; gap: 8px; }
+  .btn-mobile-filter { display: inline-flex; flex: 1 1 0; order: 1; min-height: 44px; padding: 0 14px; }
+  .listings-controls .sort-select { width: auto; flex: 1 1 0; order: 2; height: 44px; }
+  #btn-list-view, #btn-compare-mode { display: none; }
+  #btn-map-page { order: 3; flex: 0 0 auto; width: 44px; height: 44px; }
   .bike-card-body { padding: 10px 12px 12px; }
   .bike-title { font-size: 0.9rem; }
   .bike-price { font-size: 1.05rem; }
@@ -772,7 +778,7 @@
 }
 
 @media (min-width: 769px) {
-  .mobile-filter-bar { display: none !important; }
+  .btn-mobile-filter { display: none !important; }
   .mobile-filter-drawer { display: none !important; }
   .mobile-filter-overlay { display: none !important; }
 }
