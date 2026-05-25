@@ -65,12 +65,19 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
     if (!name || !email || !password) { showToast('⚠️ Udfyld alle felter'); return; }
     if (password.length < 8) { showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return; }
     const restore = btnLoading('register-btn', 'Opretter konto...');
+    // Hvis brugeren udfyldte en Cykelagent før signup, send den med i user_metadata
+    // så den overlever email-bekræftelse (også hvis linket åbnes i en anden browser).
+    let pendingAgent = null;
+    try {
+      const raw = localStorage.getItem('_pendingCykelagent');
+      if (raw) pendingAgent = JSON.parse(raw);
+    } catch {}
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { name },
+          data: pendingAgent ? { name, pending_cykelagent: pendingAgent } : { name },
           emailRedirectTo: window.location.origin,
         },
       });

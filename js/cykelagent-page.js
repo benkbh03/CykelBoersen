@@ -555,16 +555,21 @@ export function createCykelagentPage({
 
   /* Kaldes fra main.js efter auth-events (SIGNED_IN) — hvis brugeren havde
      en pending Cykelagent i localStorage før login, oprettes den nu. */
-  async function flushPendingCykelagent() {
+  async function flushPendingCykelagent({ silent = false } = {}) {
     const currentUser = getCurrentUser();
-    if (!currentUser) return;
-    let pending;
+    if (!currentUser) return false;
+    let pending = null;
+    // 1. localStorage (samme browser-session)
     try {
       const raw = localStorage.getItem('_pendingCykelagent');
-      if (!raw) return;
-      pending = JSON.parse(raw);
-    } catch { return; }
-    if (!pending?.filters) return;
+      if (raw) pending = JSON.parse(raw);
+    } catch {}
+    // 2. user_metadata (overlever email-bekræftelse på tværs af browser/enhed)
+    if (!pending?.filters) {
+      const meta = currentUser.user_metadata || {};
+      if (meta.pending_cykelagent?.filters) pending = meta.pending_cykelagent;
+    }
+    if (!pending?.filters) return false;
     const { error } = await supabase.from('saved_searches').insert({
       user_id: currentUser.id,
       name: pending.name || 'Min Cykelagent',
@@ -572,16 +577,20 @@ export function createCykelagentPage({
     });
     if (error) {
       console.error('flushPendingCykelagent fejl:', error);
-      return;
+      return false;
     }
     try { localStorage.removeItem('_pendingCykelagent'); } catch {}
-    showToast('🔔 Din Cykelagent er nu aktiveret');
+    if (currentUser.user_metadata?.pending_cykelagent) {
+      supabase.auth.updateUser({ data: { pending_cykelagent: null } }).catch(() => {});
+    }
+    if (!silent) showToast('🔔 Din Cykelagent er nu aktiveret');
     // Re-render hvis bruger er på /cykelagenter siden
     if (location.pathname === '/cykelagenter' || location.pathname === '/cykelagent') {
       _editingId = null;
       _form = _emptyForm();
       await renderCykelagentPage();
     }
+    return true;
   }
 
   function _autoName() {

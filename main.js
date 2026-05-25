@@ -884,6 +884,12 @@ async function init() {
       if (adminBtn) adminBtn.style.display = 'flex';
     }
     checkEmailConfirmed();
+    // Ventende Cykelagent fra "udfyld før login"-flow. Signup-bekræftelse håndteres
+    // i _initialAuthType-blokken nedenfor (kombineret toast); øvrige session-restores her.
+    if (_initialAuthType !== 'signup' &&
+        (localStorage.getItem('_pendingCykelagent') || currentUser.user_metadata?.pending_cykelagent)) {
+      flushPendingCykelagent().catch(() => {});
+    }
     // Opdater last_seen (fire-and-forget)
     supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id).then(null, () => {});
   } else {
@@ -981,7 +987,7 @@ async function init() {
         // Hvis brugeren havde en pending Cykelagent fra et "udfyld før login"-flow,
         // aktivér den nu. localStorage-check er billig — kører hver gang men er no-op
         // hvis nøglen ikke findes.
-        if (localStorage.getItem('_pendingCykelagent')) {
+        if (localStorage.getItem('_pendingCykelagent') || currentUser?.user_metadata?.pending_cykelagent) {
           flushPendingCykelagent().catch(() => {});
         }
       }
@@ -1112,7 +1118,15 @@ async function init() {
       showToast('✅ Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.');
       navigateTo('/min-profil');
     } else {
-      showToast('✅ Din e-mail er bekræftet!');
+      // Aktivér evt. ventende Cykelagent fra "udfyld før login"-flow og vis
+      // kombineret bekræftelse (mail bekræftet + agent aktiveret) i ÉN toast.
+      let agentActivated = false;
+      if (localStorage.getItem('_pendingCykelagent') || currentUser?.user_metadata?.pending_cykelagent) {
+        agentActivated = await flushPendingCykelagent({ silent: true }).catch(() => false);
+      }
+      showToast(agentActivated
+        ? '✅ Din e-mail er bekræftet — og din Cykelagent er nu aktiveret! 🔔'
+        : '✅ Din e-mail er bekræftet!');
       // Førstegangs-velkomst: vis onboarding-modalen når brugeren lander logget ind
       // efter email-bekræftelse. showOnboardingBanner er idempotent (viser ikke dobbelt),
       // og 'onboarded'-guarden sikrer den ikke dukker op igen ved senere logins.
