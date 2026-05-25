@@ -2108,7 +2108,12 @@ function brandAutocomplete(input, listId) {
 
 function selectBrand(brand, inputId, listId) {
   const input = document.getElementById(inputId);
-  if (input) input.value = brand;
+  if (input) {
+    input.value = brand;
+    // Lad evt. oninput-state-sync køre (fx Cykelagent-editorens _form.brand),
+    // så et valgt mærke også gemmes, ikke bare vises i feltet.
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
   const list = document.getElementById(listId);
   if (list) list.style.display = 'none';
 }

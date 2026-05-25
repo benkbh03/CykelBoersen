@@ -261,7 +261,10 @@ export function createCykelagentPage({
 
         <div class="cykelagent-field">
           <label class="cykelagent-label">Mærke eller model (søgeord)</label>
-          <input type="text" class="cykelagent-input" id="cyk-brand" placeholder="fx 'Cube' eller 'Trek Domane'" value="${esc(_form.brand)}" oninput="updateCykelagentField('brand', this.value)">
+          <div class="brand-autocomplete-wrap">
+            <input type="text" class="cykelagent-input" id="cyk-brand" placeholder="fx 'Cube' eller 'Trek Domane'" value="${esc(_form.brand)}" oninput="updateCykelagentField('brand', this.value); brandAutocomplete(this, 'cyk-brand-list')" autocomplete="off">
+            <div id="cyk-brand-list" class="brand-autocomplete-list" style="display:none"></div>
+          </div>
         </div>
 
         <div class="cykelagent-field">
