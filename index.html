@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260525mn">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260525mn">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260525mo">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260525mo">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -145,12 +145,17 @@
 
   <!-- ── NAVIGATION ── -->
   <nav role="navigation" aria-label="Hovednavigation">
-    <div class="logo" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" style="cursor:pointer;" role="link" aria-label="Cykelbørsen – gå til forsiden" tabindex="0">Cykel<span>børsen</span></div>
+    <div class="nav-left">
+      <button class="nav-hamburger" id="nav-hamburger" type="button" onclick="toggleMobileMenu()" aria-label="Åbn menu" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="logo" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" style="cursor:pointer;" role="link" aria-label="Cykelbørsen – gå til forsiden" tabindex="0">Cykel<span>børsen</span></div>
+    </div>
     <div class="nav-links">
       <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')" aria-label="Se alle cykelmærker">Mærker</a>
       <a href="/cykelagenter" onclick="event.preventDefault();navigateTo('/cykelagenter')" aria-label="Opret eller administrer Cykelagenter">Cykelagenter</a>
       <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')" aria-label="Se forhandlere">Forhandlere</a>
-      <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg">+ Sæt til salg</a>
+      <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg"><span class="sell-label-full">+ Sæt til salg</span><span class="sell-label-short">+ Sælg</span></a>
       <div class="nav-admin" id="nav-admin" style="display:none;">
         <button class="nav-admin-btn" onclick="openAdminPanel()" aria-label="Åbn admin panel">⚙️</button>
       </div>
@@ -163,9 +168,6 @@
           <span id="nav-initials" aria-hidden="true">?</span>
         </button>
       </div>
-      <button class="nav-hamburger" id="nav-hamburger" type="button" onclick="toggleMobileMenu()" aria-label="Åbn menu" aria-expanded="false" aria-controls="mobile-menu-panel">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
     </div>
     <div class="mobile-menu-panel" id="mobile-menu-panel" hidden>
       <a href="/maerker" onclick="event.preventDefault();closeMobileMenu();navigateTo('/maerker')">Mærker</a>
@@ -933,7 +935,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260525mn';
+    const V = '20260525mo';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

@@ -1212,7 +1212,7 @@ function updateNav(loggedIn, name, avatarUrl) {
         sellBtn.style.opacity = '0.6';
         sellBtn.style.cursor = 'not-allowed';
       } else {
-        sellBtn.textContent = '+ Sæt til salg';
+        sellBtn.innerHTML = '<span class="sell-label-full">+ Sæt til salg</span><span class="sell-label-short">+ Sælg</span>';
         sellBtn.setAttribute('onclick', 'event.preventDefault(); openModal()');
         sellBtn.removeAttribute('title');
         sellBtn.style.opacity = '';
