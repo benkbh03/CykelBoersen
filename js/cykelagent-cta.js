@@ -27,7 +27,17 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters })
     if (!strip) return;
 
     if (!hasActiveFilters()) {
-      strip.style.display = 'none';
+      // Ingen aktive filtre: vis en permanent, generisk CTA (fører til
+      // /cykelagenter hvor man bygger agenten). Samme responsive strip-komponent,
+      // så den passer både desktop og mobil.
+      strip.style.display = 'flex';
+      strip.classList.remove('cykelagent-cta-strip--accent');
+      strip.innerHTML = `
+        <span class="cta-strip-text">🔔 Få besked når din næste cykel dukker op — opret en gratis <strong>Cykelagent</strong></span>
+        <div class="cta-strip-actions">
+          <button class="cta-strip-btn" onclick="navigateTo('/cykelagenter')">Opret Cykelagent →</button>
+        </div>
+      `;
       return;
     }
 
