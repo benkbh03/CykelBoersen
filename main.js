@@ -727,10 +727,11 @@ async function init() {
   });
 
   // Mobil hamburger-menu (top-nav-links skjult på ≤768px)
-  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu }) => {
+  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu, initMobileNavScroll }) => {
     window.toggleMobileMenu = toggleMobileMenu;
     window.closeMobileMenu = closeMobileMenu;
     initMobileMenu();
+    initMobileNavScroll();
   });
 
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
