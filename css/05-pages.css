@@ -530,7 +530,14 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  nav { padding: 12px 14px; }
+  nav {
+    padding: 12px 14px;
+    /* fixed (ikke sticky): overflow-x:clip på html/body bryder sticky på iOS,
+       så nav'en scrollede væk. fixed + vis-ved-scroll-op (JS toggler .nav--hidden). */
+    position: fixed; left: 0; right: 0;
+    transition: transform 0.28s ease;
+  }
+  nav.nav--hidden { transform: translateY(-100%); }
   .nav-links { gap: 6px; }
   .nav-links a:not(.btn-sell) { display: none; }
   .btn-sell { font-size: 0.8rem; padding: 8px 14px; white-space: nowrap; }
