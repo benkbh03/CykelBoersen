@@ -294,6 +294,8 @@
   border-color: #c0392b;
 }
 .pp-follow-btn .follow-icon { font-size: 1rem; }
+/* Følg-knap i bruger-profil-modal (privat sælger) */
+.up-follow-row { margin: 12px 0 4px; }
 .pp-follower-count {
   font-size: 0.78rem;
   color: var(--muted);

@@ -242,6 +242,7 @@ const _ensureProfileModals = lazyCtrl(
     closeAllDealersModal: (...args) => closeAllDealersModal(...args),
     closeAllModals:       (...args) => closeAllModals(...args),
     highlightStars,
+    followDealer,
   }),
 );
 const filterByDealerCard       = lazyMethod(_ensureProfileModals, 'filterByDealerCard');
@@ -2730,7 +2731,7 @@ const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport, initInviteForm, loadAdminStats }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, initInviteForm, loadAdminStats }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -2979,69 +2980,6 @@ function updateVerifyUI() {
   }
 }
 
-/* ── ADMIN: ID ANSØGNINGER ── */
-
-async function loadIdApplications() {
-  var list = document.getElementById('admin-id-list');
-  list.innerHTML = '<p style="color:var(--muted)">Henter ansøgninger...</p>';
-
-  var result;
-  try {
-    result = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id_pending', true)
-      .eq('id_verified', false);
-  } catch (e) {
-    list.innerHTML = retryHTML('Kunne ikke hente ID-ansøgninger.', 'loadIdApplications');
-    return;
-  }
-
-  if (result.error || !result.data || result.data.length === 0) {
-    list.innerHTML = '<p style="color:var(--muted)">Ingen ventende ID-ansøgninger.</p>';
-    return;
-  }
-
-  list.innerHTML = result.data.map(function(p) {
-    return '<div class="admin-row">'
-      + '<img class="admin-id-img" src="' + esc(p.id_doc_url || '') + '" onclick="window.open(\'' + escAttr(p.id_doc_url || '') + '\',\'_blank\')" title="Klik for at se fuldt billede">'
-      + '<div class="admin-row-info">'
-      + '<div class="admin-row-name">' + esc(p.name || 'Ukendt') + '</div>'
-      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat') + '</div>'
-      + '</div>'
-      + '<div class="admin-row-actions">'
-      + '<button class="btn-approve" onclick="approveId(\'' + p.id + '\')">✓ Godkend ID</button>'
-      + '<button class="btn-reject" onclick="rejectId(\'' + p.id + '\')">✕ Afvis</button>'
-      + '</div></div>';
-  }).join('');
-}
-
-async function approveId(userId) {
-  const res = await _callAdminAction('approve_id', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('✅ ID godkendt — bruger har nu et blåt badge');
-  loadIdApplications();
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'id_approved', user_id: userId },
-  }).catch(() => {});
-  if (currentUser && currentUser.id === userId) {
-    currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
-    updateVerifyUI();
-    loadBikes();
-  }
-}
-
-async function rejectId(userId) {
-  if (!confirm('Afvis denne ID-ansøgning?')) return;
-  const res = await _callAdminAction('reject_id', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('ID-ansøgning afvist');
-  loadIdApplications();
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'id_rejected', user_id: userId },
-  }).catch(() => {});
-}
-
 async function loadAdminStats() {
   const el = document.getElementById('admin-stats');
   if (!el) return;
@@ -3190,8 +3128,6 @@ async function submitDealerInvite() {
 window.submitDealerInvite   = submitDealerInvite;
 window.loadAdminStats       = loadAdminStats;
 window.updateVerifyUI       = updateVerifyUI;
-window.approveId          = approveId;
-window.rejectId           = rejectId;
 window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
 window.pickStar              = pickStar;
