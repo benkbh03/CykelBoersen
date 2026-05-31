@@ -72,7 +72,25 @@ export function createProfilePages({
       );
       messagesCount = tradeMsg?.length || 0;
     }
-    return { profile: r1.data, activeBikes: r2.data, soldBikes: r3.data, reviews: r4.data || [], messagesCount };
+    // Følger-tæller + følger-status (samme dealer_followers-tabel som forhandler)
+    let followerCount = 0, isFollowing = false;
+    try {
+      const { count } = await supabase
+        .from('dealer_followers')
+        .select('dealer_id', { count: 'exact', head: true })
+        .eq('dealer_id', userId);
+      followerCount = count || 0;
+      if (currentUser && currentUser.id !== userId) {
+        const { data: f } = await supabase
+          .from('dealer_followers')
+          .select('dealer_id')
+          .eq('user_id', currentUser.id)
+          .eq('dealer_id', userId)
+          .maybeSingle();
+        isFollowing = !!f;
+      }
+    } catch { /* tabel kan mangle hvis migration ikke er kørt */ }
+    return { profile: r1.data, activeBikes: r2.data, soldBikes: r3.data, reviews: r4.data || [], messagesCount, followerCount, isFollowing };
   }
 
   async function fetchDealerProfileData(dealerId) {
@@ -161,7 +179,7 @@ export function createProfilePages({
 
   function buildUserProfilePageHTML(data) {
     const currentUser = getCurrentUser();
-    const { profile, activeBikes, soldBikes, reviews, messagesCount } = data;
+    const { profile, activeBikes, soldBikes, reviews, messagesCount, followerCount = 0, isFollowing = false } = data;
     const displayName  = profile.seller_type === 'dealer' ? (profile.shop_name || profile.name) : profile.name;
     const initials     = getInitials(displayName);
     const isDealer     = profile.seller_type === 'dealer';
@@ -250,10 +268,12 @@ export function createProfilePages({
             <div class="pp-badges">
               <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
               ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
+              ${followerCount > 0 ? `<span class="pp-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
             </div>
             ${isDealer && profile.address ? `<div class="pp-location">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="pp-location">📍 ${esc(profile.city)}</div>` : ''}
             ${lastSeenText ? `<div class="pp-last-seen">Sidst aktiv ${lastSeenText}</div>` : ''}
             ${profile.bio ? `<p class="pp-bio">${esc(profile.bio)}</p>` : ''}
+            ${(!isOwnProfile && followDealer) ? `<div class="up-follow-row">${followDealer.buildFollowButton(profile.id, isFollowing)}</div>` : ''}
             ${sendMsgHtml}
           </div>
         </div>
