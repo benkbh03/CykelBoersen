@@ -59,6 +59,121 @@
   font-weight: 700;
 }
 
+/* ── NYE MATCH FRA AGENTER ──
+   Vises over agent-listen når brugerens gemte agenter har match i de seneste
+   30 dage. Light-version: kun client-side matching, ikke DB-persisteret. */
+.cykelagent-matches {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(42,61,46,0.04);
+}
+.cykelagent-matches-loading {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 8px 0;
+  margin: 0;
+}
+.cykelagent-matches-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 14px;
+}
+.cykelagent-matches-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--charcoal);
+  margin: 0;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.cykelagent-matches-count {
+  background: var(--rust); color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  padding: 2px 10px; border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+.cykelagent-matches-mark-read {
+  background: none; border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem; font-weight: 500;
+  padding: 6px 12px; border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.cykelagent-matches-mark-read:hover {
+  border-color: var(--forest); color: var(--charcoal);
+}
+.cykelagent-matches-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.cykelagent-match-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none; color: inherit;
+  transition: transform 0.15s, box-shadow 0.18s, border-color 0.15s;
+}
+.cykelagent-match-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--forest);
+  box-shadow: 0 6px 18px rgba(42,61,46,0.10);
+}
+.cykelagent-match-img {
+  width: 100%; aspect-ratio: 4/3;
+  object-fit: cover; display: block;
+  background: var(--sand-2);
+}
+.cykelagent-match-img--empty {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: var(--muted);
+}
+.cykelagent-match-new {
+  position: absolute; top: 8px; left: 8px;
+  background: var(--rust); color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px; border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+.cykelagent-match-info {
+  padding: 8px 10px 10px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.cykelagent-match-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--charcoal);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cykelagent-match-meta {
+  font-size: 0.7rem; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cykelagent-match-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--rust); margin-top: 2px;
+}
+.cykelagent-matches-more {
+  margin: 12px 0 0; font-size: 0.82rem; color: var(--muted);
+  text-align: center;
+}
+.cykelagent-matches-more a { color: var(--forest); font-weight: 600; }
+@media (max-width: 600px) {
+  .cykelagent-matches { padding: 14px 14px 12px; }
+  .cykelagent-matches-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .cykelagent-matches-title { font-size: 1rem; }
+}
+
 /* ── LISTE: kort med eksisterende agenter ── */
 .cykelagent-list {
   display: flex; flex-direction: column;
