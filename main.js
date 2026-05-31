@@ -242,6 +242,7 @@ const _ensureProfileModals = lazyCtrl(
     closeAllDealersModal: (...args) => closeAllDealersModal(...args),
     closeAllModals:       (...args) => closeAllModals(...args),
     highlightStars,
+    followDealer,
   }),
 );
 const filterByDealerCard       = lazyMethod(_ensureProfileModals, 'filterByDealerCard');

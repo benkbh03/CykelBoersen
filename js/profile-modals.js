@@ -13,6 +13,7 @@ export function createProfileModals({
   closeAllDealersModal,
   closeAllModals,
   highlightStars,
+  followDealer,
 }) {
   let userProfileToken = 0;
   let dealerProfileToken = 0;
@@ -181,6 +182,7 @@ export function createProfileModals({
 
     const currentUser = getCurrentUser();
     let profile, activeBikes, soldBikes, reviews, messagesCount;
+    let followerCount = 0, isFollowing = false;
     try {
       const safe = p => Promise.resolve(p).catch(e => { console.warn('Query fejl:', e); return { data: null, error: e }; });
 
@@ -210,6 +212,25 @@ export function createProfileModals({
       } else {
         messagesCount = 0;
       }
+
+      // Følger-tæller + følger-status (samme dealer_followers-tabel som forhandler-følg).
+      // Graceful: hvis tabellen ikke findes (migration ikke kørt), forbliver 0/false.
+      try {
+        const { count } = await supabase
+          .from('dealer_followers')
+          .select('dealer_id', { count: 'exact', head: true })
+          .eq('dealer_id', userId);
+        followerCount = count || 0;
+        if (currentUser && currentUser.id !== userId) {
+          const { data: f } = await supabase
+            .from('dealer_followers')
+            .select('dealer_id')
+            .eq('user_id', currentUser.id)
+            .eq('dealer_id', userId)
+            .maybeSingle();
+          isFollowing = !!f;
+        }
+      } catch { /* tabel kan mangle hvis migration ikke er kørt */ }
     } catch (err) {
       console.error('openUserProfile error:', err.message);
       content.innerHTML = retryHTML('Kunne ikke hente profil.', `() => openUserProfile('${userId}')`);
@@ -331,9 +352,11 @@ export function createProfileModals({
           <div class="up-badges">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
             ${memberYear ? `<span class="up-member-since">Medlem siden ${memberYear}</span>` : ''}
+            ${followerCount > 0 ? `<span class="up-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
           </div>
           <div class="up-achievements" id="user-achievements"></div>
           ${profile.bio ? `<p class="up-bio">${esc(profile.bio)}</p>` : ''}
+          ${(!isOwnProfile && followDealer) ? `<div class="up-follow-row">${followDealer.buildFollowButton(userId, isFollowing)}</div>` : ''}
           ${sendMsgHtml}
         </div>
       </div>
