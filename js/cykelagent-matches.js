@@ -31,57 +31,102 @@ export function markMatchesSeen() {
 function bikeMatchesAgent(bike, f) {
   if (!f) return false;
 
-  if (f.search) {
-    const q = String(f.search).toLowerCase().trim();
-    if (q) {
-      const hay = `${bike.brand || ''} ${bike.model || ''}`.toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
-  }
-  if (f.brand) {
-    const q = String(f.brand).toLowerCase().trim();
-    if (q && !String(bike.brand || '').toLowerCase().includes(q)) return false;
-  }
+  // Type (singular fra forside-flow eller liste fra cykelagent-form)
   if (f.type && bike.type !== f.type) return false;
-  if (f.city) {
-    const c = String(f.city).toLowerCase().trim();
-    if (c && !String(bike.city || '').toLowerCase().includes(c)) return false;
-  }
   if (Array.isArray(f.types) && f.types.length && !f.types.includes(bike.type)) return false;
+
   if (Array.isArray(f.conditions) && f.conditions.length && !f.conditions.includes(bike.condition)) return false;
-  if (Array.isArray(f.sizes) && f.sizes.length) {
-    if (!bike.size) return false;
-    const bs = String(bike.size).split(' ')[0];
-    if (!f.sizes.some(s => String(s).split(' ')[0] === bs)) return false;
+
+  if (Array.isArray(f.wheelSizes) && f.wheelSizes.length) {
+    if (!bike.wheel_size || !f.wheelSizes.includes(bike.wheel_size)) return false;
   }
-  if (Array.isArray(f.wheelSizes) && f.wheelSizes.length && !f.wheelSizes.includes(String(bike.wheel_size || ''))) return false;
+
+  if (Array.isArray(f.sizes) && f.sizes.length) {
+    if (!bike.size || !f.sizes.includes(bike.size)) return false;
+  }
+
   if (Array.isArray(f.colors) && f.colors.length) {
     const bcolors = Array.isArray(bike.colors) && bike.colors.length
       ? bike.colors
       : (bike.color ? [bike.color] : []);
     if (!bcolors.some(c => f.colors.includes(c))) return false;
   }
-  if (Array.isArray(f.frameMaterials) && f.frameMaterials.length && !f.frameMaterials.includes(bike.frame_material)) return false;
-  if (Array.isArray(f.brakeTypes) && f.brakeTypes.length && !f.brakeTypes.includes(bike.brake_type)) return false;
+
+  if (Array.isArray(f.frameMaterials) && f.frameMaterials.length) {
+    if (!bike.frame_material || !f.frameMaterials.includes(bike.frame_material)) return false;
+  }
+
+  if (Array.isArray(f.brakeTypes) && f.brakeTypes.length) {
+    if (!bike.brake_type || !f.brakeTypes.includes(bike.brake_type)) return false;
+  }
+
   if (Array.isArray(f.groupsets) && f.groupsets.length) {
-    const g = String(bike.groupset || '');
-    if (!f.groupsets.some(x => g.startsWith(String(x)))) return false;
+    const g = String(bike.groupset || '').toLowerCase();
+    if (!g || !f.groupsets.some(sel => g.startsWith(String(sel).toLowerCase()))) return false;
   }
+
+  if (f.electronicShifting === 'true' || f.electronicShifting === 'false') {
+    const want = f.electronicShifting === 'true';
+    if (bike.electronic_shifting === null || bike.electronic_shifting === undefined) return false;
+    if (!!bike.electronic_shifting !== want) return false;
+  }
+
+  if (f.maxWeightKg != null && !isNaN(Number(f.maxWeightKg))) {
+    if (bike.weight_kg === null || bike.weight_kg === undefined) return false;
+    if (Number(bike.weight_kg) > Number(f.maxWeightKg)) return false;
+  }
+
   if (Array.isArray(f.motors) && f.motors.length) {
-    const m = String(bike.motor || '');
-    if (!f.motors.some(x => m.startsWith(String(x)))) return false;
+    const m = String(bike.motor || '').toLowerCase();
+    if (!m || !f.motors.some(sel => m.startsWith(String(sel).toLowerCase()))) return false;
   }
-  if (Array.isArray(f.motorPositions) && f.motorPositions.length && !f.motorPositions.includes(bike.motor_position)) return false;
-  if (Array.isArray(f.suspensions) && f.suspensions.length && !f.suspensions.includes(bike.suspension)) return false;
+
+  if (Array.isArray(f.motorPositions) && f.motorPositions.length) {
+    if (!bike.motor_position || !f.motorPositions.includes(bike.motor_position)) return false;
+  }
+
+  if (f.batteryMin != null && !isNaN(Number(f.batteryMin))) {
+    if (bike.battery_wh == null || Number(bike.battery_wh) < Number(f.batteryMin)) return false;
+  }
+  if (f.batteryMax != null && !isNaN(Number(f.batteryMax))) {
+    if (bike.battery_wh == null || Number(bike.battery_wh) > Number(f.batteryMax)) return false;
+  }
+
+  if (Array.isArray(f.suspensions) && f.suspensions.length) {
+    if (!bike.suspension || !f.suspensions.includes(bike.suspension)) return false;
+  }
+
+  if (f.minPrice != null && !isNaN(Number(f.minPrice)) && Number(bike.price) < Number(f.minPrice)) return false;
+  if (f.maxPrice != null && !isNaN(Number(f.maxPrice)) && Number(bike.price) > Number(f.maxPrice)) return false;
+
   if (f.sellerType === 'dealer' || f.sellerType === 'private') {
     const st = bike.profiles?.seller_type;
     if (st && st !== f.sellerType) return false;
   }
-  if (f.minPrice != null && bike.price < Number(f.minPrice)) return false;
-  if (f.maxPrice != null && bike.price > Number(f.maxPrice)) return false;
+
   if (f.warranty === true && !bike.warranty) return false;
-  if (f.batteryMin != null && (bike.battery_wh == null || bike.battery_wh < Number(f.batteryMin))) return false;
-  if (f.batteryMax != null && (bike.battery_wh == null || bike.battery_wh > Number(f.batteryMax))) return false;
+
+  // By: bidirektionel substring (matcher edge function — "København" matcher "København NV" og omvendt)
+  if (f.city) {
+    const bikeCity = String(bike.city || '').toLowerCase();
+    const searchCity = String(f.city).toLowerCase();
+    if (!bikeCity.includes(searchCity) && !searchCity.includes(bikeCity)) return false;
+  }
+
+  // Fritekst: substring på brand + model
+  if (f.search) {
+    const hay = `${bike.brand || ''} ${bike.model || ''}`.toLowerCase();
+    const needle = String(f.search).toLowerCase();
+    if (!hay.includes(needle)) return false;
+  }
+
+  // brand-felt (cykelagent-form gemmer brand i både search + brand;
+  // tjek for at undgå at vise andre mærker selvom search-substring tilfældigvis matcher)
+  if (f.brand) {
+    const q = String(f.brand).toLowerCase().trim();
+    if (q && !String(bike.brand || '').toLowerCase().includes(q)) return false;
+  }
+
   return true;
 }
 
