@@ -734,6 +734,11 @@ async function init() {
     initMobileNavScroll();
   });
 
+  // Hover-galleri: krydsfader gennem annonce-billeder på desktop
+  import(`./js/card-hover-gallery.js?v=${ASSET_VERSION}`).then(({ initCardHoverGallery }) => {
+    initCardHoverGallery();
+  });
+
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
   const searchCityInput  = document.getElementById('search-city');
   const searchCityClear  = document.getElementById('search-city-clear');

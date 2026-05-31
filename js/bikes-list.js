@@ -266,10 +266,15 @@ export function createBikesList({
       const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
       const isDemo     = profile.shop_name === 'Cykelbørsen Demo';
       const initials   = getInitials(sellerName);
-      const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
-      const thumbSrc = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
+      // Sortér med primary først; max 4 billeder i hover-cyklen (egress-hensyn)
+      const allImgs    = (b.bike_images || []).slice().sort((a, x) => (x.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+      const imgUrls    = allImgs.slice(0, 4).map(i => i.url);
+      const primaryImg = imgUrls[0];
+      const thumbSrc   = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
+      const hasMulti   = imgUrls.length >= 2;
+      const dataImgs   = hasMulti ? ` data-imgs='${JSON.stringify(imgUrls)}'` : '';
       const imgContent = primaryImg
-        ? `<img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
+        ? `<img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300" class="bcimg bcimg--front">${hasMulti ? '<img alt="" class="bcimg bcimg--back" loading="lazy" decoding="async">' : ''}`
         : '<span style="font-size:4rem">🚲</span>';
       const avatarUrl  = safeAvatarUrl(profile.avatar_url);
       const avatarThumb = avatarUrl ? transformImageUrl(avatarUrl, { width: 80, quality: 75 }) : null;
@@ -285,7 +290,7 @@ export function createBikesList({
       const lastSeenCard = formatLastSeen(profile.last_seen);
       return `
         <div class="bike-card"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
-          <div class="bike-card-img">
+          <div class="bike-card-img"${dataImgs}>
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
