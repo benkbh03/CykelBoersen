@@ -319,7 +319,7 @@ export function createProfileModals({
     const numActive = (activeBikes || []).length;
     const sendMsgHtml = (!isOwnProfile && currentUser && numActive > 0) ? `
       <div class="up-contact-section" id="up-contact-section">
-        <button class="up-contact-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
+        <button class="up-contact-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${numActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
@@ -425,6 +425,10 @@ export function createProfileModals({
     if (!form) return;
     const isHidden = form.style.display === 'none';
     form.style.display = isHidden ? 'block' : 'none';
+    // Skjul toggle-knappen når formularen er åben — ellers står der to
+    // identiske "Send besked"-knapper. Formularen har sin egen send-knap.
+    const toggleBtn = document.getElementById('up-contact-toggle-btn');
+    if (toggleBtn) toggleBtn.style.display = isHidden ? 'none' : '';
     if (isHidden) {
       const ta = document.getElementById('up-contact-message');
       if (ta) ta.focus();
