@@ -222,7 +222,7 @@ export function createProfilePages({
 
     const sendMsgHtml = (!isOwnProfile && currentUser && nActive > 0) ? `
       <div class="pp-cta-section">
-        <button class="pp-cta-btn" onclick="toggleProfileContact()">Send besked</button>
+        <button class="pp-cta-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">Send besked</button>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${nActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
@@ -357,7 +357,7 @@ export function createProfilePages({
     const contactHtml = (!isOwnProfile && currentUser && nActive > 0) ? `
       <div class="pp-cta-section">
         <div class="pp-cta-row">
-          <button class="pp-cta-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
+          <button class="pp-cta-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
           ${followBtnHtml}
         </div>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
