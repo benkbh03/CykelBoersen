@@ -1,0 +1,44 @@
+name: Generate sitemap
+
+# Kører dagligt + manuelt + ved push der ændrer scriptet selv.
+# Henter aktive annoncer + verificerede forhandlere fra Supabase og
+# genererer en frisk sitemap.xml. Committer kun hvis filen faktisk ændrede sig.
+on:
+  schedule:
+    - cron: '0 3 * * *'   # dagligt 03:00 UTC (~05:00 dansk)
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/generate-sitemap.mjs'
+      - '.github/workflows/sitemap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate sitemap.xml
+        run: node scripts/generate-sitemap.mjs
+
+      - name: Commit hvis ændret
+        run: |
+          if [ -n "$(git status --porcelain sitemap.xml)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add sitemap.xml
+            git commit -m "chore(sitemap): regenerér med live bikes + dealers"
+            git push
+          else
+            echo "Sitemap uændret — ingen commit."
+          fi
