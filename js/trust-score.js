@@ -47,7 +47,6 @@ export function calculateTrustScore(profile, stats) {
   const { soldCount, reviewCount, avgRating } = stats;
   let trustScore = 0;
   if (profile.email_verified) trustScore += 1;
-  if (profile.id_verified)    trustScore += 2;
   if (soldCount >= 5)          trustScore += 3;
   else if (soldCount >= 1)     trustScore += 1;
   if (profile.verified && profile.seller_type === 'dealer') trustScore += 3;
@@ -56,7 +55,6 @@ export function calculateTrustScore(profile, stats) {
 
   const tips = [];
   if (!profile.email_verified)  tips.push('Email-verifikation');
-  if (!profile.id_verified)     tips.push('ID-verifikation');
   if (soldCount < 5)             tips.push(`${Math.max(1, 5 - soldCount)} flere salg`);
   if (profile.seller_type === 'dealer' && !profile.verified) tips.push('CVR-godkendelse');
   if (reviewCount < 3)           tips.push('Flere anmeldelser');
@@ -69,7 +67,7 @@ export function calculateTrustScore(profile, stats) {
    findes alligevel på sælgers profil → Vurderinger-tab. */
 export function buildTrustPillHTML(score) {
   if (!score.isTrusted) return '';
-  return `<span class="trust-pill" title="Trust-score: ${score.trustScore}/11. Bygges på verifikationer, handelshistorik og anmeldelser.">🛡️ Trygt køb</span>`;
+  return `<span class="trust-pill" title="Trust-score: ${score.trustScore}/9. Bygges på verifikationer, handelshistorik og anmeldelser.">🛡️ Trygt køb</span>`;
 }
 
 /* Fuld breakdown — bruges øverst på Vurderinger-tabben på profilsider. */
@@ -86,7 +84,7 @@ export function buildTrustBreakdownHTML(profile, stats, score) {
   return `
     <div class="trust-card ${isTrusted ? 'trust-card--trusted' : 'trust-card--neutral'}">
       ${isTrusted ? `
-      <div class="trust-card-badge" title="Trust-score: ${trustScore}/11. Bygges på verifikationer, handelshistorik og anmeldelser.">
+      <div class="trust-card-badge" title="Trust-score: ${trustScore}/9. Bygges på verifikationer, handelshistorik og anmeldelser.">
         <span class="trust-card-badge-icon" aria-hidden="true">🛡️</span>
         <div class="trust-card-badge-text">
           <strong>Trygt køb</strong>

@@ -845,9 +845,8 @@ export function createBikeDetail({
      stempler vi annoncen med "🛡️ Trygt køb" — den vigtigste
      visuelle differentiator overfor DBA.
 
-     Score-formel (max 11):
+     Score-formel (max 9):
        +1 email-verificeret
-       +2 ID-verificeret
        +1 har solgt 1-4 cykler  /  +3 har solgt 5+
        +3 verificeret forhandler (CVR-godkendt)
        +2 ≥4.5★ gennemsnit på mindst 3 anmeldelser

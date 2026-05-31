@@ -318,7 +318,6 @@ export function createBikesList({
                 <div class="card-seller-top">
                   <span class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</span>
                   <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
-                  ${profile.id_verified ? '<span class="trust-chip">✓ ID</span>' : ''}
                 </div>
                 <div class="card-seller-bottom">
                   <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
