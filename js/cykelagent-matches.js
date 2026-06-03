@@ -142,7 +142,7 @@ export async function fetchAgentMatches(supabase, agents) {
       warranty, created_at, user_id, frame_material, brake_type, groupset, motor, motor_position,
       battery_wh, suspension,
       profiles!user_id(seller_type, shop_name, verified),
-      bike_images(url, is_primary)
+      bike_images(url, thumb_url, is_primary)
     `)
     .eq('is_active', true)
     .gte('created_at', sinceIso)

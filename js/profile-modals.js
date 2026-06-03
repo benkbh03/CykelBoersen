@@ -87,7 +87,7 @@ export function createProfileModals({
     try {
       const bikesFetch = supabase
         .from('bikes')
-        .select('*, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+        .select('*, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, thumb_url, is_primary)')
         .eq('user_id', dealerId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -115,7 +115,8 @@ export function createProfileModals({
       const profile    = b.profiles || {};
       const sellerName = profile.shop_name || profile.name || displayName;
       const avatarInit = getInitials(sellerName);
-      const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+      const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
+      const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : '<span style="font-size:4rem">🚲</span>';
@@ -188,7 +189,7 @@ export function createProfileModals({
 
       const dataPromise = Promise.all([
         safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
-        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
         safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
       ]);
@@ -261,7 +262,8 @@ export function createProfileModals({
     }
 
     const activeBikeCards = (activeBikes || []).map((b, i) => {
-      const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+      const _pRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
+      const primaryImg = _pRec?.thumb_url || _pRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : '<span style="font-size:2.5rem">🚲</span>';
