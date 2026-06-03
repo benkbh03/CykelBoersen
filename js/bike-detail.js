@@ -967,7 +967,7 @@ export function createBikeDetail({
     try {
       const { data, error: queryErr } = await supabase
         .from('bikes')
-        .select('id, brand, model, price, type, condition, bike_images(url, is_primary)')
+        .select('id, brand, model, price, type, condition, bike_images(url, thumb_url, is_primary)')
         .eq('user_id', sellerId)
         .eq('is_active', true)
         .neq('id', currentBikeId)
@@ -980,8 +980,9 @@ export function createBikeDetail({
       } // Ingen andre annoncer — skjul sektionen
 
       const cards = data.map(bike => {
-        const rawImg = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
-        const img = rawImg ? transformImageUrl(rawImg, { width: 300, quality: 75 }) : '';
+        const _rRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+        const rawImg = _rRec?.thumb_url || _rRec?.url;
+        const img = rawImg || '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
@@ -1015,7 +1016,7 @@ export function createBikeDetail({
     try {
       const { data, error: queryErr } = await supabase
         .from('bikes')
-        .select('id, brand, model, price, type, condition, bike_images(url, is_primary)')
+        .select('id, brand, model, price, type, condition, bike_images(url, thumb_url, is_primary)')
         .eq('type', bikeType)
         .eq('is_active', true)
         .neq('id', currentBikeId)
@@ -1028,8 +1029,9 @@ export function createBikeDetail({
       }
 
       const cards = data.map(bike => {
-        const rawImg = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
-        const img = rawImg ? transformImageUrl(rawImg, { width: 300, quality: 75 }) : '';
+        const _rRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+        const rawImg = _rRec?.thumb_url || _rRec?.url;
+        const img = rawImg || '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">

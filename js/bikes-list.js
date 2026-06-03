@@ -130,7 +130,7 @@ export function createBikesList({
       : (initialVist || BIKES_PAGE_SIZE);
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + fetchCount - 1);
@@ -266,11 +266,12 @@ export function createBikesList({
       const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
       const isDemo     = profile.shop_name === 'Cykelbørsen Demo';
       const initials   = getInitials(sellerName);
-      // Sortér med primary først; max 4 billeder i hover-cyklen (egress-hensyn)
+      // Sortér med primary først; max 4 billeder i hover-cyklen (egress-hensyn).
+      // Brug thumb_url (~800px) når den findes — fald tilbage til fuld url.
       const allImgs    = (b.bike_images || []).slice().sort((a, x) => (x.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
-      const imgUrls    = allImgs.slice(0, 4).map(i => i.url);
+      const imgUrls    = allImgs.slice(0, 4).map(i => i.thumb_url || i.url);
       const primaryImg = imgUrls[0];
-      const thumbSrc   = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
+      const thumbSrc   = primaryImg || '';
       const hasMulti   = imgUrls.length >= 2;
       const dataImgs   = hasMulti ? ` data-imgs='${JSON.stringify(imgUrls)}'` : '';
       const imgContent = primaryImg
@@ -391,7 +392,7 @@ export function createBikesList({
     const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + filterFetchCount - 1);

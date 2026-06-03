@@ -126,7 +126,7 @@ export function createBrandPage({
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, avatar_url), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, avatar_url), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .ilike('brand', brandName)
       .order('created_at', { ascending: false })
@@ -174,8 +174,9 @@ export function createBrandPage({
   }
 
   function buildBikeCard(b) {
-    const primaryImg = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url;
-    const thumb = primaryImg ? transformImageUrl(primaryImg, { width: 400, quality: 75 }) : '';
+    const _pRec = b.bike_images?.find(i => i.is_primary) || b.bike_images?.[0];
+    const primaryImg = _pRec?.thumb_url || _pRec?.url;
+    const thumb = primaryImg || '';
     const profile = b.profiles || {};
     const sellerType = profile.seller_type || 'private';
     const sellerName = profile.shop_name || profile.name || 'Sælger';

@@ -204,7 +204,8 @@ export function createCykelagentPage({
   }
 
   function _buildMatchCard({ bike, isNew }) {
-    const img = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url || '';
+    const _imgRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+    const img = _imgRec?.thumb_url || _imgRec?.url || '';
     const title = `${bike.brand || ''} ${bike.model || ''}`.trim() || 'Cykel';
     const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
     const price = bike.price != null ? `${Number(bike.price).toLocaleString('da-DK')} kr.` : '';

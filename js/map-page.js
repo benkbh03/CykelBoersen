@@ -330,7 +330,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
@@ -827,7 +827,7 @@ export function createMapPage({
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
         const cardsHtml = items.map(it => {
           const b = it.bike;
-          const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+          const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
           return '<button class="split-popup-list-item" onclick="navigateToBike(\'' + b.id + '\')">'
             + (primaryImg
                 ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + '" class="split-popup-list-img">'
@@ -857,7 +857,7 @@ export function createMapPage({
       } else {
         // Single-popup: som før
         const b = first.bike;
-        const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+        const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
         const sellerName = isDealer ? profile.shop_name : profile.name;
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
         const imgCount = (b.bike_images || []).length || 0;
@@ -949,7 +949,7 @@ export function createMapPage({
     container.innerHTML = bikes.map(b => {
       const profile    = b.profiles || {};
       const isDealer   = profile.seller_type === 'dealer';
-      const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+      const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
       const sellerBadge = isDealer
         ? '<span class="split-card-badge split-card-badge--dealer">Forhandler</span>'
         : '<span class="split-card-badge split-card-badge--private">Privat</span>';
