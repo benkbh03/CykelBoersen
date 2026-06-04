@@ -1092,7 +1092,7 @@ export function createMapPage({
 
     // Single-select grupper (synkroniserer med dd-* desktop-pills)
     const singleGroups = [
-      { key:'type',      title:'Cykeltype',  opts:[['','Alle'],['Racercykel','Racercykel'],['Mountainbike','Mountainbike'],['Citybike','Citybike'],['El-cykel','El-cykel'],['Gravel','Gravel'],['Ladcykel','Ladcykel'],['Børnecykel','Børnecykel']] },
+      { key:'type',      title:'Cykeltype',  opts:[['','Alle'],['Racercykel','Racercykel'],['Mountainbike','Mountainbike'],['Citybike','Citybike'],['El-cykel','El-cykel'],['Gravel','Gravel'],['Ladcykel','Ladcykel'],['Børnecykel','Børnecykel'],['Senior cykel','Senior cykel']] },
       { key:'seller',    title:'Sælger',     opts:[['all','Alle'],['private','Privat'],['dealer','Forhandler']] },
       { key:'condition', title:'Stand',      opts:[['','Alle'],['Ny','Ny'],['Som ny','Som ny'],['God stand','God stand'],['Brugt','Brugt']] },
       { key:'radius',    title:'Afstand',    opts:[['5','5 km'],['10','10 km'],['25','25 km'],['50','50 km'],['100','100 km'],['','Hele landet']] },

@@ -421,6 +421,7 @@ export function createFilters({
     setCount('type',   'Ladcykel',      data.filter(b => b.type === 'Ladcykel').length);
     setCount('type',   'Børnecykel',    data.filter(b => b.type === 'Børnecykel').length);
     setCount('type',   'Gravel',        data.filter(b => b.type === 'Gravel').length);
+    setCount('type',   'Senior cykel',  data.filter(b => b.type === 'Senior cykel').length);
     setCount('condition', 'Ny',         data.filter(b => b.condition === 'Ny').length);
     setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
     setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
