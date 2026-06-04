@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <title>Cykelbørsen – Køb & Sælg Nye og Brugte Cykler i Danmark</title>
-  <meta name="description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere." id="meta-description">
+  <meta name="description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere." id="meta-description">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#2A3D2E">
   <meta name="keywords" content="nye cykler, brugte cykler, køb cykel, sælg cykel, racercykel, mountainbike, el-cykel, citybike, Danmark, København, cykelmarkedsplads">
@@ -23,7 +23,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cykelbørsen.dk/">
   <meta property="og:title" content="Cykelbørsen – Køb & Sælg Nye og Brugte Cykler i Danmark">
-  <meta property="og:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce.">
+  <meta property="og:description" content="Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler og meget mere. Gratis at oprette annonce.">
   <meta property="og:locale" content="da_DK">
   <meta property="og:site_name" content="Cykelbørsen">
   <meta property="og:image" content="https://cykelbørsen.dk/hero.jpg.png">
@@ -47,17 +47,17 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260526nd">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526nd">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260526ne">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ne">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -73,7 +73,7 @@
     "@type": "WebSite",
     "name": "Cykelbørsen",
     "url": "https://cykelbørsen.dk/",
-    "description": "Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere.",
+    "description": "Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler og meget mere.",
     "inLanguage": "da",
     "potentialAction": {
       "@type": "SearchAction",
@@ -218,6 +218,7 @@
             <option>Gravel</option>
             <option>Ladcykel</option>
             <option>Børnecykel</option>
+            <option>Senior cykel</option>
           </select>
           <svg class="search-bar-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
@@ -252,6 +253,7 @@
       <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
       <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
       <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
     </div>
   </div>
 
@@ -523,6 +525,7 @@
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Ladcykel" onchange="applyFilters()"> Ladcykel <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Børnecykel" onchange="applyFilters()"> Børnecykel <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Gravel" onchange="applyFilters()"> Gravel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Senior cykel" onchange="applyFilters()"> Senior cykel <span class="filter-count">–</span></label>
         </div>
       </div>
       <div class="sidebar-box collapsed">
@@ -933,7 +936,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260526nd';
+    const V = '20260526ne';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

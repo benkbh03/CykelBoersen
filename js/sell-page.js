@@ -623,7 +623,7 @@ export function createSellPage({
         <label>Cykeltype <span class="req">*</span></label>
         <select id="sell-type">
           <option value="">Vælg type</option>
-          ${opt(c['sell-type'] || '', ['Racercykel','Mountainbike','Citybike','El-cykel','Ladcykel','Børnecykel','Gravel'])}
+          ${opt(c['sell-type'] || '', ['Racercykel','Mountainbike','Citybike','El-cykel','Ladcykel','Børnecykel','Gravel','Senior cykel'])}
         </select>
       </div>
 

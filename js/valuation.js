@@ -104,6 +104,7 @@ export function createValuation({
                 <option>Ladcykel</option>
                 <option>Børnecykel</option>
                 <option>Gravel</option>
+                <option>Senior cykel</option>
               </select>
             </div>
           </div>
