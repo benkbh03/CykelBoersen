@@ -255,7 +255,6 @@
   .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
   .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
   .price-reduced-card-badge { font-size: 0.6rem; padding: 3px 7px; }
-  .save-btn { width: 28px; height: 28px; font-size: 0.85rem; top: 8px; right: 8px; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
@@ -270,6 +269,11 @@
 }
 .save-btn:hover { background: #fff; transform: scale(1.08); }
 .save-btn:focus-visible { outline-color: var(--rust-light); }
+/* Mobil-overrides for save-btn — placeret EFTER base-reglen så cascade-orden
+   gør at de faktisk vinder over de generelle størrelser ovenfor. */
+@media (max-width: 560px) {
+  .save-btn { width: 28px; height: 28px; font-size: 0.85rem; top: 8px; right: 8px; }
+}
 .bike-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
 .bike-title {
