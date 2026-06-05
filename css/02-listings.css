@@ -254,6 +254,8 @@
   .warranty-card-badge { font-size: 0.6rem; padding: 3px 7px; }
   .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
   .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
+  .price-reduced-card-badge { font-size: 0.6rem; padding: 3px 7px; }
+  .save-btn { width: 28px; height: 28px; font-size: 0.85rem; top: 8px; right: 8px; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
