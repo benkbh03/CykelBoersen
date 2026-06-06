@@ -6,6 +6,7 @@ import {
   buildOpeningHoursEditor, bindOpeningHoursEditor, readOpeningHoursFromDOM,
   buildServicesEditor, bindServicesEditor, readServicesFromDOM,
 } from './dealer-extras.js';
+import { PROFILE_SESSION_FIELDS } from './supabase-client.js';
 
 export function createProfilePage({
   supabase,
@@ -474,7 +475,7 @@ export function createProfilePage({
     }
     showToast('✓ Onboarding-service aktiveret');
     // Refresh profile state + UI
-    const { data: fresh } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    const { data: fresh } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
     if (fresh) _renderAdminOnboardingState(fresh);
   }
 
@@ -491,7 +492,7 @@ export function createProfilePage({
       return;
     }
     showToast('Tilladelse tilbagekaldt');
-    const { data: fresh } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    const { data: fresh } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
     if (fresh) _renderAdminOnboardingState(fresh);
   }
 
