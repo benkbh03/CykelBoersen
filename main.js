@@ -6,7 +6,7 @@ import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJs
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
-import { supabase } from './js/supabase-client.js';
+import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
@@ -839,7 +839,7 @@ async function init() {
     currentUser = session.user;
 
     const { data: profile } = await supabase
-      .from('profiles').select('*').eq('id', currentUser.id).single();
+      .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
 
     // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
     const meta = currentUser.user_metadata || {};
@@ -863,7 +863,7 @@ async function init() {
       if (dealerUpsert.error) {
         console.error('Dealer upsert fejl:', dealerUpsert.error);
       }
-      const { data: freshProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      const { data: freshProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
       supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
       supabase.functions.invoke('notify-message', {
@@ -883,7 +883,7 @@ async function init() {
       currentProfile = profile;
     }
 
-    updateNav(true, currentProfile?.name, currentProfile?.avatar_url);
+    updateNav(true, currentProfile?.name, currentProfile?.avatar_thumb_url || currentProfile?.avatar_url);
     startRealtimeNotifications();
     // Vis admin knap hvis admin
     if (currentProfile && currentProfile.is_admin) {
@@ -924,7 +924,7 @@ async function init() {
 
       // Ægte login eller TOKEN_REFRESHED/andre events: hent profil og opdater UI
       let { data: profile, error: profileErr } = await supabase
-        .from('profiles').select('*').eq('id', currentUser.id).single();
+        .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
 
       // Ny OAuth-bruger uden profil endnu — opret den automatisk
@@ -948,7 +948,7 @@ async function init() {
           postcode:       isPendingDealer ? (meta.postcode || null) : null,
           location_precision: isPendingDealer && meta.lat && meta.lng ? 'exact' : null,
         }, { onConflict: 'id' });
-        const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        const { data: newProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
         profile = newProfile;
       }
 
@@ -975,13 +975,13 @@ async function init() {
           console.error('Pending dealer upgrade fejl:', upgradeRes.error);
         } else {
           supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
-          const { data: refreshed } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+          const { data: refreshed } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
           profile = refreshed || profile;
         }
       }
 
       currentProfile = profile;
-      updateNav(true, profile?.name, profile?.avatar_url);
+      updateNav(true, profile?.name, profile?.avatar_thumb_url || profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
       checkEmailConfirmed();
@@ -1164,9 +1164,9 @@ async function init() {
     // Genindlæs profil så verified-status er opdateret
     if (currentUser) {
       const { data: freshProfile } = await supabase
-        .from('profiles').select('*').eq('id', currentUser.id).single();
+        .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
-      updateNav(true, freshProfile?.name, freshProfile?.avatar_url);
+      updateNav(true, freshProfile?.name, freshProfile?.avatar_thumb_url || freshProfile?.avatar_url);
     }
     showToast('🎉 Velkommen som forhandler! Din 3-måneders gratis periode er startet.');
     setTimeout(() => openProfileModal(), 600);

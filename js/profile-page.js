@@ -6,6 +6,7 @@ import {
   buildOpeningHoursEditor, bindOpeningHoursEditor, readOpeningHoursFromDOM,
   buildServicesEditor, bindServicesEditor, readServicesFromDOM,
 } from './dealer-extras.js';
+import { PROFILE_SESSION_FIELDS } from './supabase-client.js';
 
 export function createProfilePage({
   supabase,
@@ -285,6 +286,52 @@ export function createProfilePage({
     } finally { restore(); }
   }
 
+  // Lav en lille (128px) WebP-thumbnail af et avatar-billede. Avatars vises
+  // typisk 40×40 i bike-kort og 36×36 i nav — at servere fuld-opløsning er
+  // ren egress-spild. 128px giver headroom til retina/3× DPR.
+  async function makeAvatarThumbnail(file) {
+    if (!file || file.type === 'image/gif') return null;
+    let objectUrl = null;
+    try {
+      let source;
+      if (typeof createImageBitmap === 'function') {
+        try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+        catch { source = null; }
+      }
+      if (!source) {
+        objectUrl = URL.createObjectURL(file);
+        source = await new Promise((resolve, reject) => {
+          const img = new Image();
+          const timeout = setTimeout(() => reject(new Error('Billede timeout')), 10000);
+          img.onload  = () => { clearTimeout(timeout); resolve(img); };
+          img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
+          img.src = objectUrl;
+        });
+      }
+      const MAX = 128;
+      let width  = source.width  || source.naturalWidth;
+      let height = source.height || source.naturalHeight;
+      if (!width || !height) return null;
+      if (width > MAX || height > MAX) {
+        const ratio = Math.min(MAX / width, MAX / height);
+        width  = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.drawImage(source, 0, 0, width, height);
+      if (source.close) source.close();
+      return await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.78));
+    } catch (e) {
+      console.warn('Avatar-thumbnail-generering fejlede:', e);
+      return null;
+    } finally {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    }
+  }
+
   async function uploadAvatar(file) {
     const currentUser = getCurrentUser();
     if (!file || !currentUser) return;
@@ -292,6 +339,8 @@ export function createProfilePage({
 
     const ext  = file.name.split('.').pop();
     const path = `${currentUser.id}/avatar.${ext}`;
+    // Start thumbnail-generering parallelt med fuld-upload — sparer ~1 sek total.
+    const thumbBlobPromise = makeAvatarThumbnail(file);
 
     const { error: uploadError } = await supabase.storage
       .from('avatars')
@@ -301,14 +350,32 @@ export function createProfilePage({
 
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
     // Tilføj cache-busting så browseren henter det nye billede
-    const avatarUrl = publicUrl + '?t=' + Date.now();
+    const ts = Date.now();
+    const avatarUrl = publicUrl + '?t=' + ts;
+
+    // Best-effort thumbnail-upload. Hvis den fejler, falder vi tilbage til
+    // fuld URL — der er ingen funktionelle konsekvenser, bare lidt mere egress.
+    let avatarThumbUrl = null;
+    try {
+      const thumbBlob = await thumbBlobPromise;
+      if (thumbBlob && thumbBlob.size > 0 && thumbBlob.size < file.size) {
+        const thumbPath = `${currentUser.id}/avatar-thumb.webp`;
+        const { error: thumbErr } = await supabase.storage
+          .from('avatars')
+          .upload(thumbPath, thumbBlob, { upsert: true, contentType: 'image/webp', cacheControl: '2592000' });
+        if (!thumbErr) {
+          const { data: { publicUrl: thumbPublic } } = supabase.storage.from('avatars').getPublicUrl(thumbPath);
+          avatarThumbUrl = thumbPublic + '?t=' + ts;
+        }
+      }
+    } catch (e) { console.warn('Avatar-thumb-upload sprang over:', e); }
 
     const { error: updateError } = await supabase
-      .from('profiles').update({ avatar_url: avatarUrl }).eq('id', currentUser.id);
+      .from('profiles').update({ avatar_url: avatarUrl, avatar_thumb_url: avatarThumbUrl }).eq('id', currentUser.id);
 
     if (updateError) { showToast('❌ Kunne ikke gemme profilbillede'); return; }
 
-    setCurrentProfile({ ...getCurrentProfile(), avatar_url: avatarUrl });
+    setCurrentProfile({ ...getCurrentProfile(), avatar_url: avatarUrl, avatar_thumb_url: avatarThumbUrl });
     showProfileData();
     updateNavAvatar(getCurrentProfile()?.name, avatarUrl);
     showToast('✅ Profilbillede opdateret!');
@@ -474,7 +541,7 @@ export function createProfilePage({
     }
     showToast('✓ Onboarding-service aktiveret');
     // Refresh profile state + UI
-    const { data: fresh } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    const { data: fresh } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
     if (fresh) _renderAdminOnboardingState(fresh);
   }
 
@@ -491,7 +558,7 @@ export function createProfilePage({
       return;
     }
     showToast('Tilladelse tilbagekaldt');
-    const { data: fresh } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    const { data: fresh } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
     if (fresh) _renderAdminOnboardingState(fresh);
   }
 
