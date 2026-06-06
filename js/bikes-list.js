@@ -130,7 +130,7 @@ export function createBikesList({
       : (initialVist || BIKES_PAGE_SIZE);
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + fetchCount - 1);
@@ -277,8 +277,11 @@ export function createBikesList({
       const imgContent = primaryImg
         ? `<img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300" class="bcimg bcimg--front">${hasMulti ? '<img alt="" class="bcimg bcimg--back" loading="lazy" decoding="async">' : ''}`
         : '<span style="font-size:4rem">🚲</span>';
-      const avatarUrl  = safeAvatarUrl(profile.avatar_url);
-      const avatarThumb = avatarUrl ? transformImageUrl(avatarUrl, { width: 80, quality: 75 }) : null;
+      // Foretræk avatar_thumb_url (~128px WebP, ~10 KB) over fuld upload (~300 KB).
+      // transformImageUrl er no-op uden Pro-plan og returnerede fuld URL — det
+      // var den primære kilde til unødig forside-egress.
+      const avatarFull  = safeAvatarUrl(profile.avatar_url);
+      const avatarThumb = safeAvatarUrl(profile.avatar_thumb_url) || avatarFull;
       const avatarHtml = avatarThumb
         ? `<img src="${avatarThumb}" alt="" loading="lazy" decoding="async" width="40" height="40">`
         : esc(initials);
@@ -392,7 +395,7 @@ export function createBikesList({
     const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + filterFetchCount - 1);

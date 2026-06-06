@@ -883,7 +883,7 @@ async function init() {
       currentProfile = profile;
     }
 
-    updateNav(true, currentProfile?.name, currentProfile?.avatar_url);
+    updateNav(true, currentProfile?.name, currentProfile?.avatar_thumb_url || currentProfile?.avatar_url);
     startRealtimeNotifications();
     // Vis admin knap hvis admin
     if (currentProfile && currentProfile.is_admin) {
@@ -981,7 +981,7 @@ async function init() {
       }
 
       currentProfile = profile;
-      updateNav(true, profile?.name, profile?.avatar_url);
+      updateNav(true, profile?.name, profile?.avatar_thumb_url || profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
       checkEmailConfirmed();
@@ -1166,7 +1166,7 @@ async function init() {
       const { data: freshProfile } = await supabase
         .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
-      updateNav(true, freshProfile?.name, freshProfile?.avatar_url);
+      updateNav(true, freshProfile?.name, freshProfile?.avatar_thumb_url || freshProfile?.avatar_url);
     }
     showToast('🎉 Velkommen som forhandler! Din 3-måneders gratis periode er startet.');
     setTimeout(() => openProfileModal(), 600);
