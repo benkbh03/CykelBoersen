@@ -3701,18 +3701,24 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .ss-notif-text { flex: 1; min-width: 0; }
 }
 
-/* ── HURTIG-SVAR SKABELONER ── */
+/* ── HURTIG-SVAR SKABELONER ──
+   Vandret scroll (ikke wrap) så de aldrig optager mere end én linje —
+   ellers presser de Send-knappen ned under fold. */
 .quick-replies {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  padding: 8px 0 6px;
+  display: flex; gap: 5px;
+  padding: 4px 0 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.quick-replies::-webkit-scrollbar { display: none; }
 .qr-btn {
-  background: var(--sand); border: 1.5px solid var(--border);
-  border-radius: 20px; padding: 5px 12px;
-  font-size: 0.75rem; font-weight: 500; color: var(--charcoal);
+  background: var(--sand); border: 1px solid var(--border);
+  border-radius: 14px; padding: 3px 10px;
+  font-size: 0.72rem; font-weight: 500; color: var(--charcoal);
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: border-color 0.15s, background 0.15s;
-  white-space: nowrap;
+  white-space: nowrap; flex-shrink: 0;
 }
 .qr-btn:hover { border-color: var(--forest); background: #f0f4f0; }
 
