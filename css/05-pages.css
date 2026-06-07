@@ -280,13 +280,23 @@
     max-height: none;
   }
   .inbox-page-empty-state { display: none; }
+  /* Når en samtale er åben, lås baggrunds-scroll så brugeren ikke
+     scroller den underliggende side i stedet for tråden. :has() rammer
+     kun når thread-view'et faktisk er synligt (display sat inline af JS). */
+  body:has(.inbox-page-chat[style*="display: flex"]) {
+    overflow: hidden;
+    height: 100vh;
+    -webkit-overflow-scrolling: auto;
+  }
   .inbox-page-chat {
     position: fixed;
-    inset: 0;
+    top: 0; right: 0; bottom: 0; left: 0;
+    width: 100%;
     z-index: 2100;
     background: #fff;
     max-height: none;
     border-radius: 0;
+    margin: 0;
   }
   .inbox-chat-header {
     padding: 14px 16px;
