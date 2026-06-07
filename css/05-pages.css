@@ -280,13 +280,15 @@
     max-height: none;
   }
   .inbox-page-empty-state { display: none; }
-  /* Når en samtale er åben, lås baggrunds-scroll så brugeren ikke
-     scroller den underliggende side i stedet for tråden. :has() rammer
-     kun når thread-view'et faktisk er synligt (display sat inline af JS). */
-  body:has(.inbox-page-chat[style*="display: flex"]) {
-    overflow: hidden;
-    height: 100vh;
-    -webkit-overflow-scrolling: auto;
+  /* Body-scroll-lock med overflow:hidden får iOS Safari til at "kvæle" de
+     første 3-5 sek. af touch-events fordi Safari prøver at afgøre om
+     scrollen er for body eller for indre element. I stedet bruger vi
+     overscroll-behavior på .inbox-chat-messages nedenfor — det forhindrer
+     scroll-chaining uden at fryse touch-håndteringen. */
+  .inbox-chat-messages {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
   .inbox-page-chat {
     position: fixed;
@@ -297,6 +299,7 @@
     max-height: none;
     border-radius: 0;
     margin: 0;
+    overscroll-behavior: contain;
   }
   .inbox-chat-header {
     padding: 14px 16px;
