@@ -571,8 +571,9 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
    "Giv bud"/"Kontakt"-bar i bunden (sat via body.viewing-bike-page). */
 body.viewing-bike-page #chat-widget { display: none; }
 /* Samme problem i indbakken: chat-bobblen skygger for Send-knappen når
-   man er inde i en samtale. Skjul den så længe indbakken er åben. */
-body:has(#inbox-modal.open) #chat-widget { display: none; }
+   man er inde i en samtale. Indbakken er en route-side (.inbox-page),
+   ikke en modal — derfor target på .inbox-page i stedet for #inbox-modal. */
+body:has(.inbox-page) #chat-widget { display: none; }
 
 #chat-toggle {
   width: 56px; height: 56px; border-radius: 50%;

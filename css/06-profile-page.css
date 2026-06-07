@@ -1509,17 +1509,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-summary-row { display: flex; justify-content: space-between; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; }
 .sell-summary-row-key { opacity: 0.55; }
 .sell-summary-row-val { font-weight: 500; text-align: right; max-width: 60%; }
-/* Wizard footer — sits above the bottom nav bar */
+/* Wizard footer — inline i formularen (var tidligere position:fixed med en tung
+   gradient-overlay i bunden, men det skyggede for OVERSIGT-preview'et på step 3
+   og var inkonsistent med step 1+2 som alligevel var inline). */
 .sell-wizard-footer {
-  position: fixed;
-  bottom: calc(68px + env(safe-area-inset-bottom));
-  left: 0; right: 0;
-  padding: 16px 16px 12px;
-  background: linear-gradient(to top, var(--cream) 60%, transparent 100%);
-  z-index: 2100;
-  pointer-events: none;
+  padding: 24px 16px calc(28px + env(safe-area-inset-bottom));
 }
-.sell-wizard-cta { pointer-events: auto; }
 .sell-wizard-cta {
   display: flex; align-items: center; justify-content: center; gap: 7px;
   width: 100%; max-width: 520px; height: 52px; margin: 0 auto;
