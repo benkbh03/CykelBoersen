@@ -305,6 +305,9 @@ export function createListingEdit({
     if (!updates.brand || !updates.price || !updates.city) {
       showToast('⚠️ Udfyld alle påkrævede felter'); return;
     }
+    if (!Number.isFinite(updates.price) || updates.price < 1 || updates.price > 9999999) {
+      showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
+    }
 
     const restore = btnLoading('edit-save-btn', 'Gemmer annonce...');
     try {

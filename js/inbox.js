@@ -149,10 +149,10 @@ export function createInbox({
       const bikeName = t.bike ? `${t.bike.brand} ${t.bike.model}` : (localStorage.getItem(`bike_name_${t.bikeId}`) || 'Ukendt cykel');
       return `
       <div class="inbox-row ${t.hasUnread ? 'unread' : ''}"
-           onclick="openThread('${t.bikeId}', '${t.otherId}', '${(t.otherName||'Ukendt').replace(/'/g,'')}')">
+           onclick="openThread('${escAttr(t.bikeId)}', '${escAttr(t.otherId)}', '${escAttr(t.otherName||'Ukendt')}')">
         <div class="inbox-avatar">${initials}</div>
         <div class="inbox-content">
-          <div class="inbox-from">${t.otherName || 'Ukendt'}</div>
+          <div class="inbox-from">${esc(t.otherName || 'Ukendt')}</div>
           <div class="inbox-bike">Re: ${bikeName}</div>
           <div class="inbox-preview">${preview}</div>
         </div>
@@ -468,7 +468,7 @@ export function createInbox({
       const p        = s.profiles || {};
       const liker    = p.seller_type === 'dealer' ? p.shop_name : p.name;
       const likerName = liker || 'Bruger';
-      const safeName  = likerName.replace(/'/g, '');
+      const safeName  = escAttr(likerName);
       const initials  = getInitials(likerName);
       const avUrl     = safeAvatarUrl(p.avatar_url);
       const avatarHTML = avUrl
@@ -501,7 +501,7 @@ export function createInbox({
       const bikeName = t.bike ? esc(t.bike.brand + ' ' + t.bike.model) : esc(localStorage.getItem(`bike_name_${t.bikeId}`) || 'Ukendt cykel');
       const bikeImg  = t.bike?.bike_images?.find(i => i.is_primary)?.url || t.bike?.bike_images?.[0]?.url;
       const isBid    = lastMsg.content.indexOf('💰') === 0;
-      const safeName = (t.otherName || 'Ukendt').replace(/'/g, '');
+      const safeName = escAttr(t.otherName || 'Ukendt');
       const _av      = safeAvatarUrl(t.otherAvatar);
       const avatarHTML = _av
         ? '<img src="' + _av + '" alt="" class="inbox-page-avatar-img">'

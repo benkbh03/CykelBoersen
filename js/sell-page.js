@@ -331,6 +331,9 @@ export function createSellPage({
       if (!brand || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
+      if (!Number.isFinite(price) || price < 1 || price > 9999999) {
+        showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); restore(); return;
+      }
       if (!model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
         visibleCtas.forEach(b => {
           b.disabled = false;
@@ -609,13 +612,13 @@ export function createSellPage({
         <div class="sell-field">
           <label>Mærke <span class="req">*</span></label>
           <div class="brand-autocomplete-wrap">
-            <input type="text" id="sell-brand" placeholder="Trek" value="${esc(c['sell-brand'] || '')}" class="${aiClass}" oninput="brandAutocomplete(this, 'sell-brand-list')" autocomplete="off">
+            <input type="text" id="sell-brand" placeholder="Trek" value="${esc(c['sell-brand'] || '')}" class="${aiClass}" oninput="brandAutocomplete(this, 'sell-brand-list')" autocomplete="off" maxlength="60">
             <div id="sell-brand-list" class="brand-autocomplete-list" style="display:none"></div>
           </div>
         </div>
         <div class="sell-field">
           <label>Model <span class="optional-hint">(anbefales)</span></label>
-          <input type="text" id="sell-model" placeholder="FX 3 Disc" value="${esc(c['sell-model'] || '')}" class="${aiClass}">
+          <input type="text" id="sell-model" placeholder="FX 3 Disc" value="${esc(c['sell-model'] || '')}" class="${aiClass}" maxlength="60">
         </div>
       </div>
 
@@ -675,7 +678,7 @@ export function createSellPage({
       <div class="sell-field">
         <label>Pris <span class="req">*</span> <span class="hint">inkl. moms</span></label>
         <div class="suffix-wrap">
-          <input type="number" id="sell-price" placeholder="4.500" min="0" value="${c['sell-price'] || ''}" onwheel="this.blur()">
+          <input type="number" id="sell-price" placeholder="4.500" min="1" max="9999999" step="1" value="${c['sell-price'] || ''}" onwheel="this.blur()">
           <span class="suffix">DKK</span>
         </div>
         <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
@@ -811,7 +814,7 @@ export function createSellPage({
 
       <div class="sell-field">
         <label>Beskrivelse <span class="req">*</span> <span class="hint">min. 40 tegn</span></label>
-        <textarea id="sell-desc" placeholder="Fortæl om cyklens stand, udstyr, historik, hvorfor du sælger…" rows="5">${esc(c['sell-desc'] || '')}</textarea>
+        <textarea id="sell-desc" placeholder="Fortæl om cyklens stand, udstyr, historik, hvorfor du sælger…" rows="5" maxlength="2000">${esc(c['sell-desc'] || '')}</textarea>
       </div>
 
       <div class="sell-field">

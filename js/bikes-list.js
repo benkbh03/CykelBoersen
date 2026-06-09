@@ -413,7 +413,10 @@ export function createBikesList({
       }
     }
     if (search) {
-      query = query.or(`brand.ilike.%${search}%,model.ilike.%${search}%`);
+      // Fjern PostgREST-meta-tegn (%, _, \, komma, parenteser, anførselstegn) så
+      // søgeteksten ikke kan ændre .or()-filterets logik (injection).
+      const s = String(search).replace(/[%_\\,.()"']/g, '');
+      if (s) query = query.or(`brand.ilike.%${s}%,model.ilike.%${s}%`);
     }
     if (minPrice)              query = query.gte('price', minPrice);
     if (maxPrice)              query = query.lte('price', maxPrice);
