@@ -172,7 +172,6 @@ export function createFilters({
         ${pills.map(p => `<span class="afb-pill">${esc(p.label)}<button class="afb-pill-remove" onclick="removeFilterPill('${p.type}','${(p.value || '').replace(/'/g, "\\'")}')">✕</button></span>`).join('')}
       </div>
       <div class="afb-actions">
-        <button class="afb-save-agent" onclick="saveCurrentSearch()" title="Få besked på e-mail når nye cykler matcher netop disse filtre">🔔 Opret Cykelagent</button>
         <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
       </div>
     `;
@@ -422,6 +421,7 @@ export function createFilters({
     setCount('type',   'Ladcykel',      data.filter(b => b.type === 'Ladcykel').length);
     setCount('type',   'Børnecykel',    data.filter(b => b.type === 'Børnecykel').length);
     setCount('type',   'Gravel',        data.filter(b => b.type === 'Gravel').length);
+    setCount('type',   'Senior cykel',  data.filter(b => b.type === 'Senior cykel').length);
     setCount('condition', 'Ny',         data.filter(b => b.condition === 'Ny').length);
     setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
     setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);

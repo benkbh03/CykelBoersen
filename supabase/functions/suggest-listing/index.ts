@@ -69,7 +69,7 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
 {
   "brand": "string eller null",
   "model": "string eller null",
-  "type": "Racercykel|Mountainbike|Citybike|El-cykel|Ladcykel|Børnecykel|Gravel eller null",
+  "type": "Racercykel|Mountainbike|Citybike|El-cykel|Ladcykel|Børnecykel|Gravel|Senior cykel eller null",
   "size": "XS (44–48 cm)|S (49–52 cm)|M (53–56 cm)|L (57–60 cm)|XL (61+ cm) eller null",
   "wheel_size": "26\\"|27.5\\" / 650b|28\\"|29\\" eller null",
   "year": "integer eller null",
@@ -94,6 +94,9 @@ Regler:
 - Kun felter du er rimeligt sikker på. Returnér null hvis du ikke kan se det.
 - Vær ærlig: hvis du kun ser delvist, returnér null på ukendte felter.
 - "condition" vælges baseret på synlig slitage, lak, dæk, kædestand.
+- "Senior cykel": vælg denne type hvis cyklen tydeligt er designet til ældre/komfort —
+  meget lav indstigning (step-through/wave-ramme), oprejst styr, fodbremse/tilbagetrædsbremse,
+  ofte med kurv/bagagebærer og lavgear. Hvis det blot er en almindelig citybike, vælg Citybike.
 - Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
 - Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
 - Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.

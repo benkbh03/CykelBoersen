@@ -1509,17 +1509,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-summary-row { display: flex; justify-content: space-between; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; }
 .sell-summary-row-key { opacity: 0.55; }
 .sell-summary-row-val { font-weight: 500; text-align: right; max-width: 60%; }
-/* Wizard footer — sits above the bottom nav bar */
+/* Wizard footer — inline i formularen (var tidligere position:fixed med en tung
+   gradient-overlay i bunden, men det skyggede for OVERSIGT-preview'et på step 3
+   og var inkonsistent med step 1+2 som alligevel var inline). */
 .sell-wizard-footer {
-  position: fixed;
-  bottom: calc(68px + env(safe-area-inset-bottom));
-  left: 0; right: 0;
-  padding: 16px 16px 12px;
-  background: linear-gradient(to top, var(--cream) 60%, transparent 100%);
-  z-index: 2100;
-  pointer-events: none;
+  padding: 24px 16px calc(28px + env(safe-area-inset-bottom));
 }
-.sell-wizard-cta { pointer-events: auto; }
 .sell-wizard-cta {
   display: flex; align-items: center; justify-content: center; gap: 7px;
   width: 100%; max-width: 520px; height: 52px; margin: 0 auto;
@@ -3701,18 +3696,24 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .ss-notif-text { flex: 1; min-width: 0; }
 }
 
-/* ── HURTIG-SVAR SKABELONER ── */
+/* ── HURTIG-SVAR SKABELONER ──
+   Vandret scroll (ikke wrap) så de aldrig optager mere end én linje —
+   ellers presser de Send-knappen ned under fold. */
 .quick-replies {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  padding: 8px 0 6px;
+  display: flex; gap: 5px;
+  padding: 4px 0 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.quick-replies::-webkit-scrollbar { display: none; }
 .qr-btn {
-  background: var(--sand); border: 1.5px solid var(--border);
-  border-radius: 20px; padding: 5px 12px;
-  font-size: 0.75rem; font-weight: 500; color: var(--charcoal);
+  background: var(--sand); border: 1px solid var(--border);
+  border-radius: 14px; padding: 3px 10px;
+  font-size: 0.72rem; font-weight: 500; color: var(--charcoal);
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: border-color 0.15s, background 0.15s;
-  white-space: nowrap;
+  white-space: nowrap; flex-shrink: 0;
 }
 .qr-btn:hover { border-color: var(--forest); background: #f0f4f0; }
 

@@ -6,7 +6,7 @@ import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJs
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
-import { supabase } from './js/supabase-client.js';
+import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
@@ -213,6 +213,7 @@ const {
   updateFilterCounts:  (...args) => updateFilterCounts(...args),
   searchBikes:         (...args) => searchBikes(...args),
   closeProfileModal:   (...args) => closeProfileModal(...args),
+  openLoginModal:      (...args) => openLoginModal(...args),
 });
 
 // Reviews (rating modal + submit-flow).
@@ -241,6 +242,7 @@ const _ensureProfileModals = lazyCtrl(
     closeAllDealersModal: (...args) => closeAllDealersModal(...args),
     closeAllModals:       (...args) => closeAllModals(...args),
     highlightStars,
+    followDealer,
   }),
 );
 const filterByDealerCard       = lazyMethod(_ensureProfileModals, 'filterByDealerCard');
@@ -725,6 +727,19 @@ async function init() {
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
   });
 
+  // Mobil hamburger-menu (top-nav-links skjult på ≤768px)
+  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu, initMobileNavScroll }) => {
+    window.toggleMobileMenu = toggleMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+    initMobileMenu();
+    initMobileNavScroll();
+  });
+
+  // Hover-galleri: krydsfader gennem annonce-billeder på desktop
+  import(`./js/card-hover-gallery.js?v=${ASSET_VERSION}`).then(({ initCardHoverGallery }) => {
+    initCardHoverGallery();
+  });
+
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
   const searchCityInput  = document.getElementById('search-city');
   const searchCityClear  = document.getElementById('search-city-clear');
@@ -824,7 +839,7 @@ async function init() {
     currentUser = session.user;
 
     const { data: profile } = await supabase
-      .from('profiles').select('*').eq('id', currentUser.id).single();
+      .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
 
     // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
     const meta = currentUser.user_metadata || {};
@@ -848,7 +863,7 @@ async function init() {
       if (dealerUpsert.error) {
         console.error('Dealer upsert fejl:', dealerUpsert.error);
       }
-      const { data: freshProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      const { data: freshProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
       supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
       supabase.functions.invoke('notify-message', {
@@ -868,7 +883,7 @@ async function init() {
       currentProfile = profile;
     }
 
-    updateNav(true, currentProfile?.name, currentProfile?.avatar_url);
+    updateNav(true, currentProfile?.name, currentProfile?.avatar_thumb_url || currentProfile?.avatar_url);
     startRealtimeNotifications();
     // Vis admin knap hvis admin
     if (currentProfile && currentProfile.is_admin) {
@@ -876,6 +891,12 @@ async function init() {
       if (adminBtn) adminBtn.style.display = 'flex';
     }
     checkEmailConfirmed();
+    // Ventende Cykelagent fra "udfyld før login"-flow. Signup-bekræftelse håndteres
+    // i _initialAuthType-blokken nedenfor (kombineret toast); øvrige session-restores her.
+    if (_initialAuthType !== 'signup' &&
+        (localStorage.getItem('_pendingCykelagent') || currentUser.user_metadata?.pending_cykelagent)) {
+      flushPendingCykelagent().catch(() => {});
+    }
     // Opdater last_seen (fire-and-forget)
     supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id).then(null, () => {});
   } else {
@@ -903,7 +924,7 @@ async function init() {
 
       // Ægte login eller TOKEN_REFRESHED/andre events: hent profil og opdater UI
       let { data: profile, error: profileErr } = await supabase
-        .from('profiles').select('*').eq('id', currentUser.id).single();
+        .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
 
       // Ny OAuth-bruger uden profil endnu — opret den automatisk
@@ -927,7 +948,7 @@ async function init() {
           postcode:       isPendingDealer ? (meta.postcode || null) : null,
           location_precision: isPendingDealer && meta.lat && meta.lng ? 'exact' : null,
         }, { onConflict: 'id' });
-        const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        const { data: newProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
         profile = newProfile;
       }
 
@@ -954,13 +975,13 @@ async function init() {
           console.error('Pending dealer upgrade fejl:', upgradeRes.error);
         } else {
           supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
-          const { data: refreshed } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+          const { data: refreshed } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
           profile = refreshed || profile;
         }
       }
 
       currentProfile = profile;
-      updateNav(true, profile?.name, profile?.avatar_url);
+      updateNav(true, profile?.name, profile?.avatar_thumb_url || profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
       checkEmailConfirmed();
@@ -973,7 +994,7 @@ async function init() {
         // Hvis brugeren havde en pending Cykelagent fra et "udfyld før login"-flow,
         // aktivér den nu. localStorage-check er billig — kører hver gang men er no-op
         // hvis nøglen ikke findes.
-        if (localStorage.getItem('_pendingCykelagent')) {
+        if (localStorage.getItem('_pendingCykelagent') || currentUser?.user_metadata?.pending_cykelagent) {
           flushPendingCykelagent().catch(() => {});
         }
       }
@@ -1104,7 +1125,15 @@ async function init() {
       showToast('✅ Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.');
       navigateTo('/min-profil');
     } else {
-      showToast('✅ Din e-mail er bekræftet!');
+      // Aktivér evt. ventende Cykelagent fra "udfyld før login"-flow og vis
+      // kombineret bekræftelse (mail bekræftet + agent aktiveret) i ÉN toast.
+      let agentActivated = false;
+      if (localStorage.getItem('_pendingCykelagent') || currentUser?.user_metadata?.pending_cykelagent) {
+        agentActivated = await flushPendingCykelagent({ silent: true }).catch(() => false);
+      }
+      showToast(agentActivated
+        ? '✅ Din e-mail er bekræftet — og din Cykelagent er nu aktiveret! 🔔'
+        : '✅ Din e-mail er bekræftet!');
       // Førstegangs-velkomst: vis onboarding-modalen når brugeren lander logget ind
       // efter email-bekræftelse. showOnboardingBanner er idempotent (viser ikke dobbelt),
       // og 'onboarded'-guarden sikrer den ikke dukker op igen ved senere logins.
@@ -1135,9 +1164,9 @@ async function init() {
     // Genindlæs profil så verified-status er opdateret
     if (currentUser) {
       const { data: freshProfile } = await supabase
-        .from('profiles').select('*').eq('id', currentUser.id).single();
+        .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
-      updateNav(true, freshProfile?.name, freshProfile?.avatar_url);
+      updateNav(true, freshProfile?.name, freshProfile?.avatar_thumb_url || freshProfile?.avatar_url);
     }
     showToast('🎉 Velkommen som forhandler! Din 3-måneders gratis periode er startet.');
     setTimeout(() => openProfileModal(), 600);
@@ -1205,7 +1234,7 @@ function updateNav(loggedIn, name, avatarUrl) {
         sellBtn.style.opacity = '0.6';
         sellBtn.style.cursor = 'not-allowed';
       } else {
-        sellBtn.textContent = '+ Sæt til salg';
+        sellBtn.innerHTML = '<span class="sell-label-full">+ Sæt til salg</span><span class="sell-label-short">+ Sælg</span>';
         sellBtn.setAttribute('onclick', 'event.preventDefault(); openModal()');
         sellBtn.removeAttribute('title');
         sellBtn.style.opacity = '';
@@ -2100,7 +2129,12 @@ function brandAutocomplete(input, listId) {
 
 function selectBrand(brand, inputId, listId) {
   const input = document.getElementById(inputId);
-  if (input) input.value = brand;
+  if (input) {
+    input.value = brand;
+    // Lad evt. oninput-state-sync køre (fx Cykelagent-editorens _form.brand),
+    // så et valgt mærke også gemmes, ikke bare vises i feltet.
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
   const list = document.getElementById(listId);
   if (list) list.style.display = 'none';
 }
@@ -2697,7 +2731,7 @@ const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport, initInviteForm, loadAdminStats }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, initInviteForm, loadAdminStats }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -2946,71 +2980,6 @@ function updateVerifyUI() {
   }
 }
 
-/* ── ADMIN: ID ANSØGNINGER ── */
-
-async function loadIdApplications() {
-  var list = document.getElementById('admin-id-list');
-  list.innerHTML = '<p style="color:var(--muted)">Henter ansøgninger...</p>';
-
-  var result;
-  try {
-    result = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id_pending', true)
-      .eq('id_verified', false);
-  } catch (e) {
-    list.innerHTML = retryHTML('Kunne ikke hente ID-ansøgninger.', 'loadIdApplications');
-    return;
-  }
-
-  if (result.error || !result.data || result.data.length === 0) {
-    list.innerHTML = '<p style="color:var(--muted)">Ingen ventende ID-ansøgninger.</p>';
-    return;
-  }
-
-  list.innerHTML = result.data.map(function(p) {
-    // Kun https-URLs (safeAvatarUrl) — neutraliserer evt. javascript:-URL i id_doc_url
-    var idDocUrl = safeAvatarUrl(p.id_doc_url || '');
-    return '<div class="admin-row">'
-      + '<img class="admin-id-img" src="' + esc(idDocUrl) + '" onclick="window.open(\'' + escAttr(idDocUrl) + '\',\'_blank\')" title="Klik for at se fuldt billede">'
-      + '<div class="admin-row-info">'
-      + '<div class="admin-row-name">' + esc(p.name || 'Ukendt') + '</div>'
-      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat') + '</div>'
-      + '</div>'
-      + '<div class="admin-row-actions">'
-      + '<button class="btn-approve" onclick="approveId(\'' + p.id + '\')">✓ Godkend ID</button>'
-      + '<button class="btn-reject" onclick="rejectId(\'' + p.id + '\')">✕ Afvis</button>'
-      + '</div></div>';
-  }).join('');
-}
-
-async function approveId(userId) {
-  const res = await _callAdminAction('approve_id', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('✅ ID godkendt — bruger har nu et blåt badge');
-  loadIdApplications();
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'id_approved', user_id: userId },
-  }).catch(() => {});
-  if (currentUser && currentUser.id === userId) {
-    currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
-    updateVerifyUI();
-    loadBikes();
-  }
-}
-
-async function rejectId(userId) {
-  if (!confirm('Afvis denne ID-ansøgning?')) return;
-  const res = await _callAdminAction('reject_id', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('ID-ansøgning afvist');
-  loadIdApplications();
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'id_rejected', user_id: userId },
-  }).catch(() => {});
-}
-
 async function loadAdminStats() {
   const el = document.getElementById('admin-stats');
   if (!el) return;
@@ -3159,8 +3128,6 @@ async function submitDealerInvite() {
 window.submitDealerInvite   = submitDealerInvite;
 window.loadAdminStats       = loadAdminStats;
 window.updateVerifyUI       = updateVerifyUI;
-window.approveId          = approveId;
-window.rejectId           = rejectId;
 window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
 window.pickStar              = pickStar;

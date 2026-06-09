@@ -1,97 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/om-os</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/vilkaar</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/privatlivspolitik</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/kontakt</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/bliv-forhandler</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/forhandlere</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/vurder-min-cykel</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/maerker</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/sikkerhedsguide</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/stelstoerrelse-guide</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://xn--cykelbrsen-5cb.dk/blog</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Blog-artikler -->
+  <url><loc>https://xn--cykelbrsen-5cb.dk/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/forhandlere</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/maerker</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykelagenter</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bliv-forhandler</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/vurder-min-cykel</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/sikkerhedsguide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/stelstoerrelse-guide</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/guide/tjek-brugt-cykel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/om-os</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/kontakt</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/vilkaar</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/privatlivspolitik</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cookiepolitik</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/tilladt-sortiment</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/databehandleraftale</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/blog/mtb-affjedring-guide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/blog/undgaa-stjaalet-cykel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/blog/cykelstoerrelse-guide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/blog/koeb-brugt-el-cykel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/bedre-cykel-billeder</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/bedre-cykel-billeder</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/blog/saelg-cykel-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/racercykler-under-15000</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <!-- Brand-landingssider — top 15 -->
+  <url><loc>https://xn--cykelbrsen-5cb.dk/blog/racercykler-under-15000</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/trek</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cube</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/specialized</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/canyon</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cannondale</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/giant</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/gazelle</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/christiania-bikes</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/scott</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/bianchi</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/kildemoes</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/mbk</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/cerv%C3%A9lo</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/batavus</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/sparta</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/brompton</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/riese-mueller</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/puky</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/woom</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/larry-vs-harry-bullitt</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/babboe</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/urban-arrow</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/bmc</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/colnago</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/orbea</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/focus</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/santa-cruz</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/haibike</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/pinarello</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/merida</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/kalkhoff</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/vanmoof</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <!-- Premium racer/MTB -->
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/bmc</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/colnago</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/orbea</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/wilier</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/focus</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/ridley</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/santa-cruz</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/mondraker</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/lapierre</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/ghost</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
@@ -100,40 +66,23 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/gt</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/bergamont</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/centurion</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/haibike</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/stevens</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/look</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/felt</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <!-- Europæiske city/touring -->
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/gazelle</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/batavus</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/sparta</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/koga</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/brompton</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/riese-mueller</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/moustache</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/liv</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/raleigh</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/tern</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/mate-bike</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <!-- Cargobikes -->
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/christiania-bikes</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/larry-vs-harry-bullitt</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/babboe</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/urban-arrow</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/butchers-bicycles</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/triobike</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/nihola</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/winther</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <!-- Børnecykler -->
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/puky</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/woom</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/frog-bikes</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
-  <!-- Danske hverdags-mærker -->
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/avenue</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/frog-bikes</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/principia</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/sco</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
-  <!-- Niche / specialty brands -->
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/amladcykler</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/e-fly</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/nishiki</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
@@ -143,4 +92,24 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/uvelo</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/kreidler</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/norden</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/b302f4c9-7a6a-4280-bb2a-cf418c4b7cb6</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/7b915feb-7c95-4168-bebd-f381ef042a07</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/fa4548b4-d52e-4c09-b90f-d1f64d727f27</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/189aab16-d60c-4698-82ad-acd6032470fa</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/32a3a497-1a8e-43de-98d7-ab9c4a11f187</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/b1ad8841-78c2-47aa-9901-6daa4562cc96</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/454de530-52d5-4f5a-b1f6-a88f454fa94c</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/6b335929-7ae8-4c7d-b6cb-ce2dfe2b6d81</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/5967d635-b876-4279-9769-ba70049c506e</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/95261d0c-2552-4acb-af7a-9535a52d8b5e</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/47df539c-10a1-4558-b89a-1ba12c727b58</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/91612bda-9751-48d7-9475-04f0bc08a495</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/dbac62cc-885d-40d9-800e-67e3e6bd393a</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/dfdc5daa-9bf5-4ac0-b449-1584154754c1</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/4c9d43b9-6e45-463e-831a-300ee7be55e0</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/42c8bbb9-f05d-44f9-8058-d30a10523728</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/3b467596-7836-4453-b626-34076a36aeb6</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/dealer/d09d75d0-be87-474f-9d6d-d2fe246bf204</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/dealer/93c7ea4f-c952-413d-aea0-49761ea27a56</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/dealer/afc48c21-f3fd-45e3-ab6f-afff22ba9cf9</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 </urlset>

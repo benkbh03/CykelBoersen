@@ -75,9 +75,10 @@ export function createSellPage({
   // oprette annoncen to gange.
   let _submittingSell = false;
 
+  // Notificér følgere (forhandler ELLER privat sælger) når en ny annonce oprettes.
   function notifyDealerFollowers(newBike) {
     const profile = getCurrentProfile();
-    if (!profile || profile.seller_type !== 'dealer' || !newBike?.id) return;
+    if (!profile || !newBike?.id) return;
     supabase.functions.invoke('notify-followers', {
       body: { bike_id: newBike.id, dealer_id: profile.id },
     }).catch(() => {});
@@ -625,7 +626,7 @@ export function createSellPage({
         <label>Cykeltype <span class="req">*</span></label>
         <select id="sell-type">
           <option value="">Vælg type</option>
-          ${opt(c['sell-type'] || '', ['Racercykel','Mountainbike','Citybike','El-cykel','Ladcykel','Børnecykel','Gravel'])}
+          ${opt(c['sell-type'] || '', ['Racercykel','Mountainbike','Citybike','El-cykel','Ladcykel','Børnecykel','Gravel','Senior cykel'])}
         </select>
       </div>
 

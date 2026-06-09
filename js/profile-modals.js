@@ -13,6 +13,7 @@ export function createProfileModals({
   closeAllDealersModal,
   closeAllModals,
   highlightStars,
+  followDealer,
 }) {
   let userProfileToken = 0;
   let dealerProfileToken = 0;
@@ -86,7 +87,7 @@ export function createProfileModals({
     try {
       const bikesFetch = supabase
         .from('bikes')
-        .select('*, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, is_primary)')
+        .select('*, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified), bike_images(url, thumb_url, is_primary)')
         .eq('user_id', dealerId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -114,7 +115,8 @@ export function createProfileModals({
       const profile    = b.profiles || {};
       const sellerName = profile.shop_name || profile.name || displayName;
       const avatarInit = getInitials(sellerName);
-      const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+      const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
+      const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : '<span style="font-size:4rem">🚲</span>';
@@ -181,12 +183,13 @@ export function createProfileModals({
 
     const currentUser = getCurrentUser();
     let profile, activeBikes, soldBikes, reviews, messagesCount;
+    let followerCount = 0, isFollowing = false;
     try {
       const safe = p => Promise.resolve(p).catch(e => { console.warn('Query fejl:', e); return { data: null, error: e }; });
 
       const dataPromise = Promise.all([
         safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
-        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
         safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
       ]);
@@ -210,6 +213,25 @@ export function createProfileModals({
       } else {
         messagesCount = 0;
       }
+
+      // Følger-tæller + følger-status (samme dealer_followers-tabel som forhandler-følg).
+      // Graceful: hvis tabellen ikke findes (migration ikke kørt), forbliver 0/false.
+      try {
+        const { count } = await supabase
+          .from('dealer_followers')
+          .select('dealer_id', { count: 'exact', head: true })
+          .eq('dealer_id', userId);
+        followerCount = count || 0;
+        if (currentUser && currentUser.id !== userId) {
+          const { data: f } = await supabase
+            .from('dealer_followers')
+            .select('dealer_id')
+            .eq('user_id', currentUser.id)
+            .eq('dealer_id', userId)
+            .maybeSingle();
+          isFollowing = !!f;
+        }
+      } catch { /* tabel kan mangle hvis migration ikke er kørt */ }
     } catch (err) {
       console.error('openUserProfile error:', err.message);
       content.innerHTML = retryHTML('Kunne ikke hente profil.', `() => openUserProfile('${userId}')`);
@@ -240,7 +262,8 @@ export function createProfileModals({
     }
 
     const activeBikeCards = (activeBikes || []).map((b, i) => {
-      const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+      const _pRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
+      const primaryImg = _pRec?.thumb_url || _pRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : '<span style="font-size:2.5rem">🚲</span>';
@@ -298,7 +321,7 @@ export function createProfileModals({
     const numActive = (activeBikes || []).length;
     const sendMsgHtml = (!isOwnProfile && currentUser && numActive > 0) ? `
       <div class="up-contact-section" id="up-contact-section">
-        <button class="up-contact-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
+        <button class="up-contact-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${numActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
@@ -331,9 +354,11 @@ export function createProfileModals({
           <div class="up-badges">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
             ${memberYear ? `<span class="up-member-since">Medlem siden ${memberYear}</span>` : ''}
+            ${followerCount > 0 ? `<span class="up-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
           </div>
           <div class="up-achievements" id="user-achievements"></div>
           ${profile.bio ? `<p class="up-bio">${esc(profile.bio)}</p>` : ''}
+          ${(!isOwnProfile && followDealer) ? `<div class="up-follow-row">${followDealer.buildFollowButton(userId, isFollowing)}</div>` : ''}
           ${sendMsgHtml}
         </div>
       </div>
@@ -402,6 +427,10 @@ export function createProfileModals({
     if (!form) return;
     const isHidden = form.style.display === 'none';
     form.style.display = isHidden ? 'block' : 'none';
+    // Skjul toggle-knappen når formularen er åben — ellers står der to
+    // identiske "Send besked"-knapper. Formularen har sin egen send-knap.
+    const toggleBtn = document.getElementById('up-contact-toggle-btn');
+    if (toggleBtn) toggleBtn.style.display = isHidden ? 'none' : '';
     if (isHidden) {
       const ta = document.getElementById('up-contact-message');
       if (ta) ta.focus();

@@ -12,6 +12,7 @@ export function createMyProfile({
   updateFilterCounts,
   searchBikes,
   closeProfileModal,
+  openLoginModal,
 }) {
   function reloadMyListings() {
     if (document.getElementById('mp-listings-grid')) loadMyListings('mp-listings-grid');
@@ -244,7 +245,6 @@ export function createMyProfile({
 
   async function saveCurrentSearch() {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at oprette en Cykelagent'); return; }
 
     const search = document.getElementById('search-input').value.trim();
     const type   = document.getElementById('search-type').value;
@@ -292,11 +292,24 @@ export function createMyProfile({
     if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
     if (city)                      parts.push(city);
     const name = parts.join(' · ') || 'Min søgning';
+    const filters = { search, type, city, warranty, ...fa };
+
+    // Ikke logget ind: gem agenten som pending (samme flow som /cykelagenter) og
+    // bed brugeren oprette konto. flushPendingCykelagent i main.js aktiverer den
+    // efter signup, så useren kun mangler at oprette sig.
+    if (!currentUser) {
+      try {
+        localStorage.setItem('_pendingCykelagent', JSON.stringify({ name, filters, savedAt: Date.now() }));
+      } catch {}
+      showToast('Næsten færdig — opret en gratis konto for at aktivere din Cykelagent');
+      openLoginModal();
+      return;
+    }
 
     const { error } = await supabase.from('saved_searches').insert({
       user_id: currentUser.id,
       name,
-      filters: { search, type, city, warranty, ...fa },
+      filters,
     });
 
     if (error) { showToast('❌ Kunne ikke oprette Cykelagent'); return; }

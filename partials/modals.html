@@ -187,7 +187,7 @@
           <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" placeholder="f.eks. FX 3 Disc"></div>
           <div class="form-group">
             <label>Cykeltype *</label>
-            <select><option value="">Vælg type</option><option>Racercykel</option><option>Mountainbike</option><option>Citybike</option><option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option></select>
+            <select><option value="">Vælg type</option><option>Racercykel</option><option>Mountainbike</option><option>Citybike</option><option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option><option>Senior cykel</option></select>
           </div>
           <div class="form-group">
             <label>Ramme / str.</label>
@@ -618,7 +618,7 @@
             <select id="edit-type">
               <option value="">Vælg type</option>
               <option>Racercykel</option><option>Mountainbike</option><option>Citybike</option>
-              <option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option>
+              <option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option><option>Senior cykel</option>
             </select>
           </div>
           <div class="form-group">
@@ -810,7 +810,6 @@
         <div class="profile-tabs" style="margin-bottom:20px;">
           <button class="profile-tab active" id="atab-applications" onclick="switchAdminTab('applications')">Forhandler ansøgninger</button>
           <button class="profile-tab" id="atab-users" onclick="switchAdminTab('users')">Alle brugere</button>
-          <button class="profile-tab" id="atab-id" onclick="switchAdminTab('id')">ID ansøgninger</button>
           <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
           <button class="profile-tab" id="atab-invite" onclick="switchAdminTab('invite')">➕ Invitér forhandler</button>
           <button class="profile-tab" id="atab-stats" onclick="switchAdminTab('stats')">📊 Statistik</button>
@@ -822,11 +821,6 @@
         </div>
         <div id="admin-users" style="display:none;">
           <div id="admin-users-list">
-            <p style="color:var(--muted)">Indlæser...</p>
-          </div>
-        </div>
-        <div id="admin-id" style="display:none;">
-          <div id="admin-id-list">
             <p style="color:var(--muted)">Indlæser...</p>
           </div>
         </div>

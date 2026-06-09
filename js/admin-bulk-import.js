@@ -25,7 +25,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
     'weight_kg', 'motor', 'motor_position', 'battery_wh', 'suspension',
     'warranty', 'external_url', 'description', 'original_price',
   ];
-  const VALID_TYPES = ['Racercykel', 'Mountainbike', 'Citybike', 'El-cykel', 'Ladcykel', 'Børnecykel', 'Gravel'];
+  const VALID_TYPES = ['Racercykel', 'Mountainbike', 'Citybike', 'El-cykel', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
   const VALID_CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
 
   // ── CSV-parser (lille, ingen lib) ────────────────────────

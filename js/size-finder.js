@@ -22,6 +22,7 @@ const INSEAM_MULTIPLIER = {
   'El-cykel':     0.66,
   'Ladcykel':     0.62,
   'Børnecykel':   0.66,
+  'Senior cykel': 0.66,   // oprejst komfort-geometri som citybike
 };
 
 export function createSizeFinder({
@@ -78,6 +79,7 @@ export function createSizeFinder({
               <option>El-cykel</option>
               <option>Ladcykel</option>
               <option>Børnecykel</option>
+              <option>Senior cykel</option>
             </select>
           </div>
 

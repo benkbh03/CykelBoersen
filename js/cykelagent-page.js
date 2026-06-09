@@ -7,8 +7,9 @@
    ============================================================ */
 
 import { BIKE_COLORS } from './config.js';
+import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
 
-const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel'];
+const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
 const SIZES      = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
 const WHEELS     = ['26"', '27.5" / 650b', '28"', '29"'];
@@ -111,6 +112,7 @@ export function createCykelagentPage({
         <div id="cykelagent-editor-mount">${showEditor && !isLoggedIn ? _buildEditorHTML(true) : ''}</div>
 
         ${isLoggedIn ? `
+          <div id="cykelagent-matches-mount"></div>
           <div id="cykelagent-list" class="cykelagent-list">
             <p style="color:var(--muted);padding:20px 0;">Henter dine Cykelagenter…</p>
           </div>
@@ -149,6 +151,77 @@ export function createCykelagentPage({
     }
 
     list.innerHTML = data.map(agent => _buildAgentCard(agent)).join('');
+    _loadAndRenderMatches(data);
+  }
+
+  /* "Nye match siden sidst"-sektion: client-side matching mod brugerens
+     agenter. Vises kun hvis brugeren har mindst én agent og der er match. */
+  async function _loadAndRenderMatches(agents) {
+    const mount = document.getElementById('cykelagent-matches-mount');
+    if (!mount || !agents || !agents.length) {
+      if (mount) mount.innerHTML = '';
+      return;
+    }
+    mount.innerHTML = '<p class="cykelagent-matches-loading">Tjekker for nye match…</p>';
+    let result;
+    try {
+      result = await fetchAgentMatches(supabase, agents);
+    } catch {
+      mount.innerHTML = '';
+      return;
+    }
+    if (!result.matches.length) {
+      mount.innerHTML = '';
+      return;
+    }
+    mount.innerHTML = _buildMatchesSection(result);
+    const btn = mount.querySelector('.cykelagent-matches-mark-read');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        markMatchesSeen();
+        // Re-render uden NY-badges (newCount→0)
+        const r2 = { matches: result.matches.map(m => ({ ...m, isNew: false })), newCount: 0, totalMatches: result.totalMatches };
+        mount.innerHTML = _buildMatchesSection(r2);
+      });
+    }
+  }
+
+  function _buildMatchesSection({ matches, newCount, totalMatches }) {
+    return `
+      <section class="cykelagent-matches" aria-label="Nye match fra dine Cykelagenter">
+        <div class="cykelagent-matches-header">
+          <h2 class="cykelagent-matches-title">
+            ${newCount > 0 ? `Nye match <span class="cykelagent-matches-count">${newCount}</span>` : 'Seneste match'}
+          </h2>
+          ${newCount > 0 ? '<button type="button" class="cykelagent-matches-mark-read">Marker som læst</button>' : ''}
+        </div>
+        <div class="cykelagent-matches-grid">
+          ${matches.map(_buildMatchCard).join('')}
+        </div>
+        ${totalMatches > matches.length ? `<p class="cykelagent-matches-more">Viser ${matches.length} af ${totalMatches} match — gå til <a href="/" onclick="event.preventDefault();navigateTo('/')">forsiden</a> for at se alle.</p>` : ''}
+      </section>
+    `;
+  }
+
+  function _buildMatchCard({ bike, isNew }) {
+    const _imgRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+    const img = _imgRec?.thumb_url || _imgRec?.url || '';
+    const title = `${bike.brand || ''} ${bike.model || ''}`.trim() || 'Cykel';
+    const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
+    const price = bike.price != null ? `${Number(bike.price).toLocaleString('da-DK')} kr.` : '';
+    return `
+      <a class="cykelagent-match-card" href="/bike/${bike.id}" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
+        ${img
+          ? `<img class="cykelagent-match-img" src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">`
+          : '<div class="cykelagent-match-img cykelagent-match-img--empty">🚲</div>'}
+        ${isNew ? '<span class="cykelagent-match-new">NY</span>' : ''}
+        <div class="cykelagent-match-info">
+          <div class="cykelagent-match-title">${esc(title)}</div>
+          ${meta ? `<div class="cykelagent-match-meta">${esc(meta)}</div>` : ''}
+          ${price ? `<div class="cykelagent-match-price">${price}</div>` : ''}
+        </div>
+      </a>
+    `;
   }
 
   function _buildAgentCard(agent) {
@@ -261,7 +334,10 @@ export function createCykelagentPage({
 
         <div class="cykelagent-field">
           <label class="cykelagent-label">Mærke eller model (søgeord)</label>
-          <input type="text" class="cykelagent-input" id="cyk-brand" placeholder="fx 'Cube' eller 'Trek Domane'" value="${esc(_form.brand)}" oninput="updateCykelagentField('brand', this.value)">
+          <div class="brand-autocomplete-wrap">
+            <input type="text" class="cykelagent-input" id="cyk-brand" placeholder="fx 'Cube' eller 'Trek Domane'" value="${esc(_form.brand)}" oninput="updateCykelagentField('brand', this.value); brandAutocomplete(this, 'cyk-brand-list')" autocomplete="off">
+            <div id="cyk-brand-list" class="brand-autocomplete-list" style="display:none"></div>
+          </div>
         </div>
 
         <div class="cykelagent-field">
@@ -552,16 +628,21 @@ export function createCykelagentPage({
 
   /* Kaldes fra main.js efter auth-events (SIGNED_IN) — hvis brugeren havde
      en pending Cykelagent i localStorage før login, oprettes den nu. */
-  async function flushPendingCykelagent() {
+  async function flushPendingCykelagent({ silent = false } = {}) {
     const currentUser = getCurrentUser();
-    if (!currentUser) return;
-    let pending;
+    if (!currentUser) return false;
+    let pending = null;
+    // 1. localStorage (samme browser-session)
     try {
       const raw = localStorage.getItem('_pendingCykelagent');
-      if (!raw) return;
-      pending = JSON.parse(raw);
-    } catch { return; }
-    if (!pending?.filters) return;
+      if (raw) pending = JSON.parse(raw);
+    } catch {}
+    // 2. user_metadata (overlever email-bekræftelse på tværs af browser/enhed)
+    if (!pending?.filters) {
+      const meta = currentUser.user_metadata || {};
+      if (meta.pending_cykelagent?.filters) pending = meta.pending_cykelagent;
+    }
+    if (!pending?.filters) return false;
     const { error } = await supabase.from('saved_searches').insert({
       user_id: currentUser.id,
       name: pending.name || 'Min Cykelagent',
@@ -569,16 +650,20 @@ export function createCykelagentPage({
     });
     if (error) {
       console.error('flushPendingCykelagent fejl:', error);
-      return;
+      return false;
     }
     try { localStorage.removeItem('_pendingCykelagent'); } catch {}
-    showToast('🔔 Din Cykelagent er nu aktiveret');
+    if (currentUser.user_metadata?.pending_cykelagent) {
+      supabase.auth.updateUser({ data: { pending_cykelagent: null } }).catch(() => {});
+    }
+    if (!silent) showToast('🔔 Din Cykelagent er nu aktiveret');
     // Re-render hvis bruger er på /cykelagenter siden
     if (location.pathname === '/cykelagenter' || location.pathname === '/cykelagent') {
       _editingId = null;
       _form = _emptyForm();
       await renderCykelagentPage();
     }
+    return true;
   }
 
   function _autoName() {

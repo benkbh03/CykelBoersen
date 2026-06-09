@@ -118,6 +118,52 @@ nav {
   outline-offset: 3px;
 }
 
+/* ── HAMBURGER + MOBIL-MENU (kun ≤768px) ──
+   På mobil skjules tekst-nav-linksene; hamburgeren genskaber adgang til
+   Mærker/Forhandlere/Cykelagenter for udlogget førstegangs-besøgende.
+   Hamburger + logo grupperes til venstre (nav-left), så "site-menu" står
+   adskilt fra de personlige handlinger (inbox/avatar) i højre side. */
+.nav-left { display: flex; align-items: center; gap: 8px; }
+.nav-hamburger {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  color: var(--sand); padding: 6px; margin-left: -2px;
+  align-items: center; justify-content: center;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Kompakt sælg-label på mobil ("+ Sælg") for at give den tætte indloggede
+   nav-række luft; fuld tekst ("+ Sæt til salg") på desktop. */
+.sell-label-short { display: none; }
+@media (max-width: 768px) {
+  .sell-label-full { display: none; }
+  .sell-label-short { display: inline; }
+}
+.nav-hamburger:hover { background: rgba(245,240,232,0.10); }
+.nav-hamburger:focus-visible { outline: 2px solid rgba(245,240,232,0.7); outline-offset: 2px; }
+.mobile-menu-panel {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--forest-light);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+  display: flex; flex-direction: column;
+  padding: 6px 0 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+  z-index: 99;
+}
+.mobile-menu-panel[hidden] { display: none; }
+.mobile-menu-panel a {
+  color: var(--sand); text-decoration: none;
+  padding: 14px 24px; font-size: 1rem; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; opacity: 0.92;
+}
+.mobile-menu-panel a:hover, .mobile-menu-panel a:focus { background: rgba(245,240,232,0.07); opacity: 1; }
+@media (max-width: 768px) {
+  .nav-hamburger { display: inline-flex; }
+}
+@media (min-width: 769px) {
+  .mobile-menu-panel { display: none !important; }
+}
+
 /* Nav profil */
 .nav-profile { margin-left: 4px; display: flex; align-items: center; gap: 6px; }
 .profile-avatar-btn {
