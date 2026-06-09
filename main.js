@@ -2970,8 +2970,10 @@ async function loadIdApplications() {
   }
 
   list.innerHTML = result.data.map(function(p) {
+    // Kun https-URLs (safeAvatarUrl) — neutraliserer evt. javascript:-URL i id_doc_url
+    var idDocUrl = safeAvatarUrl(p.id_doc_url || '');
     return '<div class="admin-row">'
-      + '<img class="admin-id-img" src="' + esc(p.id_doc_url || '') + '" onclick="window.open(\'' + escAttr(p.id_doc_url || '') + '\',\'_blank\')" title="Klik for at se fuldt billede">'
+      + '<img class="admin-id-img" src="' + esc(idDocUrl) + '" onclick="window.open(\'' + escAttr(idDocUrl) + '\',\'_blank\')" title="Klik for at se fuldt billede">'
       + '<div class="admin-row-info">'
       + '<div class="admin-row-name">' + esc(p.name || 'Ukendt') + '</div>'
       + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat') + '</div>'

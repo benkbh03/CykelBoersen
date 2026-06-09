@@ -608,11 +608,11 @@
         <div class="form-grid">
           <div class="form-group"><label>Mærke *</label>
             <div class="brand-autocomplete-wrap">
-              <input type="text" id="edit-brand" placeholder="f.eks. Trek" oninput="brandAutocomplete(this, 'edit-brand-list')" autocomplete="off">
+              <input type="text" id="edit-brand" placeholder="f.eks. Trek" oninput="brandAutocomplete(this, 'edit-brand-list')" autocomplete="off" maxlength="60">
               <div id="edit-brand-list" class="brand-autocomplete-list" style="display:none"></div>
             </div>
           </div>
-          <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" id="edit-model" placeholder="f.eks. FX 3"></div>
+          <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" id="edit-model" placeholder="f.eks. FX 3" maxlength="60"></div>
           <div class="form-group">
             <label>Cykeltype *</label>
             <select id="edit-type">
@@ -633,7 +633,7 @@
               <span class="size-cm-unit">cm <span class="size-cm-hint">– valgfri præcis størrelse</span></span>
             </div>
           </div>
-          <div class="form-group"><label>Pris (kr.) *</label><input type="number" id="edit-price" placeholder="f.eks. 4500"></div>
+          <div class="form-group"><label>Pris (kr.) *</label><input type="number" id="edit-price" placeholder="f.eks. 4500" min="1" max="9999999" step="1" onwheel="this.blur()"></div>
           <div class="form-group"><label>Årstal</label><input type="number" id="edit-year" placeholder="f.eks. 2021"></div>
           <div class="form-group">
             <label>Stand *</label>
@@ -724,7 +724,7 @@
             <input type="number" id="edit-battery-wh" placeholder="f.eks. 500" min="100" max="2000" step="1">
           </div>
           <div class="form-group full"><label>Farve(r) <small style="color:var(--muted);font-weight:400">(vælg én eller flere)</small></label><div class="color-swatch-grid" id="edit-color-grid"></div></div>
-          <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..."></textarea></div>
+          <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..." maxlength="2000"></textarea></div>
           <div class="form-group full" id="edit-warranty-group" style="display:none;">
             <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
             <input type="text" id="edit-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
