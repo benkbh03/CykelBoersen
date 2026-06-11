@@ -646,7 +646,7 @@ export function createSellPage({
           <label>Hjulstørrelse</label>
           <select id="sell-wheel-size">
             <option value="">Vælg</option>
-            ${opt(c['sell-wheel-size'] || '', ['26"','27.5" / 650b','28"','29"'])}
+            ${opt(c['sell-wheel-size'] || '', ['12"','14"','16"','18"','20"','24"','26"','27.5" / 650b','28"','29"'])}
           </select>
         </div>
         <div class="sell-field">

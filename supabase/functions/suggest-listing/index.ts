@@ -71,7 +71,7 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
   "model": "string eller null",
   "type": "Racercykel|Mountainbike|Citybike|El-cykel|Ladcykel|Børnecykel|Gravel|Senior cykel eller null",
   "size": "XS (44–48 cm)|S (49–52 cm)|M (53–56 cm)|L (57–60 cm)|XL (61+ cm) eller null",
-  "wheel_size": "26\\"|27.5\\" / 650b|28\\"|29\\" eller null",
+  "wheel_size": "12\\"|14\\"|16\\"|18\\"|20\\"|24\\"|26\\"|27.5\\" / 650b|28\\"|29\\" eller null",
   "year": "integer eller null",
   "condition": "Ny|Som ny|God stand|Brugt",
   "color": "string eller null",
