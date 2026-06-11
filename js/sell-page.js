@@ -305,7 +305,12 @@ export function createSellPage({
       const condition = getVal('sell-condition');
       const wheelSize = getVal('sell-wheel-size') || null;
       const warranty  = getVal('sell-warranty') || null;
-      const externalUrl = (getCurrentProfile()?.seller_type === 'dealer' ? (getVal('sell-external-url') || '').trim() : '') || null;
+      // Admin acting-as: forhandler-felter (webshop-link, garanti) gælder også
+      // når en admin opretter på vegne af en forhandler
+      let _actingAsEarly = null;
+      try { _actingAsEarly = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
+      const isDealerListing = getCurrentProfile()?.seller_type === 'dealer' || !!_actingAsEarly;
+      const externalUrl = (isDealerListing ? (getVal('sell-external-url') || '').trim() : '') || null;
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       // Cykel-specifikke felter
@@ -597,7 +602,9 @@ export function createSellPage({
 
   function renderSellStep2HTML() {
     const currentProfile = getCurrentProfile();
-    const isDealer = currentProfile?.seller_type === 'dealer';
+    let _actingAs = null;
+    try { _actingAs = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
+    const isDealer = currentProfile?.seller_type === 'dealer' || !!_actingAs;
     const ai = _aiApplied;
     const c = _sellFormCache;
     const aiClass = ai ? ' ai-field' : '';
