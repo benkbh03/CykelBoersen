@@ -2801,7 +2801,7 @@ async function loadAllUsers() {
     var canOnboard = isDealer && !!p.admin_can_create_listings;
     var safeName   = escAttr(p.shop_name || p.name || 'Ukendt');
     var onboardBtn = canOnboard
-      ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
+      ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\', \'' + escAttr(p.city || '') + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
       : (isDealer ? '<span class="admin-row-no-onboard" title="Forhandler skal selv aktivere onboarding-service i deres indstillinger">📋 Ikke aktiveret</span>' : '');
     return '<div class="admin-row">'
       + '<div class="admin-row-info">'
@@ -2821,10 +2821,10 @@ async function loadAllUsers() {
   }).join('');
 }
 
-function startActingAsDealer(dealerId, dealerName) {
+function startActingAsDealer(dealerId, dealerName, dealerCity) {
   // Gem acting-as state i sessionStorage så det overlever navigation
   // til sell-page men forsvinder ved browser-luk
-  sessionStorage.setItem('_adminActingAs', JSON.stringify({ id: dealerId, name: dealerName }));
+  sessionStorage.setItem('_adminActingAs', JSON.stringify({ id: dealerId, name: dealerName, city: dealerCity || '' }));
   closeAdminPanel();
   navigateTo('/saelg');
   showToast('🛠️ Opretter annonce på vegne af ' + dealerName);

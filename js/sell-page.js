@@ -463,20 +463,24 @@ export function createSellPage({
     _aiSuggestionPending = null;
     _sellFormCache = {};
 
-    // Forhåndsudfyld by fra profil — sparer dealers (og private brugere) for at
-    // skrive deres faste by hver gang de opretter en annonce. Brugeren kan stadig
-    // overskrive feltet hvis annoncen sælges et andet sted.
-    const _profile = getCurrentProfile();
-    if (_profile?.city) {
-      _sellFormCache['sell-city'] = _profile.city;
-    }
-
     // Banner når admin opretter på vegne af forhandler (acting-as-mode)
     let actingAs = null;
     try {
       const raw = sessionStorage.getItem('_adminActingAs');
       if (raw) actingAs = JSON.parse(raw);
     } catch {}
+
+    // Forhåndsudfyld by — fra FORHANDLERENS profil i acting-as-tilstand
+    // (annoncen tilhører forhandleren, så admins egen by er forkert),
+    // ellers fra brugerens egen profil. Kan altid overskrives i feltet.
+    if (actingAs) {
+      _sellFormCache['sell-city'] = actingAs.city || '';
+    } else {
+      const _profile = getCurrentProfile();
+      if (_profile?.city) {
+        _sellFormCache['sell-city'] = _profile.city;
+      }
+    }
     const actingAsBanner = actingAs ? `
       <div class="sell-acting-as-banner">
         <div class="sell-acting-as-content">
