@@ -40,7 +40,10 @@ const ALLOWED_BIKE_FIELDS = new Set([
   "weight_kg", "motor", "motor_position", "battery_wh", "suspension",
 ]);
 
-const REQUIRED_BIKE_FIELDS = ["brand", "model", "price", "city", "type", "condition"];
+// "model" er bevidst IKKE påkrævet her — sælg-flowet tillader oprettelse
+// uden model efter brugerbekræftelse (samme som det almindelige insert-flow
+// for private/forhandler-oprettelse, der ikke håndhæver dette på DB-niveau).
+const REQUIRED_BIKE_FIELDS = ["brand", "price", "city", "type", "condition"];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
