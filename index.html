@@ -577,11 +577,27 @@
         </div>
         <div class="wheel-info-popup" id="wheel-info-popup" style="display:none">
           <div class="wheel-info-row">
+            <div class="wheel-info-size">12–24"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Tilpasset barnets højde og alder</span>
+              <span class="wi-con">− Vokser barnet fra</span>
+              <span class="wi-use">Børnecykler i stigende størrelse</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">16–20"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Kompakt, nem at opbevare og transportere</span>
+              <span class="wi-con">− Mindre stabilt ved høj fart</span>
+              <span class="wi-use">Foldecykler, BMX (20")</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
             <div class="wheel-info-size">26"</div>
             <div class="wheel-info-text">
               <span class="wi-pro">+ Lettere at manøvrere, lavere vægt</span>
               <span class="wi-con">− Mindre stabilt ved høj fart</span>
-              <span class="wi-use">Børnecykler, ældre MTB</span>
+              <span class="wi-use">Ældre MTB, foldecykler, ladcykler</span>
             </div>
           </div>
           <div class="wheel-info-row">
@@ -610,6 +626,12 @@
           </div>
         </div>
         <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='12"' onchange="applyFilters()"> 12" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='14"' onchange="applyFilters()"> 14" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='16"' onchange="applyFilters()"> 16" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='18"' onchange="applyFilters()"> 18" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='20"' onchange="applyFilters()"> 20" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='24"' onchange="applyFilters()"> 24" <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='26"' onchange="applyFilters()"> 26" <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='27.5" / 650b' onchange="applyFilters()"> 27.5" / 650b <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='28"' onchange="applyFilters()"> 28" <span class="filter-count">–</span></label>
@@ -936,7 +958,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260526ng';
+    const V = '20260606ay';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

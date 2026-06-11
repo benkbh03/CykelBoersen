@@ -431,10 +431,9 @@ export function createFilters({
     setCount('size', 'M (53–56 cm)',  data.filter(b => b.size === 'M (53–56 cm)').length);
     setCount('size', 'L (57–60 cm)',  data.filter(b => b.size === 'L (57–60 cm)').length);
     setCount('size', 'XL (61+ cm)',   data.filter(b => b.size === 'XL (61+ cm)').length);
-    setCount('wheel',  '26"',           data.filter(b => b.wheel_size === '26"').length);
-    setCount('wheel',  '27.5" / 650b',  data.filter(b => b.wheel_size === '27.5" / 650b').length);
-    setCount('wheel',  '28"',           data.filter(b => b.wheel_size === '28"').length);
-    setCount('wheel',  '29"',           data.filter(b => b.wheel_size === '29"').length);
+    for (const w of ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"']) {
+      setCount('wheel', w, data.filter(b => b.wheel_size === w).length);
+    }
 
     // Farve-counts: tæl hvor mange annoncer der har hver farve i deres colors-array
     const colorCounts = {};

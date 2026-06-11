@@ -12,7 +12,7 @@ import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
 const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
 const SIZES      = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
-const WHEELS     = ['26"', '27.5" / 650b', '28"', '29"'];
+const WHEELS     = ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"'];
 const FRAME_MATERIALS = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const BRAKE_TYPES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
 const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'SRAM Rival XPLR', 'SRAM Force XPLR', 'SRAM Red XPLR', 'Campagnolo Ekar', 'Shimano Deore', 'Shimano XT'];

@@ -7,7 +7,7 @@ import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
 const MAP_FILTER_SIZES = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
-const MAP_FILTER_WHEELS = ['26"', '27.5" / 650b', '28"', '29"'];
+const MAP_FILTER_WHEELS = ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"'];
 const MAP_FILTER_FRAME = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const MAP_FILTER_BRAKES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
 const MAP_FILTER_GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'SRAM Rival XPLR', 'SRAM Force XPLR', 'SRAM Red XPLR', 'Campagnolo Ekar', 'Shimano Deore', 'Shimano XT'];
