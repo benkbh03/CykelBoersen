@@ -396,8 +396,18 @@ export function createSellPage({
           body: { target_user_id: actingAs.id, bike: bikeData, images },
         });
         if (error || data?.error) {
-          showToast('❌ ' + (data?.error || error?.message || 'Kunne ikke oprette på vegne af forhandler'));
-          console.error('admin-create-bike fejl:', error || data?.error);
+          // supabase-js skjuler edge function-fejlteksten bag en generisk
+          // "Edge Function returned a non-2xx status code" — udtræk den
+          // rigtige JSON-fejl fra error.context (Response-objektet) hvis muligt.
+          let serverMsg = data?.error;
+          if (!serverMsg && error?.context) {
+            try {
+              const body = await error.context.clone().json();
+              serverMsg = body?.error;
+            } catch {}
+          }
+          showToast('❌ ' + (serverMsg || error?.message || 'Kunne ikke oprette på vegne af forhandler'));
+          console.error('admin-create-bike fejl:', serverMsg || error || data?.error);
           restore();
           return;
         }
