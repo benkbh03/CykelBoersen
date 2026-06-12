@@ -1311,7 +1311,12 @@ body:has(.inbox-page) #chat-widget { display: none; }
     padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
     background: rgba(255,255,255,0.98);
     border-top: 1px solid var(--border);
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+    /* Andet box-shadow-lag: stort nedad-spread der dækker det "hul" Chrome
+       Android viser under den fixed bar når adressefeltet skjules/vises
+       under scroll (viewporten ændrer størrelse, men fixed bottom:0
+       genberegnes ikke altid med det samme). Safari har ikke dette problem,
+       men shadow'et er usynligt der da der aldrig opstår et hul at dække. */
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.08), 0 100vh 0 100vh rgba(255,255,255,0.98);
     align-items: center;
     gap: 10px;
     backdrop-filter: blur(10px);
