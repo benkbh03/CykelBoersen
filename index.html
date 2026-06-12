@@ -426,6 +426,7 @@
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bike by Gubi" onchange="applyFilters()"> Bike by Gubi</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Black Iron Horse" onchange="applyFilters()"> Black Iron Horse</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="BMC" onchange="applyFilters()"> BMC</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Brabus" onchange="applyFilters()"> Brabus</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Brompton" onchange="applyFilters()"> Brompton</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Butchers & Bicycles" onchange="applyFilters()"> Butchers &amp; Bicycles</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cannondale" onchange="applyFilters()"> Cannondale</label>
@@ -440,9 +441,11 @@
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cube" onchange="applyFilters()"> Cube</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="E-Fly" onchange="applyFilters()"> E-Fly</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Early Rider" onchange="applyFilters()"> Early Rider</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Ebsen" onchange="applyFilters()"> Ebsen</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Electra" onchange="applyFilters()"> Electra</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Everton" onchange="applyFilters()"> Everton</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="FACTOR" onchange="applyFilters()"> FACTOR</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Falcon" onchange="applyFilters()"> Falcon</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Felt" onchange="applyFilters()"> Felt</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Focus" onchange="applyFilters()"> Focus</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Frog Bikes" onchange="applyFilters()"> Frog Bikes</label>
@@ -484,6 +487,7 @@
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Qio" onchange="applyFilters()"> Qio</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="QWIC" onchange="applyFilters()"> QWIC</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Raleigh" onchange="applyFilters()"> Raleigh</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Remington" onchange="applyFilters()"> Remington</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Riese & Müller" onchange="applyFilters()"> Riese &amp; Müller</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Ridley" onchange="applyFilters()"> Ridley</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Royal Cargobike" onchange="applyFilters()"> Royal Cargobike</label>
@@ -501,7 +505,9 @@
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Triobike" onchange="applyFilters()"> Triobike</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Urban Arrow" onchange="applyFilters()"> Urban Arrow</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="uVelo" onchange="applyFilters()"> uVelo</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Van De Falk" onchange="applyFilters()"> Van De Falk</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="VanMoof" onchange="applyFilters()"> VanMoof</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Velo" onchange="applyFilters()"> Velo</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Velo de Ville" onchange="applyFilters()"> Velo de Ville</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Victoria" onchange="applyFilters()"> Victoria</label>
             <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Wilier" onchange="applyFilters()"> Wilier</label>
@@ -958,7 +964,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260606ba';
+    const V = '20260606bb';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

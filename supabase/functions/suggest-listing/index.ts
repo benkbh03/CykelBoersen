@@ -86,7 +86,8 @@ Regler:
   deres navn DER. Læs hvert bogstav. Eksempler på brands der ofte står
   skrevet: "CUBE", "Trek", "Specialized", "Cervélo", "Canyon", "Giant",
   "Scott", "Cannondale", "Bianchi", "Focus", "Merida", "Bergamont",
-  "Kalkhoff", "Gazelle", "Kildemoes", "MBK", "Principia", "Norco", "BMC".
+  "Kalkhoff", "Gazelle", "Kildemoes", "MBK", "Principia", "Norco", "BMC",
+  "Ebsen", "Remington", "Van De Falk", "Velo", "Falcon", "Brabus".
   HVIS DU KAN SE ET LOGO, BRUG DET — gæt aldrig et andet brand når et
   navn er synligt på rammen.
 - Hvis du ikke kan se logoet tydeligt, returnér null for brand frem for
