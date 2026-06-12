@@ -412,9 +412,9 @@ export function createSellPage({
           return;
         }
         newBike = { id: data.bike_id, ...bikeData };
-        // Ryd acting-as efter succesfuld oprettelse — admin må starte forfra
-        // for at oprette næste annonce, så de tager et bevidst valg pr. annonce
-        sessionStorage.removeItem('_adminActingAs');
+        // Bevar acting-as-tilstand efter oprettelse — admin opretter ofte
+        // flere annoncer i træk for samme forhandler og skal ikke vælge
+        // "Opret annonce" igen for hver. Stoppes manuelt via "✕ Stop"-knappen.
         showToast(`✓ Annonce oprettet på vegne af ${actingAs.name}`);
       } else {
         const res = await supabase.from('bikes').insert(bikeData).select().single();
