@@ -745,8 +745,14 @@
   #btn-map-page { order: 3; flex: 0 0 auto; width: 44px; height: 44px; }
   #btn-compare-mode { display: flex; order: 4; flex: 0 0 auto; width: 44px; height: 44px; }
   .bike-card-body { padding: 10px 12px 12px; }
-  .bike-title { font-size: 0.9rem; }
-  .bike-price { font-size: 1.05rem; }
+  /* Titel + pris stables lodret på mobil: på smalle 2-kolonne-kort klemte
+     prisen (nowrap + flex-shrink:0) titlen, så lange mærkenavne som
+     "Centurion" blev klippet horisontalt af overflow:hidden ("Centuri").
+     Fuld kortbredde over 2 linjer, pris på egen linje under — min-height
+     på titlen holder alle kort i samme format/højde. */
+  .card-top { flex-direction: column; align-items: stretch; gap: 2px; }
+  .bike-title { font-size: 0.9rem; min-height: calc(2 * 1.35 * 0.9rem); }
+  .bike-price { font-size: 1.05rem; margin-left: 0; }
   .bike-meta { font-size: 0.72rem; margin-bottom: 8px; }
   .card-footer { padding-top: 8px; }
   .seller-name { display: none; }
