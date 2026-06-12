@@ -77,6 +77,8 @@ const BRAND_SLUGS = [
   ['amladcykler', '0.5'], ['e-fly', '0.5'], ['nishiki', '0.5'], ['factor', '0.5'],
   ['motobecane', '0.5'], ['qio', '0.5'], ['uvelo', '0.5'], ['kreidler', '0.5'],
   ['norden', '0.5'],
+  ['ebsen', '0.5'], ['remington', '0.5'], ['van-de-falk', '0.5'],
+  ['velo', '0.5'], ['falcon', '0.5'], ['brabus', '0.5'],
 ];
 
 /* ---------- Supabase fetch ---------- */

@@ -16,14 +16,14 @@ const MAP_FILTER_MOTOR_POS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
 const MAP_FILTER_SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
 const MAP_FILTER_COLORS = ['Sort', 'Hvid', 'Grå', 'Sølv', 'Rød', 'Blå', 'Grøn', 'Gul', 'Orange', 'Lyserød', 'Lilla', 'Brun', 'Beige'];
 const MAP_FILTER_BRANDS = [
-  'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton',
+  'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brabus','Brompton',
   'Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube',
-  'E-Fly','Early Rider','Electra','Everton','FACTOR','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike',
+  'E-Fly','Early Rider','Ebsen','Electra','Everton','FACTOR','Falcon','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike',
   'Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK',
   'Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco',
-  'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike',
+  'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Remington','Riese & Müller','Ridley','Royal Cargobike',
   'Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike',
-  'Urban Arrow','uVelo','VanMoof','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba',
+  'Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba',
 ];
 
 export function createMapPage({
