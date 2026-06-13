@@ -643,8 +643,14 @@ const _ensureValuation = lazyCtrl(
 );
 const renderValuationPage = lazyMethod(_ensureValuation, 'renderValuationPage');
 const runValuation        = lazyMethod(_ensureValuation, 'runValuation');
+const openValuationModal  = lazyMethod(_ensureValuation, 'openValuationModal');
+const closeValuationModal = lazyMethod(_ensureValuation, 'closeValuationModal');
+const applyValuationPrice = lazyMethod(_ensureValuation, 'applyValuationPrice');
 window.renderValuationPage = renderValuationPage;
 window.runValuation        = runValuation;
+window.openValuationModal  = openValuationModal;
+window.closeValuationModal = closeValuationModal;
+window.applyValuationPrice = applyValuationPrice;
 
 // Stelstørrelse-finder — lazy-loaded (/stelstoerrelse-guide)
 const _ensureSizeFinder = lazyCtrl(
@@ -1214,6 +1220,7 @@ async function init() {
     if (document.getElementById('modal')?.classList.contains('open'))            { closeModal(); return; }
     if (document.getElementById('login-modal')?.classList.contains('open'))      { closeLoginModal(); return; }
     // display:flex-baserede modaler
+    if (document.getElementById('valuation-modal')?.style.display === 'flex')       { closeValuationModal(); return; }
     if (document.getElementById('user-profile-modal')?.style.display === 'flex')   { closeUserProfileModal(); return; }
     if (document.getElementById('dealer-profile-modal')?.style.display === 'flex') { closeDealerProfileModal(); return; }
     if (document.getElementById('all-dealers-modal')?.style.display === 'flex')    { closeAllDealersModal(); return; }

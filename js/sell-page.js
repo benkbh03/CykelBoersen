@@ -702,7 +702,7 @@ export function createSellPage({
           <input type="number" id="sell-price" placeholder="4.500" min="1" max="9999999" step="1" value="${c['sell-price'] || ''}" onwheel="this.blur()">
           <span class="suffix">DKK</span>
         </div>
-        <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
+        <a href="/vurder-min-cykel" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
       </div>
 
       ${isDealer ? `

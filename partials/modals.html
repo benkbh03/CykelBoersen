@@ -905,6 +905,17 @@
     </div>
   </div>
 
+  <!-- ── CYKEL-VURDERING MODAL (åbnes fra sælg-flow så form-data ikke mistes) ── -->
+  <div class="modal-overlay" id="valuation-modal" role="dialog" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeValuationModal()">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2>💡 Gratis prisvurdering</h2>
+        <button class="modal-close" onclick="closeValuationModal()" aria-label="Luk">✕</button>
+      </div>
+      <div class="modal-body" id="valuation-modal-body"></div>
+    </div>
+  </div>
+
   <!-- ── FULDSKÆRMS BILLED-LIGHTBOX ── -->
   <div class="lightbox-overlay" id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Fuldskærms billede">
     <button class="lightbox-close" onclick="closeLightbox()" aria-label="Luk">✕</button>
