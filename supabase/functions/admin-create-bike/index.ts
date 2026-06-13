@@ -37,7 +37,7 @@ const ALLOWED_BIKE_FIELDS = new Set([
   "city", "description", "type", "size", "size_cm", "condition",
   "wheel_size", "warranty", "external_url", "color", "colors",
   "groupset", "frame_material", "brake_type", "electronic_shifting",
-  "weight_kg", "motor", "motor_position", "battery_wh", "suspension",
+  "weight_kg", "motor", "motor_position", "battery_wh", "suspension", "geartype",
 ]);
 
 // "model" er bevidst IKKE påkrævet her — sælg-flowet tillader oprettelse

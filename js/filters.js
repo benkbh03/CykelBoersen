@@ -38,6 +38,7 @@ export function createFilters({
       (args.motors && args.motors.length > 0) ||
       (args.motorPositions && args.motorPositions.length > 0) ||
       (args.suspensions && args.suspensions.length > 0) ||
+      (args.geartypes && args.geartypes.length > 0) ||
       args.electronicShifting === true || args.electronicShifting === false ||
       args.batteryMin ||
       args.batteryMax ||
@@ -87,6 +88,7 @@ export function createFilters({
     else if (args?.batteryMin) parts.push(`fra ${args.batteryMin} Wh`);
     else if (args?.batteryMax) parts.push(`under ${args.batteryMax} Wh`);
     if (args?.suspensions?.length)    parts.push(args.suspensions.join(', '));
+    if (args?.geartypes?.length)      parts.push(args.geartypes.map(g => `${g.toLowerCase()} gear`).join(', '));
     if (args?.sellerType === 'dealer')  parts.push('forhandlere');
     if (args?.sellerType === 'private') parts.push('private');
 
@@ -156,6 +158,7 @@ export function createFilters({
     for (const m of (args?.motors || []))         pills.push({ label: `Motor: ${m}`, type: 'motor', value: m });
     for (const p of (args?.motorPositions || [])) pills.push({ label: p, type: 'motor_position', value: p });
     for (const s of (args?.suspensions || []))    pills.push({ label: s, type: 'suspension', value: s });
+    for (const g of (args?.geartypes || []))      pills.push({ label: `${g} gear`, type: 'geartype', value: g });
     if (args?.batteryMin && args?.batteryMax) {
       pills.push({ label: `${args.batteryMin}–${args.batteryMax} Wh`, type: 'battery' });
     } else if (args?.batteryMin) {
@@ -274,6 +277,7 @@ export function createFilters({
       case 'motor':
       case 'motor_position':
       case 'suspension':
+      case 'geartype':
         document.querySelectorAll(`[data-filter="${type}"][data-value="${value}"]`).forEach(cb => cb.checked = false);
         applyFilters();
         break;

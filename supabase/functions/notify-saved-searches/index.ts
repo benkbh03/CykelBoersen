@@ -140,6 +140,11 @@ function bikeMatchesSearch(bike, filters) {
     if (!bike.suspension || !filters.suspensions.includes(bike.suspension)) return false;
   }
 
+  // Geartype: eksakt match (Indvendig/Udvendig)
+  if (Array.isArray(filters.geartypes) && filters.geartypes.length > 0) {
+    if (!bike.geartype || !filters.geartypes.includes(bike.geartype)) return false;
+  }
+
   // Pris
   const bikePrice = Number(bike.price);
   if (filters.minPrice != null && !isNaN(Number(filters.minPrice)) && bikePrice < Number(filters.minPrice)) return false;

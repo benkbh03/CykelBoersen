@@ -21,6 +21,8 @@ const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM R
 const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
 const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
 const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
+// Geartype: value → label (value gemmes, label vises)
+const GEARTYPE = [['Indvendig', 'Indvendig gear'], ['Udvendig', 'Udvendig gear']];
 
 export function createCykelagentPage({
   supabase,
@@ -64,6 +66,8 @@ export function createCykelagentPage({
       batteryMax: null,
       // Affjedring (MTB/gravel/el-MTB)
       suspensions: [],
+      // Geartype: indvendig/udvendig
+      geartypes: [],
     };
   }
 
@@ -253,6 +257,7 @@ export function createCykelagentPage({
     else if (f.batteryMin)            chips.push(`🔋 Fra ${f.batteryMin} Wh`);
     else if (f.batteryMax)            chips.push(`🔋 Op til ${f.batteryMax} Wh`);
     if (Array.isArray(f.suspensions)) f.suspensions.forEach(s => chips.push('🚵 ' + esc(s)));
+    if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('⚙️ ' + esc(g) + ' gear'));
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -310,6 +315,7 @@ export function createCykelagentPage({
           batteryMin:     f.batteryMin || null,
           batteryMax:     f.batteryMax || null,
           suspensions:    Array.isArray(f.suspensions)    ? f.suspensions    : [],
+          geartypes:      Array.isArray(f.geartypes)      ? f.geartypes      : [],
         };
       }
     }
@@ -415,7 +421,7 @@ export function createCykelagentPage({
           </label>
         </div>
 
-        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length ? 'open' : ''}>
+        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length || _form.geartypes.length ? 'open' : ''}>
           <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt — helt valgfrit, men giver dig mere præcise match</span></summary>
 
           <div class="cykelagent-field">
@@ -483,6 +489,15 @@ export function createCykelagentPage({
             <div class="cykelagent-chips-row">
               ${SUSPENSION.map(s => `
                 <button type="button" class="cykelagent-chip-btn${_form.suspensions.includes(s) ? ' active' : ''}" onclick="toggleCykelagentArray('suspensions', '${esc(s)}')">${esc(s)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Geartype</label>
+            <div class="cykelagent-chips-row">
+              ${GEARTYPE.map(([val, label]) => `
+                <button type="button" class="cykelagent-chip-btn${_form.geartypes.includes(val) ? ' active' : ''}" onclick="toggleCykelagentArray('geartypes', '${esc(val)}')">${esc(label)}</button>
               `).join('')}
             </div>
           </div>
@@ -562,7 +577,7 @@ export function createCykelagentPage({
       || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length
       || _form.electronicShifting || _form.maxWeightKg
       || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax
-      || _form.suspensions.length;
+      || _form.suspensions.length || _form.geartypes.length;
     if (!hasFilter) {
       showToast('⚠️ Tilføj mindst ét filter til din Cykelagent');
       return;
@@ -594,6 +609,8 @@ export function createCykelagentPage({
       batteryMax:     _form.batteryMax,
       // Affjedring (strict-match i edge function)
       suspensions:    _form.suspensions,
+      // Geartype (strict-match i edge function)
+      geartypes:      _form.geartypes,
     };
 
     const currentUser = getCurrentUser();

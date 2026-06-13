@@ -2095,6 +2095,10 @@ function applyFilters() {
   const suspensions = [...document.querySelectorAll('[data-filter="suspension"]:checked')]
     .map(el => el.dataset.value);
 
+  // Geartype: Indvendig (navgear) / Udvendig (kædeskifter) — eksakt match
+  const geartypes = [...document.querySelectorAll('[data-filter="geartype"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -2117,7 +2121,7 @@ function applyFilters() {
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
     motors, motorPositions, batteryMin, batteryMax,
-    suspensions,
+    suspensions, geartypes,
     maxWeight, city, search,
   });
 }

@@ -379,6 +379,7 @@ export function createBikeDetail({
         if (b.motor_position)              techRows.push(['Motor-placering', esc(b.motor_position)]);
         if (b.battery_wh != null)          techRows.push(['Batteri', `${b.battery_wh} Wh`]);
         if (b.suspension)                  techRows.push(['Affjedring', esc(b.suspension)]);
+        if (b.geartype)                    techRows.push(['Geartype', esc(b.geartype) + ' gear']);
         if (techRows.length === 0) return '';
         return `
         <div class="fit-section" style="margin-top:24px;">

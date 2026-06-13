@@ -96,6 +96,8 @@ export function createSellPage({
     'sell-motor', 'sell-motor-position', 'sell-battery-wh',
     // Affjedring (MTB/gravel/el-MTB)
     'sell-suspension',
+    // Geartype (indvendig/udvendig) — relevant for alle typer
+    'sell-geartype',
   ];
 
   // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
@@ -333,6 +335,9 @@ export function createSellPage({
       const isSusp         = _SUSPENSION_TYPES.includes(type);
       const suspension     = isSusp ? (getVal('sell-suspension') || null) : null;
 
+      // Geartype: indvendig (navgear) / udvendig (kædeskifter) — alle typer
+      const geartype       = getVal('sell-geartype') || null;
+
       if (!brand || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
@@ -378,6 +383,7 @@ export function createSellPage({
         motor_position:      motorPosition,
         battery_wh:          batteryWh,
         suspension,
+        geartype,
       };
 
       let newBike;
@@ -743,6 +749,15 @@ export function createSellPage({
           <select id="sell-suspension">
             <option value="">Vælg</option>
             ${opt(c['sell-suspension'] || '', _SUSPENSION_OPTS)}
+          </select>
+        </div>
+
+        <div class="sell-field">
+          <label>Geartype <span class="hint">(indvendig = navgear, udvendig = kædeskifter)</span></label>
+          <select id="sell-geartype">
+            <option value="">Vælg</option>
+            <option value="Indvendig"${c['sell-geartype'] === 'Indvendig' ? ' selected' : ''}>Indvendig gear</option>
+            <option value="Udvendig"${c['sell-geartype'] === 'Udvendig' ? ' selected' : ''}>Udvendig gear</option>
           </select>
         </div>
 
@@ -1532,10 +1547,11 @@ export function createSellPage({
     }
     if (s.weight_kg != null) setField('sell-weight-kg', s.weight_kg);
     setField('sell-suspension', s.suspension);
+    setField('sell-geartype', s.geartype);
 
     const aiFilledAdvanced = Boolean(
       s.groupset || s.frame_material || s.brake_type ||
-      s.electronic_shifting != null || s.weight_kg != null || s.suspension
+      s.electronic_shifting != null || s.weight_kg != null || s.suspension || s.geartype
     );
     if (aiFilledAdvanced) {
       const sec = document.getElementById('sell-advanced-section');
