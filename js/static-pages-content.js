@@ -181,7 +181,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. juni 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -200,6 +200,7 @@ export const footerContent = {
         <li><strong>Sidst sete annoncer:</strong> Vi gemmer lokalt i din browser (localStorage) de seneste 8 annoncer du har klikket på, så vi kan vise dem i "Sidst set"-rækken på forsiden. Data forlader aldrig din browser og slettes når du rydder browserdata.</li>
         <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
+        <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
         <li><strong>Betalingsdata:</strong> Forhandlerabonnementer er gratis under platformens lanceringsfase. Når betaling senere aktiveres, håndteres den af Stripe — vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
       </ul>
@@ -239,8 +240,12 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Forebyggelse af misbrug og svindel</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Henvendelser via kontaktformular</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
       </table>
@@ -267,6 +272,7 @@ export const footerContent = {
         <li><strong>Beskeder:</strong> Opbevares så længe kontoen eksisterer og slettes ved kontosletning.</li>
         <li><strong>ID-dokumenter:</strong> Slettes efter verificeringsprocessen er afsluttet.</li>
         <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
+        <li><strong>Visningstæller-log:</strong> Bruges kun til at undgå dobbelttælling og slettes automatisk, når den tilhørende annonce slettes.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
@@ -298,7 +304,7 @@ export const footerContent = {
     title: 'Cookiepolitik',
     metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. juni 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
       <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde — små data-poster i din browser, vi bruger til at huske dig.</p>
@@ -333,10 +339,15 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Cursor til notifikationer om gemte søgninger (Cykelagent), så vi ikke sender dobbeltbeskeder. Forlader aldrig din browser.</td>
           <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">dealer_signup_source (sessionStorage)</td>
           <td style="padding:8px 8px 8px 0;">Hvis du klikker på et link med UTM-parametre (fx fra en e-mail-kampagne) til "Bliv forhandler", husker vi kilden midlertidigt, så vi kan se hvilken kanal der har skabt ansøgningen. Slettes når du lukker browseren.</td>
           <td style="padding:8px 0;">Session</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">cb_viewer_id</td>
+          <td style="padding:8px 8px 8px 0;">En tilfældig, anonym kode der bruges til at tælle annonce-visninger korrekt uden dobbelttælling, hvis du ikke er logget ind. Indeholder ingen oplysninger om dig.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
       </table>
 
