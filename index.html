@@ -700,6 +700,16 @@
       </div>
       <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Indstigning</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="step_type" data-value="Lav indstigning" onchange="applyFilters()"> Lav indstigning</label>
+          <label class="filter-option"><input type="checkbox" data-filter="step_type" data-value="Høj indstigning" onchange="applyFilters()"> Høj indstigning</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3>Komponentgruppe</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
@@ -974,7 +984,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260606be';
+    const V = '20260606bf';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

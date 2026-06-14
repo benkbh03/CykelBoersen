@@ -380,6 +380,7 @@ export function createBikeDetail({
         if (b.battery_wh != null)          techRows.push(['Batteri', `${b.battery_wh} Wh`]);
         if (b.suspension)                  techRows.push(['Affjedring', esc(b.suspension)]);
         if (b.geartype)                    techRows.push(['Geartype', esc(b.geartype) + ' gear']);
+        if (b.step_type)                   techRows.push(['Indstigning', esc(b.step_type)]);
         if (techRows.length === 0) return '';
         return `
         <div class="fit-section" style="margin-top:24px;">

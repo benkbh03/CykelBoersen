@@ -98,6 +98,8 @@ export function createSellPage({
     'sell-suspension',
     // Geartype (indvendig/udvendig) — relevant for alle typer
     'sell-geartype',
+    // Stel-type (indstigning) — relevant for alle typer
+    'sell-step-type',
   ];
 
   // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
@@ -338,6 +340,9 @@ export function createSellPage({
       // Geartype: indvendig (navgear) / udvendig (kædeskifter) — alle typer
       const geartype       = getVal('sell-geartype') || null;
 
+      // Stel-type: lav/høj indstigning — alle typer
+      const stepType       = getVal('sell-step-type') || null;
+
       if (!brand || !price || !city || !type || !condition) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
@@ -384,6 +389,7 @@ export function createSellPage({
         battery_wh:          batteryWh,
         suspension,
         geartype,
+        step_type: stepType,
       };
 
       let newBike;
@@ -758,6 +764,15 @@ export function createSellPage({
             <option value="">Vælg</option>
             <option value="Indvendig"${c['sell-geartype'] === 'Indvendig' ? ' selected' : ''}>Indvendig gear</option>
             <option value="Udvendig"${c['sell-geartype'] === 'Udvendig' ? ' selected' : ''}>Udvendig gear</option>
+          </select>
+        </div>
+
+        <div class="sell-field">
+          <label>Indstigning</label>
+          <select id="sell-step-type">
+            <option value="">Vælg</option>
+            <option value="Lav indstigning"${c['sell-step-type'] === 'Lav indstigning' ? ' selected' : ''}>Lav indstigning</option>
+            <option value="Høj indstigning"${c['sell-step-type'] === 'Høj indstigning' ? ' selected' : ''}>Høj indstigning</option>
           </select>
         </div>
 
@@ -1548,6 +1563,7 @@ export function createSellPage({
     if (s.weight_kg != null) setField('sell-weight-kg', s.weight_kg);
     setField('sell-suspension', s.suspension);
     setField('sell-geartype', s.geartype);
+    setField('sell-step-type', s.step_type);
 
     const aiFilledAdvanced = Boolean(
       s.groupset || s.frame_material || s.brake_type ||

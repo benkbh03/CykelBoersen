@@ -15,6 +15,7 @@ const MAP_FILTER_MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', '
 const MAP_FILTER_MOTOR_POS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
 const MAP_FILTER_SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
 const MAP_FILTER_GEARTYPE = ['Indvendig', 'Udvendig'];
+const MAP_FILTER_STEP_TYPE = ['Lav indstigning', 'Høj indstigning'];
 const MAP_FILTER_COLORS = ['Sort', 'Hvid', 'Grå', 'Sølv', 'Rød', 'Blå', 'Grøn', 'Gul', 'Orange', 'Lyserød', 'Lilla', 'Brun', 'Beige'];
 const MAP_FILTER_BRANDS = [
   'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brabus','Brompton',
@@ -78,7 +79,7 @@ export function createMapPage({
     frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
     groupset: new Set(), weight_max: null,
     motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
-    suspension: new Set(), geartype: new Set(),
+    suspension: new Set(), geartype: new Set(), step_type: new Set(),
   };
 
   /* ── setView ────────────────────────────────────────────── */
@@ -331,7 +332,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, geartype, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
@@ -400,6 +401,7 @@ export function createMapPage({
       if (adv.battery_max != null && (b.battery_wh == null || b.battery_wh > adv.battery_max)) return false;
       if (adv.suspension.size && !adv.suspension.has(b.suspension)) return false;
       if (adv.geartype.size && !adv.geartype.has(b.geartype)) return false;
+      if (adv.step_type.size && !adv.step_type.has(b.step_type)) return false;
       if (f.nearCoords && f.radius && _mapPageGeocoded) {
         const g = _mapPageGeocoded.get(b.id);
         if (!g) return false;
@@ -432,7 +434,7 @@ export function createMapPage({
     n += adv.brand.size + adv.size.size + adv.wheel_size.size + adv.color.size
        + adv.frame_material.size + adv.brake_type.size + adv.electronic_shifting.size
        + adv.groupset.size + (adv.weight_max != null ? 1 : 0)
-       + adv.motor.size + adv.motor_position.size + adv.suspension.size + adv.geartype.size
+       + adv.motor.size + adv.motor_position.size + adv.suspension.size + adv.geartype.size + adv.step_type.size
        + (adv.battery_min != null ? 1 : 0) + (adv.battery_max != null ? 1 : 0);
 
     // Opdater alle badge-elementer (mobil-chip + desktop "Flere filtre"-knap)
@@ -526,7 +528,7 @@ export function createMapPage({
       frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
       groupset: new Set(), weight_max: null,
       motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
-    suspension: new Set(), geartype: new Set(),
+    suspension: new Set(), geartype: new Set(), step_type: new Set(),
     };
     resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
     resetMapDd('dd-bike-type',   '',    'Alle typer');
@@ -1186,6 +1188,9 @@ export function createMapPage({
         }).join('')
       + '</div>';
     html += acc('Geartype', geartypeInner, _mapAdvFilters.geartype.size);
+
+    // Indstigning (Stel-type)
+    html += acc('Indstigning', advChips('step_type', MAP_FILTER_STEP_TYPE), _mapAdvFilters.step_type.size);
 
     // Max vægt
     const weightInner = '<div class="msf-price"><input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="'

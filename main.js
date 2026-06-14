@@ -2099,6 +2099,10 @@ function applyFilters() {
   const geartypes = [...document.querySelectorAll('[data-filter="geartype"]:checked')]
     .map(el => el.dataset.value);
 
+  // Stel-type: Lav indstigning / Høj indstigning — eksakt match
+  const stepTypes = [...document.querySelectorAll('[data-filter="step_type"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -2121,7 +2125,7 @@ function applyFilters() {
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
     motors, motorPositions, batteryMin, batteryMax,
-    suspensions, geartypes,
+    suspensions, geartypes, stepTypes,
     maxWeight, city, search,
   });
 }
