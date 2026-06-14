@@ -1483,9 +1483,10 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-field input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .sell-field input[type="number"] { -moz-appearance: textfield; }
 .sell-form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-/* Reservér plads til 2 linjers label, så selects flugter selvom kun
-   ét af felternes labels (fx Geartype-hint) ombrydes. */
-.sell-form-grid-2.sell-grid-align > .sell-field > label { min-height: 32px; display: block; }
+/* Geartype-hintet og Indstigning skal flugte: gør hint til sin egen linje
+   på begge felter (Indstigning får en tom hint-linje), så begge labels
+   altid er nøjagtigt 2 linjer høje uanset bredde/skriftstørrelse. */
+.sell-form-grid-2.sell-grid-align > .sell-field > label .hint { display: block; margin-left: 0; margin-top: 1px; }
 /* Summary card */
 .sell-summary-card {
   margin-top: 16px; background: var(--forest);
