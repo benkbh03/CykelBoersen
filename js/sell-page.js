@@ -947,6 +947,8 @@ export function createSellPage({
 
   function renderSellDesktopPreviewHTML() {
     const currentProfile = getCurrentProfile();
+    let _actingAs = null;
+    try { _actingAs = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
     const c = _sellFormCache;
     const brand = c['sell-brand'] || '';
     const model = c['sell-model'] || '';
@@ -979,7 +981,7 @@ export function createSellPage({
          </div>`
       : '';
 
-    const ownerName = currentProfile?.shop_name || currentProfile?.name || 'Sælger';
+    const ownerName = _actingAs?.name || currentProfile?.shop_name || currentProfile?.name || 'Sælger';
 
     return `
       <div class="sell-desktop-preview-label">Sådan ser annoncen ud</div>
