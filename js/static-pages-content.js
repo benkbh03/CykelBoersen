@@ -201,6 +201,7 @@ export const footerContent = {
         <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
         <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
+        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres, når det aktiveres, af Stripe — se betalingsdata.</li>
         <li><strong>Betalingsdata:</strong> Forhandlerabonnementer er gratis under platformens lanceringsfase. Når betaling senere aktiveres, håndteres den af Stripe — vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
       </ul>
@@ -244,9 +245,13 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Henvendelser via kontaktformular</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Fremhævning/boost af annoncer</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
         </tr>
       </table>
 

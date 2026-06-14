@@ -521,6 +521,19 @@
   transition: background 0.15s;
 }
 .mp-btn-edit:hover { background: var(--forest-light); }
+.mp-btn-boost {
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
+  color: #fff; border: none; border-radius: 8px;
+  padding: 7px 12px; font-size: 0.78rem; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  transition: filter 0.15s;
+}
+.mp-btn-boost:hover { filter: brightness(1.05); }
+.mp-btn-boost--active {
+  background: #fff; color: #8a6817;
+  border: 1px solid rgba(212,160,23,0.6);
+}
 .mp-btn-sold, .mp-btn-unsold {
   background: none;
   border: 1px solid var(--border);

@@ -14,6 +14,8 @@ import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from 
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
 import { createRealtimeNotifications } from './js/realtime-notifications.js';
 import { createShareActions } from './js/share-actions.js';
+import { createBoostModule } from './js/listing-boost.js';
+import { createFeaturedBikes } from './js/featured-bikes.js';
 import { setMainView, showDetailView, showListingView as _baseShowListingView } from './js/view-switcher.js';
 import { createSoldActions } from './js/sold-actions.js';
 import { createQuickReplies } from './js/quick-replies.js';
@@ -1408,6 +1410,7 @@ async function loadInitialData() {
   ]);
   updateFilterCounts(bikesData, dealerCount);
   loadDealers(dealers, bikesData);
+  loadFeaturedBikes();
 }
 
 // Større version af dealer-card til "⭐ Fremhævede forhandlere"-sektionen.
@@ -2953,6 +2956,28 @@ const {
   shareViaSMS,
   openNativeShare,
 } = createShareActions({ showToast });
+
+/* ============================================================
+   FREMHÆV ANNONCE (BOOST) + FREMHÆVEDE CYKLER
+   ============================================================ */
+const { loadFeaturedBikes } = createFeaturedBikes({ supabase, esc });
+
+const { openBoostModal, closeBoostModal } = createBoostModule({
+  supabase,
+  showToast,
+  esc,
+  getCurrentUser: () => currentUser,
+  onBoosted: () => {
+    // Opdatér forsidens "Fremhævede cykler"-sektion
+    loadFeaturedBikes();
+    // Flip knappen til "Fremhævet" hvis "Mine annoncer" er åben
+    if (document.getElementById('mp-listings-grid')) {
+      try { loadMyListings('mp-listings-grid'); } catch {}
+    }
+  },
+});
+window.openBoostModal  = openBoostModal;
+window.closeBoostModal = closeBoostModal;
 
 
 window.searchAutocomplete = searchAutocomplete;
