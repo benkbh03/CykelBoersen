@@ -78,7 +78,7 @@ const KNOWN_BRANDS = [
   "Santa Cruz","SCO","Scott","Seaside Bike","Silverback","Sparta",
   "Specialized","Stevens","Superior","Tern","Trek","Triobike",
   "Urban Arrow","uVelo","Van De Falk","VanMoof","Velo","Velo de Ville",
-  "Victoria","Wilier","Winther","Woom","Yuba",
+  "Velo Lux","Victoria","Wilier","Winther","Woom","Yuba",
 ];
 
 // Skal matche brandToSlug() i js/brand-data-v2.js præcist

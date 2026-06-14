@@ -905,6 +905,17 @@ export const BRANDS_META = {
     },
     typical_price_range: null,
   },
+  'velo-lux': {
+    name: 'Velo Lux',
+    country: null,
+    founded: null,
+    tagline: 'Klassiske citybikes til hverdagen',
+    description: 'Velo Lux er et budgetvenligt cykelmærke med klassiske dame- og herrecykler til hverdagskørsel i byen. Cyklerne fås typisk med tre eller syv navgear, rustfri fælge, bagagebærer og skærme, og leveres i flere klassiske farver. Mærket føres bredt af danske cykelforhandlere som en simpel og prisbevidst transportcykel.',
+    popular_models: {
+      'Citybike': ['3G', '7G'],
+    },
+    typical_price_range: null,
+  },
   falcon: {
     name: 'Falcon',
     country: null,
@@ -1009,5 +1020,5 @@ export const KNOWN_BRANDS = [
   'Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta',
   'Specialized','Stevens','Superior','Tern','Trek','Triobike',
   'Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville',
-  'Victoria','Wilier','Winther','Woom','Yuba',
+  'Velo Lux','Victoria','Wilier','Winther','Woom','Yuba',
 ];
