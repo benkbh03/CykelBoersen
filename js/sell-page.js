@@ -708,7 +708,7 @@ export function createSellPage({
         <div class="color-swatch-grid" id="sell-color-grid"></div>
       </div>
 
-      <div class="sell-form-grid-2">
+      <div class="sell-form-grid-2 sell-grid-align">
         <div class="sell-field">
           <label>Geartype <span class="hint">(indvendig = navgear, udvendig = kædeskifter)</span></label>
           <select id="sell-geartype">
