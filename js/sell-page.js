@@ -718,7 +718,7 @@ export function createSellPage({
           </select>
         </div>
         <div class="sell-field">
-          <label>Indstigning</label>
+          <label>Indstigning <span class="hint">&nbsp;</span></label>
           <select id="sell-step-type">
             <option value="">Vælg</option>
             <option value="Lav indstigning"${c['sell-step-type'] === 'Lav indstigning' ? ' selected' : ''}>Lav indstigning</option>

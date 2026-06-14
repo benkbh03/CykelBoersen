@@ -25,7 +25,7 @@ const MAP_FILTER_BRANDS = [
   'Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco',
   'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Remington','Riese & Müller','Ridley','Royal Cargobike',
   'Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike',
-  'Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba',
+  'Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville','Velo Lux','Victoria','Wilier','Winther','Woom','Yuba',
 ];
 
 export function createMapPage({
