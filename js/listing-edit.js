@@ -198,6 +198,7 @@ export function createListingEdit({
     document.getElementById('edit-motor-position').value     = b.motor_position || '';
     { const s = document.getElementById('edit-suspension'); if (s) s.value = b.suspension || ''; }
     { const g = document.getElementById('edit-geartype'); if (g) g.value = b.geartype || ''; }
+    { const st = document.getElementById('edit-step-type'); if (st) st.value = b.step_type || ''; }
     document.getElementById('edit-battery-wh').value         = b.battery_wh ?? '';
 
     const isDealer = getCurrentProfile()?.seller_type === 'dealer';
@@ -302,6 +303,7 @@ export function createListingEdit({
       battery_wh:         parseInt(document.getElementById('edit-battery-wh').value) || null,
       suspension:         document.getElementById('edit-suspension')?.value || null,
       geartype:           document.getElementById('edit-geartype')?.value || null,
+      step_type:          document.getElementById('edit-step-type')?.value || null,
     };
 
     if (!updates.brand || !updates.price || !updates.city) {

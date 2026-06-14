@@ -22,7 +22,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
   const OPTIONAL_FIELDS = [
     'year', 'size', 'size_cm', 'wheel_size', 'color', 'colors',
     'frame_material', 'brake_type', 'groupset', 'electronic_shifting',
-    'weight_kg', 'motor', 'motor_position', 'battery_wh', 'suspension', 'geartype',
+    'weight_kg', 'motor', 'motor_position', 'battery_wh', 'suspension', 'geartype', 'step_type',
     'warranty', 'external_url', 'description', 'original_price',
   ];
   const VALID_TYPES = ['Racercykel', 'Mountainbike', 'Citybike', 'El-cykel', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];

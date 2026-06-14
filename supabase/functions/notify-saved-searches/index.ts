@@ -145,6 +145,11 @@ function bikeMatchesSearch(bike, filters) {
     if (!bike.geartype || !filters.geartypes.includes(bike.geartype)) return false;
   }
 
+  // Stel-type: eksakt match (Lav/Høj indstigning)
+  if (Array.isArray(filters.stepTypes) && filters.stepTypes.length > 0) {
+    if (!bike.step_type || !filters.stepTypes.includes(bike.step_type)) return false;
+  }
+
   // Pris
   const bikePrice = Number(bike.price);
   if (filters.minPrice != null && !isNaN(Number(filters.minPrice)) && bikePrice < Number(filters.minPrice)) return false;

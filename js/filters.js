@@ -39,6 +39,7 @@ export function createFilters({
       (args.motorPositions && args.motorPositions.length > 0) ||
       (args.suspensions && args.suspensions.length > 0) ||
       (args.geartypes && args.geartypes.length > 0) ||
+      (args.stepTypes && args.stepTypes.length > 0) ||
       args.electronicShifting === true || args.electronicShifting === false ||
       args.batteryMin ||
       args.batteryMax ||
@@ -89,6 +90,7 @@ export function createFilters({
     else if (args?.batteryMax) parts.push(`under ${args.batteryMax} Wh`);
     if (args?.suspensions?.length)    parts.push(args.suspensions.join(', '));
     if (args?.geartypes?.length)      parts.push(args.geartypes.map(g => `${g.toLowerCase()} gear`).join(', '));
+    if (args?.stepTypes?.length)      parts.push(args.stepTypes.join(', '));
     if (args?.sellerType === 'dealer')  parts.push('forhandlere');
     if (args?.sellerType === 'private') parts.push('private');
 
@@ -159,6 +161,7 @@ export function createFilters({
     for (const p of (args?.motorPositions || [])) pills.push({ label: p, type: 'motor_position', value: p });
     for (const s of (args?.suspensions || []))    pills.push({ label: s, type: 'suspension', value: s });
     for (const g of (args?.geartypes || []))      pills.push({ label: `${g} gear`, type: 'geartype', value: g });
+    for (const st of (args?.stepTypes || []))     pills.push({ label: st, type: 'step_type', value: st });
     if (args?.batteryMin && args?.batteryMax) {
       pills.push({ label: `${args.batteryMin}–${args.batteryMax} Wh`, type: 'battery' });
     } else if (args?.batteryMin) {
@@ -278,6 +281,7 @@ export function createFilters({
       case 'motor_position':
       case 'suspension':
       case 'geartype':
+      case 'step_type':
         document.querySelectorAll(`[data-filter="${type}"][data-value="${value}"]`).forEach(cb => cb.checked = false);
         applyFilters();
         break;
