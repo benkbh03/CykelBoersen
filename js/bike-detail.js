@@ -9,6 +9,27 @@ import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
 import { createBikeDetailLightbox } from './bike-detail-lightbox.js';
 
+/* Stabil "viewer key" til visningstælling:
+   - Logget ind → brugerens eget id (så samme person ikke tæller fra flere browsere).
+   - Ellers → en anonym tilfældig token gemt i localStorage (ingen IP/persondata).
+   Server-side RPC sørger for dedup (én visning pr. seer pr. annonce pr. 24t) og
+   for at ejeren ikke tæller sig selv. Returnerer null i privat-browsing uden
+   storage → så tæller vi hellere ikke (bedre end at puste tallet op). */
+function getViewerKey(currentUser) {
+  if (currentUser?.id) return currentUser.id;
+  try {
+    let k = localStorage.getItem('cb_viewer_id');
+    if (!k) {
+      k = (window.crypto?.randomUUID?.())
+        || ('v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2));
+      localStorage.setItem('cb_viewer_id', k);
+    }
+    return k;
+  } catch {
+    return null;
+  }
+}
+
 export function createBikeDetail({
   supabase,
   showToast,
@@ -451,9 +472,10 @@ export function createBikeDetail({
 
     const currentUser = getCurrentUser();
 
-    // Tæl visning (fire-and-forget, kun ikke-ejere)
+    // Tæl visning (fire-and-forget, kun ikke-ejere; dedup sker server-side)
     if (b && (!currentUser || currentUser.id !== b.user_id)) {
-      supabase.rpc('increment_bike_views', { bike_id: bikeId }).then(null, () => {});
+      const vk = getViewerKey(currentUser);
+      if (vk) supabase.rpc('increment_bike_views', { bike_id: bikeId, viewer_key: vk }).then(null, () => {});
     }
 
     if (error || !b) {
@@ -686,7 +708,8 @@ export function createBikeDetail({
 
     const currentUser = getCurrentUser();
     if (!currentUser || currentUser.id !== b.user_id) {
-      supabase.rpc('increment_bike_views', { bike_id: bikeId }).then(null, () => {});
+      const vk = getViewerKey(currentUser);
+      if (vk) supabase.rpc('increment_bike_views', { bike_id: bikeId, viewer_key: vk }).then(null, () => {});
     }
 
     const primaryImg = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
