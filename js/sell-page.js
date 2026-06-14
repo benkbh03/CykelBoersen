@@ -708,6 +708,25 @@ export function createSellPage({
         <div class="color-swatch-grid" id="sell-color-grid"></div>
       </div>
 
+      <div class="sell-form-grid-2">
+        <div class="sell-field">
+          <label>Geartype <span class="hint">(indvendig = navgear, udvendig = kædeskifter)</span></label>
+          <select id="sell-geartype">
+            <option value="">Vælg</option>
+            <option value="Indvendig"${c['sell-geartype'] === 'Indvendig' ? ' selected' : ''}>Indvendig gear</option>
+            <option value="Udvendig"${c['sell-geartype'] === 'Udvendig' ? ' selected' : ''}>Udvendig gear</option>
+          </select>
+        </div>
+        <div class="sell-field">
+          <label>Indstigning</label>
+          <select id="sell-step-type">
+            <option value="">Vælg</option>
+            <option value="Lav indstigning"${c['sell-step-type'] === 'Lav indstigning' ? ' selected' : ''}>Lav indstigning</option>
+            <option value="Høj indstigning"${c['sell-step-type'] === 'Høj indstigning' ? ' selected' : ''}>Høj indstigning</option>
+          </select>
+        </div>
+      </div>
+
       <div class="sell-field">
         <label>Pris <span class="req">*</span> <span class="hint">inkl. moms</span></label>
         <div class="suffix-wrap">
@@ -755,24 +774,6 @@ export function createSellPage({
           <select id="sell-suspension">
             <option value="">Vælg</option>
             ${opt(c['sell-suspension'] || '', _SUSPENSION_OPTS)}
-          </select>
-        </div>
-
-        <div class="sell-field">
-          <label>Geartype <span class="hint">(indvendig = navgear, udvendig = kædeskifter)</span></label>
-          <select id="sell-geartype">
-            <option value="">Vælg</option>
-            <option value="Indvendig"${c['sell-geartype'] === 'Indvendig' ? ' selected' : ''}>Indvendig gear</option>
-            <option value="Udvendig"${c['sell-geartype'] === 'Udvendig' ? ' selected' : ''}>Udvendig gear</option>
-          </select>
-        </div>
-
-        <div class="sell-field">
-          <label>Indstigning</label>
-          <select id="sell-step-type">
-            <option value="">Vælg</option>
-            <option value="Lav indstigning"${c['sell-step-type'] === 'Lav indstigning' ? ' selected' : ''}>Lav indstigning</option>
-            <option value="Høj indstigning"${c['sell-step-type'] === 'Høj indstigning' ? ' selected' : ''}>Høj indstigning</option>
           </select>
         </div>
 
@@ -1567,7 +1568,7 @@ export function createSellPage({
 
     const aiFilledAdvanced = Boolean(
       s.groupset || s.frame_material || s.brake_type ||
-      s.electronic_shifting != null || s.weight_kg != null || s.suspension || s.geartype
+      s.electronic_shifting != null || s.weight_kg != null || s.suspension
     );
     if (aiFilledAdvanced) {
       const sec = document.getElementById('sell-advanced-section');
