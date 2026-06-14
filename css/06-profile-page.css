@@ -1482,12 +1482,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-field input[type="number"]::-webkit-inner-spin-button,
 .sell-field input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .sell-field input[type="number"] { -moz-appearance: textfield; }
-.sell-form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch; }
-/* Flugt select/input i bunden så et felt med 2-linjers label ikke står lavere end nabofeltet */
-.sell-form-grid-2 > .sell-field { display: flex; flex-direction: column; }
-.sell-form-grid-2 > .sell-field > select,
-.sell-form-grid-2 > .sell-field > input,
-.sell-form-grid-2 > .sell-field > .suffix-wrap { margin-top: auto; }
+.sell-form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Flugt select/input i bunden så et felt med 2-linjers label ikke står lavere end nabofeltet.
+   Kun for grids hvor begge celler har præcis ét kontrol-felt (ikke fx stel+hjulstr). */
+.sell-form-grid-2.sell-grid-align { align-items: stretch; }
+.sell-form-grid-2.sell-grid-align > .sell-field { display: flex; flex-direction: column; }
+.sell-form-grid-2.sell-grid-align > .sell-field > select,
+.sell-form-grid-2.sell-grid-align > .sell-field > input { margin-top: auto; }
 /* Summary card */
 .sell-summary-card {
   margin-top: 16px; background: var(--forest);
