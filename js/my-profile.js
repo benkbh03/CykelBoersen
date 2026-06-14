@@ -55,6 +55,7 @@ export function createMyProfile({
     try {
       grid.innerHTML = data.map(b => {
         const isSold = !b.is_active;
+        const isFeatured = !isSold && b.featured_until && new Date(b.featured_until).getTime() > Date.now();
         const views  = b.views || 0;
         const daysOld = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
         const isOld  = !isSold && daysOld >= 30;
@@ -87,7 +88,8 @@ export function createMyProfile({
                 <div class="mp-listing-actions">
                   <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
                   ${!isSold
-                    ? `<button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                    ? `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">⭐ ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>
+                       <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                        <button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
                     : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                   <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
@@ -96,7 +98,8 @@ export function createMyProfile({
               <div class="mp-listing-actions-mobile">
                 <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
                 ${!isSold
-                  ? `<button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                  ? `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">⭐ ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>
+                     <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                      <button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                 <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>

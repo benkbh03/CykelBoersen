@@ -914,10 +914,29 @@
         <div class="success-bike-name" id="success-bike-title"></div>
         <div class="success-bike-price" id="success-bike-price"></div>
       </div>
+      <button class="success-boost-cta" id="success-boost-btn">
+        <span class="success-boost-cta-star">⭐</span>
+        <span class="success-boost-cta-text">
+          <strong>Fremhæv din annonce</strong>
+          <span>Få den vist i toppen — første gang er gratis</span>
+        </span>
+        <span class="success-boost-cta-arrow">→</span>
+      </button>
       <div class="success-actions">
         <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce →</button>
         <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ── FREMHÆV ANNONCE (BOOST) MODAL — udfyldes dynamisk af js/listing-boost.js ── -->
+  <div class="modal-overlay" id="boost-modal" role="dialog" aria-modal="true" style="z-index:6000;" onclick="if(event.target===this)closeBoostModal()">
+    <div class="modal boost-modal-inner" style="max-width:440px;">
+      <div class="modal-header">
+        <h2>⭐ Fremhæv annonce</h2>
+        <button class="modal-close" onclick="closeBoostModal()" aria-label="Luk">✕</button>
+      </div>
+      <div class="modal-body" id="boost-modal-body"></div>
     </div>
   </div>
 

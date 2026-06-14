@@ -214,6 +214,27 @@
   max-width: calc(100% - 58px); /* plads til save-btn i højre side */
   z-index: 1;
 }
+/* ── Fremhævet (boost) annonce — gylden accent + badge ── */
+.bike-card--featured {
+  border-color: rgba(212,160,23,0.55);
+  box-shadow: 0 4px 16px rgba(212,160,23,0.16);
+}
+.bike-card--featured:hover {
+  border-color: #d4a017;
+  box-shadow: 0 12px 30px rgba(212,160,23,0.24);
+}
+.featured-card-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
+  color: #fff;
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.3px;
+  text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(212,160,23,0.32);
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+}
+.featured-card-img-placeholder { font-size: 4rem; }
+
 .condition-tag {
   border-radius: 6px;
   padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2px;
@@ -507,3 +528,90 @@
   .rv-card { flex: 0 0 130px; }
   .rv-heading { font-size: 1.15rem; }
 }
+
+/* ============================================================
+   FREMHÆVEDE CYKLER — forside-sektion
+   ============================================================ */
+.promoted-bikes {
+  margin: 24px 0 8px;
+  padding: 18px 18px 20px;
+  background: linear-gradient(180deg, rgba(212,160,23,0.06), rgba(212,160,23,0.02));
+  border: 1px solid rgba(212,160,23,0.22);
+  border-radius: 16px;
+}
+.promoted-bikes-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.promoted-bikes-title {
+  font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700;
+  margin: 0; color: #6e4e00; letter-spacing: -0.01em;
+}
+.promoted-bikes-sub {
+  font-size: 0.75rem; color: #8a6817; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.promoted-bikes-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+}
+@media (max-width: 1024px) { .promoted-bikes-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px)  { .promoted-bikes-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+@media (max-width: 480px)  { .promoted-bikes-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+
+/* ============================================================
+   FREMHÆV-MODAL (boost)
+   ============================================================ */
+.boost-loading, .boost-msg { text-align: center; color: var(--muted); padding: 18px 0; }
+.boost-pitch { font-size: 0.95rem; color: var(--charcoal); margin: 2px 0 14px; line-height: 1.5; }
+.boost-benefits {
+  list-style: none; margin: 0 0 16px; padding: 0;
+  display: flex; flex-direction: column; gap: 9px;
+}
+.boost-benefits li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 0.9rem; color: var(--charcoal); line-height: 1.4;
+}
+.boost-benefits li span { flex-shrink: 0; }
+.boost-cta-btn {
+  width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+  font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; color: #fff;
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
+  box-shadow: 0 3px 10px rgba(212,160,23,0.32);
+  transition: filter 0.15s, transform 0.1s;
+}
+.boost-cta-btn:hover { filter: brightness(1.05); }
+.boost-cta-btn:active { transform: translateY(1px); }
+.boost-cta-btn:disabled { cursor: default; opacity: 0.85; }
+.boost-cta-btn--soon {
+  background: var(--sand); color: var(--muted);
+  box-shadow: none; border: 1px solid var(--border);
+}
+.boost-fineprint { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 11px 0 0; line-height: 1.45; }
+.boost-soon-note { font-size: 0.82rem; color: var(--muted); text-align: center; margin: 4px 0 0; }
+.boost-state-active { text-align: center; }
+.boost-state-active .boost-benefits { text-align: left; }
+.boost-badge-big {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%); color: #fff;
+  font-weight: 800; font-size: 0.8rem; letter-spacing: 0.4px; text-transform: uppercase;
+  padding: 6px 16px; border-radius: 999px; box-shadow: 0 2px 8px rgba(212,160,23,0.4);
+  margin-bottom: 10px;
+}
+.boost-active-text { font-size: 0.95rem; color: var(--charcoal); margin: 0 0 14px; line-height: 1.5; }
+
+/* Boost-CTA i "annonce oprettet"-modalen */
+.success-boost-cta {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  margin: 4px 0 14px; padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(212,160,23,0.12), rgba(232,185,51,0.08));
+  border: 1px solid rgba(212,160,23,0.4); border-radius: 12px;
+  cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.success-boost-cta:hover { border-color: #d4a017; box-shadow: 0 4px 14px rgba(212,160,23,0.18); }
+.success-boost-cta-star { font-size: 1.5rem; flex-shrink: 0; }
+.success-boost-cta-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.success-boost-cta-text strong { font-size: 0.92rem; color: #6e4e00; }
+.success-boost-cta-text span { font-size: 0.8rem; color: #8a6817; }
+.success-boost-cta-arrow { font-size: 1.1rem; color: #b8860b; flex-shrink: 0; }

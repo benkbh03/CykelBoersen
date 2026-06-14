@@ -1617,6 +1617,8 @@ export function createSellPage({
     if (priceEl) priceEl.textContent = bike.price ? `${bike.price.toLocaleString('da-DK')} kr.` : '';
     if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); navigateTo(`/bike/${bike.id}`); };
     if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellPage(); };
+    const boostBtn = document.getElementById('success-boost-btn');
+    if (boostBtn) boostBtn.onclick = () => { closeListingSuccessModal(); if (window.openBoostModal) window.openBoostModal(bike.id); };
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
