@@ -96,6 +96,10 @@ function bikeMatchesAgent(bike, f) {
     if (!bike.suspension || !f.suspensions.includes(bike.suspension)) return false;
   }
 
+  if (Array.isArray(f.geartypes) && f.geartypes.length) {
+    if (!bike.geartype || !f.geartypes.includes(bike.geartype)) return false;
+  }
+
   if (f.minPrice != null && !isNaN(Number(f.minPrice)) && Number(bike.price) < Number(f.minPrice)) return false;
   if (f.maxPrice != null && !isNaN(Number(f.maxPrice)) && Number(bike.price) > Number(f.maxPrice)) return false;
 
@@ -140,7 +144,7 @@ export async function fetchAgentMatches(supabase, agents) {
     .select(`
       id, brand, model, price, type, city, condition, year, size, wheel_size, color, colors,
       warranty, created_at, user_id, frame_material, brake_type, groupset, motor, motor_position,
-      battery_wh, suspension,
+      battery_wh, suspension, geartype,
       profiles!user_id(seller_type, shop_name, verified),
       bike_images(url, thumb_url, is_primary)
     `)

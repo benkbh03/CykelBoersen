@@ -204,7 +204,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, profiles!user_id(seller_type), bike_images(url, is_primary)')
+        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, profiles!user_id(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
@@ -235,6 +235,7 @@ export function createMyProfile({
             motor_position:      full.motor_position,
             battery_wh:          full.battery_wh,
             suspension:          full.suspension,
+            geartype:            full.geartype,
             seller_type:         full.profiles?.seller_type || 'private',
             image:               primaryImage,
           },
@@ -266,6 +267,7 @@ export function createMyProfile({
       || (fa.motorPositions?.length > 0)
       || fa.batteryMin || fa.batteryMax
       || (fa.suspensions?.length > 0)
+      || (fa.geartypes?.length > 0)
       || warranty;
 
     if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
@@ -287,6 +289,7 @@ export function createMyProfile({
     else if (fa.batteryMin)        parts.push(`fra ${fa.batteryMin} Wh`);
     else if (fa.batteryMax)        parts.push(`til ${fa.batteryMax} Wh`);
     if (fa.suspensions?.length)    parts.push(...fa.suspensions);
+    if (fa.geartypes?.length)      parts.push(...fa.geartypes.map(g => g + ' gear'));
     if (warranty)                  parts.push('Med garanti');
     if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
     if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);

@@ -688,6 +688,14 @@
               <option>Fuld affjedring (fully)</option>
             </select>
           </div>
+          <div class="form-group">
+            <label>Geartype</label>
+            <select id="edit-geartype">
+              <option value="">Vælg</option>
+              <option value="Indvendig">Indvendig gear</option>
+              <option value="Udvendig">Udvendig gear</option>
+            </select>
+          </div>
           <div class="form-group" data-perf-only>
             <label>Komponentgruppe <small style="color:var(--muted);font-weight:400">(fx Shimano 105)</small></label>
             <input type="text" id="edit-groupset" list="edit-groupset-list" placeholder="Shimano 105" autocomplete="off">
@@ -902,6 +910,17 @@
         <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce →</button>
         <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ── CYKEL-VURDERING MODAL (åbnes fra sælg-flow så form-data ikke mistes) ── -->
+  <div class="modal-overlay" id="valuation-modal" role="dialog" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeValuationModal()">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2>💡 Gratis prisvurdering</h2>
+        <button class="modal-close" onclick="closeValuationModal()" aria-label="Luk">✕</button>
+      </div>
+      <div class="modal-body" id="valuation-modal-body"></div>
     </div>
   </div>
 
