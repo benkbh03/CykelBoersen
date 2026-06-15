@@ -214,23 +214,20 @@
   max-width: calc(100% - 58px); /* plads til save-btn i højre side */
   z-index: 1;
 }
-/* ── Fremhævet (boost) annonce — gylden accent + badge ── */
+/* ── Fremhævet (boost) annonce — diskret, neutral badge (DBA-stil) ── */
 .bike-card--featured {
-  border-color: rgba(212,160,23,0.55);
-  box-shadow: 0 4px 16px rgba(212,160,23,0.16);
+  border-color: rgba(212,160,23,0.28);
 }
 .bike-card--featured:hover {
-  border-color: #d4a017;
-  box-shadow: 0 12px 30px rgba(212,160,23,0.24);
+  border-color: rgba(212,160,23,0.5);
 }
 .featured-card-badge {
   display: inline-flex; align-items: center; gap: 4px;
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
-  color: #fff;
-  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.3px;
-  text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(212,160,23,0.32);
+  background: rgba(255,255,255,0.92);
+  color: #8a6817;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2px;
+  padding: 4px 9px; border-radius: 6px;
+  border: 1px solid rgba(212,160,23,0.35);
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
 }
 .featured-card-img-placeholder { font-size: 4rem; }
