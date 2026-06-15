@@ -90,7 +90,7 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     if (isFeatured) {
       el.innerHTML = `
         <div class="boost-state-active">
-          <div class="boost-badge-big">⭐ Fremhævet</div>
+          <div class="boost-badge-big">⭐ Promoveret</div>
           <p class="boost-active-text">Din annonce vises i toppen indtil <strong>${fmtDate(featuredUntil)}</strong>.</p>
           ${BOOST_BENEFITS}
           <button class="boost-cta-btn" id="boost-pay-btn">Forlæng ${BOOST_DAYS} dage – ${BOOST_PRICE_KR} kr.</button>
