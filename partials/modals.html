@@ -828,6 +828,7 @@
           <button class="profile-tab active" id="atab-applications" onclick="switchAdminTab('applications')">Forhandler ansøgninger</button>
           <button class="profile-tab" id="atab-users" onclick="switchAdminTab('users')">Alle brugere</button>
           <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
+          <button class="profile-tab" id="atab-feed-import" onclick="switchAdminTab('feed-import')">🔗 Feed-sync</button>
           <button class="profile-tab" id="atab-invite" onclick="switchAdminTab('invite')">➕ Invitér forhandler</button>
           <button class="profile-tab" id="atab-stats" onclick="switchAdminTab('stats')">📊 Statistik</button>
         </div>
@@ -842,6 +843,9 @@
           </div>
         </div>
         <div id="admin-bulk-import" style="display:none;">
+          <p style="color:var(--muted)">Indlæser…</p>
+        </div>
+        <div id="admin-feed-import" style="display:none;">
           <p style="color:var(--muted)">Indlæser…</p>
         </div>
         <div id="admin-invite" style="display:none;">

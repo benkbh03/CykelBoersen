@@ -2752,10 +2752,17 @@ const _ensureBulkImport = lazyCtrl(
 );
 const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 
+const _ensureFeedImport = lazyCtrl(
+  () => import(`./js/admin-feed-import.js?v=${ASSET_VERSION}`),
+  'createAdminFeedImport',
+  () => ({ supabase, showToast }),
+);
+const loadFeedImport = lazyMethod(_ensureFeedImport, 'loadFeedImportTab');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, initInviteForm, loadAdminStats }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
