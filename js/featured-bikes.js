@@ -29,7 +29,7 @@ export function createFeaturedBikes({ supabase, esc }) {
       <div class="bike-card bike-card--featured" onclick="navigateToBike('${b.id}')" title="${esc(title)}">
         <div class="bike-card-img">
           ${imgContent}
-          <div class="bike-card-badges"><span class="featured-card-badge">⭐ Fremhævet</span></div>
+          <div class="bike-card-badges"><span class="featured-card-badge">Fremhævet</span></div>
         </div>
         <div class="bike-card-body">
           <div class="card-top">

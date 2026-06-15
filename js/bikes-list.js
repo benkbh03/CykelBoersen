@@ -299,7 +299,7 @@ export function createBikesList({
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
-              ${isFeatured ? '<span class="featured-card-badge">⭐ Fremhævet</span>' : ''}
+              ${isFeatured ? '<span class="featured-card-badge">Fremhævet</span>' : ''}
               ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
               ${!isSold && !isDemo && b.original_price && b.original_price > b.price
                 ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>`
