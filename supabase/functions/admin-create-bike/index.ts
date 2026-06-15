@@ -38,6 +38,7 @@ const ALLOWED_BIKE_FIELDS = new Set([
   "wheel_size", "warranty", "external_url", "color", "colors",
   "groupset", "frame_material", "brake_type", "electronic_shifting",
   "weight_kg", "motor", "motor_position", "battery_wh", "suspension", "geartype", "step_type",
+  "external_id",
 ]);
 
 // "model" er bevidst IKKE påkrævet her — sælg-flowet tillader oprettelse
@@ -120,46 +121,88 @@ serve(async (req) => {
       if (ALLOWED_BIKE_FIELDS.has(key)) safeBike[key] = value;
     }
     safeBike.user_id             = target_user_id;
-    safeBike.is_active           = true;
     safeBike.created_by_admin_id = caller.id;
     if (!safeBike.original_price) safeBike.original_price = price;
 
-    // ── 7. Insert bike ──────────────────────────────────────
-    const { data: newBike, error: insertErr } = await supa
-      .from("bikes")
-      .insert(safeBike)
-      .select("id")
-      .single();
+    // ── 7. Upsert bike ──────────────────────────────────────
+    // Har annoncen et external_id (forhandlerens varenummer fra CSV/feed) og
+    // findes der allerede en cykel med samme (user_id, external_id)? → opdatér
+    // den i stedet for at lave en dublet. Ellers opret ny. Manuelt oprettede
+    // cykler uden external_id opretter altid en ny række (uændret adfærd).
+    const externalId = typeof safeBike.external_id === "string" && safeBike.external_id.trim()
+      ? safeBike.external_id.trim()
+      : null;
 
-    if (insertErr || !newBike) {
-      console.error("Bike insert fejl:", insertErr);
-      return jsonResponse({ error: "Kunne ikke oprette annonce" }, 500);
+    let bikeId: string | null = null;
+    let wasUpdate = false;
+
+    if (externalId) {
+      const { data: existing } = await supa
+        .from("bikes")
+        .select("id")
+        .eq("user_id", target_user_id)
+        .eq("external_id", externalId)
+        .maybeSingle();
+
+      if (existing?.id) {
+        // Opdatér eksisterende: gen-aktivér + ryd sold_at (cyklen er tilbage i lager)
+        safeBike.is_active = true;
+        safeBike.sold_at   = null;
+        const { error: updErr } = await supa
+          .from("bikes")
+          .update(safeBike)
+          .eq("id", existing.id);
+        if (updErr) {
+          console.error("Bike update fejl:", updErr);
+          return jsonResponse({ error: "Kunne ikke opdatere annonce" }, 500);
+        }
+        bikeId = existing.id;
+        wasUpdate = true;
+      }
     }
 
-    // ── 8. Insert bike_images hvis nogen ────────────────────
+    if (!bikeId) {
+      safeBike.is_active = true;
+      const { data: newBike, error: insertErr } = await supa
+        .from("bikes")
+        .insert(safeBike)
+        .select("id")
+        .single();
+      if (insertErr || !newBike) {
+        console.error("Bike insert fejl:", insertErr);
+        return jsonResponse({ error: "Kunne ikke oprette annonce" }, 500);
+      }
+      bikeId = newBike.id;
+    }
+
+    // ── 8. Synkronisér bike_images ──────────────────────────
+    // Ved opdatering: erstat billeder (feedet er kilden) — slet gamle først.
     if (Array.isArray(images) && images.length > 0) {
       const imageRows = images
         .filter((img) => img && typeof img.url === "string" && img.url.startsWith("https://"))
         .map((img) => ({
-          bike_id:    newBike.id,
+          bike_id:    bikeId,
           url:        img.url,
           is_primary: !!img.is_primary,
         }));
 
       if (imageRows.length > 0) {
+        if (wasUpdate) {
+          await supa.from("bike_images").delete().eq("bike_id", bikeId);
+        }
         const { error: imgErr } = await supa.from("bike_images").insert(imageRows);
         if (imgErr) {
           console.error("Bike_images insert fejl:", imgErr);
-          // Bike er allerede oprettet — log men returner ikke fejl
-          // Frontend kan vise warning: "Annonce oprettet men nogle billeder mangler"
+          // Bike er allerede oprettet/opdateret — log men returner ikke fejl
         }
       }
     }
 
-    console.log(`Admin ${caller.id} oprettede annonce ${newBike.id} for forhandler ${target_user_id}`);
+    console.log(`Admin ${caller.id} ${wasUpdate ? "opdaterede" : "oprettede"} annonce ${bikeId} for forhandler ${target_user_id}`);
     return jsonResponse({
       ok: true,
-      bike_id: newBike.id,
+      bike_id: bikeId,
+      updated: wasUpdate,
       target_name: target.shop_name || target.name,
     });
 

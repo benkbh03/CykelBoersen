@@ -23,7 +23,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
     'year', 'size', 'size_cm', 'wheel_size', 'color', 'colors',
     'frame_material', 'brake_type', 'groupset', 'electronic_shifting',
     'weight_kg', 'motor', 'motor_position', 'battery_wh', 'suspension', 'geartype', 'step_type',
-    'warranty', 'external_url', 'description', 'original_price',
+    'warranty', 'external_url', 'description', 'original_price', 'external_id',
   ];
   const VALID_TYPES = ['Racercykel', 'Mountainbike', 'Citybike', 'El-cykel', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
   const VALID_CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
@@ -175,6 +175,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
         <p style="margin:0 0 10px;color:var(--muted);font-size:0.78rem;line-height:1.5;">
           <strong>Tips til forhandleren:</strong>
           Skriv hjulstørrelse som tal (28, ikke 28"). Wrap beskrivelser med kommaer i "...". Gem fra Excel som "CSV UTF-8 (Comma delimited)".
+          <br><strong>Varenummer (external_id):</strong> medtag forhandlerens eget varenummer i hver række — så kan samme fil gen-uploades senere for at opdatere priser og automatisk fjerne solgte cykler (uden dubletter).
         </p>
       </div>
 
@@ -288,6 +289,15 @@ export function createAdminBulkImport({ supabase, showToast }) {
           </tbody>
         </table>
       </div>
+      <label style="margin-top:16px;display:flex;gap:8px;align-items:flex-start;padding:12px;background:var(--sand);border-radius:8px;cursor:pointer;font-size:0.85rem;line-height:1.5;">
+        <input type="checkbox" id="bulk-full-catalog" style="margin-top:2px;flex-shrink:0;">
+        <span>
+          <strong>Dette er forhandlerens FULDE lager.</strong>
+          Deaktivér de cykler (med varenummer) der ikke er i denne fil — dvs. dem der er solgt siden sidst.
+          <span style="display:block;color:var(--muted);margin-top:2px;">Kræver at rækkerne har en <code>external_id</code>-kolonne. Lad være afkrydset hvis du kun uploader nye/enkelte cykler.</span>
+        </span>
+      </label>
+
       <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button id="bulk-import-btn" ${validCount === 0 ? 'disabled' : ''} style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;${validCount === 0 ? 'opacity:0.5;cursor:not-allowed;' : ''}">
           🚀 Importér ${validCount} cykler
@@ -380,13 +390,44 @@ export function createAdminBulkImport({ supabase, showToast }) {
       log.scrollTop = log.scrollHeight;
     }
 
+    // Reconcile: hvis admin markerede "fuldt lager", deaktivér forhandlerens
+    // feed-cykler (med external_id) der IKKE var i denne upload = solgt siden sidst.
+    let deactivated = 0;
+    const fullCatalog = document.getElementById('bulk-full-catalog')?.checked;
+    if (fullCatalog) {
+      const seenIds = validRows
+        .map(v => (v.row.external_id || '').trim())
+        .filter(Boolean);
+      if (seenIds.length === 0) {
+        log.insertAdjacentHTML('beforeend',
+          `<div style="padding:4px 0;color:#a8761a;">⚠ "Fuldt lager" var markeret, men ingen rækker har et varenummer (external_id) — sprang reconcile over.</div>`
+        );
+      } else {
+        try {
+          const { data, error } = await supabase.rpc('reconcile_dealer_feed', {
+            p_user_id: _selectedDealerId,
+            p_seen_ids: seenIds,
+          });
+          if (error) throw error;
+          deactivated = data || 0;
+          log.insertAdjacentHTML('beforeend',
+            `<div style="padding:4px 0;color:var(--charcoal);">🔄 ${deactivated} cykler deaktiveret (ikke længere i lager).</div>`
+          );
+        } catch (err) {
+          log.insertAdjacentHTML('beforeend',
+            `<div style="padding:4px 0;color:#c8302a;">✗ Reconcile fejlede: ${esc((err && err.message) || String(err))}</div>`
+          );
+        }
+      }
+    }
+
     log.insertAdjacentHTML('beforeend', `
       <div style="margin-top:12px;padding:12px;background:#fff;border-radius:8px;border:1px solid var(--border);">
-        <strong>Færdig:</strong> ${success} oprettet · ${failed} fejlet
+        <strong>Færdig:</strong> ${success} oprettet/opdateret · ${failed} fejlet${deactivated ? ` · ${deactivated} deaktiveret` : ''}
       </div>
     `);
     document.getElementById('bulk-import-btn').disabled = false;
-    showToast(`✓ ${success} cykler importeret${failed > 0 ? ` · ${failed} fejlede` : ''}`);
+    showToast(`✓ ${success} cykler importeret${failed > 0 ? ` · ${failed} fejlede` : ''}${deactivated ? ` · ${deactivated} udsolgt` : ''}`);
   }
 
   // ── Type-specifikke CSV-templates ────────────────────────
@@ -462,9 +503,9 @@ export function createAdminBulkImport({ supabase, showToast }) {
     universal: {
       label: 'Universal (alle felter)',
       filename: 'cykelboersen-template-universal.csv',
-      headers: ['brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','groupset','electronic_shifting','weight_kg','warranty','city','description','external_url','image_1','image_2','image_3','image_4','image_5'],
+      headers: ['external_id','brand','model','type','price','year','condition','size','size_cm','wheel_size','color','frame_material','brake_type','groupset','electronic_shifting','weight_kg','warranty','city','description','external_url','image_1','image_2','image_3','image_4','image_5'],
       samples: [
-        ['Trek','Madone SL 6','Racercykel','32000','2023','Som ny','M','54','28','Sort','Carbon','Skivebremser hydraulisk','Shimano 105 Di2','true','8.2','12 mdr','København','Veligholdt racercykel kørt ca. 2000 km','','https://eksempel.dk/madone-1.jpg','https://eksempel.dk/madone-2.jpg','','',''],
+        ['SKU-1001','Trek','Madone SL 6','Racercykel','32000','2023','Som ny','M','54','28','Sort','Carbon','Skivebremser hydraulisk','Shimano 105 Di2','true','8.2','12 mdr','København','Veligholdt racercykel kørt ca. 2000 km','','https://eksempel.dk/madone-1.jpg','https://eksempel.dk/madone-2.jpg','','',''],
       ],
     },
   };
