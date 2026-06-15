@@ -520,35 +520,6 @@
 }
 
 /* ============================================================
-   FREMHÆVEDE CYKLER — forside-sektion
-   ============================================================ */
-.promoted-bikes {
-  margin: 24px 0 8px;
-  padding: 18px 18px 20px;
-  background: linear-gradient(180deg, rgba(212,160,23,0.06), rgba(212,160,23,0.02));
-  border: 1px solid rgba(212,160,23,0.22);
-  border-radius: 16px;
-}
-.promoted-bikes-header {
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
-}
-.promoted-bikes-title {
-  font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700;
-  margin: 0; color: #6e4e00; letter-spacing: -0.01em;
-}
-.promoted-bikes-sub {
-  font-size: 0.75rem; color: #8a6817; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase;
-}
-.promoted-bikes-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
-}
-@media (max-width: 1024px) { .promoted-bikes-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 768px)  { .promoted-bikes-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
-@media (max-width: 480px)  { .promoted-bikes-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
-
-/* ============================================================
    FREMHÆV-MODAL (boost)
    ============================================================ */
 .boost-loading, .boost-msg { text-align: center; color: var(--muted); padding: 18px 0; }

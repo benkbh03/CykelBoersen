@@ -48,7 +48,7 @@
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
   <link rel="stylesheet" href="/css/01-base.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260615b">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260615c">
   <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
   <link rel="stylesheet" href="/css/04-modals.css?v=20260612a">
   <link rel="stylesheet" href="/css/05-pages.css?v=20260612a">
@@ -813,17 +813,6 @@
         <div id="promoted-dealers-grid" class="promoted-dealers-grid"></div>
       </section>
 
-      <!-- ⭐ Fremhævede cykler — vises kun hvis nogen har featured_until > NOW().
-           Max 8 slots, nyeste fremhævning først. Drives af gratis intro-boost nu,
-           betalt boost (Stripe one-time) senere. Se js/featured-bikes.js. -->
-      <section id="promoted-bikes" class="promoted-bikes" style="display:none;" aria-label="Fremhævede cykler">
-        <div class="promoted-bikes-header">
-          <h2 class="promoted-bikes-title">⭐ Fremhævede cykler</h2>
-          <span class="promoted-bikes-sub">Premium-annoncer</span>
-        </div>
-        <div id="promoted-bikes-grid" class="promoted-bikes-grid"></div>
-      </section>
-
       <div class="listings-header">
         <div>
           <h2>Seneste annoncer</h2>
@@ -996,7 +985,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260606bk';
+    const V = '20260606bl';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
