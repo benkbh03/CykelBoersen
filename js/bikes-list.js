@@ -74,6 +74,9 @@ export function createBikesList({
   // leder efter — især nul-resultat-søgninger = umødt efterspørgsel. Dedupéres så
   // samme søgning ikke logges flere gange i træk (fx ved re-render).
   let _lastLoggedSearch = '';
+  // Ids på aktive fremhævede (boostede) annoncer fra seneste initial load.
+  // Ekskluderes fra hoved-listen så de ikke optræder dobbelt på tværs af pagination.
+  let _featuredIds = [];
   function logSearch(term, type, city, count) {
     const q = (term || '').trim();
     if (!q) return;
@@ -128,29 +131,59 @@ export function createBikesList({
     const fetchCount = append
       ? BIKES_LOAD_MORE_SIZE
       : (initialVist || BIKES_PAGE_SIZE);
-    let query = supabase
-      .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + fetchCount - 1);
 
-    if (filters.type)       query = query.eq('type', filters.type);
-    if (filters.city) {
-      const group = CITY_GROUPS[filters.city];
-      if (group) {
-        query = query.or(group.map(c => `city.ilike.%${c}%`).join(','));
-      } else {
-        query = query.ilike('city', `%${filters.city}%`);
+    const SELECT_FIELDS = 'id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)';
+
+    // Fælles filtre — anvendes på BÅDE hoved-listen og fremhævede-query, så et
+    // boost kun løftes op når annoncen rent faktisk matcher det aktuelle filter.
+    const applyListFilters = (q) => {
+      if (filters.type) q = q.eq('type', filters.type);
+      if (filters.city) {
+        const group = CITY_GROUPS[filters.city];
+        if (group) q = q.or(group.map(c => `city.ilike.%${c}%`).join(','));
+        else       q = q.ilike('city', `%${filters.city}%`);
       }
+      if (filters.maxPrice) q = q.lte('price', filters.maxPrice);
+      if (filters.search) {
+        const s = filters.search.replace(/[%_\\,.()"']/g, '');
+        if (s) q = q.or(`brand.ilike.%${s}%,model.ilike.%${s}%`);
+      }
+      if (filters.warranty) q = q.not('warranty', 'is', null);
+      if (filters.newOnly)  q = q.gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      return q;
+    };
+
+    // FREMHÆVEDE (boostede) annoncer der stadig er aktive løftes øverst — kun på
+    // initial load (ikke ved "Vis flere"). featured_until > NOW() sikrer at udløbne
+    // boosts IKKE forurener rækkefølgen. Nyeste boost først.
+    let featuredData = [];
+    if (!append) {
+      const { data: fd } = await applyListFilters(
+        supabase
+          .from('bikes')
+          .select(SELECT_FIELDS)
+          .eq('is_active', true)
+          .gt('featured_until', new Date().toISOString())
+          .order('featured_until', { ascending: false })
+          .limit(24)
+      );
+      featuredData = filters.sellerType
+        ? (fd || []).filter(b => b.profiles?.seller_type === filters.sellerType)
+        : (fd || []);
+      _featuredIds = featuredData.map(b => b.id);
     }
-    if (filters.maxPrice)   query = query.lte('price', filters.maxPrice);
-    if (filters.search) {
-      const s = filters.search.replace(/[%_\\,.()"']/g, '');
-      if (s) query = query.or(`brand.ilike.%${s}%,model.ilike.%${s}%`);
-    }
-    if (filters.warranty)   query = query.not('warranty', 'is', null);
-    if (filters.newOnly)    query = query.gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+
+    let query = applyListFilters(
+      supabase
+        .from('bikes')
+        .select(SELECT_FIELDS)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + fetchCount - 1)
+    );
+    // Ekskludér fremhævede fra hoved-listen så de ikke vises dobbelt (de er
+    // allerede prepended øverst). _featuredIds persisterer over pagination.
+    if (_featuredIds.length) query = query.not('id', 'in', `(${_featuredIds.join(',')})`);
 
     const { data: rawData, error } = await query;
 
@@ -160,9 +193,12 @@ export function createBikesList({
       return;
     }
 
-    const data = filters.sellerType
-      ? rawData.filter(b => b.profiles?.seller_type === filters.sellerType)
-      : rawData;
+    const normalData = filters.sellerType
+      ? (rawData || []).filter(b => b.profiles?.seller_type === filters.sellerType)
+      : (rawData || []);
+
+    // Render-rækkefølge: fremhævede øverst (kun initial load), derefter normale.
+    const data = append ? normalData : [...featuredData, ...normalData];
 
     if (!append && filters.search) logSearch(filters.search, filters.type, filters.city, data.length);
 
@@ -190,7 +226,9 @@ export function createBikesList({
     updateActiveFiltersBar();
     updateCykelagentCta();
 
-    setBikesOffset(getBikesOffset() + data.length);
+    // Offset/pagination tæller KUN normale rækker — fremhævede er prepended
+    // separat og ekskluderet fra hoved-query'en, så de må ikke tælle med.
+    setBikesOffset(getBikesOffset() + normalData.length);
     writeVistToUrl(getBikesOffset());
 
     const existing = document.getElementById('load-more-btn');
@@ -199,7 +237,7 @@ export function createBikesList({
     const footer = document.createElement('div');
     footer.id = 'load-more-btn';
     // Fuld batch → der kan være flere → vis "Vis flere"-knap
-    if (data.length === fetchCount) {
+    if (normalData.length === fetchCount) {
       footer.innerHTML = `<button onclick="loadMoreBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
     } else if (append && getBikesOffset() > BIKES_PAGE_SIZE) {
       footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
@@ -299,7 +337,7 @@ export function createBikesList({
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
-              ${isFeatured ? '<span class="featured-card-badge">Fremhævet</span>' : ''}
+              ${isFeatured ? '<span class="featured-card-badge">Promoveret</span>' : ''}
               ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
               ${!isSold && !isDemo && b.original_price && b.original_price > b.price
                 ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>`
