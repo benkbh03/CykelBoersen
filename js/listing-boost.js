@@ -14,7 +14,7 @@ const BOOST_DAYS     = 7;
 const BOOST_BENEFITS = `
   <ul class="boost-benefits">
     <li><span>⬆️</span> Vist <strong>øverst i listen</strong> på forsiden</li>
-    <li><span>🏷️</span> <strong>Promoveret</strong>-mærkat der fanger øjet</li>
+    <li><span>🏷️</span> <strong>Betalt promovering</strong>-mærkat der fanger øjet</li>
     <li><span>🚀</span> Større chance for at blive set — og solgt hurtigere</li>
   </ul>`;
 
@@ -90,7 +90,7 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     if (isFeatured) {
       el.innerHTML = `
         <div class="boost-state-active">
-          <div class="boost-badge-big">⭐ Promoveret</div>
+          <div class="boost-badge-big">⭐ Betalt promovering</div>
           <p class="boost-active-text">Din annonce vises i toppen indtil <strong>${fmtDate(featuredUntil)}</strong>.</p>
           ${BOOST_BENEFITS}
           <button class="boost-cta-btn" id="boost-pay-btn">Forlæng ${BOOST_DAYS} dage – ${BOOST_PRICE_KR} kr.</button>
@@ -100,7 +100,7 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     else if (status.free_available) {
       el.innerHTML = `
         <div class="boost-state-free">
-          <p class="boost-pitch">Få din annonce vist øverst og med en Promoveret-mærkat i <strong>${BOOST_DAYS} dage</strong>.</p>
+          <p class="boost-pitch">Få din annonce vist øverst og med en "Betalt promovering"-mærkat i <strong>${BOOST_DAYS} dage</strong>.</p>
           ${BOOST_BENEFITS}
           <button class="boost-cta-btn" id="boost-claim-btn">Fremhæv gratis i ${BOOST_DAYS} dage</button>
           <p class="boost-fineprint">Normalpris ${BOOST_PRICE_KR} kr. — <strong>gratis</strong> for din første fremhævning.</p>
