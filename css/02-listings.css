@@ -254,8 +254,8 @@
 }
 .price-reduced-card-badge {
   background: #c8302a; color: #fff;
-  border-radius: 6px; padding: 4px 9px;
-  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.3px;
+  border-radius: 4px; padding: 2px 6px;
+  font-size: 0.56rem; font-weight: 800; letter-spacing: 0.3px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 2px;
   box-shadow: 0 2px 6px rgba(200,48,42,0.25);
@@ -265,7 +265,7 @@
   .warranty-card-badge { font-size: 0.6rem; padding: 3px 7px; }
   .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
   .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
-  .price-reduced-card-badge { font-size: 0.6rem; padding: 3px 7px; }
+  .price-reduced-card-badge { font-size: 0.5rem; padding: 2px 5px; }
   .featured-card-badge { font-size: 0.5rem; padding: 2px 5px; }
 }
 .save-btn {
