@@ -219,8 +219,8 @@
   display: inline-flex; align-items: center;
   background: #e3edfb;
   color: #3a5a85;
-  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1px;
-  padding: 3px 8px; border-radius: 4px;
+  font-size: 0.56rem; font-weight: 600; letter-spacing: 0.1px;
+  padding: 2px 6px; border-radius: 4px;
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
 }
 .featured-card-img-placeholder { font-size: 4rem; }
@@ -266,7 +266,7 @@
   .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
   .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
   .price-reduced-card-badge { font-size: 0.6rem; padding: 3px 7px; }
-  .featured-card-badge { font-size: 0.54rem; padding: 2px 6px; }
+  .featured-card-badge { font-size: 0.5rem; padding: 2px 5px; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
