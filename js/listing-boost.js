@@ -86,14 +86,13 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     const featuredUntil = status.featured_until ? new Date(status.featured_until) : null;
     const isFeatured = featuredUntil && featuredUntil.getTime() > Date.now();
 
-    // 1) Allerede fremhævet — tilbyd forlængelse mod betaling
+    // 1) Allerede fremhævet — vis aktiv-status, ingen forlæng-knap
     if (isFeatured) {
       el.innerHTML = `
         <div class="boost-state-active">
-          <div class="boost-badge-big">⭐ Betalt promovering</div>
-          <p class="boost-active-text">Din annonce vises i toppen indtil <strong>${fmtDate(featuredUntil)}</strong>.</p>
+          <div class="boost-badge-big">⭐ Promovering aktiveret</div>
+          <p class="boost-active-text">Din annonce er fremhævet og vises i toppen indtil <strong>${fmtDate(featuredUntil)}</strong>.</p>
           ${BOOST_BENEFITS}
-          <button class="boost-cta-btn" id="boost-pay-btn">Forlæng ${BOOST_DAYS} dage – ${BOOST_PRICE_KR} kr.</button>
         </div>`;
     }
     // 2) Gratis intro-fremhævning tilgængelig
