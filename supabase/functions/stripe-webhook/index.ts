@@ -43,9 +43,31 @@ serve(async (req) => {
   try {
     switch (event.type) {
 
-      // ── Betaling gennemført → aktiver forhandler ──
+      // ── Betaling gennemført → aktiver forhandler / boost ──
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+
+        // Engangsbetaling: promovering/boost af annonce
+        if (session.mode === "payment" && session.metadata?.type === "boost") {
+          const userId = session.metadata?.user_id;
+          const bikeId = session.metadata?.bike_id;
+          const days   = parseInt(session.metadata?.days ?? "7", 10) || 7;
+          if (!userId || !bikeId) break;
+
+          const { error } = await supabase.rpc("apply_paid_boost", {
+            p_session_id: session.id,
+            p_user_id:    userId,
+            p_bike_id:    bikeId,
+            p_days:       days,
+            p_amount_kr:  Math.round((session.amount_total ?? 0) / 100),
+          });
+
+          if (error) console.error("apply_paid_boost fejlede:", error);
+          else        console.log(`Boost aktiveret for annonce ${bikeId} (${days} dage)`);
+          break;
+        }
+
+        // Abonnement: forhandler
         if (session.mode !== "subscription") break;
 
         const userId = session.metadata?.user_id;

@@ -1180,6 +1180,14 @@ async function init() {
   } else if (urlParams.get('dealer_cancel') === 'true') {
     history.replaceState(null, '', window.location.pathname);
     showToast('ℹ️ Betalingen blev annulleret. Du kan prøve igen når du er klar.');
+  } else if (urlParams.get('boost_success') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('⭐ Din annonce er nu promoveret og vises øverst!');
+    // featured_until er sat af stripe-webhook — genindlæs listen så badgen vises
+    try { loadBikes(); } catch {}
+  } else if (urlParams.get('boost_cancel') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('ℹ️ Betalingen blev annulleret. Din annonce blev ikke promoveret.');
   }
 
   // Klik uden for modal lukker den

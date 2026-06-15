@@ -1,11 +1,11 @@
 /* ============================================================
    FREMHÆV ANNONCE (BOOST) — ES module factory
    ------------------------------------------------------------
-   Genbrugt modal der lader en sælger fremhæve én annonce. v1:
+   Genbrugt modal der lader en sælger fremhæve én annonce:
      • Gratis intro-fremhævning (7 dage) — første gang pr. bruger
-     • Betalt boost (39 kr) markeret "åbner snart" indtil Stripe wires op
-   featured_until sættes server-side via claim_free_boost-RPC (beskyttet
-   af en trigger), aldrig direkte fra klienten.
+     • Betalt boost (39 kr / 7 dage) via Stripe engangsbetaling
+   featured_until sættes ALTID server-side — gratis via claim_free_boost-RPC,
+   betalt via stripe-webhook → apply_paid_boost-RPC. Aldrig direkte fra klienten.
    ============================================================ */
 
 const BOOST_PRICE_KR = 39;
@@ -13,8 +13,8 @@ const BOOST_DAYS     = 7;
 
 const BOOST_BENEFITS = `
   <ul class="boost-benefits">
-    <li><span>⭐</span> Vist i <strong>“Fremhævede cykler”</strong> øverst på forsiden</li>
-    <li><span>✨</span> Gylden ramme + badge der fanger øjet i listen</li>
+    <li><span>⬆️</span> Vist <strong>øverst i listen</strong> på forsiden</li>
+    <li><span>🏷️</span> <strong>Promoveret</strong>-mærkat der fanger øjet</li>
     <li><span>🚀</span> Større chance for at blive set — og solgt hurtigere</li>
   </ul>`;
 
@@ -86,40 +86,41 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     const featuredUntil = status.featured_until ? new Date(status.featured_until) : null;
     const isFeatured = featuredUntil && featuredUntil.getTime() > Date.now();
 
-    // 1) Allerede fremhævet
+    // 1) Allerede fremhævet — tilbyd forlængelse mod betaling
     if (isFeatured) {
       el.innerHTML = `
         <div class="boost-state-active">
           <div class="boost-badge-big">⭐ Fremhævet</div>
           <p class="boost-active-text">Din annonce vises i toppen indtil <strong>${fmtDate(featuredUntil)}</strong>.</p>
           ${BOOST_BENEFITS}
-          <p class="boost-soon-note">Forlængelse med betaling åbner snart.</p>
+          <button class="boost-cta-btn" id="boost-pay-btn">Forlæng ${BOOST_DAYS} dage – ${BOOST_PRICE_KR} kr.</button>
         </div>`;
-      return;
     }
-
     // 2) Gratis intro-fremhævning tilgængelig
-    if (status.free_available) {
+    else if (status.free_available) {
       el.innerHTML = `
         <div class="boost-state-free">
-          <p class="boost-pitch">Få din annonce vist øverst og med en ⭐-markering i <strong>${BOOST_DAYS} dage</strong>.</p>
+          <p class="boost-pitch">Få din annonce vist øverst og med en Promoveret-mærkat i <strong>${BOOST_DAYS} dage</strong>.</p>
           ${BOOST_BENEFITS}
           <button class="boost-cta-btn" id="boost-claim-btn">Fremhæv gratis i ${BOOST_DAYS} dage</button>
           <p class="boost-fineprint">Normalpris ${BOOST_PRICE_KR} kr. — <strong>gratis</strong> for din første fremhævning.</p>
         </div>`;
-      const btn = document.getElementById('boost-claim-btn');
-      if (btn) btn.onclick = claimFree;
-      return;
+    }
+    // 3) Gratis brugt — betal for at fremhæve
+    else {
+      el.innerHTML = `
+        <div class="boost-state-paid">
+          <p class="boost-pitch">Fremhæv din annonce i <strong>${BOOST_DAYS} dage</strong> for ${BOOST_PRICE_KR} kr.</p>
+          ${BOOST_BENEFITS}
+          <button class="boost-cta-btn" id="boost-pay-btn">Betal ${BOOST_PRICE_KR} kr. – fremhæv ${BOOST_DAYS} dage</button>
+          <p class="boost-fineprint">Du har brugt din gratis fremhævning. Sikker betaling via Stripe.</p>
+        </div>`;
     }
 
-    // 3) Gratis brugt — betalt boost kommer snart
-    el.innerHTML = `
-      <div class="boost-state-paid">
-        <p class="boost-pitch">Fremhæv din annonce i <strong>${BOOST_DAYS} dage</strong> for ${BOOST_PRICE_KR} kr.</p>
-        ${BOOST_BENEFITS}
-        <button class="boost-cta-btn boost-cta-btn--soon" disabled>Betaling åbner snart</button>
-        <p class="boost-fineprint">Du har brugt din gratis fremhævning. Vil du fremhæves nu? Skriv til <strong>hej@cykelbørsen.dk</strong>.</p>
-      </div>`;
+    const claimBtn = document.getElementById('boost-claim-btn');
+    if (claimBtn) claimBtn.onclick = claimFree;
+    const payBtn = document.getElementById('boost-pay-btn');
+    if (payBtn) payBtn.onclick = startPaidBoost;
   }
 
   async function claimFree() {
@@ -138,6 +139,32 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
       const msg = (e && e.message) ? e.message : 'Noget gik galt. Prøv igen.';
       if (showToast) showToast(msg);
       if (btn) { btn.disabled = false; btn.textContent = `Fremhæv gratis i ${BOOST_DAYS} dage`; }
+    }
+  }
+
+  async function startPaidBoost() {
+    const btn = document.getElementById('boost-pay-btn');
+    const bikeId = _bikeId;
+    if (!bikeId) return;
+    const origText = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Sender dig til betaling…'; }
+    try {
+      const base = window.location.origin + window.location.pathname;
+      const { data, error } = await supabase.functions.invoke('create-boost-checkout', {
+        body: { bike_id: bikeId, success_url: base, cancel_url: base },
+      });
+      // supabase.functions.invoke pakker function-fejl i error.context (Response)
+      if (error) {
+        let msg = 'Kunne ikke starte betaling. Prøv igen.';
+        try { msg = (await error.context.json()).error || msg; } catch {}
+        throw new Error(msg);
+      }
+      if (!data || !data.url) throw new Error('Kunne ikke starte betaling. Prøv igen.');
+      window.location.href = data.url;
+    } catch (e) {
+      const msg = (e && e.message) ? e.message : 'Kunne ikke starte betaling. Prøv igen.';
+      if (showToast) showToast(msg);
+      if (btn) { btn.disabled = false; btn.textContent = origText || `Betal ${BOOST_PRICE_KR} kr.`; }
     }
   }
 
