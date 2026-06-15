@@ -14,8 +14,9 @@
 // "Verify JWT" SKAL være SLÅET TIL for denne function (kun loggede brugere
 // må starte en betaling — vi verificerer ejerskab af annoncen).
 //
-// Betalingsmetoder: automatic_payment_methods viser dem du har aktiveret i
-// Stripe (kort, MobilePay, Apple/Google Pay). MobilePay virker i payment-mode (DK).
+// Betalingsmetoder: Checkout Sessions viser AUTOMATISK de metoder du har
+// aktiveret i Stripe Dashboard → Settings → Payment methods (kort, MobilePay,
+// Apple/Google Pay) — ingen ekstra parameter nødvendig.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -76,7 +77,6 @@ serve(async (req) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      automatic_payment_methods: { enabled: true },
       line_items: [{
         quantity: 1,
         price_data: {
