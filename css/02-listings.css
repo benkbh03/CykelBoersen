@@ -214,20 +214,13 @@
   max-width: calc(100% - 58px); /* plads til save-btn i højre side */
   z-index: 1;
 }
-/* ── Fremhævet (boost) annonce — diskret, neutral badge (DBA-stil) ── */
-.bike-card--featured {
-  border-color: rgba(212,160,23,0.28);
-}
-.bike-card--featured:hover {
-  border-color: rgba(212,160,23,0.5);
-}
+/* ── Fremhævet (boost) annonce — diskret badge, blender ind (DBA-stil) ── */
 .featured-card-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(255,255,255,0.92);
-  color: #8a6817;
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2px;
-  padding: 4px 9px; border-radius: 6px;
-  border: 1px solid rgba(212,160,23,0.35);
+  display: inline-flex; align-items: center;
+  background: #e3edfb;
+  color: #3a5a85;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1px;
+  padding: 4px 10px; border-radius: 4px;
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
 }
 .featured-card-img-placeholder { font-size: 4rem; }
