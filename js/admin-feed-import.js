@@ -63,9 +63,10 @@ export function createAdminFeedImport({ supabase, showToast }) {
             <option value="">— Vælg forhandler —</option>
             ${_dealers.map(d => `<option value="${esc(d.id)}">${esc(d.shop_name || d.name || 'Unavngivet')} ${d.city ? '(' + esc(d.city) + ')' : ''}</option>`).join('')}
           </select>
-          <input type="url" id="feed-url-input" placeholder="https://forhandler.dk/google-shopping.xml" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          <input type="url" id="feed-url-input" placeholder="Shopify: https://forhandler.dk/products.json" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <select id="feed-format-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+              <option value="shopify_json">Shopify (automatisk)</option>
               <option value="google_xml">Google Shopping XML</option>
               <option value="csv">CSV</option>
             </select>
