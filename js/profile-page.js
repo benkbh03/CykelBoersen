@@ -39,13 +39,24 @@ export function createProfilePage({
     if (e.target === e.currentTarget) closeProfileModal();
   });
 
-  function openProfileModal() {
+  async function openProfileModal() {
     if (!getCurrentUser()) return;
     document.getElementById('profile-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
     showProfileData();
     switchProfileTab('info');
     enableFocusTrap('profile-modal');
+    // Session-cachen (PROFILE_SESSION_FIELDS) er slank og mangler felter som
+    // phone/address/bio + forhandler-extras (services, åbningstider, sociale links).
+    // Hent den fulde profil og re-render, så edit-formularen viser ALT korrekt.
+    try {
+      const cu = getCurrentUser();
+      const { data: full } = await supabase.from('profiles').select('*').eq('id', cu.id).single();
+      if (full && document.getElementById('profile-modal').classList.contains('open')) {
+        setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
+        showProfileData();
+      }
+    } catch (e) { /* behold cache-render ved fejl */ }
   }
 
   function closeProfileModal() {
