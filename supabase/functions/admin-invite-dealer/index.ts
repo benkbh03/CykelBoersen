@@ -80,6 +80,11 @@ serve(async (req) => {
       location_precision: (lat && lng) ? "exact" : null,
       seller_type: "dealer",
       verified:    true,
+      // Admin opretter forhandleren → markér email som verificeret med det samme.
+      // Service-role bypasser protect_privileged_profile_columns-triggeren, så
+      // dette accepteres selv før auth.users.email_confirmed_at er sat (det sættes
+      // automatisk når forhandleren accepterer invitationen og vælger password).
+      email_verified: true,
     }, { onConflict: "id" });
 
     if (upsertErr) {
