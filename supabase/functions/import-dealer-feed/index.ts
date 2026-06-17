@@ -235,7 +235,14 @@ function parseShopifyProducts(products: any[], origin: string): any[] {
 
 // ── Hent + parse feed (håndterer Shopify-paginering) ────────
 async function fetchItems(feed: any): Promise<any[]> {
-  const ua = { "User-Agent": "CykelboersenFeedBot/1.0" };
+  // Sprog + landehints så Shopify Markets serverer DKK-priser i stedet for
+  // geo-IP-baseret EUR (edge-funktionen kører ikke fra en dansk IP).
+  // "localization"-cookien er Shopify Markets' egen landevælger-cookie.
+  const ua = {
+    "User-Agent": "CykelboersenFeedBot/1.0",
+    "Accept-Language": "da-DK,da;q=0.9",
+    "Cookie": "localization=DK; cart_currency=DKK",
+  };
 
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
