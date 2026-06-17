@@ -1859,6 +1859,10 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     document.body.classList.add('map-page-view');
+    // Ryd detail-view SYNKRONT, så den forrige sides indhold (fx en annonces
+    // gallerbillede) ikke "glipper" mens map-page.js + Leaflet lazy-loades.
+    const _dv = document.getElementById('detail-view');
+    if (_dv) _dv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser kort…</div>';
     const mapBikeId = new URLSearchParams(window.location.search).get('bike');
     if (mapBikeId) history.replaceState(null, '', '/kort');
     renderMapPage();
