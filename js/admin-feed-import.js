@@ -74,7 +74,20 @@ export function createAdminFeedImport({ supabase, showToast }) {
               <option value="">Auto-gæt cykeltype</option>
               ${VALID_TYPES.map(t => `<option value="${t}">Default: ${t}</option>`).join('')}
             </select>
+            <select id="feed-currency-select" title="Butikkens valuta — priser omregnes til DKK" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+              <option value="auto">Valuta: auto-registrér</option>
+              <option value="DKK">DKK (kr)</option>
+              <option value="EUR">EUR → DKK</option>
+              <option value="SEK">SEK → DKK</option>
+              <option value="NOK">NOK → DKK</option>
+              <option value="USD">USD → DKK</option>
+              <option value="GBP">GBP → DKK</option>
+            </select>
           </div>
+          <p style="margin:0;color:var(--muted);font-size:0.78rem;line-height:1.4;">
+            💡 Shopify-feeds viser butikkens egen valuta. Lad stå på <strong>auto</strong> — så
+            registreres valutaen og priser omregnes til DKK. Vis forkerte priser? Vælg den rigtige valuta manuelt.
+          </p>
           <button id="feed-add-btn" style="background:var(--forest);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;justify-self:start;">+ Gem feed</button>
         </div>
       </div>
@@ -110,7 +123,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
               <div style="font-weight:600;">${esc(dealerName(f.user_id))} ${f.active ? '' : '<span style="color:var(--muted);font-weight:400;">(inaktiv)</span>'}</div>
               <div style="color:var(--muted);font-size:0.8rem;word-break:break-all;">${esc(f.feed_url)}</div>
               <div style="font-size:0.8rem;margin-top:4px;">
-                <span style="color:var(--muted);">${esc(f.format)} · sidst synket: ${synced}</span>
+                <span style="color:var(--muted);">${esc(f.format)}${f.currency && f.currency !== 'auto' && f.currency !== 'DKK' ? ' · ' + esc(f.currency) + '→DKK' : ''} · sidst synket: ${synced}</span>
                 ${f.last_status ? `<span style="display:block;margin-top:2px;color:${statusOk ? '#2e7d32' : '#c8302a'};">${statusOk ? `✓ ${f.last_count ?? 0} cykler${f.last_deactivated ? ` · ${f.last_deactivated} deaktiveret` : ''}` : '✗ ' + esc(f.last_status)}</span>` : ''}
               </div>
             </div>
@@ -141,11 +154,12 @@ export function createAdminFeedImport({ supabase, showToast }) {
     const url = document.getElementById('feed-url-input').value.trim();
     const format = document.getElementById('feed-format-select').value;
     const defaultType = document.getElementById('feed-deftype-select').value || null;
+    const currency = document.getElementById('feed-currency-select').value || 'auto';
     if (!userId) { showToast('⚠️ Vælg en forhandler'); return; }
     if (!/^https:\/\//.test(url)) { showToast('⚠️ Feed-URL skal starte med https://'); return; }
 
     const { error } = await supabase.from('dealer_feeds').insert({
-      user_id: userId, feed_url: url, format, default_type: defaultType, active: true,
+      user_id: userId, feed_url: url, format, default_type: defaultType, currency, active: true,
     });
     if (error) { showToast('❌ Kunne ikke gemme: ' + error.message); return; }
     showToast('✓ Feed gemt — klik "Test" for at se cyklerne');
@@ -168,9 +182,23 @@ export function createAdminFeedImport({ supabase, showToast }) {
       }
       if (data.error) throw new Error(data.error);
       const items = data.items || [];
+      const cur = data.currency || 'DKK';
+      const converted = cur && cur !== 'DKK';
+      const specSummary = (b) => [
+        b.year,
+        (Array.isArray(b.colors) && b.colors.length) ? b.colors.join('/') : (b.color || null),
+        b.frame_material, b.groupset, b.wheel_size, b.motor,
+        b.battery_wh ? b.battery_wh + ' Wh' : null,
+        b.weight_kg ? b.weight_kg + ' kg' : null,
+      ].filter(Boolean).join(' · ');
       section.innerHTML = `
         <div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--sand);">
-          <h4 style="margin:0 0 10px;font-family:'Fraunces',serif;">Preview — ${data.total} cykler fundet${items.length < data.total ? ` (viser ${items.length})` : ''}</h4>
+          <h4 style="margin:0 0 4px;font-family:'Fraunces',serif;">Preview — ${data.total} cykler fundet${items.length < data.total ? ` (viser ${items.length})` : ''}</h4>
+          <p style="margin:0 0 10px;font-size:0.8rem;color:${converted ? '#2e7d32' : 'var(--muted)'};">
+            ${converted
+              ? `💱 Butikkens valuta: <strong>${esc(cur)}</strong> — priser omregnet til DKK.`
+              : `Priser i DKK.`}
+          </p>
           <div style="max-height:340px;overflow:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
               <thead><tr style="text-align:left;">
@@ -178,15 +206,15 @@ export function createAdminFeedImport({ supabase, showToast }) {
                 <th style="padding:6px 8px;border-bottom:1px solid var(--border);">Cykel</th>
                 <th style="padding:6px 8px;border-bottom:1px solid var(--border);">Type</th>
                 <th style="padding:6px 8px;border-bottom:1px solid var(--border);">Pris</th>
-                <th style="padding:6px 8px;border-bottom:1px solid var(--border);">By</th>
+                <th style="padding:6px 8px;border-bottom:1px solid var(--border);">Udfyldte specs</th>
               </tr></thead>
               <tbody>
                 ${items.map(b => `<tr style="border-bottom:1px solid var(--border);">
                   <td style="padding:5px 8px;color:var(--muted);">${esc(b.external_id || '—')}</td>
                   <td style="padding:5px 8px;">${esc(b.brand || '')} ${esc(b.model || '')}</td>
                   <td style="padding:5px 8px;">${esc(b.type || '')}</td>
-                  <td style="padding:5px 8px;">${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}</td>
-                  <td style="padding:5px 8px;">${esc(b.city || '')}</td>
+                  <td style="padding:5px 8px;white-space:nowrap;">${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}${(converted && b._rawPrice) ? `<br><span style="color:var(--muted);font-size:0.72rem;">(${Number(b._rawPrice).toLocaleString('da-DK')} ${esc(cur)})</span>` : ''}</td>
+                  <td style="padding:5px 8px;color:var(--muted);font-size:0.76rem;">${esc(specSummary(b) || '—')}</td>
                 </tr>`).join('')}
               </tbody>
             </table>
