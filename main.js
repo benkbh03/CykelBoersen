@@ -3159,7 +3159,9 @@ async function submitDealerInvite() {
   const body = {
     email,
     shop_name: document.getElementById('di-shop')?.value.trim()    || null,
+    cvr:       document.getElementById('di-cvr')?.value.trim()     || null,
     contact:   document.getElementById('di-contact')?.value.trim() || null,
+    phone:     document.getElementById('di-phone')?.value.trim()   || null,
     city:      document.getElementById('di-city')?.value.trim()    || null,
     address:   document.getElementById('di-address')?.value.trim() || null,
   };
@@ -3175,7 +3177,7 @@ async function submitDealerInvite() {
     result.innerHTML = `<span style="color:#2A7D4F;">✅ Forhandler oprettet og inviteret — de får en mail hvor de vælger password.</span>`
       + `<br><span style="color:var(--muted);font-size:0.82rem;">Bruger-ID (til bulk-import): <code>${esc(data.user_id)}</code></span>`;
   }
-  ['di-email','di-shop','di-contact','di-city','di-address'].forEach(id => {
+  ['di-email','di-shop','di-cvr','di-contact','di-phone','di-city','di-address'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
 }

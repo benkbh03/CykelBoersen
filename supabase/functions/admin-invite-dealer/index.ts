@@ -46,7 +46,7 @@ serve(async (req) => {
     }
 
     // ── Input ────────────────────────────────────────────────
-    const { email, shop_name, contact, city, address } = await req.json();
+    const { email, shop_name, cvr, contact, phone, city, address } = await req.json();
     const cleanEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
     if (!cleanEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cleanEmail)) {
       return jsonResponse({ error: "Ugyldig email" }, 400);
@@ -70,6 +70,8 @@ serve(async (req) => {
       id:          newUserId,
       name:        contact || shop_name || "Forhandler",
       shop_name:   shop_name || null,
+      cvr:         cvr || null,
+      phone:       phone || null,
       city:        city || null,
       address:     address || null,
       seller_type: "dealer",
