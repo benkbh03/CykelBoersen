@@ -44,6 +44,34 @@ function json(body: unknown, status = 200) {
 
 const VALID_TYPES = ["Racercykel", "Mountainbike", "Citybike", "El-cykel", "Ladcykel", "Børnecykel", "Gravel", "Senior cykel"];
 
+// Kanonisk mærke-liste — SKAL matche KNOWN_BRANDS i main.js, så et importeret
+// mærke er præcis den værdi mærke-filteret bruger (ellers filtrerer det ikke).
+const KNOWN_BRANDS = ["Amladcykler","Avenue","Babboe","Batavus","Bergamont","Bianchi","Bike by Gubi","Black Iron Horse","BMC","Brabus","Brompton","Butchers & Bicycles","Cannondale","Canyon","Carqon","Centurion","Cervélo","Christiania Bikes","Colnago","Conway","Corratec","Cube","E-Fly","Early Rider","Ebsen","Electra","Everton","FACTOR","Falcon","Felt","Focus","Frog Bikes","Gazelle","Ghost","Giant","GT","Gudereit","Haibike","Husqvarna","Kalkhoff","Kildemoes","Koga","Kona","Kreidler","Lapierre","Larry vs Harry / Bullitt","Lindebjerg","Liv","LOOK","Marin","Mate Bike","MBK","Merida","Momentum","Mondraker","Motobecane","Moustache","Nihola","Nishiki","Norden","Norco","Omnium","Orbea","Pegasus","Pinarello","Principia","Puky","Qio","QWIC","Raleigh","Remington","Riese & Müller","Ridley","Royal Cargobike","Santa Cruz","SCO","Scott","Seaside Bike","Silverback","Sparta","Specialized","Stevens","Superior","Tern","Trek","Triobike","Urban Arrow","uVelo","Van De Falk","VanMoof","Velo","Velo de Ville","Velo Lux","Victoria","Wilier","Winther","Woom","Yuba"];
+
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Find det kanoniske mærke i en titel (længste match vinder, så "Velo Lux"
+// foretrækkes frem for "Velo"). Falder tilbage til vendor hvis det ikke er
+// shoppens eget navn, ellers første ord.
+function matchBrand(title: string, vendor: string): string {
+  let best = "";
+  for (const b of KNOWN_BRANDS) {
+    const re = new RegExp(`(^|[^\\p{L}])${escapeRe(b)}([^\\p{L}]|$)`, "iu");
+    if (re.test(title) && b.length > best.length) best = b;
+  }
+  if (best) return best;
+  const v = stripHtml(vendor);
+  if (v && !/forum\s+cykel|v(æ|ae)rksted/i.test(v)) return v;
+  return (title.trim().split(/\s+/)[0] || "Cykel");
+}
+
+// Fjern shop-støj ("forum cykel værksted") fra en titel
+function cleanTitle(t: string): string {
+  return stripHtml(t).replace(/forum\s+cykel\s+v(æ|ae)rksted/gi, "").replace(/\s+/g, " ").trim();
+}
+
 // ── Feltkonvertering ────────────────────────────────────────
 function stripHtml(s: string): string {
   return String(s ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -157,7 +185,9 @@ function parseCsv(text: string): any[] {
 }
 
 // ── Shopify: spring åbenlyst tilbehør over (ikke cykler) ────
-const ACCESSORY_RE = /(l(å|aa)s|lygte|lys\b|pumpe|hjelm|bagageb(æ|ae)rer|kurv|sk(æ|ae)rm|stativ|slange|d(æ|ae)k\b|k(æ|ae)de\b|pedal|sadel\b|styr\b|handske|taske|flaske|holder|computer|reservedel|tilbeh(ø|o)r|gavekort|kn(a|æ)gt|reflek|ringeklokke|kabel|bremse|gear\b|skifte|fender|str(ø|o)mpe|t-?shirt|trøje|bukser|sko\b)/i;
+// Kun ord der entydigt er tilbehør/beklædning — IKKE ord der kan stå i en
+// cykel-titel (gear, lys, dæk, kæde, bremse osv. er bevidst udeladt).
+const ACCESSORY_RE = /(l(å|aa)s|lygte|cykelpumpe|\bpumpe\b|hjelm|bagageb(æ|ae)rer|\bkurv\b|sk(æ|ae)rm|cykelstativ|cykelcomputer|reservedel|tilbeh(ø|o)r|gavekort|reflek|ringeklokke|str(ø|o)mpe|t-?shirt|trøje|handske|drikkedunk|flaskeholder)/i;
 function looksLikeAccessory(text: string): boolean {
   return ACCESSORY_RE.test(text || "");
 }
@@ -176,17 +206,23 @@ function parseShopifyProducts(products: any[], origin: string): any[] {
       .map((im: any) => im?.src)
       .filter((u: any) => typeof u === "string" && u.startsWith("https://"));
     const vendor = stripHtml(p.vendor ?? "");
-    const title = stripHtml(p.title ?? "");
-    const model = vendor && title.toLowerCase().startsWith(vendor.toLowerCase())
-      ? title.slice(vendor.length).trim()
-      : title;
+    const title  = cleanTitle(p.title ?? "");
+    // Kanonisk mærke (matcher mærke-filteret) udledt fra titlen
+    const brand  = matchBrand(title, vendor);
+    // Model = titel uden mærket (så "Centurion Basic Free" → "Basic Free")
+    let model = title.replace(new RegExp(escapeRe(brand), "i"), "").replace(/\s+/g, " ").trim();
+    if (!model) model = title;
+    // Beskrivelse: brug webshoppens tekst, men sikr min. længde (påkrævet felt)
+    let description = stripHtml(p.body_html ?? "");
+    if (description.length < 40) {
+      description = `${brand} ${model}`.trim() + " — ny cykel fra forhandleren. Kontakt forhandleren for nærmere info om udstyr og specifikationer.";
+    }
     return {
       external_id:   String(p.id ?? "").trim(),
-      brand:         vendor || title.split(/\s+/)[0] || "",
-      model, title,
+      brand, model, title,
       price:         parsePrice(v0.price),
       original_price: parsePrice(v0.compare_at_price) || null,
-      description:   stripHtml(p.body_html ?? ""),
+      description,
       external_url:  p.handle ? `${origin}/products/${p.handle}` : null,
       condition:     "Ny",
       availability:  anyAvail ? "in_stock" : "out_of_stock",
