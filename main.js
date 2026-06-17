@@ -1859,6 +1859,10 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     document.body.classList.add('map-page-view');
+    // Ryd detail-view SYNKRONT, så den forrige sides indhold (fx en annonces
+    // gallerbillede) ikke "glipper" mens map-page.js + Leaflet lazy-loades.
+    const _dv = document.getElementById('detail-view');
+    if (_dv) _dv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser kort…</div>';
     const mapBikeId = new URLSearchParams(window.location.search).get('bike');
     if (mapBikeId) history.replaceState(null, '', '/kort');
     renderMapPage();
@@ -2752,10 +2756,17 @@ const _ensureBulkImport = lazyCtrl(
 );
 const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 
+const _ensureFeedImport = lazyCtrl(
+  () => import(`./js/admin-feed-import.js?v=${ASSET_VERSION}`),
+  'createAdminFeedImport',
+  () => ({ supabase, showToast }),
+);
+const loadFeedImport = lazyMethod(_ensureFeedImport, 'loadFeedImportTab');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, initInviteForm, loadAdminStats }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -3148,7 +3159,9 @@ async function submitDealerInvite() {
   const body = {
     email,
     shop_name: document.getElementById('di-shop')?.value.trim()    || null,
+    cvr:       document.getElementById('di-cvr')?.value.trim()     || null,
     contact:   document.getElementById('di-contact')?.value.trim() || null,
+    phone:     document.getElementById('di-phone')?.value.trim()   || null,
     city:      document.getElementById('di-city')?.value.trim()    || null,
     address:   document.getElementById('di-address')?.value.trim() || null,
   };
@@ -3164,7 +3177,7 @@ async function submitDealerInvite() {
     result.innerHTML = `<span style="color:#2A7D4F;">✅ Forhandler oprettet og inviteret — de får en mail hvor de vælger password.</span>`
       + `<br><span style="color:var(--muted);font-size:0.82rem;">Bruger-ID (til bulk-import): <code>${esc(data.user_id)}</code></span>`;
   }
-  ['di-email','di-shop','di-contact','di-city','di-address'].forEach(id => {
+  ['di-email','di-shop','di-cvr','di-contact','di-phone','di-city','di-address'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
 }
