@@ -1,9 +1,13 @@
 // Supabase Edge Function: import-dealer-feed
 // Deploy: Supabase Dashboard → Edge Functions → import-dealer-feed → Deploy
 //
-// Henter en forhandlers produkt-feed (Google Shopping XML eller CSV), opretter/
-// opdaterer cyklerne (upsert på user_id+external_id) og deaktiverer udsolgte
-// (reconcile). Spejler logikken i admin-create-bike, men kører server-side.
+// Henter en forhandlers produkt-feed (Shopify products.json, Google Shopping XML
+// eller CSV), opretter/opdaterer cyklerne (upsert på user_id+external_id) og
+// deaktiverer udsolgte (reconcile). Spejler logikken i admin-create-bike, men
+// kører server-side.
+//
+// Shopify: angiv feed-URL https://<shop>/products.json og format "shopify_json".
+// Functionen paginerer automatisk (250/side) og springer åbenlyst tilbehør over.
 //
 // To måder at kalde:
 //   1) Cron (run-all): header  x-cron-secret: <FEED_CRON_SECRET>   body {}
@@ -152,6 +156,73 @@ function parseCsv(text: string): any[] {
   });
 }
 
+// ── Shopify: spring åbenlyst tilbehør over (ikke cykler) ────
+const ACCESSORY_RE = /(l(å|aa)s|lygte|lys\b|pumpe|hjelm|bagageb(æ|ae)rer|kurv|sk(æ|ae)rm|stativ|slange|d(æ|ae)k\b|k(æ|ae)de\b|pedal|sadel\b|styr\b|handske|taske|flaske|holder|computer|reservedel|tilbeh(ø|o)r|gavekort|kn(a|æ)gt|reflek|ringeklokke|kabel|bremse|gear\b|skifte|fender|str(ø|o)mpe|t-?shirt|trøje|bukser|sko\b)/i;
+function looksLikeAccessory(text: string): boolean {
+  return ACCESSORY_RE.test(text || "");
+}
+
+function originOf(url: string): string {
+  try { return new URL(url).origin; } catch { return ""; }
+}
+
+// ── Parse Shopify products.json → normaliserede items ───────
+function parseShopifyProducts(products: any[], origin: string): any[] {
+  return products.map((p: any) => {
+    const variants = Array.isArray(p.variants) ? p.variants : [];
+    const v0 = variants[0] || {};
+    const anyAvail = variants.some((v: any) => v.available);
+    const images = (Array.isArray(p.images) ? p.images : [])
+      .map((im: any) => im?.src)
+      .filter((u: any) => typeof u === "string" && u.startsWith("https://"));
+    const vendor = stripHtml(p.vendor ?? "");
+    const title = stripHtml(p.title ?? "");
+    const model = vendor && title.toLowerCase().startsWith(vendor.toLowerCase())
+      ? title.slice(vendor.length).trim()
+      : title;
+    return {
+      external_id:   String(p.id ?? "").trim(),
+      brand:         vendor || title.split(/\s+/)[0] || "",
+      model, title,
+      price:         parsePrice(v0.price),
+      original_price: parsePrice(v0.compare_at_price) || null,
+      description:   stripHtml(p.body_html ?? ""),
+      external_url:  p.handle ? `${origin}/products/${p.handle}` : null,
+      condition:     "Ny",
+      availability:  anyAvail ? "in_stock" : "out_of_stock",
+      _typeHint:     `${p.product_type ?? ""} ${Array.isArray(p.tags) ? p.tags.join(" ") : (p.tags ?? "")} ${title}`,
+      _accessory:    looksLikeAccessory(`${p.product_type ?? ""} ${title}`),
+      images,
+    };
+  });
+}
+
+// ── Hent + parse feed (håndterer Shopify-paginering) ────────
+async function fetchItems(feed: any): Promise<any[]> {
+  const ua = { "User-Agent": "CykelboersenFeedBot/1.0" };
+
+  if (feed.format === "shopify_json") {
+    const origin = originOf(feed.feed_url);
+    const base = feed.feed_url.split("?")[0].replace(/\/$/, "");
+    const all: any[] = [];
+    for (let page = 1; page <= 20; page++) {
+      const res = await fetch(`${base}?limit=250&page=${page}`, { headers: ua });
+      if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
+      const data = JSON.parse(await res.text());
+      const prods = Array.isArray(data?.products) ? data.products : [];
+      if (prods.length === 0) break;
+      all.push(...parseShopifyProducts(prods, origin));
+      if (prods.length < 250) break;
+    }
+    return all.filter((it) => !it._accessory);
+  }
+
+  const res = await fetch(feed.feed_url, { headers: ua });
+  if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
+  const raw = await res.text();
+  return feed.format === "csv" ? parseCsv(raw) : parseGoogleXml(raw);
+}
+
 // ── Synkronisér ÉN feed ─────────────────────────────────────
 async function syncFeed(supa: any, feed: any, preview: boolean) {
   // Forhandler-profil (city-fallback + tjek samtykke)
@@ -164,12 +235,8 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
   if (!profile || profile.seller_type !== "dealer") throw new Error("Forhandler ikke fundet");
   if (!profile.admin_can_create_listings) throw new Error("Forhandler har ikke aktiveret onboarding-samtykke");
 
-  // Hent feed
-  const res = await fetch(feed.feed_url, { headers: { "User-Agent": "CykelboersenFeedBot/1.0" } });
-  if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
-  const raw = await res.text();
-
-  let items = feed.format === "csv" ? parseCsv(raw) : parseGoogleXml(raw);
+  // Hent + parse feed (Google XML / CSV / Shopify products.json)
+  let items = await fetchItems(feed);
   items = items.filter((it) => it.external_id && it.price && (it.brand || it.title));
 
   // Byg bike-payloads
@@ -184,7 +251,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
       title:        it.title,
       type:         it._explicitType && VALID_TYPES.includes(it._explicitType) ? it._explicitType : inferType(it._typeHint, feed.default_type),
       price:        it.price,
-      original_price: it.price,
+      original_price: it.original_price || it.price,
       condition:    VALID_TYPES.includes(it.condition) ? "God stand" : it.condition,
       city:         it.city || fallbackCity,
       description:  it.description || "",
