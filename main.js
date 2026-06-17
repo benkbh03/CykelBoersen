@@ -3156,6 +3156,8 @@ async function submitDealerInvite() {
   const email = document.getElementById('di-email')?.value.trim();
   if (!email) { showToast('⚠️ Email er påkrævet'); return; }
   const restore = btnLoading('di-submit', 'Sender invitation...');
+  const addressInput = document.getElementById('di-address');
+  const addrData = readDawaData(addressInput);
   const body = {
     email,
     shop_name: document.getElementById('di-shop')?.value.trim()    || null,
@@ -3163,7 +3165,10 @@ async function submitDealerInvite() {
     contact:   document.getElementById('di-contact')?.value.trim() || null,
     phone:     document.getElementById('di-phone')?.value.trim()   || null,
     city:      document.getElementById('di-city')?.value.trim()    || null,
-    address:   document.getElementById('di-address')?.value.trim() || null,
+    address:   addressInput?.value.trim() || null,
+    lat:       addrData.lat      || null,
+    lng:       addrData.lng      || null,
+    postcode:  addrData.postcode || null,
   };
   const { data, error } = await supabase.functions.invoke('admin-invite-dealer', { body });
   restore();
