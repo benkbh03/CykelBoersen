@@ -222,7 +222,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
                   <td style="padding:5px 8px;color:var(--muted);">${esc(b.external_id || '—')}</td>
                   <td style="padding:5px 8px;">${esc(b.brand || '')} ${esc(b.model || '')}</td>
                   <td style="padding:5px 8px;">${esc(b.type || '')}</td>
-                  <td style="padding:5px 8px;white-space:nowrap;">${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}${(converted && b._rawPrice) ? `<br><span style="color:var(--muted);font-size:0.72rem;">(${Number(b._rawPrice).toLocaleString('da-DK')} ${esc(cur)})</span>` : ''}</td>
+                  <td style="padding:5px 8px;white-space:nowrap;">${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}${(b.original_price && b.original_price > b.price) ? `<br><span style="text-decoration:line-through;color:var(--muted);font-size:0.72rem;">${Number(b.original_price).toLocaleString('da-DK')} kr</span>` : ''}${(converted && b._rawPrice) ? `<br><span style="color:var(--muted);font-size:0.72rem;">(${Number(b._rawPrice).toLocaleString('da-DK')} ${esc(cur)})</span>` : ''}</td>
                   <td style="padding:5px 8px;color:var(--muted);font-size:0.76rem;">${esc(specSummary(b) || '—')}</td>
                 </tr>`).join('')}
               </tbody>

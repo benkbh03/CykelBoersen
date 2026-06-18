@@ -110,17 +110,45 @@ const FX_TO_DKK: Record<string, number> = {
   DKK: 1, EUR: 7.46, SEK: 0.64, NOK: 0.64, USD: 6.90, GBP: 8.70, PLN: 1.70, CHF: 7.90,
 };
 
-// Læs butikkens valuta fra Shopify Ajax-API (/cart.js → { "currency": "EUR" }).
-async function detectShopCurrency(origin: string, headers: Record<string, string>): Promise<string> {
+// Læs valutaen for en given Shopify-base (rod eller markeds-subfolder) via
+// Ajax-API'et /cart.js. Returnerer "" hvis ukendt (så discovery kan gå videre).
+async function fetchCartCurrency(base: string, headers: Record<string, string>): Promise<string> {
   try {
-    const res = await fetch(`${origin}/cart.js`, { headers });
+    const res = await fetch(`${base}/cart.js`, { headers });
     if (res.ok) {
       const data = JSON.parse(await res.text());
       const cur = String(data?.currency ?? "").toUpperCase();
       if (/^[A-Z]{3}$/.test(cur)) return cur;
     }
-  } catch (_e) { /* falder tilbage til DKK */ }
-  return "DKK";
+  } catch (_e) { /* ukendt valuta */ }
+  return "";
+}
+
+// Har denne products.json-URL mindst ét produkt? Verificerer at en markeds-
+// subfolder faktisk har varer, før vi bruger den.
+async function shopHasProducts(productsUrl: string, headers: Record<string, string>): Promise<boolean> {
+  try {
+    const res = await fetch(`${productsUrl}?limit=1`, { headers });
+    if (!res.ok) return false;
+    const data = JSON.parse(await res.text());
+    return Array.isArray(data?.products) && data.products.length > 0;
+  } catch (_e) { return false; }
+}
+
+// Find en Shopify Markets-subfolder der serverer DKK, så vi får butikkens
+// EKSAKTE danske priser (fx 4.699 kr) frem for en omtrentlig FX-omregning.
+// Returnerer: "" = roden er allerede DKK · "en-dk" o.l. = brug den subfolder ·
+// null = ingen DKK-markedssti fundet (→ FX-omregning som fallback).
+const DK_MARKET_PREFIXES = ["en-dk", "da-dk", "da", "dk"];
+async function findDkkMarket(origin: string, headers: Record<string, string>): Promise<string | null> {
+  if (await fetchCartCurrency(origin, headers) === "DKK") return "";
+  for (const p of DK_MARKET_PREFIXES) {
+    if (await fetchCartCurrency(`${origin}/${p}`, headers) === "DKK"
+        && await shopHasProducts(`${origin}/${p}/products.json`, headers)) {
+      return p;
+    }
+  }
+  return null;
 }
 
 function mapCondition(raw: unknown): string {
@@ -411,7 +439,20 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
 
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
-    const base = feed.feed_url.split("?")[0].replace(/\/$/, "");
+    let base = feed.feed_url.split("?")[0].replace(/\/$/, "");
+
+    // Auto (ingen manuel valuta): find en DKK-markeds-subfolder så vi henter
+    // butikkens eksakte danske priser. Ellers detektér feedets valuta og FX-omregn.
+    if (!currency) {
+      const dk = await findDkkMarket(origin, ua);
+      if (dk !== null) {
+        if (dk) base = `${origin}/${dk}/products.json`;
+        currency = "DKK";
+      } else {
+        currency = (await fetchCartCurrency(origin, ua)) || "DKK";
+      }
+    }
+
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
       const res = await fetch(`${base}?limit=250&page=${page}`, { headers: ua });
@@ -423,7 +464,6 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
       if (prods.length < 250) break;
     }
     items = all.filter((it) => !it._accessory);
-    if (!currency) currency = await detectShopCurrency(origin, ua);
   } else {
     const res = await fetch(feed.feed_url, { headers: ua });
     if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
