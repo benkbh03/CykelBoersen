@@ -239,20 +239,24 @@ function originOf(url: string): string {
 // importerede cykler er lige så filtrerbare som manuelt oprettede. Kun
 // HØJSIKRE matches sættes (forkert data er værre end manglende) og alle
 // værdier er KANONISKE (matcher filtrene 1:1 — se CLAUDE.md).
+// Farve-regler — SUBSTRING-match (ikke ordgrænse), så danske sammensatte
+// farveord rammes: "MØRKEGRØN"→Grøn, "LYSERBLÅ"→Blå, "POSTKASSERØD"→Rød.
+// Lyserød står FØR Rød, og en match fjernes fra teksten så "lyserød" ikke
+// også tæller som Rød. Rækkefølgen er derfor betydningsfuld.
 const _COLOR_RULES: [RegExp, string][] = [
-  [/\b(mat\s?)?sort\b|\bblack\b|\bsorte?\b/i, "Sort"],
-  [/\bhvid\b|\bwhite\b|\bperlemor\b/i, "Hvid"],
-  [/\bgr(å|aa)\b|\bgrey\b|\bgray\b|\bantracit\b|\bgunmetal\b/i, "Grå"],
-  [/\bs(ø|o)lv\b|\bsilver\b/i, "Sølv"],
-  [/\br(ø|o)d\b|\bred\b|\bbordeaux\b|\bpostkasser(ø|o)d\b|\bvinr(ø|o)d\b|\bkoral\b/i, "Rød"],
-  [/\bbl(å|aa)\b|\bblue\b|\bnavy\b|\bpetrol\b|\bturkis\b|\bdenim\b/i, "Blå"],
-  [/\bgr(ø|o)n\b|\bgreen\b|\boliven\b|\barmy\b|\bmint\b/i, "Grøn"],
-  [/\bgul\b|\byellow\b|\bokker\b/i, "Gul"],
-  [/\borange\b/i, "Orange"],
-  [/\blyser(ø|o)d\b|\bpink\b|\brosa\b/i, "Lyserød"],
-  [/\blilla\b|\bpurple\b|\bviolet\b/i, "Lilla"],
-  [/\bcappuccino\b|\bbrun\b|\bbrown\b|\bkaffe\b|\bchokolade\b/i, "Brun"],
-  [/\bbeige\b|\bcreme\b|\bsand\b|\bkit\b|\bnude\b/i, "Beige"],
+  [/sort|black/i, "Sort"],
+  [/hvid|white|perlemor/i, "Hvid"],
+  [/gr(å|aa)|grey|gray|antracit|gunmetal/i, "Grå"],
+  [/s(ø|o)lv|silver/i, "Sølv"],
+  [/lyser(ø|o)d|pink|rosa/i, "Lyserød"],
+  [/r(ø|o)d|red|bordeaux|vinr(ø|o)d|koral/i, "Rød"],
+  [/bl(å|aa)|blue|navy|petrol|turkis|denim/i, "Blå"],
+  [/gr(ø|o)n|green|oliven|army|mint/i, "Grøn"],
+  [/gul|yellow|okker/i, "Gul"],
+  [/orange/i, "Orange"],
+  [/lilla|purple|violet/i, "Lilla"],
+  [/cappuccino|brun|brown|kaffe|chokolade/i, "Brun"],
+  [/beige|creme|nude/i, "Beige"],
 ];
 // Længste/mest specifikke først (prefix-match i filteret).
 const _GROUPSETS = [
@@ -264,8 +268,14 @@ const _GROUPSETS = [
 const _MOTOR_BRANDS = ["Bosch", "Yamaha", "Bafang", "Mahle", "Promovec", "Shimano"];
 
 function extractColors(text: string): string[] {
+  let work = text;
   const out: string[] = [];
-  for (const [re, name] of _COLOR_RULES) if (re.test(text) && !out.includes(name)) out.push(name);
+  for (const [re, name] of _COLOR_RULES) {
+    if (re.test(work) && !out.includes(name)) {
+      out.push(name);
+      work = work.replace(new RegExp(re.source, "gi"), " ");  // undgå dobbelt-match (fx lyserød→rød)
+    }
+  }
   return out.slice(0, 3);
 }
 
@@ -288,10 +298,10 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   else if (/\b(aluminium|alu|alloy|alu\.)\b/i.test(spec)) out.frame_material = "Aluminium";
   else if (/\b(st(å|aa)l|steel|cr-?mo|chromoly|cromoly)\b/i.test(spec)) out.frame_material = "Stål";
 
-  // Hjulstørrelse
-  if (/27[.,]5|650b/i.test(name)) out.wheel_size = '27.5" / 650b';
+  // Hjulstørrelse (tjek både titel og beskrivelse — fx "28 tommer")
+  if (/27[.,]5|650b/i.test(spec)) out.wheel_size = '27.5" / 650b';
   else {
-    const wm = name.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)/i);
+    const wm = spec.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)/i);
     if (wm) out.wheel_size = `${wm[1]}"`;
   }
 
