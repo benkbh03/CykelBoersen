@@ -77,12 +77,50 @@ function stripHtml(s: string): string {
   return String(s ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+// Robust pris-parser der håndterer både "6299.00" (Shopify),
+// "6.299,00" (dansk), "6,299.00" (engelsk) og rene heltal.
 function parsePrice(raw: unknown): number | null {
   if (raw == null) return null;
-  const m = String(raw).replace(",", ".").match(/[\d.]+/);
-  if (!m) return null;
-  const n = Math.round(parseFloat(m[0]));
+  let s = String(raw).trim().replace(/[^\d.,]/g, "");
+  if (!s) return null;
+  const hasDot = s.includes("."), hasComma = s.includes(",");
+  if (hasDot && hasComma) {
+    // Det sidste tegn er decimal-separatoren; det andet er tusind-separator.
+    if (s.lastIndexOf(",") > s.lastIndexOf(".")) s = s.replace(/\./g, "").replace(",", ".");
+    else                                         s = s.replace(/,/g, "");
+  } else if (hasComma) {
+    const p = s.split(",");
+    s = (p.length === 2 && p[1].length <= 2) ? s.replace(",", ".") : s.replace(/,/g, "");
+  } else if (hasDot) {
+    const p = s.split(".");
+    // ".000" / 3-cifret sidste gruppe = tusind-separator, ellers decimal.
+    if (p.length > 1 && p[p.length - 1].length === 3) s = s.replace(/\./g, "");
+  }
+  const n = Math.round(parseFloat(s));
   return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+// ── Valuta → DKK ────────────────────────────────────────────
+// Shopify products.json serverer butikkens PRIMÆRE valuta og ignorerer
+// locale-cookies. Er den fx EUR, importeres tal som "629" der i virkeligheden
+// er 629 EUR ≈ 4.692 kr. Vi opdager valutaen (via /cart.js) og omregner.
+// EUR er fastkurs-bundet til DKK (ERM II ~7,46) → stabil. Øvrige kurser er
+// rimelige cirka-værdier og kan finjusteres; admin kan også sætte valuta manuelt.
+const FX_TO_DKK: Record<string, number> = {
+  DKK: 1, EUR: 7.46, SEK: 0.64, NOK: 0.64, USD: 6.90, GBP: 8.70, PLN: 1.70, CHF: 7.90,
+};
+
+// Læs butikkens valuta fra Shopify Ajax-API (/cart.js → { "currency": "EUR" }).
+async function detectShopCurrency(origin: string, headers: Record<string, string>): Promise<string> {
+  try {
+    const res = await fetch(`${origin}/cart.js`, { headers });
+    if (res.ok) {
+      const data = JSON.parse(await res.text());
+      const cur = String(data?.currency ?? "").toUpperCase();
+      if (/^[A-Z]{3}$/.test(cur)) return cur;
+    }
+  } catch (_e) { /* falder tilbage til DKK */ }
+  return "DKK";
 }
 
 function mapCondition(raw: unknown): string {
@@ -196,12 +234,124 @@ function originOf(url: string): string {
   try { return new URL(url).origin; } catch { return ""; }
 }
 
+// ── Felt-berigelse ──────────────────────────────────────────
+// Udled så mange specs som muligt fra titel/beskrivelse/tags/varianter, så
+// importerede cykler er lige så filtrerbare som manuelt oprettede. Kun
+// HØJSIKRE matches sættes (forkert data er værre end manglende) og alle
+// værdier er KANONISKE (matcher filtrene 1:1 — se CLAUDE.md).
+const _COLOR_RULES: [RegExp, string][] = [
+  [/\b(mat\s?)?sort\b|\bblack\b|\bsorte?\b/i, "Sort"],
+  [/\bhvid\b|\bwhite\b|\bperlemor\b/i, "Hvid"],
+  [/\bgr(å|aa)\b|\bgrey\b|\bgray\b|\bantracit\b|\bgunmetal\b/i, "Grå"],
+  [/\bs(ø|o)lv\b|\bsilver\b/i, "Sølv"],
+  [/\br(ø|o)d\b|\bred\b|\bbordeaux\b|\bpostkasser(ø|o)d\b|\bvinr(ø|o)d\b|\bkoral\b/i, "Rød"],
+  [/\bbl(å|aa)\b|\bblue\b|\bnavy\b|\bpetrol\b|\bturkis\b|\bdenim\b/i, "Blå"],
+  [/\bgr(ø|o)n\b|\bgreen\b|\boliven\b|\barmy\b|\bmint\b/i, "Grøn"],
+  [/\bgul\b|\byellow\b|\bokker\b/i, "Gul"],
+  [/\borange\b/i, "Orange"],
+  [/\blyser(ø|o)d\b|\bpink\b|\brosa\b/i, "Lyserød"],
+  [/\blilla\b|\bpurple\b|\bviolet\b/i, "Lilla"],
+  [/\bcappuccino\b|\bbrun\b|\bbrown\b|\bkaffe\b|\bchokolade\b/i, "Brun"],
+  [/\bbeige\b|\bcreme\b|\bsand\b|\bkit\b|\bnude\b/i, "Beige"],
+];
+// Længste/mest specifikke først (prefix-match i filteret).
+const _GROUPSETS = [
+  "Shimano Dura-Ace", "Shimano Ultegra", "Shimano GRX", "Shimano 105",
+  "Shimano XT", "Shimano Deore", "SRAM Red XPLR", "SRAM Force XPLR",
+  "SRAM Rival XPLR", "SRAM Red", "SRAM Force", "SRAM Apex", "SRAM Rival",
+  "Campagnolo Ekar",
+];
+const _MOTOR_BRANDS = ["Bosch", "Yamaha", "Bafang", "Mahle", "Promovec", "Shimano"];
+
+function extractColors(text: string): string[] {
+  const out: string[] = [];
+  for (const [re, name] of _COLOR_RULES) if (re.test(text) && !out.includes(name)) out.push(name);
+  return out.slice(0, 3);
+}
+
+function enrichFields(type: string, title: string, body: string, tags: string, variants: string): Record<string, unknown> {
+  const name = `${title} ${tags} ${variants}`;           // titel/tags/variant-navne
+  const spec = `${title} ${tags} ${body}`;               // inkl. beskrivelse
+  const out: Record<string, unknown> = {};
+
+  // Årgang (kun realistisk modelår)
+  const ym = name.match(/\b(19[5-9]\d|20[0-3]\d)\b/);
+  if (ym) { const y = +ym[1]; if (y >= 1990 && y <= 2031) out.year = y; }
+
+  // Farve(r) — sættes som både array (colors) og tekst (color), som i sælg-flowet
+  const colors = extractColors(name);
+  if (colors.length) { out.colors = colors; out.color = colors.join(", "); }
+
+  // Stelmateriale
+  if (/\b(carbon|kulfiber)\b/i.test(spec)) out.frame_material = "Carbon";
+  else if (/\b(titanium|titan)\b/i.test(spec)) out.frame_material = "Titanium";
+  else if (/\b(aluminium|alu|alloy|alu\.)\b/i.test(spec)) out.frame_material = "Aluminium";
+  else if (/\b(st(å|aa)l|steel|cr-?mo|chromoly|cromoly)\b/i.test(spec)) out.frame_material = "Stål";
+
+  // Hjulstørrelse
+  if (/27[.,]5|650b/i.test(name)) out.wheel_size = '27.5" / 650b';
+  else {
+    const wm = name.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)/i);
+    if (wm) out.wheel_size = `${wm[1]}"`;
+  }
+
+  // Stelstørrelse i cm
+  const sm = name.match(/\b([3-7]\d)\s*cm\b/i);
+  if (sm) { const n = +sm[1]; if (n >= 38 && n <= 70) out.size_cm = n; }
+
+  // Komponentgruppe
+  for (const g of _GROUPSETS) { if (new RegExp(escapeRe(g), "i").test(spec)) { out.groupset = g; break; } }
+
+  // Bremsetype
+  if (/hydraulisk[a-zæøå]*\s*skivebrems|hydraulic\s*disc/i.test(spec)) out.brake_type = "Skivebremser hydrauliske";
+  else if (/mekanisk[a-zæøå]*\s*skivebrems|mechanical\s*disc/i.test(spec)) out.brake_type = "Skivebremser mekaniske";
+  else if (/f(æ|ae)lgbrems|rim\s*brake|caliper/i.test(spec)) out.brake_type = "Fælgbremser";
+  else if (/tromlebrems|roller\s*brake|drum\s*brake|fodbrems|coaster/i.test(spec)) out.brake_type = "Tromlebremser";
+
+  // Vægt
+  const gm = spec.match(/\b(\d{1,2}(?:[.,]\d)?)\s*kg\b/i);
+  if (gm) { const w = parseFloat(gm[1].replace(",", ".")); if (w >= 2 && w <= 50) out.weight_kg = w; }
+
+  // Geartype (indvendig = navgear / udvendig = kædeskifter)
+  if (/navgear|nexus|alfine|enviolo|indvendig[a-zæøå]*\s*gear|internal\s*gear/i.test(spec)) out.geartype = "Indvendig";
+  else if (/k(æ|ae)deskifter|derailleur|udvendig[a-zæøå]*\s*gear|shimano\s*(deore|altus|acera|tourney|sora|tiagra|105|grx)/i.test(spec)) out.geartype = "Udvendig";
+
+  // Indstigning
+  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through|\bwave\b|\bdame[a-zæøå]*\b|\bunisex\b/i.test(name)) out.step_type = "Lav indstigning";
+  else if (/h(ø|o)j\s*indstigning|high[\s-]?step|\bherre[a-zæøå]*\b|\bdiamant\b/i.test(name)) out.step_type = "Høj indstigning";
+
+  // Affjedring (kun MTB/Gravel/El-cykel)
+  if (["Mountainbike", "Gravel", "El-cykel"].includes(type)) {
+    if (/\bfully\b|fuld\s*affjedring|full[\s-]?suspension|dual\s*suspension|dobbelt\s*affjedr/i.test(spec)) out.suspension = "Fuld affjedring (fully)";
+    else if (/\bhardtail\b|affjedret\s*forgaffel|front\s*suspension|forgaffel/i.test(spec)) out.suspension = "Forgaffel (hardtail)";
+  }
+
+  // El-cykel: motor + placering + batteri
+  if (type === "El-cykel") {
+    for (const b of _MOTOR_BRANDS) { if (new RegExp(`\\b${b}\\b`, "i").test(spec)) { out.motor = b; break; } }
+    if (/midtermotor|mid[\s-]?motor|mid[\s-]?drive/i.test(spec)) out.motor_position = "Midtermotor";
+    else if (/forhjuls?\s*motor|front[\s-]?(motor|hub)/i.test(spec)) out.motor_position = "Forhjulsmotor";
+    else if (/baghjuls?\s*motor|rear[\s-]?(motor|hub)/i.test(spec)) out.motor_position = "Baghjulsmotor";
+    const bm = spec.match(/\b(\d{3,4})\s*wh\b/i);
+    if (bm) { const wh = +bm[1]; if (wh >= 100 && wh <= 2000) out.battery_wh = wh; }
+  }
+
+  return out;
+}
+
 // ── Parse Shopify products.json → normaliserede items ───────
 function parseShopifyProducts(products: any[], origin: string): any[] {
   return products.map((p: any) => {
     const variants = Array.isArray(p.variants) ? p.variants : [];
-    const v0 = variants[0] || {};
     const anyAvail = variants.some((v: any) => v.available);
+    // Pris: højeste variant-pris (undgår at gribe en billig "depositum"/tilkøbs-
+    // variant som variants[0]; ens for normale størrelses-/farve-varianter).
+    const vPrices  = variants.map((v: any) => parsePrice(v.price)).filter((n: any): n is number => n != null);
+    const vCompare = variants.map((v: any) => parsePrice(v.compare_at_price)).filter((n: any): n is number => n != null);
+    const price    = vPrices.length  ? Math.max(...vPrices)  : null;
+    const original = vCompare.length ? Math.max(...vCompare) : null;
+    const variantText = variants.map((v: any) => [v.title, v.option1, v.option2, v.option3].filter(Boolean).join(" ")).join(" ");
+    const tags = Array.isArray(p.tags) ? p.tags.join(" ") : (p.tags ?? "");
     const images = (Array.isArray(p.images) ? p.images : [])
       .map((im: any) => im?.src)
       .filter((u: any) => typeof u === "string" && u.startsWith("https://"));
@@ -220,29 +370,34 @@ function parseShopifyProducts(products: any[], origin: string): any[] {
     return {
       external_id:   String(p.id ?? "").trim(),
       brand, model, title,
-      price:         parsePrice(v0.price),
-      original_price: parsePrice(v0.compare_at_price) || null,
+      price,
+      original_price: original,
       description,
       external_url:  p.handle ? `${origin}/products/${p.handle}` : null,
       condition:     "Ny",
       availability:  anyAvail ? "in_stock" : "out_of_stock",
-      _typeHint:     `${p.product_type ?? ""} ${Array.isArray(p.tags) ? p.tags.join(" ") : (p.tags ?? "")} ${title}`,
+      _typeHint:     `${p.product_type ?? ""} ${tags} ${title}`,
       _accessory:    looksLikeAccessory(`${p.product_type ?? ""} ${title}`),
+      _body:         stripHtml(p.body_html ?? "").slice(0, 1500),
+      _tags:         String(tags),
+      _variantText:  variantText,
       images,
     };
   });
 }
 
 // ── Hent + parse feed (håndterer Shopify-paginering) ────────
-async function fetchItems(feed: any): Promise<any[]> {
-  // Sprog + landehints så Shopify Markets serverer DKK-priser i stedet for
-  // geo-IP-baseret EUR (edge-funktionen kører ikke fra en dansk IP).
-  // "localization"-cookien er Shopify Markets' egen landevælger-cookie.
+async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }> {
   const ua = {
     "User-Agent": "CykelboersenFeedBot/1.0",
     "Accept-Language": "da-DK,da;q=0.9",
-    "Cookie": "localization=DK; cart_currency=DKK",
   };
+
+  let items: any[];
+  // Manuelt valgt valuta vinder; "auto"/tom → auto-registrér (Shopify) / DKK.
+  let currency = feed.currency && String(feed.currency).toLowerCase() !== "auto"
+    ? String(feed.currency).toUpperCase()
+    : "";
 
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
@@ -257,13 +412,27 @@ async function fetchItems(feed: any): Promise<any[]> {
       all.push(...parseShopifyProducts(prods, origin));
       if (prods.length < 250) break;
     }
-    return all.filter((it) => !it._accessory);
+    items = all.filter((it) => !it._accessory);
+    if (!currency) currency = await detectShopCurrency(origin, ua);
+  } else {
+    const res = await fetch(feed.feed_url, { headers: ua });
+    if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
+    const raw = await res.text();
+    items = feed.format === "csv" ? parseCsv(raw) : parseGoogleXml(raw);
+    if (!currency) currency = "DKK";   // XML/CSV antages i DKK medmindre admin vælger andet
   }
 
-  const res = await fetch(feed.feed_url, { headers: ua });
-  if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
-  const raw = await res.text();
-  return feed.format === "csv" ? parseCsv(raw) : parseGoogleXml(raw);
+  // Omregn til DKK hvis butikken sælger i anden valuta (gem rå pris til preview).
+  const rate = FX_TO_DKK[currency] ?? 1;
+  for (const it of items) {
+    it._currency = currency;
+    if (rate !== 1) {
+      it._rawPrice = it.price;
+      if (typeof it.price === "number")          it.price = Math.round(it.price * rate);
+      if (typeof it.original_price === "number") it.original_price = Math.round(it.original_price * rate);
+    }
+  }
+  return { items, currency };
 }
 
 // ── Synkronisér ÉN feed ─────────────────────────────────────
@@ -278,33 +447,44 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
   if (!profile || profile.seller_type !== "dealer") throw new Error("Forhandler ikke fundet");
   if (!profile.admin_can_create_listings) throw new Error("Forhandler har ikke aktiveret onboarding-samtykke");
 
-  // Hent + parse feed (Google XML / CSV / Shopify products.json)
-  let items = await fetchItems(feed);
-  items = items.filter((it) => it.external_id && it.price && (it.brand || it.title));
+  // Hent + parse feed (Google XML / CSV / Shopify products.json) + valuta
+  const { items: fetched, currency } = await fetchItems(feed);
+  const items = fetched.filter((it) => it.external_id && it.price && (it.brand || it.title));
 
-  // Byg bike-payloads
+  // Byg bike-payloads — sikrer altid de obligatoriske felter (brand, type,
+  // condition, price, city) + beriger med alle specs vi kan udlede sikkert.
   const fallbackCity = profile.city || "Danmark";
-  const built = items.map((it) => ({
-    external_id: it.external_id,
-    available:   !it.availability.includes("out"),
-    bike: {
-      external_id:  it.external_id,
-      brand:        it.brand || it.title,
-      model:        it.model || "",
-      title:        it.title,
-      type:         it._explicitType && VALID_TYPES.includes(it._explicitType) ? it._explicitType : inferType(it._typeHint, feed.default_type),
-      price:        it.price,
-      original_price: it.original_price || it.price,
-      condition:    VALID_TYPES.includes(it.condition) ? "God stand" : it.condition,
-      city:         it.city || fallbackCity,
-      description:  it.description || "",
-      external_url: it.external_url,
-    },
-    images: it.images.map((url: string, idx: number) => ({ url, is_primary: idx === 0 })),
-  }));
+  const built = items.map((it) => {
+    const type = it._explicitType && VALID_TYPES.includes(it._explicitType)
+      ? it._explicitType
+      : inferType(it._typeHint, feed.default_type);
+    const enriched = enrichFields(type, it.title || "", it._body || it.description || "", it._tags || "", it._variantText || "");
+    return {
+      external_id: it.external_id,
+      available:   !it.availability.includes("out"),
+      bike: {
+        external_id:  it.external_id,
+        brand:        it.brand || it.title || "Cykel",            // obligatorisk
+        model:        it.model || "",
+        title:        it.title || "",
+        type,                                                      // obligatorisk
+        price:        it.price,                                    // obligatorisk
+        original_price: it.original_price || it.price,
+        condition:    VALID_TYPES.includes(it.condition) ? "God stand" : (it.condition || "God stand"), // obligatorisk
+        city:         it.city || fallbackCity,                     // obligatorisk
+        description:  it.description || "",
+        external_url: it.external_url,
+        ...enriched,                                               // year, colors, motor, groupset, …
+      },
+      images: it.images.map((url: string, idx: number) => ({ url, is_primary: idx === 0 })),
+    };
+  });
 
   if (preview) {
-    return { preview: true, total: built.length, items: built.slice(0, 50).map((b) => b.bike) };
+    return {
+      preview: true, total: built.length, currency,
+      items: built.slice(0, 50).map((b, i) => ({ ...b.bike, _rawPrice: items[i]?._rawPrice ?? null })),
+    };
   }
 
   // Upsert hver vare (kun in-stock; out_of_stock håndteres af reconcile)
@@ -352,7 +532,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
     last_deactivated: deactivated,
   }).eq("id", feed.id);
 
-  return { created, updated, failed, deactivated, total: built.length };
+  return { created, updated, failed, deactivated, total: built.length, currency };
 }
 
 serve(async (req) => {
