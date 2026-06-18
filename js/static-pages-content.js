@@ -181,7 +181,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. juni 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 18. juni 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -204,6 +204,7 @@ export const footerContent = {
         <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres, når det aktiveres, af Stripe — se betalingsdata.</li>
         <li><strong>Betalingsdata:</strong> Forhandlerabonnementer er gratis under platformens lanceringsfase. Når betaling senere aktiveres, håndteres den af Stripe — vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
+        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, sender vi det til tyveriregisteret BikeIndex for et opslag. Vi gemmer <strong>aldrig</strong> hele stelnummeret — kun de sidste 4 cifre samt resultatet af opslaget (om der blev fundet et muligt match). Det fulde nummer kasseres efter opslaget.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
@@ -249,9 +250,13 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Fremhævning/boost af annoncer</td>
           <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Tyveri-tjek af oplyst stelnummer mod BikeIndex</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse (bekæmpelse af tyverihæleri)</td>
         </tr>
       </table>
 
@@ -264,6 +269,7 @@ export const footerContent = {
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
         <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
+        <li><strong>BikeIndex (USA)</strong> — Internationalt tyveriregister for cykler. Hvis du oplyser et stelnummer på en annonce, sendes det til BikeIndex for et opslag mod efterlyste cykler. Vi gemmer kun resultatet og de sidste 4 cifre — aldrig hele nummeret. Se <a href="https://bikeindex.org/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">BikeIndex' privatlivspolitik</a>.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 
