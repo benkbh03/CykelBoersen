@@ -88,7 +88,7 @@ export function createSellPage({
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
-    'sell-price', 'sell-warranty', 'sell-external-url',
+    'sell-price', 'sell-original-price', 'sell-warranty', 'sell-external-url',
     // Cykel-specifikke strukturerede felter (kan auto-udfyldes af AI fra billeder)
     'sell-groupset', 'sell-frame-material', 'sell-brake-type',
     'sell-electronic-shifting', 'sell-weight-kg',
@@ -315,6 +315,9 @@ export function createSellPage({
       try { _actingAsEarly = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
       const isDealerListing = getCurrentProfile()?.seller_type === 'dealer' || !!_actingAsEarly;
       const externalUrl = (isDealerListing ? (getVal('sell-external-url') || '').trim() : '') || null;
+      // Forhandler-valgfri før-pris (vejl. udsalgspris) → driver rabatbadge.
+      // Bruges kun hvis højere end prisen, ellers = pris (ingen falsk rabat).
+      const origPriceNum = isDealerListing ? (parseInt(getVal('sell-original-price')) || null) : null;
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       // Cykel-specifikke felter
@@ -369,7 +372,7 @@ export function createSellPage({
       const bikeData = {
         user_id: actingAs ? actingAs.id : currentUser.id,
         brand, model, price, year, city,
-        original_price: price,  // Sættes ved create, opdateres aldrig — driver "Reduceret fra X → Y"-badge
+        original_price: (origPriceNum && origPriceNum > price) ? origPriceNum : price,  // forhandler-før-pris hvis sat, ellers pris-snapshot — driver "Reduceret fra X → Y"-badge
         description: desc || null,
         type, size: size || null, size_cm: sizeCm, condition,
         wheel_size: wheelSize || null,
@@ -737,6 +740,13 @@ export function createSellPage({
       </div>
 
       ${isDealer ? `
+      <div class="sell-field">
+        <label>Før-pris <span class="hint">(valgfri — vejl. udsalgspris; vises som rabat hvis højere end prisen)</span></label>
+        <div class="suffix-wrap">
+          <input type="number" id="sell-original-price" placeholder="f.eks. 5.999" min="1" max="9999999" step="1" value="${c['sell-original-price'] || ''}" onwheel="this.blur()">
+          <span class="suffix">DKK</span>
+        </div>
+      </div>
       <div class="sell-field">
         <label>Garanti <span class="hint">(valgfrit)</span></label>
         <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti" value="${esc(c['sell-warranty'] || '')}">
@@ -1142,7 +1152,7 @@ export function createSellPage({
       });
       // Live footer + preview updates
       ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
-       'sell-year','sell-condition','sell-price','sell-warranty','sell-external-url',
+       'sell-year','sell-condition','sell-price','sell-original-price','sell-warranty','sell-external-url',
        // Avancerede felter — også gem i cache så de overlever step-skift
        'sell-groupset','sell-frame-material','sell-brake-type',
        'sell-electronic-shifting','sell-weight-kg'].forEach(id => {
