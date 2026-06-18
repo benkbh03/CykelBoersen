@@ -998,6 +998,14 @@ async function init() {
           import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
         }
         checkSavedSearchNotifications();
+        // Forhandler-friskheds-nudge: vis kun forældede annoncer (60+ dage) med
+        // 1-klik "aktuel/ret/deaktivér". Feed-styrede annoncer bumpes nat for nat
+        // og dukker derfor aldrig op her.
+        if (profile?.seller_type === 'dealer') {
+          import(`./js/dealer-freshness.js?v=${ASSET_VERSION}`)
+            .then(m => m.checkDealerFreshness(currentUser, profile))
+            .catch(() => {});
+        }
         // Hvis brugeren havde en pending Cykelagent fra et "udfyld før login"-flow,
         // aktivér den nu. localStorage-check er billig — kører hver gang men er no-op
         // hvis nøglen ikke findes.
