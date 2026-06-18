@@ -187,7 +187,16 @@ export function createAdminFeedImport({ supabase, showToast }) {
       const specSummary = (b) => [
         b.year,
         (Array.isArray(b.colors) && b.colors.length) ? b.colors.join('/') : (b.color || null),
-        b.frame_material, b.groupset, b.wheel_size, b.motor,
+        b.frame_material,
+        b.wheel_size,
+        b.size_cm ? b.size_cm + ' cm' : null,
+        b.groupset,
+        b.brake_type,
+        b.geartype ? b.geartype + ' gear' : null,
+        b.step_type,
+        b.suspension,
+        b.motor,
+        b.motor_position,
         b.battery_wh ? b.battery_wh + ' Wh' : null,
         b.weight_kg ? b.weight_kg + ' kg' : null,
       ].filter(Boolean).join(' · ');
