@@ -416,6 +416,32 @@ export function createBikeDetail({
           </div>
         </div>`;
       })()}
+      ${(() => {
+        if (!b.frame_check_status && !b.frame_last4) return '';
+        const l4 = b.frame_last4 ? esc(b.frame_last4) : '';
+        const dateStr = b.frame_check_at ? new Date(b.frame_check_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        let icon, title, sub, color, bg, border;
+        if (b.frame_check_status === 'clear') {
+          icon = '✓'; color = '#2e7d32'; bg = 'rgba(46,125,50,0.08)'; border = '#2e7d32';
+          title = 'Stelnummer oplyst · ingen tyveri-match';
+          sub = `Tjekket mod BikeIndex${dateStr ? ' ' + dateStr : ''}. Internationalt register — ingen garanti. Få hele nummeret af sælger ved overlevering.`;
+        } else if (b.frame_check_status === 'match') {
+          icon = '⚠️'; color = '#c8302a'; bg = 'rgba(200,48,42,0.08)'; border = '#c8302a';
+          title = 'Muligt tyveri-match — undersøg før køb';
+          sub = 'Stelnummeret ligner en efterlyst cykel i BikeIndex (omtrentligt match). Bekræft nummeret med sælger og tjek selv inden køb.';
+        } else {
+          icon = '🔒'; color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
+          title = 'Stelnummer oplyst af sælger';
+          sub = 'Sælger har registreret cyklens stelnummer.';
+        }
+        return `<div class="frame-trust-badge" style="display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;border-radius:12px;background:${bg};border:1px solid ${border};">
+          <span style="font-size:1.2rem;line-height:1.2;">${icon}</span>
+          <div style="min-width:0;">
+            <div style="font-weight:600;color:${color};font-size:0.92rem;">${title}${l4 ? ` · ••${l4}` : ''}</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:3px;line-height:1.5;">${sub}${b.frame_check_status === 'match' && b.frame_check_ref ? ` <a href="${esc(b.frame_check_ref)}" target="_blank" rel="noopener" style="color:${color};font-weight:600;">Se i register →</a>` : ''}</div>
+          </div>
+        </div>`;
+      })()}
       <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="theft-check-tip">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>

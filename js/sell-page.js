@@ -88,7 +88,7 @@ export function createSellPage({
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
-    'sell-price', 'sell-original-price', 'sell-warranty', 'sell-external-url',
+    'sell-price', 'sell-original-price', 'sell-warranty', 'sell-external-url', 'sell-frame-number',
     // Cykel-specifikke strukturerede felter (kan auto-udfyldes af AI fra billeder)
     'sell-groupset', 'sell-frame-material', 'sell-brake-type',
     'sell-electronic-shifting', 'sell-weight-kg',
@@ -318,6 +318,7 @@ export function createSellPage({
       // Forhandler-valgfri før-pris (vejl. udsalgspris) → driver rabatbadge.
       // Bruges kun hvis højere end prisen, ellers = pris (ingen falsk rabat).
       const origPriceNum = isDealerListing ? (parseInt(getVal('sell-original-price')) || null) : null;
+      const frameNumber = getVal('sell-frame-number');  // valgfrit stelnr — tyveri-tjekkes efter oprettelse
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       // Cykel-specifikke felter
@@ -441,6 +442,14 @@ export function createSellPage({
             if (btn) btn.textContent = `Uploader ${current}/${total}…`;
           });
         }
+      }
+
+      // Tyveri-tjek af stelnummer (fire-and-forget — annoncen er allerede oprettet).
+      // Edge-functionen gemmer kun sidste 4 cifre + resultat, aldrig hele nummeret.
+      if (frameNumber && newBike?.id) {
+        supabase.functions.invoke('check-frame-number', {
+          body: { bike_id: newBike.id, frame_number: frameNumber },
+        }).catch(() => {});
       }
 
       loadBikes();
@@ -755,6 +764,14 @@ export function createSellPage({
         <label>Link til din webshop <span class="hint">(valgfrit — skjuler bud-knap så købere går direkte til din side)</span></label>
         <input type="url" id="sell-external-url" placeholder="https://din-webshop.dk/cykler/..." value="${esc(c['sell-external-url'] || '')}">
       </div>` : ''}
+
+      <div class="sell-field">
+        <label>Stelnummer <span class="hint">(valgfrit — øger tryghed)</span></label>
+        <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off">
+        <div style="margin-top:6px;font-size:0.78rem;color:var(--muted);line-height:1.5;">
+          🔒 Vi tjekker det mod tyveriregisteret BikeIndex og viser kun de <strong>sidste 4 cifre</strong> offentligt. Det fulde nummer gemmes ikke — du giver det til køber ved overlevering.
+        </div>
+      </div>
 
       <button type="button" id="sell-advanced-toggle" class="sell-advanced-toggle" onclick="toggleAdvancedSpecs()" aria-expanded="false">
         <span class="sell-advanced-icon">▸</span>
@@ -1152,7 +1169,7 @@ export function createSellPage({
       });
       // Live footer + preview updates
       ['sell-brand','sell-model','sell-type','sell-size','sell-size-cm','sell-wheel-size',
-       'sell-year','sell-condition','sell-price','sell-original-price','sell-warranty','sell-external-url',
+       'sell-year','sell-condition','sell-price','sell-original-price','sell-warranty','sell-external-url','sell-frame-number',
        // Avancerede felter — også gem i cache så de overlever step-skift
        'sell-groupset','sell-frame-material','sell-brake-type',
        'sell-electronic-shifting','sell-weight-kg'].forEach(id => {

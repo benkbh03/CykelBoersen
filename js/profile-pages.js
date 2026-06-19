@@ -186,7 +186,7 @@ export function createProfilePages({
     const isDealer     = profile.seller_type === 'dealer';
     const memberSince  = profile.created_at ? new Date(profile.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' }) : null;
     const isOwnProfile = currentUser && currentUser.id === profile.id;
-    const lastSeenText = !isOwnProfile ? formatLastSeen(profile.last_seen) : null;
+    const lastSeenText = (!isOwnProfile && !isDealer) ? formatLastSeen(profile.last_seen, 72) : null;
     const reviewList   = reviews || [];
     const avgRating    = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
     const hasReviewed  = currentUser && reviewList.some(r => r.reviewer_id === currentUser.id);

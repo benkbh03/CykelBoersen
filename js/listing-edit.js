@@ -210,6 +210,16 @@ export function createListingEdit({
     if (extUrlGroup) extUrlGroup.style.display = isDealer ? '' : 'none';
     document.getElementById('edit-external-url').value = b.external_url || '';
 
+    // Stelnummer: vis kun status/sidste 4 (vi gemmer aldrig hele nummeret).
+    // Tomt felt = uændret; indtast igen for at gen-tjekke.
+    { const fn = document.getElementById('edit-frame-number');
+      if (fn) {
+        fn.value = '';
+        fn.placeholder = b.frame_last4
+          ? `Tjekket · slutter på ••${b.frame_last4} — indtast igen for at gen-tjekke`
+          : 'Indtast stelnummer';
+      } }
+
     editNewFiles     = [];
     editExistingImgs = (b.bike_images || []).map(img => ({
       ...img,
@@ -325,6 +335,16 @@ export function createListingEdit({
 
     const { error } = await supabase.from('bikes').update(updates).eq('id', id);
     if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+
+    // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret). Tyveri-
+    // tjekkes server-side; kun sidste 4 + resultat gemmes (aldrig hele nummeret).
+    const frameInput = document.getElementById('edit-frame-number');
+    const frameVal = frameInput ? frameInput.value.trim() : '';
+    if (frameVal) {
+      supabase.functions.invoke('check-frame-number', {
+        body: { bike_id: id, frame_number: frameVal },
+      }).catch(() => { /* fire-and-forget */ });
+    }
 
     // Prisfald-trigger: hvis sælgeren har sat prisen ned, send notifikation til
     // alle der watcher annoncen ved en pris HØJERE end den nye pris.
