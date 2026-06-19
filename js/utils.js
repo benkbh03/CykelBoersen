@@ -21,9 +21,12 @@ export function debounce(fn, ms) {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
-export function formatLastSeen(dateStr) {
+export function formatLastSeen(dateStr, maxAgeHours = null) {
   if (!dateStr) return null;
   const diff = Date.now() - new Date(dateStr).getTime();
+  // Skjul gammel tilstedeværelse: "Aktiv for 5 dage siden" får en ung
+  // markedsplads til at se død ud. Vis kun når det er friskt nok.
+  if (maxAgeHours != null && diff > maxAgeHours * 3600000) return null;
   const mins = Math.floor(diff / 60000);
   if (mins < 5)   return 'Netop aktiv';
   if (mins < 60)  return `Aktiv for ${mins} min. siden`;

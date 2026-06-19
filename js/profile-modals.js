@@ -250,7 +250,7 @@ export function createProfileModals({
     const isDealer     = profile.seller_type === 'dealer';
     const memberYear   = profile.created_at ? new Date(profile.created_at).getFullYear() : null;
     const isOwnProfile = currentUser && currentUser.id === userId;
-    const lastSeenText = !isOwnProfile ? formatLastSeen(profile.last_seen) : null;
+    const lastSeenText = (!isOwnProfile && !isDealer) ? formatLastSeen(profile.last_seen, 72) : null;
 
     const reviewList   = reviews || [];
     const avgRating    = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
