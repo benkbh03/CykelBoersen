@@ -226,7 +226,9 @@ function inferType(text: string, fallback: string | null): string {
   if (/\b(gravel|grus)\b/.test(t)) return "Gravel";
   if (/\b(mtb|mountain|terr)\b/.test(t)) return "Mountainbike";
   if (/\b(el-?cykel|e-?bike|elektrisk|pedelec)\b/.test(t)) return "El-cykel";
-  if (/\b(lad|cargo|long.?john)\b/.test(t)) return "Ladcykel";
+  // Ladcykel KUN ved entydige cargo-signaler — IKKE bare "lad"/"cargo" (fx
+  // "m. lad" eller modelnavnet "Yate Cargo" er ikke en ladcykel).
+  if (/\bladcykel\b|long.?john|long.?tail|christiania|\bbullitt\b|babboe|nihola|urban\s*arrow|carqon|amladcykler|royal\s*cargobike|butchers/i.test(t)) return "Ladcykel";
   if (/\b(b(ø|o)rn|junior|kids?)\b/.test(t)) return "Børnecykel";
   if (/\b(rac|road|landevej)\b/.test(t)) return "Racercykel";
   if (/\b(senior|komfort)\b/.test(t)) return "Senior cykel";
@@ -612,10 +614,13 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
   // condition, price, city) + beriger med alle specs vi kan udlede sikkert.
   const fallbackCity = profile.city || "Danmark";
   const built = items.map((it) => {
-    const type = it._explicitType && VALID_TYPES.includes(it._explicitType)
+    let type = it._explicitType && VALID_TYPES.includes(it._explicitType)
       ? it._explicitType
       : inferType(it._typeHint, feed.default_type);
     const enriched = enrichFields(type, it.title || "", it._body || it.description || "", it._tags || "", it._variantText || "");
+    // Hjul under 26" = børnecykel (uanset hvad titlen ellers siger).
+    const ws = parseInt(String(enriched.wheel_size || ""), 10);
+    if (ws && ws < 26) type = "Børnecykel";
     return {
       external_id: it.external_id,
       available:   !it.availability.includes("out"),

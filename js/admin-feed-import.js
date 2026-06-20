@@ -160,19 +160,17 @@ export function createAdminFeedImport({ supabase, showToast }) {
   }
 
   async function removeFeedBikes(id, btn) {
+    const f = _feeds.find(x => x.id === id);
+    if (!f) { showToast('❌ Feed ikke fundet'); return; }
     if (!confirm('Fjern (skjul) ALLE cykler importeret fra dette feed?\n\nDe deaktiveres — manuelt oprettede annoncer røres ikke. Du kan altid synkronisere dem ind igen.')) return;
     const orig = btn.textContent;
     btn.disabled = true; btn.textContent = 'Fjerner…';
     try {
-      const { data, error } = await supabase.functions.invoke('import-dealer-feed', {
-        body: { feed_id: id, action: 'remove' },
-      });
-      if (error) {
-        let msg = 'Kunne ikke fjerne'; try { msg = (await error.context.json()).error || msg; } catch {}
-        throw new Error(msg);
-      }
-      if (data.error) throw new Error(data.error);
-      showToast(`✓ ${data.removed} cykler fjernet (deaktiveret)`);
+      // SECURITY DEFINER RPC (omgår RLS med internt admin-tjek) — virker uden
+      // edge-deploy. Kræver SQL'en add_remove_dealer_feed_bikes.sql er kørt.
+      const { data, error } = await supabase.rpc('remove_dealer_feed_bikes', { p_user_id: f.user_id });
+      if (error) throw new Error(error.message || 'Kunne ikke fjerne');
+      showToast(`✓ ${data ?? 0} cykler fjernet (deaktiveret)`);
     } catch (e) {
       showToast('❌ ' + (e.message || 'Kunne ikke fjerne'));
     } finally {
