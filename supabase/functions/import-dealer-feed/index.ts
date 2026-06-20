@@ -85,6 +85,10 @@ function parsePrice(raw: unknown): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+function scalePrice(n: number | null, factor: number): number | null {
+  return n == null ? null : Math.round(n * factor);
+}
+
 function mapCondition(raw: unknown): string {
   const c = String(raw ?? "").toLowerCase();
   if (c.includes("refurb")) return "Som ny";
@@ -196,8 +200,28 @@ function originOf(url: string): string {
   try { return new URL(url).origin; } catch { return ""; }
 }
 
+// ── Shopify Markets serverer priser i besøgerens lokale valuta baseret på
+//    IP-geolokation — edge-funktionen kører ikke fra en dansk IP og kan derfor
+//    få priser i EUR i stedet for DKK. /cart.js afslører hvilken valuta
+//    Shopify har valgt til DENNE request, så vi kan regne tilbage til DKK.
+//    DKK er ERM II-fastkurset til EUR (~7,46, bånd ±2,25%) — derfor er en fast
+//    kurs sikker at bruge. Andre valutaer er kun et grovt fallback-gæt.
+const FX_TO_DKK: Record<string, number> = { DKK: 1, EUR: 7.46, USD: 6.9, GBP: 8.7, SEK: 0.66, NOK: 0.62 };
+
+async function detectCurrencyFactor(origin: string, ua: Record<string, string>): Promise<number> {
+  try {
+    const res = await fetch(`${origin}/cart.js`, { headers: ua });
+    if (!res.ok) return 1;
+    const data = JSON.parse(await res.text());
+    const code = String(data?.currency ?? "DKK").toUpperCase();
+    return FX_TO_DKK[code] ?? 1;
+  } catch {
+    return 1;
+  }
+}
+
 // ── Parse Shopify products.json → normaliserede items ───────
-function parseShopifyProducts(products: any[], origin: string): any[] {
+function parseShopifyProducts(products: any[], origin: string, fxFactor = 1): any[] {
   return products.map((p: any) => {
     const variants = Array.isArray(p.variants) ? p.variants : [];
     const v0 = variants[0] || {};
@@ -220,8 +244,8 @@ function parseShopifyProducts(products: any[], origin: string): any[] {
     return {
       external_id:   String(p.id ?? "").trim(),
       brand, model, title,
-      price:         parsePrice(v0.price),
-      original_price: parsePrice(v0.compare_at_price) || null,
+      price:         scalePrice(parsePrice(v0.price), fxFactor),
+      original_price: scalePrice(parsePrice(v0.compare_at_price), fxFactor) || null,
       description,
       external_url:  p.handle ? `${origin}/products/${p.handle}` : null,
       condition:     "Ny",
@@ -246,6 +270,7 @@ async function fetchItems(feed: any): Promise<any[]> {
 
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
+    const fxFactor = await detectCurrencyFactor(origin, ua);
     const base = feed.feed_url.split("?")[0].replace(/\/$/, "");
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
@@ -254,7 +279,7 @@ async function fetchItems(feed: any): Promise<any[]> {
       const data = JSON.parse(await res.text());
       const prods = Array.isArray(data?.products) ? data.products : [];
       if (prods.length === 0) break;
-      all.push(...parseShopifyProducts(prods, origin));
+      all.push(...parseShopifyProducts(prods, origin, fxFactor));
       if (prods.length < 250) break;
     }
     return all.filter((it) => !it._accessory);
