@@ -431,9 +431,11 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   if (/navgear|indvendig[a-zæøå]*\s*gear|internal\s*(hub\s*)?gear|hub\s*gear/i.test(spec)) out.geartype = "Indvendig";
   else if (/k(æ|ae)deskifter|derailleur|udvendig[a-zæøå]*\s*gear|external\s*gear/i.test(spec)) out.geartype = "Udvendig";
 
-  // Indstigning — KUN hvis eksplicit nævnt. Vi gætter IKKE ud fra "dame"/"herre".
-  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through/i.test(spec)) out.step_type = "Lav indstigning";
-  else if (/h(ø|o)j\s*indstigning|high[\s-]?step/i.test(spec)) out.step_type = "Høj indstigning";
+  // Indstigning — udledes fra dame/herre/frame-type (passer pålideligt for
+  // cykler: damecykel = step-through = lav, herrecykel = diamantstel = høj) +
+  // eksplicit "lav/høj indstigning"/step-through. (Bevidst tilladt undtagelse.)
+  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through|\bwave\b|\bdame[a-zæøå]*\b|\bunisex\b/i.test(name)) out.step_type = "Lav indstigning";
+  else if (/h(ø|o)j\s*indstigning|high[\s-]?step|\bherre[a-zæøå]*\b/i.test(name)) out.step_type = "Høj indstigning";
 
   // Affjedring (kun MTB/Gravel/El-cykel) — KUN hvis eksplicit affjedring nævnt
   // (ikke bare "forgaffel", som en stiv cykel også har).
