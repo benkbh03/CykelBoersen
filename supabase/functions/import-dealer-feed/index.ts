@@ -324,10 +324,10 @@ function originOf(url: string): string {
 }
 
 // ── Felt-berigelse ──────────────────────────────────────────
-// Udled så mange specs som muligt fra titel/beskrivelse/tags/varianter, så
-// importerede cykler er lige så filtrerbare som manuelt oprettede. Kun
-// HØJSIKRE matches sættes (forkert data er værre end manglende) og alle
-// værdier er KANONISKE (matcher filtrene 1:1 — se CLAUDE.md).
+// VIGTIGT: ALDRIG gætte. Et felt sættes KUN hvis værdien bogstaveligt står i
+// titel/beskrivelse/tags/varianter. Vi UDLEDER ikke (fx "dame"→indstigning eller
+// "Nexus"→geartype). Står det ikke der, lades feltet TOMT. Forkert data er værre
+// end manglende på en transparent markedsplads. Alle værdier er kanoniske.
 // Farve-regler — SUBSTRING-match (ikke ordgrænse), så danske sammensatte
 // farveord rammes: "MØRKEGRØN"→Grøn, "LYSERBLÅ"→Blå, "POSTKASSERØD"→Rød.
 // Lyserød står FØR Rød, og en match fjernes fra teksten så "lyserød" ikke
@@ -425,18 +425,21 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   const gm = spec.match(/\b(\d{1,2}(?:[.,]\d)?)\s*kg\b/i);
   if (gm) { const w = parseFloat(gm[1].replace(",", ".")); if (w >= 2 && w <= 50) out.weight_kg = w; }
 
-  // Geartype (indvendig = navgear / udvendig = kædeskifter)
-  if (/navgear|nexus|alfine|enviolo|indvendig[a-zæøå]*\s*gear|internal\s*gear/i.test(spec)) out.geartype = "Indvendig";
-  else if (/k(æ|ae)deskifter|derailleur|udvendig[a-zæøå]*\s*gear|shimano\s*(deore|altus|acera|tourney|sora|tiagra|105|grx)/i.test(spec)) out.geartype = "Udvendig";
+  // Geartype — KUN hvis det eksplicit står (navgear/indvendig vs kædeskifter/
+  // udvendig). Vi UDLEDER ikke fra komponentnavne (fx "Nexus"), selvom det
+  // teknisk er entydigt — kun hvad der bogstaveligt står.
+  if (/navgear|indvendig[a-zæøå]*\s*gear|internal\s*(hub\s*)?gear|hub\s*gear/i.test(spec)) out.geartype = "Indvendig";
+  else if (/k(æ|ae)deskifter|derailleur|udvendig[a-zæøå]*\s*gear|external\s*gear/i.test(spec)) out.geartype = "Udvendig";
 
-  // Indstigning
-  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through|\bwave\b|\bdame[a-zæøå]*\b|\bunisex\b/i.test(name)) out.step_type = "Lav indstigning";
-  else if (/h(ø|o)j\s*indstigning|high[\s-]?step|\bherre[a-zæøå]*\b|\bdiamant\b/i.test(name)) out.step_type = "Høj indstigning";
+  // Indstigning — KUN hvis eksplicit nævnt. Vi gætter IKKE ud fra "dame"/"herre".
+  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through/i.test(spec)) out.step_type = "Lav indstigning";
+  else if (/h(ø|o)j\s*indstigning|high[\s-]?step/i.test(spec)) out.step_type = "Høj indstigning";
 
-  // Affjedring (kun MTB/Gravel/El-cykel)
+  // Affjedring (kun MTB/Gravel/El-cykel) — KUN hvis eksplicit affjedring nævnt
+  // (ikke bare "forgaffel", som en stiv cykel også har).
   if (["Mountainbike", "Gravel", "El-cykel"].includes(type)) {
     if (/\bfully\b|fuld\s*affjedring|full[\s-]?suspension|dual\s*suspension|dobbelt\s*affjedr/i.test(spec)) out.suspension = "Fuld affjedring (fully)";
-    else if (/\bhardtail\b|affjedret\s*forgaffel|front\s*suspension|forgaffel/i.test(spec)) out.suspension = "Forgaffel (hardtail)";
+    else if (/\bhardtail\b|affjedret\s*forgaffel|fjedergaffel|luftgaffel|front\s*suspension|suspension\s*fork/i.test(spec)) out.suspension = "Forgaffel (hardtail)";
   }
 
   // El-cykel: motor + placering + batteri
