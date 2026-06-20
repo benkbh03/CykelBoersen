@@ -110,6 +110,18 @@ const FX_TO_DKK: Record<string, number> = {
   DKK: 1, EUR: 7.46, SEK: 0.64, NOK: 0.64, USD: 6.90, GBP: 8.70, PLN: 1.70, CHF: 7.90,
 };
 
+// Afrund en FX-omregnet pris til butikkens pris-mønster, så fx 4.692 → 4.699.
+function roundPrice(n: number, mode: string): number {
+  if (!Number.isFinite(n) || n <= 0) return n;
+  switch (mode) {
+    case "99":  return Math.max(99, Math.round((n + 1) / 100) * 100 - 1);  // nærmeste x99
+    case "95":  return Math.max(95, Math.round((n - 95) / 100) * 100 + 95); // nærmeste x95
+    case "50":  return Math.round(n / 50) * 50;
+    case "100": return Math.round(n / 100) * 100;
+    default:    return n;                                                    // 'none'
+  }
+}
+
 // Læs valutaen for en given Shopify-base (rod eller markeds-subfolder) via
 // Ajax-API'et /cart.js. Returnerer "" hvis ukendt (så discovery kan gå videre).
 async function fetchCartCurrency(base: string, headers: Record<string, string>): Promise<string> {
@@ -530,13 +542,16 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
   }
 
   // Omregn til DKK hvis butikken sælger i anden valuta (gem rå pris til preview).
+  // FX rammer ikke butikkens "pæne" priser (4.692 vs 4.699) → valgfri afrunding
+  // til butikkens pris-mønster (kun på FX-omregnede priser, ikke eksakt DKK).
   const rate = FX_TO_DKK[currency] ?? 1;
+  const roundMode = String(feed.price_round || "none");
   for (const it of items) {
     it._currency = currency;
     if (rate !== 1) {
       it._rawPrice = it.price;
-      if (typeof it.price === "number")          it.price = Math.round(it.price * rate);
-      if (typeof it.original_price === "number") it.original_price = Math.round(it.original_price * rate);
+      if (typeof it.price === "number")          it.price = roundPrice(Math.round(it.price * rate), roundMode);
+      if (typeof it.original_price === "number") it.original_price = roundPrice(Math.round(it.original_price * rate), roundMode);
     }
   }
   return { items, currency };
