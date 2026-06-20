@@ -83,10 +83,18 @@ export function createAdminFeedImport({ supabase, showToast }) {
               <option value="USD">USD → DKK</option>
               <option value="GBP">GBP → DKK</option>
             </select>
+            <select id="feed-round-select" title="Afrund omregnede priser til butikkens pris-mønster" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+              <option value="none">Afrunding: ingen</option>
+              <option value="99">Afrund til x99 (fx 4.699)</option>
+              <option value="95">Afrund til x95</option>
+              <option value="50">Afrund til nærmeste 50</option>
+              <option value="100">Afrund til nærmeste 100</option>
+            </select>
           </div>
           <p style="margin:0;color:var(--muted);font-size:0.78rem;line-height:1.4;">
-            💡 Shopify-feeds viser butikkens egen valuta. Lad stå på <strong>auto</strong> — så
-            registreres valutaen og priser omregnes til DKK. Vis forkerte priser? Vælg den rigtige valuta manuelt.
+            💡 Shopify-feeds viser butikkens egen valuta efter geo-IP. Lad stå på <strong>auto</strong>.
+            Hvis butikken kun har udenlandsk valuta (fx EUR), omregnes der til DKK — vælg da <strong>afrunding</strong>
+            der matcher butikkens priser (de fleste ender på x99), så fx 4.692 → 4.699. Afrunding rører kun omregnede priser.
           </p>
           <button id="feed-add-btn" style="background:var(--forest);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;justify-self:start;">+ Gem feed</button>
         </div>
@@ -155,11 +163,12 @@ export function createAdminFeedImport({ supabase, showToast }) {
     const format = document.getElementById('feed-format-select').value;
     const defaultType = document.getElementById('feed-deftype-select').value || null;
     const currency = document.getElementById('feed-currency-select').value || 'auto';
+    const priceRound = document.getElementById('feed-round-select').value || 'none';
     if (!userId) { showToast('⚠️ Vælg en forhandler'); return; }
     if (!/^https:\/\//.test(url)) { showToast('⚠️ Feed-URL skal starte med https://'); return; }
 
     const { error } = await supabase.from('dealer_feeds').insert({
-      user_id: userId, feed_url: url, format, default_type: defaultType, currency, active: true,
+      user_id: userId, feed_url: url, format, default_type: defaultType, currency, price_round: priceRound, active: true,
     });
     if (error) { showToast('❌ Kunne ikke gemme: ' + error.message); return; }
     showToast('✓ Feed gemt — klik "Test" for at se cyklerne');

@@ -110,6 +110,18 @@ const FX_TO_DKK: Record<string, number> = {
   DKK: 1, EUR: 7.46, SEK: 0.64, NOK: 0.64, USD: 6.90, GBP: 8.70, PLN: 1.70, CHF: 7.90,
 };
 
+// Afrund en FX-omregnet pris til butikkens pris-mønster, så fx 4.692 → 4.699.
+function roundPrice(n: number, mode: string): number {
+  if (!Number.isFinite(n) || n <= 0) return n;
+  switch (mode) {
+    case "99":  return Math.max(99, Math.round((n + 1) / 100) * 100 - 1);  // nærmeste x99
+    case "95":  return Math.max(95, Math.round((n - 95) / 100) * 100 + 95); // nærmeste x95
+    case "50":  return Math.round(n / 50) * 50;
+    case "100": return Math.round(n / 100) * 100;
+    default:    return n;                                                    // 'none'
+  }
+}
+
 // Læs valutaen for en given Shopify-base (rod eller markeds-subfolder) via
 // Ajax-API'et /cart.js. Returnerer "" hvis ukendt (så discovery kan gå videre).
 async function fetchCartCurrency(base: string, headers: Record<string, string>): Promise<string> {
@@ -133,6 +145,21 @@ async function shopHasProducts(productsUrl: string, headers: Record<string, stri
     const data = JSON.parse(await res.text());
     return Array.isArray(data?.products) && data.products.length > 0;
   } catch (_e) { return false; }
+}
+
+// Hent første produkts (højeste variant-)pris fra en products.json-URL. Bruges
+// til at se om ?country=DK får Shopify til at skifte til DKK-priser (prisen hopper).
+async function firstShopifyPrice(url: string, headers: Record<string, string>): Promise<number | null> {
+  try {
+    const res = await fetch(url, { headers });
+    if (!res.ok) return null;
+    const data = JSON.parse(await res.text());
+    const p = (Array.isArray(data?.products) ? data.products : [])[0];
+    if (!p) return null;
+    const prices = (Array.isArray(p.variants) ? p.variants : [])
+      .map((v: any) => parsePrice(v.price)).filter((n: any): n is number => n != null);
+    return prices.length ? Math.max(...prices) : null;
+  } catch (_e) { return null; }
 }
 
 // Læs Shopify Markets-subfolders fra <link rel="alternate" hreflang=...> på
@@ -485,6 +512,7 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
     ? String(feed.currency).toUpperCase()
     : "";
 
+  let extraQuery = "";  // fx "&country=DK" hvis Shopify honorerer det
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
     let base = feed.feed_url.split("?")[0].replace(/\/$/, "");
@@ -504,15 +532,29 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
           if (dk) base = `${origin}/${dk}/products.json`;
           currency = "DKK";
         } else {
-          // 3) Intet dansk marked tilgængeligt → detektér valuta til FX-omregning.
-          currency = (await fetchCartCurrency(origin, ua)) || "DKK";
+          // 3) Intet dansk marked-URL. Prøv at TVINGE DK via ?country=DK og se om
+          //    priserne hopper til DKK (~7× højere). Virker det → brug den EKSAKTE
+          //    DKK-værdi uden omregning. Ellers FX-omregning som sidste udvej.
+          const cur0 = (await fetchCartCurrency(origin, ua)) || "DKK";
+          if (cur0 !== "DKK") {
+            const pPlain = await firstShopifyPrice(`${base}?limit=1`, ua);
+            const pDk    = await firstShopifyPrice(`${base}?limit=1&country=DK`, ua);
+            if (pPlain && pDk && pDk / pPlain > 3) {
+              extraQuery = "&country=DK";
+              currency = "DKK";
+            } else {
+              currency = cur0;
+            }
+          } else {
+            currency = "DKK";
+          }
         }
       }
     }
 
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
-      const res = await fetch(`${base}?limit=250&page=${page}`, { headers: ua });
+      const res = await fetch(`${base}?limit=250&page=${page}${extraQuery}`, { headers: ua });
       if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
       const data = JSON.parse(await res.text());
       const prods = Array.isArray(data?.products) ? data.products : [];
@@ -530,13 +572,16 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
   }
 
   // Omregn til DKK hvis butikken sælger i anden valuta (gem rå pris til preview).
+  // FX rammer ikke butikkens "pæne" priser (4.692 vs 4.699) → valgfri afrunding
+  // til butikkens pris-mønster (kun på FX-omregnede priser, ikke eksakt DKK).
   const rate = FX_TO_DKK[currency] ?? 1;
+  const roundMode = String(feed.price_round || "none");
   for (const it of items) {
     it._currency = currency;
     if (rate !== 1) {
       it._rawPrice = it.price;
-      if (typeof it.price === "number")          it.price = Math.round(it.price * rate);
-      if (typeof it.original_price === "number") it.original_price = Math.round(it.original_price * rate);
+      if (typeof it.price === "number")          it.price = roundPrice(Math.round(it.price * rate), roundMode);
+      if (typeof it.original_price === "number") it.original_price = roundPrice(Math.round(it.original_price * rate), roundMode);
     }
   }
   return { items, currency };
