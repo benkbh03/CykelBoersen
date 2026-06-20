@@ -605,9 +605,11 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
       ? it._explicitType
       : inferType(it._typeHint, feed.default_type);
     const enriched = enrichFields(type, it.title || "", it._body || it.description || "", it._tags || "", it._variantText || "");
-    // Hjul under 26" = børnecykel (uanset hvad titlen ellers siger).
+    // Hjul under 26" = børnecykel — MEN ikke hvis titlen markerer en voksencykel
+    // (Herre/Dame/voksen), da fx en 24" herrecykel er til voksne, ikke børn.
     const ws = parseInt(String(enriched.wheel_size || ""), 10);
-    if (ws && ws < 26) type = "Børnecykel";
+    const adultHint = /\bherre\b|\bdame\b|\bmen'?s\b|\bwomen'?s\b|\bvoksen\b/i.test(it.title || "");
+    if (ws && ws < 26 && !adultHint) type = "Børnecykel";
     return {
       external_id: it.external_id,
       available:   !it.availability.includes("out"),
