@@ -314,7 +314,7 @@ function parseCsv(text: string): any[] {
 // ── Shopify: spring åbenlyst tilbehør over (ikke cykler) ────
 // Kun ord der entydigt er tilbehør/beklædning — IKKE ord der kan stå i en
 // cykel-titel (gear, lys, dæk, kæde, bremse osv. er bevidst udeladt).
-const ACCESSORY_RE = /(l(å|aa)s|lygte|cykelpumpe|\bpumpe\b|hjelm|bagageb(æ|ae)rer|\bkurv\b|sk(æ|ae)rm|cykelstativ|cykelcomputer|reservedel|tilbeh(ø|o)r|gavekort|reflek|ringeklokke|str(ø|o)mpe|t-?shirt|trøje|handske|drikkedunk|flaskeholder)/i;
+const ACCESSORY_RE = /(l(å|aa)s|lygte|cykelpumpe|\bpumpe\b|hjelm|bagageb(æ|ae)rer|\bkurv\b|sk(æ|ae)rm|cykelstativ|cykelcomputer|reservedel|tilbeh(ø|o)r|gavekort|reflek|ringeklokke|str(ø|o)mpe|t-?shirt|trøje|handske|drikkedunk|flaskeholder|sadelovertr(æ|ae)k|sadelbetr(æ|ae)k|\bovertr(æ|ae)k\b|\bsadel\b|\bsadler\b|sadelpind|frempind|\bgreb\b|h(å|aa)ndtag|\bpedal(er)?\b|\bslange\b|st(ø|o)tteben|kickstand|cykeltaske|sadeltaske|barnestol|cykelstol|cykelanh(æ|ae)nger)/i;
 function looksLikeAccessory(text: string): boolean {
   return ACCESSORY_RE.test(text || "");
 }
@@ -635,7 +635,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
   if (preview) {
     return {
       preview: true, total: built.length, currency,
-      items: built.slice(0, 50).map((b, i) => ({ ...b.bike, _rawPrice: items[i]?._rawPrice ?? null })),
+      items: built.slice(0, 500).map((b, i) => ({ ...b.bike, _rawPrice: items[i]?._rawPrice ?? null })),
     };
   }
 
