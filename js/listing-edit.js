@@ -314,6 +314,9 @@ export function createListingEdit({
       suspension:         document.getElementById('edit-suspension')?.value || null,
       geartype:           document.getElementById('edit-geartype')?.value || null,
       step_type:          document.getElementById('edit-step-type')?.value || null,
+      // Manuel redigering låser annoncen, så den natlige feed-sync ikke
+      // overskriver dine rettelser (kun pris opdateres for låste cykler).
+      feed_locked:        true,
     };
 
     if (!updates.brand || !updates.price || !updates.city) {

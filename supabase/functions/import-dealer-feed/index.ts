@@ -22,9 +22,9 @@
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY  (auto-sat)
 //   FEED_CRON_SECRET                         (vilkårlig hemmelig streng — samme som i cron-SQL)
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { XMLParser } from "https://esm.sh/fast-xml-parser@4";
+// Bruger Denos indbyggede Deno.serve (ingen ekstern std-afhængighed at bundle).
 
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -605,9 +605,11 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
       ? it._explicitType
       : inferType(it._typeHint, feed.default_type);
     const enriched = enrichFields(type, it.title || "", it._body || it.description || "", it._tags || "", it._variantText || "");
-    // Hjul under 26" = børnecykel (uanset hvad titlen ellers siger).
+    // Hjul under 26" = børnecykel — MEN ikke hvis titlen markerer en voksencykel
+    // (Herre/Dame/voksen), da fx en 24" herrecykel er til voksne, ikke børn.
     const ws = parseInt(String(enriched.wheel_size || ""), 10);
-    if (ws && ws < 26) type = "Børnecykel";
+    const adultHint = /\bherre\b|\bdame\b|\bmen'?s\b|\bwomen'?s\b|\bvoksen\b/i.test(it.title || "");
+    if (ws && ws < 26 && !adultHint) type = "Børnecykel";
     return {
       external_id: it.external_id,
       available:   !it.availability.includes("out"),
@@ -646,7 +648,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
     try {
       const { data: existing } = await supa
         .from("bikes")
-        .select("id")
+        .select("id, feed_locked")
         .eq("user_id", feed.user_id)
         .eq("external_id", row.external_id)
         .maybeSingle();
@@ -654,10 +656,18 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
       const payload: Record<string, unknown> = { ...row.bike, user_id: feed.user_id, is_active: true };
 
       if (existing?.id) {
-        payload.sold_at = null;
-        await supa.from("bikes").update(payload).eq("id", existing.id);
-        await supa.from("bike_images").delete().eq("bike_id", existing.id);
-        if (row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: existing.id })));
+        if (existing.feed_locked) {
+          // Manuelt redigeret/låst — opdatér KUN pris, bevar type/specs/billeder.
+          await supa.from("bikes").update({
+            price: row.bike.price,
+            original_price: row.bike.original_price,
+          }).eq("id", existing.id);
+        } else {
+          payload.sold_at = null;
+          await supa.from("bikes").update(payload).eq("id", existing.id);
+          await supa.from("bike_images").delete().eq("bike_id", existing.id);
+          if (row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: existing.id })));
+        }
         updated++;
       } else {
         const { data: nb } = await supa.from("bikes").insert(payload).select("id").single();
@@ -684,7 +694,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
   return { created, updated, failed, deactivated, total: built.length, currency };
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST")    return json({ error: "Method not allowed" }, 405);
 
