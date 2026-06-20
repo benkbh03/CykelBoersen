@@ -648,7 +648,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
     try {
       const { data: existing } = await supa
         .from("bikes")
-        .select("id")
+        .select("id, feed_locked")
         .eq("user_id", feed.user_id)
         .eq("external_id", row.external_id)
         .maybeSingle();
@@ -656,10 +656,18 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
       const payload: Record<string, unknown> = { ...row.bike, user_id: feed.user_id, is_active: true };
 
       if (existing?.id) {
-        payload.sold_at = null;
-        await supa.from("bikes").update(payload).eq("id", existing.id);
-        await supa.from("bike_images").delete().eq("bike_id", existing.id);
-        if (row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: existing.id })));
+        if (existing.feed_locked) {
+          // Manuelt redigeret/låst — opdatér KUN pris, bevar type/specs/billeder.
+          await supa.from("bikes").update({
+            price: row.bike.price,
+            original_price: row.bike.original_price,
+          }).eq("id", existing.id);
+        } else {
+          payload.sold_at = null;
+          await supa.from("bikes").update(payload).eq("id", existing.id);
+          await supa.from("bike_images").delete().eq("bike_id", existing.id);
+          if (row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: existing.id })));
+        }
         updated++;
       } else {
         const { data: nb } = await supa.from("bikes").insert(payload).select("id").single();
