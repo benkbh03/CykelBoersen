@@ -714,7 +714,7 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { feed_id, preview } = body ?? {};
+    const { feed_id, preview, action } = body ?? {};
 
     // ── Run-all (cron) ──────────────────────────────────────
     if (!feed_id) {
@@ -737,6 +737,19 @@ serve(async (req) => {
     // ── Single feed (admin: test/preview eller sync nu) ─────
     const { data: feed } = await supa.from("dealer_feeds").select("*").eq("id", feed_id).single();
     if (!feed) return json({ error: "Feed ikke fundet" }, 404);
+
+    // ── Fjern: deaktivér ALLE feed-importerede cykler for forhandleren ──
+    // (kun dem med external_id — manuelt oprettede annoncer røres ikke).
+    if (action === "remove") {
+      const { data, error } = await supa.from("bikes")
+        .update({ is_active: false })
+        .eq("user_id", feed.user_id)
+        .eq("is_active", true)
+        .not("external_id", "is", null)
+        .select("id");
+      if (error) return json({ error: "Kunne ikke fjerne cykler" }, 500);
+      return json({ ok: true, removed: (data || []).length });
+    }
 
     try {
       const result = await syncFeed(supa, feed, !!preview);
