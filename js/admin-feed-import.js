@@ -138,6 +138,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
               <button data-act="test" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🔍 Test</button>
               <button data-act="sync" data-id="${esc(f.id)}" style="background:var(--rust);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">🔄 Synkronisér nu</button>
+              <button data-act="remove" data-id="${esc(f.id)}" title="Skjul alle cykler importeret fra dette feed" style="background:none;border:1px solid #c8302a;color:#c8302a;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🗑️ Fjern cykler</button>
               <button data-act="toggle" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">${f.active ? 'Deaktivér' : 'Aktivér'}</button>
               <button data-act="delete" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);color:#c8302a;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">Slet</button>
             </div>
@@ -151,10 +152,32 @@ export function createAdminFeedImport({ supabase, showToast }) {
         const act = btn.dataset.act;
         if (act === 'test') testFeed(id, btn);
         else if (act === 'sync') syncFeed(id, btn);
+        else if (act === 'remove') removeFeedBikes(id, btn);
         else if (act === 'toggle') toggleFeed(id);
         else if (act === 'delete') deleteFeed(id);
       };
     });
+  }
+
+  async function removeFeedBikes(id, btn) {
+    if (!confirm('Fjern (skjul) ALLE cykler importeret fra dette feed?\n\nDe deaktiveres — manuelt oprettede annoncer røres ikke. Du kan altid synkronisere dem ind igen.')) return;
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Fjerner…';
+    try {
+      const { data, error } = await supabase.functions.invoke('import-dealer-feed', {
+        body: { feed_id: id, action: 'remove' },
+      });
+      if (error) {
+        let msg = 'Kunne ikke fjerne'; try { msg = (await error.context.json()).error || msg; } catch {}
+        throw new Error(msg);
+      }
+      if (data.error) throw new Error(data.error);
+      showToast(`✓ ${data.removed} cykler fjernet (deaktiveret)`);
+    } catch (e) {
+      showToast('❌ ' + (e.message || 'Kunne ikke fjerne'));
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
   }
 
   async function addFeed() {
