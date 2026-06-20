@@ -578,6 +578,23 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
     if (!currency) currency = "DKK";   // XML/CSV antages i DKK medmindre admin vælger andet
   }
 
+  // ── Valuta-reconciliation via pris-magnitude (robust mod geo-flakiness) ──
+  // Geo-routing kan give cart.js=DKK men EUR-priser i SAMME kald, så cart.js er
+  // upålidelig. Pris-magnituden er det eneste pålidelige signal: nye cykler
+  // koster ikke under ~1.800 kr. Er medianprisen for lav, er feedet i fremmed
+  // valuta — uanset cart.js. (Admin kan sætte valuta manuelt for at overstyre.)
+  {
+    const manual = feed.currency && String(feed.currency).toLowerCase() !== "auto"
+      ? String(feed.currency).toUpperCase() : "";
+    const sorted = items.map((it: any) => it.price)
+      .filter((n: any): n is number => typeof n === "number" && n > 0)
+      .sort((a: number, b: number) => a - b);
+    const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
+    if (manual === "DKK") currency = "DKK";
+    else if (median > 0 && median < 1800) currency = manual || (currency && currency !== "DKK" ? currency : "EUR");
+    else if (median >= 1800) currency = "DKK";
+  }
+
   // Omregn til DKK hvis butikken sælger i anden valuta (gem rå pris til preview).
   // FX rammer ikke butikkens "pæne" priser (4.692 vs 4.699) → valgfri afrunding
   // til butikkens pris-mønster (kun på FX-omregnede priser, ikke eksakt DKK).
