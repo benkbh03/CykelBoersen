@@ -294,6 +294,11 @@ export function createProfilePage({
       showProfileData();
       updateNavAvatar(updates.name, getCurrentProfile().avatar_url);
       showToast('✅ Profil opdateret!');
+      // Er brugeren på "Min konto"-siden, så gen-render den, så profil-
+      // komplethedskortet ("Om mig udfyldt" osv.) opdateres/forsvinder straks.
+      if (location.pathname === '/me' && typeof window.renderMyProfilePage === 'function') {
+        window.renderMyProfilePage();
+      }
     } finally { restore(); }
   }
 
