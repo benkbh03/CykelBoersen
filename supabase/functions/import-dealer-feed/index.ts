@@ -147,6 +147,21 @@ async function shopHasProducts(productsUrl: string, headers: Record<string, stri
   } catch (_e) { return false; }
 }
 
+// Hent første produkts (højeste variant-)pris fra en products.json-URL. Bruges
+// til at se om ?country=DK får Shopify til at skifte til DKK-priser (prisen hopper).
+async function firstShopifyPrice(url: string, headers: Record<string, string>): Promise<number | null> {
+  try {
+    const res = await fetch(url, { headers });
+    if (!res.ok) return null;
+    const data = JSON.parse(await res.text());
+    const p = (Array.isArray(data?.products) ? data.products : [])[0];
+    if (!p) return null;
+    const prices = (Array.isArray(p.variants) ? p.variants : [])
+      .map((v: any) => parsePrice(v.price)).filter((n: any): n is number => n != null);
+    return prices.length ? Math.max(...prices) : null;
+  } catch (_e) { return null; }
+}
+
 // Læs Shopify Markets-subfolders fra <link rel="alternate" hreflang=...> på
 // forsiden. Shopify udsender én pr. marked (fx href=".../en-dk/"), så vi finder
 // den faktiske danske sti i stedet for at gætte. Returnerer fx "en-dk" eller null.
@@ -497,6 +512,7 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
     ? String(feed.currency).toUpperCase()
     : "";
 
+  let extraQuery = "";  // fx "&country=DK" hvis Shopify honorerer det
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
     let base = feed.feed_url.split("?")[0].replace(/\/$/, "");
@@ -516,15 +532,29 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
           if (dk) base = `${origin}/${dk}/products.json`;
           currency = "DKK";
         } else {
-          // 3) Intet dansk marked tilgængeligt → detektér valuta til FX-omregning.
-          currency = (await fetchCartCurrency(origin, ua)) || "DKK";
+          // 3) Intet dansk marked-URL. Prøv at TVINGE DK via ?country=DK og se om
+          //    priserne hopper til DKK (~7× højere). Virker det → brug den EKSAKTE
+          //    DKK-værdi uden omregning. Ellers FX-omregning som sidste udvej.
+          const cur0 = (await fetchCartCurrency(origin, ua)) || "DKK";
+          if (cur0 !== "DKK") {
+            const pPlain = await firstShopifyPrice(`${base}?limit=1`, ua);
+            const pDk    = await firstShopifyPrice(`${base}?limit=1&country=DK`, ua);
+            if (pPlain && pDk && pDk / pPlain > 3) {
+              extraQuery = "&country=DK";
+              currency = "DKK";
+            } else {
+              currency = cur0;
+            }
+          } else {
+            currency = "DKK";
+          }
         }
       }
     }
 
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
-      const res = await fetch(`${base}?limit=250&page=${page}`, { headers: ua });
+      const res = await fetch(`${base}?limit=250&page=${page}${extraQuery}`, { headers: ua });
       if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
       const data = JSON.parse(await res.text());
       const prods = Array.isArray(data?.products) ? data.products : [];
