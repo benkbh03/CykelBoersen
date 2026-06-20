@@ -22,9 +22,9 @@
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY  (auto-sat)
 //   FEED_CRON_SECRET                         (vilkårlig hemmelig streng — samme som i cron-SQL)
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { XMLParser } from "https://esm.sh/fast-xml-parser@4";
+// Bruger Denos indbyggede Deno.serve (ingen ekstern std-afhængighed at bundle).
 
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -694,7 +694,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
   return { created, updated, failed, deactivated, total: built.length, currency };
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST")    return json({ error: "Method not allowed" }, 405);
 
