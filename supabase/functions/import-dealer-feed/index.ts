@@ -135,13 +135,47 @@ async function shopHasProducts(productsUrl: string, headers: Record<string, stri
   } catch (_e) { return false; }
 }
 
+// Læs Shopify Markets-subfolders fra <link rel="alternate" hreflang=...> på
+// forsiden. Shopify udsender én pr. marked (fx href=".../en-dk/"), så vi finder
+// den faktiske danske sti i stedet for at gætte. Returnerer fx "en-dk" eller null.
+async function findDkMarketFromHreflang(origin: string, headers: Record<string, string>): Promise<string | null> {
+  try {
+    const res = await fetch(`${origin}/`, { headers });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const hrefs = new Set<string>();
+    const re = /<link\b[^>]*rel=["']alternate["'][^>]*>/gi;
+    let tag: RegExpExecArray | null;
+    while ((tag = re.exec(html))) {
+      const lang = (tag[0].match(/hreflang=["']([^"']+)["']/i) || [])[1] || "";
+      const href = (tag[0].match(/href=["']([^"']+)["']/i) || [])[1] || "";
+      if (href && /(-dk|^da)/i.test(lang)) hrefs.add(href);  // dansk marked / DK-land
+    }
+    for (const href of hrefs) {
+      try {
+        const u = new URL(href, origin);
+        if (u.origin !== origin) continue;
+        const prefix = u.pathname.replace(/^\/+|\/+$/g, "");   // "en-dk" (tom = rod = geo, springes over)
+        if (!prefix) continue;
+        if (await fetchCartCurrency(`${origin}/${prefix}`, headers) === "DKK"
+            && await shopHasProducts(`${origin}/${prefix}/products.json`, headers)) {
+          return prefix;
+        }
+      } catch (_e) { /* ignorér ugyldig href */ }
+    }
+  } catch (_e) { /* forside utilgængelig */ }
+  return null;
+}
+
 // Find en Shopify Markets-subfolder der serverer DKK, så vi får butikkens
 // EKSAKTE danske priser (fx 4.699 kr) frem for en omtrentlig FX-omregning.
 // Returnerer: "" = roden er allerede DKK · "en-dk" o.l. = brug den subfolder ·
 // null = ingen DKK-markedssti fundet (→ FX-omregning som fallback).
-const DK_MARKET_PREFIXES = ["en-dk", "da-dk", "da", "dk"];
+const DK_MARKET_PREFIXES = ["en-dk", "da-dk", "da", "dk", "dk-da", "en-da"];
 async function findDkkMarket(origin: string, headers: Record<string, string>): Promise<string | null> {
   if (await fetchCartCurrency(origin, headers) === "DKK") return "";
+  const viaHreflang = await findDkMarketFromHreflang(origin, headers);
+  if (viaHreflang) return viaHreflang;
   for (const p of DK_MARKET_PREFIXES) {
     if (await fetchCartCurrency(`${origin}/${p}`, headers) === "DKK"
         && await shopHasProducts(`${origin}/${p}/products.json`, headers)) {
@@ -340,11 +374,25 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   // Komponentgruppe
   for (const g of _GROUPSETS) { if (new RegExp(escapeRe(g), "i").test(spec)) { out.groupset = g; break; } }
 
-  // Bremsetype
-  if (/hydraulisk[a-zæøå]*\s*skivebrems|hydraulic\s*disc/i.test(spec)) out.brake_type = "Skivebremser hydrauliske";
-  else if (/mekanisk[a-zæøå]*\s*skivebrems|mechanical\s*disc/i.test(spec)) out.brake_type = "Skivebremser mekaniske";
-  else if (/f(æ|ae)lgbrems|rim\s*brake|caliper/i.test(spec)) out.brake_type = "Fælgbremser";
-  else if (/tromlebrems|roller\s*brake|drum\s*brake|fodbrems|coaster/i.test(spec)) out.brake_type = "Tromlebremser";
+  // Bremsetype — sæt KUN når der er ÉN entydig type i teksten. Klassiske
+  // bycykler har ofte BÅDE en fodbremse (coaster) og en fælgbremse, så vi
+  // gætter IKKE ud fra "fodbremse" alene (det gav forkert "Tromlebremser").
+  {
+    const hasDisc = /skivebrems|disc\s*brake/i.test(spec);
+    const hasRim  = /f(æ|ae)lgbrems|v-?brems|rim\s*brake|caliper|stempelbrems/i.test(spec);
+    const hasDrum = /tromlebrems|rullebrems|roller\s*brake|drum\s*brake/i.test(spec);
+    if ((hasDisc ? 1 : 0) + (hasRim ? 1 : 0) + (hasDrum ? 1 : 0) === 1) {
+      if (hasDisc) {
+        if (/hydraulisk/i.test(spec)) out.brake_type = "Skivebremser hydrauliske";
+        else if (/mekanisk/i.test(spec)) out.brake_type = "Skivebremser mekaniske";
+        // generisk "skivebremser" uden hydraulisk/mekanisk → lad stå tomt
+      } else if (hasRim) {
+        out.brake_type = "Fælgbremser";
+      } else {
+        out.brake_type = "Tromlebremser";
+      }
+    }
+  }
 
   // Vægt
   const gm = spec.match(/\b(\d{1,2}(?:[.,]\d)?)\s*kg\b/i);
@@ -440,16 +488,25 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
     let base = feed.feed_url.split("?")[0].replace(/\/$/, "");
+    // Markeds-kontekst fra selve feed-URL'en (fx hvis admin har indsat /en-dk/products.json).
+    let feedDir = "";
+    try { feedDir = new URL(feed.feed_url).pathname.replace(/\/products\.json.*$/i, "").replace(/\/+$/, ""); } catch (_e) {}
 
-    // Auto (ingen manuel valuta): find en DKK-markeds-subfolder så vi henter
-    // butikkens eksakte danske priser. Ellers detektér feedets valuta og FX-omregn.
     if (!currency) {
-      const dk = await findDkkMarket(origin, ua);
-      if (dk !== null) {
-        if (dk) base = `${origin}/${dk}/products.json`;
+      // 1) Er feed-URL'ens egen markeds-kontekst allerede DKK? (respekterer en
+      //    manuelt indsat /en-dk-sti, så vi IKKE FX-omregner allerede-DKK-priser).
+      if (await fetchCartCurrency(`${origin}${feedDir}`, ua) === "DKK") {
         currency = "DKK";
       } else {
-        currency = (await fetchCartCurrency(origin, ua)) || "DKK";
+        // 2) Find en DKK-markeds-subfolder → butikkens EKSAKTE danske priser.
+        const dk = await findDkkMarket(origin, ua);
+        if (dk !== null) {
+          if (dk) base = `${origin}/${dk}/products.json`;
+          currency = "DKK";
+        } else {
+          // 3) Intet dansk marked tilgængeligt → detektér valuta til FX-omregning.
+          currency = (await fetchCartCurrency(origin, ua)) || "DKK";
+        }
       }
     }
 

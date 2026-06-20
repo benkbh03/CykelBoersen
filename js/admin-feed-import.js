@@ -203,10 +203,10 @@ export function createAdminFeedImport({ supabase, showToast }) {
       section.innerHTML = `
         <div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--sand);">
           <h4 style="margin:0 0 4px;font-family:'Fraunces',serif;">Preview — ${data.total} cykler fundet${items.length < data.total ? ` (viser ${items.length})` : ''}</h4>
-          <p style="margin:0 0 10px;font-size:0.8rem;color:${converted ? '#2e7d32' : 'var(--muted)'};">
+          <p style="margin:0 0 10px;font-size:0.8rem;color:${converted ? '#b8860b' : '#2e7d32'};">
             ${converted
-              ? `💱 Butikkens valuta: <strong>${esc(cur)}</strong> — priser omregnet til DKK.`
-              : `Priser i DKK.`}
+              ? `⚠️ Butikkens valuta er <strong>${esc(cur)}</strong> — priser er <strong>ca.-omregnet</strong> til DKK (ikke butikkens eksakte danske priser). For præcise priser: brug butikkens danske markeds-URL, fx <code>…/en-dk/products.json</code>.`
+              : `✓ Priser i DKK — butikkens eksakte priser.`}
           </p>
           <div style="max-height:340px;overflow:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
