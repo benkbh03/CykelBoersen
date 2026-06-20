@@ -523,41 +523,11 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
   if (feed.format === "shopify_json") {
     const origin = originOf(feed.feed_url);
     let base = feed.feed_url.split("?")[0].replace(/\/$/, "");
-    // Markeds-kontekst fra selve feed-URL'en (fx hvis admin har indsat /en-dk/products.json).
-    let feedDir = "";
-    try { feedDir = new URL(feed.feed_url).pathname.replace(/\/products\.json.*$/i, "").replace(/\/+$/, ""); } catch (_e) {}
-
-    if (!currency) {
-      // 1) Er feed-URL'ens egen markeds-kontekst allerede DKK? (respekterer en
-      //    manuelt indsat /en-dk-sti, så vi IKKE FX-omregner allerede-DKK-priser).
-      if (await fetchCartCurrency(`${origin}${feedDir}`, ua) === "DKK") {
-        currency = "DKK";
-      } else {
-        // 2) Find en DKK-markeds-subfolder → butikkens EKSAKTE danske priser.
-        const dk = await findDkkMarket(origin, ua);
-        if (dk !== null) {
-          if (dk) base = `${origin}/${dk}/products.json`;
-          currency = "DKK";
-        } else {
-          // 3) Intet dansk marked-URL. Prøv at TVINGE DK via ?country=DK og se om
-          //    priserne hopper til DKK (~7× højere). Virker det → brug den EKSAKTE
-          //    DKK-værdi uden omregning. Ellers FX-omregning som sidste udvej.
-          const cur0 = (await fetchCartCurrency(origin, ua)) || "DKK";
-          if (cur0 !== "DKK") {
-            const pPlain = await firstShopifyPrice(`${base}?limit=1`, ua);
-            const pDk    = await firstShopifyPrice(`${base}?limit=1&country=DK`, ua);
-            if (pPlain && pDk && pDk / pPlain > 3) {
-              extraQuery = "&country=DK";
-              currency = "DKK";
-            } else {
-              currency = cur0;
-            }
-          } else {
-            currency = "DKK";
-          }
-        }
-      }
-    }
+    // Tving det danske marked, så Shopify så vidt muligt serverer DKK-priser
+    // DIREKTE — så importerer vi den EKSAKTE værdi uden omregning/afrunding.
+    // Virker det ikke (priserne forbliver fremmede), FX-omregner magnitude-
+    // tjekket nedenfor som nødfald. Manuel valuta springer country=DK over.
+    if (!currency) extraQuery = "&country=DK";
 
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
@@ -576,6 +546,23 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
     const raw = await res.text();
     items = feed.format === "csv" ? parseCsv(raw) : parseGoogleXml(raw);
     if (!currency) currency = "DKK";   // XML/CSV antages i DKK medmindre admin vælger andet
+  }
+
+  // ── Valuta-reconciliation via pris-magnitude (robust mod geo-flakiness) ──
+  // Geo-routing kan give cart.js=DKK men EUR-priser i SAMME kald, så cart.js er
+  // upålidelig. Pris-magnituden er det eneste pålidelige signal: nye cykler
+  // koster ikke under ~1.800 kr. Er medianprisen for lav, er feedet i fremmed
+  // valuta — uanset cart.js. (Admin kan sætte valuta manuelt for at overstyre.)
+  {
+    const manual = feed.currency && String(feed.currency).toLowerCase() !== "auto"
+      ? String(feed.currency).toUpperCase() : "";
+    const sorted = items.map((it: any) => it.price)
+      .filter((n: any): n is number => typeof n === "number" && n > 0)
+      .sort((a: number, b: number) => a - b);
+    const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
+    if (manual === "DKK") currency = "DKK";
+    else if (median > 0 && median < 1800) currency = manual || (currency && currency !== "DKK" ? currency : "EUR");
+    else if (median >= 1800) currency = "DKK";
   }
 
   // Omregn til DKK hvis butikken sælger i anden valuta (gem rå pris til preview).
