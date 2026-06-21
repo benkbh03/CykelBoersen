@@ -695,7 +695,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
     try {
       const { data: existing } = await supa
         .from("bikes")
-        .select("id, feed_locked")
+        .select("id, feed_locked, is_active, sold_at")
         .eq("user_id", feed.user_id)
         .eq("external_id", row.external_id)
         .maybeSingle();
@@ -707,10 +707,18 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
       if (existing?.id) {
         if (existing.feed_locked) {
           // Manuelt redigeret/låst — opdatér KUN pris, bevar type/specs/billeder.
-          await supa.from("bikes").update({
+          const upd: Record<string, unknown> = {
             price: row.bike.price,
             original_price: row.bike.original_price,
-          }).eq("id", existing.id);
+          };
+          // Tilbage på lager: en låst cykel der var UDSOLGT (sold_at sat) gen-
+          // aktiveres, så den kommer på siden igen. Kladde-skjulte (sold_at=null)
+          // røres IKKE — de er ikke udsolgt, bare ikke udgivet endnu.
+          if (!draft && existing.is_active === false && existing.sold_at) {
+            upd.is_active = true;
+            upd.sold_at = null;
+          }
+          await supa.from("bikes").update(upd).eq("id", existing.id);
         } else {
           payload.sold_at = null;
           // is_active er sat ovenfor (draft ? false : true). Ved kladde-import
