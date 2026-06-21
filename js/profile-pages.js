@@ -58,7 +58,10 @@ export function createProfilePages({
     const dataPromise = Promise.all([
       safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio, opening_hours, website, facebook, instagram, services').eq('id', userId).single()),
       safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
-      safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
+      // "Solgt" = RIGTIGT solgt (sold_via sat af "Sæt solgt") — ikke bare inaktiv.
+      // Skjulte/deaktiverede cykler (sold_via=NULL, fx feed-backup) skal IKKE vises
+      // som solgt; de er bare ude af visning.
+      safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).not('sold_via', 'is', null).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
     ]);
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000));
