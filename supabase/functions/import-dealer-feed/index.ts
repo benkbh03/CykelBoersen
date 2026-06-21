@@ -712,7 +712,9 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
           }).eq("id", existing.id);
         } else {
           payload.sold_at = null;
-          if (draft) delete payload.is_active;  // bevar nuværende synlighed ved kladde-opdatering
+          // is_active er sat ovenfor (draft ? false : true). Ved kladde-import
+          // SKJULER vi derfor også eksisterende cykler (tager dem midlertidigt
+          // offline), så hele kataloget kan gennemgås før det udgives igen.
           await supa.from("bikes").update(payload).eq("id", existing.id);
           await supa.from("bike_images").delete().eq("bike_id", existing.id);
           if (row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: existing.id })));
