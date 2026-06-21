@@ -383,11 +383,11 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   const colors = extractColors(name);
   if (colors.length) { out.colors = colors; out.color = colors.join(", "); }
 
-  // Stelmateriale
-  if (/\b(carbon|kulfiber)\b/i.test(spec)) out.frame_material = "Carbon";
-  else if (/\b(titanium|titan)\b/i.test(spec)) out.frame_material = "Titanium";
-  else if (/\b(aluminium|alu|alloy|alu\.)\b/i.test(spec)) out.frame_material = "Aluminium";
-  else if (/\b(st(å|aa)l|steel|cr-?mo|chromoly|cromoly)\b/i.test(spec)) out.frame_material = "Stål";
+  // Stelmateriale udfyldes IKKE automatisk: keyword-match fangede ord som
+  // "alufælge" eller "stålgaffel" i beskrivelsen og troede det var stellet, så
+  // herre/dame-varianter fik forskellige (forkerte) materialer. Admin udfylder
+  // materiale manuelt. (frame_material sættes til null i payloadet, så et
+  // gammelt forkert auto-materiale ryddes ved næste sync på ulåste cykler.)
 
   // Hjulstørrelse: et bart tomme-tal i titlen er TVETYDIGT — det kan være HJUL
   // eller STEL. Gammeldags herre-/damecykler måles i tommer-stel (fx "Raleigh
@@ -672,6 +672,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
         description:  it.description || "",
         external_url: it.external_url,
         ...enriched,                                               // year, colors, motor, groupset, …
+        frame_material: null,                                      // udfyldes manuelt — ryd evt. gammelt auto-materiale
       },
       images: it.images.map((url: string, idx: number) => ({ url, is_primary: idx === 0 })),
     };
