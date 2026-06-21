@@ -1113,7 +1113,7 @@ async function init() {
     history.replaceState(null, '', window.location.pathname);
     openAdminPanel();
     const validTabs = ['applications', 'users', 'id'];
-    const tabMap    = { dealers: 'applications', forhandlere: 'applications' };
+    const tabMap    = { dealers: 'applications', forhandlere: 'applications', feed: 'feed-import' };
     const target    = tabMap[adminTab] || (validTabs.includes(adminTab) ? adminTab : 'applications');
     setTimeout(() => switchAdminTab(target), 100);
   }

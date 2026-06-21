@@ -538,6 +538,42 @@ function feedErr(status: number): string {
   return `Feed svarede ${status}`;
 }
 
+// ── Mail til admin når en forhandler har lagt NYE cykler op ──────────────
+// Bruger samme Resend-secrets som notify-message (project-wide i Supabase):
+// RESEND_API_KEY, EMAIL_FROM, ADMIN_EMAIL. Sender intet hvis de ikke er sat.
+const _RESEND_KEY  = Deno.env.get("RESEND_API_KEY") ?? "";
+const _EMAIL_FROM  = Deno.env.get("EMAIL_FROM") ?? "Cykelbørsen <onboarding@resend.dev>";
+const _ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "";
+
+function _escHtml(s: string): string {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+}
+
+async function notifyAdminNewBikes(dealer: string, count: number, titles: string[]): Promise<void> {
+  if (!_RESEND_KEY || !_ADMIN_EMAIL) return;   // ingen mail konfigureret → skip
+  const plural = count === 1 ? "" : "er";
+  const list = titles.slice(0, 15).map((t) => `<li>${_escHtml(t)}</li>`).join("");
+  const more = count > 15 ? `<li>… og ${count - 15} flere</li>` : "";
+  const html = `
+    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1a1a18;">
+      <h2 style="color:#2a4d3a;">🚲 ${_escHtml(dealer)} har lagt ${count} ny${plural} cykel${plural} op</h2>
+      <p>De er importeret fra forhandlerens feed og afventer din gennemgang. Ret det der mangler, og lås dem (🔒) så de ikke ændrer sig igen.</p>
+      <ul>${list}${more}</ul>
+      <p><a href="https://xn--cykelbrsen-5cb.dk/?admin=feed" style="display:inline-block;background:#2a4d3a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Åbn Feed-sync → Gennemgå</a></p>
+      <p style="color:#888;font-size:0.85rem;">Du modtager denne mail fordi du er admin på Cykelbørsen.</p>
+    </div>`;
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${_RESEND_KEY}` },
+    body: JSON.stringify({
+      from: _EMAIL_FROM,
+      to: _ADMIN_EMAIL,
+      subject: `🚲 ${dealer} har lagt ${count} ny${plural} cykel${plural} op – gennemgå dem`,
+      html,
+    }),
+  });
+}
+
 // ── Hent + parse feed (håndterer Shopify-paginering) ────────
 async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }> {
   // Mange webshops (Cloudflare/WAF) blokerer bot-agtige User-Agents fra
@@ -624,10 +660,11 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
   // Forhandler-profil (city-fallback + samtykke-tjek). Ved test-preview uden
   // forhandler (test_url) springes tjekket over — preview skriver alligevel intet.
   let profileCity = "Danmark";
+  let dealerName = "Forhandler";
   if (feed.user_id) {
     const { data: profile } = await supa
       .from("profiles")
-      .select("id, city, seller_type, admin_can_create_listings")
+      .select("id, city, seller_type, shop_name, name, admin_can_create_listings")
       .eq("id", feed.user_id)
       .single();
     if (!preview) {
@@ -635,6 +672,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
       if (!profile.admin_can_create_listings) throw new Error("Forhandler har ikke aktiveret onboarding-samtykke");
     }
     if (profile?.city) profileCity = profile.city;
+    dealerName = profile?.shop_name || profile?.name || dealerName;
   } else if (!preview) {
     throw new Error("Forhandler påkrævet for synkronisering");
   }
@@ -688,6 +726,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
   // Upsert hver vare (kun in-stock; out_of_stock håndteres af reconcile)
   let created = 0, updated = 0, failed = 0;
   const seenIds: string[] = [];
+  const createdTitles: string[] = [];   // til "nye cykler"-mail til admin
 
   for (const row of built) {
     if (!row.available) continue;  // udsolgt — lad reconcile deaktivere
@@ -733,6 +772,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
         const { data: nb } = await supa.from("bikes").insert(payload).select("id").single();
         if (nb?.id && row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: nb.id })));
         created++;
+        createdTitles.push(String(row.bike.title || row.bike.brand || "Cykel"));
       }
     } catch (_e) { failed++; }
   }
@@ -751,6 +791,12 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
     last_count:       created + updated,
     last_deactivated: deactivated,
   }).eq("id", feed.id);
+
+  // Mail til admin når forhandleren har lagt NYE cykler op (kun rigtige syncs).
+  // Fire-and-forget — må aldrig vælte selve synket.
+  if (!preview && !draft && created > 0) {
+    notifyAdminNewBikes(dealerName, created, createdTitles).catch(() => {});
+  }
 
   return { created, updated, failed, deactivated, total: built.length, currency };
 }
