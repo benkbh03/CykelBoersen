@@ -381,17 +381,29 @@ export function createAdminFeedImport({ supabase, showToast }) {
       return;
     }
     const hiddenCount = bikes.filter(b => !b.is_active).length;
-    const rows = bikes.map(b => {
+    // "Ny" = oprettet inden for 7 dage (forhandleren har lige lagt den i feedet).
+    const NEW_MS = 7 * 24 * 60 * 60 * 1000;
+    const isNew = b => b.created_at && (Date.now() - new Date(b.created_at).getTime()) < NEW_MS;
+    const unlockedCount = bikes.filter(b => !b.feed_locked).length;
+    const newCount = bikes.filter(b => !b.feed_locked && isNew(b)).length;
+    // Sortér så det der mangler din opmærksomhed ligger øverst: ulåste først
+    // (nyeste først), derefter de låste (gennemgåede).
+    const sorted = bikes.slice().sort((a, b) => {
+      if (!!a.feed_locked !== !!b.feed_locked) return a.feed_locked ? 1 : -1;
+      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
+    const rows = sorted.map(b => {
       const specs = feedBikeSpecs(b);
       const specHtml = specs.length
         ? specs.map(s => `<span style="display:inline-block;background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin:2px 3px 0 0;font-size:0.72rem;">${s}</span>`).join('')
         : '<span style="color:#c8302a;font-size:0.74rem;">⚠ ingen specs udfyldt — trænger til redigering</span>';
+      const newBadge = (!b.feed_locked && isNew(b)) ? ' <span title="Tilføjet inden for 7 dage" style="background:#fff3e0;color:#bf360c;border-radius:4px;padding:0 5px;font-size:0.66rem;font-weight:700;">🆕 NY</span>' : '';
       return `
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);${!b.feed_locked ? 'background:rgba(191,54,12,0.03);' : ''}">
         <div style="min-width:0;flex:1;">
           <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <span title="${b.is_active ? 'Live (synlig)' : 'Skjult'}">${b.is_active ? '🟢' : '⚪'}</span>
-            ${esc((b.brand || '') + ' ' + (b.model || ''))}${b.feed_locked ? ' <span title="Låst — sync rører kun pris" style="color:var(--forest);">🔒</span>' : ''}
+            ${esc((b.brand || '') + ' ' + (b.model || ''))}${b.feed_locked ? ' <span title="Låst — gennemgået, sync rører kun pris" style="color:var(--forest);">🔒</span>' : ''}${newBadge}
           </div>
           <div style="font-size:0.76rem;color:var(--muted);margin-top:1px;">${esc(b.type || '— ingen type')} · ${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}</div>
           <div style="margin-top:2px;">${specHtml}</div>
@@ -399,9 +411,13 @@ export function createAdminFeedImport({ supabase, showToast }) {
         <button onclick="openEditModal('${esc(b.id)}')" style="background:none;border:1px solid var(--border);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.78rem;white-space:nowrap;">✏️ Redigér</button>
       </div>`;
     }).join('');
+    const todoLine = unlockedCount
+      ? `<div style="font-size:0.78rem;color:#bf360c;margin-bottom:6px;">⚠ ${unlockedCount} ikke gennemgået (ikke låst)${newCount ? ` · heraf ${newCount} nye (7 dage)` : ''} — ret + lås dem</div>`
+      : `<div style="font-size:0.78rem;color:var(--forest);margin-bottom:6px;">✓ Alle gennemgået og låst</div>`;
     box.innerHTML = `
       <div style="background:var(--sand);border-radius:8px;padding:10px 12px;margin-top:8px;">
-        <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;">${bikes.length} feed-cykler (🟢 live · ⚪ skjult) — ret dem her, udgiv når du er klar</div>
+        <div style="font-size:0.82rem;font-weight:600;margin-bottom:3px;">${bikes.length} feed-cykler (🟢 live · ⚪ skjult · 🔒 låst)</div>
+        ${todoLine}
         <div style="max-height:340px;overflow-y:auto;">${rows}</div>
         <button id="feed-activate-${id}" style="margin-top:10px;width:100%;background:var(--forest);color:#fff;border:none;padding:9px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;">✅ Udgiv alle skjulte${hiddenCount ? ` (${hiddenCount})` : ''}</button>
       </div>`;
