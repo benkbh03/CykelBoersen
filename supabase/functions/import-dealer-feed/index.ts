@@ -398,11 +398,23 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   // om aldrig at gætte — manglende felt er bedre end forkert).
   if (/27[.,]5|650b/i.test(spec)) out.wheel_size = '27.5" / 650b';
   else {
-    const wm = spec.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)/i);
+    // Accepter både "24"", "24 tommer", "24 inch" OG sammenskrevet "24in".
+    const wm = spec.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)\b/i)
+            || spec.match(/\b(12|14|16|18|20|24|26|28|29)in\b/i);
     if (wm) {
       const inch = +wm[1];
-      const adultBike = /\bherre[a-zæøå]*\b|\bdame[a-zæøå]*\b|\bvoksen\b|\bmen'?s\b|\bwomen'?s\b/i.test(name);
-      if (inch >= 26 || !adultBike) out.wheel_size = `${inch}"`;
+      // 24" er TVETYDIGT: hjul på en børne-/juniorcykel ELLER tommer-stel på en
+      // voksen roadster (fx "Raleigh Herre 24"" = 24" stel med 28" hjul). Sæt
+      // derfor kun 24 som hjul når der er et tydeligt børne-/junior-signal; ved
+      // voksen-signal eller helt uden signal gætter vi ikke. Øvrige mål er
+      // entydige (≤20 findes ikke som stel; 26"+ findes ikke som tvetydigt hjul).
+      if (inch === 24) {
+        const kidsBike  = /\bdreng[a-zæøå]*\b|\bpige[a-zæøå]*\b|\bjunior\b|\bb(ø|o)rn[a-zæøå]*\b|\bkids?\b|\byouth\b/i.test(name);
+        const adultBike = /\bherre[a-zæøå]*\b|\bdame[a-zæøå]*\b|\bvoksen\b|\bmen'?s\b|\bwomen'?s\b/i.test(name);
+        if (kidsBike && !adultBike) out.wheel_size = '24"';
+      } else {
+        out.wheel_size = `${inch}"`;
+      }
     }
   }
 
