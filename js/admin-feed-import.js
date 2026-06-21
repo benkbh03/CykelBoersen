@@ -100,6 +100,22 @@ export function createAdminFeedImport({ supabase, showToast }) {
         </div>
       </div>
 
+      <div class="bulk-import-step" style="margin-top:24px;">
+        <h3 style="margin:0 0 4px;font-family:'Fraunces',serif;">🔍 Test en vilkårlig butik</h3>
+        <p style="margin:0 0 10px;color:var(--muted);font-size:0.82rem;line-height:1.5;">
+          Indsæt enhver Shopify <code>products.json</code>-URL for at se hvordan den parses — <strong>skriver intet, kræver ingen forhandler</strong>. Perfekt til at tjekke en butik før du onboarder dem.
+        </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;max-width:560px;">
+          <input type="url" id="feed-test-url-input" placeholder="https://butik.dk/products.json" style="flex:1;min-width:220px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          <select id="feed-test-format-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            <option value="shopify_json">Shopify</option>
+            <option value="google_xml">Google XML</option>
+            <option value="csv">CSV</option>
+          </select>
+          <button id="feed-test-url-btn" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:10px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;">🔍 Test URL</button>
+        </div>
+      </div>
+
       <div class="bulk-import-step" style="margin-top:28px;">
         <h3 style="margin:0 0 12px;font-family:'Fraunces',serif;">Eksisterende feeds (${_feeds.length})</h3>
         <div id="feed-list"></div>
@@ -109,6 +125,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
     `;
 
     document.getElementById('feed-add-btn').onclick = addFeed;
+    document.getElementById('feed-test-url-btn').onclick = testArbitraryUrl;
     renderFeedList();
   }
 
@@ -198,13 +215,22 @@ export function createAdminFeedImport({ supabase, showToast }) {
     renderFeedList();
   }
 
-  async function testFeed(id, btn) {
+  function testFeed(id, btn) { return runPreview({ feed_id: id, preview: true }, btn); }
+
+  function testArbitraryUrl() {
+    const url = document.getElementById('feed-test-url-input').value.trim();
+    const format = document.getElementById('feed-test-format-select')?.value || 'shopify_json';
+    if (!/^https:\/\//.test(url)) { showToast('⚠️ URL skal starte med https://'); return; }
+    runPreview({ test_url: url, test_format: format, preview: true }, document.getElementById('feed-test-url-btn'));
+  }
+
+  async function runPreview(invokeBody, btn) {
     const orig = btn.textContent;
     btn.disabled = true; btn.textContent = 'Tester…';
     const section = document.getElementById('feed-preview-section');
     try {
       const { data, error } = await supabase.functions.invoke('import-dealer-feed', {
-        body: { feed_id: id, preview: true },
+        body: invokeBody,
       });
       if (error) {
         let msg = 'Test fejlede'; try { msg = (await error.context.json()).error || msg; } catch {}
