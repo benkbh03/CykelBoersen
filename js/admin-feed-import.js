@@ -323,6 +323,31 @@ export function createAdminFeedImport({ supabase, showToast }) {
     }
   }
 
+  // Kompakt liste over de specs en feed-cykel HAR udfyldt — så admin på et blik
+  // kan se om der mangler noget og om den trænger til redigering.
+  function feedBikeSpecs(b) {
+    const p = [];
+    if (b.color)                       p.push(esc(b.color));
+    if (b.wheel_size)                  p.push(esc(b.wheel_size));
+    if (b.size_cm)                     p.push(b.size_cm + ' cm');
+    else if (b.size)                   p.push(esc(b.size));
+    if (b.frame_material)              p.push(esc(b.frame_material));
+    if (b.groupset)                    p.push(esc(b.groupset));
+    if (b.brake_type)                  p.push(esc(b.brake_type));
+    if (b.electronic_shifting === true)  p.push('Elektronisk gear');
+    else if (b.electronic_shifting === false) p.push('Mekanisk gear');
+    if (b.geartype)                    p.push(esc(b.geartype) + ' gear');
+    if (b.motor)                       p.push('⚡ ' + esc(b.motor));
+    if (b.battery_wh)                  p.push(b.battery_wh + ' Wh');
+    if (b.suspension)                  p.push(esc(b.suspension));
+    if (b.step_type)                   p.push(esc(b.step_type));
+    if (b.weight_kg)                   p.push(Number(b.weight_kg).toFixed(1).replace('.', ',') + ' kg');
+    if (b.condition)                   p.push(esc(b.condition));
+    if (b.year)                        p.push(String(b.year));
+    if (b.warranty)                    p.push('🛡️ ' + esc(b.warranty));
+    return p;
+  }
+
   // Gennemgå skjulte (kladde) cykler fra et feed: liste med redigér-knapper +
   // "Aktivér alle". Vises under feed-kortet i en udklappelig boks.
   async function reviewFeedBikes(id, btn) {
@@ -346,17 +371,24 @@ export function createAdminFeedImport({ supabase, showToast }) {
       return;
     }
     const hiddenCount = bikes.filter(b => !b.is_active).length;
-    const rows = bikes.map(b => `
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
-        <div style="min-width:0;">
+    const rows = bikes.map(b => {
+      const specs = feedBikeSpecs(b);
+      const specHtml = specs.length
+        ? specs.map(s => `<span style="display:inline-block;background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin:2px 3px 0 0;font-size:0.72rem;">${s}</span>`).join('')
+        : '<span style="color:#c8302a;font-size:0.74rem;">⚠ ingen specs udfyldt — trænger til redigering</span>';
+      return `
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:0;flex:1;">
           <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <span title="${b.is_active ? 'Live (synlig)' : 'Skjult'}">${b.is_active ? '🟢' : '⚪'}</span>
             ${esc((b.brand || '') + ' ' + (b.model || ''))}${b.feed_locked ? ' <span title="Låst — sync rører kun pris" style="color:var(--forest);">🔒</span>' : ''}
           </div>
-          <div style="font-size:0.76rem;color:var(--muted);">${esc(b.type || '—')} · ${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}${b.wheel_size ? ' · ' + esc(b.wheel_size) : ''}</div>
+          <div style="font-size:0.76rem;color:var(--muted);margin-top:1px;">${esc(b.type || '— ingen type')} · ${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}</div>
+          <div style="margin-top:2px;">${specHtml}</div>
         </div>
         <button onclick="openEditModal('${esc(b.id)}')" style="background:none;border:1px solid var(--border);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.78rem;white-space:nowrap;">✏️ Redigér</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     box.innerHTML = `
       <div style="background:var(--sand);border-radius:8px;padding:10px 12px;margin-top:8px;">
         <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;">${bikes.length} feed-cykler (🟢 live · ⚪ skjult) — ret dem her, udgiv når du er klar</div>
