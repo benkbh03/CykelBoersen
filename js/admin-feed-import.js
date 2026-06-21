@@ -332,32 +332,36 @@ export function createAdminFeedImport({ supabase, showToast }) {
     if (!box) return;
     if (box.dataset.open === '1') { box.style.display = 'none'; box.dataset.open = '0'; return; }
     box.style.display = 'block'; box.dataset.open = '1';
-    box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Henter skjulte cykler…</p>';
-    const { data: bikes, error } = await supabase
-      .from('bikes')
-      .select('id, brand, model, type, price, wheel_size, is_active, feed_locked')
-      .eq('user_id', f.user_id)
-      .not('external_id', 'is', null)
-      .eq('is_active', false)
-      .order('created_at', { ascending: false });
-    if (error) { box.innerHTML = '<p style="color:#c8302a;font-size:0.85rem;">Kunne ikke hente cykler.</p>'; return; }
-    if (!bikes || bikes.length === 0) {
-      box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Ingen skjulte cykler. Brug "📥 Importér som kladde" for at lægge dem ind skjult først.</p>';
+    box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Henter cykler…</p>';
+    // SECURITY DEFINER RPC (omgår RLS, admin-tjek internt) — viser ALLE feed-
+    // cykler for forhandleren, både live og skjulte. Kræver SQL'en
+    // add_list_dealer_feed_bikes.sql.
+    const { data: bikes, error } = await supabase.rpc('list_dealer_feed_bikes', { p_user_id: f.user_id });
+    if (error) {
+      box.innerHTML = `<p style="color:#c8302a;font-size:0.85rem;">Kunne ikke hente cykler: ${esc(error.message || 'fejl')}. Har du kørt add_list_dealer_feed_bikes.sql?</p>`;
       return;
     }
+    if (!bikes || bikes.length === 0) {
+      box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Ingen feed-cykler fundet for denne forhandler endnu. Importér feedet først.</p>';
+      return;
+    }
+    const hiddenCount = bikes.filter(b => !b.is_active).length;
     const rows = bikes.map(b => `
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
         <div style="min-width:0;">
-          <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc((b.brand || '') + ' ' + (b.model || ''))}${b.feed_locked ? ' <span title="Låst — sync rører kun pris" style="color:var(--forest);">🔒</span>' : ''}</div>
-          <div style="font-size:0.76rem;color:var(--muted);">${esc(b.type || '—')} · ${b.price ? b.price.toLocaleString('da-DK') + ' kr' : '—'}${b.wheel_size ? ' · ' + esc(b.wheel_size) : ''}</div>
+          <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            <span title="${b.is_active ? 'Live (synlig)' : 'Skjult'}">${b.is_active ? '🟢' : '⚪'}</span>
+            ${esc((b.brand || '') + ' ' + (b.model || ''))}${b.feed_locked ? ' <span title="Låst — sync rører kun pris" style="color:var(--forest);">🔒</span>' : ''}
+          </div>
+          <div style="font-size:0.76rem;color:var(--muted);">${esc(b.type || '—')} · ${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : '—'}${b.wheel_size ? ' · ' + esc(b.wheel_size) : ''}</div>
         </div>
         <button onclick="openEditModal('${esc(b.id)}')" style="background:none;border:1px solid var(--border);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.78rem;white-space:nowrap;">✏️ Redigér</button>
       </div>`).join('');
     box.innerHTML = `
       <div style="background:var(--sand);border-radius:8px;padding:10px 12px;margin-top:8px;">
-        <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;">${bikes.length} skjulte cykler — ret dem her, udgiv når du er klar</div>
-        ${rows}
-        <button id="feed-activate-${id}" style="margin-top:10px;width:100%;background:var(--forest);color:#fff;border:none;padding:9px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;">✅ Udgiv alle ${bikes.length} cykler</button>
+        <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;">${bikes.length} feed-cykler (🟢 live · ⚪ skjult) — ret dem her, udgiv når du er klar</div>
+        <div style="max-height:340px;overflow-y:auto;">${rows}</div>
+        <button id="feed-activate-${id}" style="margin-top:10px;width:100%;background:var(--forest);color:#fff;border:none;padding:9px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;">✅ Udgiv alle skjulte${hiddenCount ? ` (${hiddenCount})` : ''}</button>
       </div>`;
     const actBtn = document.getElementById(`feed-activate-${id}`);
     if (actBtn) actBtn.onclick = () => activateFeedBikes(id, actBtn);
