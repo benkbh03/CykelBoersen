@@ -337,9 +337,10 @@ export function createBikesList({
       var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
       var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
       var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
-      // Forhandlere: skjul "sidst aktiv" (deres lager auto-synces nat for nat —
-      // login-tid er irrelevant og virker misvisende). Private: kun friskt (≤72t).
-      const lastSeenCard = sellerType === 'dealer' ? null : formatLastSeen(profile.last_seen, 72);
+      // Samme "sidst aktiv"-linje for private OG forhandlere, så kort-footeren
+      // (og divider-linjen) flugter ens. Kun friskt (≤72t); ellers reserveres
+      // linjen tom nedenfor, så højden er konsistent.
+      const lastSeenCard = formatLastSeen(profile.last_seen, 72);
       return `
         <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
           <div class="bike-card-img"${dataImgs}>
@@ -374,7 +375,7 @@ export function createBikesList({
                 </div>
                 <div class="card-seller-bottom">
                   <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
-                  ${lastSeenCard ? `<span class="card-last-seen">${lastSeenCard}</span>` : ''}
+                  <span class="card-last-seen">${lastSeenCard || '&nbsp;'}</span>
                 </div>
               </div>
             </div>
