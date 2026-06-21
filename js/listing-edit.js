@@ -29,6 +29,13 @@ export function createListingEdit({
   let editNewFiles     = [];  // { file, url, isPrimary }
   let editExistingImgs = [];  // { id, url, is_primary, toDelete }
 
+  // Admin-redigerer-anden-forhandlers-annonce kontekst. Når true gemmer vi
+  // bikes-rækken via SECURITY DEFINER-RPC'en admin_update_bike (RLS tillader
+  // ikke direkte update af andres annonce) og springer billed-mutationer over
+  // (de er stadig RLS-beskyttede — admin retter felter, ikke feed-billeder).
+  let editBikeOwnerId  = null;
+  let editIsAdminOther = false;
+
   // ── State accessors ────────────────────────────────────────
 
   function getEditNewFiles()     { return editNewFiles; }
@@ -170,6 +177,11 @@ export function createListingEdit({
       .eq('id', id).single();
     if (error || !b) { showToast('❌ Kunne ikke hente annonce'); return; }
 
+    // Admin der redigerer en ANDEN forhandlers annonce? (feed-rettelse + lås)
+    const _cu = getCurrentUser();
+    editBikeOwnerId  = b.user_id;
+    editIsAdminOther = !!(_cu && b.user_id && b.user_id !== _cu.id && getCurrentProfile()?.is_admin);
+
     document.getElementById('edit-bike-id').value       = b.id;
     document.getElementById('edit-brand').value         = b.brand || '';
     document.getElementById('edit-model').value         = b.model || '';
@@ -201,7 +213,9 @@ export function createListingEdit({
     { const st = document.getElementById('edit-step-type'); if (st) st.value = b.step_type || ''; }
     document.getElementById('edit-battery-wh').value         = b.battery_wh ?? '';
 
-    const isDealer = getCurrentProfile()?.seller_type === 'dealer';
+    // Forhandler-felter (garanti, webshop-link): vis for forhandlere — og for
+    // admins der redigerer en forhandlers annonce (editIsAdminOther).
+    const isDealer = editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer';
     const warrantyGroup = document.getElementById('edit-warranty-group');
     if (warrantyGroup) warrantyGroup.style.display = isDealer ? '' : 'none';
     document.getElementById('edit-warranty').value = b.warranty || '';
@@ -300,8 +314,8 @@ export function createListingEdit({
       size_cm:     parseInt(document.getElementById('edit-size-cm').value) || null,
       condition:   document.getElementById('edit-condition').value,
       is_active:   document.getElementById('edit-is-active').checked,
-      warranty:    (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-warranty').value.trim() : null) || null,
-      external_url: (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-external-url').value.trim() : null) || null,
+      warranty:    ((editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer') ? document.getElementById('edit-warranty').value.trim() : null) || null,
+      external_url: ((editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer') ? document.getElementById('edit-external-url').value.trim() : null) || null,
       wheel_size:         document.getElementById('edit-wheel-size').value || null,
       frame_material:     document.getElementById('edit-frame-material').value || null,
       brake_type:         document.getElementById('edit-brake-type').value || null,
@@ -336,8 +350,20 @@ export function createListingEdit({
       .single();
     const oldPrice = oldBike?.price ?? null;
 
-    const { error } = await supabase.from('bikes').update(updates).eq('id', id);
-    if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+    if (editIsAdminOther) {
+      // Admin retter en forhandlers annonce → SECURITY DEFINER-RPC (omgår RLS,
+      // håndhæver admin + udvidet samtykke server-side, sætter feed_locked=true).
+      const { error } = await supabase.rpc('admin_update_bike', { p_bike_id: id, p_updates: updates });
+      if (error) {
+        showToast(error.message?.includes('opdaterede onboarding')
+          ? '❌ Forhandleren har ikke accepteret de opdaterede onboarding-vilkår'
+          : '❌ Kunne ikke gemme ændringer');
+        console.error(error); return;
+      }
+    } else {
+      const { error } = await supabase.from('bikes').update(updates).eq('id', id);
+      if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+    }
 
     // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret). Tyveri-
     // tjekkes server-side; kun sidste 4 + resultat gemmes (aldrig hele nummeret).
@@ -364,6 +390,10 @@ export function createListingEdit({
       }).catch(() => { /* fire-and-forget */ });
     }
 
+    // Billed-mutationer: kun for ejeren. Admin der retter en anden forhandlers
+    // annonce rører IKKE billederne (bike_images er RLS-beskyttet, og admin-
+    // rettelsen handler om specs/tekst — feed-billederne bevares som de er).
+    if (!editIsAdminOther) {
     const toDelete = editExistingImgs.filter(img => img.toDelete);
     const toKeep   = editExistingImgs.filter(img => !img.toDelete);
     for (const img of toDelete) {
@@ -409,6 +439,7 @@ export function createListingEdit({
       const { data: firstImg } = await supabase.from('bike_images').select('id').eq('bike_id', id).limit(1).single();
       if (firstImg) await supabase.from('bike_images').update({ is_primary: true }).eq('id', firstImg.id).eq('bike_id', id);
     }
+    } // end !editIsAdminOther image mutations
 
     bikeCache.delete(id);
     bikeCache.delete(Number(id));

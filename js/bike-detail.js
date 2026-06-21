@@ -87,7 +87,7 @@ export function createBikeDetail({
     } else {
       const fetchPromise = supabase
         .from('bikes')
-        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
+        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at, admin_can_create_listings, admin_authorized_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
         .eq('id', bikeId)
         .single();
       const timeoutPromise = new Promise((_, reject) =>
@@ -161,6 +161,17 @@ export function createBikeDetail({
     const currentUser = getCurrentUser();
     const isOwner    = currentUser && currentUser.id === profile.id;
     const isSold     = b.is_active === false;
+
+    // Admin må manuelt rette en forhandlers feed-importerede annonce — men KUN
+    // hvis forhandleren har accepteret det udvidede onboarding-samtykke
+    // (admin_authorized_at >= DPA_EFFECTIVE 2026-06-19). RPC'en håndhæver det
+    // også server-side; her gater vi bare visningen af knappen.
+    const _DPA_EFFECTIVE = new Date('2026-06-19T00:00:00Z');
+    const _dealerConsented = !!profile.admin_can_create_listings
+      && !!profile.admin_authorized_at
+      && new Date(profile.admin_authorized_at) >= _DPA_EFFECTIVE;
+    const adminCanEdit = !isOwner && !!getCurrentProfile()?.is_admin
+      && !!b.external_id && _dealerConsented;
     const avatarUrl  = safeAvatarUrl(profile.avatar_url);
     const avatarContent = avatarUrl
       ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
@@ -258,6 +269,12 @@ export function createBikeDetail({
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
+          ${adminCanEdit ? `
+          <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">🛠️ Admin · forhandler-annonce</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt — annoncen låses, så natlig sync herefter kun opdaterer pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
+            <button class="btn-save-listing" onclick="openEditModal('${b.id}')">✏️ Redigér som admin</button>
+          </div>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">

@@ -583,15 +583,23 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
 
 // ── Synkronisér ÉN feed ─────────────────────────────────────
 async function syncFeed(supa: any, feed: any, preview: boolean) {
-  // Forhandler-profil (city-fallback + tjek samtykke)
-  const { data: profile } = await supa
-    .from("profiles")
-    .select("id, city, seller_type, admin_can_create_listings")
-    .eq("id", feed.user_id)
-    .single();
-
-  if (!profile || profile.seller_type !== "dealer") throw new Error("Forhandler ikke fundet");
-  if (!profile.admin_can_create_listings) throw new Error("Forhandler har ikke aktiveret onboarding-samtykke");
+  // Forhandler-profil (city-fallback + samtykke-tjek). Ved test-preview uden
+  // forhandler (test_url) springes tjekket over — preview skriver alligevel intet.
+  let profileCity = "Danmark";
+  if (feed.user_id) {
+    const { data: profile } = await supa
+      .from("profiles")
+      .select("id, city, seller_type, admin_can_create_listings")
+      .eq("id", feed.user_id)
+      .single();
+    if (!preview) {
+      if (!profile || profile.seller_type !== "dealer") throw new Error("Forhandler ikke fundet");
+      if (!profile.admin_can_create_listings) throw new Error("Forhandler har ikke aktiveret onboarding-samtykke");
+    }
+    if (profile?.city) profileCity = profile.city;
+  } else if (!preview) {
+    throw new Error("Forhandler påkrævet for synkronisering");
+  }
 
   // Hent + parse feed (Google XML / CSV / Shopify products.json) + valuta
   const { items: fetched, currency } = await fetchItems(feed);
@@ -599,7 +607,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
 
   // Byg bike-payloads — sikrer altid de obligatoriske felter (brand, type,
   // condition, price, city) + beriger med alle specs vi kan udlede sikkert.
-  const fallbackCity = profile.city || "Danmark";
+  const fallbackCity = profileCity;
   const built = items.map((it) => {
     let type = it._explicitType && VALID_TYPES.includes(it._explicitType)
       ? it._explicitType
@@ -716,7 +724,21 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { feed_id, preview, action } = body ?? {};
+    const { feed_id, preview, action, test_url, test_format, test_type } = body ?? {};
+
+    // ── Test af vilkårlig products.json-URL (admin, preview-only, ingen forhandler) ──
+    if (test_url) {
+      if (!isAdmin) return json({ error: "Kræver admin-rettigheder" }, 403);
+      const synthetic = {
+        feed_url: String(test_url), format: test_format || "shopify_json",
+        default_type: test_type || null, currency: "auto", price_round: "none", user_id: null,
+      };
+      try {
+        return json({ ok: true, ...(await syncFeed(supa, synthetic, true)) });
+      } catch (e) {
+        return json({ error: String((e as Error).message) }, 400);
+      }
+    }
 
     // ── Run-all (cron) ──────────────────────────────────────
     if (!feed_id) {

@@ -429,11 +429,14 @@
           <!-- Cykelbørsen onboarding-service (admin opretter annoncer på forhandlers vegne) -->
           <div class="onboarding-service-box" id="admin-onboarding-box" style="display:none;">
             <div class="onboarding-service-title">🛠️ Cykelbørsen onboarding-service</div>
-            <p class="onboarding-service-desc">Lad Cykelbørsen oprette annoncer på dine vegne mens du kommer i gang. Vi kan KUN oprette annoncer — vi har ikke adgang til dine beskeder, indstillinger eller andet på din profil.</p>
+            <p class="onboarding-service-desc">Lad Cykelbørsen oprette og løbende vedligeholde dine cykel-annoncer på dine vegne — import fra dit webshop-feed, automatisk pris- og lager-synkronisering, og rettelser af annonce-detaljer. Vi har KUN adgang til dine annoncer (oprette, redigere, deaktivere) — ikke dine beskeder, indstillinger eller andet på din profil.</p>
             <a href="/databehandleraftale" onclick="event.preventDefault();navigateTo('/databehandleraftale')" class="onboarding-service-dpa-link">Læs databehandleraftalen →</a>
 
-            <!-- Vises når IKKE opt-in -->
+            <!-- Vises når IKKE opt-in (eller når vilkårene er opdateret og kræver gen-accept) -->
             <div id="admin-onboarding-grant">
+              <div id="admin-onboarding-reaccept-notice" style="display:none;background:#fff7e6;border:1px solid #e0a800;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:0.82rem;color:#7a5a00;line-height:1.5;">
+                ⚠️ <strong>Vilkårene er opdateret.</strong> Onboarding-servicen dækker nu også <strong>løbende vedligehold og rettelser</strong> af dine annoncer (ud over oprettelse). Bekræft venligst de opdaterede vilkår for at fortsætte.
+              </div>
               <label class="onboarding-service-consent">
                 <input type="checkbox" id="admin-onboarding-consent-cb">
                 <span>Jeg har læst databehandleraftalen og giver tilladelse</span>
