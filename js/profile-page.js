@@ -493,14 +493,23 @@ export function createProfilePage({
      ONBOARDING-SERVICE: forhandler-opt-in til admin-create-bike
      ============================================================ */
 
+  // Dato hvor onboarding-vilkårene blev udvidet (oprette → oprette + løbende
+  // vedligehold/redigering). Forhandlere der gav samtykke FØR denne dato skal
+  // gen-acceptere før admin må redigere (auto-sync fortsætter uændret).
+  const DPA_EFFECTIVE = new Date('2026-06-19T00:00:00Z');
+
   function _renderAdminOnboardingState(profile) {
-    const grantSection  = document.getElementById('admin-onboarding-grant');
-    const activeSection = document.getElementById('admin-onboarding-active');
-    const cb            = document.getElementById('admin-onboarding-consent-cb');
-    const grantBtn      = document.getElementById('admin-onboarding-grant-btn');
+    const grantSection   = document.getElementById('admin-onboarding-grant');
+    const activeSection  = document.getElementById('admin-onboarding-active');
+    const cb             = document.getElementById('admin-onboarding-consent-cb');
+    const grantBtn       = document.getElementById('admin-onboarding-grant-btn');
+    const reacceptNotice = document.getElementById('admin-onboarding-reaccept-notice');
     if (!grantSection || !activeSection) return;
 
-    if (profile.admin_can_create_listings) {
+    const acceptedCurrent = !!profile.admin_authorized_at && new Date(profile.admin_authorized_at) >= DPA_EFFECTIVE;
+    const needsReaccept   = profile.admin_can_create_listings && !acceptedCurrent;
+
+    if (profile.admin_can_create_listings && acceptedCurrent) {
       grantSection.style.display  = 'none';
       activeSection.style.display = '';
       const at = profile.admin_authorized_at
@@ -510,10 +519,15 @@ export function createProfilePage({
       if (activatedAt) activatedAt.textContent = `Tilladelse givet ${at}`;
       _loadAdminCreatedListingsCount(profile.id);
     } else {
+      // Ikke-opt-in ELLER opt-in under gamle vilkår → vis grant/gen-accept-sektion
       grantSection.style.display  = '';
       activeSection.style.display = 'none';
+      if (reacceptNotice) reacceptNotice.style.display = needsReaccept ? '' : 'none';
       if (cb) cb.checked = false;
-      if (grantBtn) grantBtn.disabled = true;
+      if (grantBtn) {
+        grantBtn.disabled = true;
+        grantBtn.textContent = needsReaccept ? 'Bekræft opdaterede vilkår' : 'Aktivér onboarding-service';
+      }
       if (cb && !cb._adminOnboardingBound) {
         cb._adminOnboardingBound = true;
         cb.addEventListener('change', () => {

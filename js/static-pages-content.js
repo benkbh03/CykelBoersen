@@ -515,39 +515,44 @@ export const footerContent = {
     title: 'Databehandleraftale — Cykelbørsen onboarding-service',
     metaDesc: 'Databehandleraftale for forhandlere der ønsker at Cykelbørsen opretter annoncer på deres vegne under onboarding.',
     body: `
-      <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 14. maj 2026</p>
+      <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 19. juni 2026</p>
       <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
+      <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;">⚠️ <strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen — udover at oprette annoncer — også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Formål og omfang</h3>
-      <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette annoncer på dine vegne i en begrænset onboarding-fase. Konkret må Cykelbørsen:</p>
+      <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette <em>og løbende vedligeholde</em> annoncer på dine vegne. Konkret må Cykelbørsen:</p>
       <ul style="margin-bottom:16px;">
-        <li>Indsætte rækker i tabellen <code>bikes</code> med dit bruger-id som ejer</li>
-        <li>Indsætte rækker i tabellen <code>bike_images</code> linket til disse annoncer</li>
+        <li><strong>Oprette annoncer:</strong> indsætte rækker i tabellen <code>bikes</code> med dit bruger-id som ejer, samt tilhørende billeder i <code>bike_images</code></li>
+        <li><strong>Importere fra dit feed:</strong> hente dine produkter fra den feed-URL du selv angiver (fx <code>products.json</code>) og oprette tilsvarende annoncer</li>
+        <li><strong>Synkronisere automatisk:</strong> køre en natlig synkronisering der opdaterer pris og lagerstatus (aktiv/inaktiv) på de annoncer der stammer fra dit feed, så de matcher din webshop</li>
+        <li><strong>Rette specifikationer:</strong> manuelt korrigere felter på de importerede annoncer (fx type, mærke, beskrivelse, billeder) for at sikre korrekt visning</li>
       </ul>
-      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette dine annoncer eller andre data, ændre din pris efter oprettelse, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge function (<code>admin-create-bike</code>) — der findes ingen genvej til andre handlinger.</p>
+      <p style="margin-bottom:16px;"><strong>Låsning af manuelt rettede annoncer:</strong> Når en Cykelbørsen-administrator manuelt retter en importeret annonce, "låses" den (<code>feed_locked=true</code>), så den natlige synkronisering derefter <em>kun</em> opdaterer pris og lagerstatus — dine manuelle rettelser overskrives ikke.</p>
+      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette din konto, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge functions og database-funktioner (<code>admin-create-bike</code>, <code>import-dealer-feed</code>, <code>admin_update_bike</code>) — der findes ingen genvej til andre handlinger, og hver funktion verificerer dit aktive samtykke før den kører.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Forhandlerens ansvar (Dataansvarlig)</h3>
-      <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes på dine vegne. Det betyder konkret:</p>
+      <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes eller vedligeholdes på dine vegne. Det betyder konkret:</p>
       <ul style="margin-bottom:16px;">
         <li>Du skal selv reviewe annoncen efter oprettelse — vi anbefaler du gør det inden for 48 timer</li>
-        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig</li>
+        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig — også de værdier der importeres automatisk fra dit feed</li>
+        <li>Du er ansvarlig for at den feed-URL du angiver er din egen, og at du har ret til at offentliggøre produkterne på den</li>
         <li>Du er ansvarlig for kommunikation med købere og opfølgning på handler</li>
-        <li>Du kan til enhver tid redigere eller slette enhver annonce der er oprettet på dine vegne</li>
+        <li>Du kan til enhver tid redigere, deaktivere eller slette enhver annonce der er oprettet på dine vegne — også de importerede</li>
         <li>Du er forbrugerretsligt ansvarlig sælger jf. Købeloven og Markedsføringsloven</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Cykelbørsens forpligtelser (Databehandler)</h3>
       <p style="margin-bottom:8px;">Cykelbørsen forpligter sig til:</p>
       <ul style="margin-bottom:16px;">
-        <li>Kun at behandle dine data inden for ovennævnte scope</li>
-        <li>At føre audit-log for hver handling: hvilken admin oprettede hvilken annonce hvornår (logges i <code>bikes.created_by_admin_id</code> + Supabase function-logs i 90 dage)</li>
+        <li>Kun at behandle dine data inden for ovennævnte scope, og kun så længe dit samtykke er aktivt</li>
+        <li>At føre audit-log for hver handling: hvilken admin oprettede eller rettede hvilken annonce hvornår (logges i <code>bikes.created_by_admin_id</code> + Supabase function-logs i 90 dage)</li>
         <li>At gøre audit-loggen tilgængelig for dig på forespørgsel — du kan altid kontakte os på <strong>hej@cykelbørsen.dk</strong> for udtræk</li>
-        <li>At sikre at kun verificerede Cykelbørsen-administratorer har adgang til funktionen</li>
-        <li>At underrette dig hvis Aftalens omfang ændres</li>
+        <li>At sikre at kun verificerede Cykelbørsen-administratorer har adgang til funktionerne</li>
+        <li>At indhente fornyet samtykke fra dig, før et udvidet omfang af Aftalen tages i brug</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Tilbagekaldelse</h3>
-      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå "Tillad Cykelbørsen at oprette annoncer på mine vegne" fra. Tilbagekaldelse træder i kraft med det samme — vi kan ikke oprette nye annoncer efter det tidspunkt. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
+      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå onboarding-servicen fra. Tilbagekaldelse træder i kraft med det samme — vi kan ikke oprette, importere, synkronisere eller rette nye annoncer efter det tidspunkt, og den natlige synkronisering stopper. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Varighed</h3>
       <p style="margin-bottom:16px;">Aftalen gælder fra du aktiverer onboarding-servicen og indtil du selv tilbagekalder den. Der er ingen automatisk udløb. Cykelbørsen anbefaler dog at du tilbagekalder tilladelsen når du selv er fortrolig med at oprette annoncer (typisk efter 1-2 ugers brug af platformen).</p>
