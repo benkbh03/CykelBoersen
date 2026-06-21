@@ -337,10 +337,11 @@ export function createBikesList({
       var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
       var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
       var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
-      // Samme "sidst aktiv"-linje for private OG forhandlere, så kort-footeren
-      // (og divider-linjen) flugter ens. Kun friskt (≤72t); ellers reserveres
-      // linjen tom nedenfor, så højden er konsistent.
-      const lastSeenCard = formatLastSeen(profile.last_seen, 72);
+      // "Sidst aktiv" vises kun for PRIVATE sælgere (login-tid er misvisende for
+      // en butik der auto-synces nat for nat). For forhandlere skjules den — men
+      // linjen reserveres tom nedenfor (&nbsp;), så kort-footeren og divider-
+      // linjen flugter ens og ikke ser ujævnt ud.
+      const lastSeenCard = sellerType === 'dealer' ? null : formatLastSeen(profile.last_seen, 72);
       return `
         <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
           <div class="bike-card-img"${dataImgs}>
