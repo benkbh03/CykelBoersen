@@ -506,11 +506,27 @@ function parseShopifyProducts(products: any[], origin: string): any[] {
   });
 }
 
+// Oversæt HTTP-status fra feed-serveren til en forståelig fejl. 403/404/429 fra
+// en webshop betyder oftest bot-beskyttelse (Cloudflare/WAF), ikke at feedet
+// mangler — så admin ved at det er adgang, ikke en forkert URL.
+function feedErr(status: number): string {
+  if (status === 403 || status === 404 || status === 429) {
+    return `Feed svarede ${status} — butikken blokerer sandsynligvis automatiske kald (bot-beskyttelse). Bed forhandleren whiteliste CykelBørsen, eller tjek at URL'en er korrekt og offentlig.`;
+  }
+  return `Feed svarede ${status}`;
+}
+
 // ── Hent + parse feed (håndterer Shopify-paginering) ────────
 async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }> {
+  // Mange webshops (Cloudflare/WAF) blokerer bot-agtige User-Agents fra
+  // datacenter-IP'er med 403/404. En realistisk browser-UA + standard accept-
+  // headers slipper typisk forbi de simple bot-regler. Durabel løsning for en
+  // RIGTIG partner er dog at de whitelister os (UA/IP) eller giver en feed-URL
+  // uden bot-beskyttelse — så vi ikke er afhængige af UA-spoofing.
   const ua = {
-    "User-Agent": "CykelboersenFeedBot/1.0",
-    "Accept-Language": "da-DK,da;q=0.9",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "da-DK,da;q=0.9,en;q=0.8",
   };
 
   let items: any[];
@@ -532,7 +548,7 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
       const res = await fetch(`${base}?limit=250&page=${page}${extraQuery}`, { headers: ua });
-      if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
+      if (!res.ok) throw new Error(feedErr(res.status));
       const data = JSON.parse(await res.text());
       const prods = Array.isArray(data?.products) ? data.products : [];
       if (prods.length === 0) break;
@@ -542,7 +558,7 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
     items = all.filter((it) => !it._accessory);
   } else {
     const res = await fetch(feed.feed_url, { headers: ua });
-    if (!res.ok) throw new Error(`Feed svarede ${res.status}`);
+    if (!res.ok) throw new Error(feedErr(res.status));
     const raw = await res.text();
     items = feed.format === "csv" ? parseCsv(raw) : parseGoogleXml(raw);
     if (!currency) currency = "DKK";   // XML/CSV antages i DKK medmindre admin vælger andet
