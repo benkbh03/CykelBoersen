@@ -262,12 +262,14 @@
   box-shadow: 0 2px 6px rgba(200,48,42,0.25);
 }
 @media (max-width: 560px) {
-  .bike-card-badges { gap: 4px; }
-  .warranty-card-badge { font-size: 0.6rem; padding: 3px 7px; }
-  .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
-  .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
-  .price-reduced-card-badge { font-size: 0.5rem; padding: 2px 5px; }
-  .featured-card-badge { font-size: 0.5rem; padding: 2px 5px; }
+  /* Kompakte badges på mobil — de må ikke dække cyklen. Mindre tekst/padding,
+     tættere i hjørnet, ingen skygge, og kun ÉT ord-mellemrum så de wrapper mindre. */
+  .bike-card-badges { gap: 3px; top: 6px; left: 6px; max-width: calc(100% - 38px); }
+  .featured-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
+  .price-reduced-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
+  .warranty-card-badge { font-size: 0.48rem; padding: 2px 5px; letter-spacing: 0; }
+  .demo-badge { font-size: 0.48rem; padding: 2px 5px; box-shadow: none; }
+  .condition-tag { font-size: 0.52rem; padding: 2px 6px; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
