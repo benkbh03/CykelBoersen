@@ -154,12 +154,15 @@ export function createAdminFeedImport({ supabase, showToast }) {
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
               <button data-act="test" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🔍 Test</button>
-              <button data-act="sync" data-id="${esc(f.id)}" style="background:var(--rust);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">🔄 Synkronisér nu</button>
+              <button data-act="draft" data-id="${esc(f.id)}" title="Importér cyklerne SKJULT (inaktive), så du kan rette dem før kunderne ser dem" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">📥 Importér som kladde</button>
+              <button data-act="review" data-id="${esc(f.id)}" title="Gennemgå og udgiv de skjulte (kladde) cykler" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">👁 Gennemgå &amp; udgiv</button>
+              <button data-act="sync" data-id="${esc(f.id)}" title="Synkronisér og udgiv med det samme (cyklerne bliver live nu)" style="background:var(--rust);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">🔄 Synkronisér nu</button>
               <button data-act="remove" data-id="${esc(f.id)}" title="Skjul alle cykler importeret fra dette feed" style="background:none;border:1px solid #c8302a;color:#c8302a;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🗑️ Fjern cykler</button>
               <button data-act="toggle" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">${f.active ? 'Deaktivér' : 'Aktivér'}</button>
               <button data-act="delete" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);color:#c8302a;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">Slet</button>
             </div>
           </div>
+          <div id="feed-review-${esc(f.id)}" data-open="0" style="display:none;"></div>
         </div>`;
     }).join('');
 
@@ -169,6 +172,8 @@ export function createAdminFeedImport({ supabase, showToast }) {
         const act = btn.dataset.act;
         if (act === 'test') testFeed(id, btn);
         else if (act === 'sync') syncFeed(id, btn);
+        else if (act === 'draft') syncFeed(id, btn, true);
+        else if (act === 'review') reviewFeedBikes(id, btn);
         else if (act === 'remove') removeFeedBikes(id, btn);
         else if (act === 'toggle') toggleFeed(id);
         else if (act === 'delete') deleteFeed(id);
@@ -294,23 +299,85 @@ export function createAdminFeedImport({ supabase, showToast }) {
     }
   }
 
-  async function syncFeed(id, btn) {
+  async function syncFeed(id, btn, draft = false) {
     const orig = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Synkroniserer…';
+    btn.disabled = true; btn.textContent = draft ? 'Importerer skjult…' : 'Synkroniserer…';
     try {
       const { data, error } = await supabase.functions.invoke('import-dealer-feed', {
-        body: { feed_id: id },
+        body: { feed_id: id, draft },
       });
       if (error) {
         let msg = 'Sync fejlede'; try { msg = (await error.context.json()).error || msg; } catch {}
         throw new Error(msg);
       }
       if (data.error) throw new Error(data.error);
-      showToast(`✓ ${data.created} oprettet · ${data.updated} opdateret${data.deactivated ? ` · ${data.deactivated} udsolgt` : ''}${data.failed ? ` · ${data.failed} fejlet` : ''}`);
+      showToast(draft
+        ? `✓ ${data.created} importeret som kladde (skjult) · ${data.updated} opdateret. Klik "👁 Gennemgå & udgiv" for at rette og udgive.`
+        : `✓ ${data.created} oprettet · ${data.updated} opdateret${data.deactivated ? ` · ${data.deactivated} udsolgt` : ''}${data.failed ? ` · ${data.failed} fejlet` : ''}`);
       await loadData();
       renderFeedList();
     } catch (e) {
       showToast('❌ ' + (e.message || 'Sync fejlede'));
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  }
+
+  // Gennemgå skjulte (kladde) cykler fra et feed: liste med redigér-knapper +
+  // "Aktivér alle". Vises under feed-kortet i en udklappelig boks.
+  async function reviewFeedBikes(id, btn) {
+    const f = _feeds.find(x => x.id === id);
+    if (!f) { showToast('❌ Feed ikke fundet'); return; }
+    const box = document.getElementById(`feed-review-${id}`);
+    if (!box) return;
+    if (box.dataset.open === '1') { box.style.display = 'none'; box.dataset.open = '0'; return; }
+    box.style.display = 'block'; box.dataset.open = '1';
+    box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Henter skjulte cykler…</p>';
+    const { data: bikes, error } = await supabase
+      .from('bikes')
+      .select('id, brand, model, type, price, wheel_size, is_active, feed_locked')
+      .eq('user_id', f.user_id)
+      .not('external_id', 'is', null)
+      .eq('is_active', false)
+      .order('created_at', { ascending: false });
+    if (error) { box.innerHTML = '<p style="color:#c8302a;font-size:0.85rem;">Kunne ikke hente cykler.</p>'; return; }
+    if (!bikes || bikes.length === 0) {
+      box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Ingen skjulte cykler. Brug "📥 Importér som kladde" for at lægge dem ind skjult først.</p>';
+      return;
+    }
+    const rows = bikes.map(b => `
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:0;">
+          <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc((b.brand || '') + ' ' + (b.model || ''))}${b.feed_locked ? ' <span title="Låst — sync rører kun pris" style="color:var(--forest);">🔒</span>' : ''}</div>
+          <div style="font-size:0.76rem;color:var(--muted);">${esc(b.type || '—')} · ${b.price ? b.price.toLocaleString('da-DK') + ' kr' : '—'}${b.wheel_size ? ' · ' + esc(b.wheel_size) : ''}</div>
+        </div>
+        <button onclick="openEditModal('${esc(b.id)}')" style="background:none;border:1px solid var(--border);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.78rem;white-space:nowrap;">✏️ Redigér</button>
+      </div>`).join('');
+    box.innerHTML = `
+      <div style="background:var(--sand);border-radius:8px;padding:10px 12px;margin-top:8px;">
+        <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;">${bikes.length} skjulte cykler — ret dem her, udgiv når du er klar</div>
+        ${rows}
+        <button id="feed-activate-${id}" style="margin-top:10px;width:100%;background:var(--forest);color:#fff;border:none;padding:9px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;">✅ Udgiv alle ${bikes.length} cykler</button>
+      </div>`;
+    const actBtn = document.getElementById(`feed-activate-${id}`);
+    if (actBtn) actBtn.onclick = () => activateFeedBikes(id, actBtn);
+  }
+
+  async function activateFeedBikes(id, btn) {
+    const f = _feeds.find(x => x.id === id);
+    if (!f) { showToast('❌ Feed ikke fundet'); return; }
+    if (!confirm('Udgiv alle skjulte cykler fra dette feed?\n\nDe bliver synlige for kunderne med det samme.')) return;
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Udgiver…';
+    try {
+      // SECURITY DEFINER RPC — kræver SQL'en add_activate_dealer_feed_bikes.sql.
+      const { data, error } = await supabase.rpc('activate_dealer_feed_bikes', { p_user_id: f.user_id });
+      if (error) throw new Error(error.message || 'Kunne ikke udgive');
+      showToast(`✓ ${data ?? 0} cykler udgivet (synlige nu)`);
+      const box = document.getElementById(`feed-review-${id}`);
+      if (box) { box.style.display = 'none'; box.dataset.open = '0'; }
+    } catch (e) {
+      showToast('❌ ' + (e.message || 'Kunne ikke udgive'));
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }

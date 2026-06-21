@@ -620,7 +620,7 @@ async function fetchItems(feed: any): Promise<{ items: any[]; currency: string }
 }
 
 // ── Synkronisér ÉN feed ─────────────────────────────────────
-async function syncFeed(supa: any, feed: any, preview: boolean) {
+async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
   // Forhandler-profil (city-fallback + samtykke-tjek). Ved test-preview uden
   // forhandler (test_url) springes tjekket over — preview skriver alligevel intet.
   let profileCity = "Danmark";
@@ -699,7 +699,9 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
         .eq("external_id", row.external_id)
         .maybeSingle();
 
-      const payload: Record<string, unknown> = { ...row.bike, user_id: feed.user_id, is_active: true };
+      // Kladde-import (draft): opret cyklerne SKJULT (is_active=false), så admin
+      // kan rette dem før kunderne ser dem. "Aktivér alle" udgiver dem bagefter.
+      const payload: Record<string, unknown> = { ...row.bike, user_id: feed.user_id, is_active: draft ? false : true };
 
       if (existing?.id) {
         if (existing.feed_locked) {
@@ -710,6 +712,7 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
           }).eq("id", existing.id);
         } else {
           payload.sold_at = null;
+          if (draft) delete payload.is_active;  // bevar nuværende synlighed ved kladde-opdatering
           await supa.from("bikes").update(payload).eq("id", existing.id);
           await supa.from("bike_images").delete().eq("bike_id", existing.id);
           if (row.images.length) await supa.from("bike_images").insert(row.images.map((im) => ({ ...im, bike_id: existing.id })));
@@ -723,9 +726,10 @@ async function syncFeed(supa: any, feed: any, preview: boolean) {
     } catch (_e) { failed++; }
   }
 
-  // Reconcile: deaktivér feed-cykler der ikke længere er i feedet (= udsolgt)
+  // Reconcile: deaktivér feed-cykler der ikke længere er i feedet (= udsolgt).
+  // Springes over ved kladde-import — vi vil ikke røre synlighed der.
   let deactivated = 0;
-  if (seenIds.length > 0) {
+  if (!draft && seenIds.length > 0) {
     const { data } = await supa.rpc("reconcile_dealer_feed", { p_user_id: feed.user_id, p_seen_ids: seenIds });
     deactivated = data || 0;
   }
@@ -762,7 +766,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { feed_id, preview, action, test_url, test_format, test_type } = body ?? {};
+    const { feed_id, preview, action, test_url, test_format, test_type, draft } = body ?? {};
 
     // ── Test af vilkårlig products.json-URL (admin, preview-only, ingen forhandler) ──
     if (test_url) {
@@ -814,7 +818,7 @@ Deno.serve(async (req) => {
     }
 
     try {
-      const result = await syncFeed(supa, feed, !!preview);
+      const result = await syncFeed(supa, feed, !!preview, !!draft);
       return json({ ok: true, ...result });
     } catch (e) {
       if (!preview) {
