@@ -389,11 +389,21 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   else if (/\b(aluminium|alu|alloy|alu\.)\b/i.test(spec)) out.frame_material = "Aluminium";
   else if (/\b(st(å|aa)l|steel|cr-?mo|chromoly|cromoly)\b/i.test(spec)) out.frame_material = "Stål";
 
-  // Hjulstørrelse (tjek både titel og beskrivelse — fx "28 tommer")
+  // Hjulstørrelse: et bart tomme-tal i titlen er TVETYDIGT — det kan være HJUL
+  // eller STEL. Gammeldags herre-/damecykler måles i tommer-stel (fx "Raleigh
+  // Tourist Herre ... 24"" = 24" STEL med 28" hjul). 26/27.5/28/29" findes ikke
+  // som stelstørrelse → entydigt hjul. 12–24" overlapper med stel, så dem sætter
+  // vi KUN som hjul hvis titlen IKKE markerer en voksencykel (herre/dame/voksen);
+  // ellers er tallet sandsynligvis stelstørrelsen, og vi gætter ikke (jf. reglen
+  // om aldrig at gætte — manglende felt er bedre end forkert).
   if (/27[.,]5|650b/i.test(spec)) out.wheel_size = '27.5" / 650b';
   else {
     const wm = spec.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)/i);
-    if (wm) out.wheel_size = `${wm[1]}"`;
+    if (wm) {
+      const inch = +wm[1];
+      const adultBike = /\bherre[a-zæøå]*\b|\bdame[a-zæøå]*\b|\bvoksen\b|\bmen'?s\b|\bwomen'?s\b/i.test(name);
+      if (inch >= 26 || !adultBike) out.wheel_size = `${inch}"`;
+    }
   }
 
   // Stelstørrelse i cm
