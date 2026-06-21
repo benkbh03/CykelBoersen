@@ -348,15 +348,25 @@ export function createAdminFeedImport({ supabase, showToast }) {
     return p;
   }
 
+  // Hvilket feed har en åben gennemgå-liste (så vi kan genindlæse den efter en
+  // admin-redigering). window.reviewFeedRefresh kaldes fra listing-edit.js.
+  let _openReviewFeedId = null;
+  window.reviewFeedRefresh = () => { if (_openReviewFeedId) renderReviewBox(_openReviewFeedId); };
+
   // Gennemgå skjulte (kladde) cykler fra et feed: liste med redigér-knapper +
   // "Aktivér alle". Vises under feed-kortet i en udklappelig boks.
   async function reviewFeedBikes(id, btn) {
-    const f = _feeds.find(x => x.id === id);
-    if (!f) { showToast('❌ Feed ikke fundet'); return; }
     const box = document.getElementById(`feed-review-${id}`);
     if (!box) return;
-    if (box.dataset.open === '1') { box.style.display = 'none'; box.dataset.open = '0'; return; }
-    box.style.display = 'block'; box.dataset.open = '1';
+    if (box.dataset.open === '1') { box.style.display = 'none'; box.dataset.open = '0'; _openReviewFeedId = null; return; }
+    box.style.display = 'block'; box.dataset.open = '1'; _openReviewFeedId = id;
+    await renderReviewBox(id);
+  }
+
+  async function renderReviewBox(id) {
+    const f = _feeds.find(x => x.id === id);
+    const box = document.getElementById(`feed-review-${id}`);
+    if (!f || !box) return;
     box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin:8px 0;">Henter cykler…</p>';
     // SECURITY DEFINER RPC (omgår RLS, admin-tjek internt) — viser ALLE feed-
     // cykler for forhandleren, både live og skjulte. Kræver SQL'en
@@ -410,8 +420,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
       const { data, error } = await supabase.rpc('activate_dealer_feed_bikes', { p_user_id: f.user_id });
       if (error) throw new Error(error.message || 'Kunne ikke udgive');
       showToast(`✓ ${data ?? 0} cykler udgivet (synlige nu)`);
-      const box = document.getElementById(`feed-review-${id}`);
-      if (box) { box.style.display = 'none'; box.dataset.open = '0'; }
+      await renderReviewBox(id);  // genindlæs boksen → de vises nu som 🟢 live
     } catch (e) {
       showToast('❌ ' + (e.message || 'Kunne ikke udgive'));
     } finally {

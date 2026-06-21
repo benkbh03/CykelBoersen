@@ -449,6 +449,9 @@ export function createListingEdit({
     reloadMyListings();
     loadBikes();
     updateFilterCounts();
+    // Admin redigerede en forhandlers feed-cykel fra gennemgå-listen → genindlæs
+    // listen så de nye værdier vises med det samme.
+    if (editIsAdminOther && typeof window.reviewFeedRefresh === 'function') window.reviewFeedRefresh();
 
     const currentPath   = window.location.pathname;
     const bikeModalOpen = document.getElementById('bike-modal')?.classList.contains('open');
