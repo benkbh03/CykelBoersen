@@ -192,6 +192,13 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 
 /* Slet-konto-bekræftelse åbnes oven på Min profil-modalen (z 1500) — skal ligge øverst */
 #delete-account-modal { z-index: 3500; }
+
+/* Redigér-annonce kan åbnes oven på admin-panelet (fx admin-redigering af en
+   forhandlers feed-cykel). Admin-modal og edit-modal deler ellers base-z (1500),
+   og admin-modal ligger senere i DOM'en → den dækkede edit-modal. Løft
+   edit-modal (og opret-modal) over admin/bike-modal, men under crop/lightbox. */
+#edit-modal { z-index: 4000; }
+#modal { z-index: 4000; }
 .modal {
   background: var(--cream); border-radius: 16px;
   max-width: 600px; width: 100%;
