@@ -991,7 +991,7 @@ export function createMapPage({
         + (distStr ? '<span class="split-card-loc-dist"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/></svg>' + distStr + '</span>' : '')
         + '</div>'
         + (chips.length ? '<div class="split-card-chips">' + chips.map(c => '<span class="split-card-chip">' + c + '</span>').join('') + '</div>' : '')
-        + '<div class="split-card-cta">Se annonce →</div>'
+        + '<div class="split-card-cta" onclick="event.stopPropagation();navigateToBike(\'' + b.id + '\')">Se annonce →</div>'
         + '</div>'
         + '</div>';
     }).join('');
