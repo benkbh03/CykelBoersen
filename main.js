@@ -529,6 +529,7 @@ const _ensureMyProfilePage = lazyCtrl(
     navigateTo:        (...args) => navigateTo(...args),
     getCurrentUser:    () => currentUser,
     getCurrentProfile: () => currentProfile,
+    setCurrentProfile: (p) => { currentProfile = p; },
   }),
 );
 const navigateToMyProfile    = lazyMethod(_ensureMyProfilePage, 'navigateToMyProfile');
