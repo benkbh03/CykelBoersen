@@ -21,6 +21,7 @@ export function createMyProfilePage({
   navigateTo,
   getCurrentUser,
   getCurrentProfile,
+  setCurrentProfile,
 }) {
   function navigateToMyProfile() {
     navigateTo('/me');
@@ -39,6 +40,18 @@ export function createMyProfilePage({
     document.body.classList.toggle('is-mp-mobile', window.innerWidth <= 768);
     const detailView = document.getElementById('detail-view');
     detailView.innerHTML = renderProfileSkeleton();
+
+    // Session-cachen (PROFILE_SESSION_FIELDS) er slank og mangler bio, phone,
+    // created_at, åbningstider, services, sociale links mm. som komplethedskortet
+    // bruger. Hent den fulde profil og opdatér cachen FØR vi bygger siden, så
+    // checklisten ikke fejlagtigt viser udfyldte felter som "ikke udfyldt" efter
+    // et page-reload (kun den cachede, slanke profil var i hukommelsen).
+    if (typeof setCurrentProfile === 'function') {
+      try {
+        const { data: full } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        if (full) setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
+      } catch { /* behold cache-render ved fejl */ }
+    }
 
     document.title = `Min konto | Cykelbørsen`;
     detailView.innerHTML = buildMyProfilePageHTML();
