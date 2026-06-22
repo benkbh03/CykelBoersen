@@ -58,7 +58,7 @@ SELECT cron.schedule(
   'dealer-feed-sync',
   '0 4 * * *',
   $$
-  SELECT extensions.net.http_post(
+  SELECT net.http_post(
     url     := 'https://ktufgncydxhkhfttojkh.supabase.co/functions/v1/import-dealer-feed',
     headers := jsonb_build_object(
       'Content-Type',   'application/json',
