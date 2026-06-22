@@ -105,6 +105,10 @@ export function createBikeDetail({
   }
 
   function renderPriceHistory(b) {
+    // Prisnedsættelse vises KUN for forhandlere (ægte før-pris, lovbundet). Private
+    // kunne ellers liste højt og straks sætte ned for at fake et tilbud — samme
+    // regel som rabat-badgen på kortene.
+    if ((b.profiles?.seller_type || 'private') !== 'dealer') return '';
     const history = Array.isArray(b.bike_price_history) ? [...b.bike_price_history] : [];
     history.sort((a, z) => new Date(a.changed_at) - new Date(z.changed_at));
 

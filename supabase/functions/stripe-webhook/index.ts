@@ -22,7 +22,9 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
-const webhookSecret    = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "";
+// .trim() — fjern evt. mellemrum/linjeskift fra copy-paste af whsec_ (ellers
+// fejler signatur-verifikationen med "signing secret contains whitespace").
+const webhookSecret    = (Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "").trim();
 const SUPABASE_URL     = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
