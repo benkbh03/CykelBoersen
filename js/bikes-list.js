@@ -337,21 +337,27 @@ export function createBikesList({
       var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
       var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
       var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
+      // Besparelse (før-pris minus pris) → rabatbadge + "Største besparelse"-sort.
+      // KUN forhandlere: deres før-pris er en ægte vejl. udsalgspris (og de er
+      // lovmæssigt bundet af Markedsføringsloven). Private kunne ellers liste højt
+      // og straks sætte ned for at fake et "godt tilbud" — derfor ingen rabat der.
+      var saving       = (sellerType === 'dealer' && b.original_price && b.original_price > b.price) ? (b.original_price - b.price) : 0;
+      var savingAttr   = ` data-saving="${saving}"`;
       // "Sidst aktiv" vises kun for PRIVATE sælgere (login-tid er misvisende for
       // en butik der auto-synces nat for nat). For forhandlere skjules den — men
       // linjen reserveres tom nedenfor (&nbsp;), så kort-footeren og divider-
       // linjen flugter ens og ikke ser ujævnt ud.
       const lastSeenCard = sellerType === 'dealer' ? null : formatLastSeen(profile.last_seen, 72);
       return `
-        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
+        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
           <div class="bike-card-img"${dataImgs}>
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
               ${isFeatured ? '<span class="featured-card-badge">Betalt promovering</span>' : ''}
               ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
-              ${!isSold && !isDemo && b.original_price && b.original_price > b.price
-                ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span>`
+              ${!isSold && !isDemo && saving > 0
+                ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${saving.toLocaleString('da-DK')} kr.</span>`
                 : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
               ${b.warranty && !isSold && !isDemo ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
             </div>

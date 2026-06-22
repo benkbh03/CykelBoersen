@@ -394,6 +394,11 @@ export function createFilters({
       const pB = parseInt(b.querySelector('.bike-price').textContent.replace(/\D/g, ''));
       if (value === 'price_asc')  return pA - pB;
       if (value === 'price_desc') return pB - pA;
+      if (value === 'biggest_saving') {
+        const sA = parseInt(a.dataset.saving || '0', 10);
+        const sB = parseInt(b.dataset.saving || '0', 10);
+        return sB - sA;   // størst besparelse først
+      }
       return 0;
     });
     cards.forEach(c => grid.appendChild(c));
