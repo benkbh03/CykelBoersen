@@ -1,15 +1,17 @@
-export const BIKES_PAGE_SIZE = 12;
-// Hvor mange cykler "Vis flere cykler"-knappen indlæser ad gangen.
-// Asymmetrisk pagination: kompakt første visning (12) + større batches (24)
-// per klik, så engagerede brugere ikke skal klikke knappen mange gange.
-export const BIKES_LOAD_MORE_SIZE = 24;
+// Første visning: 51 annoncer (lav friktion — brugeren ser et stort udvalg med
+// det samme før paginering, i tråd med DBA/Trendsales der viser mange før "vis flere").
+// Billeder er loading="lazy", så off-screen-kort belaster ikke first-paint.
+export const BIKES_PAGE_SIZE = 51;
+// Hvor mange cykler "Vis flere cykler"-knappen indlæser ad gangen (samme batch-størrelse
+// som første visning, så hvert klik også henter en stor sats).
+export const BIKES_LOAD_MORE_SIZE = 51;
 export const MAP_PAGE_LIMIT = 500;
 
 /* Cache-busting version til dynamiske imports.
    BUMP når lazy-loaded moduler ændres, så browseren henter ny version
    i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
    rydder ikke altid module-cachen. */
-export const ASSET_VERSION = '20260622d';
+export const ASSET_VERSION = '20260628a';
 
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
