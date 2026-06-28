@@ -137,16 +137,31 @@ export function createBikeDetail({
     const expandable = drops.length >= 2;
     const detailsAttr = expandable ? '' : ' style="pointer-events:none;"';
 
+    // Rabat i procent (afrundet). Vises kun når den er ≥1 % — undgår "−0 %"
+    // ved en mikroskopisk nedsættelse. Bruger typografisk minus (−), som resten
+    // af prishistorikken.
+    const pctOff = peak > 0 ? Math.round((totalDrop / peak) * 100) : 0;
+    // Faktuel under-note: kun antal nedsættelser (ingen "dokumenteret"-påstand,
+    // da en ren original_price uden historik-rækker ikke er en registreret sænkning).
+    const dropNote = dropCount > 1 ? `over ${dropCount} ${dropLabel}` : `${dropCount} ${dropLabel}`;
+
     return `
       <div class="price-history-card" data-drops="${dropCount}">
-        <div class="price-history-summary">
-          <span class="price-history-icon">📉</span>
-          <span class="price-history-text">
-            Prisen er sat ned fra <span class="price-history-from">${peak.toLocaleString('da-DK')} kr.</span>
-            <span class="price-history-arrow">→</span>
-            <strong>${b.price.toLocaleString('da-DK')} kr.</strong>
-            <span class="price-history-meta">(${dropCount} ${dropLabel}, spar ${totalDrop.toLocaleString('da-DK')} kr.)</span>
+        <div class="price-history-head">
+          <span class="price-history-tag">
+            <svg class="price-history-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6.5 6.5 4-4L21 17"></path><path d="M21 11.5V17h-5.5"></path></svg>
+            Prisfald
           </span>
+          ${pctOff >= 1 ? `<span class="price-history-pct" aria-label="${pctOff} procent lavere end før">−${pctOff}%</span>` : ''}
+        </div>
+        <div class="price-history-prices">
+          <span class="price-history-before"><span class="price-history-cap">Før</span><span class="price-history-from">${peak.toLocaleString('da-DK')} kr.</span></span>
+          <svg class="price-history-to" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"></path></svg>
+          <span class="price-history-now"><span class="price-history-cap">Nu</span><strong>${b.price.toLocaleString('da-DK')} kr.</strong></span>
+        </div>
+        <div class="price-history-save">
+          <span class="price-history-cap">Spar</span><strong>${totalDrop.toLocaleString('da-DK')} kr.</strong>
+          <span class="price-history-note">${dropNote}</span>
         </div>
         ${expandable ? `
           <details class="price-history-details"${detailsAttr}>
