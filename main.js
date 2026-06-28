@@ -7,7 +7,11 @@ import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckb
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
+// config.js cache-bustes via ?v= (skal holdes i sync med ASSET_VERSION i config.js
+// + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
+// cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
+// igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628a';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
