@@ -337,17 +337,16 @@
 .message-bubble.sent .msg-time { justify-content: flex-end; }
 .read-receipt { font-size: 0.78rem; letter-spacing: -1px; opacity: 0.85; }
 .read-receipt.read { color: #4FC3F7; opacity: 1; font-weight: 600; }
-/* Bud-bobler — tydeligt visuelt skel fra almindelige beskeder */
+/* Bud-bobler — tydeligt visuelt skel fra almindelige beskeder (rene labels, intet emoji) */
 .message-bubble.bid-bubble {
   position: relative;
   background: #fffaf2;
   border: 1.5px solid var(--rust);
   border-radius: 14px;
-  padding: 20px 16px 12px;
+  padding: 22px 16px 12px;
   margin-top: 16px;
-  font-family: 'Fraunces', serif;
-  font-weight: 700;
-  font-size: 1.15rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
   color: var(--charcoal);
   display: flex;
   flex-direction: column;
@@ -358,34 +357,45 @@
 .message-bubble.bid-bubble::before {
   content: 'BUD';
   position: absolute;
-  top: -11px;
+  top: -10px;
   left: 14px;
   background: var(--rust);
   color: #fff;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.6px;
-  padding: 3px 11px;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
   border-radius: 999px;
   font-family: 'DM Sans', sans-serif;
-  box-shadow: 0 2px 6px rgba(200,80,42,0.3);
+}
+.bid-amount {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--charcoal);
 }
 .message-bubble.accepted-bubble {
-  background: rgba(46,125,50,0.08);
-  border: 1.5px solid #4caf50;
-  color: #2e7d32;
+  background: rgba(42,61,46,0.06);
+  border: 1px solid rgba(42,61,46,0.22);
+  color: var(--forest);
   font-weight: 600;
   align-self: stretch;
   border-radius: 12px;
-  text-align: center;
-  padding: 14px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 .message-bubble.accepted-bubble::before { display: none; }
+.accepted-text { display: flex; align-items: flex-start; gap: 8px; }
+.accepted-text .msg-check { color: var(--forest); margin-top: 1px; }
+.msg-check { display: block; flex-shrink: 0; }
 .btn-accept-bid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
   width: 100%;
   padding: 11px 0;
   background: var(--forest);
