@@ -297,7 +297,11 @@ export function createBikeDetail({
           </div>
           ` : !isOwner ? `
           <div class="action-buttons">
-            ${b.external_url ? '' : `
+            ${b.external_url ? `
+            <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-external-cta">
+              🛒 Se hos ${esc(profile.shop_name || profile.name || 'forhandler')}
+              <span class="btn-external-cta-sub">Bestil direkte hos forhandleren</span>
+            </a>` : `
             <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
             <div class="bid-box" id="bid-box">
               <div class="bid-box-inner">
@@ -324,11 +328,6 @@ export function createBikeDetail({
             <button class="btn-save-listing" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})">🔔 Få besked ved prisfald</button>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
             <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🚩 Rapporter annonce</button>
-            ${b.external_url ? `
-            <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-external-cta">
-              🛒 Se hos ${esc(profile.shop_name || profile.name || 'forhandler')}
-              <span class="btn-external-cta-sub">Bestil direkte hos forhandleren</span>
-            </a>` : ''}
             ${sellerType === 'dealer' ? (() => {
               const perks = [];
               if (profile.verified) perks.push('Verificeret virksomhed');
