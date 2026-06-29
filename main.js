@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628f';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628g';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -1919,6 +1919,11 @@ function handleRoute() {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
+    // Ryd detail-view SYNKRONT, så forrige sides indhold (eller en tom flade)
+    // ikke "glipper" mens brand-page.js lazy-loades + mærke-tællingen hentes —
+    // renderBrandsOverview sætter først innerHTML efter sit await.
+    const _bv = document.getElementById('detail-view');
+    if (_bv) _bv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser mærker…</div>';
     renderBrandsOverview();
   } else if (cykelagentMatch) {
     closeAllModals();
@@ -1979,6 +1984,8 @@ function _preloadStaticModules() {
     import(`./js/sell-page.js?v=${ASSET_VERSION}`).catch(() => {});
     // "Forhandlere"-link i topnav
     import(`./js/dealers-page.js?v=${ASSET_VERSION}`).catch(() => {});
+    // "Mærker"-link i topnav (oversigt /maerker + brand-sider /cykler/:brand)
+    import(`./js/brand-page.js?v=${ASSET_VERSION}`).catch(() => {});
   });
 }
 window.addEventListener('load', _preloadStaticModules);
