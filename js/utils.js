@@ -21,6 +21,39 @@ export function debounce(fn, ms) {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
+/* Password-validering — stærk nok til at stoppe de oplagte svage koder, men UDEN
+   komplekse sammensætningskrav (krav om store/små bogstaver + tal + specialtegn)
+   der skræmmer nye brugere. Filosofi (NIST 800-63B): længde + blokér de
+   gættelige/lækkede koder slår sammensætningsregler. Returnerer { ok, message }.
+   ctx kan indeholde { email, name } så koden ikke må være brugerens egen email/navn. */
+export function validatePassword(pw, ctx = {}) {
+  const v = String(pw || '');
+  if (v.length < 8)  return { ok: false, message: 'Adgangskoden skal være mindst 8 tegn.' };
+  if (v.length > 72) return { ok: false, message: 'Adgangskoden må højst være 72 tegn.' };
+  const lower = v.toLowerCase();
+  // De mest gættelige koder (inkl. et par danske + sitenavnet).
+  const COMMON = new Set([
+    '12345678', '123456789', '1234567890', 'password', 'password1', 'passw0rd',
+    'qwerty123', 'qwertyui', '11111111', '00000000', 'iloveyou', 'welcome1',
+    'adgangskode', 'kodeord12', 'sommer2024', 'sommer2025', 'danmark12',
+    'cykelborsen', 'cykelboersen', 'christiania',
+  ]);
+  if (COMMON.has(lower)) return { ok: false, message: 'Den adgangskode er for nem at gætte — vælg en anden.' };
+  if (/^(.)\1+$/.test(v)) return { ok: false, message: 'Undgå at gentage det samme tegn — vælg en mere unik kode.' };
+  if (/^(01234567|12345678|23456789|34567890|abcdefgh|87654321|98765432)/.test(lower)) {
+    return { ok: false, message: 'Undgå simple talrækker som 12345678 — vælg en mere unik kode.' };
+  }
+  const emailLocal = String(ctx.email || '').toLowerCase().split('@')[0];
+  if (emailLocal.length >= 4 && lower.includes(emailLocal)) {
+    return { ok: false, message: 'Adgangskoden må ikke indeholde din email.' };
+  }
+  const name = String(ctx.name || '').toLowerCase().trim();
+  if (name.length >= 4 && lower === name) {
+    return { ok: false, message: 'Adgangskoden må ikke være dit navn.' };
+  }
+  return { ok: true, message: '' };
+}
+
 export function formatLastSeen(dateStr, maxAgeHours = null) {
   if (!dateStr) return null;
   const diff = Date.now() - new Date(dateStr).getTime();

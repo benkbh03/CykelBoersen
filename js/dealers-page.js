@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
+import { validatePassword } from './utils.js';
 
 export function createDealersPage({
   supabase,
@@ -610,9 +611,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         restore();
         showToast('⚠️ Udfyld email og adgangskode'); return;
       }
-      if (password.length < 8) {
+      const pwCheck = validatePassword(password, { email, name: contact });
+      if (!pwCheck.ok) {
         restore();
-        showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return;
+        showToast('⚠️ ' + pwCheck.message); return;
       }
 
       const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
