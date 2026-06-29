@@ -63,13 +63,15 @@ export function clearRecentlyViewed() {
   try { localStorage.removeItem(STORAGE_KEY); } catch {}
 }
 
-/* Render en horizontal scroll-sektion. Hvis listen er tom, skjules sektionen.
+/* Render en slank horizontal scroll-stribe. Skjules hvis listen har under 2 elementer.
    Bruger eksisterende navigateToBike() globalt fra main.js for routing. */
 export function renderRecentlyViewedSection(containerId, opts = {}) {
   const container = document.getElementById(containerId);
   if (!container) return;
   const items = getRecentlyViewed(opts.excludeId);
-  if (items.length === 0) {
+  // Skjul ved under 2 elementer: ét enkelt kort er ikke en hel sektion værd og
+  // skubber bare "Seneste annoncer" unødigt ned (mindre scroll-friktion på forsiden).
+  if (items.length < 2) {
     container.innerHTML = '';
     container.style.display = 'none';
     return;
