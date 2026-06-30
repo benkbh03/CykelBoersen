@@ -39,7 +39,11 @@ export function createMyProfilePage({
     showDetailView();
     document.body.classList.toggle('is-mp-mobile', window.innerWidth <= 768);
     const detailView = document.getElementById('detail-view');
-    detailView.innerHTML = renderProfileSkeleton();
+    // renderProfileSkeleton injiceres fra main.js som en lazy-wrapper (returnerer
+    // et Promise indtil profile-pages.js er hentet) — så den SKAL awaites. Uden
+    // await blev selve Promise-objektet sat som innerHTML og vist som
+    // "[object Promise]" indtil profil-hentet nedenfor var færdig.
+    detailView.innerHTML = await renderProfileSkeleton();
 
     // Session-cachen (PROFILE_SESSION_FIELDS) er slank og mangler bio, phone,
     // created_at, åbningstider, services, sociale links mm. som komplethedskortet
