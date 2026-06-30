@@ -77,7 +77,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 29. juni 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -125,15 +125,8 @@ export const footerContent = {
       <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 30 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres reklamationsforpligtelser</h3>
-      <p style="margin-bottom:8px;">Forhandlere der sælger brugte cykler til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning, herunder:</p>
-      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>Reklamationsret:</strong> Forbrugere har 2 års reklamationsret på nye varer og mindst 1 års reklamationsret på brugte varer jf. købelovens § 83.</li>
-        <li><strong>Fortrydelsesret:</strong> Ved fjernsalg (fx aftaler indgået via beskedsystemet) har forbrugere 14 dages fortrydelsesret jf. forbrugeraftalelovens § 18.</li>
-        <li><strong>Oplysningspligt:</strong> Forhandlere skal tydeligt oplyse om reklamationsret, pris inkl. eventuelle gebyrer og leveringsbetingelser.</li>
-        <li><strong>Markedsføringsloven:</strong> Al kommunikation og annoncering skal være sandfærdig og ikke vildledende.</li>
-      </ul>
-      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse af ovenstående. Tvister mellem forbrugere og forhandlere skal løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres forbrugeransvar</h3>
+      <p style="margin-bottom:16px;">Forhandlere der sælger til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning — herunder reklamationsret, fortrydelsesret ved fjernsalg, oplysningspligt og markedsføringsloven. Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse heraf. Tvister mellem forbrugere og forhandlere løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
@@ -163,7 +156,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Fortrydelsesret</h3>
-      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, gælder der ingen fortrydelsesret for oprettelse af brugerkonti eller annoncer — disse kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger, og er underlagt købelovens almindelige regler om fortrydelsesret ved fjernsalg mellem forbruger og erhvervsdrivende (14 dages fortrydelsesret jf. forbrugeraftalelovens kap. 4). Ved private handler mellem to privatpersoner gælder fortrydelsesretten ikke.</p>
+      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, er der ingen fortrydelsesret forbundet med at oprette en brugerkonto eller en annonce — begge kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger; om der gælder fortrydelsesret — fx 14 dage ved fjernkøb fra en erhvervsdrivende, jf. forbrugeraftaleloven — afhænger af den konkrete handel og er sælgers ansvar (se §5a). Ved handler mellem to private gælder der ingen fortrydelsesret.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. AI-chatassistent</h3>
       <p style="margin-bottom:16px;">Platformen tilbyder en AI-baseret chatassistent til generel hjælp og support. Svar fra AI-assistenten er udelukkende vejledende og udgør ikke juridisk, økonomisk eller professionel rådgivning. Vi garanterer ikke for rigtigheden eller fuldstændigheden af AI-assistentens svar. Ved tvivl bør du altid kontakte os direkte eller søge professionel rådgivning.</p>
@@ -181,7 +174,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 18. juni 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 29. juni 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -201,8 +194,8 @@ export const footerContent = {
         <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
         <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
-        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres, når det aktiveres, af Stripe — se betalingsdata.</li>
-        <li><strong>Betalingsdata:</strong> Forhandlerabonnementer er gratis under platformens lanceringsfase. Når betaling senere aktiveres, håndteres den af Stripe — vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
+        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres af Stripe — se betalingsdata.</li>
+        <li><strong>Betalingsdata:</strong> Betalt fremhævning (boost) af annoncer håndteres af Stripe. Forhandlerabonnementer er gratis under platformens lanceringsfase; når betaling for abonnementer senere aktiveres, håndteres den ligeledes af Stripe. Vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
         <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, sender vi det til tyveriregisteret BikeIndex for et opslag. Vi gemmer <strong>aldrig</strong> hele stelnummeret — kun de sidste 4 cifre samt resultatet af opslaget (om der blev fundet et muligt match). Det fulde nummer kasseres efter opslaget.</li>
       </ul>
@@ -264,7 +257,7 @@ export const footerContent = {
       <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Supabase (USA)</strong> — Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
-        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for forhandlerabonnementer. Stripe er selvstændig dataansvarlig for betalingsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
+        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for betalt fremhævning (boost) og fremtidige forhandlerabonnementer. Stripe er selvstændig dataansvarlig for betalingsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
         <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>

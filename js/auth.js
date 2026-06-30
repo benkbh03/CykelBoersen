@@ -1,3 +1,5 @@
+import { validatePassword } from './utils.js';
+
 export function createAuthActions({ supabase, showToast, btnLoading, enableFocusTrap, disableFocusTrap }) {
   function openLoginModal() {
     document.getElementById('login-modal').classList.add('open');
@@ -63,7 +65,8 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
     const email    = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
     if (!name || !email || !password) { showToast('⚠️ Udfyld alle felter'); return; }
-    if (password.length < 8) { showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return; }
+    const pwCheck = validatePassword(password, { email, name });
+    if (!pwCheck.ok) { showToast('⚠️ ' + pwCheck.message); return; }
     const restore = btnLoading('register-btn', 'Opretter konto...');
     // Hvis brugeren udfyldte en Cykelagent før signup, send den med i user_metadata
     // så den overlever email-bekræftelse (også hvis linket åbnes i en anden browser).

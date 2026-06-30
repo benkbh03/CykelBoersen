@@ -46,21 +46,34 @@ export function createInbox({
 
   function renderMessages(messages, isSeller, bikeActive, isInbox) {
     const currentUser = getCurrentUser();
+    // Rent check-ikon (SVG, ikke emoji) til accepter-knap + accept-bekræftelse.
+    const checkSvg = '<svg class="msg-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>';
     return messages.map(msg => {
       const isSent     = msg.sender_id === currentUser.id;
       const isBid      = msg.content.startsWith('💰 Bud:') || msg.content.startsWith('💰');
       const isAccepted = msg.content.startsWith('✅ Bud på');
       const time       = new Date(msg.created_at).toLocaleString('da-DK', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       const acceptBtn  = (isBid && !isSent && isSeller && bikeActive)
-        ? `<button class="btn-accept-bid" onclick="acceptBid('${escAttr(msg.content)}', ${isInbox})">✅ Accepter bud</button>`
+        ? `<button class="btn-accept-bid" onclick="acceptBid('${escAttr(msg.content)}', ${isInbox})">${checkSvg}Accepter bud</button>`
         : '';
       const readReceipt = (isSent && !isAccepted)
         ? (msg.read
             ? '<span class="read-receipt read" title="Læst">✓✓</span>'
             : '<span class="read-receipt" title="Sendt">✓</span>')
         : '';
+      // Emoji-markørerne (💰/✅) bevares i DB-content til detektion + notifikationer,
+      // men VISES ikke — i stedet rene labels/ikoner, så tråden ser professionel ud.
+      let body;
+      if (isBid) {
+        const m = msg.content.match(/Bud:\s*(.+?)\s*kr\./);
+        body = `<span class="bid-amount">${esc(m ? `${m[1]} kr.` : msg.content.replace(/^💰\s*/, ''))}</span>`;
+      } else if (isAccepted) {
+        body = `<span class="accepted-text">${checkSvg}<span>${esc(msg.content.replace(/^✅\s*/, ''))}</span></span>`;
+      } else {
+        body = esc(msg.content);
+      }
       return `<div class="message-bubble ${isSent ? 'sent' : 'received'}${isBid ? ' bid-bubble' : ''}${isAccepted ? ' accepted-bubble' : ''}">
-      ${esc(msg.content)}${acceptBtn}<div class="msg-time">${time}${readReceipt}</div>
+      ${body}${acceptBtn}<div class="msg-time">${time}${readReceipt}</div>
     </div>`;
     }).join('');
   }

@@ -2,7 +2,7 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
+import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword } from './js/utils.js';
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628g';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628j';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -1790,13 +1790,19 @@ function updatePwStrength(inputId, wrapId) {
   if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
   if (/\d/.test(v))     score++;
   if (/[^A-Za-z0-9]/.test(v)) score++;
-  // 0-1: weak, 2-3: medium, 4-5: strong
-  const tier = v.length < 8 ? 'too-short' : score <= 1 ? 'weak' : score <= 3 ? 'medium' : 'strong';
+  // Oplagte/gættelige koder (fx "12345678" eller din email) trækkes ned til Svag
+  // uanset længde, så måleren matcher de hårde krav i validatePassword.
+  const guessable = v.length >= 8 && !validatePassword(v).ok;
+  const tier = v.length < 8 ? 'too-short'
+             : guessable    ? 'weak'
+             : score <= 1   ? 'weak'
+             : score <= 3   ? 'medium'
+             : 'strong';
   const labels = {
-    'too-short': `🔴 Mindst 8 tegn (du har ${v.length})`,
-    weak:        '🔴 Svag — gør den længere',
-    medium:      '🟡 OK — kan gøres stærkere',
-    strong:      '🟢 Stærkt password ✓',
+    'too-short': `Mindst 8 tegn (du har ${v.length})`,
+    weak:        'Svag — gør den længere eller mere unik',
+    medium:      'OK — kan gøres stærkere',
+    strong:      'Stærk adgangskode',
   };
   const widths = { 'too-short': '20%', weak: '35%', medium: '65%', strong: '100%' };
   if (fill)  { fill.style.width = widths[tier]; fill.dataset.tier = tier; }
@@ -2376,8 +2382,9 @@ async function handleResetPassword() {
   const pw1 = document.getElementById('reset-pw1').value;
   const pw2 = document.getElementById('reset-pw2').value;
 
-  if (!pw1 || pw1.length < 8) { showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return; }
-  if (pw1 !== pw2)             { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
+  const pwCheck = validatePassword(pw1);
+  if (!pwCheck.ok) { showToast('⚠️ ' + pwCheck.message); return; }
+  if (pw1 !== pw2) { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
 
   const btn = document.querySelector('[onclick="handleResetPassword()"]');
   const originalText = btn?.textContent;
