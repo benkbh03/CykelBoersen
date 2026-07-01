@@ -11,7 +11,7 @@ export const MAP_PAGE_LIMIT = 500;
    BUMP når lazy-loaded moduler ændres, så browseren henter ny version
    i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
    rydder ikke altid module-cachen. */
-export const ASSET_VERSION = '20260628l';
+export const ASSET_VERSION = '20260628m';
 
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
@@ -33,6 +33,31 @@ export const BIKE_COLORS = [
   { name: 'Lilla',    hex: '#7a4ec1', dark: true  },
   { name: 'Brun',     hex: '#7a4f2a', dark: true  },
   { name: 'Beige',    hex: '#d8c8a8', dark: false },
+];
+
+/* ── Top-level listing-kategorier ────────────────────────────
+   `category`-kolonnen på bikes-tabellen. Hård top-level akse: alle
+   liste-queries scopes på den, så cykler og tilbehør ALDRIG blandes.
+   Default (og alle eksisterende annoncer) = 'cykel'. */
+export const LISTING_CATEGORY = { BIKE: 'cykel', ACCESSORY: 'tilbehoer' };
+
+/* Kanonisk underkategori-liste for tilbehør (én bred spand, ingen spec-felter
+   pr. underkategori). Gemmes i `type`-kolonnen når category='tilbehoer'.
+   ÉN kilde — spejles i sælg-flow, sidebar/hero-filtre og filter-tællere. */
+export const ACCESSORY_TYPES = [
+  'Hjelm',
+  'Lygter',
+  'Lås',
+  'Computer/GPS',
+  'Tasker & kurve',
+  'Pumpe & værktøj',
+  'Barnestol & anhænger',
+  'Hometrainer',
+  'Cykelsko',
+  'Beklædning',
+  'Skærme & bagagebærere',
+  'Dæk & slanger',
+  'Øvrigt tilbehør',
 ];
 
 export const STATIC_PAGE_ROUTES = {

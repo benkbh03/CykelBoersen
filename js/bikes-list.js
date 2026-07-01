@@ -132,11 +132,13 @@ export function createBikesList({
       ? BIKES_LOAD_MORE_SIZE
       : (initialVist || BIKES_PAGE_SIZE);
 
-    const SELECT_FIELDS = 'id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)';
+    const SELECT_FIELDS = 'id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)';
 
     // Fælles filtre — anvendes på BÅDE hoved-listen og fremhævede-query, så et
     // boost kun løftes op når annoncen rent faktisk matcher det aktuelle filter.
     const applyListFilters = (q) => {
+      // Hård top-level separation: browse viser én kategori ad gangen (default cykel).
+      q = q.eq('category', filters.category || 'cykel');
       if (filters.type) q = q.eq('type', filters.type);
       if (filters.city) {
         const group = CITY_GROUPS[filters.city];
@@ -419,7 +421,7 @@ export function createBikesList({
     frameMaterials = [], brakeTypes = [], groupsets = [], electronicShifting = null,
     motors = [], motorPositions = [], batteryMin, batteryMax,
     suspensions = [], geartypes = [], stepTypes = [],
-    maxWeight = null, city = null, search = null,
+    maxWeight = null, city = null, search = null, category = 'cykel',
   } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 
@@ -440,7 +442,7 @@ export function createBikesList({
         frameMaterials, brakeTypes, groupsets, electronicShifting,
         motors, motorPositions, batteryMin, batteryMax,
         suspensions, geartypes, stepTypes,
-        maxWeight, city, search,
+        maxWeight, city, search, category,
       });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
@@ -452,8 +454,9 @@ export function createBikesList({
     const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
     let query = supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
+      .select('id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
+      .eq('category', category)
       .order('created_at', { ascending: false })
       .range(offset, offset + filterFetchCount - 1);
 
