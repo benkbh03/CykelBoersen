@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260628o';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701a';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -469,6 +469,31 @@ const showListingSuccessModal    = lazyMethod(_ensureSellPage, 'showListingSucce
 const closeListingSuccessModal   = lazyMethod(_ensureSellPage, 'closeListingSuccessModal');
 const renderSellImagePreviews    = lazyMethod(_ensureSellPage, 'renderSellImagePreviews');
 const showSellTermsModal         = lazyMethod(_ensureSellPage, 'showSellTermsModal');
+
+// Sælg-flow: kategori-vælger + let tilbehørs-flow (lazy — kun /sell)
+// Genbruger billed-upload (previewSellImages) + success-modal fra sell-page.
+const _ensureSellAccessory = lazyCtrl(
+  () => import(`./js/sell-accessory.js?v=${ASSET_VERSION}`),
+  'createSellAccessory',
+  () => ({
+    supabase, showToast, esc, btnLoading, updateSEOMeta,
+    attachCityAutocomplete,
+    blockIfPendingDealer:   () => blockIfPendingDealer(),
+    openLoginModal:         () => openLoginModal(),
+    navigateTo:             (...args) => navigateTo(...args),
+    showDetailView:         () => showDetailView(),
+    getSelectedFiles,
+    uploadImages,
+    getCurrentUser:         () => currentUser,
+    getCurrentProfile:      () => currentProfile,
+    accessoryTypes:         ACCESSORY_TYPES,
+    showListingSuccessModal: (...args) => showListingSuccessModal(...args),
+  }),
+);
+const renderSellChooser          = lazyMethod(_ensureSellAccessory, 'renderSellChooser');
+const renderSellAccessoryPage    = lazyMethod(_ensureSellAccessory, 'renderSellAccessoryPage');
+const checkAccessoryForm         = lazyMethod(_ensureSellAccessory, 'checkAccessoryForm');
+const submitAccessoryListing     = lazyMethod(_ensureSellAccessory, 'submitAccessoryListing');
 
 // Bike detail — lazy-loaded (kun ved /bike/:id route eller åbning af bike-modal)
 // Ved første load kører setupLightboxEvents + registerWindowExports.
@@ -1960,7 +1985,9 @@ function handleRoute() {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
-    renderSellPage();
+    // /sell viser nu "Hvad vil du sælge?"-vælgeren (Cykel → renderSellPage,
+    // Tilbehør → renderSellAccessoryPage). Cykel-flowet er uændret.
+    renderSellChooser();
   } else if (bikeMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -2046,7 +2073,8 @@ function _preloadStaticModules() {
     // Annonce-modal (klik på bike-card) + Leaflet til lokations-kort
     import(`./js/bike-detail.js?v=${ASSET_VERSION}`).catch(() => {});
     ensureLeaflet().catch(() => {});
-    // "Sæt til salg"-knap
+    // "Sæt til salg"-knap: kategori-vælger + cykel-wizard
+    import(`./js/sell-accessory.js?v=${ASSET_VERSION}`).catch(() => {});
     import(`./js/sell-page.js?v=${ASSET_VERSION}`).catch(() => {});
     // "Forhandlere"-link i topnav
     import(`./js/dealers-page.js?v=${ASSET_VERSION}`).catch(() => {});
@@ -2735,6 +2763,10 @@ window.setPrimary         = setPrimary;
 window.removeImage        = removeImage;
 window.renderSellPage            = renderSellPage;
 window.submitSellPage            = submitSellPage;
+window.renderSellChooser         = renderSellChooser;
+window.renderSellAccessoryPage   = renderSellAccessoryPage;
+window.checkAccessoryForm        = checkAccessoryForm;
+window.submitAccessoryListing    = submitAccessoryListing;
 window.previewSellImages         = previewSellImages;
 window.setSellPrimary            = setSellPrimary;
 window.removeSellImage           = removeSellImage;
