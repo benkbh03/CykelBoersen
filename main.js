@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628k';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628l';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -1858,6 +1858,19 @@ function handleRoute() {
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
   const staticMatch  = Object.keys(STATIC_PAGE_ROUTES).find(key => STATIC_PAGE_ROUTES[key] === path);
+
+  // Ryd detail-view SYNKRONT ved ALLE side-ruter, så den forrige sides indhold
+  // ikke "glipper" mens den nye (typisk lazy-loadede) side hentes og renderes.
+  // Hver render-gren overskriver straks denne placeholder med sit eget skelet/indhold.
+  const _isPageRoute = staticMatch || dealerApply || dealersMatch || mapPageMatch ||
+    inboxMatch || meMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
+    brandMatch || brandsOverviewMatch || cykelagentMatch || valuationMatch ||
+    sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch;
+  if (_isPageRoute) {
+    const _pv = document.getElementById('detail-view');
+    if (_pv) _pv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser…</div>';
+  }
+
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
