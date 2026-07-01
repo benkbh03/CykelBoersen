@@ -49,6 +49,7 @@ export function createBikesList({
   getActiveRadius,
   userSavedSet,        // Set reference (mutated)
   askedAvailableSet,   // Set reference (read)
+  getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
 }) {
   // Læs ?vist=N fra URL'en — kun gyldigt på initial load, og kun til at hente
   // en større førstesats så delelig/bookmarkbar position kan genskabes.
@@ -138,7 +139,7 @@ export function createBikesList({
     // boost kun løftes op når annoncen rent faktisk matcher det aktuelle filter.
     const applyListFilters = (q) => {
       // Hård top-level separation: browse viser én kategori ad gangen (default cykel).
-      q = q.eq('category', filters.category || 'cykel');
+      q = q.eq('category', filters.category || (getBrowseCategory ? getBrowseCategory() : 'cykel'));
       if (filters.type) q = q.eq('type', filters.type);
       if (filters.city) {
         const group = CITY_GROUPS[filters.city];
@@ -421,7 +422,8 @@ export function createBikesList({
     frameMaterials = [], brakeTypes = [], groupsets = [], electronicShifting = null,
     motors = [], motorPositions = [], batteryMin, batteryMax,
     suspensions = [], geartypes = [], stepTypes = [],
-    maxWeight = null, city = null, search = null, category = 'cykel',
+    maxWeight = null, city = null, search = null,
+    category = (getBrowseCategory ? getBrowseCategory() : 'cykel'),
   } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
 

@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js?v=20260628m';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260628n';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -194,7 +194,41 @@ const {
   getActiveRadius:      () => activeRadius,
   userSavedSet:         _userSavedSet,
   askedAvailableSet,
+  getBrowseCategory: () => _browseCategory,
 });
+
+// Aktiv browse-kategori for forside-toggle "Cykler | Tilbehør". Hård top-level
+// separation: alle liste-queries scopes på den (default cykel).
+let _browseCategory = 'cykel';
+const BIKE_TYPES = ['Racercykel','Mountainbike','El-cykel','Citybike','Gravel','Ladcykel','Børnecykel','Senior cykel'];
+
+function setBrowseCategory(cat) {
+  cat = (cat === 'tilbehoer') ? 'tilbehoer' : 'cykel';
+  _browseCategory = cat;
+  const isAcc = cat === 'tilbehoer';
+  const types = isAcc ? ACCESSORY_TYPES : BIKE_TYPES;
+  document.body.classList.toggle('browse-tilbehoer', isAcc);
+  document.querySelectorAll('.browse-cat-btn').forEach(b => {
+    const on = b.dataset.cat === cat;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  // Ryd aktive type-filtre så en cykel-type ikke hænger ved i tilbehør (og omvendt)
+  document.querySelectorAll('[data-filter="type"]:checked').forEach(cb => { cb.checked = false; });
+  // Swap hero-dropdown, hero-chips og sidebar-type-liste til den valgte kategori
+  const sel = document.getElementById('search-type');
+  if (sel) sel.innerHTML = '<option value="">Alle typer</option>' + types.map(t => `<option>${esc(t)}</option>`).join('');
+  const chips = document.querySelector('.hero-cat-chips');
+  if (chips) chips.innerHTML = '<button class="hero-cat-chip active" onclick="selectHeroCatChip(this,\'\')" aria-pressed="true">Alle</button>' +
+    types.map(t => `<button class="hero-cat-chip" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(t)}</button>`).join('');
+  const stg = document.getElementById('sidebar-type-group');
+  if (stg) stg.innerHTML = types.map(t => `<label class="filter-option"><input type="checkbox" data-filter="type" data-value="${esc(t)}" onchange="applyFilters()"> ${esc(t)} <span class="filter-count">–</span></label>`).join('');
+  const sth = document.getElementById('sidebar-type-heading');
+  if (sth) sth.textContent = isAcc ? 'Tilbehørstype' : 'Cykeltype';
+  // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)
+  loadBikes({ category: cat });
+}
+window.setBrowseCategory = setBrowseCategory;
 
 // My-profile actions (loadMyListings, savedListings, savedSearches, tradeHistory).
 const {
