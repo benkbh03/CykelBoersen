@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260628n';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260628o';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -225,8 +225,21 @@ function setBrowseCategory(cat) {
   if (stg) stg.innerHTML = types.map(t => `<label class="filter-option"><input type="checkbox" data-filter="type" data-value="${esc(t)}" onchange="applyFilters()"> ${esc(t)} <span class="filter-count">–</span></label>`).join('');
   const sth = document.getElementById('sidebar-type-heading');
   if (sth) sth.textContent = isAcc ? 'Tilbehørstype' : 'Cykeltype';
+  // Skjul cykel-specifikke filter-sektioner på tilbehør (behold kun generiske + type)
+  const KEEP_ON_ACC = new Set(['Pris', 'Mærke', 'Stand', 'Farve', 'Sælgertype']);
+  document.querySelectorAll('#sidebar-filters .sidebar-box').forEach(box => {
+    if (box.querySelector('#sidebar-type-heading')) { box.style.display = ''; return; }
+    const h3 = box.querySelector('h3');
+    box.style.display = (isAcc && !KEEP_ON_ACC.has((h3 ? h3.textContent : '').trim())) ? 'none' : '';
+  });
   // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)
   loadBikes({ category: cat });
+  // Kategori-bevidst tæller — tilbehør må ikke tælle med under cykler
+  supabase.from('bikes').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('category', cat)
+    .then(({ count }) => {
+      const el = document.getElementById('listings-count');
+      if (el) el.textContent = isAcc ? `${count || 0} stykker tilbehør` : `${count || 0} cykler til salg`;
+    }, () => {});
 }
 window.setBrowseCategory = setBrowseCategory;
 
