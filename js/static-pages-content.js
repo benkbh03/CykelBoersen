@@ -106,10 +106,11 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4a. Tilladt sortiment</h3>
-      <p style="margin-bottom:8px;">Cykelbørsen er udelukkende en markedsplads for cykler. Følgende må sælges på platformen:</p>
+      <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Almindelige cykler</strong> i alle kategorier — racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
         <li><strong>El-cykler (pedelec)</strong> med motor op til 250W og max 25 km/t med pedal-assist. Det er det færdselsloven definerer som "cykel" og kræver ikke registrering, kørekort eller forsikring.</li>
+        <li><strong>Cykeltilbehør og -udstyr</strong> — fx hjelme, lygter, låse, cykelcomputere, tasker, pumper, barnestole, hometrainere, cykelsko, cykelbeklædning, skærme og dæk/slanger.</li>
       </ul>
       <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke er cykler jvf. dansk lovgivning:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
@@ -117,7 +118,6 @@ export const footerContent = {
         <li><strong>Speed pedelecs</strong> (cykler med motor 250-1000W eller hastighed over 25 km/t med pedal-assist) — kræver registrering som lille knallert (L1e), nummerplade og ansvarsforsikring.</li>
         <li><strong>El-motocross, el-motorcykler og el-mopeder</strong> over 1000W eller over 45 km/t — kræver kørekort og fuld registrering som motorkøretøj.</li>
         <li><strong>Almindelige knallerter, scootere og motorcykler.</strong></li>
-        <li><strong>Cykelreservedele eller tilbehør uden tilhørende cykel</strong> (kan ændres i en fremtidig version af platformen).</li>
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist, så køber kan verificere at cyklen falder inden for cykel-definitionen.</p>
 
@@ -373,9 +373,9 @@ export const footerContent = {
   },
   sortiment: {
     title: 'Tilladt sortiment',
-    metaDesc: 'Hvad må sælges på Cykelbørsen? Alle cykler og el-cykler op til 250W. Ikke el-løbehjul, knallerter eller motorcykler.',
+    metaDesc: 'Hvad må sælges på Cykelbørsen? Alle cykler, el-cykler op til 250W og cykeltilbehør. Ikke el-løbehjul, knallerter eller motorcykler.',
     body: `
-      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler. Her er hvad der må sælges, og hvad der ikke gør — så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
+      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler og cykeltilbehør. Her er hvad der må sælges, og hvad der ikke gør — så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
         <div style="background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:18px 20px;">
@@ -383,6 +383,7 @@ export const footerContent = {
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>Alle slags cykler — racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
+            <li>Cykeltilbehør og -udstyr — hjelme, lygter, låse, computere, tasker, pumper, barnestole, hometrainere, sko, beklædning, skærme, dæk/slanger m.m.</li>
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
@@ -392,7 +393,6 @@ export const footerContent = {
             <li>Speed pedelecs (250-1000W eller over 25 km/t)</li>
             <li>El-motocross, el-motorcykler, el-mopeder</li>
             <li>Almindelige knallerter og motorcykler</li>
-            <li>Cykelreservedele eller tilbehør alene (uden cykel)</li>
           </ul>
         </div>
       </div>
