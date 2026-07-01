@@ -243,6 +243,19 @@
         </button>
       </div>
     </div>
+    <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
+    <style>
+      .browse-cat-wrap{display:flex;justify-content:center;margin:0 0 14px;}
+      .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--sand-2);border:1px solid var(--border);border-radius:999px;padding:4px;}
+      .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:600 0.9rem/1 'DM Sans',sans-serif;padding:9px 20px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s;}
+      .browse-cat-btn.active{background:var(--forest);color:#fff;}
+    </style>
+    <div class="browse-cat-wrap">
+      <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
+        <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
+        <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
+      </div>
+    </div>
     <!-- ── KATEGORI CHIPS ── -->
     <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
       <button class="hero-cat-chip active" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
@@ -521,10 +534,10 @@
       </div>
       <div class="sidebar-box collapsed">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
-          <h3>Cykeltype</h3>
+          <h3 id="sidebar-type-heading">Cykeltype</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
-        <div class="filter-group sidebar-section-body">
+        <div class="filter-group sidebar-section-body" id="sidebar-type-group">
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Racercykel" onchange="applyFilters()"> Racercykel <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Mountainbike" onchange="applyFilters()"> Mountainbike <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="El-cykel" onchange="applyFilters()"> El-cykel <span class="filter-count">–</span></label>
@@ -986,7 +999,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260628m';
+    const V = '20260628n';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
