@@ -47,7 +47,7 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260701b">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260701c">
   <link rel="stylesheet" href="/css/02-listings.css?v=20260628d">
   <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
   <link rel="stylesheet" href="/css/04-modals.css?v=20260628c">
@@ -241,19 +241,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
           Søg
         </button>
-      </div>
-    </div>
-    <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
-    <style>
-      .browse-cat-wrap{display:flex;justify-content:center;margin:15px 0 5px;}
-      .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1px solid rgba(26,26,24,0.10);border-radius:9px;padding:4px;box-shadow:0 6px 18px rgba(14,22,15,0.30);}
-      .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.82rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
-      .browse-cat-btn.active{background:var(--forest);color:#fff;}
-    </style>
-    <div class="browse-cat-wrap">
-      <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
-        <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
-        <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
       </div>
     </div>
     <!-- ── KATEGORI CHIPS ── -->
@@ -826,10 +813,24 @@
         <div id="promoted-dealers-grid" class="promoted-dealers-grid"></div>
       </section>
 
+      <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
+      <style>
+        .browse-cat-wrap{display:flex;}
+        .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
+        .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
+        .browse-cat-btn:hover{color:var(--charcoal);}
+        .browse-cat-btn.active{background:var(--forest);color:#fff;}
+      </style>
       <div class="listings-header">
         <div>
           <h2>Seneste annoncer</h2>
           <span id="listings-count">– cykler til salg</span>
+        </div>
+        <div class="browse-cat-wrap">
+          <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
+            <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
+            <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
+          </div>
         </div>
         <div class="listings-controls">
           <button class="btn-mobile-filter" onclick="openMobileFilters()" id="btn-open-filters">
