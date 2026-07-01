@@ -245,10 +245,12 @@
     </div>
     <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
     <style>
-      .browse-cat-wrap{display:flex;justify-content:center;margin:0 0 14px;}
-      .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--sand-2);border:1px solid var(--border);border-radius:999px;padding:4px;}
-      .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:600 0.9rem/1 'DM Sans',sans-serif;padding:9px 20px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s;}
+      .browse-cat-wrap{display:flex;justify-content:center;margin:8px 0 20px;}
+      .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1px solid var(--border);border-radius:999px;padding:5px;box-shadow:0 6px 18px rgba(26,26,24,0.18);}
+      .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:600 0.92rem/1 'DM Sans',sans-serif;padding:10px 24px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s;}
       .browse-cat-btn.active{background:var(--forest);color:#fff;}
+      /* Skjul cykel-specifikke sidebar-filtre når man browser tilbehør */
+      body.browse-tilbehoer .sidebar-box[data-cykel-only]{display:none;}
     </style>
     <div class="browse-cat-wrap">
       <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
@@ -999,7 +1001,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260628n';
+    const V = '20260628o';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
