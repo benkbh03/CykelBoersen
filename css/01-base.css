@@ -414,7 +414,7 @@ nav {
   background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
   padding: 16px 48px 14px;
-  height: clamp(264px, 18.5vw, 306px) !important;
+  height: clamp(240px, 17vw, 280px) !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
