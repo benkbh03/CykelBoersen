@@ -51,6 +51,11 @@ function emailWrapper(content) {
 function bikeMatchesSearch(bike, filters) {
   if (!filters) return false;
 
+  // Hård kategori-akse: en cykel-agent matcher ALDRIG tilbehør (og omvendt).
+  // Eksisterende cykel-agenter har ingen filters.category → defaulter til 'cykel';
+  // cykel-annoncer har category (eller default 'cykel'). Ingen ændring for cykler.
+  if ((bike.category || "cykel") !== (filters.category || "cykel")) return false;
+
   // Legacy enkelt-type dropdown
   if (filters.type && bike.type !== filters.type) return false;
 

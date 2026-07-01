@@ -7,6 +7,7 @@ export function createMyProfile({
   getCurrentUser,
   getCurrentFilters,
   getCurrentFilterArgs,
+  getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
   // Collaborators
   loadBikes,
   updateFilterCounts,
@@ -207,7 +208,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(seller_type), bike_images(url, is_primary)')
+        .select('id, category, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
@@ -216,6 +217,7 @@ export function createMyProfile({
         body: {
           bike: {
             id:                  full.id,
+            category:            full.category || 'cykel',
             user_id:             newBike.user_id || null,
             brand:               full.brand,
             model:               full.model,
@@ -301,7 +303,10 @@ export function createMyProfile({
     if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
     if (city)                      parts.push(city);
     const name = parts.join(' · ') || 'Min søgning';
-    const filters = { search, type, city, warranty, ...fa };
+    // Stempl aktiv browse-kategori, så matchningen i notify-saved-searches
+    // aldrig krydser cykel/tilbehør. Eksisterende agenter uden category = 'cykel'.
+    const category = (getBrowseCategory ? getBrowseCategory() : 'cykel') || 'cykel';
+    const filters = { search, type, city, warranty, category, ...fa };
 
     // Ikke logget ind: gem agenten som pending (samme flow som /cykelagenter) og
     // bed brugeren oprette konto. flushPendingCykelagent i main.js aktiverer den
