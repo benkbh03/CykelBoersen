@@ -489,7 +489,7 @@ nav {
 }
 /* ── HERO KATEGORI-CHIPS ── */
 .hero-cat-chips {
-  display: flex; justify-content: center; gap: 7px;
+  display: flex; justify-content: safe center; gap: 7px;
   flex-wrap: nowrap; white-space: nowrap;
   max-width: 960px; margin: 10px auto 0;
   overflow-x: auto; scrollbar-width: none;
