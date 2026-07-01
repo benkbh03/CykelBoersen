@@ -47,7 +47,7 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260701a">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260701b">
   <link rel="stylesheet" href="/css/02-listings.css?v=20260628d">
   <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
   <link rel="stylesheet" href="/css/04-modals.css?v=20260628c">
@@ -245,7 +245,7 @@
     </div>
     <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
     <style>
-      .browse-cat-wrap{display:flex;justify-content:center;margin:2px 0 8px;}
+      .browse-cat-wrap{display:flex;justify-content:center;margin:15px 0 5px;}
       .browse-cat-toggle{display:inline-flex;gap:3px;background:var(--cream);border:1px solid var(--border);border-radius:999px;padding:3px;box-shadow:0 3px 10px rgba(26,26,24,0.14);}
       .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:600 0.82rem/1 'DM Sans',sans-serif;padding:7px 17px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s;}
       .browse-cat-btn.active{background:var(--forest);color:#fff;}
