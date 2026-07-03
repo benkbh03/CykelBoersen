@@ -1921,9 +1921,22 @@ export function createSellPage({
     if (titleEl) titleEl.textContent = `${bike.brand} ${bike.model}`;
     if (priceEl) priceEl.textContent = bike.price ? `${bike.price.toLocaleString('da-DK')} kr.` : '';
     if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); navigateTo(`/bike/${bike.id}`); };
-    if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellPage(); };
+    // "Opret en ny annonce" → kategori-vælgeren, så man kan vælge cykel/tilbehør.
+    if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellChooser(); };
     const boostBtn = document.getElementById('success-boost-btn');
     if (boostBtn) boostBtn.onclick = () => { closeListingSuccessModal(); if (window.openBoostModal) window.openBoostModal(bike.id); };
+
+    // Cross-sell: efter en CYKEL-annonce, nudg til også at sælge tilbehør
+    // (rammer folk der lige har solgt-mode og har gammelt grej liggende).
+    // Vises IKKE efter en tilbehørs-annonce ("Opret ny" dækker det).
+    const crossSell = document.getElementById('success-crosssell');
+    if (crossSell) {
+      const showCross = !_isAcc();
+      crossSell.style.display = showCross ? 'flex' : 'none';
+      const crossBtn = document.getElementById('success-crosssell-btn');
+      if (showCross && crossBtn) crossBtn.onclick = () => { closeListingSuccessModal(); renderSellPage('tilbehoer'); };
+    }
+
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }

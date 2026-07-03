@@ -939,6 +939,24 @@
         <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce →</button>
         <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
       </div>
+      <style>
+        .success-crosssell{display:none;align-items:center;gap:12px;margin-top:16px;padding:14px 16px;background:var(--sand);border:1px solid var(--border);border-radius:14px;text-align:left;}
+        .success-crosssell-emoji{font-size:1.7rem;flex-shrink:0;line-height:1;}
+        .success-crosssell-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+        .success-crosssell-text strong{font-size:0.92rem;color:var(--charcoal);font-family:'DM Sans',sans-serif;}
+        .success-crosssell-text span{font-size:0.8rem;color:var(--muted);line-height:1.4;}
+        .success-crosssell-btn{flex-shrink:0;background:var(--forest);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s;}
+        .success-crosssell-btn:hover{background:#24331f;}
+        @media(max-width:480px){.success-crosssell{flex-wrap:wrap;} .success-crosssell-btn{width:100%;}}
+      </style>
+      <div class="success-crosssell" id="success-crosssell">
+        <span class="success-crosssell-emoji">🎒</span>
+        <div class="success-crosssell-text">
+          <strong>Har du også cykeltilbehør?</strong>
+          <span>Sælg dit gamle grej — hjelm, lygter, tasker … det er gratis.</span>
+        </div>
+        <button class="success-crosssell-btn" id="success-crosssell-btn">Sæt til salg →</button>
+      </div>
     </div>
   </div>
 
