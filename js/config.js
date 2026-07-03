@@ -11,7 +11,7 @@ export const MAP_PAGE_LIMIT = 500;
    BUMP når lazy-loaded moduler ændres, så browseren henter ny version
    i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
    rydder ikke altid module-cachen. */
-export const ASSET_VERSION = '20260701h';
+export const ASSET_VERSION = '20260701i';
 
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
@@ -45,18 +45,43 @@ export const LISTING_CATEGORY = { BIKE: 'cykel', ACCESSORY: 'tilbehoer' };
    pr. underkategori). Gemmes i `type`-kolonnen når category='tilbehoer'.
    ÉN kilde — spejles i sælg-flow, sidebar/hero-filtre og filter-tællere. */
 export const ACCESSORY_TYPES = [
+  // Sikkerhed & synlighed
   'Hjelm',
+  'Briller',
   'Lygter',
+  'Ringeklokke',
   'Lås',
+  // Elektronik & holdere
   'Computer/GPS',
+  'Mobilholdere',
+  // Opbevaring & transport
   'Tasker & kurve',
-  'Pumpe & værktøj',
+  'Flasker & flaskeholdere',
+  'Skærme & bagagebærere',
   'Barnestol & anhænger',
+  'Cykelstativer',
+  // Vedligehold
+  'Pumpe & værktøj',
+  'Kædeolie & rengøring',
+  // Reservedele & komponenter
+  'Dæk & slanger',
+  'Hjul',
+  'Forgaffel & affjedring',
+  'Pedaler',
+  'Sadler',
+  'Sadelpind',
+  'Styr & frempind',
+  'Håndtag & styrbånd',
+  'Bremseklodser',
+  'Gear & skiftere',
+  'Kæder & kassetter',
+  // El-cykel
+  'Batterier & opladere (elcykel)',
+  // Træning & beklædning
   'Hometrainer',
   'Cykelsko',
   'Beklædning',
-  'Skærme & bagagebærere',
-  'Dæk & slanger',
+  // Catch-all (skal blive sidst)
   'Øvrigt tilbehør',
 ];
 
