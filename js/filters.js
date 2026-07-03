@@ -17,6 +17,7 @@ export function createFilters({
   setUserGeoCoords,
   getActiveRadius,
   setActiveRadius,
+  getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
 }) {
   function hasActiveFilters() {
     const cf = getCurrentFilters();
@@ -406,12 +407,15 @@ export function createFilters({
 
   async function updateFilterCounts(data, dealerCount) {
     if (!data) {
+      // Tællere scopes til den aktive browse-kategori (Cykler | Tilbehør),
+      // så tilbehør aldrig tælles med under cykler — og omvendt.
+      const _cat = (getBrowseCategory ? getBrowseCategory() : 'cykel') || 'cykel';
       const [bikesRes, dealerRes] = await Promise.all([
-        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles!user_id(seller_type)').eq('is_active', true).eq('category', 'cykel'),
+        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles!user_id(seller_type)').eq('is_active', true).eq('category', _cat),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
       ]);
       if (bikesRes.error || !bikesRes.data) {
-        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles!user_id(seller_type)').eq('is_active', true).eq('category', 'cykel');
+        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles!user_id(seller_type)').eq('is_active', true).eq('category', _cat);
         if (!fallback) return;
         data = fallback;
       } else {
@@ -427,14 +431,12 @@ export function createFilters({
     setCount('seller', 'all',           total);
     setCount('seller', 'dealer',        dealers);
     setCount('seller', 'private',       privates);
-    setCount('type',   'Racercykel',    data.filter(b => b.type === 'Racercykel').length);
-    setCount('type',   'Mountainbike',  data.filter(b => b.type === 'Mountainbike').length);
-    setCount('type',   'El-cykel',      data.filter(b => b.type === 'El-cykel').length);
-    setCount('type',   'Citybike',      data.filter(b => b.type === 'Citybike').length);
-    setCount('type',   'Ladcykel',      data.filter(b => b.type === 'Ladcykel').length);
-    setCount('type',   'Børnecykel',    data.filter(b => b.type === 'Børnecykel').length);
-    setCount('type',   'Gravel',        data.filter(b => b.type === 'Gravel').length);
-    setCount('type',   'Senior cykel',  data.filter(b => b.type === 'Senior cykel').length);
+    // Type-tællere: generisk over de checkboxes der faktisk står i sidebaren,
+    // så både cykel-typer og tilbehørs-underkategorier udfyldes (kategori-swap
+    // genbygger listen i setBrowseCategory).
+    const _typeVals = new Set();
+    document.querySelectorAll('[data-filter="type"]').forEach(cb => { if (cb.dataset.value) _typeVals.add(cb.dataset.value); });
+    _typeVals.forEach(v => setCount('type', v, data.filter(b => b.type === v).length));
     setCount('condition', 'Ny',         data.filter(b => b.condition === 'Ny').length);
     setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
     setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
@@ -461,7 +463,8 @@ export function createFilters({
 
     const countEl   = document.getElementById('listings-count');
     const statTotal = document.getElementById('stat-total');
-    if (countEl)   countEl.textContent   = `${total} cykler til salg`;
+    const _isAccCat = (getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer';
+    if (countEl)   countEl.textContent   = _isAccCat ? `${total} stykker tilbehør` : `${total} cykler til salg`;
     if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
 
     const statDealers = document.getElementById('stat-dealers');

@@ -1,4 +1,4 @@
-export function createSearchAutocompleteHandlers({ supabase, esc, onSearchSubmit }) {
+export function createSearchAutocompleteHandlers({ supabase, esc, onSearchSubmit, getBrowseCategory }) {
   let autocompleteTimeout = null;
   let autocompleteIndex = -1;
 
@@ -14,6 +14,8 @@ export function createSearchAutocompleteHandlers({ supabase, esc, onSearchSubmit
         .from('bikes')
         .select('brand, model, type, price')
         .eq('is_active', true)
+        // Forslag matcher den aktive fane (Cykler | Tilbehør) — aldrig på tværs
+        .eq('category', getBrowseCategory ? getBrowseCategory() : 'cykel')
         .or('brand.ilike.%' + cleanQuery + '%,model.ilike.%' + cleanQuery + '%')
         .limit(8);
 

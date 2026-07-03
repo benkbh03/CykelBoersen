@@ -334,6 +334,7 @@ export function createMapPage({
       .from('bikes')
       .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
+      .eq('category', 'cykel')  // kortet er cykel-only i v1
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
     _mapPageBikes = (!error && data) ? data : [];
@@ -1319,7 +1320,8 @@ export function createMapPage({
     var result = await supabase
       .from('bikes')
       .select('*, profiles!user_id(name, seller_type, shop_name, verified, address, lat, lng, location_precision)')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .eq('category', 'cykel');  // kortet er cykel-only i v1
 
     if (!result.data || result.data.length === 0) return;
 
