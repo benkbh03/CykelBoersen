@@ -111,6 +111,7 @@ export const footerContent = {
         <li><strong>Almindelige cykler</strong> i alle kategorier — racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
         <li><strong>El-cykler (pedelec)</strong> med motor op til 250W og max 25 km/t med pedal-assist. Det er det færdselsloven definerer som "cykel" og kræver ikke registrering, kørekort eller forsikring.</li>
         <li><strong>Cykeltilbehør og -udstyr</strong> — fx hjelme, lygter, låse, cykelcomputere, tasker, pumper, barnestole, hometrainere, cykelsko, cykelbeklædning, skærme og dæk/slanger.</li>
+        <li><strong>Reservedele og komponenter</strong> — fx hjul, dæk/slanger, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr og forgafler.</li>
       </ul>
       <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke er cykler jvf. dansk lovgivning:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
@@ -384,6 +385,7 @@ export const footerContent = {
             <li>Alle slags cykler — racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
             <li>Cykeltilbehør og -udstyr — hjelme, lygter, låse, computere, tasker, pumper, barnestole, hometrainere, sko, beklædning, skærme, dæk/slanger m.m.</li>
+            <li>Reservedele og komponenter — hjul, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr, forgafler m.m.</li>
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
