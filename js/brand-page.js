@@ -128,6 +128,7 @@ export function createBrandPage({
       .from('bikes')
       .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, avatar_url), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
+      .eq('category', 'cykel')  // mærke-sider er cykel-sider
       .ilike('brand', brandName)
       .order('created_at', { ascending: false })
       .limit(60);
@@ -217,6 +218,7 @@ export function createBrandPage({
       .from('bikes')
       .select('user_id, profiles!user_id!inner(id, shop_name, name, city, address, avatar_url, verified, seller_type)')
       .eq('is_active', true)
+      .eq('category', 'cykel')
       .eq('profiles.seller_type', 'dealer')
       .ilike('brand', brandName)
       .limit(200);
@@ -328,7 +330,8 @@ export function createBrandPage({
     const { data: bikes } = await supabase
       .from('bikes')
       .select('brand')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .eq('category', 'cykel');  // tilbehørs-mærker må ikke tælle med i cykel-mærke-oversigten
 
     const counts = new Map();
     if (bikes) {
