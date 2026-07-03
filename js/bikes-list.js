@@ -260,13 +260,14 @@ export function createBikesList({
   }
 
   function renderListingsEmptyState() {
+    const _isAcc = (getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer';
     if (!hasActiveFilters()) {
       return `
         <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
-          <div style="font-size:4rem;margin-bottom:16px;">🚲</div>
-          <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler her endnu</h3>
-          <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge din cykel på Cykelbørsen — det er gratis og tager kun 2 minutter.</p>
-          <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Sæt din cykel til salg</button>
+          <div style="font-size:4rem;margin-bottom:16px;">${_isAcc ? '📦' : '🚲'}</div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør her endnu' : 'Ingen cykler her endnu'}</h3>
+          <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge ${_isAcc ? 'dit cykeltilbehør' : 'din cykel'} på Cykelbørsen — det er gratis og tager kun 2 minutter.</p>
+          <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">${_isAcc ? '+ Sæt tilbehør til salg' : '+ Sæt din cykel til salg'}</button>
         </div>`;
     }
 
@@ -278,7 +279,7 @@ export function createBikesList({
     return `
       <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
         <div style="font-size:3.5rem;margin-bottom:14px;">🔍</div>
-        <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">Ingen cykler matcher dine filtre</h3>
+        <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør matcher dine filtre' : 'Ingen cykler matcher dine filtre'}</h3>
         <p style="color:var(--muted);font-size:0.92rem;max-width:380px;margin:0 auto 14px;line-height:1.55;">Prøv at fjerne et filter eller udvid dit søgekriterium.</p>
         ${filterText}
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;">
