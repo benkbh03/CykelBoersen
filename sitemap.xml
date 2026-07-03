@@ -98,6 +98,7 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/velo</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/falcon</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/brabus</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/e52f28a0-def2-4811-b7c9-c527734b9988</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/f67c12ca-36c5-4fb4-a0ad-46dafd9e907c</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/d98e0696-715e-45cd-beca-3ab73020e61c</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/0fe990b7-52a8-4614-bac0-dbff7ddc9f5c</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -177,7 +178,6 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/09f32150-5cc9-4765-9041-3fd659e62071</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/90b23483-cd6f-495a-bf4f-424115246e46</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/e52f28a0-def2-4811-b7c9-c527734b9988</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/7457647d-9468-4d73-9cfc-ecd63d11de68</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/ddafc080-fad0-4b8d-8e20-c608b67352a9</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/8ebca3e5-b46c-427c-a828-fdaeab3945ce</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -194,7 +194,6 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/facac81c-1f17-4ee5-840c-af80d71f4ee5</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/f421eec4-c872-45e9-bb55-7ff4fa1d3713</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/bdd4921d-19a1-4196-9d39-07a7da03eda6</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/549ae83a-019c-495f-8838-0a362904b83e</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/dealer/81ccb89f-56e6-43b2-ab8b-a9a8f5681a33</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/dealer/04a85d44-4286-4af4-9535-e6bd38138a48</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/dealer/d09d75d0-be87-474f-9d6d-d2fe246bf204</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
