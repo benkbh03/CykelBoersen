@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701i';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701j';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -233,6 +233,28 @@ function setBrowseCategory(cat) {
     const h3 = box.querySelector('h3');
     box.style.display = (isAcc && !KEEP_ON_ACC.has((h3 ? h3.textContent : '').trim())) ? 'none' : '';
   });
+  // URL + SEO: gør tilbehør til en rigtig, delbar/indekserbar landingsside.
+  // replaceState (ikke pushState) → ingen ekstra history-entry, trigger ikke handleRoute.
+  try { history.replaceState(null, '', isAcc ? '/tilbehoer' : '/'); } catch {}
+  document.title = isAcc
+    ? 'Cykeltilbehør & udstyr – Cykelbørsen'
+    : 'Cykelbørsen – Danmarks markedsplads for cykler';
+  updateSEOMeta(
+    isAcc
+      ? 'Køb og sælg cykeltilbehør, udstyr og reservedele på Cykelbørsen — hjelme, lygter, låse, dæk, gear, batterier og meget mere. Gratis at oprette annonce.'
+      : 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler, cykeltilbehør og meget mere. Gratis at oprette annonce.',
+    isAcc ? '/tilbehoer' : '/'
+  );
+  // Hero-tekst tilpasses kategori, så landingssiden er sammenhængende.
+  const _hTitle = document.querySelector('.search-hero-title');
+  const _hSub = document.querySelector('.search-hero-sub');
+  if (_hTitle) _hTitle.innerHTML = isAcc
+    ? 'Find cykeltilbehør på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
+    : 'Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>';
+  if (_hSub) _hSub.textContent = isAcc
+    ? 'Danmarks markedsplads for cykeltilbehør, udstyr og reservedele.'
+    : 'Danmarks dedikerede markedsplads for nye og brugte cykler.';
+
   // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)
   loadBikes({ category: cat });
   // Kategori-bevidste tællere: udfylder både "X cykler/stykker tilbehør"-label
@@ -1907,6 +1929,7 @@ function handleRoute() {
   const dealerApply  = path === '/bliv-forhandler';
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
+  const tilbehoerMatch = path === '/tilbehoer' || path === '/tilbehør';
   const staticMatch  = Object.keys(STATIC_PAGE_ROUTES).find(key => STATIC_PAGE_ROUTES[key] === path);
 
   // Ryd detail-view SYNKRONT ved ALLE side-ruter, så den forrige sides indhold
@@ -2026,8 +2049,18 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBlogOverview();
+  } else if (tilbehoerMatch) {
+    // Dedikeret tilbehørs-landingsside: samme liste-view som forsiden, men med
+    // Tilbehør-kategorien aktiv. setBrowseCategory sætter også titel/meta + URL.
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showListingView();
+    setBrowseCategory('tilbehoer');
+    import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   } else {
     showListingView();
+    // Kommer man til '/' mens tilbehør er aktiv (fx logo-klik), nulstil til cykel.
+    if (_browseCategory === 'tilbehoer') setBrowseCategory('cykel');
     // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
     import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   }
