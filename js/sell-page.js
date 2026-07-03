@@ -562,24 +562,30 @@ export function createSellPage({
 
     const BACK = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const LOGO = `<svg width="22" height="22" viewBox="0 0 40 40" fill="none"><circle cx="11" cy="27" r="9" stroke="var(--forest)" stroke-width="2.5"/><circle cx="29" cy="27" r="9" stroke="var(--forest)" stroke-width="2.5"/><path d="M11 27l7-13h7l5 13M18 14h-3M23 14l-5 13" stroke="var(--rust)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    const CHEV = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    const BIKE = `<svg width="26" height="26" viewBox="0 0 40 40" fill="none"><circle cx="11" cy="27" r="8" stroke="currentColor" stroke-width="2.4"/><circle cx="29" cy="27" r="8" stroke="currentColor" stroke-width="2.4"/><path d="M11 27l7-13h7l5 13M18 14h-3M23 14l-5 13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    const ACC = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2 1 3.5 2.2 4.8.7.8 1.3 1.5 1.5 2.7l.3 1.5h6l.3-1.5c.2-1.2.8-1.9 1.5-2.7C18 12.5 19 11 19 9a7 7 0 0 0-7-7Z"/><path d="M9.5 21h5"/></svg>`;
+    const BIKE = `<svg width="46" height="46" viewBox="0 0 40 40" fill="none"><circle cx="11" cy="27" r="8" stroke="currentColor" stroke-width="2.4"/><circle cx="29" cy="27" r="8" stroke="currentColor" stroke-width="2.4"/><path d="M11 27l7-13h7l5 13M18 14h-3M23 14l-5 13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const ACC = `<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2 1 3.5 2.2 4.8.7.8 1.3 1.5 1.5 2.7l.3 1.5h6l.3-1.5c.2-1.2.8-1.9 1.5-2.7C18 12.5 19 11 19 9a7 7 0 0 0-7-7Z"/><path d="M9.5 21h5"/></svg>`;
     const CSS = `
-      .acc-chooser{display:flex;flex-direction:column;gap:14px;margin-top:8px;}
-      .acc-choice{display:flex;align-items:center;gap:16px;width:100%;text-align:left;background:var(--cream);border:1.5px solid var(--border);border-radius:16px;padding:20px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .15s,box-shadow .15s,transform .05s;}
-      .acc-choice:hover{border-color:var(--forest);box-shadow:0 6px 18px rgba(26,26,24,0.10);}
-      .acc-choice:active{transform:scale(0.99);}
-      .acc-choice-ic{width:52px;height:52px;flex-shrink:0;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--sand);color:var(--forest);}
-      .acc-choice-txt{flex:1;min-width:0;}
-      .acc-choice-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--charcoal);}
-      .acc-choice-sub{font-size:0.83rem;color:var(--muted);margin-top:2px;}
-      .acc-choice-arrow{color:var(--muted);flex-shrink:0;}
+      .sell-wizard--chooser{max-width:900px;}
+      .sell-wizard--chooser .sell-step-heading,
+      .sell-wizard--chooser .sell-step-subtitle{text-align:center;}
+      .acc-chooser{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px;}
+      .acc-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;min-height:300px;background:var(--cream);border:1.5px solid var(--border);border-radius:22px;padding:44px 28px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .15s,box-shadow .18s,transform .12s;}
+      .acc-choice:hover{border-color:var(--forest);box-shadow:0 16px 36px rgba(26,26,24,0.13);transform:translateY(-3px);}
+      .acc-choice:active{transform:translateY(0);}
+      .acc-choice-ic{width:96px;height:96px;flex-shrink:0;border-radius:26px;display:flex;align-items:center;justify-content:center;background:var(--sand);color:var(--forest);}
+      .acc-choice-title{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:600;color:var(--charcoal);}
+      .acc-choice-sub{font-size:0.95rem;color:var(--muted);line-height:1.5;max-width:24ch;margin:0 auto;}
+      @media(max-width:640px){
+        .acc-chooser{grid-template-columns:1fr;gap:14px;margin-top:18px;}
+        .acc-choice{min-height:0;padding:30px 24px;gap:12px;}
+        .acc-choice-ic{width:72px;height:72px;border-radius:20px;}
+        .acc-choice-title{font-size:1.4rem;}
+      }
     `;
 
     document.getElementById('detail-view').innerHTML = `
       <style>${CSS}</style>
-      <div class="sell-wizard">
+      <div class="sell-wizard sell-wizard--chooser">
         <div class="sell-wizard-top">
           <button class="sell-wizard-back-btn" onclick="navigateTo('/')" aria-label="Tilbage">${BACK}</button>
           <div class="sell-wizard-logo">${LOGO}<span>Cykelbørsen</span></div>
@@ -591,19 +597,13 @@ export function createSellPage({
           <div class="acc-chooser">
             <button class="acc-choice" onclick="renderSellPage()">
               <div class="acc-choice-ic">${BIKE}</div>
-              <div class="acc-choice-txt">
-                <div class="acc-choice-title">Cykel</div>
-                <div class="acc-choice-sub">Racer, mountainbike, el-cykel, citybike m.m.</div>
-              </div>
-              <div class="acc-choice-arrow">${CHEV}</div>
+              <div class="acc-choice-title">Cykel</div>
+              <div class="acc-choice-sub">Racer, mountainbike, el-cykel, citybike m.m.</div>
             </button>
             <button class="acc-choice" onclick="renderSellPage('tilbehoer')">
               <div class="acc-choice-ic">${ACC}</div>
-              <div class="acc-choice-txt">
-                <div class="acc-choice-title">Tilbehør &amp; udstyr</div>
-                <div class="acc-choice-sub">Hjelm, lygter, lås, computer, tasker m.m.</div>
-              </div>
-              <div class="acc-choice-arrow">${CHEV}</div>
+              <div class="acc-choice-title">Tilbehør &amp; udstyr</div>
+              <div class="acc-choice-sub">Hjelm, lygter, lås, computer, tasker m.m.</div>
             </button>
           </div>
         </div>
