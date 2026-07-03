@@ -21,10 +21,17 @@ function _markDismissed(parts) {
   } catch {}
 }
 
-export function createCykelagentCta({ hasActiveFilters, describeActiveFilters }) {
+export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory }) {
   function updateCykelagentCta(resultCount = null) {
     const strip = document.getElementById('cykelagent-cta-strip');
     if (!strip) return;
+
+    // Cykelagent-byggeren er cykel-only; tilbehørs-agenter er follow-up.
+    // Skjul hele CTA'en på Tilbehør-fanen så vi ikke lover en cykel-feature.
+    if ((getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer') {
+      strip.style.display = 'none';
+      return;
+    }
 
     if (!hasActiveFilters()) {
       // Ingen aktive filtre: vis en permanent, generisk CTA (fører til
