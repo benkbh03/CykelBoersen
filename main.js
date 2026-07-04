@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701k';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701l';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -249,10 +249,10 @@ function setBrowseCategory(cat) {
   const _hTitle = document.querySelector('.search-hero-title');
   const _hSub = document.querySelector('.search-hero-sub');
   if (_hTitle) _hTitle.innerHTML = isAcc
-    ? 'Find cykeltilbehør på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
+    ? 'Find alt til din cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
     : 'Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>';
   if (_hSub) _hSub.textContent = isAcc
-    ? 'Danmarks markedsplads for cykeltilbehør, udstyr og reservedele.'
+    ? 'Hjelme, lygter, dæk, gear og reservedele — køb og sælg, nyt og brugt.'
     : 'Danmarks dedikerede markedsplads for nye og brugte cykler.';
 
   // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)

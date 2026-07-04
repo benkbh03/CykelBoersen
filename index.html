@@ -816,6 +816,9 @@
       <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
       <style>
         .browse-cat-wrap{display:flex;}
+        /* På mobil bliver listings-header en kolonne (align-items:flex-start),
+           så centrér toggle'en eksplicit. */
+        @media(max-width:768px){.browse-cat-wrap{width:100%;justify-content:center;}}
         .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
@@ -1023,7 +1026,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260701k';
+    const V = '20260701l';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
