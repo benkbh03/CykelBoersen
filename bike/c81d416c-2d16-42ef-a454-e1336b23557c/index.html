@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    SPA-decode: gendan en ren URL efter GitHub Pages 404-fallbacken (se 404.html).
+    Hvis vi ankom via /?/original/sti, oversættes den tilbage til /original/sti
+    med history.replaceState — SYNKRONT og FØR main.js læser location.pathname,
+    så appens router (handleRoute) ser den korrekte rute. Gør intet ved normale
+    loads. Skal blive stående før alle andre scripts.
+  -->
+  <script type="text/javascript">
+    (function (l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function (s) {
+          return s.replace(/~and~/g, '&');
+        }).join('?');
+        window.history.replaceState(null, null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location));
+  </script>
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <title>Centurion 26&quot; Basic Free. – 5.699 kr. | Cykelbørsen</title>
+  <meta name="description" content="Centurion 26&quot; Basic Free. – Børnecykel i Frederiksberg C. Ny. 5.699 kr. Køb på Cykelbørsen." id="meta-description">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2A3D2E">
+  <meta name="keywords" content="nye cykler, brugte cykler, køb cykel, sælg cykel, racercykel, mountainbike, el-cykel, citybike, cykeltilbehør, cykeludstyr, cykelhjelm, cykellygter, cykellås, Danmark, København, cykelmarkedsplads">
+  <meta name="author" content="Cykelbørsen">
+  <meta name="geo.region" content="DK">
+  <meta name="geo.placename" content="Danmark">
+  <link rel="canonical" href="https://cykelbørsen.dk/bike/c81d416c-2d16-42ef-a454-e1336b23557c" id="canonical-link">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cykelbørsen.dk/bike/c81d416c-2d16-42ef-a454-e1336b23557c">
+  <meta property="og:title" content="Centurion 26&quot; Basic Free. – 5.699 kr. | Cykelbørsen">
+  <meta property="og:description" content="Centurion 26&quot; Basic Free. – Børnecykel i Frederiksberg C. Ny. 5.699 kr. Køb på Cykelbørsen.">
+  <meta property="og:locale" content="da_DK">
+  <meta property="og:site_name" content="Cykelbørsen">
+  <meta property="og:image" content="https://cdn.shopify.com/s/files/1/0986/1506/6968/files/24.jpg?v=1777117022">
+  <meta property="og:image:alt" content="Centurion 26&quot; Basic Free. – Børnecykel i Frederiksberg C">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Centurion 26&quot; Basic Free. – 5.699 kr. | Cykelbørsen">
+  <meta name="twitter:description" content="Centurion 26&quot; Basic Free. – Børnecykel i Frederiksberg C. Ny. 5.699 kr. Køb på Cykelbørsen.">
+  <meta name="twitter:image" content="https://cdn.shopify.com/s/files/1/0986/1506/6968/files/24.jpg?v=1777117022">
+
+  <link rel="preload" href="/hero.jpg?v=hero1" as="image" type="image/jpeg" fetchpriority="high">
+  <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+  <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
+       skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
+       ruter når JS render skete før CSS-swap fuldførtes. -->
+  <link rel="stylesheet" href="/css/01-base.css?v=20260701e">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260628d">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260628c">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260628h">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260614a">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260526ng">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260701n">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
+  <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
+  <noscript>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+  </noscript>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Cykelbørsen",
+    "url": "https://cykelbørsen.dk/",
+    "description": "Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler, cykeltilbehør og meget mere.",
+    "inLanguage": "da",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://cykelbørsen.dk/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Cykelbørsen",
+    "url": "https://cykelbørsen.dk/",
+    "logo": "https://cykelbørsen.dk/hero.jpg.png",
+    "description": "Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Racercykler, mountainbikes, el-cykler og cykeltilbehør.",
+    "foundingLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "DK"
+      }
+    },
+    "sameAs": [],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": "da"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Hvordan sælger jeg min cykel på Cykelbørsen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Opret en gratis konto, klik på 'Sæt til salg', udfyld oplysninger om din cykel med billeder, og din annonce er live med det samme. Det er helt gratis for private sælgere."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Er det gratis at oprette en annonce?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, det er helt gratis at oprette annoncer som privat sælger. Forhandlere kan også oprette sig gratis i lanceringsfasen — ingen abonnement, ingen prøveperiode, bare ind og sælg."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Hvilke typer cykler kan jeg finde på Cykelbørsen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Du kan finde alle typer brugte cykler: racercykler, mountainbikes, el-cykler, bycykler, børnecykler, ladcykler og meget mere. Både fra private sælgere og autoriserede forhandlere i hele Danmark."
+        }
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Centurion 26\" Basic Free.","sku":"c81d416c-2d16-42ef-a454-e1336b23557c","productID":"c81d416c-2d16-42ef-a454-e1336b23557c","description":"Centurion MTB junior drengecykel. 26\" Centurion Basic Free er en mountainbike til børn mellem 10 og 12 år. Cyklen har aluminiumstel, 7 udvendige gear og håndbremser. Alle komponenter er fremstillet i rustfri og lette materialer. 26\" Centurion Basic Free anbefales til skolekørsel, MTB i skoven og leg i fritiden. Vi leverer cyklen 100% samlet.","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/24.jpg?v=1777117022"],"brand":{"@type":"Brand","name":"Centurion"},"category":"Børnecykel","url":"https://cykelbørsen.dk/bike/c81d416c-2d16-42ef-a454-e1336b23557c","offers":{"@type":"Offer","price":5699,"priceCurrency":"DKK","priceValidUntil":"2026-10-03","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/c81d416c-2d16-42ef-a454-e1336b23557c","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Centurion 26\" Basic Free.","item":"https://cykelbørsen.dk/bike/c81d416c-2d16-42ef-a454-e1336b23557c"}]}</script>
+</head>
+<body>
+
+  <!-- ── NAVIGATION ── -->
+  <nav role="navigation" aria-label="Hovednavigation">
+    <div class="nav-left">
+      <button class="nav-hamburger" id="nav-hamburger" type="button" onclick="toggleMobileMenu()" aria-label="Åbn menu" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="logo" onclick="navigateTo('/');window.scrollTo({top:0,behavior:'auto'});" style="cursor:pointer;" role="link" aria-label="Cykelbørsen – gå til forsiden" tabindex="0">Cykel<span>børsen</span></div>
+    </div>
+    <div class="nav-links">
+      <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')" aria-label="Se alle cykelmærker">Mærker</a>
+      <a href="/cykelagenter" onclick="event.preventDefault();navigateTo('/cykelagenter')" aria-label="Opret eller administrer Cykelagenter">Cykelagenter</a>
+      <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')" aria-label="Se forhandlere">Forhandlere</a>
+      <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg"><span class="sell-label-full">+ Sæt til salg</span><span class="sell-label-short">+ Sælg</span></a>
+      <div class="nav-admin" id="nav-admin" style="display:none;">
+        <button class="nav-admin-btn" onclick="openAdminPanel()" aria-label="Åbn admin panel">⚙️</button>
+      </div>
+      <div class="nav-profile" id="nav-profile" style="display:none;">
+        <button class="nav-inbox-btn" id="nav-inbox-btn" onclick="openInboxModal()" aria-label="Åbn indbakke">
+          <span class="nav-inbox-icon" aria-hidden="true">✉️</span>
+          <span class="nav-inbox-badge" id="nav-inbox-badge" style="display:none;" aria-live="polite" aria-label="Ulæste beskeder">0</span>
+        </button>
+        <button class="profile-avatar-btn" id="profile-avatar-btn" onclick="navigateToMyProfile()" aria-label="Åbn din profil">
+          <span id="nav-initials" aria-hidden="true">?</span>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" hidden>
+      <a href="/maerker" onclick="event.preventDefault();closeMobileMenu();navigateTo('/maerker')">Mærker</a>
+      <a href="/forhandlere" onclick="event.preventDefault();closeMobileMenu();navigateTo('/forhandlere')">Forhandlere</a>
+      <a href="/cykelagenter" onclick="event.preventDefault();closeMobileMenu();navigateTo('/cykelagenter')">Cykelagenter</a>
+    </div>
+  </nav>
+
+  <!-- Email-bekræftelse banner -->
+  <div id="email-confirm-banner" style="display:none;background:var(--rust);color:#fff;text-align:center;padding:10px 16px;font-size:0.85rem;font-family:'DM Sans',sans-serif;">
+    Du har ikke bekræftet din e-mail endnu. Tjek din indbakke (og spam) for bekræftelseslinket.
+    <button onclick="resendConfirmationEmail()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;padding:4px 12px;border-radius:6px;margin-left:8px;cursor:pointer;font-size:0.8rem;">Send igen</button>
+    <button onclick="dismissEmailBanner()" style="background:none;color:rgba(255,255,255,0.7);border:none;padding:4px 8px;cursor:pointer;font-size:1rem;margin-left:4px;">✕</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       LANDING LAYOUT – kun synlig på forsiden (/)
+       ══════════════════════════════════════════════════ -->
+  <main id="landing-layout" style="display:none;">
+
+  <!-- ── HERO + SØGEBAR ── -->
+  <div class="search-section" role="search" aria-label="Søg efter cykler">
+    <div class="search-hero-text">
+      <div class="search-hero-pill" style="display:none;">
+        <span class="search-hero-dot"></span>
+        <span id="hero-listing-count"><span id="stat-total">–</span> aktive annoncer i Danmark</span>
+      </div>
+      <h1 class="search-hero-title">Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span></h1>
+      <p class="search-hero-sub">Danmarks dedikerede markedsplads for nye og brugte cykler.</p>
+    </div>
+    <div class="search-bar-wrap">
+      <div class="search-bar">
+        <div class="search-bar-field search-bar-query">
+          <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <label for="search-input" class="sr-only">Søg efter mærke, model eller type</label>
+          <input type="text" id="search-input" placeholder="Søg efter mærke, model…" oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
+          <div id="autocomplete-list" class="autocomplete-list" style="display:none;" role="listbox" aria-label="Søgeforslag"></div>
+        </div>
+        <div class="search-bar-sep"></div>
+        <div class="search-bar-field">
+          <label for="search-type" class="sr-only">Vælg cykeltype</label>
+          <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="searchBikes()">
+            <option value="">Alle typer</option>
+            <option>Racercykel</option>
+            <option>Mountainbike</option>
+            <option>Citybike</option>
+            <option>El-cykel</option>
+            <option>Gravel</option>
+            <option>Ladcykel</option>
+            <option>Børnecykel</option>
+            <option>Senior cykel</option>
+          </select>
+          <svg class="search-bar-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="search-bar-sep"></div>
+        <div class="search-bar-field search-bar-city">
+          <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <label for="search-city" class="sr-only">By eller postnummer</label>
+          <input id="search-city" type="text" placeholder="By eller postnummer" aria-label="Filtrer efter by eller postnummer" autocomplete="off">
+          <select id="search-city-radius" class="search-city-radius" aria-label="Søgeradius om byen" hidden>
+            <option value="">Kun denne by</option>
+            <option value="5">+5 km</option>
+            <option value="10">+10 km</option>
+            <option value="25">+25 km</option>
+            <option value="50">+50 km</option>
+            <option value="100">+100 km</option>
+          </select>
+          <button type="button" class="search-city-clear" id="search-city-clear" aria-label="Ryd by-filter" hidden>×</button>
+        </div>
+        <button class="search-pill-btn" onclick="searchBikes()" aria-label="Søg efter cykler">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          Søg
+        </button>
+      </div>
+    </div>
+    <!-- ── KATEGORI CHIPS ── -->
+    <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
+      <button class="hero-cat-chip active" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
+      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
+    </div>
+  </div>
+
+  <!-- ── HURTIGFILTER PILLS (skjult — erstattet af hero-cat-chips) ── -->
+  <div class="filters-row" role="group" aria-label="Hurtigfiltre">
+    <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
+    <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
+    <span class="pill pill--nearme" id="pill-nearme" onclick="toggleNearMe(this)" role="button" tabindex="0" aria-pressed="false">📍 Nær mig</span>
+    <select id="nearme-radius" onchange="updateNearMeRadius(this.value)" style="display:none;font-size:0.8rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--sand);cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <option value="2">2 km</option>
+      <option value="5">5 km</option>
+      <option value="10">10 km</option>
+      <option value="15">15 km</option>
+      <option value="20" selected>20 km</option>
+      <option value="30">30 km</option>
+      <option value="50">50 km</option>
+      <option value="75">75 km</option>
+      <option value="100">100 km</option>
+      <option value="200">200 km</option>
+    </select>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Under 3.000 kr</span>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">El-cykler</span>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun forhandlere</span>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun private</span>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">✨ Ny annonce</span>
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Med garanti</span>
+  </div>
+
+  <!-- ── MAIN: SIDEBAR + ANNONCER ── -->
+  <div class="main">
+
+    <aside class="sidebar" id="sidebar-filters">
+      <!-- Mobil-only header (synlig kun på <=768px) -->
+      <div class="sidebar-mobile-header">
+        <h3>Filtre</h3>
+        <button class="sidebar-mobile-close" onclick="closeMobileFilters()" aria-label="Luk filtre">✕</button>
+      </div>
+      <div class="bike-quiz-box" id="bike-quiz-box">
+        <div class="bike-quiz-intro" id="bike-quiz-intro">
+          <div class="bike-quiz-icon">🚲</div>
+          <div class="bike-quiz-title">Hvad passer til dig?</div>
+          <div class="bike-quiz-sub">Få en anbefaling på 2 spørgsmål</div>
+          <button class="bike-quiz-start-btn" onclick="startBikeQuiz()">Start</button>
+        </div>
+        <div class="bike-quiz-steps" id="bike-quiz-steps" style="display:none">
+          <div class="bike-quiz-step" id="quiz-step-1">
+            <div class="bike-quiz-q">Hvad skal du bruge cyklen til?</div>
+            <div class="bike-quiz-opts">
+              <button class="bike-quiz-opt" onclick="quizPick(1,'pendler')">🏙️ Pendler til arbejde</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'motion')">💪 Motion og træning</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'tur')">🌿 Ture i naturen</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'born')">👶 Til mit barn</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'shopping')">🛒 Indkøb og hverdag</button>
+            </div>
+          </div>
+          <div class="bike-quiz-step" id="quiz-step-2" style="display:none">
+            <div class="bike-quiz-q">Hvad er vigtigst for dig?</div>
+            <div class="bike-quiz-opts">
+              <button class="bike-quiz-opt" onclick="quizPick(2,'pris')">💰 Lav pris</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'komfort')">😌 Komfort</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'fart')">⚡ Fart</button>
+            </div>
+            <button class="bike-quiz-back" onclick="quizBack()">← Tilbage</button>
+          </div>
+          <div class="bike-quiz-result" id="quiz-result" style="display:none">
+            <div class="bike-quiz-result-type" id="quiz-result-type"></div>
+            <div class="bike-quiz-result-desc" id="quiz-result-desc"></div>
+            <button class="bike-quiz-start-btn" onclick="applyQuizResult()" id="quiz-apply-btn">Vis disse cykler</button>
+            <button class="bike-quiz-back" onclick="resetQuiz()">Start forfra</button>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Pris</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="price-range sidebar-section-body">
+          <div class="price-inputs">
+            <input type="number" placeholder="Min kr." min="0">
+            <span>–</span>
+            <input type="number" placeholder="Max kr." min="0">
+          </div>
+          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Stelstørrelse</h3>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleSizeInfo()" aria-label="Størrelsesguide" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="wheel-info-popup" id="size-info-popup" style="display:none">
+          <p style="font-size:0.75rem;color:var(--muted);margin:0 0 8px">Vejledende — varierer efter cykeltype og kropsbygning</p>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">XS</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">44–48 cm stel</span>
+              <span class="wi-use">Ca. 155–162 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">S</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">49–52 cm stel</span>
+              <span class="wi-use">Ca. 163–170 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">M</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">53–56 cm stel</span>
+              <span class="wi-use">Ca. 170–178 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">L</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">57–60 cm stel</span>
+              <span class="wi-use">Ca. 179–188 cm højde</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">XL</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">61+ cm stel</span>
+              <span class="wi-use">Ca. 189+ cm højde</span>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XS (44–48 cm)" onchange="applyFilters()"> XS <span style="color:var(--muted);font-size:0.8rem">44–48 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="S (49–52 cm)" onchange="applyFilters()"> S <span style="color:var(--muted);font-size:0.8rem">49–52 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="M (53–56 cm)" onchange="applyFilters()"> M <span style="color:var(--muted);font-size:0.8rem">53–56 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="L (57–60 cm)" onchange="applyFilters()"> L <span style="color:var(--muted);font-size:0.8rem">57–60 cm</span> <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="size" data-value="XL (61+ cm)" onchange="applyFilters()"> XL <span style="color:var(--muted);font-size:0.8rem">61+ cm</span> <span class="filter-count">–</span></label>
+          <div class="height-finder">
+            <label class="height-finder-label">Find din størrelse (voksen)</label>
+            <div class="height-finder-row">
+              <input type="number" id="height-input" placeholder="Din højde cm" min="140" max="220" oninput="suggestFrameSize()">
+              <span id="height-result"></span>
+            </div>
+            <div class="height-finder" style="margin-top:10px;">
+              <label class="height-finder-label">Børnecykel — barnets højde</label>
+              <div class="height-finder-row">
+                <input type="number" id="child-height-input" placeholder="Barnets højde cm" min="85" max="175" oninput="suggestChildBikeSize()">
+                <span id="child-height-result"></span>
+              </div>
+              <div id="child-size-detail" style="font-size:0.75rem;color:var(--muted);margin-top:4px;line-height:1.4;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Mærke</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" style="padding-top:10px;">
+          <input type="text" id="brand-filter-search" placeholder="Søg mærke..." oninput="filterBrandList()" class="brand-search-input">
+          <div id="brand-filter-list" class="brand-filter-list">
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Amladcykler" onchange="applyFilters()"> Amladcykler</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Avenue" onchange="applyFilters()"> Avenue</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Babboe" onchange="applyFilters()"> Babboe</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Batavus" onchange="applyFilters()"> Batavus</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bergamont" onchange="applyFilters()"> Bergamont</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bianchi" onchange="applyFilters()"> Bianchi</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Bike by Gubi" onchange="applyFilters()"> Bike by Gubi</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Black Iron Horse" onchange="applyFilters()"> Black Iron Horse</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="BMC" onchange="applyFilters()"> BMC</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Brabus" onchange="applyFilters()"> Brabus</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Brompton" onchange="applyFilters()"> Brompton</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Butchers & Bicycles" onchange="applyFilters()"> Butchers &amp; Bicycles</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cannondale" onchange="applyFilters()"> Cannondale</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Canyon" onchange="applyFilters()"> Canyon</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Carqon" onchange="applyFilters()"> Carqon</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Centurion" onchange="applyFilters()"> Centurion</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cervélo" onchange="applyFilters()"> Cervélo</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Christiania Bikes" onchange="applyFilters()"> Christiania Bikes</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Colnago" onchange="applyFilters()"> Colnago</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Conway" onchange="applyFilters()"> Conway</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Corratec" onchange="applyFilters()"> Corratec</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Cube" onchange="applyFilters()"> Cube</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="E-Fly" onchange="applyFilters()"> E-Fly</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Early Rider" onchange="applyFilters()"> Early Rider</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Ebsen" onchange="applyFilters()"> Ebsen</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Electra" onchange="applyFilters()"> Electra</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Everton" onchange="applyFilters()"> Everton</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="FACTOR" onchange="applyFilters()"> FACTOR</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Falcon" onchange="applyFilters()"> Falcon</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Felt" onchange="applyFilters()"> Felt</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Focus" onchange="applyFilters()"> Focus</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Frog Bikes" onchange="applyFilters()"> Frog Bikes</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Gazelle" onchange="applyFilters()"> Gazelle</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Ghost" onchange="applyFilters()"> Ghost</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Giant" onchange="applyFilters()"> Giant</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="GT" onchange="applyFilters()"> GT</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Gudereit" onchange="applyFilters()"> Gudereit</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Haibike" onchange="applyFilters()"> Haibike</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Husqvarna" onchange="applyFilters()"> Husqvarna</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kalkhoff" onchange="applyFilters()"> Kalkhoff</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kildemoes" onchange="applyFilters()"> Kildemoes</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Koga" onchange="applyFilters()"> Koga</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kona" onchange="applyFilters()"> Kona</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Kreidler" onchange="applyFilters()"> Kreidler</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Lapierre" onchange="applyFilters()"> Lapierre</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Larry vs Harry / Bullitt" onchange="applyFilters()"> Larry vs Harry / Bullitt</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Lindebjerg" onchange="applyFilters()"> Lindebjerg</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Liv" onchange="applyFilters()"> Liv</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="LOOK" onchange="applyFilters()"> LOOK</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Marin" onchange="applyFilters()"> Marin</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Mate Bike" onchange="applyFilters()"> Mate Bike</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="MBK" onchange="applyFilters()"> MBK</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Merida" onchange="applyFilters()"> Merida</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Momentum" onchange="applyFilters()"> Momentum</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Mondraker" onchange="applyFilters()"> Mondraker</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Motobecane" onchange="applyFilters()"> Motobecane</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Moustache" onchange="applyFilters()"> Moustache</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Nihola" onchange="applyFilters()"> Nihola</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Nishiki" onchange="applyFilters()"> Nishiki</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Norden" onchange="applyFilters()"> Norden</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Norco" onchange="applyFilters()"> Norco</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Omnium" onchange="applyFilters()"> Omnium</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Orbea" onchange="applyFilters()"> Orbea</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Pegasus" onchange="applyFilters()"> Pegasus</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Pinarello" onchange="applyFilters()"> Pinarello</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Principia" onchange="applyFilters()"> Principia</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Puky" onchange="applyFilters()"> Puky</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Qio" onchange="applyFilters()"> Qio</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="QWIC" onchange="applyFilters()"> QWIC</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Raleigh" onchange="applyFilters()"> Raleigh</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Remington" onchange="applyFilters()"> Remington</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Riese & Müller" onchange="applyFilters()"> Riese &amp; Müller</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Ridley" onchange="applyFilters()"> Ridley</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Royal Cargobike" onchange="applyFilters()"> Royal Cargobike</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Santa Cruz" onchange="applyFilters()"> Santa Cruz</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="SCO" onchange="applyFilters()"> SCO</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Scott" onchange="applyFilters()"> Scott</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Seaside Bike" onchange="applyFilters()"> Seaside Bike</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Silverback" onchange="applyFilters()"> Silverback</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Sparta" onchange="applyFilters()"> Sparta</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Specialized" onchange="applyFilters()"> Specialized</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Stevens" onchange="applyFilters()"> Stevens</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Superior" onchange="applyFilters()"> Superior</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Tern" onchange="applyFilters()"> Tern</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Trek" onchange="applyFilters()"> Trek</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Triobike" onchange="applyFilters()"> Triobike</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Urban Arrow" onchange="applyFilters()"> Urban Arrow</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="uVelo" onchange="applyFilters()"> uVelo</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Van De Falk" onchange="applyFilters()"> Van De Falk</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="VanMoof" onchange="applyFilters()"> VanMoof</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Velo" onchange="applyFilters()"> Velo</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Velo de Ville" onchange="applyFilters()"> Velo de Ville</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Velo Lux" onchange="applyFilters()"> Velo Lux</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Victoria" onchange="applyFilters()"> Victoria</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Wilier" onchange="applyFilters()"> Wilier</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Winther" onchange="applyFilters()"> Winther</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Woom" onchange="applyFilters()"> Woom</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Yuba" onchange="applyFilters()"> Yuba</label>
+            <label class="filter-option"><input type="checkbox" data-filter="brand" data-value="Andre" onchange="applyFilters()"> Andre mærker</label>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3 id="sidebar-type-heading">Cykeltype</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body" id="sidebar-type-group">
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Racercykel" onchange="applyFilters()"> Racercykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Mountainbike" onchange="applyFilters()"> Mountainbike <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="El-cykel" onchange="applyFilters()"> El-cykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Citybike" onchange="applyFilters()"> Citybike <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Ladcykel" onchange="applyFilters()"> Ladcykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Børnecykel" onchange="applyFilters()"> Børnecykel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Gravel" onchange="applyFilters()"> Gravel <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Senior cykel" onchange="applyFilters()"> Senior cykel <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Stand</h3>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleConditionInfo()" aria-label="Hvad betyder stand?" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="condition-guide" id="condition-info-popup" style="display:none">
+          <div class="cg-row"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Som ny" onchange="applyFilters()"> Som ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="God stand" onchange="applyFilters()"> God stand <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Brugt" onchange="applyFilters()"> Brugt <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Farve</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body color-swatch-grid" id="color-filter-grid"></div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Sælgertype</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option filter-option--full"><input type="checkbox" data-filter="seller" data-value="all" checked onchange="sellerToggle(this)"> Alle sælgere <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="private" onchange="sellerToggle(this)"> 👤 Private <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="seller" data-value="dealer" onchange="sellerToggle(this)"> 🏪 Forhandlere <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Hjulstørrelse</h3>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleWheelInfo()" aria-label="Hvad betyder hjulstørrelse?" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="wheel-info-popup" id="wheel-info-popup" style="display:none">
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">12–24"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Tilpasset barnets højde og alder</span>
+              <span class="wi-con">− Vokser barnet fra</span>
+              <span class="wi-use">Børnecykler i stigende størrelse</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">16–20"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Kompakt, nem at opbevare og transportere</span>
+              <span class="wi-con">− Mindre stabilt ved høj fart</span>
+              <span class="wi-use">Foldecykler, BMX (20")</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">26"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Lettere at manøvrere, lavere vægt</span>
+              <span class="wi-con">− Mindre stabilt ved høj fart</span>
+              <span class="wi-use">Ældre MTB, foldecykler, ladcykler</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">27.5"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ God balance mellem agilitet og fart</span>
+              <span class="wi-con">− Mindre udbredt end 29"</span>
+              <span class="wi-use">Mountainbike, trail</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">28"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Hurtig og effektiv på asfalt</span>
+              <span class="wi-con">− Dårligere i ujævnt terræn</span>
+              <span class="wi-use">Racercykel, citybike, el-cykel</span>
+            </div>
+          </div>
+          <div class="wheel-info-row">
+            <div class="wheel-info-size">29"</div>
+            <div class="wheel-info-text">
+              <span class="wi-pro">+ Ruller lettere over forhindringer</span>
+              <span class="wi-con">− Tungere, sværere at dreje</span>
+              <span class="wi-use">Cross country MTB, gravel</span>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='12"' onchange="applyFilters()"> 12" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='14"' onchange="applyFilters()"> 14" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='16"' onchange="applyFilters()"> 16" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='18"' onchange="applyFilters()"> 18" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='20"' onchange="applyFilters()"> 20" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='24"' onchange="applyFilters()"> 24" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='26"' onchange="applyFilters()"> 26" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='27.5" / 650b' onchange="applyFilters()"> 27.5" / 650b <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='28"' onchange="applyFilters()"> 28" <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="wheel" data-value='29"' onchange="applyFilters()"> 29" <span class="filter-count">–</span></label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Stelmaterial</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Carbon" onchange="applyFilters()"> Carbon</label>
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Aluminium" onchange="applyFilters()"> Aluminium</label>
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Stål" onchange="applyFilters()"> Stål</label>
+          <label class="filter-option"><input type="checkbox" data-filter="frame_material" data-value="Titanium" onchange="applyFilters()"> Titanium</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Bremser</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Skivebremser hydrauliske" onchange="applyFilters()"> Skivebremser hydrauliske</label>
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Skivebremser mekaniske" onchange="applyFilters()"> Skivebremser mekaniske</label>
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Fælgbremser" onchange="applyFilters()"> Fælgbremser</label>
+          <label class="filter-option"><input type="checkbox" data-filter="brake_type" data-value="Tromlebremser" onchange="applyFilters()"> Tromlebremser</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Gear-skifte</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="electronic_shifting" data-value="true" onchange="applyFilters()"> Elektronisk (Di2/eTap/AXS)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="electronic_shifting" data-value="false" onchange="applyFilters()"> Mekanisk</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Affjedring</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="suspension" data-value="Forgaffel (hardtail)" onchange="applyFilters()"> Forgaffel (hardtail)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="suspension" data-value="Fuld affjedring (fully)" onchange="applyFilters()"> Fuld affjedring (fully)</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Geartype</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="geartype" data-value="Indvendig" onchange="applyFilters()"> Indvendig gear</label>
+          <label class="filter-option"><input type="checkbox" data-filter="geartype" data-value="Udvendig" onchange="applyFilters()"> Udvendig gear</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Indstigning</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="step_type" data-value="Lav indstigning" onchange="applyFilters()"> Lav indstigning</label>
+          <label class="filter-option"><input type="checkbox" data-filter="step_type" data-value="Høj indstigning" onchange="applyFilters()"> Høj indstigning</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Komponentgruppe</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano 105" onchange="applyFilters()"> Shimano 105</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Ultegra" onchange="applyFilters()"> Shimano Ultegra</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Dura-Ace" onchange="applyFilters()"> Shimano Dura-Ace</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Rival" onchange="applyFilters()"> SRAM Rival</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Force" onchange="applyFilters()"> SRAM Force</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Red" onchange="applyFilters()"> SRAM Red</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano GRX" onchange="applyFilters()"> Shimano GRX (gravel)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Apex" onchange="applyFilters()"> SRAM Apex (gravel)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Rival XPLR" onchange="applyFilters()"> SRAM Rival XPLR (gravel)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Force XPLR" onchange="applyFilters()"> SRAM Force XPLR (gravel)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="SRAM Red XPLR" onchange="applyFilters()"> SRAM Red XPLR (gravel)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Campagnolo Ekar" onchange="applyFilters()"> Campagnolo Ekar (gravel)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano Deore" onchange="applyFilters()"> Shimano Deore (MTB)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="groupset" data-value="Shimano XT" onchange="applyFilters()"> Shimano XT (MTB)</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Motor (el-cykel)</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Bosch" onchange="applyFilters()"> Bosch</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Shimano" onchange="applyFilters()"> Shimano (STEPS)</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Promovec" onchange="applyFilters()"> Promovec</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Yamaha" onchange="applyFilters()"> Yamaha</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Bafang" onchange="applyFilters()"> Bafang</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Mahle" onchange="applyFilters()"> Mahle</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Motor-placering</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="motor_position" data-value="Midtermotor" onchange="applyFilters()"> Midtermotor</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor_position" data-value="Forhjulsmotor" onchange="applyFilters()"> Forhjulsmotor</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor_position" data-value="Baghjulsmotor" onchange="applyFilters()"> Baghjulsmotor</label>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Batteri (Wh)</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="price-range sidebar-section-body">
+          <div class="price-inputs">
+            <input type="number" id="battery-min" placeholder="Min Wh" min="100" max="2000" step="1" onchange="applyFilters()">
+            <span>–</span>
+            <input type="number" id="battery-max" placeholder="Max Wh" min="100" max="2000" step="1" onchange="applyFilters()">
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
+          <h3>Vægt</h3>
+          <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+        <div class="weight-range sidebar-section-body">
+          <div class="price-inputs">
+            <input type="number" id="sidebar-max-weight" placeholder="Max kg" min="2" max="50" step="0.1">
+            <span>kg</span>
+          </div>
+          <div class="weight-presets" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
+            <button type="button" class="weight-preset" onclick="setMaxWeight(8)">Under 8 kg</button>
+            <button type="button" class="weight-preset" onclick="setMaxWeight(9)">Under 9 kg</button>
+            <button type="button" class="weight-preset" onclick="setMaxWeight(10)">Under 10 kg</button>
+            <button type="button" class="weight-preset" onclick="setMaxWeight(12)">Under 12 kg</button>
+          </div>
+          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
+        </div>
+      </div>
+      <div class="sidebar-save-card">
+        <h4>🔔 Cykelagent</h4>
+        <p>Få besked på e-mail når nye cykler matcher din søgning</p>
+        <button onclick="saveCurrentSearch()">Opret Cykelagent</button>
+      </div>
+      <!-- Mobil-only footer (synlig kun på <=768px) -->
+      <button class="sidebar-mobile-apply" id="sidebar-mobile-apply-btn" onclick="closeMobileFilters()">Vis cykler</button>
+    </aside>
+    <div class="mobile-filter-overlay" id="mobile-filter-overlay" onclick="closeMobileFilters()"></div>
+
+    <div>
+      <!-- Sidst sete cykler — vises kun hvis bruger har set mindst én annonce -->
+      <section id="recently-viewed" class="recently-viewed" style="display:none;" aria-label="Sidst sete cykler"></section>
+
+      <!-- ⭐ Fremhævede forhandlere — vises kun hvis nogen har featured_until > NOW().
+           Max 3 slots, nyeste featured først. Manuel kontrol via Supabase
+           Dashboard nu, automatisk via Stripe-webhook senere. -->
+      <section id="promoted-dealers" class="promoted-dealers" style="display:none;" aria-label="Fremhævede forhandlere">
+        <div class="promoted-dealers-header">
+          <h2 class="promoted-dealers-title">⭐ Fremhævede forhandlere</h2>
+          <span class="promoted-dealers-sub">Premium-partnere</span>
+        </div>
+        <div id="promoted-dealers-grid" class="promoted-dealers-grid"></div>
+      </section>
+
+      <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
+      <style>
+        .browse-cat-wrap{display:flex;}
+        .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
+        .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
+        .browse-cat-btn:hover{color:var(--charcoal);}
+        .browse-cat-btn.active{background:var(--forest);color:#fff;}
+        /* På mobil: toggle'en fylder hele bredden, og de to knapper deles 50/50
+           ud til kanterne. Placeret EFTER base-reglerne så den vinder på source-order. */
+        @media(max-width:768px){
+          .browse-cat-wrap{width:100%;display:block;}
+          .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
+          .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
+        }
+      </style>
+      <div class="listings-header">
+        <div>
+          <h2>Seneste annoncer</h2>
+          <span id="listings-count">– cykler til salg</span>
+        </div>
+        <div class="browse-cat-wrap">
+          <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
+            <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
+            <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
+          </div>
+        </div>
+        <div class="listings-controls">
+          <button class="btn-mobile-filter" onclick="openMobileFilters()" id="btn-open-filters">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="17" y2="6"/><line x1="6" y1="10" x2="14" y2="10"/><line x1="9" y1="14" x2="11" y2="14"/></svg>
+            <span>Filtre</span>
+            <span class="filter-count-badge" id="mobile-filter-count" style="display:none;">0</span>
+          </button>
+          <button class="view-toggle active" id="btn-list-view" onclick="setView('list')" aria-label="Skift til listevisning" aria-pressed="true">☰</button>
+          <button class="view-toggle" id="btn-map-page" onclick="navigateTo('/kort')" aria-label="Åbn kortvisning" title="Kortvisning med liste">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C8.13 2 5 5.13 5 9c0 4.25 4.58 9.79 6.39 11.83.32.36.9.36 1.22 0C14.42 18.79 19 13.25 19 9c0-3.87-3.13-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>
+          </button>
+          <button class="view-toggle" id="btn-compare-mode" onclick="toggleCompareMode()" aria-label="Slå sammenligning til" aria-pressed="false" title="Vælg cykler at sammenligne">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="6" height="12" rx="1"/><rect x="12" y="4" width="6" height="12" rx="1"/><path d="M9 10h2"/></svg>
+          </button>
+          <label for="sort-select" class="sr-only">Sorter annoncer</label>
+          <select class="sort-select" id="sort-select" onchange="sortBikes(this.value)" aria-label="Sorter annoncer">
+            <option value="newest">Nyeste først</option>
+            <option value="price_asc">Pris: lav til høj</option>
+            <option value="price_desc">Pris: høj til lav</option>
+            <option value="biggest_saving">Største besparelse</option>
+          </select>
+        </div>
+      </div>
+      <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
+      <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
+      <div class="listings-grid" id="listings-grid"></div>
+      <div id="listings-map" style="display:none;height:600px;border-radius:14px;overflow:hidden;border:1px solid var(--border);"></div>
+
+      <!-- Forhandler-banner — vises mellem annoncer og "Vis flere"-knap på mobil -->
+      <a class="dealer-banner-mobile" href="/forhandlere" onclick="event.preventDefault(); navigateTo('/forhandlere')" aria-label="Se alle verificerede forhandlere">
+        <div class="dealer-banner-icon">🏪</div>
+        <div class="dealer-banner-text">
+          <div class="dealer-banner-title">Køb hos verificeret forhandler</div>
+          <div class="dealer-banner-sub">Garanti og professionel rådgivning</div>
+        </div>
+        <svg class="dealer-banner-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+      </a>
+
+      <!-- ── POPULÆRE SØGNINGER (SEO landing chips) ── -->
+      <section class="popular-searches" aria-label="Populære søgninger" style="margin-top:40px;">
+        <h2 class="popular-searches-title">Populære søgninger</h2>
+        <style>
+          /* Kategori-bevidste populære søgninger: cykel-sæt på Cykler-fanen,
+             tilbehørs-sæt på Tilbehør-fanen. display:contents lader chippene
+             flyde ind i den fælles flex-container uden ekstra box. */
+          .pop-set{display:contents;}
+          .pop-set--acc{display:none;}
+          body.browse-tilbehoer .pop-set--cykel{display:none;}
+          body.browse-tilbehoer .pop-set--acc{display:contents;}
+        </style>
+        <div class="popular-searches-chips">
+          <span class="pop-set pop-set--cykel">
+            <a class="popular-chip" href="/cykler/trek" onclick="event.preventDefault();navigateTo('/cykler/trek')">🚴 Trek racere</a>
+            <a class="popular-chip" href="/cykler/cube" onclick="event.preventDefault();navigateTo('/cykler/cube')">🚴 Cube cykler</a>
+            <a class="popular-chip" href="/cykler/specialized" onclick="event.preventDefault();navigateTo('/cykler/specialized')">🚴 Specialized</a>
+            <a class="popular-chip" href="/?type=Racercykel&amp;maxPrice=10000" onclick="event.preventDefault();applyPopularSearch({type:'Racercykel',maxPrice:10000})">💰 Racere under 10.000</a>
+            <a class="popular-chip" href="/?type=El-cykel" onclick="event.preventDefault();applyPopularSearch({type:'El-cykel'})">⚡ El-cykler</a>
+            <a class="popular-chip" href="/?type=Mountainbike" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike'})">🏔️ Mountainbikes</a>
+            <a class="popular-chip" href="/?type=Ladcykel" onclick="event.preventDefault();applyPopularSearch({type:'Ladcykel'})">📦 Ladcykler</a>
+            <a class="popular-chip" href="/?type=Børnecykel" onclick="event.preventDefault();applyPopularSearch({type:'Børnecykel'})">👶 Børnecykler</a>
+            <a class="popular-chip" href="/?maxPrice=5000" onclick="event.preventDefault();applyPopularSearch({maxPrice:5000})">💸 Under 5.000 kr</a>
+            <a class="popular-chip" href="/cykler/kildemoes" onclick="event.preventDefault();navigateTo('/cykler/kildemoes')">🇩🇰 Kildemoes</a>
+          </span>
+          <span class="pop-set pop-set--acc">
+            <a class="popular-chip" href="/?type=Hjelm" onclick="event.preventDefault();applyPopularSearch({type:'Hjelm'})">🪖 Cykelhjelme</a>
+            <a class="popular-chip" href="/?type=Lygter" onclick="event.preventDefault();applyPopularSearch({type:'Lygter'})">💡 Lygter</a>
+            <a class="popular-chip" href="/?type=Lås" onclick="event.preventDefault();applyPopularSearch({type:'Lås'})">🔒 Låse</a>
+            <a class="popular-chip" href="/?type=Computer/GPS" onclick="event.preventDefault();applyPopularSearch({type:'Computer/GPS'})">🖥️ Cykelcomputere</a>
+            <a class="popular-chip" href="/?type=Mobilholdere" onclick="event.preventDefault();applyPopularSearch({type:'Mobilholdere'})">📱 Mobilholdere</a>
+            <a class="popular-chip" href="/?type=Tasker" onclick="event.preventDefault();applyPopularSearch({type:'Tasker &amp; kurve'})">🎒 Tasker &amp; kurve</a>
+            <a class="popular-chip" href="/?type=Daek" onclick="event.preventDefault();applyPopularSearch({type:'Dæk &amp; slanger'})">🛞 Dæk &amp; slanger</a>
+            <a class="popular-chip" href="/?type=Sadler" onclick="event.preventDefault();applyPopularSearch({type:'Sadler'})">🪑 Sadler</a>
+            <a class="popular-chip" href="/?type=Batterier" onclick="event.preventDefault();applyPopularSearch({type:'Batterier &amp; opladere (elcykel)'})">🔋 El-cykel batterier</a>
+            <a class="popular-chip" href="/?maxPrice=300" onclick="event.preventDefault();applyPopularSearch({maxPrice:300})">💸 Under 300 kr</a>
+          </span>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- ── SÆLG CTA BANNER ── -->
+  <section class="sell-cta-section">
+    <div class="sell-cta-inner">
+      <div>
+        <div class="sell-cta-label">— Sælg din cykel</div>
+        <h2 class="sell-cta-headline">Klar på 3 minutter. <em>Gratis</em> for alle.</h2>
+        <p class="sell-cta-sub">Tag tre billeder, sæt en pris — så er du live på få minutter.</p>
+        <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:10px;color:#fff;font-size:0.88rem;text-decoration:underline;font-family:'DM Sans',sans-serif;opacity:0.9;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
+      </div>
+      <div>
+        <button class="sell-cta-btn" onclick="openModal()">+ Sæt til salg</button>
+      </div>
+    </div>
+  </section>
+
+  </main><!-- #landing-layout -->
+
+  <!-- ══════════════════════════════════════════════════
+       PAGE LAYOUT – kun synlig på /bike, /profile, /dealer, /me, /bliv-forhandler
+       ══════════════════════════════════════════════════ -->
+  <div id="page-layout" style="display:block;">
+  <!-- ── DETAIL VIEW (hash routing) ── -->
+  <section id="detail-view">
+      <div class="bike-page bike-prerender">
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        <img class="bike-prerender-img" src="https://cdn.shopify.com/s/files/1/0986/1506/6968/files/24.jpg?v=1777117022" alt="Centurion 26&quot; Basic Free. – Børnecykel i Frederiksberg C" width="600" height="450">
+        <h1 class="bike-prerender-title">Centurion 26&quot; Basic Free.</h1>
+        <p class="bike-prerender-price">5.699 kr.</p>
+        <div class="bike-prerender-meta"><span>Børnecykel</span><span>Ny</span><span>Frederiksberg C</span></div>
+        <div class="bike-prerender-desc">Centurion MTB junior drengecykel. 26&quot; Centurion Basic Free er en mountainbike til børn mellem 10 og 12 år. Cyklen har aluminiumstel, 7 udvendige gear og håndbremser. Alle komponenter er fremstillet i rustfri og lette materialer. 26&quot; Centurion Basic Free anbefales til skolekørsel, MTB i skoven og leg i fritiden. Vi leverer cyklen 100% samlet.</div>
+      </div></section>
+  </div><!-- #page-layout -->
+
+
+  <!-- ── FOOTER ── -->
+  <footer role="contentinfo">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h3 class="footer-col-title">Sælg cykel</h3>
+        <a href="/sell" onclick="event.preventDefault();openModal()">+ Sæt til salg</a>
+        <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Cykel-vurdering</a>
+        <a href="/blog/saelg-cykel-tips" onclick="event.preventDefault();navigateTo('/blog/saelg-cykel-tips')">Salgsguide</a>
+        <a href="/blog/bedre-cykel-billeder" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">Tag bedre billeder</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Køb cykel</h3>
+        <a href="/" onclick="event.preventDefault();navigateTo('/')">Alle annoncer</a>
+        <a href="/maerker" onclick="event.preventDefault();navigateTo('/maerker')">Mærker</a>
+        <a href="/stelstoerrelse-guide" onclick="event.preventDefault();navigateTo('/stelstoerrelse-guide')">Stelstørrelse-finder</a>
+        <a href="/kort" onclick="event.preventDefault();navigateTo('/kort')">Kort-visning</a>
+        <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')">Køberguide</a>
+        <a href="/sikkerhedsguide" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">Sikkerhedsguide</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Kategorier</h3>
+        <a href="/racercykler" onclick="event.preventDefault();navigateTo('/racercykler')">Racercykler</a>
+        <a href="/mountainbikes" onclick="event.preventDefault();navigateTo('/mountainbikes')">Mountainbikes</a>
+        <a href="/el-cykler" onclick="event.preventDefault();navigateTo('/el-cykler')">El-cykler</a>
+        <a href="/gravelbikes" onclick="event.preventDefault();navigateTo('/gravelbikes')">Gravelbikes</a>
+        <a href="/citybikes" onclick="event.preventDefault();navigateTo('/citybikes')">Citybikes</a>
+        <a href="/ladcykler" onclick="event.preventDefault();navigateTo('/ladcykler')">Ladcykler</a>
+        <a href="/boernecykler" onclick="event.preventDefault();navigateTo('/boernecykler')">Børnecykler</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Forhandlere</h3>
+        <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')">Find forhandler</a>
+        <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Cykelbørsen</h3>
+        <a href="/om-os" onclick="event.preventDefault();navigateTo('/om-os')">Om os</a>
+        <a href="/blog" onclick="event.preventDefault();navigateTo('/blog')">Blog</a>
+        <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')">Kontakt</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Juridisk</h3>
+        <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>
+        <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')">Privatlivspolitik</a>
+        <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')">Cookiepolitik</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">Cykel<span>børsen</span></div>
+      <p>© 2025–2026 Cykelbørsen · CVR: 46403568 · Danmarks dedikerede markedsplads for nye og brugte cykler</p>
+    </div>
+  </footer>
+
+
+  <!-- ── TOAST BESKED ── -->
+  <div class="toast" id="toast">✅ Din annonce er oprettet!</div>
+
+
+  <!-- ── AI SUPPORT CHAT ── -->
+  <div id="chat-widget">
+    <button id="chat-toggle" onclick="toggleChat()" aria-label="Åbn support chat">
+      <svg id="chat-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <svg id="chat-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="chat-window">
+      <div id="chat-header">
+        <span>🚲 Support</span>
+        <span id="chat-subtitle">Spørg mig om alt</span>
+      </div>
+      <div id="chat-messages">
+        <div class="chat-msg chat-msg--bot">
+          <div class="chat-bubble">Hej! Jeg er Cykelbørsens AI-assistent. Hvad kan jeg hjælpe dig med? 😊</div>
+        </div>
+      </div>
+      <div id="chat-input-area">
+        <textarea id="chat-input" placeholder="Skriv dit spørgsmål..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+        <button id="chat-send-btn" onclick="sendChatMessage()" aria-label="Send besked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL-PARTIALS injiceres her FØR main.js (partials/modals.html) ── -->
+  <div id="modals-root"></div>
+
+  <!-- Leaflet, MarkerCluster og Cropper loades on-demand fra main.js — IKKE eagerly -->
+  <!-- Modal-partials SKAL injiceres før main.js evalueres: factory-funktioner i
+       main.js tilknytter listeners til modal-elementer på modul-niveau, så
+       elementerne skal findes i DOM før importen. Derfor: hent partials, injicér,
+       og importér FØRST derefter main.js (sekventielt via await). -->
+  <script type="module">
+    // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
+    // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
+    // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
+    const V = '20260701n';
+    const root = document.getElementById('modals-root');
+    try {
+      const res = await fetch(`/partials/modals.html?v=${V}`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      root.innerHTML = await res.text();
+      root.dataset.loaded = '1';
+    } catch (e) {
+      console.error('Kunne ikke indlæse modal-partials:', e);
+      // Fail-safe: importér main.js alligevel — appen kører, modaler mangler.
+    }
+    await import(`/main.js?v=${V}`);
+  </script>
+</body>
+</html>
