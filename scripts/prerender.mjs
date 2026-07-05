@@ -38,6 +38,7 @@ import {
   BLOG_ARTICLES,
   getAllArticlesSorted,
 } from '../js/blog-data-v2.js';
+import { CATEGORY_META } from '../js/category-data.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE_URL = 'https://cykelbørsen.dk'; // matcher BASE_URL i js/utils.js (canonical)
@@ -356,6 +357,74 @@ function brandsOverviewPage() {
   };
 }
 
+function categoryPage(slug, meta) {
+  const canonicalPath = `/${slug}`;
+  const faqHtml = meta.faq && meta.faq.length ? `
+        <div class="brand-page-section category-faq">
+          <h2 class="brand-page-section-title">Ofte stillede spørgsmål om ${escHtml(meta.name.toLowerCase())}</h2>
+          <div class="category-faq-list">
+            ${meta.faq.map(f => `
+              <details class="category-faq-item">
+                <summary>${escHtml(f.q)}</summary>
+                <p>${escHtml(f.a)}</p>
+              </details>`).join('')}
+          </div>
+        </div>` : '';
+
+  const relatedHtml = `
+        <div class="brand-page-section">
+          <h2 class="brand-page-section-title">Andre kategorier</h2>
+          <div class="brand-related-grid">
+            ${meta.related.map(rs => CATEGORY_META[rs]
+              ? `<a class="brand-related-chip" href="/${rs}">${escHtml(CATEGORY_META[rs].name)}</a>`
+              : '').join('')}
+          </div>
+        </div>`;
+
+  const contentHtml = `
+      <div class="brand-page category-page">
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        <div class="brand-page-hero">
+          <h1 class="brand-page-title">${escHtml(meta.h1)}</h1>
+        </div>
+        <div class="brand-page-body">
+          <p class="brand-page-description">${escHtml(meta.intro)}</p>
+        </div>
+        <div id="category-bikes-section" class="brand-page-section">
+          <h2 class="brand-page-section-title">${escHtml(meta.name)} til salg</h2>
+          <div id="category-bikes-grid" class="brand-bikes-grid">
+            <p style="color:var(--muted);padding:20px;">Henter ${escHtml(meta.name.toLowerCase())}…</p>
+          </div>
+          <div id="category-bikes-more" class="brand-show-more-wrap"></div>
+        </div>
+        ${faqHtml}${relatedHtml}
+      </div>`;
+
+  const jsonldBlocks = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: meta.h1,
+      description: meta.metaDesc,
+      url: `${BASE_URL}${canonicalPath}`,
+    },
+    breadcrumb([['Forside', '/'], [meta.name, canonicalPath]]),
+  ];
+  if (meta.faq && meta.faq.length) {
+    jsonldBlocks.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: meta.faq.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    });
+  }
+
+  return { title: meta.title, description: meta.metaDesc, canonicalPath, jsonldBlocks, contentHtml };
+}
+
 function breadcrumb(items) {
   return {
     '@context': 'https://schema.org',
@@ -395,13 +464,20 @@ function main() {
     count++;
   }
 
+  // Kategori-landingssider
+  for (const [slug, meta] of Object.entries(CATEGORY_META)) {
+    const page = categoryPage(slug, meta);
+    writePage(page.canonicalPath, buildPage(page));
+    count++;
+  }
+
   // Oversigtssider
   for (const page of [blogOverviewPage(), brandsOverviewPage()]) {
     writePage(page.canonicalPath, buildPage(page));
     count++;
   }
 
-  console.log(`Prerendered ${count} statiske sider (mærker + blog + oversigter).`);
+  console.log(`Prerendered ${count} statiske sider (mærker + blog + kategorier + oversigter).`);
 }
 
 main();

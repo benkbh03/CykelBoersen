@@ -40,6 +40,12 @@ const STATIC_URLS = [
   { loc: '/databehandleraftale',       changefreq: 'monthly', priority: '0.3' },
 ];
 
+/* Kategori-landingssider (/racercykler, …). Match CATEGORY_META i js/category-data.js. */
+const CATEGORY_SLUGS = [
+  'racercykler', 'mountainbikes', 'el-cykler', 'citybikes',
+  'ladcykler', 'boernecykler', 'gravelbikes',
+];
+
 const BLOG_SLUGS = [
   'mtb-affjedring-guide',
   'undgaa-stjaalet-cykel',
@@ -134,6 +140,7 @@ async function main() {
 
   const urls = [
     ...STATIC_URLS,
+    ...CATEGORY_SLUGS.map(slug => ({ loc: `/${slug}`, changefreq: 'daily', priority: '0.9' })),
     ...BLOG_SLUGS.map(slug => ({ loc: `/blog/${slug}`, changefreq: 'monthly', priority: '0.7' })),
     ...BRAND_SLUGS.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
     ...bikes.map(b => ({ loc: `/bike/${b.id}`, changefreq: 'weekly', priority: '0.6' })),

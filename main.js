@@ -11,8 +11,9 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701m';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701n';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
+import { CATEGORY_META } from './js/category-data.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
@@ -676,6 +677,23 @@ window.renderBrandPage    = renderBrandPage;
 window.renderBrandsOverview = renderBrandsOverview;
 window.expandBrandBikes   = expandBrandBikes;
 window.expandBrandDealers = expandBrandDealers;
+
+// Kategori-landingsside — lazy-loaded (/racercykler, /el-cykler, …)
+const _ensureCategoryPage = lazyCtrl(
+  () => import(`./js/category-page.js?v=${ASSET_VERSION}`),
+  'createCategoryPage',
+  () => ({
+    supabase, esc, updateSEOMeta,
+    showDetailView, showListingView,
+    navigateTo:     (...args) => navigateTo(...args),
+    navigateToBike: (...args) => navigateToBike(...args),
+    BASE_URL,
+  }),
+);
+const renderCategoryPage  = lazyMethod(_ensureCategoryPage, 'renderCategoryPage');
+const expandCategoryBikes = lazyMethod(_ensureCategoryPage, 'expandCategoryBikes');
+window.renderCategoryPage = renderCategoryPage;
+window.expandCategoryBikes = expandCategoryBikes;
 
 // Cykelagent-side — lazy-loaded (/cykelagenter)
 const _ensureCykelagentPage = lazyCtrl(
@@ -1917,6 +1935,8 @@ function handleRoute() {
   const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
   const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
   const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
+  const categorySlug = path.slice(1);
+  const categoryMatch = CATEGORY_META[categorySlug] ? categorySlug : null;
   const cykelagentMatch = path === '/cykelagenter' || path === '/cykelagent';
   const valuationMatch = path === '/vurder-min-cykel';
   const sizeFinderMatch = path === '/stelstoerrelse-guide' || path === '/stelstørrelse-guide';
@@ -1937,7 +1957,7 @@ function handleRoute() {
   // Hver render-gren overskriver straks denne placeholder med sit eget skelet/indhold.
   const _isPageRoute = staticMatch || dealerApply || dealersMatch || mapPageMatch ||
     inboxMatch || meMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
-    brandMatch || brandsOverviewMatch || cykelagentMatch || valuationMatch ||
+    brandMatch || brandsOverviewMatch || categoryMatch || cykelagentMatch || valuationMatch ||
     sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch;
   if (_isPageRoute) {
     const _pv = document.getElementById('detail-view');
@@ -2009,6 +2029,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBrandPage(decodeURIComponent(brandMatch[1]));
+  } else if (categoryMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderCategoryPage(categoryMatch);
   } else if (brandsOverviewMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
