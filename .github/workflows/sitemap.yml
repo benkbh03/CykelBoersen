@@ -44,10 +44,13 @@ jobs:
 
       - name: Commit hvis ændret
         run: |
-          if [ -n "$(git status --porcelain sitemap.xml cykler blog maerker)" ]; then
+          # git add -A: robust — fanger sitemap.xml + ALLE prerendrede mapper
+          # (cykler, blog, maerker, kategorier, bike). I CI adskiller working
+          # tree sig kun ved genererede filer, så -A er sikkert og fremtidssikkert.
+          if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add sitemap.xml cykler blog maerker
+            git add -A
             git commit -m "chore(seo): regenerér sitemap + prerendrede sider"
             git push
           else
