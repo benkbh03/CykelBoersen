@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Cykelbørsen</title>
+  <!--
+    SPA-fallback til GitHub Pages.
+
+    GitHub Pages har ingen server-side rewrites (og ignorerer `_redirects`, som
+    er en Netlify/Cloudflare-fil). Uden denne fil svarer et DIREKTE load af en
+    "ren" rute — fx /bike/123, /cykler/trek, /blog/... — med en hård 404, så
+    Googlebot og delte links aldrig når frem til appen.
+
+    Teknik (rafgraph/spa-github-pages): omskriv stien til en query-streng og
+    send brugeren til roden (/?/original/sti), som ER en rigtig fil (index.html,
+    HTTP 200). Et lille decode-script i index.html gendanner den rene URL med
+    history.replaceState, FØR appens router læser location.pathname. Nettoeffekt:
+    indhold serveres altid på en 200-URL, og URL'en i adresselinjen forbliver ren.
+
+    pathSegmentsToKeep = 0, fordi siden kører på eget domæne-rod (custom domain).
+  -->
+  <script type="text/javascript">
+    var pathSegmentsToKeep = 0;
+
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+      l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+<body>
+</body>
+</html>
