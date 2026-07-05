@@ -77,6 +77,7 @@
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
   <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260701n">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260701o">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1136,7 +1137,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260701n';
+    const V = '20260701o';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

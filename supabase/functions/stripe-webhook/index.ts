@@ -123,6 +123,23 @@ serve(async (req) => {
         break;
       }
 
+      // ── Connect-konto opdateret → synk forhandlerens udlejnings-status ──
+      case "account.updated": {
+        const account = event.data.object as Stripe.Account;
+
+        let status = "pending";
+        if (account.charges_enabled && account.payouts_enabled) status = "enabled";
+        else if (account.requirements?.disabled_reason)        status = "disabled";
+
+        const { error } = await supabase.from("profiles").update({
+          stripe_account_status: status,
+        }).eq("stripe_account_id", account.id);
+
+        if (error) console.error("DB opdatering fejlede (account.updated):", error);
+        else        console.log(`Connect-konto [${status}]: ${account.id}`);
+        break;
+      }
+
       // ── Betaling mislykkedes → marker som restance ──
       case "invoice.payment_failed": {
         const invoice    = event.data.object as Stripe.Invoice;
