@@ -19,6 +19,7 @@ on:
       - 'index.html'
       - 'js/brand-data-v2.js'
       - 'js/blog-data-v2.js'
+      - 'js/category-data.js'
 
 permissions:
   contents: write

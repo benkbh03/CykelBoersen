@@ -75,7 +75,7 @@
   <link rel="stylesheet" href="/css/07-map.css?v=20260526ng">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260526ng">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260701n">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
@@ -1064,6 +1064,16 @@
         <a href="/sikkerhedsguide" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">Sikkerhedsguide</a>
       </div>
       <div class="footer-col">
+        <h3 class="footer-col-title">Kategorier</h3>
+        <a href="/racercykler" onclick="event.preventDefault();navigateTo('/racercykler')">Racercykler</a>
+        <a href="/mountainbikes" onclick="event.preventDefault();navigateTo('/mountainbikes')">Mountainbikes</a>
+        <a href="/el-cykler" onclick="event.preventDefault();navigateTo('/el-cykler')">El-cykler</a>
+        <a href="/gravelbikes" onclick="event.preventDefault();navigateTo('/gravelbikes')">Gravelbikes</a>
+        <a href="/citybikes" onclick="event.preventDefault();navigateTo('/citybikes')">Citybikes</a>
+        <a href="/ladcykler" onclick="event.preventDefault();navigateTo('/ladcykler')">Ladcykler</a>
+        <a href="/boernecykler" onclick="event.preventDefault();navigateTo('/boernecykler')">Børnecykler</a>
+      </div>
+      <div class="footer-col">
         <h3 class="footer-col-title">Forhandlere</h3>
         <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')">Find forhandler</a>
         <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
@@ -1129,7 +1139,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260701m';
+    const V = '20260701n';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
