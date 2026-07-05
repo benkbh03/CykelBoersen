@@ -2,16 +2,21 @@
 // Deploy: supabase functions deploy stripe-webhook
 //
 // Påkrævede secrets:
-//   STRIPE_SECRET_KEY      – Stripe secret key
-//   STRIPE_WEBHOOK_SECRET  – Webhook signing secret fra Stripe Dashboard
+//   STRIPE_SECRET_KEY              – Stripe secret key
+//   STRIPE_WEBHOOK_SECRET          – Signing secret, endpoint "events on your account"
+//   STRIPE_CONNECT_WEBHOOK_SECRET  – Signing secret, endpoint "events on Connected
+//                                    accounts" (valgfri indtil Connect tages i brug)
 //
-// Opsæt webhook i Stripe Dashboard → Developers → Webhooks:
+// Opsæt TO webhooks i Stripe Dashboard → Developers → Webhooks (samme URL):
 //   URL: https://<project-ref>.supabase.co/functions/v1/stripe-webhook
-//   Events der lyttes på:
+//   1) "Events on your account":
 //     - checkout.session.completed
 //     - customer.subscription.updated
 //     - customer.subscription.deleted
 //     - invoice.payment_failed
+//   2) "Events on Connected accounts" (Connect / udlejning):
+//     - account.updated
+//   Connect-endpointen har sin EGEN signing secret — deraf to secrets ovenfor.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -24,7 +29,10 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
 
 // .trim() — fjern evt. mellemrum/linjeskift fra copy-paste af whsec_ (ellers
 // fejler signatur-verifikationen med "signing secret contains whitespace").
-const webhookSecret    = (Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "").trim();
+const webhookSecret        = (Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "").trim();
+// Connect-endpointen ("events on Connected accounts") har sin egen secret.
+// account.updated fra forhandlernes Express-konti ankommer via den.
+const connectWebhookSecret = (Deno.env.get("STRIPE_CONNECT_WEBHOOK_SECRET") ?? "").trim();
 const SUPABASE_URL     = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
@@ -32,12 +40,21 @@ serve(async (req) => {
   const signature = req.headers.get("stripe-signature");
   const body      = await req.text();
 
-  let event: Stripe.Event;
-  try {
-    event = await stripe.webhooks.constructEventAsync(body, signature!, webhookSecret);
-  } catch (err) {
-    console.error("Webhook signatur fejl:", err.message);
-    return new Response(`Webhook error: ${err.message}`, { status: 400 });
+  // Verificér mod begge endpoints' secrets — eventen er gyldig hvis én matcher.
+  let event: Stripe.Event | null = null;
+  let lastErr = "";
+  for (const secret of [webhookSecret, connectWebhookSecret]) {
+    if (!secret) continue;
+    try {
+      event = await stripe.webhooks.constructEventAsync(body, signature!, secret);
+      break;
+    } catch (err) {
+      lastErr = err.message;
+    }
+  }
+  if (!event) {
+    console.error("Webhook signatur fejl:", lastErr || "ingen secrets konfigureret");
+    return new Response(`Webhook error: ${lastErr || "no secrets configured"}`, { status: 400 });
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE);
