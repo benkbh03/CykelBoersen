@@ -26,7 +26,7 @@
  * Kører i CI via .github/workflows/sitemap.yml (samme daglige job).
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -44,6 +44,26 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE_URL = 'https://cykelbørsen.dk'; // matcher BASE_URL i js/utils.js (canonical)
 const TEMPLATE = readFileSync(join(ROOT, 'index.html'), 'utf8');
 
+// Supabase — samme publishable key som resten af appen (sikker at eksponere).
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ktufgncydxhkhfttojkh.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
+
+async function fetchSupabase(path) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+  });
+  if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+// Replikerer bikeTitle() i js/utils.js
+function bikeTitle(brand, model) {
+  const b = (brand == null ? '' : String(brand)).trim();
+  const m = (model == null ? '' : String(model)).trim();
+  if (!m || /^[-.?_/\\]+$/.test(m)) return b;
+  return `${b} ${m}`.trim();
+}
+
 /* ---------- Escape-hjælpere ---------- */
 function escHtml(s) {
   return String(s ?? '')
@@ -59,7 +79,7 @@ function jsonLd(obj) {
 }
 
 /* ---------- Template-transformation ---------- */
-function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml }) {
+function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt }) {
   const url = BASE_URL + canonicalPath;
   const t = escHtml(title);
   const d = escHtml(description);
@@ -88,6 +108,19 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
   // Twitter
   html = html.replace(/<meta name="twitter:title"[^>]*>/, `<meta name="twitter:title" content="${t}">`);
   html = html.replace(/<meta name="twitter:description"[^>]*>/, `<meta name="twitter:description" content="${d}">`);
+
+  // Per-side OG-billede (fx annoncens primærbillede) — det store gevinst-punkt
+  // for delinger på Facebook/Messenger, som ikke kører JS.
+  if (ogImage) {
+    const img = escHtml(ogImage);
+    const alt = escHtml(ogImageAlt || title);
+    html = html.replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${img}">`);
+    html = html.replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${img}">`);
+    html = html.replace(/<meta property="og:image:alt"[^>]*>/, `<meta property="og:image:alt" content="${alt}">`);
+    // Fjern faste dimensioner fra hero-billedet — annonce-billeder har andre mål.
+    html = html.replace(/\s*<meta property="og:image:width"[^>]*>/, '');
+    html = html.replace(/\s*<meta property="og:image:height"[^>]*>/, '');
+  }
 
   // Rute-JSON-LD før </head>
   const ldScripts = jsonldBlocks
@@ -425,6 +458,73 @@ function categoryPage(slug, meta) {
   return { title: meta.title, description: meta.metaDesc, canonicalPath, jsonldBlocks, contentHtml };
 }
 
+function bikePage(b) {
+  const name = bikeTitle(b.brand, b.model);
+  const price = Number(b.price) || 0;
+  const priceStr = price.toLocaleString('da-DK');
+  const city = b.city || 'Danmark';
+  const canonicalPath = `/bike/${b.id}`;
+
+  const title = `${name} – ${priceStr} kr. | Cykelbørsen`;
+  const description = `${name} – ${b.type || 'Cykel'} i ${city}. ${b.condition || ''}. ${priceStr} kr. Køb på Cykelbørsen.`;
+
+  const images = (b.bike_images || []).map(i => i.url).filter(Boolean);
+  const primary = (b.bike_images || []).find(i => i.is_primary)?.url || images[0] || '';
+  const sizeStr = b.size_cm ? `${b.size_cm} cm` : (b.size || '');
+
+  const metaBits = [b.type, b.year, sizeStr, b.condition, city].filter(Boolean)
+    .map(x => `<span>${escHtml(x)}</span>`).join('');
+  const descHtml = b.description ? `<div class="bike-prerender-desc">${escHtml(b.description).replace(/\n/g, '<br>')}</div>` : '';
+
+  const contentHtml = `
+      <div class="bike-page bike-prerender">
+        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        ${primary ? `<img class="bike-prerender-img" src="${escHtml(primary)}" alt="${escHtml(name)} – ${escHtml(b.type || 'cykel')} i ${escHtml(city)}" width="600" height="450">` : ''}
+        <h1 class="bike-prerender-title">${escHtml(name)}</h1>
+        <p class="bike-prerender-price">${priceStr} kr.</p>
+        <div class="bike-prerender-meta">${metaBits}</div>
+        ${descHtml}
+      </div>`;
+
+  // Product JSON-LD — matcher buildBikeJsonLd() i js/bike-detail.js (uden
+  // sælger-rating; JS re-injicerer med rating når trust-data ankommer).
+  const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+  const jsonldBlocks = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name,
+      sku: b.id,
+      productID: b.id,
+      description: b.description || `${b.type || 'Cykel'} – ${b.condition || ''}`,
+      image: images.length ? images : (primary ? [primary] : []),
+      brand: { '@type': 'Brand', name: b.brand },
+      category: b.type,
+      url: `${BASE_URL}${canonicalPath}`,
+      offers: {
+        '@type': 'Offer',
+        price,
+        priceCurrency: 'DKK',
+        priceValidUntil,
+        availability: 'https://schema.org/InStock',
+        itemCondition: b.condition === 'Ny' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+        url: `${BASE_URL}${canonicalPath}`,
+        seller: {
+          '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
+          name: b.profiles?.shop_name || b.profiles?.name || 'Sælger',
+        },
+      },
+    },
+    breadcrumb([['Forside', '/'], [name, canonicalPath]]),
+  ];
+
+  return {
+    title, description, canonicalPath, jsonldBlocks, contentHtml,
+    ogImage: primary || undefined,
+    ogImageAlt: primary ? `${name} – ${b.type || 'cykel'} i ${city}` : undefined,
+  };
+}
+
 function breadcrumb(items) {
   return {
     '@context': 'https://schema.org',
@@ -445,7 +545,7 @@ function formatDate(iso) {
 }
 
 /* ---------- Main ---------- */
-function main() {
+async function main() {
   let count = 0;
 
   // Mærke-sider — kun ASCII-slugs (accenttegn undgås pga. URL-encoding i filstier;
@@ -478,6 +578,35 @@ function main() {
   }
 
   console.log(`Prerendered ${count} statiske sider (mærker + blog + kategorier + oversigter).`);
+
+  // Annonce-sider (/bike/:id) — hentes live fra Supabase. Dynamiske OG-billeder
+  // (annoncens primærbillede) + Product-schema i rå-HTML → delinger på
+  // Facebook/Messenger viser cyklen, og Bing/scrapers indekserer uden JS.
+  let bikes = null;
+  try {
+    bikes = await fetchSupabase(
+      'bikes?is_active=eq.true&select=id,brand,model,price,type,city,condition,year,size,size_cm,description,' +
+      'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
+    );
+  } catch (err) {
+    console.warn('Kunne ikke hente annoncer:', err.message);
+  }
+
+  if (bikes) {
+    // Ryd gamle annonce-sider, så solgte/inaktive annoncer forsvinder (deres
+    // /bike/:id falder tilbage på 404.html + JS). Regenerér kun aktive.
+    const bikeRoot = join(ROOT, 'bike');
+    if (existsSync(bikeRoot)) rmSync(bikeRoot, { recursive: true, force: true });
+    for (const b of bikes) {
+      writePage(`/bike/${b.id}`, buildPage(bikePage(b)));
+    }
+    console.log(`Prerendered ${bikes.length} annonce-sider (med dynamiske OG-billeder).`);
+  } else {
+    console.warn('Springer annonce-prerender over (ingen data) — beholder eksisterende /bike-sider.');
+  }
 }
 
-main();
+main().catch(err => {
+  console.error('Prerender fejlede:', err);
+  process.exit(1);
+});
