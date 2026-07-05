@@ -1,8 +1,9 @@
-name: Generate sitemap
+name: Generate sitemap + prerender
 
-# Kører dagligt + manuelt + ved push der ændrer scriptet selv.
-# Henter aktive annoncer + verificerede forhandlere fra Supabase og
-# genererer en frisk sitemap.xml. Committer kun hvis filen faktisk ændrede sig.
+# Kører dagligt + manuelt + ved push der ændrer indhold/scripts.
+# 1) Genererer en frisk sitemap.xml (aktive annoncer + verificerede forhandlere).
+# 2) Prerenderer statiske SEO-sider (mærker + blog + oversigter) fra data-moduler.
+# Committer kun hvis noget faktisk ændrede sig.
 on:
   schedule:
     - cron: '0 3 * * *'   # dagligt 03:00 UTC (~05:00 dansk)
@@ -11,7 +12,13 @@ on:
     branches: [main]
     paths:
       - 'scripts/generate-sitemap.mjs'
+      - 'scripts/prerender.mjs'
       - '.github/workflows/sitemap.yml'
+      # Prerendret indhold afhænger af disse — regenerér når de ændrer sig,
+      # så de statiske sider ikke peger på gamle asset-versioner eller tekst.
+      - 'index.html'
+      - 'js/brand-data-v2.js'
+      - 'js/blog-data-v2.js'
 
 permissions:
   contents: write
@@ -31,14 +38,17 @@ jobs:
       - name: Generate sitemap.xml
         run: node scripts/generate-sitemap.mjs
 
+      - name: Prerender statiske SEO-sider
+        run: node scripts/prerender.mjs
+
       - name: Commit hvis ændret
         run: |
-          if [ -n "$(git status --porcelain sitemap.xml)" ]; then
+          if [ -n "$(git status --porcelain sitemap.xml cykler blog maerker)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add sitemap.xml
-            git commit -m "chore(sitemap): regenerér med live bikes + dealers"
+            git add sitemap.xml cykler blog maerker
+            git commit -m "chore(seo): regenerér sitemap + prerendrede sider"
             git push
           else
-            echo "Sitemap uændret — ingen commit."
+            echo "Sitemap + prerender uændret — ingen commit."
           fi
