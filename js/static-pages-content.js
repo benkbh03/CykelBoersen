@@ -110,17 +110,17 @@ export const footerContent = {
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Almindelige cykler</strong> i alle kategorier — racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
         <li><strong>El-cykler (pedelec)</strong> med motor op til 250W og max 25 km/t med pedal-assist. Det er det færdselsloven definerer som "cykel" og kræver ikke registrering, kørekort eller forsikring.</li>
+        <li><strong>Speed pedelecs (S-pedelec)</strong> — pedelecs med pedal-assist over 25 km/t (op til 45 km/t). <strong>Vigtigt:</strong> en speed pedelec er juridisk en lille knallert (L1e-B) og kræver registrering med nummerplade, lovpligtig ansvarsforsikring, kørekort (mindst kategori AM) og styrthjelm. Sælger skal oplyse dette tydeligt i annoncen (se nedenfor).</li>
         <li><strong>Cykeltilbehør og -udstyr</strong> — fx hjelme, lygter, låse, cykelcomputere, tasker, pumper, barnestole, hometrainere, cykelsko, cykelbeklædning, skærme og dæk/slanger.</li>
         <li><strong>Reservedele og komponenter</strong> — fx hjul, dæk/slanger, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr og forgafler.</li>
       </ul>
-      <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke er cykler jvf. dansk lovgivning:</p>
+      <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke har trædefunktion / ikke er cykler eller speed pedelecs jvf. dansk lovgivning:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>El-løbehjul og el-scootere</strong> — andet køretøj-segment.</li>
-        <li><strong>Speed pedelecs</strong> (cykler med motor 250-1000W eller hastighed over 25 km/t med pedal-assist) — kræver registrering som lille knallert (L1e), nummerplade og ansvarsforsikring.</li>
-        <li><strong>El-motocross, el-motorcykler og el-mopeder</strong> over 1000W eller over 45 km/t — kræver kørekort og fuld registrering som motorkøretøj.</li>
-        <li><strong>Almindelige knallerter, scootere og motorcykler.</strong></li>
+        <li><strong>El-motorcykler, el-motocross og el-mopeder</strong> — motorkøretøjer uden pedal-assist eller med tophastighed over 45 km/t.</li>
+        <li><strong>Almindelige knallerter, scootere og motorcykler</strong> uden trædefunktion.</li>
       </ul>
-      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist, så køber kan verificere at cyklen falder inden for cykel-definitionen.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist. Sælger du en <strong>speed pedelec</strong>, skal du derudover tydeligt angive i annoncen, at det er en speed pedelec der kræver registrering, nummerplade, ansvarsforsikring og kørekort — så køber kender de juridiske krav inden køb.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
       <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
@@ -384,6 +384,7 @@ export const footerContent = {
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>Alle slags cykler — racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
+            <li>Speed pedelecs (op til <strong>45 km/t</strong>) — kræver registrering, forsikring &amp; kørekort; skal oplyses i annoncen</li>
             <li>Cykeltilbehør og -udstyr — hjelme, lygter, låse, computere, tasker, pumper, barnestole, hometrainere, sko, beklædning, skærme, dæk/slanger m.m.</li>
             <li>Reservedele og komponenter — hjul, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr, forgafler m.m.</li>
           </ul>
@@ -392,17 +393,16 @@ export const footerContent = {
           <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#c8302a;margin:0 0 12px;display:flex;align-items:center;gap:8px;">❌ Må IKKE sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>El-løbehjul og el-scootere</li>
-            <li>Speed pedelecs (250-1000W eller over 25 km/t)</li>
-            <li>El-motocross, el-motorcykler, el-mopeder</li>
-            <li>Almindelige knallerter og motorcykler</li>
+            <li>El-motorcykler, el-motocross &amp; el-mopeder (uden pedaler / over 45 km/t)</li>
+            <li>Almindelige knallerter, scootere og motorcykler</li>
           </ul>
         </div>
       </div>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Hvorfor er grænsen ved 250W og 25 km/t?</h3>
       <p style="margin-bottom:16px;">Det er Færdselslovens definition af en "cykel". En el-cykel med motor på højst 250W og maksimal hastighed 25 km/t med pedal-assist betragtes juridisk som en cykel og kræver ikke registrering, nummerplade, kørekort eller forsikring.</p>
-      <p style="margin-bottom:16px;">Så snart en cykel overstiger 250W eller kan køre over 25 km/t på motorkraft, klassificeres den som <strong>lille knallert (L1e)</strong> eller motorcykel. Det betyder registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring, og at føreren skal have kørekort til kategorien.</p>
-      <p style="margin-bottom:24px;">Vi tillader ikke disse på Cykelbørsen fordi det forvirrer købere (mange ved ikke at en 1000W "el-cykel" er en knallert juridisk) og lægger juridisk risiko på dig som sælger.</p>
+      <p style="margin-bottom:16px;">En pedelec der hjælper over 25 km/t (op til 45 km/t) er en <strong>speed pedelec</strong> — juridisk en lille knallert (L1e-B). Den <strong>må gerne sælges på Cykelbørsen</strong>, men den kræver registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring og kørekort (mindst kategori AM). Derfor skal sælger oplyse dette tydeligt i annoncen, så køber kender kravene inden køb.</p>
+      <p style="margin-bottom:24px;">Rene motorkøretøjer <strong>uden trædefunktion</strong> — eller køretøjer der kan køre over 45 km/t — hører ikke hjemme på en cykel-markedsplads og må ikke sælges her.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Oplysningspligt ved salg af el-cykler</h3>
       <p style="margin-bottom:16px;">Sælger du en el-cykel, skal du i selve annonceteksten oplyse:</p>
@@ -412,6 +412,7 @@ export const footerContent = {
         <li><strong>Batterikapacitet</strong> i Wh eller Ah (fx "504 Wh / 14 Ah")</li>
       </ul>
       <p style="margin-bottom:16px;">Det giver køberen tryghed for at cyklen falder inden for cykel-definitionen og ikke kræver registrering.</p>
+      <p style="margin-bottom:16px;">Sælger du en <strong>speed pedelec</strong> (over 25 km/t), skal du derudover tydeligt skrive i annoncen, at det er en speed pedelec, og at den kræver <strong>registrering, nummerplade, ansvarsforsikring og kørekort</strong> (mindst kategori AM). Så ved køber præcis hvad der følger med.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Tvivlstilfælde</h3>
       <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs — så svarer vi indenfor et par timer.</p>
