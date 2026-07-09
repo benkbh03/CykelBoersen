@@ -1,0 +1,85 @@
+/* ============================================================
+   CYKELUDLEJNING (12-rental.css)
+   Onboarding (/bliv-udlejer) + inventar + booking.
+   ============================================================ */
+
+/* ── Udlejer-onboarding ── */
+.rental-onboarding {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 16px 48px;
+}
+.rental-onb-card {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e2ded5);
+  border-radius: 16px;
+  padding: 32px 28px;
+  margin-top: 8px;
+  text-align: center;
+}
+.rental-onb-badge {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.rental-onb-badge--ok {
+  background: rgba(42, 61, 46, 0.1);
+  color: var(--forest, #2a3d2e);
+}
+.rental-onb-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  color: var(--forest, #2a3d2e);
+  margin: 0 0 12px;
+}
+.rental-onb-lead {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 1rem;
+  margin: 0 0 20px;
+}
+.rental-onb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 24px;
+  max-width: 400px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rental-onb-list li {
+  color: var(--ink, #2b2b2b);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.rental-onb-btn {
+  background: var(--rust);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.rental-onb-btn:hover { filter: brightness(1.05); }
+.rental-onb-btn:disabled { opacity: 0.6; cursor: default; }
+.rental-onb-fineprint {
+  margin-top: 16px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.rental-onb-fineprint a { color: var(--rust); }
+
+@media (max-width: 480px) {
+  .rental-onb-card { padding: 24px 18px; }
+  .rental-onb-title { font-size: 1.4rem; }
+}
