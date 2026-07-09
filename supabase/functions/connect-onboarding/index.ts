@@ -89,7 +89,11 @@ serve(async (req) => {
     }
 
     // Onboarding-link (Stripe-hostet). refresh_url bruges hvis linket udløber.
-    const base = (return_url || "").split("?")[0] || "https://xn--cykelbrsen-5cb.dk/bliv-udlejer";
+    // Stripe kræver ASCII-URLs — konvertér Unicode-domænet "cykelbørsen.dk" til
+    // punycode, ellers fejler det med "Non-ASCII characters in URLs must be
+    // percent-encoded". (Frontend sender Unicode-BASE_URL fra js/utils.js.)
+    let base = (return_url || "").split("?")[0] || "https://xn--cykelbrsen-5cb.dk/bliv-udlejer";
+    base = base.replace("cykelbørsen.dk", "xn--cykelbrsen-5cb.dk");
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
       refresh_url: `${base}?connect_refresh=true`,
