@@ -75,9 +75,9 @@ export function createRentalOnboarding({
       return `
         <div class="rental-onb-badge rental-onb-badge--ok">✓ Udlejnings-konto aktiv</div>
         <h1 class="rental-onb-title">Du er klar til at udleje${shopName ? `, ${esc(shopName)}` : ''}!</h1>
-        <p class="rental-onb-lead">Din Stripe-konto er sat op og klar til at modtage betalinger. Næste skridt er at oprette dine udlejningscykler med priser og tilgængelighed.</p>
-        <button class="rental-onb-btn" onclick="navigateTo('/me')">Til min profil</button>
-        <p class="rental-onb-fineprint">Udlejnings-inventar og bookinger administreres under <a href="/me" onclick="event.preventDefault();navigateTo('/me')">Min profil</a>.</p>
+        <p class="rental-onb-lead">Din Stripe-konto er sat op og klar til at modtage betalinger. Opret nu dine udlejningscykler med priser og tilgængelighed.</p>
+        <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">Opret udlejningscykel</button>
+        <p class="rental-onb-fineprint">Se og administrer dine udlejningscykler under <a href="/udlejning/mine" onclick="event.preventDefault();navigateTo('/udlejning/mine')">Mine udlejningscykler</a>.</p>
       `;
     }
 
