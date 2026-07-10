@@ -199,3 +199,14 @@
   .rental-booking-row { flex-wrap: wrap; }
   .rental-status { order: 3; }
 }
+
+/* ── Udlejning: booking-handlinger (Fase 3) ── */
+.rental-booking-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.rental-act-btn { border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+.rental-act-ok { background: rgba(42,61,46,0.1); color: var(--forest, #2a3d2e); }
+.rental-act-warn { background: #fff4e5; color: #8a5a00; }
+.rental-act-cancel { background: #f6e5e5; color: #b23b3b; }
+.rental-act-btn:hover { filter: brightness(0.96); }
+@media (max-width: 480px) {
+  .rental-booking-right { flex-direction: row; flex-wrap: wrap; width: 100%; align-items: center; margin-top: 4px; }
+}

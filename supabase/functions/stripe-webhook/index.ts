@@ -88,12 +88,19 @@ serve(async (req) => {
 
         // Udlejnings-booking: bekræft efter gennemført betaling (idempotent)
         if (session.mode === "payment" && session.metadata?.type === "rental") {
-          const { error } = await supabase.rpc("confirm_rental_booking", {
+          const { data: confirmedId, error } = await supabase.rpc("confirm_rental_booking", {
             p_session_id:        session.id,
             p_payment_intent_id: (session.payment_intent as string) ?? null,
           });
-          if (error) console.error("confirm_rental_booking fejlede:", error);
-          else        console.log(`Udlejnings-booking bekræftet (session ${session.id})`);
+          if (error) {
+            console.error("confirm_rental_booking fejlede:", error);
+          } else if (confirmedId) {
+            // Kun ved FRISK bekræftelse (gensendt webhook returnerer null → ingen dobbelt-mail)
+            console.log(`Udlejnings-booking bekræftet (session ${session.id})`);
+            supabase.functions.invoke("notify-message", {
+              body: { type: "rental_booked", booking_id: confirmedId },
+            }).catch(() => {});
+          }
           break;
         }
 

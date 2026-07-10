@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701q';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701r';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
@@ -752,7 +752,7 @@ const _ensureRentalBooking = lazyCtrl(
   () => import(`./js/rental-booking.js?v=${ASSET_VERSION}`),
   'createRentalBooking',
   () => ({
-    supabase, esc,
+    supabase, esc, showToast,
     getCurrentUser: () => currentUser,
     showDetailView,
     navigateTo: (...args) => navigateTo(...args),
@@ -760,8 +760,10 @@ const _ensureRentalBooking = lazyCtrl(
 );
 const renderMyRentals      = lazyMethod(_ensureRentalBooking, 'renderMyRentals');
 const renderDealerBookings = lazyMethod(_ensureRentalBooking, 'renderDealerBookings');
+const rentalBookingAction  = lazyMethod(_ensureRentalBooking, 'rentalBookingAction');
 window.renderMyRentals      = renderMyRentals;
 window.renderDealerBookings = renderDealerBookings;
+window.rentalBookingAction  = rentalBookingAction;
 
 // Udlejning: forhandler-administration (/udlejning/opret|rediger|mine) — lazy-loaded
 const _ensureRentalManage = lazyCtrl(

@@ -139,6 +139,40 @@ serve(async (req) => {
       }
     }
 
+    // ── UDLEJNING: NY BOOKING (→ forhandler) ──────────────────
+    if (payload.type === "rental_booked") {
+      const { data: b } = await supabase
+        .from("rental_bookings")
+        .select("dealer_id, start_date, end_date, days, rental_amount, platform_fee, rental_items!item_id(title), profiles!renter_id(name)")
+        .eq("id", payload.booking_id)
+        .single();
+      if (!b) return new Response("Booking not found", { status: 400, headers: corsHeaders });
+
+      const { data: { user: dealer } } = await supabase.auth.admin.getUserById(b.dealer_id);
+      if (!dealer?.email) {
+        return new Response(JSON.stringify({ ok: true, skipped: "no dealer email" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const item   = (b as any).rental_items || {};
+      const renter = (b as any).profiles || {};
+      const payout = (b.rental_amount || 0) - (b.platform_fee || 0);
+
+      const html = emailWrapper(`
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Ny udlejnings-booking! 🚲</h2>
+        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
+          <strong style="color:#1A1A18;">${esc(item.title ?? "Din udlejningscykel")}</strong> er booket af ${esc(renter.name ?? "en kunde")}.<br><br>
+          📅 ${esc(b.start_date)} – ${esc(b.end_date)} (${b.days} dage)<br>
+          💰 Din udbetaling: <strong style="color:#1A1A18;">${payout.toLocaleString("da-DK")} kr.</strong> (efter kommission)
+        </p>
+        <a href="https://cykelbørsen.dk/udlejning/bookinger"
+           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Se dine bookinger →
+        </a>
+      `);
+      const result = await sendEmail(dealer.email, "🚲 Ny udlejnings-booking – Cykelbørsen", html);
+      console.log("Rental-booking email sendt til:", dealer.email, "| ID:", result.id);
+      return new Response(JSON.stringify({ ok: true, id: result.id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── ID VERIFICERING GODKENDT ──────────────────────────────
     if (payload.type === "id_approved") {
       const { data: { user }, error } = await supabase.auth.admin.getUserById(payload.user_id);
