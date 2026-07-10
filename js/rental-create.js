@@ -99,7 +99,10 @@ export function createRentalManage({
         ${connectBanner(auth.profile.stripe_account_status)}
         <div class="rental-mine-head">
           <h1>Mine udlejningscykler</h1>
-          <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">+ Ny udlejningscykel</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="rental-onb-btn" onclick="navigateTo('/udlejning/bookinger')" style="background:var(--forest,#2a3d2e);">Bookinger</button>
+            <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">+ Ny udlejningscykel</button>
+          </div>
         </div>
         <div class="rental-mine-list">
           ${list || '<p style="color:var(--muted);padding:24px;text-align:center;">Du har endnu ingen udlejningscykler. Opret din første ovenfor.</p>'}

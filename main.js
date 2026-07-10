@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701p';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701q';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
@@ -732,14 +732,36 @@ const _ensureRentalItem = lazyCtrl(
   () => import(`./js/rental-item-page.js?v=${ASSET_VERSION}`),
   'createRentalItemPage',
   () => ({
-    supabase, esc, updateSEOMeta, showDetailView, showListingView,
+    supabase, esc, updateSEOMeta, showDetailView, showListingView, showToast,
     navigateTo:       (...args) => navigateTo(...args),
     navigateToDealer: (...args) => navigateToDealer(...args),
+    getCurrentUser: () => currentUser,
+    openLoginModal: (...args) => openLoginModal(...args),
     BASE_URL,
   }),
 );
 const renderRentalItemPage = lazyMethod(_ensureRentalItem, 'renderRentalItemPage');
+const updateRentalPrice    = lazyMethod(_ensureRentalItem, 'updateRentalPrice');
+const startRentalBooking   = lazyMethod(_ensureRentalItem, 'startRentalBooking');
 window.renderRentalItemPage = renderRentalItemPage;
+window.updateRentalPrice    = updateRentalPrice;
+window.startRentalBooking   = startRentalBooking;
+
+// Udlejning: bookings-oversigter (/udlejning/lejeaftaler|bookinger) — lazy-loaded
+const _ensureRentalBooking = lazyCtrl(
+  () => import(`./js/rental-booking.js?v=${ASSET_VERSION}`),
+  'createRentalBooking',
+  () => ({
+    supabase, esc,
+    getCurrentUser: () => currentUser,
+    showDetailView,
+    navigateTo: (...args) => navigateTo(...args),
+  }),
+);
+const renderMyRentals      = lazyMethod(_ensureRentalBooking, 'renderMyRentals');
+const renderDealerBookings = lazyMethod(_ensureRentalBooking, 'renderDealerBookings');
+window.renderMyRentals      = renderMyRentals;
+window.renderDealerBookings = renderDealerBookings;
 
 // Udlejning: forhandler-administration (/udlejning/opret|rediger|mine) — lazy-loaded
 const _ensureRentalManage = lazyCtrl(
@@ -1369,6 +1391,12 @@ async function init() {
   } else if (urlParams.get('boost_cancel') === 'true') {
     history.replaceState(null, '', window.location.pathname);
     showToast('ℹ️ Betalingen blev annulleret. Din annonce blev ikke promoveret.');
+  } else if (urlParams.get('rental_success') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('🎉 Din booking er bekræftet! Se den under Mine lejeaftaler.');
+  } else if (urlParams.get('rental_cancel') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('ℹ️ Booking annulleret. Du blev ikke opkrævet.');
   }
 
   // Klik uden for modal lukker den
@@ -2029,8 +2057,10 @@ function handleRoute() {
   const rentalBrowse = path === '/udlejning';
   const rentalCreate = path === '/udlejning/opret';
   const rentalMine   = path === '/udlejning/mine';
+  const rentalMyBookings     = path === '/udlejning/lejeaftaler';
+  const rentalDealerBookings = path === '/udlejning/bookinger';
   const rentalEditMatch = path.match(/^\/udlejning\/rediger\/([^/]+)$/);
-  // Catch-all til sidst — matcher også /opret og /mine, så tjek DEM først i handleren.
+  // Catch-all til sidst — matcher også /opret, /mine osv., så tjek DEM først i handleren.
   const rentalItemMatch = path.match(/^\/udlejning\/([^/]+)$/);
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
@@ -2044,7 +2074,8 @@ function handleRoute() {
     inboxMatch || meMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
     brandMatch || brandsOverviewMatch || categoryMatch || cykelagentMatch || valuationMatch ||
     sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch ||
-    rentalBrowse || rentalCreate || rentalMine || rentalEditMatch || rentalItemMatch;
+    rentalBrowse || rentalCreate || rentalMine || rentalMyBookings || rentalDealerBookings ||
+    rentalEditMatch || rentalItemMatch;
   if (_isPageRoute) {
     const _pv = document.getElementById('detail-view');
     if (_pv) _pv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser…</div>';
@@ -2075,6 +2106,16 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderRentalMine();
+  } else if (rentalMyBookings) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderMyRentals();
+  } else if (rentalDealerBookings) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderDealerBookings();
   } else if (rentalEditMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });

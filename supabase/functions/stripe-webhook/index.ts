@@ -86,6 +86,17 @@ serve(async (req) => {
           break;
         }
 
+        // Udlejnings-booking: bekræft efter gennemført betaling (idempotent)
+        if (session.mode === "payment" && session.metadata?.type === "rental") {
+          const { error } = await supabase.rpc("confirm_rental_booking", {
+            p_session_id:        session.id,
+            p_payment_intent_id: (session.payment_intent as string) ?? null,
+          });
+          if (error) console.error("confirm_rental_booking fejlede:", error);
+          else        console.log(`Udlejnings-booking bekræftet (session ${session.id})`);
+          break;
+        }
+
         // Abonnement: forhandler
         if (session.mode !== "subscription") break;
 
