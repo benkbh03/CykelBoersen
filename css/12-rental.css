@@ -83,3 +83,87 @@
   .rental-onb-card { padding: 24px 18px; }
   .rental-onb-title { font-size: 1.4rem; }
 }
+
+/* ── Udlejning: browse (/udlejning) ── */
+.rental-browse { max-width: 1100px; margin: 0 auto; padding: 8px 16px 48px; }
+.rental-browse-hero { text-align: center; padding: 12px 0 20px; }
+.rental-browse-title { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--forest, #2a3d2e); margin: 0 0 6px; }
+.rental-browse-sub { color: var(--muted); font-size: 1rem; margin: 0; }
+.rental-type-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
+.rental-type-chip {
+  border: 1px solid var(--border, #e2ded5); background: var(--card, #fff);
+  color: var(--ink, #2b2b2b); border-radius: 999px; padding: 7px 15px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer;
+}
+.rental-type-chip.active { background: var(--forest, #2a3d2e); color: #fff; border-color: var(--forest, #2a3d2e); }
+.rental-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.rental-card {
+  background: var(--card, #fff); border: 1px solid var(--border, #e2ded5);
+  border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow 0.15s, transform 0.15s;
+}
+.rental-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.rental-card-img { aspect-ratio: 4/3; background: #f0ede6; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.rental-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.rental-card-body { padding: 12px 14px; }
+.rental-card-title { font-weight: 600; color: var(--forest, #2a3d2e); margin-bottom: 2px; }
+.rental-card-price { color: var(--rust); font-weight: 600; font-size: 1.05rem; margin-bottom: 6px; }
+.rental-card-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-size: 0.85rem; margin-bottom: 6px; }
+.rental-card-dealer { font-size: 0.82rem; color: var(--muted); }
+.rental-empty { text-align: center; padding: 40px 16px; color: var(--muted); grid-column: 1 / -1; }
+
+/* ── Udlejning: item-detalje ── */
+.rental-item-page { max-width: 980px; margin: 0 auto; padding: 8px 16px 48px; }
+.rental-item-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; margin-top: 12px; }
+.rental-item-main-img { aspect-ratio: 4/3; background: #f0ede6; border-radius: 14px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.rental-item-main-img img { width: 100%; height: 100%; object-fit: cover; }
+.rental-item-thumbs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.rental-item-thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border, #e2ded5); }
+.rental-item-title { font-family: 'Fraunces', serif; font-size: 1.6rem; color: var(--forest, #2a3d2e); margin: 0 0 8px; }
+.rental-item-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.rental-item-chip { background: #f0ede6; border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; color: var(--ink, #2b2b2b); }
+.rental-item-pricebox { border: 1px solid var(--border, #e2ded5); border-radius: 14px; padding: 18px; }
+.rental-item-price { font-size: 1.5rem; font-weight: 700; color: var(--rust); }
+.rental-item-price span { font-size: 0.95rem; font-weight: 400; color: var(--muted); }
+.rental-item-weekly { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+.rental-item-terms { margin-top: 12px; font-size: 0.9rem; color: var(--ink, #2b2b2b); display: flex; flex-direction: column; gap: 4px; }
+.rental-book-placeholder { margin-top: 16px; border-top: 1px solid var(--border, #e2ded5); padding-top: 14px; }
+.rental-book-btn { width: 100%; background: #cfc9bd; color: #fff; border: none; border-radius: 10px; padding: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: not-allowed; }
+.rental-book-note { font-size: 0.85rem; color: var(--muted); margin: 8px 0; }
+.rental-dealer-link { display: inline-block; color: var(--rust); font-weight: 600; text-decoration: none; }
+.rental-item-desc { margin-top: 20px; line-height: 1.6; color: var(--ink, #2b2b2b); }
+
+/* ── Udlejning: forhandler-administration ── */
+.rental-manage { max-width: 720px; margin: 0 auto; padding: 8px 16px 48px; }
+.rental-connect-warn { background: #fff4e5; border: 1px solid #f0c98a; border-radius: 10px; padding: 12px 14px; margin: 8px 0 16px; font-size: 0.9rem; color: #8a5a00; }
+.rental-connect-warn a { color: var(--rust); font-weight: 600; }
+.rental-mine-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.rental-mine-head h1 { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--forest, #2a3d2e); margin: 0; }
+.rental-mine-list { display: flex; flex-direction: column; gap: 10px; }
+.rental-mine-row { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border, #e2ded5); border-radius: 12px; padding: 10px 12px; }
+.rental-mine-thumb { width: 56px; height: 56px; border-radius: 8px; background: #f0ede6; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 1.6rem; flex-shrink: 0; }
+.rental-mine-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.rental-mine-info { flex: 1; min-width: 0; }
+.rental-mine-title { font-weight: 600; color: var(--forest, #2a3d2e); }
+.rental-inactive-tag { font-size: 0.72rem; background: #e2ded5; color: #666; padding: 2px 7px; border-radius: 999px; font-weight: 500; }
+.rental-mine-sub { font-size: 0.85rem; color: var(--muted); }
+.rental-mine-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.rental-mine-actions button { border: 1px solid var(--border, #e2ded5); background: var(--card, #fff); border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.rental-form-title { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--forest, #2a3d2e); margin: 8px 0 16px; }
+.rental-form { display: flex; flex-direction: column; gap: 14px; }
+.rental-form label { display: flex; flex-direction: column; gap: 5px; font-size: 0.9rem; font-weight: 500; color: var(--ink, #2b2b2b); }
+.rental-form input, .rental-form select, .rental-form textarea {
+  border: 1px solid var(--border, #e2ded5); border-radius: 8px; padding: 10px 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 1rem; background: var(--card, #fff); color: var(--ink, #2b2b2b);
+}
+.rental-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rental-img-section { margin-top: 6px; }
+.rental-img-label { font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; display: block; }
+.rental-delete-btn { background: none; border: none; color: #b23b3b; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; margin-top: 10px; text-decoration: underline; }
+
+@media (max-width: 768px) {
+  .rental-item-grid { grid-template-columns: 1fr; gap: 18px; }
+}
+@media (max-width: 480px) {
+  .rental-browse-title { font-size: 1.6rem; }
+  .rental-form-row { grid-template-columns: 1fr; }
+}

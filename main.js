@@ -11,7 +11,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 // + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
 // cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
 // igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701o';
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701p';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
@@ -711,6 +711,67 @@ const renderBecomeRenterPage  = lazyMethod(_ensureRentalOnboarding, 'renderBecom
 const startConnectOnboarding  = lazyMethod(_ensureRentalOnboarding, 'startConnectOnboarding');
 window.renderBecomeRenterPage = renderBecomeRenterPage;
 window.startConnectOnboarding = startConnectOnboarding;
+
+// Udlejning: browse (/udlejning) — lazy-loaded
+const _ensureRentalBrowse = lazyCtrl(
+  () => import(`./js/rental-browse.js?v=${ASSET_VERSION}`),
+  'createRentalBrowse',
+  () => ({
+    supabase, esc, updateSEOMeta, showDetailView,
+    navigateTo: (...args) => navigateTo(...args),
+    BASE_URL,
+  }),
+);
+const renderRentalBrowse = lazyMethod(_ensureRentalBrowse, 'renderRentalBrowse');
+const filterRentalType   = lazyMethod(_ensureRentalBrowse, 'filterRentalType');
+window.renderRentalBrowse = renderRentalBrowse;
+window.filterRentalType   = filterRentalType;
+
+// Udlejning: item-detalje (/udlejning/:id) — lazy-loaded
+const _ensureRentalItem = lazyCtrl(
+  () => import(`./js/rental-item-page.js?v=${ASSET_VERSION}`),
+  'createRentalItemPage',
+  () => ({
+    supabase, esc, updateSEOMeta, showDetailView, showListingView,
+    navigateTo:       (...args) => navigateTo(...args),
+    navigateToDealer: (...args) => navigateToDealer(...args),
+    BASE_URL,
+  }),
+);
+const renderRentalItemPage = lazyMethod(_ensureRentalItem, 'renderRentalItemPage');
+window.renderRentalItemPage = renderRentalItemPage;
+
+// Udlejning: forhandler-administration (/udlejning/opret|rediger|mine) — lazy-loaded
+const _ensureRentalManage = lazyCtrl(
+  () => import(`./js/rental-create.js?v=${ASSET_VERSION}`),
+  'createRentalManage',
+  () => ({
+    supabase, esc, showToast, compressImage, validateImageFile,
+    getCurrentUser:    () => currentUser,
+    getCurrentProfile: () => currentProfile,
+    showDetailView, showListingView,
+    navigateTo: (...args) => navigateTo(...args),
+    BASE_URL,
+  }),
+);
+const renderRentalMine   = lazyMethod(_ensureRentalManage, 'renderRentalMine');
+const renderRentalCreate = lazyMethod(_ensureRentalManage, 'renderRentalCreate');
+const renderRentalEdit   = lazyMethod(_ensureRentalManage, 'renderRentalEdit');
+const selectRentalImages = lazyMethod(_ensureRentalManage, 'selectRentalImages');
+const setRentalPrimary   = lazyMethod(_ensureRentalManage, 'setRentalPrimary');
+const removeRentalImage  = lazyMethod(_ensureRentalManage, 'removeRentalImage');
+const submitRentalItem   = lazyMethod(_ensureRentalManage, 'submitRentalItem');
+const toggleRentalActive = lazyMethod(_ensureRentalManage, 'toggleRentalActive');
+const deleteRentalItem   = lazyMethod(_ensureRentalManage, 'deleteRentalItem');
+window.renderRentalMine   = renderRentalMine;
+window.renderRentalCreate = renderRentalCreate;
+window.renderRentalEdit   = renderRentalEdit;
+window.selectRentalImages = selectRentalImages;
+window.setRentalPrimary   = setRentalPrimary;
+window.removeRentalImage  = removeRentalImage;
+window.submitRentalItem   = submitRentalItem;
+window.toggleRentalActive = toggleRentalActive;
+window.deleteRentalItem   = deleteRentalItem;
 
 // Cykelagent-side — lazy-loaded (/cykelagenter)
 const _ensureCykelagentPage = lazyCtrl(
@@ -1965,6 +2026,12 @@ function handleRoute() {
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
   const becomeRenter = path === '/bliv-udlejer';
+  const rentalBrowse = path === '/udlejning';
+  const rentalCreate = path === '/udlejning/opret';
+  const rentalMine   = path === '/udlejning/mine';
+  const rentalEditMatch = path.match(/^\/udlejning\/rediger\/([^/]+)$/);
+  // Catch-all til sidst — matcher også /opret og /mine, så tjek DEM først i handleren.
+  const rentalItemMatch = path.match(/^\/udlejning\/([^/]+)$/);
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
   const tilbehoerMatch = path === '/tilbehoer' || path === '/tilbehør';
@@ -1976,7 +2043,8 @@ function handleRoute() {
   const _isPageRoute = staticMatch || dealerApply || becomeRenter || dealersMatch || mapPageMatch ||
     inboxMatch || meMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
     brandMatch || brandsOverviewMatch || categoryMatch || cykelagentMatch || valuationMatch ||
-    sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch;
+    sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch ||
+    rentalBrowse || rentalCreate || rentalMine || rentalEditMatch || rentalItemMatch;
   if (_isPageRoute) {
     const _pv = document.getElementById('detail-view');
     if (_pv) _pv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser…</div>';
@@ -1997,6 +2065,31 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBecomeRenterPage();
+  } else if (rentalCreate) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalCreate();
+  } else if (rentalMine) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalMine();
+  } else if (rentalEditMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalEdit(decodeURIComponent(rentalEditMatch[1]));
+  } else if (rentalBrowse) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalBrowse();
+  } else if (rentalItemMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalItemPage(decodeURIComponent(rentalItemMatch[1]));
   } else if (dealersMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
