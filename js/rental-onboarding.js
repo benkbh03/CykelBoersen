@@ -93,7 +93,7 @@ export function createRentalOnboarding({
       <button class="rental-onb-btn" id="connect-onboard-btn" onclick="startConnectOnboarding()">
         ${started ? 'Fortsæt opsætning' : 'Kom i gang med udlejning'}
       </button>
-      <p class="rental-onb-fineprint">Opsætningen sker sikkert hos Stripe, som håndterer verifikation og udbetalinger. Du accepterer <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">vilkårene</a> undervejs.</p>
+      <p class="rental-onb-fineprint">Opsætningen sker sikkert hos Stripe, som håndterer verifikation og udbetalinger. Du accepterer <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">udlejningsvilkårene</a> undervejs.</p>
     `;
   }
 

@@ -26,6 +26,9 @@ const STATIC_URLS = [
   { loc: '/maerker',                   changefreq: 'weekly',  priority: '0.8' },
   { loc: '/cykelagenter',              changefreq: 'weekly',  priority: '0.7' },
   { loc: '/bliv-forhandler',           changefreq: 'monthly', priority: '0.6' },
+  { loc: '/udlejning',                 changefreq: 'daily',   priority: '0.8' },
+  { loc: '/bliv-udlejer',              changefreq: 'monthly', priority: '0.6' },
+  { loc: '/udlejningsvilkaar',         changefreq: 'monthly', priority: '0.3' },
   { loc: '/vurder-min-cykel',          changefreq: 'weekly',  priority: '0.9' },
   { loc: '/sikkerhedsguide',           changefreq: 'monthly', priority: '0.7' },
   { loc: '/stelstoerrelse-guide',      changefreq: 'monthly', priority: '0.8' },
@@ -128,6 +131,13 @@ async function main() {
     dynamicFailed = true;
   }
 
+  let rentals = [];
+  try {
+    rentals = await fetchSupabase('rental_items?is_active=eq.true&select=id');
+  } catch (err) {
+    console.warn('Kunne ikke hente rental_items:', err.message);
+  }
+
   // Hvis vi ikke kunne hente det dynamiske og der allerede findes en sitemap.xml,
   // bevar den eksisterende fil i stedet for at overskrive med en mangelfuld version.
   if (dynamicFailed && existsSync('sitemap.xml')) {
@@ -145,6 +155,7 @@ async function main() {
     ...BRAND_SLUGS.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
     ...bikes.map(b => ({ loc: `/bike/${b.id}`, changefreq: 'weekly', priority: '0.6' })),
     ...dealers.map(d => ({ loc: `/dealer/${d.id}`, changefreq: 'weekly', priority: '0.6' })),
+    ...rentals.map(r => ({ loc: `/udlejning/${r.id}`, changefreq: 'weekly', priority: '0.6' })),
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
