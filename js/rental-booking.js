@@ -19,10 +19,50 @@ const STATUS_LABELS = {
 export function createRentalBooking({
   supabase,
   esc,
+  showToast,
   getCurrentUser,
   showDetailView,
   navigateTo,
 }) {
+
+  function renterActions(b) {
+    if (b.status !== 'confirmed') return '';
+    return `<button class="rental-act-btn rental-act-cancel" onclick="rentalBookingAction('${b.id}','cancel')">Afbestil</button>`;
+  }
+
+  function dealerActions(b) {
+    if (!['confirmed', 'active'].includes(b.status)) return '';
+    return `
+      <button class="rental-act-btn rental-act-ok" onclick="rentalBookingAction('${b.id}','return_ok')">Afleveret – OK</button>
+      <button class="rental-act-btn rental-act-warn" onclick="rentalBookingAction('${b.id}','return_damage')">Skade</button>
+      <button class="rental-act-btn rental-act-cancel" onclick="rentalBookingAction('${b.id}','cancel')">Afbestil</button>`;
+  }
+
+  async function rentalBookingAction(bookingId, action) {
+    const msgs = {
+      cancel:        'Afbestil bookingen? Kunden får det fulde beløb refunderet.',
+      return_ok:     'Markér som afleveret uden skade? Depositum tilbagebetales til kunden.',
+      return_damage: 'Registrér skade? Depositum tilbageholdes (tilbagebetales IKKE).',
+    };
+    if (!confirm(msgs[action] || 'Er du sikker?')) return;
+    try {
+      const { data, error } = await supabase.functions.invoke('rental-booking-action', {
+        body: { booking_id: bookingId, action },
+      });
+      if (error) {
+        let m = 'Handlingen fejlede. Prøv igen.';
+        try { m = (await error.context.json()).error || m; } catch {}
+        throw new Error(m);
+      }
+      if (showToast) showToast('✅ Opdateret');
+      // Genindlæs den relevante liste
+      const path = window.location.pathname;
+      if (path === '/udlejning/bookinger') renderDealerBookings();
+      else renderMyRentals();
+    } catch (e) {
+      if (showToast) showToast((e && e.message) || 'Handlingen fejlede.');
+    }
+  }
 
   function fmtDate(d) {
     try { return new Date(d).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' }); }
@@ -67,7 +107,7 @@ export function createRentalBooking({
             <div class="rental-booking-sub">${fmtDate(b.start_date)} – ${fmtDate(b.end_date)} · ${b.days} dage · hos ${esc(dealer.shop_name || dealer.name || 'forhandler')}</div>
             <div class="rental-booking-sub">${(b.total_amount || 0).toLocaleString('da-DK')} kr.${b.deposit_amount ? ` (heraf ${b.deposit_amount.toLocaleString('da-DK')} kr. depositum)` : ''}</div>
           </div>
-          ${statusBadge(b.status)}
+          <div class="rental-booking-right">${statusBadge(b.status)}${renterActions(b)}</div>
         </div>`;
     }).join('');
 
@@ -110,7 +150,7 @@ export function createRentalBooking({
             <div class="rental-booking-sub">${fmtDate(b.start_date)} – ${fmtDate(b.end_date)} · ${b.days} dage · ${esc(renter.name || 'Kunde')}</div>
             <div class="rental-booking-sub">Din udbetaling: ${payout.toLocaleString('da-DK')} kr. (efter kommission)</div>
           </div>
-          ${statusBadge(b.status)}
+          <div class="rental-booking-right">${statusBadge(b.status)}${dealerActions(b)}</div>
         </div>`;
     }).join('');
 
@@ -131,5 +171,5 @@ export function createRentalBooking({
     return `<div class="rental-manage"><button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button><div class="rental-onb-card" style="text-align:center;"><p>${esc(msg)}</p><button class="rental-onb-btn" onclick="${onclick}">${esc(btn)}</button></div></div>`;
   }
 
-  return { renderMyRentals, renderDealerBookings };
+  return { renderMyRentals, renderDealerBookings, rentalBookingAction };
 }
