@@ -507,6 +507,32 @@ export const footerContent = {
       </div>
     `
   },
+  udlejningsvilkaar: {
+    title: 'Udlejningsvilkår',
+    metaDesc: 'Vilkår for cykeludlejning via Cykelbørsen — booking, betaling, depositum, afbestilling og ansvar mellem kunde og forhandler.',
+    body: `
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 10. juli 2026</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Om udlejningstjenesten</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen formidler udlejning af cykler mellem private kunder og registrerede forhandlere ("udlejere"). Selve lejeaftalen indgås mellem kunden og forhandleren; Cykelbørsen håndterer booking og betaling som betalingsformidler via Stripe. Forhandleren er ansvarlig for cyklens stand, udlevering og for at leve op til lejeaftalen.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Booking og betaling</h3>
+      <p style="margin-bottom:8px;">Når du booker, betaler du leje og et eventuelt depositum via Stripe. Bookingen bekræftes automatisk ved gennemført betaling. Cykelbørsen opkræver en kommission af forhandleren og udbetaler resten til forhandleren.</p>
+      <p style="margin-bottom:16px;">Betalinger behandles sikkert af Stripe. Cykelbørsen opbevarer ikke dine kortoplysninger.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Depositum</h3>
+      <p style="margin-bottom:16px;">Hvis forhandleren kræver depositum, opkræves det sammen med lejen og <strong>tilbagebetales efter aflevering</strong>, forudsat at cyklen afleveres uden skader ud over normal brug. Ved skade kan forhandleren tilbageholde depositummet helt eller delvist. Uenigheder om skade afgøres mellem kunde og forhandler; Cykelbørsen er ikke part i vurderingen.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Afbestilling og refusion</h3>
+      <p style="margin-bottom:16px;">En booking kan afbestilles af både kunde og forhandler frem til lejeperiodens start. Ved afbestilling refunderes hele det betalte beløb (leje + depositum). Forhandleren kan fastsætte yderligere betingelser i sin egen beskrivelse.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Ansvar</h3>
+      <p style="margin-bottom:16px;">Kunden er ansvarlig for cyklen i lejeperioden og skal behandle den forsvarligt og følge færdselsloven. Forhandleren er ansvarlig for at cyklen er i lovlig og sikker stand ved udlevering. Cykelbørsen er alene betalingsformidler og platform og er ikke ansvarlig for skader, tyveri, personskade eller tab i forbindelse med udlejningen. Kunde og forhandler opfordres til at aftale forsikringsforhold indbyrdes.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Persondata</h3>
+      <p style="margin-bottom:16px;">Ved en booking behandles nødvendige oplysninger (navn, kontakt, datoer, beløb) for at gennemføre lejeaftalen. Se <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')" style="color:var(--rust);">privatlivspolitikken</a> for detaljer.</p>
+    `
+  },
   databehandleraftale: {
     title: 'Databehandleraftale — Cykelbørsen onboarding-service',
     metaDesc: 'Databehandleraftale for forhandlere der ønsker at Cykelbørsen opretter annoncer på deres vegne under onboarding.',

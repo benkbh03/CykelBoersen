@@ -1104,6 +1104,7 @@
       <div class="footer-col">
         <h3 class="footer-col-title">Juridisk</h3>
         <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>
+        <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">Udlejningsvilkår</a>
         <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')">Privatlivspolitik</a>
         <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')">Cookiepolitik</a>
       </div>
@@ -1156,7 +1157,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260701r';
+    const V = '20260701s';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

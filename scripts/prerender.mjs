@@ -525,6 +525,73 @@ function bikePage(b) {
   };
 }
 
+function rentalBrowsePage() {
+  const contentHtml = `
+      <div class="rental-browse">
+        <div class="rental-browse-hero">
+          <h1 class="rental-browse-title">Lej en cykel</h1>
+          <p class="rental-browse-sub">Book cykler direkte hos forhandlere — betal sikkert online, hent og kør.</p>
+        </div>
+        <div class="rental-grid"><p style="color:var(--muted);padding:24px;text-align:center;">Henter udlejningscykler…</p></div>
+      </div>`;
+  return {
+    title: 'Lej en cykel — udlejning hos forhandlere | Cykelbørsen',
+    description: 'Lej cykler direkte hos danske cykelforhandlere. Racercykler, mountainbikes, el-cykler, ladcykler og mere — book og betal sikkert online.',
+    canonicalPath: '/udlejning',
+    jsonldBlocks: [breadcrumb([['Forside', '/'], ['Udlejning', '/udlejning']])],
+    contentHtml,
+  };
+}
+
+function rentalItemPage(it) {
+  const name  = it.title;
+  const daily = Number(it.daily_rate) || 0;
+  const city  = it.city || 'Danmark';
+  const canonicalPath = `/udlejning/${it.id}`;
+  const images  = (it.rental_item_images || []).map(i => i.url).filter(Boolean);
+  const primary = (it.rental_item_images || []).find(i => i.is_primary)?.url || images[0] || '';
+
+  const title = `Lej ${name} — ${daily.toLocaleString('da-DK')} kr./dag | Cykelbørsen`;
+  const description = `Lej ${name}${city ? ` i ${city}` : ''} for ${daily.toLocaleString('da-DK')} kr./dag. Book direkte hos forhandleren på Cykelbørsen.`;
+  const descHtml = it.description ? `<div class="rental-item-desc">${escHtml(it.description).replace(/\n/g, '<br>')}</div>` : '';
+
+  const contentHtml = `
+      <div class="rental-item-page">
+        <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button>
+        ${primary ? `<img class="rental-item-main-img" src="${escHtml(primary)}" alt="${escHtml(name)}" style="max-width:520px;width:100%;border-radius:14px;">` : ''}
+        <h1 class="rental-item-title">${escHtml(name)}</h1>
+        <p class="rental-item-price">${daily.toLocaleString('da-DK')} kr. <span>/ dag</span></p>
+        <div class="rental-item-meta">${it.type ? `<span class="rental-item-chip">${escHtml(it.type)}</span>` : ''}${city ? `<span class="rental-item-chip">📍 ${escHtml(city)}</span>` : ''}</div>
+        ${descHtml}
+      </div>`;
+
+  const jsonldBlocks = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name,
+      description: it.description || `Udlejning: ${it.type || 'cykel'}`,
+      image: images.length ? images : (primary ? [primary] : []),
+      category: it.type,
+      url: `${BASE_URL}${canonicalPath}`,
+      offers: {
+        '@type': 'Offer',
+        price: daily,
+        priceCurrency: 'DKK',
+        availability: 'https://schema.org/InStock',
+        url: `${BASE_URL}${canonicalPath}`,
+      },
+    },
+    breadcrumb([['Forside', '/'], ['Udlejning', '/udlejning'], [name, canonicalPath]]),
+  ];
+
+  return {
+    title, description, canonicalPath, jsonldBlocks, contentHtml,
+    ogImage: primary || undefined,
+    ogImageAlt: primary ? name : undefined,
+  };
+}
+
 function breadcrumb(items) {
   return {
     '@context': 'https://schema.org',
@@ -603,6 +670,29 @@ async function main() {
     console.log(`Prerendered ${bikes.length} annonce-sider (med dynamiske OG-billeder).`);
   } else {
     console.warn('Springer annonce-prerender over (ingen data) — beholder eksisterende /bike-sider.');
+  }
+
+  // Udlejnings-sider: /udlejning (browse, statisk) + /udlejning/:id (fra Supabase).
+  let rentals = null;
+  try {
+    rentals = await fetchSupabase(
+      'rental_items?is_active=eq.true&select=id,title,type,city,daily_rate,description,rental_item_images(url,is_primary)'
+    );
+  } catch (err) {
+    console.warn('Kunne ikke hente udlejnings-items:', err.message);
+  }
+
+  // Ryd hele /udlejning-mappen (browse + gamle item-sider) FØR vi genskriver,
+  // så deaktiverede udlejningscykler forsvinder. Kun hvis fetch lykkedes.
+  if (rentals) {
+    const rentalRoot = join(ROOT, 'udlejning');
+    if (existsSync(rentalRoot)) rmSync(rentalRoot, { recursive: true, force: true });
+  }
+  // Browse-siden er statisk — skriv den altid.
+  { const p = rentalBrowsePage(); writePage(p.canonicalPath, buildPage(p)); count++; }
+  if (rentals) {
+    for (const it of rentals) writePage(`/udlejning/${it.id}`, buildPage(rentalItemPage(it)));
+    console.log(`Prerendered ${rentals.length} udlejnings-sider + /udlejning.`);
   }
 }
 
