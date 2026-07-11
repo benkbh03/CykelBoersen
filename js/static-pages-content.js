@@ -77,7 +77,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 29. juni 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -93,7 +93,8 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Du skal være mindst 18 år for at oprette en konto. Hver person må kun have én aktiv konto.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Platformens rolle</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
+      <p style="margin-bottom:8px;">Ved <strong>køb og salg</strong> af cykler er Cykelbørsen udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
+      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
@@ -175,7 +176,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 29. juni 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -196,7 +197,9 @@ export const footerContent = {
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
         <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
         <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres af Stripe — se betalingsdata.</li>
-        <li><strong>Betalingsdata:</strong> Betalt fremhævning (boost) af annoncer håndteres af Stripe. Forhandlerabonnementer er gratis under platformens lanceringsfase; når betaling for abonnementer senere aktiveres, håndteres den ligeledes af Stripe. Vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
+        <li><strong>Betalingsdata:</strong> Betalt fremhævning (boost) af annoncer samt udlejnings-bookinger håndteres af Stripe. Forhandlerabonnementer er gratis under platformens lanceringsfase; når betaling for abonnementer senere aktiveres, håndteres den ligeledes af Stripe. Vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
+        <li><strong>Udlejningsdata:</strong> Hvis du udbyder cykler til udlejning som forhandler, gemmer vi dine udlejningsopslag (titel, type, priser, depositum, tilgængelighed, billeder). Hvis du booker en udlejningscykel som kunde, gemmer vi bookingen (den valgte cykel, forhandler, datoer, beløb og status) for at gennemføre lejeaftalen mellem dig og forhandleren.</li>
+        <li><strong>Udlejer-verifikation (Stripe Connect):</strong> For at en forhandler kan modtage udlejningsbetalinger opretter Stripe en konto til forhandleren, hvor forhandleren afgiver identitets-, virksomheds- og bankoplysninger direkte til Stripe (KYC-verifikation). Vi opbevarer kun en reference til Stripe-kontoen og dens status — ikke selve identitets- eller bankoplysningerne.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
         <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, sender vi det til tyveriregisteret BikeIndex for et opslag. Vi gemmer <strong>aldrig</strong> hele stelnummeret — kun de sidste 4 cifre samt resultatet af opslaget (om der blev fundet et muligt match). Det fulde nummer kasseres efter opslaget.</li>
       </ul>
@@ -248,9 +251,17 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Fremhævning/boost af annoncer</td>
           <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Tyveri-tjek af oplyst stelnummer mod BikeIndex</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse (bekæmpelse af tyverihæleri)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Udlejnings-booking, betaling og udbetaling til forhandler</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Bogføring af udlejningsbetalinger og kommission</td>
+          <td style="padding:8px 0;">Art. 6(1)(c) — retlig forpligtelse (bogføringsloven)</td>
         </tr>
       </table>
 
@@ -258,7 +269,7 @@ export const footerContent = {
       <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Supabase (USA)</strong> — Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
-        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for betalt fremhævning (boost) og fremtidige forhandlerabonnementer. Stripe er selvstændig dataansvarlig for betalingsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
+        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
         <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
@@ -278,6 +289,7 @@ export const footerContent = {
         <li><strong>ID-dokumenter:</strong> Slettes efter verificeringsprocessen er afsluttet.</li>
         <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
         <li><strong>Visningstæller-log:</strong> Bruges kun til at undgå dobbelttælling og slettes automatisk, når den tilhørende annonce slettes.</li>
+        <li><strong>Udlejnings-bookinger:</strong> Bookingoplysninger opbevares så længe kontoen eksisterer. Betalings- og regnskabsrelaterede oplysninger om gennemførte udlejningsbetalinger opbevares dog i op til 5 år efter udgangen af regnskabsåret, jf. bogføringslovens krav.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
