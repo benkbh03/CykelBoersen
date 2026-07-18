@@ -33,6 +33,7 @@ import { dirname, join } from 'node:path';
 import {
   BRANDS_META,
   brandToSlug,
+  getBrandMeta,
 } from '../js/brand-data-v2.js';
 import {
   BLOG_ARTICLES,
@@ -611,6 +612,85 @@ function formatDate(iso) {
   return `${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+/* ---------- Statiske app-ruter ----------
+   Ruter som sitemap.xml annoncerer, men som indtil nu IKKE blev prerendret.
+   GitHub Pages svarer derfor HTTP 404 på dem (404.html-fallbacken redirecter
+   ganske vist brugere korrekt via JS, men crawleren registrerer 404-statussen
+   — det var præcis disse ruter Search Console rapporterede som "Not found").
+   En mappe med index.html pr. rute = HTTP 200 + korrekt title/description/
+   canonical i rå HTML. Appen overskriver indholdet ved boot som på alle andre
+   prerendrede sider. Holdes i sync med STATIC_URLS i generate-sitemap.mjs. */
+const STATIC_APP_PAGES = [
+  { path: '/forhandlere',            h1: 'Cykelforhandlere i hele Danmark',
+    title: 'Cykelforhandlere i hele Danmark | Cykelbørsen',
+    description: 'Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.' },
+  { path: '/cykelagenter',           h1: 'Cykelagenter',
+    title: 'Cykelagenter — få besked når din næste cykel dukker op | Cykelbørsen',
+    description: 'Opret en Cykelagent og få besked når den perfekte cykel dukker op. Du behøver ikke have en konto for at komme i gang.' },
+  { path: '/bliv-forhandler',        h1: 'Bliv forhandler på Cykelbørsen',
+    title: 'Bliv forhandler på Cykelbørsen — gratis i lanceringsfasen',
+    description: 'Bliv forhandler på Cykelbørsen. Nå cykelkøbere i hele Danmark. Helt gratis — ingen binding.' },
+  { path: '/sell',                   h1: 'Sæt din cykel til salg',
+    title: 'Sæt din cykel til salg — gratis annonce | Cykelbørsen',
+    description: 'Sælg din cykel eller cykeltilbehør gratis på Cykelbørsen. Opret en annonce på under 2 minutter.' },
+  { path: '/vurder-min-cykel',       h1: 'Hvad er min cykel værd?',
+    title: 'Hvad er min cykel værd? Gratis vurdering | Cykelbørsen',
+    description: 'Få en gratis og øjeblikkelig vurdering af din cykels værdi baseret på mærke, model, alder og stand.' },
+  { path: '/stelstoerrelse-guide',   h1: 'Stelstørrelse-finder',
+    title: 'Stelstørrelse-finder — Hvilken cykelstørrelse passer mig? | Cykelbørsen',
+    description: 'Find din rigtige stelstørrelse ud fra højde og skridtlængde — for racercykler, mountainbikes, citybikes og børnecykler.' },
+  { path: '/sikkerhedsguide',        h1: 'Sikkerhedsguide',
+    title: 'Sikkerhedsguide — handl trygt på Cykelbørsen',
+    description: 'Sådan handler du trygt: undgå snyd, tjek stelnummer, mød sælger sikkert og betal fornuftigt.' },
+  { path: '/guide/tjek-brugt-cykel', h1: 'Sådan tjekker du en brugt cykel inden køb',
+    title: 'Sådan tjekker du en brugt cykel inden køb | Cykelbørsen',
+    description: 'Tjekliste til køb af brugt cykel: stel, gear, bremser, stelnummer og prisforhandling — alt du skal se efter inden du køber.' },
+  { path: '/bliv-udlejer',           h1: 'Bliv udlejer på Cykelbørsen',
+    title: 'Bliv udlejer — lej din cykel ud | Cykelbørsen',
+    description: 'Tjen penge på cykler du ikke bruger. Opret udlejningsannoncer gratis på Cykelbørsen.' },
+  { path: '/udlejningsvilkaar',      h1: 'Udlejningsvilkår',
+    title: 'Udlejningsvilkår | Cykelbørsen',
+    description: 'Vilkår for leje og udlejning af cykler gennem Cykelbørsen.' },
+  { path: '/om-os',                  h1: 'Om Cykelbørsen',
+    title: 'Om Cykelbørsen — Danmarks cykelmarkedsplads',
+    description: 'Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler — fra private sælgere og forhandlere.' },
+  { path: '/kontakt',                h1: 'Kontakt os',
+    title: 'Kontakt Cykelbørsen',
+    description: 'Kontakt Cykelbørsen — vi svarer typisk inden for 24 timer på hverdage.' },
+  { path: '/vilkaar',                h1: 'Vilkår og betingelser',
+    title: 'Vilkår og betingelser | Cykelbørsen',
+    description: 'Vilkår og betingelser for brug af Cykelbørsen.' },
+  { path: '/privatlivspolitik',      h1: 'Privatlivspolitik',
+    title: 'Privatlivspolitik | Cykelbørsen',
+    description: 'Sådan behandler Cykelbørsen dine personoplysninger.' },
+  { path: '/cookiepolitik',          h1: 'Cookiepolitik',
+    title: 'Cookiepolitik | Cykelbørsen',
+    description: 'Cookies og lokal lagring på Cykelbørsen — hvad vi gemmer og hvorfor.' },
+  { path: '/tilladt-sortiment',      h1: 'Tilladt sortiment',
+    title: 'Tilladt sortiment | Cykelbørsen',
+    description: 'Hvad må sælges på Cykelbørsen? Cykler, el-cykler og cykeltilbehør — og hvad der ikke hører hjemme her.' },
+  { path: '/databehandleraftale',    h1: 'Databehandleraftale',
+    title: 'Databehandleraftale | Cykelbørsen',
+    description: 'Databehandleraftale for Cykelbørsens onboarding-service til forhandlere.' },
+];
+
+function staticAppPage({ path, h1, title, description }) {
+  const contentHtml = `
+      <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
+        <h1 style="font-family:'Fraunces',serif;">${escHtml(h1)}</h1>
+        <p>${escHtml(description)}</p>
+      </div>`;
+  const jsonldBlocks = [{
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: `${BASE_URL}${path}`,
+    isPartOf: { '@type': 'WebSite', name: 'Cykelbørsen', url: BASE_URL },
+  }];
+  return { title, description, canonicalPath: path, jsonldBlocks, contentHtml };
+}
+
 /* ---------- Main ---------- */
 async function main() {
   let count = 0;
@@ -644,7 +724,14 @@ async function main() {
     count++;
   }
 
-  console.log(`Prerendered ${count} statiske sider (mærker + blog + kategorier + oversigter).`);
+  // Statiske app-ruter (kontakt, sell, bliv-forhandler, guides, juridiske sider…)
+  // — de stod i sitemap.xml men blev aldrig prerendret → HTTP 404 for crawlere.
+  for (const def of STATIC_APP_PAGES) {
+    writePage(def.path, buildPage(staticAppPage(def)));
+    count++;
+  }
+
+  console.log(`Prerendered ${count} statiske sider (mærker + blog + kategorier + oversigter + app-ruter).`);
 
   // Annonce-sider (/bike/:id) — hentes live fra Supabase. Dynamiske OG-billeder
   // (annoncens primærbillede) + Product-schema i rå-HTML → delinger på
@@ -668,6 +755,25 @@ async function main() {
       writePage(`/bike/${b.id}`, buildPage(bikePage(b)));
     }
     console.log(`Prerendered ${bikes.length} annonce-sider (med dynamiske OG-billeder).`);
+
+    // Ukuraterede mærker med aktive annoncer: annonce-siderne linker
+    // "Se alle <mærke>-cykler →" til /cykler/<slug> for ALLE mærker, og appen
+    // renderer siden fint via getBrandMeta()-fallback — men uden prerender
+    // svarer GitHub Pages 404 på ruten (Search Console: /cykler/omnium).
+    // Generér derfor også en side pr. mærke der kun findes i annoncerne.
+    const uncurated = new Map();
+    for (const b of bikes) {
+      const brand = (b.brand || '').trim();
+      if (!brand) continue;
+      const slug = brandToSlug(brand);
+      if (!/^[a-z0-9-]+$/.test(slug)) continue;   // samme ASCII-regel som kuraterede
+      if (BRANDS_META[slug] || uncurated.has(slug)) continue;
+      uncurated.set(slug, brand);
+    }
+    for (const [slug, brand] of uncurated) {
+      writePage(`/cykler/${slug}`, buildPage(brandPage(slug, getBrandMeta(brand))));
+    }
+    if (uncurated.size) console.log(`Prerendered ${uncurated.size} ukuraterede mærkesider (${[...uncurated.values()].join(', ')}).`);
   } else {
     console.warn('Springer annonce-prerender over (ingen data) — beholder eksisterende /bike-sider.');
   }
