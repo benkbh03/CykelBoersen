@@ -28,10 +28,13 @@ export function createReviews({
     if (!currentUser) { showToast('⚠️ Log ind for at give en vurdering'); return; }
     if (rating < 1)   { showToast('⚠️ Vælg et antal stjerner'); return; }
 
+    // Kun system-genererede handelsbeskeder tæller — begge handelsveje (acceptBid
+    // og "Sæt solgt") indsætter en besked der STARTER med ✅ og indeholder "accepteret".
+    // En almindelig besked hvor nogen blot skriver "accepteret" kvalificerer IKKE.
     const { data: tradeMsg } = await supabase.from('messages')
       .select('id')
       .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${reviewedUserId}),and(sender_id.eq.${reviewedUserId},receiver_id.eq.${currentUser.id})`)
-      .ilike('content', '%accepteret%')
+      .ilike('content', '✅%accepteret%')
       .limit(1);
     const hasTraded = tradeMsg?.length > 0;
     if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
@@ -100,10 +103,11 @@ export function createReviews({
     if (!currentUser) { showToast('⚠️ Log ind for at give en vurdering'); return; }
     if (rating < 1)   { showToast('⚠️ Vælg et antal stjerner'); return; }
 
+    // Kun system-genererede handelsbeskeder tæller (starter med ✅ + "accepteret").
     const { data: tradeMsg } = await supabase.from('messages')
       .select('id')
       .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${ratingModalUserId}),and(sender_id.eq.${ratingModalUserId},receiver_id.eq.${currentUser.id})`)
-      .ilike('content', '%accepteret%')
+      .ilike('content', '✅%accepteret%')
       .limit(1);
     const hasTraded = tradeMsg?.length > 0;
     if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }

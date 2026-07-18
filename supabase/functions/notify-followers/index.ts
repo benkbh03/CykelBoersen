@@ -93,12 +93,6 @@ serve(async (req) => {
       });
     }
 
-    if (bikeRow.notify_sent_at) {
-      return new Response(JSON.stringify({ ok: true, sent: 0, reason: "already_notified" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     // Annoncen skal være oprettet inden for sidste 10 min — forhindrer
     // re-notifikation efter sletning/genoprettelse for samme følgere
     const ageMs = Date.now() - new Date(bikeRow.created_at).getTime();
@@ -108,8 +102,20 @@ serve(async (req) => {
       });
     }
 
-    // Markér annoncen som notificeret FØR vi sender — atomic guard
-    await supa.from("bikes").update({ notify_sent_at: new Date().toISOString() }).eq("id", bike_id);
+    // Atomic once-per-bike guard: sæt notify_sent_at KUN hvis det stadig er null.
+    // To samtidige invocations kan ikke begge "vinde" — kun den der faktisk
+    // opdaterer en række fortsætter. Forhindrer dublerede mails (race condition).
+    const { data: claimed } = await supa
+      .from("bikes")
+      .update({ notify_sent_at: new Date().toISOString() })
+      .eq("id", bike_id)
+      .is("notify_sent_at", null)
+      .select("id");
+    if (!claimed || claimed.length === 0) {
+      return new Response(JSON.stringify({ ok: true, sent: 0, reason: "already_notified" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const [{ data: dealer }, { data: followers }] = await Promise.all([
       supa.from("profiles").select("id, shop_name, name").eq("id", dealer_id).single(),
@@ -130,11 +136,14 @@ serve(async (req) => {
       });
     }
 
-    // Hent e-mails fra auth.users via service-role
-    const { data: authUsers } = await supa.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const followerEmails = (authUsers?.users ?? [])
-      .filter(u => followerIds.includes(u.id) && u.email)
-      .map(u => u.email!) as string[];
+    // Hent e-mails målrettet pr. følger via getUserById — undgår at hente HELE
+    // auth-tabellen ind i hukommelsen (og den tidligere 1000-bruger hard-cap der
+    // lydløst ville droppe følgere ved vækst).
+    const followerEmails: string[] = [];
+    for (const id of followerIds) {
+      const { data: { user: fu } } = await supa.auth.admin.getUserById(id);
+      if (fu?.email) followerEmails.push(fu.email);
+    }
 
     const dealerName = dealer.shop_name || dealer.name || "Forhandler";
     const bikeUrl    = `${SITE_URL}/bike/${bike.id}`;

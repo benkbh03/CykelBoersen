@@ -21,13 +21,30 @@ function _markDismissed(parts) {
   } catch {}
 }
 
-export function createCykelagentCta({ hasActiveFilters, describeActiveFilters }) {
+export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory }) {
   function updateCykelagentCta(resultCount = null) {
     const strip = document.getElementById('cykelagent-cta-strip');
     if (!strip) return;
 
-    if (!hasActiveFilters()) {
+    // Cykelagent-byggeren er cykel-only; tilbehørs-agenter er follow-up.
+    // Skjul hele CTA'en på Tilbehør-fanen så vi ikke lover en cykel-feature.
+    if ((getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer') {
       strip.style.display = 'none';
+      return;
+    }
+
+    if (!hasActiveFilters()) {
+      // Ingen aktive filtre: vis en permanent, generisk CTA (fører til
+      // /cykelagenter hvor man bygger agenten). Samme responsive strip-komponent,
+      // så den passer både desktop og mobil.
+      strip.style.display = 'flex';
+      strip.classList.remove('cykelagent-cta-strip--accent');
+      strip.innerHTML = `
+        <span class="cta-strip-text">🔔 Få besked når din næste cykel dukker op — opret en gratis <strong>Cykelagent</strong></span>
+        <div class="cta-strip-actions">
+          <button class="cta-strip-btn" onclick="navigateTo('/cykelagenter')">Opret Cykelagent →</button>
+        </div>
+      `;
       return;
     }
 

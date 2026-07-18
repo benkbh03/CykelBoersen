@@ -51,6 +51,11 @@ function emailWrapper(content) {
 function bikeMatchesSearch(bike, filters) {
   if (!filters) return false;
 
+  // Hård kategori-akse: en cykel-agent matcher ALDRIG tilbehør (og omvendt).
+  // Eksisterende cykel-agenter har ingen filters.category → defaulter til 'cykel';
+  // cykel-annoncer har category (eller default 'cykel'). Ingen ændring for cykler.
+  if ((bike.category || "cykel") !== (filters.category || "cykel")) return false;
+
   // Legacy enkelt-type dropdown
   if (filters.type && bike.type !== filters.type) return false;
 
@@ -97,8 +102,11 @@ function bikeMatchesSearch(bike, filters) {
     if (!bike.brake_type || !filters.brakeTypes.includes(bike.brake_type)) return false;
   }
 
+  // Groupset: prefix-match som sidebaren (ilike 'X%'), så "Shimano GRX" matcher
+  // en cykel gemt som "Shimano GRX 800". Holder agent og live-filter ens.
   if (Array.isArray(filters.groupsets) && filters.groupsets.length > 0) {
-    if (!bike.groupset || !filters.groupsets.includes(bike.groupset)) return false;
+    const g = (bike.groupset || "").toLowerCase();
+    if (!g || !filters.groupsets.some((sel) => g.startsWith(String(sel).toLowerCase()))) return false;
   }
 
   // electronicShifting: '' = ligegyldigt, 'true' = elektronisk, 'false' = mekanisk
@@ -112,6 +120,39 @@ function bikeMatchesSearch(bike, filters) {
   if (filters.maxWeightKg != null && !isNaN(Number(filters.maxWeightKg))) {
     if (bike.weight_kg === null || bike.weight_kg === undefined) return false;
     if (Number(bike.weight_kg) > Number(filters.maxWeightKg)) return false;
+  }
+
+  // ── EL-CYKEL ─────────────────────────────────────────────
+  // Motor-mærke: prefix-match som sidebaren (fx "Bosch" matcher "Bosch Performance Line CX")
+  if (Array.isArray(filters.motors) && filters.motors.length > 0) {
+    const m = (bike.motor || "").toLowerCase();
+    if (!m || !filters.motors.some((sel) => m.startsWith(String(sel).toLowerCase()))) return false;
+  }
+  // Motor-placering: eksakt match
+  if (Array.isArray(filters.motorPositions) && filters.motorPositions.length > 0) {
+    if (!bike.motor_position || !filters.motorPositions.includes(bike.motor_position)) return false;
+  }
+  // Batteri-kapacitet (Wh): bike.battery_wh skal være sat OG inden for interval
+  if (filters.batteryMin != null && !isNaN(Number(filters.batteryMin))) {
+    if (bike.battery_wh == null || Number(bike.battery_wh) < Number(filters.batteryMin)) return false;
+  }
+  if (filters.batteryMax != null && !isNaN(Number(filters.batteryMax))) {
+    if (bike.battery_wh == null || Number(bike.battery_wh) > Number(filters.batteryMax)) return false;
+  }
+
+  // Affjedring: eksakt match (Forgaffel/Fuld/Ingen)
+  if (Array.isArray(filters.suspensions) && filters.suspensions.length > 0) {
+    if (!bike.suspension || !filters.suspensions.includes(bike.suspension)) return false;
+  }
+
+  // Geartype: eksakt match (Indvendig/Udvendig)
+  if (Array.isArray(filters.geartypes) && filters.geartypes.length > 0) {
+    if (!bike.geartype || !filters.geartypes.includes(bike.geartype)) return false;
+  }
+
+  // Stel-type: eksakt match (Lav/Høj indstigning)
+  if (Array.isArray(filters.stepTypes) && filters.stepTypes.length > 0) {
+    if (!bike.step_type || !filters.stepTypes.includes(bike.step_type)) return false;
   }
 
   // Pris

@@ -9,6 +9,27 @@ import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
 import { createBikeDetailLightbox } from './bike-detail-lightbox.js';
 
+/* Stabil "viewer key" til visningstælling:
+   - Logget ind → brugerens eget id (så samme person ikke tæller fra flere browsere).
+   - Ellers → en anonym tilfældig token gemt i localStorage (ingen IP/persondata).
+   Server-side RPC sørger for dedup (én visning pr. seer pr. annonce pr. 24t) og
+   for at ejeren ikke tæller sig selv. Returnerer null i privat-browsing uden
+   storage → så tæller vi hellere ikke (bedre end at puste tallet op). */
+function getViewerKey(currentUser) {
+  if (currentUser?.id) return currentUser.id;
+  try {
+    let k = localStorage.getItem('cb_viewer_id');
+    if (!k) {
+      k = (window.crypto?.randomUUID?.())
+        || ('v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2));
+      localStorage.setItem('cb_viewer_id', k);
+    }
+    return k;
+  } catch {
+    return null;
+  }
+}
+
 export function createBikeDetail({
   supabase,
   showToast,
@@ -66,7 +87,7 @@ export function createBikeDetail({
     } else {
       const fetchPromise = supabase
         .from('bikes')
-        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
+        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at, admin_can_create_listings, admin_authorized_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
         .eq('id', bikeId)
         .single();
       const timeoutPromise = new Promise((_, reject) =>
@@ -84,6 +105,10 @@ export function createBikeDetail({
   }
 
   function renderPriceHistory(b) {
+    // Prisnedsættelse vises KUN for forhandlere (ægte før-pris, lovbundet). Private
+    // kunne ellers liste højt og straks sætte ned for at fake et tilbud — samme
+    // regel som rabat-badgen på kortene.
+    if ((b.profiles?.seller_type || 'private') !== 'dealer') return '';
     const history = Array.isArray(b.bike_price_history) ? [...b.bike_price_history] : [];
     history.sort((a, z) => new Date(a.changed_at) - new Date(z.changed_at));
 
@@ -96,7 +121,6 @@ export function createBikeDetail({
     if (totalDrop <= 0) return '';
 
     const dropCount = drops.length || 1;
-    const dropLabel = dropCount === 1 ? 'sænkning' : 'sænkninger';
     const dropsHtml = drops.length >= 2 ? drops.slice().reverse().map(h => {
       const diff = h.old_price - h.new_price;
       const sign = diff > 0 ? '−' : '+';
@@ -112,16 +136,18 @@ export function createBikeDetail({
     const expandable = drops.length >= 2;
     const detailsAttr = expandable ? '' : ' style="pointer-events:none;"';
 
+    // Rabat i procent (afrundet). Vises kun når den er ≥1 % — undgår "−0 %"
+    // ved en mikroskopisk nedsættelse. Typografisk minus (−) som resten af
+    // prishistorikken. "Nu"-prisen gentages IKKE her — den står stort lige over
+    // boksen, så vi holder kortet på én kompakt linje: procent · spar · førpris.
+    const pctOff = peak > 0 ? Math.round((totalDrop / peak) * 100) : 0;
+
     return `
       <div class="price-history-card" data-drops="${dropCount}">
-        <div class="price-history-summary">
-          <span class="price-history-icon">📉</span>
-          <span class="price-history-text">
-            Prisen er sat ned fra <span class="price-history-from">${peak.toLocaleString('da-DK')} kr.</span>
-            <span class="price-history-arrow">→</span>
-            <strong>${b.price.toLocaleString('da-DK')} kr.</strong>
-            <span class="price-history-meta">(${dropCount} ${dropLabel}, spar ${totalDrop.toLocaleString('da-DK')} kr.)</span>
-          </span>
+        <div class="price-history-row">
+          ${pctOff >= 1 ? `<span class="price-history-pct" aria-label="${pctOff} procent lavere end før"><svg class="price-history-svg" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6.5 6.5 4-4L21 17"></path><path d="M21 11.5V17h-5.5"></path></svg>−${pctOff}%</span>` : ''}
+          <span class="price-history-save"><span class="price-history-cap">Spar</span><strong>${totalDrop.toLocaleString('da-DK')} kr.</strong></span>
+          <span class="price-history-was"><span class="price-history-cap">Før</span><span class="price-history-from">${peak.toLocaleString('da-DK')} kr.</span></span>
         </div>
         ${expandable ? `
           <details class="price-history-details"${detailsAttr}>
@@ -140,6 +166,17 @@ export function createBikeDetail({
     const currentUser = getCurrentUser();
     const isOwner    = currentUser && currentUser.id === profile.id;
     const isSold     = b.is_active === false;
+
+    // Admin må manuelt rette en forhandlers feed-importerede annonce — men KUN
+    // hvis forhandleren har accepteret det udvidede onboarding-samtykke
+    // (admin_authorized_at >= DPA_EFFECTIVE 2026-06-19). RPC'en håndhæver det
+    // også server-side; her gater vi bare visningen af knappen.
+    const _DPA_EFFECTIVE = new Date('2026-06-19T00:00:00Z');
+    const _dealerConsented = !!profile.admin_can_create_listings
+      && !!profile.admin_authorized_at
+      && new Date(profile.admin_authorized_at) >= _DPA_EFFECTIVE;
+    const adminCanEdit = !isOwner && !!getCurrentProfile()?.is_admin
+      && !!b.external_id && _dealerConsented;
     const avatarUrl  = safeAvatarUrl(profile.avatar_url);
     const avatarContent = avatarUrl
       ? `<img src="${avatarUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
@@ -237,6 +274,12 @@ export function createBikeDetail({
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
+          ${adminCanEdit ? `
+          <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">🛠️ Admin · forhandler-annonce</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt — annoncen låses, så natlig sync herefter kun opdaterer pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
+            <button class="btn-save-listing" onclick="openEditModal('${b.id}')">✏️ Redigér som admin</button>
+          </div>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">
@@ -253,24 +296,6 @@ export function createBikeDetail({
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
           </div>
           ` : !isOwner ? `
-          ${sellerType === 'dealer' ? (() => {
-            const perks = [];
-            if (profile.verified) perks.push('Verificeret virksomhed');
-            if (b.warranty) perks.push(`Garanti: ${esc(b.warranty)}`);
-            else perks.push('Service & faglig rådgivning');
-            if (profile.offers_tradein)   perks.push('Byttetilbud muligt');
-            if (profile.offers_financing) perks.push('Finansiering muligt');
-            return `
-          <div class="dealer-perks">
-            <div class="dealer-perks-header">
-              <span class="dealer-perks-icon">🏪</span>
-              <span class="dealer-perks-title">Køb hos forhandler</span>
-            </div>
-            <ul class="dealer-perks-list">
-              ${perks.map(p => `<li><span class="dp-check">✓</span>${p}</li>`).join('')}
-            </ul>
-          </div>`;
-          })() : ''}
           <div class="action-buttons">
             ${b.external_url ? `
             <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-external-cta">
@@ -303,6 +328,24 @@ export function createBikeDetail({
             <button class="btn-save-listing" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})">🔔 Få besked ved prisfald</button>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
             <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🚩 Rapporter annonce</button>
+            ${sellerType === 'dealer' ? (() => {
+              const perks = [];
+              if (profile.verified) perks.push('Verificeret virksomhed');
+              if (b.warranty) perks.push(`Garanti: ${esc(b.warranty)}`);
+              else perks.push('Service & faglig rådgivning');
+              if (profile.offers_tradein)   perks.push('Byttetilbud muligt');
+              if (profile.offers_financing) perks.push('Finansiering muligt');
+              return `
+            <div class="dealer-perks">
+              <div class="dealer-perks-header">
+                <span class="dealer-perks-icon">🏪</span>
+                <span class="dealer-perks-title">Køb hos forhandler</span>
+              </div>
+              <ul class="dealer-perks-list">
+                ${perks.map(p => `<li><span class="dp-check">✓</span>${p}</li>`).join('')}
+              </ul>
+            </div>`;
+            })() : ''}
           </div>
           ` : `
           <div class="owner-panel">
@@ -375,6 +418,12 @@ export function createBikeDetail({
         if (b.electronic_shifting === true)  techRows.push(['Gear-skifte', 'Elektronisk (Di2/eTap/AXS)']);
         if (b.electronic_shifting === false) techRows.push(['Gear-skifte', 'Mekanisk']);
         if (b.weight_kg != null)           techRows.push(['Vægt', `${Number(b.weight_kg).toFixed(2).replace('.', ',')} kg`]);
+        if (b.motor)                       techRows.push(['Motor', esc(b.motor)]);
+        if (b.motor_position)              techRows.push(['Motor-placering', esc(b.motor_position)]);
+        if (b.battery_wh != null)          techRows.push(['Batteri', `${b.battery_wh} Wh`]);
+        if (b.suspension)                  techRows.push(['Affjedring', esc(b.suspension)]);
+        if (b.geartype)                    techRows.push(['Geartype', esc(b.geartype) + ' gear']);
+        if (b.step_type)                   techRows.push(['Indstigning', esc(b.step_type)]);
         if (techRows.length === 0) return '';
         return `
         <div class="fit-section" style="margin-top:24px;">
@@ -386,6 +435,32 @@ export function createBikeDetail({
                 <div class="fit-card-value">${value}</div>
               </div>
             `).join('')}
+          </div>
+        </div>`;
+      })()}
+      ${(() => {
+        if (!b.frame_check_status && !b.frame_last4) return '';
+        const l4 = b.frame_last4 ? esc(b.frame_last4) : '';
+        const dateStr = b.frame_check_at ? new Date(b.frame_check_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        let icon, title, sub, color, bg, border;
+        if (b.frame_check_status === 'clear') {
+          icon = '✓'; color = '#2e7d32'; bg = 'rgba(46,125,50,0.08)'; border = '#2e7d32';
+          title = 'Stelnummer oplyst · ingen tyveri-match';
+          sub = `Tjekket mod BikeIndex${dateStr ? ' ' + dateStr : ''}. Internationalt register — ingen garanti. Få hele nummeret af sælger ved overlevering.`;
+        } else if (b.frame_check_status === 'match') {
+          icon = '⚠️'; color = '#c8302a'; bg = 'rgba(200,48,42,0.08)'; border = '#c8302a';
+          title = 'Muligt tyveri-match — undersøg før køb';
+          sub = 'Stelnummeret ligner en efterlyst cykel i BikeIndex (omtrentligt match). Bekræft nummeret med sælger og tjek selv inden køb.';
+        } else {
+          icon = '🔒'; color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
+          title = 'Stelnummer oplyst af sælger';
+          sub = 'Sælger har registreret cyklens stelnummer.';
+        }
+        return `<div class="frame-trust-badge" style="display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;border-radius:12px;background:${bg};border:1px solid ${border};">
+          <span style="font-size:1.2rem;line-height:1.2;">${icon}</span>
+          <div style="min-width:0;">
+            <div style="font-weight:600;color:${color};font-size:0.92rem;">${title}${l4 ? ` · ••${l4}` : ''}</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:3px;line-height:1.5;">${sub}${b.frame_check_status === 'match' && b.frame_check_ref ? ` <a href="${esc(b.frame_check_ref)}" target="_blank" rel="noopener" style="color:${color};font-weight:600;">Se i register →</a>` : ''}</div>
           </div>
         </div>`;
       })()}
@@ -445,9 +520,10 @@ export function createBikeDetail({
 
     const currentUser = getCurrentUser();
 
-    // Tæl visning (fire-and-forget, kun ikke-ejere)
+    // Tæl visning (fire-and-forget, kun ikke-ejere; dedup sker server-side)
     if (b && (!currentUser || currentUser.id !== b.user_id)) {
-      supabase.rpc('increment_bike_views', { bike_id: bikeId }).then(null, () => {});
+      const vk = getViewerKey(currentUser);
+      if (vk) supabase.rpc('increment_bike_views', { bike_id: bikeId, viewer_key: vk }).then(null, () => {});
     }
 
     if (error || !b) {
@@ -680,7 +756,8 @@ export function createBikeDetail({
 
     const currentUser = getCurrentUser();
     if (!currentUser || currentUser.id !== b.user_id) {
-      supabase.rpc('increment_bike_views', { bike_id: bikeId }).then(null, () => {});
+      const vk = getViewerKey(currentUser);
+      if (vk) supabase.rpc('increment_bike_views', { bike_id: bikeId, viewer_key: vk }).then(null, () => {});
     }
 
     const primaryImg = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
@@ -841,9 +918,8 @@ export function createBikeDetail({
      stempler vi annoncen med "🛡️ Trygt køb" — den vigtigste
      visuelle differentiator overfor DBA.
 
-     Score-formel (max 11):
+     Score-formel (max 9):
        +1 email-verificeret
-       +2 ID-verificeret
        +1 har solgt 1-4 cykler  /  +3 har solgt 5+
        +3 verificeret forhandler (CVR-godkendt)
        +2 ≥4.5★ gennemsnit på mindst 3 anmeldelser
@@ -964,7 +1040,7 @@ export function createBikeDetail({
     try {
       const { data, error: queryErr } = await supabase
         .from('bikes')
-        .select('id, brand, model, price, type, condition, bike_images(url, is_primary)')
+        .select('id, brand, model, price, type, condition, bike_images(url, thumb_url, is_primary)')
         .eq('user_id', sellerId)
         .eq('is_active', true)
         .neq('id', currentBikeId)
@@ -977,8 +1053,9 @@ export function createBikeDetail({
       } // Ingen andre annoncer — skjul sektionen
 
       const cards = data.map(bike => {
-        const rawImg = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
-        const img = rawImg ? transformImageUrl(rawImg, { width: 300, quality: 75 }) : '';
+        const _rRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+        const rawImg = _rRec?.thumb_url || _rRec?.url;
+        const img = rawImg || '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
@@ -1012,7 +1089,7 @@ export function createBikeDetail({
     try {
       const { data, error: queryErr } = await supabase
         .from('bikes')
-        .select('id, brand, model, price, type, condition, bike_images(url, is_primary)')
+        .select('id, brand, model, price, type, condition, bike_images(url, thumb_url, is_primary)')
         .eq('type', bikeType)
         .eq('is_active', true)
         .neq('id', currentBikeId)
@@ -1025,8 +1102,9 @@ export function createBikeDetail({
       }
 
       const cards = data.map(bike => {
-        const rawImg = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
-        const img = rawImg ? transformImageUrl(rawImg, { width: 300, quality: 75 }) : '';
+        const _rRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+        const rawImg = _rRec?.thumb_url || _rRec?.url;
+        const img = rawImg || '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">

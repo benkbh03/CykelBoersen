@@ -1,4 +1,4 @@
-export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport }) {
+export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats }) {
   function openAdminPanel() {
     document.getElementById('admin-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -11,7 +11,7 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadI
   }
 
   function switchAdminTab(tab) {
-    const panels = ['applications', 'users', 'id', 'bulk-import'];
+    const panels = ['applications', 'users', 'bulk-import', 'feed-import', 'invite', 'stats'];
     for (const t of panels) {
       const panel = document.getElementById('admin-' + t);
       const tabBtn = document.getElementById('atab-' + t);
@@ -21,8 +21,10 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadI
 
     if (tab === 'applications') loadDealerApplications();
     if (tab === 'users') loadAllUsers();
-    if (tab === 'id') loadIdApplications();
     if (tab === 'bulk-import' && loadBulkImport) loadBulkImport();
+    if (tab === 'feed-import' && loadFeedImport) loadFeedImport();
+    if (tab === 'invite' && initInviteForm) initInviteForm();
+    if (tab === 'stats' && loadAdminStats) loadAdminStats();
   }
 
   return { openAdminPanel, closeAdminPanel, switchAdminTab };

@@ -57,8 +57,11 @@ export function createProfilePages({
     const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
     const dataPromise = Promise.all([
       safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio, opening_hours, website, facebook, instagram, services').eq('id', userId).single()),
-      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
-      safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
+      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+      // "Solgt" = RIGTIGT solgt (sold_via sat af "Sæt solgt") — ikke bare inaktiv.
+      // Skjulte/deaktiverede cykler (sold_via=NULL, fx feed-backup) skal IKKE vises
+      // som solgt; de er bare ude af visning.
+      safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).not('sold_via', 'is', null).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
     ]);
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000));
@@ -72,7 +75,25 @@ export function createProfilePages({
       );
       messagesCount = tradeMsg?.length || 0;
     }
-    return { profile: r1.data, activeBikes: r2.data, soldBikes: r3.data, reviews: r4.data || [], messagesCount };
+    // Følger-tæller + følger-status (samme dealer_followers-tabel som forhandler)
+    let followerCount = 0, isFollowing = false;
+    try {
+      const { count } = await supabase
+        .from('dealer_followers')
+        .select('dealer_id', { count: 'exact', head: true })
+        .eq('dealer_id', userId);
+      followerCount = count || 0;
+      if (currentUser && currentUser.id !== userId) {
+        const { data: f } = await supabase
+          .from('dealer_followers')
+          .select('dealer_id')
+          .eq('user_id', currentUser.id)
+          .eq('dealer_id', userId)
+          .maybeSingle();
+        isFollowing = !!f;
+      }
+    } catch { /* tabel kan mangle hvis migration ikke er kørt */ }
+    return { profile: r1.data, activeBikes: r2.data, soldBikes: r3.data, reviews: r4.data || [], messagesCount, followerCount, isFollowing };
   }
 
   async function fetchDealerProfileData(dealerId) {
@@ -81,7 +102,7 @@ export function createProfilePages({
     const [r1, r2, r3] = await Promise.race([
       Promise.all([
         safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, email_verified, avatar_url, created_at, bio, last_seen, opening_hours, website, facebook, instagram, services').eq('id', dealerId).single()),
-        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
+        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', dealerId).order('created_at', { ascending: false })),
       ]),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000)),
@@ -126,7 +147,8 @@ export function createProfilePages({
       return 'condition-tag--brugt';
     };
     return bikes.map((b, i) => {
-      const primaryImg = b.bike_images?.find(img => img.is_primary)?.url;
+      const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
+      const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
         : '<span style="font-size:3.5rem">🚲</span>';
@@ -161,13 +183,13 @@ export function createProfilePages({
 
   function buildUserProfilePageHTML(data) {
     const currentUser = getCurrentUser();
-    const { profile, activeBikes, soldBikes, reviews, messagesCount } = data;
+    const { profile, activeBikes, soldBikes, reviews, messagesCount, followerCount = 0, isFollowing = false } = data;
     const displayName  = profile.seller_type === 'dealer' ? (profile.shop_name || profile.name) : profile.name;
     const initials     = getInitials(displayName);
     const isDealer     = profile.seller_type === 'dealer';
     const memberSince  = profile.created_at ? new Date(profile.created_at).toLocaleDateString('da-DK', { year: 'numeric', month: 'long' }) : null;
     const isOwnProfile = currentUser && currentUser.id === profile.id;
-    const lastSeenText = !isOwnProfile ? formatLastSeen(profile.last_seen) : null;
+    const lastSeenText = (!isOwnProfile && !isDealer) ? formatLastSeen(profile.last_seen, 72) : null;
     const reviewList   = reviews || [];
     const avgRating    = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : null;
     const hasReviewed  = currentUser && reviewList.some(r => r.reviewer_id === currentUser.id);
@@ -222,7 +244,7 @@ export function createProfilePages({
 
     const sendMsgHtml = (!isOwnProfile && currentUser && nActive > 0) ? `
       <div class="pp-cta-section">
-        <button class="pp-cta-btn" onclick="toggleProfileContact()">Send besked</button>
+        <button class="pp-cta-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">Send besked</button>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${nActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
@@ -250,10 +272,12 @@ export function createProfilePages({
             <div class="pp-badges">
               <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
               ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
+              ${followerCount > 0 ? `<span class="pp-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
             </div>
             ${isDealer && profile.address ? `<div class="pp-location">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="pp-location">📍 ${esc(profile.city)}</div>` : ''}
             ${lastSeenText ? `<div class="pp-last-seen">Sidst aktiv ${lastSeenText}</div>` : ''}
             ${profile.bio ? `<p class="pp-bio">${esc(profile.bio)}</p>` : ''}
+            ${(!isOwnProfile && followDealer) ? `<div class="up-follow-row">${followDealer.buildFollowButton(profile.id, isFollowing)}</div>` : ''}
             ${sendMsgHtml}
           </div>
         </div>
@@ -357,7 +381,7 @@ export function createProfilePages({
     const contactHtml = (!isOwnProfile && currentUser && nActive > 0) ? `
       <div class="pp-cta-section">
         <div class="pp-cta-row">
-          <button class="pp-cta-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
+          <button class="pp-cta-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">Kontakt forhandler</button>
           ${followBtnHtml}
         </div>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">

@@ -2,18 +2,24 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled } from './js/utils.js';
+import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword } from './js/utils.js';
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
-import { supabase } from './js/supabase-client.js';
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION } from './js/config.js';
+import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
+// config.js cache-bustes via ?v= (skal holdes i sync med ASSET_VERSION i config.js
+// + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
+// cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
+// igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
+import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701t';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
+import { CATEGORY_META } from './js/category-data.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
 import { createRealtimeNotifications } from './js/realtime-notifications.js';
 import { createShareActions } from './js/share-actions.js';
+import { createBoostModule } from './js/listing-boost.js';
 import { setMainView, showDetailView, showListingView as _baseShowListingView } from './js/view-switcher.js';
 import { createSoldActions } from './js/sold-actions.js';
 import { createQuickReplies } from './js/quick-replies.js';
@@ -34,6 +40,12 @@ import { createImageUpload } from './js/image-upload.js';
 import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
+
+// Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
+// supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
+// Ellers er window.location.hash typisk tom når init() senere læser den, og
+// signup/invite-flowet (der ikke har et dedikeret auth-event som recovery) misses.
+const _initialAuthType = new URLSearchParams(window.location.hash.slice(1)).get('type');
 
 /* ============================================================
    LAZY MODULE LOADER
@@ -153,9 +165,10 @@ const {
   setUserGeoCoords:     v => { userGeoCoords = v; },
   getActiveRadius:      () => activeRadius,
   setActiveRadius:      v => { activeRadius = v; },
+  getBrowseCategory:    () => _browseCategory,
 });
 
-const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters });
+const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory: () => _browseCategory });
 window.dismissCykelagentCta = dismissCykelagentCta;
 
 // Bike list (loadBikes/renderBikes/searchBikes/loadBikesWithFilters).
@@ -183,7 +196,74 @@ const {
   getActiveRadius:      () => activeRadius,
   userSavedSet:         _userSavedSet,
   askedAvailableSet,
+  getBrowseCategory: () => _browseCategory,
 });
+
+// Aktiv browse-kategori for forside-toggle "Cykler | Tilbehør". Hård top-level
+// separation: alle liste-queries scopes på den (default cykel).
+let _browseCategory = 'cykel';
+const BIKE_TYPES = ['Racercykel','Mountainbike','El-cykel','Citybike','Gravel','Ladcykel','Børnecykel','Senior cykel'];
+
+function setBrowseCategory(cat) {
+  cat = (cat === 'tilbehoer') ? 'tilbehoer' : 'cykel';
+  _browseCategory = cat;
+  const isAcc = cat === 'tilbehoer';
+  const types = isAcc ? ACCESSORY_TYPES : BIKE_TYPES;
+  document.body.classList.toggle('browse-tilbehoer', isAcc);
+  document.querySelectorAll('.browse-cat-btn').forEach(b => {
+    const on = b.dataset.cat === cat;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  // Ryd aktive type-filtre så en cykel-type ikke hænger ved i tilbehør (og omvendt)
+  document.querySelectorAll('[data-filter="type"]:checked').forEach(cb => { cb.checked = false; });
+  // Swap hero-dropdown, hero-chips og sidebar-type-liste til den valgte kategori
+  const sel = document.getElementById('search-type');
+  if (sel) sel.innerHTML = '<option value="">Alle typer</option>' + types.map(t => `<option>${esc(t)}</option>`).join('');
+  const chips = document.querySelector('.hero-cat-chips');
+  if (chips) chips.innerHTML = '<button class="hero-cat-chip active" onclick="selectHeroCatChip(this,\'\')" aria-pressed="true">Alle</button>' +
+    types.map(t => `<button class="hero-cat-chip" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(t)}</button>`).join('');
+  const stg = document.getElementById('sidebar-type-group');
+  if (stg) stg.innerHTML = types.map(t => `<label class="filter-option"><input type="checkbox" data-filter="type" data-value="${esc(t)}" onchange="applyFilters()"> ${esc(t)} <span class="filter-count">–</span></label>`).join('');
+  const sth = document.getElementById('sidebar-type-heading');
+  if (sth) sth.textContent = isAcc ? 'Tilbehørstype' : 'Cykeltype';
+  // Skjul cykel-specifikke filter-sektioner på tilbehør (behold kun generiske + type)
+  const KEEP_ON_ACC = new Set(['Pris', 'Mærke', 'Stand', 'Farve', 'Sælgertype']);
+  document.querySelectorAll('#sidebar-filters .sidebar-box').forEach(box => {
+    if (box.querySelector('#sidebar-type-heading')) { box.style.display = ''; return; }
+    const h3 = box.querySelector('h3');
+    box.style.display = (isAcc && !KEEP_ON_ACC.has((h3 ? h3.textContent : '').trim())) ? 'none' : '';
+  });
+  // URL + SEO: gør tilbehør til en rigtig, delbar/indekserbar landingsside.
+  // replaceState (ikke pushState) → ingen ekstra history-entry, trigger ikke handleRoute.
+  try { history.replaceState(null, '', isAcc ? '/tilbehoer' : '/'); } catch {}
+  document.title = isAcc
+    ? 'Cykeltilbehør & udstyr – Cykelbørsen'
+    : 'Cykelbørsen – Danmarks markedsplads for cykler';
+  updateSEOMeta(
+    isAcc
+      ? 'Køb og sælg cykeltilbehør, udstyr og reservedele på Cykelbørsen — hjelme, lygter, låse, dæk, gear, batterier og meget mere. Gratis at oprette annonce.'
+      : 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler, cykeltilbehør og meget mere. Gratis at oprette annonce.',
+    isAcc ? '/tilbehoer' : '/'
+  );
+  // Hero-tekst tilpasses kategori, så landingssiden er sammenhængende.
+  const _hTitle = document.querySelector('.search-hero-title');
+  const _hSub = document.querySelector('.search-hero-sub');
+  if (_hTitle) _hTitle.innerHTML = isAcc
+    ? 'Find alt til din cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
+    : 'Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>';
+  if (_hSub) _hSub.textContent = isAcc
+    ? 'Hjelme, lygter, dæk, gear og reservedele — køb og sælg, nyt og brugt.'
+    : 'Danmarks dedikerede markedsplads for nye og brugte cykler.';
+
+  // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)
+  loadBikes({ category: cat });
+  // Kategori-bevidste tællere: udfylder både "X cykler/stykker tilbehør"-label
+  // og sidebar-type-tællerne for den nye kategori (updateFilterCounts læser
+  // _browseCategory via getBrowseCategory-dep'en).
+  updateFilterCounts();
+}
+window.setBrowseCategory = setBrowseCategory;
 
 // My-profile actions (loadMyListings, savedListings, savedSearches, tradeHistory).
 const {
@@ -203,10 +283,12 @@ const {
   getCurrentUser:       () => currentUser,
   getCurrentFilters:    () => currentFilters,
   getCurrentFilterArgs: () => currentFilterArgs,
+  getBrowseCategory:    () => _browseCategory,
   loadBikes:           (...args) => loadBikes(...args),
   updateFilterCounts:  (...args) => updateFilterCounts(...args),
   searchBikes:         (...args) => searchBikes(...args),
   closeProfileModal:   (...args) => closeProfileModal(...args),
+  openLoginModal:      (...args) => openLoginModal(...args),
 });
 
 // Reviews (rating modal + submit-flow).
@@ -235,6 +317,7 @@ const _ensureProfileModals = lazyCtrl(
     closeAllDealersModal: (...args) => closeAllDealersModal(...args),
     closeAllModals:       (...args) => closeAllModals(...args),
     highlightStars,
+    followDealer,
   }),
 );
 const filterByDealerCard       = lazyMethod(_ensureProfileModals, 'filterByDealerCard');
@@ -302,6 +385,7 @@ const listingEdit = createListingEdit({
   renderUserProfilePage:      (...args) => renderUserProfilePage(...args),
   renderDealerProfilePage:    (...args) => renderDealerProfilePage(...args),
   attachCityAutocomplete,
+  accessoryTypes:             ACCESSORY_TYPES,
 });
 
 const {
@@ -382,8 +466,10 @@ const _ensureSellPage = lazyCtrl(
     compressForAI,
     getCurrentUser:         () => currentUser,
     getCurrentProfile:      () => currentProfile,
+    accessoryTypes:         ACCESSORY_TYPES,
   }),
 );
+const renderSellChooser          = lazyMethod(_ensureSellPage, 'renderSellChooser');
 const openModal                  = lazyMethod(_ensureSellPage, 'openModal');
 const _openModalLegacy           = lazyMethod(_ensureSellPage, '_openModalLegacy');
 const closeModal                 = lazyMethod(_ensureSellPage, 'closeModal');
@@ -520,6 +606,7 @@ const _ensureMyProfilePage = lazyCtrl(
     navigateTo:        (...args) => navigateTo(...args),
     getCurrentUser:    () => currentUser,
     getCurrentProfile: () => currentProfile,
+    setCurrentProfile: (p) => { currentProfile = p; },
   }),
 );
 const navigateToMyProfile    = lazyMethod(_ensureMyProfilePage, 'navigateToMyProfile');
@@ -591,6 +678,125 @@ window.renderBrandsOverview = renderBrandsOverview;
 window.expandBrandBikes   = expandBrandBikes;
 window.expandBrandDealers = expandBrandDealers;
 
+// Kategori-landingsside — lazy-loaded (/racercykler, /el-cykler, …)
+const _ensureCategoryPage = lazyCtrl(
+  () => import(`./js/category-page.js?v=${ASSET_VERSION}`),
+  'createCategoryPage',
+  () => ({
+    supabase, esc, updateSEOMeta,
+    showDetailView, showListingView,
+    navigateTo:     (...args) => navigateTo(...args),
+    navigateToBike: (...args) => navigateToBike(...args),
+    BASE_URL,
+  }),
+);
+const renderCategoryPage  = lazyMethod(_ensureCategoryPage, 'renderCategoryPage');
+const expandCategoryBikes = lazyMethod(_ensureCategoryPage, 'expandCategoryBikes');
+window.renderCategoryPage = renderCategoryPage;
+window.expandCategoryBikes = expandCategoryBikes;
+
+// Udlejer-onboarding — lazy-loaded (/bliv-udlejer, Stripe Connect)
+const _ensureRentalOnboarding = lazyCtrl(
+  () => import(`./js/rental-onboarding.js?v=${ASSET_VERSION}`),
+  'createRentalOnboarding',
+  () => ({
+    supabase, esc, updateSEOMeta, showDetailView, showToast,
+    getCurrentUser: () => currentUser,
+    navigateTo:     (...args) => navigateTo(...args),
+    openLoginModal: (...args) => openLoginModal(...args),
+    BASE_URL,
+  }),
+);
+const renderBecomeRenterPage  = lazyMethod(_ensureRentalOnboarding, 'renderBecomeRenterPage');
+const startConnectOnboarding  = lazyMethod(_ensureRentalOnboarding, 'startConnectOnboarding');
+window.renderBecomeRenterPage = renderBecomeRenterPage;
+window.startConnectOnboarding = startConnectOnboarding;
+
+// Udlejning: browse (/udlejning) — lazy-loaded
+const _ensureRentalBrowse = lazyCtrl(
+  () => import(`./js/rental-browse.js?v=${ASSET_VERSION}`),
+  'createRentalBrowse',
+  () => ({
+    supabase, esc, updateSEOMeta, showDetailView,
+    navigateTo: (...args) => navigateTo(...args),
+    BASE_URL,
+  }),
+);
+const renderRentalBrowse = lazyMethod(_ensureRentalBrowse, 'renderRentalBrowse');
+const filterRentalType   = lazyMethod(_ensureRentalBrowse, 'filterRentalType');
+window.renderRentalBrowse = renderRentalBrowse;
+window.filterRentalType   = filterRentalType;
+
+// Udlejning: item-detalje (/udlejning/:id) — lazy-loaded
+const _ensureRentalItem = lazyCtrl(
+  () => import(`./js/rental-item-page.js?v=${ASSET_VERSION}`),
+  'createRentalItemPage',
+  () => ({
+    supabase, esc, updateSEOMeta, showDetailView, showListingView, showToast,
+    navigateTo:       (...args) => navigateTo(...args),
+    navigateToDealer: (...args) => navigateToDealer(...args),
+    getCurrentUser: () => currentUser,
+    openLoginModal: (...args) => openLoginModal(...args),
+    BASE_URL,
+  }),
+);
+const renderRentalItemPage = lazyMethod(_ensureRentalItem, 'renderRentalItemPage');
+const updateRentalPrice    = lazyMethod(_ensureRentalItem, 'updateRentalPrice');
+const startRentalBooking   = lazyMethod(_ensureRentalItem, 'startRentalBooking');
+window.renderRentalItemPage = renderRentalItemPage;
+window.updateRentalPrice    = updateRentalPrice;
+window.startRentalBooking   = startRentalBooking;
+
+// Udlejning: bookings-oversigter (/udlejning/lejeaftaler|bookinger) — lazy-loaded
+const _ensureRentalBooking = lazyCtrl(
+  () => import(`./js/rental-booking.js?v=${ASSET_VERSION}`),
+  'createRentalBooking',
+  () => ({
+    supabase, esc, showToast,
+    getCurrentUser: () => currentUser,
+    showDetailView,
+    navigateTo: (...args) => navigateTo(...args),
+  }),
+);
+const renderMyRentals      = lazyMethod(_ensureRentalBooking, 'renderMyRentals');
+const renderDealerBookings = lazyMethod(_ensureRentalBooking, 'renderDealerBookings');
+const rentalBookingAction  = lazyMethod(_ensureRentalBooking, 'rentalBookingAction');
+window.renderMyRentals      = renderMyRentals;
+window.renderDealerBookings = renderDealerBookings;
+window.rentalBookingAction  = rentalBookingAction;
+
+// Udlejning: forhandler-administration (/udlejning/opret|rediger|mine) — lazy-loaded
+const _ensureRentalManage = lazyCtrl(
+  () => import(`./js/rental-create.js?v=${ASSET_VERSION}`),
+  'createRentalManage',
+  () => ({
+    supabase, esc, showToast, compressImage, validateImageFile,
+    getCurrentUser:    () => currentUser,
+    getCurrentProfile: () => currentProfile,
+    showDetailView, showListingView,
+    navigateTo: (...args) => navigateTo(...args),
+    BASE_URL,
+  }),
+);
+const renderRentalMine   = lazyMethod(_ensureRentalManage, 'renderRentalMine');
+const renderRentalCreate = lazyMethod(_ensureRentalManage, 'renderRentalCreate');
+const renderRentalEdit   = lazyMethod(_ensureRentalManage, 'renderRentalEdit');
+const selectRentalImages = lazyMethod(_ensureRentalManage, 'selectRentalImages');
+const setRentalPrimary   = lazyMethod(_ensureRentalManage, 'setRentalPrimary');
+const removeRentalImage  = lazyMethod(_ensureRentalManage, 'removeRentalImage');
+const submitRentalItem   = lazyMethod(_ensureRentalManage, 'submitRentalItem');
+const toggleRentalActive = lazyMethod(_ensureRentalManage, 'toggleRentalActive');
+const deleteRentalItem   = lazyMethod(_ensureRentalManage, 'deleteRentalItem');
+window.renderRentalMine   = renderRentalMine;
+window.renderRentalCreate = renderRentalCreate;
+window.renderRentalEdit   = renderRentalEdit;
+window.selectRentalImages = selectRentalImages;
+window.setRentalPrimary   = setRentalPrimary;
+window.removeRentalImage  = removeRentalImage;
+window.submitRentalItem   = submitRentalItem;
+window.toggleRentalActive = toggleRentalActive;
+window.deleteRentalItem   = deleteRentalItem;
+
 // Cykelagent-side — lazy-loaded (/cykelagenter)
 const _ensureCykelagentPage = lazyCtrl(
   () => import(`./js/cykelagent-page.js?v=${ASSET_VERSION}`),
@@ -635,8 +841,14 @@ const _ensureValuation = lazyCtrl(
 );
 const renderValuationPage = lazyMethod(_ensureValuation, 'renderValuationPage');
 const runValuation        = lazyMethod(_ensureValuation, 'runValuation');
+const openValuationModal  = lazyMethod(_ensureValuation, 'openValuationModal');
+const closeValuationModal = lazyMethod(_ensureValuation, 'closeValuationModal');
+const applyValuationPrice = lazyMethod(_ensureValuation, 'applyValuationPrice');
 window.renderValuationPage = renderValuationPage;
 window.runValuation        = runValuation;
+window.openValuationModal  = openValuationModal;
+window.closeValuationModal = closeValuationModal;
+window.applyValuationPrice = applyValuationPrice;
 
 // Stelstørrelse-finder — lazy-loaded (/stelstoerrelse-guide)
 const _ensureSizeFinder = lazyCtrl(
@@ -717,6 +929,19 @@ async function init() {
   import(`./js/color-swatches.js?v=${ASSET_VERSION}`).then(({ renderColorSwatches }) => {
     const colorGrid = document.getElementById('color-filter-grid');
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
+  });
+
+  // Mobil hamburger-menu (top-nav-links skjult på ≤768px)
+  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu, initMobileNavScroll }) => {
+    window.toggleMobileMenu = toggleMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+    initMobileMenu();
+    initMobileNavScroll();
+  });
+
+  // Hover-galleri: krydsfader gennem annonce-billeder på desktop
+  import(`./js/card-hover-gallery.js?v=${ASSET_VERSION}`).then(({ initCardHoverGallery }) => {
+    initCardHoverGallery();
   });
 
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
@@ -818,7 +1043,7 @@ async function init() {
     currentUser = session.user;
 
     const { data: profile } = await supabase
-      .from('profiles').select('*').eq('id', currentUser.id).single();
+      .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
 
     // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
     const meta = currentUser.user_metadata || {};
@@ -842,7 +1067,7 @@ async function init() {
       if (dealerUpsert.error) {
         console.error('Dealer upsert fejl:', dealerUpsert.error);
       }
-      const { data: freshProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      const { data: freshProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
       supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
       supabase.functions.invoke('notify-message', {
@@ -862,7 +1087,7 @@ async function init() {
       currentProfile = profile;
     }
 
-    updateNav(true, currentProfile?.name, currentProfile?.avatar_url);
+    updateNav(true, currentProfile?.name, currentProfile?.avatar_thumb_url || currentProfile?.avatar_url);
     startRealtimeNotifications();
     // Vis admin knap hvis admin
     if (currentProfile && currentProfile.is_admin) {
@@ -870,6 +1095,12 @@ async function init() {
       if (adminBtn) adminBtn.style.display = 'flex';
     }
     checkEmailConfirmed();
+    // Ventende Cykelagent fra "udfyld før login"-flow. Signup-bekræftelse håndteres
+    // i _initialAuthType-blokken nedenfor (kombineret toast); øvrige session-restores her.
+    if (_initialAuthType !== 'signup' &&
+        (localStorage.getItem('_pendingCykelagent') || currentUser.user_metadata?.pending_cykelagent)) {
+      flushPendingCykelagent().catch(() => {});
+    }
     // Opdater last_seen (fire-and-forget)
     supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id).then(null, () => {});
   } else {
@@ -879,7 +1110,12 @@ async function init() {
   // Opdater nav når bruger logger ind/ud
   // _hasHadSession forhindrer at token-refresh (der fyrer SIGNED_IN) kalder loadBikes() unødvendigt
   let _hasHadSession = !!currentUser;
-  supabase.auth.onAuthStateChange(async (_event, session) => {
+  supabase.auth.onAuthStateChange((_event, session) => {
+    // Defer alt async-arbejde UD af callbacken. supabase-js holder en intern lås
+    // mens auth-state-callbacks kører; await'er på supabase-kald heri (DB-forespørgsler
+    // henter selv sessionen → tager låsen) deadlocker andre auth-operationer som
+    // updateUser ved password-reset (→ "Timeout"). setTimeout(0) frigiver låsen straks.
+    setTimeout(async () => {
     if (session) {
       const isNewLogin = !_hasHadSession;
       _hasHadSession = true;
@@ -892,7 +1128,7 @@ async function init() {
 
       // Ægte login eller TOKEN_REFRESHED/andre events: hent profil og opdater UI
       let { data: profile, error: profileErr } = await supabase
-        .from('profiles').select('*').eq('id', currentUser.id).single();
+        .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
 
       // Ny OAuth-bruger uden profil endnu — opret den automatisk
@@ -916,7 +1152,7 @@ async function init() {
           postcode:       isPendingDealer ? (meta.postcode || null) : null,
           location_precision: isPendingDealer && meta.lat && meta.lng ? 'exact' : null,
         }, { onConflict: 'id' });
-        const { data: newProfile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        const { data: newProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
         profile = newProfile;
       }
 
@@ -943,13 +1179,13 @@ async function init() {
           console.error('Pending dealer upgrade fejl:', upgradeRes.error);
         } else {
           supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
-          const { data: refreshed } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+          const { data: refreshed } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
           profile = refreshed || profile;
         }
       }
 
       currentProfile = profile;
-      updateNav(true, profile?.name, profile?.avatar_url);
+      updateNav(true, profile?.name, profile?.avatar_thumb_url || profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
       checkEmailConfirmed();
@@ -959,10 +1195,18 @@ async function init() {
           import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
         }
         checkSavedSearchNotifications();
+        // Forhandler-friskheds-nudge: vis kun forældede annoncer (60+ dage) med
+        // 1-klik "aktuel/ret/deaktivér". Feed-styrede annoncer bumpes nat for nat
+        // og dukker derfor aldrig op her.
+        if (profile?.seller_type === 'dealer') {
+          import(`./js/dealer-freshness.js?v=${ASSET_VERSION}`)
+            .then(m => m.checkDealerFreshness(currentUser, profile))
+            .catch(() => {});
+        }
         // Hvis brugeren havde en pending Cykelagent fra et "udfyld før login"-flow,
         // aktivér den nu. localStorage-check er billig — kører hver gang men er no-op
         // hvis nøglen ikke findes.
-        if (localStorage.getItem('_pendingCykelagent')) {
+        if (localStorage.getItem('_pendingCykelagent') || currentUser?.user_metadata?.pending_cykelagent) {
           flushPendingCykelagent().catch(() => {});
         }
       }
@@ -977,6 +1221,7 @@ async function init() {
         window.location.href = window.location.pathname;
       }
     }
+    }, 0);
   });
 
   // --- Idle/refresh guards ---
@@ -1030,8 +1275,11 @@ async function init() {
       _refreshInProgress = true;
       _lastRefreshTime = now;
       try {
-        const { data, error } = await supabase.auth.getSession();
-        loadBikes();
+        // Refresh kun sessionen (usynligt) + last_seen ved fane-skift.
+        // IKKE loadBikes() — det genindlæste hele annonce-grid'et og nulstillede
+        // scroll/paginering hver gang man kort tabbede væk og tilbage. Unødvendigt
+        // forstyrrende på en lav-trafik-side; brugeren kan refreshe manuelt.
+        await supabase.auth.getSession();
         // Opdater last_seen når brugeren vender tilbage til fanen
         if (currentUser) {
           supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id).then(() => {}, (err) => {});
@@ -1062,14 +1310,15 @@ async function init() {
     history.replaceState(null, '', window.location.pathname);
     openAdminPanel();
     const validTabs = ['applications', 'users', 'id'];
-    const tabMap    = { dealers: 'applications', forhandlere: 'applications' };
+    const tabMap    = { dealers: 'applications', forhandlere: 'applications', feed: 'feed-import' };
     const target    = tabMap[adminTab] || (validTabs.includes(adminTab) ? adminTab : 'applications');
     setTimeout(() => switchAdminTab(target), 100);
   }
 
-  // Håndter email-bekræftelse og password reset (Supabase sætter type i hash)
-  const hashParams = new URLSearchParams(window.location.hash.slice(1));
-  if (hashParams.get('type') === 'signup') {
+  // Håndter email-bekræftelse, invitation og password reset. Vi bruger den TIDLIGT
+  // fangede _initialAuthType (ikke window.location.hash, som supabase-js kan have nået
+  // at rydde async, så signup/invite ellers blev misset).
+  if (_initialAuthType === 'signup') {
     history.replaceState(null, '', window.location.pathname);
     dismissEmailBanner();
     localStorage.removeItem('_pending_dealer');
@@ -1088,11 +1337,35 @@ async function init() {
       showToast('✅ Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.');
       navigateTo('/min-profil');
     } else {
-      showToast('✅ Din e-mail er bekræftet – velkommen til Cykelbørsen!');
+      // Aktivér evt. ventende Cykelagent fra "udfyld før login"-flow og vis
+      // kombineret bekræftelse (mail bekræftet + agent aktiveret) i ÉN toast.
+      let agentActivated = false;
+      if (localStorage.getItem('_pendingCykelagent') || currentUser?.user_metadata?.pending_cykelagent) {
+        agentActivated = await flushPendingCykelagent({ silent: true }).catch(() => false);
+      }
+      showToast(agentActivated
+        ? '✅ Din e-mail er bekræftet — og din Cykelagent er nu aktiveret! 🔔'
+        : '✅ Din e-mail er bekræftet!');
+      // Førstegangs-velkomst: vis onboarding-modalen når brugeren lander logget ind
+      // efter email-bekræftelse. showOnboardingBanner er idempotent (viser ikke dobbelt),
+      // og 'onboarded'-guarden sikrer den ikke dukker op igen ved senere logins.
+      if (!localStorage.getItem('onboarded')) {
+        import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
+      }
     }
-  } else if (hashParams.get('type') === 'recovery') {
+  } else if (_initialAuthType === 'recovery' || _initialAuthType === 'invite') {
     history.replaceState(null, '', window.location.pathname);
-    document.getElementById('reset-modal').classList.add('open');
+    const resetModal = document.getElementById('reset-modal');
+    const resetClose = resetModal.querySelector('.modal-close');
+    if (_initialAuthType === 'invite') {
+      showToast('👋 Velkommen! Vælg en adgangskode for at aktivere din konto.');
+      // Inviteret bruger har INGEN adgangskode endnu — gør det obligatorisk:
+      // skjul luk-knappen (modalen kan i forvejen ikke lukkes via Escape/klik-udenfor).
+      if (resetClose) resetClose.style.display = 'none';
+    } else if (resetClose) {
+      resetClose.style.display = '';
+    }
+    resetModal.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
@@ -1103,15 +1376,29 @@ async function init() {
     // Genindlæs profil så verified-status er opdateret
     if (currentUser) {
       const { data: freshProfile } = await supabase
-        .from('profiles').select('*').eq('id', currentUser.id).single();
+        .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
-      updateNav(true, freshProfile?.name, freshProfile?.avatar_url);
+      updateNav(true, freshProfile?.name, freshProfile?.avatar_thumb_url || freshProfile?.avatar_url);
     }
     showToast('🎉 Velkommen som forhandler! Din 3-måneders gratis periode er startet.');
     setTimeout(() => openProfileModal(), 600);
   } else if (urlParams.get('dealer_cancel') === 'true') {
     history.replaceState(null, '', window.location.pathname);
     showToast('ℹ️ Betalingen blev annulleret. Du kan prøve igen når du er klar.');
+  } else if (urlParams.get('boost_success') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('⭐ Din annonce er nu promoveret og vises øverst!');
+    // featured_until er sat af stripe-webhook — genindlæs listen så badgen vises
+    try { loadBikes(); } catch {}
+  } else if (urlParams.get('boost_cancel') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('ℹ️ Betalingen blev annulleret. Din annonce blev ikke promoveret.');
+  } else if (urlParams.get('rental_success') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('🎉 Din booking er bekræftet! Se den under Mine lejeaftaler.');
+  } else if (urlParams.get('rental_cancel') === 'true') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('ℹ️ Booking annulleret. Du blev ikke opkrævet.');
   }
 
   // Klik uden for modal lukker den
@@ -1132,7 +1419,7 @@ async function init() {
   }
 
   // Pathname routing: håndter initial route (køres efter Supabase hash-params er tjekket)
-  if (!_initHash.includes('type=signup') && !_initHash.includes('type=recovery')) {
+  if (_initialAuthType !== 'signup' && _initialAuthType !== 'recovery' && _initialAuthType !== 'invite') {
     handleRoute();
   }
 
@@ -1153,6 +1440,7 @@ async function init() {
     if (document.getElementById('modal')?.classList.contains('open'))            { closeModal(); return; }
     if (document.getElementById('login-modal')?.classList.contains('open'))      { closeLoginModal(); return; }
     // display:flex-baserede modaler
+    if (document.getElementById('valuation-modal')?.style.display === 'flex')       { closeValuationModal(); return; }
     if (document.getElementById('user-profile-modal')?.style.display === 'flex')   { closeUserProfileModal(); return; }
     if (document.getElementById('dealer-profile-modal')?.style.display === 'flex') { closeDealerProfileModal(); return; }
     if (document.getElementById('all-dealers-modal')?.style.display === 'flex')    { closeAllDealersModal(); return; }
@@ -1173,7 +1461,7 @@ function updateNav(loggedIn, name, avatarUrl) {
         sellBtn.style.opacity = '0.6';
         sellBtn.style.cursor = 'not-allowed';
       } else {
-        sellBtn.textContent = '+ Sæt til salg';
+        sellBtn.innerHTML = '<span class="sell-label-full">+ Sæt til salg</span><span class="sell-label-short">+ Sælg</span>';
         sellBtn.setAttribute('onclick', 'event.preventDefault(); openModal()');
         sellBtn.removeAttribute('title');
         sellBtn.style.opacity = '';
@@ -1607,7 +1895,7 @@ function selectHeroCatChip(el, type) {
 // Skriver til samme felter som brugeren ville sætte manuelt — sidebar-checkboxes
 // for type, sidebar prisinputs for pris, hero-felt for by — så Cykelagenten
 // gemmer samme state som ved manuel filtrering.
-function applyPopularSearch({ type, size, maxPrice, minPrice, city } = {}) {
+function applyPopularSearch({ type, size, maxPrice, minPrice, city, suspension } = {}) {
   navigateTo('/');
   setTimeout(() => {
     // Nulstil eksisterende type-checkboxes i sidebar, så vi starter rent
@@ -1653,6 +1941,17 @@ function applyPopularSearch({ type, size, maxPrice, minPrice, city } = {}) {
       if (cityInput) cityInput.value = city;
     }
 
+    if (suspension) {
+      // Åbn Affjedring-sektionen (collapsed som standard) + sæt chip
+      document.querySelectorAll('[data-filter="suspension"]').forEach(cb => { cb.checked = false; });
+      const susCb = document.querySelector(`[data-filter="suspension"][data-value="${suspension}"]`);
+      if (susCb) {
+        susCb.checked = true;
+        const box = susCb.closest('.sidebar-box');
+        if (box) box.classList.remove('collapsed');
+      }
+    }
+
     document.getElementById('listings-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     applyFilters();
   }, 50);
@@ -1689,13 +1988,19 @@ function updatePwStrength(inputId, wrapId) {
   if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
   if (/\d/.test(v))     score++;
   if (/[^A-Za-z0-9]/.test(v)) score++;
-  // 0-1: weak, 2-3: medium, 4-5: strong
-  const tier = v.length < 8 ? 'too-short' : score <= 1 ? 'weak' : score <= 3 ? 'medium' : 'strong';
+  // Oplagte/gættelige koder (fx "12345678" eller din email) trækkes ned til Svag
+  // uanset længde, så måleren matcher de hårde krav i validatePassword.
+  const guessable = v.length >= 8 && !validatePassword(v).ok;
+  const tier = v.length < 8 ? 'too-short'
+             : guessable    ? 'weak'
+             : score <= 1   ? 'weak'
+             : score <= 3   ? 'medium'
+             : 'strong';
   const labels = {
-    'too-short': `🔴 Mindst 8 tegn (du har ${v.length})`,
-    weak:        '🔴 Svag — gør den længere',
-    medium:      '🟡 OK — kan gøres stærkere',
-    strong:      '🟢 Stærkt password ✓',
+    'too-short': `Mindst 8 tegn (du har ${v.length})`,
+    weak:        'Svag — gør den længere eller mere unik',
+    medium:      'OK — kan gøres stærkere',
+    strong:      'Stærk adgangskode',
   };
   const widths = { 'too-short': '20%', weak: '35%', medium: '65%', strong: '100%' };
   if (fill)  { fill.style.width = widths[tier]; fill.dataset.tier = tier; }
@@ -1738,6 +2043,8 @@ function handleRoute() {
   const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
   const brandMatch   = path.match(/^\/cykler\/([^/]+)$/);
   const brandsOverviewMatch = path === '/maerker' || path === '/mærker';
+  const categorySlug = path.slice(1);
+  const categoryMatch = CATEGORY_META[categorySlug] ? categorySlug : null;
   const cykelagentMatch = path === '/cykelagenter' || path === '/cykelagent';
   const valuationMatch = path === '/vurder-min-cykel';
   const sizeFinderMatch = path === '/stelstoerrelse-guide' || path === '/stelstørrelse-guide';
@@ -1748,9 +2055,34 @@ function handleRoute() {
   const sellMatch    = path === '/sell';
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
+  const becomeRenter = path === '/bliv-udlejer';
+  const rentalBrowse = path === '/udlejning';
+  const rentalCreate = path === '/udlejning/opret';
+  const rentalMine   = path === '/udlejning/mine';
+  const rentalMyBookings     = path === '/udlejning/lejeaftaler';
+  const rentalDealerBookings = path === '/udlejning/bookinger';
+  const rentalEditMatch = path.match(/^\/udlejning\/rediger\/([^/]+)$/);
+  // Catch-all til sidst — matcher også /opret, /mine osv., så tjek DEM først i handleren.
+  const rentalItemMatch = path.match(/^\/udlejning\/([^/]+)$/);
   const dealersMatch = path === '/forhandlere';
   const mapPageMatch = path === '/kort';
+  const tilbehoerMatch = path === '/tilbehoer' || path === '/tilbehør';
   const staticMatch  = Object.keys(STATIC_PAGE_ROUTES).find(key => STATIC_PAGE_ROUTES[key] === path);
+
+  // Ryd detail-view SYNKRONT ved ALLE side-ruter, så den forrige sides indhold
+  // ikke "glipper" mens den nye (typisk lazy-loadede) side hentes og renderes.
+  // Hver render-gren overskriver straks denne placeholder med sit eget skelet/indhold.
+  const _isPageRoute = staticMatch || dealerApply || becomeRenter || dealersMatch || mapPageMatch ||
+    inboxMatch || meMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
+    brandMatch || brandsOverviewMatch || categoryMatch || cykelagentMatch || valuationMatch ||
+    sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch ||
+    rentalBrowse || rentalCreate || rentalMine || rentalMyBookings || rentalDealerBookings ||
+    rentalEditMatch || rentalItemMatch;
+  if (_isPageRoute) {
+    const _pv = document.getElementById('detail-view');
+    if (_pv) _pv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser…</div>';
+  }
+
   if (staticMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -1761,6 +2093,46 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBecomeDealerPage();
+  } else if (becomeRenter) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderBecomeRenterPage();
+  } else if (rentalCreate) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalCreate();
+  } else if (rentalMine) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalMine();
+  } else if (rentalMyBookings) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderMyRentals();
+  } else if (rentalDealerBookings) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderDealerBookings();
+  } else if (rentalEditMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalEdit(decodeURIComponent(rentalEditMatch[1]));
+  } else if (rentalBrowse) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalBrowse();
+  } else if (rentalItemMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderRentalItemPage(decodeURIComponent(rentalItemMatch[1]));
   } else if (dealersMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -1771,6 +2143,10 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     document.body.classList.add('map-page-view');
+    // Ryd detail-view SYNKRONT, så den forrige sides indhold (fx en annonces
+    // gallerbillede) ikke "glipper" mens map-page.js + Leaflet lazy-loades.
+    const _dv = document.getElementById('detail-view');
+    if (_dv) _dv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser kort…</div>';
     const mapBikeId = new URLSearchParams(window.location.search).get('bike');
     if (mapBikeId) history.replaceState(null, '', '/kort');
     renderMapPage();
@@ -1789,7 +2165,9 @@ function handleRoute() {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
-    renderSellPage();
+    // /sell viser nu "Hvad vil du sælge?"-vælgeren (Cykel → renderSellPage(),
+    // Tilbehør → renderSellPage('tilbehoer')). Samme wizard, forskellige felter.
+    renderSellChooser();
   } else if (bikeMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -1810,10 +2188,20 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBrandPage(decodeURIComponent(brandMatch[1]));
+  } else if (categoryMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderCategoryPage(categoryMatch);
   } else if (brandsOverviewMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
+    // Ryd detail-view SYNKRONT, så forrige sides indhold (eller en tom flade)
+    // ikke "glipper" mens brand-page.js lazy-loades + mærke-tællingen hentes —
+    // renderBrandsOverview sætter først innerHTML efter sit await.
+    const _bv = document.getElementById('detail-view');
+    if (_bv) _bv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser mærker…</div>';
     renderBrandsOverview();
   } else if (cykelagentMatch) {
     closeAllModals();
@@ -1845,8 +2233,18 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderBlogOverview();
+  } else if (tilbehoerMatch) {
+    // Dedikeret tilbehørs-landingsside: samme liste-view som forsiden, men med
+    // Tilbehør-kategorien aktiv. setBrowseCategory sætter også titel/meta + URL.
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showListingView();
+    setBrowseCategory('tilbehoer');
+    import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   } else {
     showListingView();
+    // Kommer man til '/' mens tilbehør er aktiv (fx logo-klik), nulstil til cykel.
+    if (_browseCategory === 'tilbehoer') setBrowseCategory('cykel');
     // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
     import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
   }
@@ -1870,10 +2268,12 @@ function _preloadStaticModules() {
     // Annonce-modal (klik på bike-card) + Leaflet til lokations-kort
     import(`./js/bike-detail.js?v=${ASSET_VERSION}`).catch(() => {});
     ensureLeaflet().catch(() => {});
-    // "Sæt til salg"-knap
+    // "Sæt til salg"-knap: kategori-vælger + wizard (cykel + tilbehør)
     import(`./js/sell-page.js?v=${ASSET_VERSION}`).catch(() => {});
     // "Forhandlere"-link i topnav
     import(`./js/dealers-page.js?v=${ASSET_VERSION}`).catch(() => {});
+    // "Mærker"-link i topnav (oversigt /maerker + brand-sider /cykler/:brand)
+    import(`./js/brand-page.js?v=${ASSET_VERSION}`).catch(() => {});
   });
 }
 window.addEventListener('load', _preloadStaticModules);
@@ -1942,21 +2342,24 @@ function closeMobileFilters() {
   document.body.classList.remove('mobile-filters-open');
 }
 
+function sellerToggle(el) {
+  const all     = document.querySelector('[data-filter="seller"][data-value="all"]');
+  const dealer  = document.querySelector('[data-filter="seller"][data-value="dealer"]');
+  const priv    = document.querySelector('[data-filter="seller"][data-value="private"]');
+  if (el === all) {
+    if (all.checked) { if (dealer) dealer.checked = false; if (priv) priv.checked = false; }
+    else { all.checked = true; }
+  } else {
+    if (el.checked && all) all.checked = false;
+    if (!dealer?.checked && !priv?.checked && all) all.checked = true;
+  }
+  applyFilters();
+}
+
 function applyFilters() {
-  // Sælgertype — hvis "alle" er checket, ignorer de andre
   const sellerAll     = document.querySelector('[data-filter="seller"][data-value="all"]');
   const sellerDealer  = document.querySelector('[data-filter="seller"][data-value="dealer"]');
   const sellerPrivate = document.querySelector('[data-filter="seller"][data-value="private"]');
-
-  // Hvis "Alle sælgere" klikkes på, fjern de andre
-  if (sellerAll?.checked) {
-    if (sellerDealer)  sellerDealer.checked  = false;
-    if (sellerPrivate) sellerPrivate.checked = false;
-  }
-  // Hvis en specifik sælger vælges, fjern "alle"
-  if ((sellerDealer?.checked || sellerPrivate?.checked) && sellerAll?.checked) {
-    sellerAll.checked = false;
-  }
 
   // Saml valgte typer
   const types = [...document.querySelectorAll('[data-filter="type"]:checked')]
@@ -2001,6 +2404,26 @@ function applyFilters() {
   }
   // hvis begge eller ingen er checked → ingen filter (alle)
 
+  // El-cykel-filtre
+  const motors = [...document.querySelectorAll('[data-filter="motor"]:checked')]
+    .map(el => el.dataset.value);
+  const motorPositions = [...document.querySelectorAll('[data-filter="motor_position"]:checked')]
+    .map(el => el.dataset.value);
+  const batteryMin = parseInt(document.getElementById('battery-min')?.value) || null;
+  const batteryMax = parseInt(document.getElementById('battery-max')?.value) || null;
+
+  // Affjedring (eksakt match)
+  const suspensions = [...document.querySelectorAll('[data-filter="suspension"]:checked')]
+    .map(el => el.dataset.value);
+
+  // Geartype: Indvendig (navgear) / Udvendig (kædeskifter) — eksakt match
+  const geartypes = [...document.querySelectorAll('[data-filter="geartype"]:checked')]
+    .map(el => el.dataset.value);
+
+  // Stel-type: Lav indstigning / Høj indstigning — eksakt match
+  const stepTypes = [...document.querySelectorAll('[data-filter="step_type"]:checked')]
+    .map(el => el.dataset.value);
+
   // Pris
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
@@ -2022,11 +2445,13 @@ function applyFilters() {
     types, conditions, minPrice, maxPrice, sellerType,
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
+    motors, motorPositions, batteryMin, batteryMax,
+    suspensions, geartypes, stepTypes,
     maxWeight, city, search,
   });
 }
 
-const KNOWN_BRANDS = ['Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton','Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube','E-Fly','Early Rider','Electra','Everton','FACTOR','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike','Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK','Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco','Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike','Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike','Urban Arrow','uVelo','VanMoof','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba'];
+const KNOWN_BRANDS = ['Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brabus','Brompton','Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube','E-Fly','Early Rider','Ebsen','Electra','Everton','FACTOR','Falcon','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike','Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK','Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco','Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Remington','Riese & Müller','Ridley','Royal Cargobike','Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike','Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville','Velo Lux','Victoria','Wilier','Winther','Woom','Yuba'];
 
 function brandAutocomplete(input, listId) {
   const list = document.getElementById(listId);
@@ -2040,7 +2465,12 @@ function brandAutocomplete(input, listId) {
 
 function selectBrand(brand, inputId, listId) {
   const input = document.getElementById(inputId);
-  if (input) input.value = brand;
+  if (input) {
+    input.value = brand;
+    // Lad evt. oninput-state-sync køre (fx Cykelagent-editorens _form.brand),
+    // så et valgt mærke også gemmes, ikke bare vises i feltet.
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
   const list = document.getElementById(listId);
   if (list) list.style.display = 'none';
 }
@@ -2241,8 +2671,9 @@ async function handleResetPassword() {
   const pw1 = document.getElementById('reset-pw1').value;
   const pw2 = document.getElementById('reset-pw2').value;
 
-  if (!pw1 || pw1.length < 8) { showToast('⚠️ Adgangskoden skal være mindst 8 tegn'); return; }
-  if (pw1 !== pw2)             { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
+  const pwCheck = validatePassword(pw1);
+  if (!pwCheck.ok) { showToast('⚠️ ' + pwCheck.message); return; }
+  if (pw1 !== pw2) { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
 
   const btn = document.querySelector('[onclick="handleResetPassword()"]');
   const originalText = btn?.textContent;
@@ -2259,7 +2690,10 @@ async function handleResetPassword() {
       setTimeout(() => reject(new Error('Timeout')), 10000)
     );
 
-    await Promise.race([updatePromise, timeoutPromise]);
+    // updateUser KASTER ikke ved fejl — den returnerer { error }. Tjek den eksplicit,
+    // ellers vises "success" selvom det fejlede (eller en intetsigende fejl).
+    const { error: updErr } = await Promise.race([updatePromise, timeoutPromise]);
+    if (updErr) throw updErr;
 
     history.replaceState(null, '', window.location.pathname);
     showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
@@ -2268,8 +2702,10 @@ async function handleResetPassword() {
     document.getElementById('reset-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
     if (btn) { btn.textContent = originalText; btn.disabled = false; }
-    showToast('❌ Kunne ikke opdatere adgangskode');
-    console.error(error);
+    const msg = error?.message || '';
+    // Vis den FAKTISKE årsag (fx udløbet session) så det kan diagnosticeres
+    showToast(msg ? '❌ Kunne ikke opdatere: ' + msg : '❌ Kunne ikke opdatere adgangskode');
+    console.error('Reset password fejl:', error);
   }
 }
 
@@ -2442,6 +2878,7 @@ window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+window.sellerToggle           = sellerToggle;
 window.setMaxWeight = function(kg) {
   const input = document.getElementById('sidebar-max-weight');
   if (!input) return;
@@ -2526,6 +2963,7 @@ window.previewImages      = previewImages;
 window.setPrimary         = setPrimary;
 window.removeImage        = removeImage;
 window.renderSellPage            = renderSellPage;
+window.renderSellChooser         = renderSellChooser;
 window.submitSellPage            = submitSellPage;
 window.previewSellImages         = previewSellImages;
 window.setSellPrimary            = setSellPrimary;
@@ -2635,10 +3073,17 @@ const _ensureBulkImport = lazyCtrl(
 );
 const loadBulkImport = lazyMethod(_ensureBulkImport, 'loadBulkImportTab');
 
+const _ensureFeedImport = lazyCtrl(
+  () => import(`./js/admin-feed-import.js?v=${ASSET_VERSION}`),
+  'createAdminFeedImport',
+  () => ({ supabase, showToast }),
+);
+const loadFeedImport = lazyMethod(_ensureFeedImport, 'loadFeedImportTab');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadIdApplications, loadBulkImport }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -2708,7 +3153,7 @@ async function loadAllUsers() {
     var canOnboard = isDealer && !!p.admin_can_create_listings;
     var safeName   = escAttr(p.shop_name || p.name || 'Ukendt');
     var onboardBtn = canOnboard
-      ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
+      ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\', \'' + escAttr(p.city || '') + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
       : (isDealer ? '<span class="admin-row-no-onboard" title="Forhandler skal selv aktivere onboarding-service i deres indstillinger">📋 Ikke aktiveret</span>' : '');
     return '<div class="admin-row">'
       + '<div class="admin-row-info">'
@@ -2728,10 +3173,10 @@ async function loadAllUsers() {
   }).join('');
 }
 
-function startActingAsDealer(dealerId, dealerName) {
+function startActingAsDealer(dealerId, dealerName, dealerCity) {
   // Gem acting-as state i sessionStorage så det overlever navigation
   // til sell-page men forsvinder ved browser-luk
-  sessionStorage.setItem('_adminActingAs', JSON.stringify({ id: dealerId, name: dealerName }));
+  sessionStorage.setItem('_adminActingAs', JSON.stringify({ id: dealerId, name: dealerName, city: dealerCity || '' }));
   closeAdminPanel();
   navigateTo('/saelg');
   showToast('🛠️ Opretter annonce på vegne af ' + dealerName);
@@ -2815,6 +3260,7 @@ const { searchAutocomplete, selectAutocomplete, handleSearchKey, bindOutsideClic
   supabase,
   esc,
   onSearchSubmit: searchBikes,
+  getBrowseCategory: () => _browseCategory,
 });
 
 bindOutsideClickClose();
@@ -2845,6 +3291,26 @@ const {
   shareViaSMS,
   openNativeShare,
 } = createShareActions({ showToast });
+
+/* ============================================================
+   FREMHÆV ANNONCE (BOOST)
+   ============================================================ */
+const { openBoostModal, closeBoostModal } = createBoostModule({
+  supabase,
+  showToast,
+  esc,
+  getCurrentUser: () => currentUser,
+  onBoosted: () => {
+    // Genindlæs forsidens liste så badgen/placeringen opdateres
+    try { loadBikes(); } catch {}
+    // Flip knappen til "Fremhævet" hvis "Mine annoncer" er åben
+    if (document.getElementById('mp-listings-grid')) {
+      try { loadMyListings('mp-listings-grid'); } catch {}
+    }
+  },
+});
+window.openBoostModal  = openBoostModal;
+window.closeBoostModal = closeBoostModal;
 
 
 window.searchAutocomplete = searchAutocomplete;
@@ -2887,72 +3353,161 @@ function updateVerifyUI() {
   }
 }
 
-/* ── ADMIN: ID ANSØGNINGER ── */
-
-async function loadIdApplications() {
-  var list = document.getElementById('admin-id-list');
-  list.innerHTML = '<p style="color:var(--muted)">Henter ansøgninger...</p>';
-
-  var result;
+async function loadAdminStats() {
+  const el = document.getElementById('admin-stats');
+  if (!el) return;
+  el.innerHTML = '<p style="color:var(--muted)">Indlæser statistik…</p>';
   try {
-    result = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id_pending', true)
-      .eq('id_verified', false);
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+    const [profRes, bikeRes, revRes, searchRes] = await Promise.all([
+      supabase.from('profiles').select('seller_type, verified, created_at'),
+      supabase.from('bikes').select('type, price, is_active, sold_via, views, created_at'),
+      supabase.from('reviews').select('rating'),
+      supabase.from('search_logs').select('query, result_count').order('created_at', { ascending: false }).limit(2000),
+    ]);
+    const profiles = profRes.data || [];
+    const bikes    = bikeRes.data || [];
+    const reviews  = revRes.data || [];
+    const searches = searchRes.data || [];
+
+    const dealers   = profiles.filter(p => p.seller_type === 'dealer');
+    const verified  = dealers.filter(p => p.verified).length;
+    const privates  = profiles.filter(p => p.seller_type !== 'dealer').length;
+    const newUsers7 = profiles.filter(p => p.created_at && p.created_at >= weekAgo).length;
+
+    const activeBikes = bikes.filter(b => b.is_active);
+    const sold        = bikes.filter(b => !b.is_active).length;
+    const newBikes7   = bikes.filter(b => b.created_at && b.created_at >= weekAgo).length;
+    const totalViews  = bikes.reduce((s, b) => s + (b.views || 0), 0);
+    const avgPrice    = activeBikes.length
+      ? Math.round(activeBikes.reduce((s, b) => s + (b.price || 0), 0) / activeBikes.length)
+      : 0;
+
+    const typeCounts = {};
+    activeBikes.forEach(b => { const t = b.type || 'Ukendt'; typeCounts[t] = (typeCounts[t] || 0) + 1; });
+    const topTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+
+    const avgRating = reviews.length
+      ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1)
+      : '–';
+
+    // Søge-statistik: top-søgninger + nul-resultat-søgninger (umødt efterspørgsel)
+    const allCounts = {}, zeroCounts = {};
+    searches.forEach(s => {
+      const q = (s.query || '').trim().toLowerCase();
+      if (!q) return;
+      allCounts[q] = (allCounts[q] || 0) + 1;
+      if ((s.result_count ?? 0) === 0) zeroCounts[q] = (zeroCounts[q] || 0) + 1;
+    });
+    const topSearches = Object.entries(allCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const topZero     = Object.entries(zeroCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const searchRow = ([q, n], accent) => `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;">
+        <span style="color:${accent || 'var(--charcoal)'};">${esc(q)}</span>
+        <span style="color:var(--muted);font-weight:600;">${n}×</span>
+      </div>`;
+
+    const card = (label, value, sub) => `
+      <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;color:var(--charcoal);line-height:1;">${value}</div>
+        <div style="font-size:0.82rem;color:var(--charcoal);margin-top:6px;font-weight:600;">${label}</div>
+        ${sub ? `<div style="font-size:0.76rem;color:var(--muted);margin-top:2px;">${sub}</div>` : ''}
+      </div>`;
+
+    const typeRows = topTypes.length
+      ? topTypes.map(([t, n]) => `
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;">
+            <span style="color:var(--charcoal);">${esc(t)}</span>
+            <span style="color:var(--muted);font-weight:600;">${n}</span>
+          </div>`).join('')
+      : '<p style="color:var(--muted);font-size:0.86rem;">Ingen aktive annoncer endnu.</p>';
+
+    el.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;">
+        ${card('Brugere i alt', profiles.length, `${newUsers7} nye seneste 7 dage`)}
+        ${card('Forhandlere', dealers.length, `${verified} verificerede`)}
+        ${card('Private', privates, '')}
+        ${card('Aktive annoncer', activeBikes.length, `${newBikes7} nye seneste 7 dage`)}
+        ${card('Solgte/inaktive', sold, '')}
+        ${card('Visninger i alt', totalViews.toLocaleString('da-DK'), '')}
+        ${card('Gns. pris (aktive)', avgPrice ? avgPrice.toLocaleString('da-DK') + ' kr.' : '–', '')}
+        ${card('Anmeldelser', reviews.length, `Gns. ${avgRating} ★`)}
+      </div>
+      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">Aktive annoncer pr. type</h3>
+      <div>${typeRows}</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:22px;">
+        <div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">🔍 Mest søgte</h3>
+          ${topSearches.length ? topSearches.map(r => searchRow(r)).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen søgninger logget endnu.</p>'}
+        </div>
+        <div>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">⚠️ Søgt — 0 resultater</h3>
+          <p style="font-size:0.76rem;color:var(--muted);margin:0 0 6px;">Umødt efterspørgsel — cykler folk leder efter, men ikke finder.</p>
+          ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
+        </div>
+      </div>
+      <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger logges anonymt (uden bruger-id).</p>
+    `;
   } catch (e) {
-    list.innerHTML = retryHTML('Kunne ikke hente ID-ansøgninger.', 'loadIdApplications');
+    console.error('loadAdminStats fejl:', e);
+    el.innerHTML = retryHTML('Kunne ikke hente statistik.', 'loadAdminStats');
+  }
+}
+
+let _inviteFormInited = false;
+function initInviteForm() {
+  if (_inviteFormInited) return;
+  const cityInput    = document.getElementById('di-city');
+  const addressInput = document.getElementById('di-address');
+  if (!cityInput || !addressInput) return;
+  // Samme DAWA-autocomplete som resten af appen → præcis, standardiseret adresse
+  // (kortet geokoder adresse-strengen ved visning, ligesom for andre forhandlere).
+  attachAddressAutocomplete(addressInput, (picked) => {
+    if (picked.city) cityInput.value = picked.city;
+  });
+  attachCityAutocomplete(cityInput);
+  _inviteFormInited = true;
+}
+
+async function submitDealerInvite() {
+  const email = document.getElementById('di-email')?.value.trim();
+  if (!email) { showToast('⚠️ Email er påkrævet'); return; }
+  const restore = btnLoading('di-submit', 'Sender invitation...');
+  const addressInput = document.getElementById('di-address');
+  const addrData = readDawaData(addressInput);
+  const body = {
+    email,
+    shop_name: document.getElementById('di-shop')?.value.trim()    || null,
+    cvr:       document.getElementById('di-cvr')?.value.trim()     || null,
+    contact:   document.getElementById('di-contact')?.value.trim() || null,
+    phone:     document.getElementById('di-phone')?.value.trim()   || null,
+    city:      document.getElementById('di-city')?.value.trim()    || null,
+    address:   addressInput?.value.trim() || null,
+    lat:       addrData.lat      || null,
+    lng:       addrData.lng      || null,
+    postcode:  addrData.postcode || null,
+  };
+  const { data, error } = await supabase.functions.invoke('admin-invite-dealer', { body });
+  restore();
+  const result = document.getElementById('di-result');
+  if (error || data?.error) {
+    if (result) result.innerHTML = `<span style="color:#c0392b;">❌ ${esc(data?.error || error?.message || 'Ukendt fejl')}</span>`;
     return;
   }
-
-  if (result.error || !result.data || result.data.length === 0) {
-    list.innerHTML = '<p style="color:var(--muted)">Ingen ventende ID-ansøgninger.</p>';
-    return;
+  showToast('✅ Invitation sendt til ' + email);
+  if (result) {
+    result.innerHTML = `<span style="color:#2A7D4F;">✅ Forhandler oprettet og inviteret — de får en mail hvor de vælger password.</span>`
+      + `<br><span style="color:var(--muted);font-size:0.82rem;">Bruger-ID (til bulk-import): <code>${esc(data.user_id)}</code></span>`;
   }
-
-  list.innerHTML = result.data.map(function(p) {
-    return '<div class="admin-row">'
-      + '<img class="admin-id-img" src="' + esc(p.id_doc_url || '') + '" onclick="window.open(\'' + escAttr(p.id_doc_url || '') + '\',\'_blank\')" title="Klik for at se fuldt billede">'
-      + '<div class="admin-row-info">'
-      + '<div class="admin-row-name">' + esc(p.name || 'Ukendt') + '</div>'
-      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat') + '</div>'
-      + '</div>'
-      + '<div class="admin-row-actions">'
-      + '<button class="btn-approve" onclick="approveId(\'' + p.id + '\')">✓ Godkend ID</button>'
-      + '<button class="btn-reject" onclick="rejectId(\'' + p.id + '\')">✕ Afvis</button>'
-      + '</div></div>';
-  }).join('');
+  ['di-email','di-shop','di-cvr','di-contact','di-phone','di-city','di-address'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
 }
 
-async function approveId(userId) {
-  const res = await _callAdminAction('approve_id', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('✅ ID godkendt — bruger har nu et blåt badge');
-  loadIdApplications();
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'id_approved', user_id: userId },
-  }).catch(() => {});
-  if (currentUser && currentUser.id === userId) {
-    currentProfile = { ...currentProfile, id_verified: true, id_pending: false };
-    updateVerifyUI();
-    loadBikes();
-  }
-}
-
-async function rejectId(userId) {
-  if (!confirm('Afvis denne ID-ansøgning?')) return;
-  const res = await _callAdminAction('reject_id', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('ID-ansøgning afvist');
-  loadIdApplications();
-  supabase.functions.invoke('notify-message', {
-    body: { type: 'id_rejected', user_id: userId },
-  }).catch(() => {});
-}
-
+window.submitDealerInvite   = submitDealerInvite;
+window.loadAdminStats       = loadAdminStats;
 window.updateVerifyUI       = updateVerifyUI;
-window.approveId          = approveId;
-window.rejectId           = rejectId;
 window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
 window.pickStar              = pickStar;

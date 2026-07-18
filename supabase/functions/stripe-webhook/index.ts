@@ -2,16 +2,21 @@
 // Deploy: supabase functions deploy stripe-webhook
 //
 // Påkrævede secrets:
-//   STRIPE_SECRET_KEY      – Stripe secret key
-//   STRIPE_WEBHOOK_SECRET  – Webhook signing secret fra Stripe Dashboard
+//   STRIPE_SECRET_KEY              – Stripe secret key
+//   STRIPE_WEBHOOK_SECRET          – Signing secret, endpoint "events on your account"
+//   STRIPE_CONNECT_WEBHOOK_SECRET  – Signing secret, endpoint "events on Connected
+//                                    accounts" (valgfri indtil Connect tages i brug)
 //
-// Opsæt webhook i Stripe Dashboard → Developers → Webhooks:
+// Opsæt TO webhooks i Stripe Dashboard → Developers → Webhooks (samme URL):
 //   URL: https://<project-ref>.supabase.co/functions/v1/stripe-webhook
-//   Events der lyttes på:
+//   1) "Events on your account":
 //     - checkout.session.completed
 //     - customer.subscription.updated
 //     - customer.subscription.deleted
 //     - invoice.payment_failed
+//   2) "Events on Connected accounts" (Connect / udlejning):
+//     - account.updated
+//   Connect-endpointen har sin EGEN signing secret — deraf to secrets ovenfor.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -22,7 +27,12 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
-const webhookSecret    = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "";
+// .trim() — fjern evt. mellemrum/linjeskift fra copy-paste af whsec_ (ellers
+// fejler signatur-verifikationen med "signing secret contains whitespace").
+const webhookSecret        = (Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "").trim();
+// Connect-endpointen ("events on Connected accounts") har sin egen secret.
+// account.updated fra forhandlernes Express-konti ankommer via den.
+const connectWebhookSecret = (Deno.env.get("STRIPE_CONNECT_WEBHOOK_SECRET") ?? "").trim();
 const SUPABASE_URL     = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
@@ -30,12 +40,21 @@ serve(async (req) => {
   const signature = req.headers.get("stripe-signature");
   const body      = await req.text();
 
-  let event: Stripe.Event;
-  try {
-    event = await stripe.webhooks.constructEventAsync(body, signature!, webhookSecret);
-  } catch (err) {
-    console.error("Webhook signatur fejl:", err.message);
-    return new Response(`Webhook error: ${err.message}`, { status: 400 });
+  // Verificér mod begge endpoints' secrets — eventen er gyldig hvis én matcher.
+  let event: Stripe.Event | null = null;
+  let lastErr = "";
+  for (const secret of [webhookSecret, connectWebhookSecret]) {
+    if (!secret) continue;
+    try {
+      event = await stripe.webhooks.constructEventAsync(body, signature!, secret);
+      break;
+    } catch (err) {
+      lastErr = err.message;
+    }
+  }
+  if (!event) {
+    console.error("Webhook signatur fejl:", lastErr || "ingen secrets konfigureret");
+    return new Response(`Webhook error: ${lastErr || "no secrets configured"}`, { status: 400 });
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE);
@@ -43,9 +62,49 @@ serve(async (req) => {
   try {
     switch (event.type) {
 
-      // ── Betaling gennemført → aktiver forhandler ──
+      // ── Betaling gennemført → aktiver forhandler / boost ──
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+
+        // Engangsbetaling: promovering/boost af annonce
+        if (session.mode === "payment" && session.metadata?.type === "boost") {
+          const userId = session.metadata?.user_id;
+          const bikeId = session.metadata?.bike_id;
+          const days   = parseInt(session.metadata?.days ?? "7", 10) || 7;
+          if (!userId || !bikeId) break;
+
+          const { error } = await supabase.rpc("apply_paid_boost", {
+            p_session_id: session.id,
+            p_user_id:    userId,
+            p_bike_id:    bikeId,
+            p_days:       days,
+            p_amount_kr:  Math.round((session.amount_total ?? 0) / 100),
+          });
+
+          if (error) console.error("apply_paid_boost fejlede:", error);
+          else        console.log(`Boost aktiveret for annonce ${bikeId} (${days} dage)`);
+          break;
+        }
+
+        // Udlejnings-booking: bekræft efter gennemført betaling (idempotent)
+        if (session.mode === "payment" && session.metadata?.type === "rental") {
+          const { data: confirmedId, error } = await supabase.rpc("confirm_rental_booking", {
+            p_session_id:        session.id,
+            p_payment_intent_id: (session.payment_intent as string) ?? null,
+          });
+          if (error) {
+            console.error("confirm_rental_booking fejlede:", error);
+          } else if (confirmedId) {
+            // Kun ved FRISK bekræftelse (gensendt webhook returnerer null → ingen dobbelt-mail)
+            console.log(`Udlejnings-booking bekræftet (session ${session.id})`);
+            supabase.functions.invoke("notify-message", {
+              body: { type: "rental_booked", booking_id: confirmedId },
+            }).catch(() => {});
+          }
+          break;
+        }
+
+        // Abonnement: forhandler
         if (session.mode !== "subscription") break;
 
         const userId = session.metadata?.user_id;
@@ -96,6 +155,23 @@ serve(async (req) => {
 
         if (error) console.error("DB opdatering fejlede (subscription.deleted):", error);
         else        console.log(`Forhandler deaktiveret: ${userId}`);
+        break;
+      }
+
+      // ── Connect-konto opdateret → synk forhandlerens udlejnings-status ──
+      case "account.updated": {
+        const account = event.data.object as Stripe.Account;
+
+        let status = "pending";
+        if (account.charges_enabled && account.payouts_enabled) status = "enabled";
+        else if (account.requirements?.disabled_reason)        status = "disabled";
+
+        const { error } = await supabase.from("profiles").update({
+          stripe_account_status: status,
+        }).eq("stripe_account_id", account.id);
+
+        if (error) console.error("DB opdatering fejlede (account.updated):", error);
+        else        console.log(`Connect-konto [${status}]: ${account.id}`);
         break;
       }
 

@@ -7,14 +7,24 @@
    ============================================================ */
 
 import { BIKE_COLORS } from './config.js';
+import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
 
-const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel'];
+const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
 const SIZES      = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
-const WHEELS     = ['26"', '27.5" / 650b', '28"', '29"'];
+const WHEELS     = ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"'];
 const FRAME_MATERIALS = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const BRAKE_TYPES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
-const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano Deore', 'Shimano XT'];
+const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'SRAM Rival XPLR', 'SRAM Force XPLR', 'SRAM Red XPLR', 'Campagnolo Ekar', 'Shimano Deore', 'Shimano XT'];
+// El-cykel: motor-mærke matches som prefix (bike.motor starter med fx "Bosch ...").
+// Samme værdier som sidebar-filteret i index.html.
+const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
+const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
+const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
+// Geartype: value → label (value gemmes, label vises)
+const GEARTYPE = [['Indvendig', 'Indvendig gear'], ['Udvendig', 'Udvendig gear']];
+// Stel-type (indstigning)
+const STEP_TYPE = ['Lav indstigning', 'Høj indstigning'];
 
 export function createCykelagentPage({
   supabase,
@@ -51,6 +61,17 @@ export function createCykelagentPage({
       groupsets: [],
       electronicShifting: '', // '' | 'true' | 'false'
       maxWeightKg: null,
+      // El-cykel
+      motors: [],
+      motorPositions: [],
+      batteryMin: null,
+      batteryMax: null,
+      // Affjedring (MTB/gravel/el-MTB)
+      suspensions: [],
+      // Geartype: indvendig/udvendig
+      geartypes: [],
+      // Stel-type (indstigning)
+      stepTypes: [],
     };
   }
 
@@ -99,6 +120,7 @@ export function createCykelagentPage({
         <div id="cykelagent-editor-mount">${showEditor && !isLoggedIn ? _buildEditorHTML(true) : ''}</div>
 
         ${isLoggedIn ? `
+          <div id="cykelagent-matches-mount"></div>
           <div id="cykelagent-list" class="cykelagent-list">
             <p style="color:var(--muted);padding:20px 0;">Henter dine Cykelagenter…</p>
           </div>
@@ -137,6 +159,77 @@ export function createCykelagentPage({
     }
 
     list.innerHTML = data.map(agent => _buildAgentCard(agent)).join('');
+    _loadAndRenderMatches(data);
+  }
+
+  /* "Nye match siden sidst"-sektion: client-side matching mod brugerens
+     agenter. Vises kun hvis brugeren har mindst én agent og der er match. */
+  async function _loadAndRenderMatches(agents) {
+    const mount = document.getElementById('cykelagent-matches-mount');
+    if (!mount || !agents || !agents.length) {
+      if (mount) mount.innerHTML = '';
+      return;
+    }
+    mount.innerHTML = '<p class="cykelagent-matches-loading">Tjekker for nye match…</p>';
+    let result;
+    try {
+      result = await fetchAgentMatches(supabase, agents);
+    } catch {
+      mount.innerHTML = '';
+      return;
+    }
+    if (!result.matches.length) {
+      mount.innerHTML = '';
+      return;
+    }
+    mount.innerHTML = _buildMatchesSection(result);
+    const btn = mount.querySelector('.cykelagent-matches-mark-read');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        markMatchesSeen();
+        // Re-render uden NY-badges (newCount→0)
+        const r2 = { matches: result.matches.map(m => ({ ...m, isNew: false })), newCount: 0, totalMatches: result.totalMatches };
+        mount.innerHTML = _buildMatchesSection(r2);
+      });
+    }
+  }
+
+  function _buildMatchesSection({ matches, newCount, totalMatches }) {
+    return `
+      <section class="cykelagent-matches" aria-label="Nye match fra dine Cykelagenter">
+        <div class="cykelagent-matches-header">
+          <h2 class="cykelagent-matches-title">
+            ${newCount > 0 ? `Nye match <span class="cykelagent-matches-count">${newCount}</span>` : 'Seneste match'}
+          </h2>
+          ${newCount > 0 ? '<button type="button" class="cykelagent-matches-mark-read">Marker som læst</button>' : ''}
+        </div>
+        <div class="cykelagent-matches-grid">
+          ${matches.map(_buildMatchCard).join('')}
+        </div>
+        ${totalMatches > matches.length ? `<p class="cykelagent-matches-more">Viser ${matches.length} af ${totalMatches} match — gå til <a href="/" onclick="event.preventDefault();navigateTo('/')">forsiden</a> for at se alle.</p>` : ''}
+      </section>
+    `;
+  }
+
+  function _buildMatchCard({ bike, isNew }) {
+    const _imgRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
+    const img = _imgRec?.thumb_url || _imgRec?.url || '';
+    const title = `${bike.brand || ''} ${bike.model || ''}`.trim() || 'Cykel';
+    const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
+    const price = bike.price != null ? `${Number(bike.price).toLocaleString('da-DK')} kr.` : '';
+    return `
+      <a class="cykelagent-match-card" href="/bike/${bike.id}" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
+        ${img
+          ? `<img class="cykelagent-match-img" src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">`
+          : '<div class="cykelagent-match-img cykelagent-match-img--empty">🚲</div>'}
+        ${isNew ? '<span class="cykelagent-match-new">NY</span>' : ''}
+        <div class="cykelagent-match-info">
+          <div class="cykelagent-match-title">${esc(title)}</div>
+          ${meta ? `<div class="cykelagent-match-meta">${esc(meta)}</div>` : ''}
+          ${price ? `<div class="cykelagent-match-price">${price}</div>` : ''}
+        </div>
+      </a>
+    `;
   }
 
   function _buildAgentCard(agent) {
@@ -162,6 +255,15 @@ export function createCykelagentPage({
     if (f.electronicShifting === 'true')  chips.push('⚡ Elektronisk gear');
     if (f.electronicShifting === 'false') chips.push('🔧 Mekanisk gear');
     if (f.maxWeightKg)                chips.push(`Maks ${Number(f.maxWeightKg)} kg`);
+    if (Array.isArray(f.motors))         f.motors.forEach(m => chips.push('🔋 ' + esc(m)));
+    if (Array.isArray(f.motorPositions)) f.motorPositions.forEach(p => chips.push('⚙️ ' + esc(p)));
+    if (f.batteryMin && f.batteryMax) chips.push(`🔋 ${f.batteryMin}–${f.batteryMax} Wh`);
+    else if (f.batteryMin)            chips.push(`🔋 Fra ${f.batteryMin} Wh`);
+    else if (f.batteryMax)            chips.push(`🔋 Op til ${f.batteryMax} Wh`);
+    if (Array.isArray(f.suspensions)) f.suspensions.forEach(s => chips.push('🚵 ' + esc(s)));
+    if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('⚙️ ' + esc(g) + ' gear'));
+    if (Array.isArray(f.stepTypes))   f.stepTypes.forEach(s => chips.push('🚲 ' + esc(s)));
+    if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('⚙️ ' + esc(g) + ' gear'));
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -214,6 +316,13 @@ export function createCykelagentPage({
           groupsets:          Array.isArray(f.groupsets)      ? f.groupsets      : [],
           electronicShifting: f.electronicShifting || '',
           maxWeightKg:        f.maxWeightKg || null,
+          motors:         Array.isArray(f.motors)         ? f.motors         : [],
+          motorPositions: Array.isArray(f.motorPositions) ? f.motorPositions : [],
+          batteryMin:     f.batteryMin || null,
+          batteryMax:     f.batteryMax || null,
+          suspensions:    Array.isArray(f.suspensions)    ? f.suspensions    : [],
+          geartypes:      Array.isArray(f.geartypes)      ? f.geartypes      : [],
+          stepTypes:      Array.isArray(f.stepTypes)      ? f.stepTypes      : [],
         };
       }
     }
@@ -238,7 +347,10 @@ export function createCykelagentPage({
 
         <div class="cykelagent-field">
           <label class="cykelagent-label">Mærke eller model (søgeord)</label>
-          <input type="text" class="cykelagent-input" id="cyk-brand" placeholder="fx 'Cube' eller 'Trek Domane'" value="${esc(_form.brand)}" oninput="updateCykelagentField('brand', this.value)">
+          <div class="brand-autocomplete-wrap">
+            <input type="text" class="cykelagent-input" id="cyk-brand" placeholder="fx 'Cube' eller 'Trek Domane'" value="${esc(_form.brand)}" oninput="updateCykelagentField('brand', this.value); brandAutocomplete(this, 'cyk-brand-list')" autocomplete="off">
+            <div id="cyk-brand-list" class="brand-autocomplete-list" style="display:none"></div>
+          </div>
         </div>
 
         <div class="cykelagent-field">
@@ -316,8 +428,8 @@ export function createCykelagentPage({
           </label>
         </div>
 
-        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg ? 'open' : ''}>
-          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs <span class="cykelagent-advanced-hint">(valgfrit — vi sender kun notifikation hvis cyklen har præcis disse specs)</span></summary>
+        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length ? 'open' : ''}>
+          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt — helt valgfrit, men giver dig mere præcise match</span></summary>
 
           <div class="cykelagent-field">
             <label class="cykelagent-label">Stelmaterial</label>
@@ -359,6 +471,62 @@ export function createCykelagentPage({
             <label class="cykelagent-label">Maks. vægt (kg)</label>
             <input type="number" min="2" max="50" step="0.1" class="cykelagent-input" id="cyk-max-weight" placeholder="fx 9" value="${_form.maxWeightKg ?? ''}" oninput="updateCykelagentField('maxWeightKg', this.value ? parseFloat(this.value) : null)">
             <div class="cykelagent-hint">Relevant for racere — efterlad tomt for cykler hvor vægt ikke betyder noget.</div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Motor (el-cykel)</label>
+            <div class="cykelagent-chips-row">
+              ${MOTORS.map(m => `
+                <button type="button" class="cykelagent-chip-btn${_form.motors.includes(m) ? ' active' : ''}" onclick="toggleCykelagentArray('motors', '${esc(m)}')">${esc(m)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Motor-placering</label>
+            <div class="cykelagent-chips-row">
+              ${MOTOR_POSITIONS.map(p => `
+                <button type="button" class="cykelagent-chip-btn${_form.motorPositions.includes(p) ? ' active' : ''}" onclick="toggleCykelagentArray('motorPositions', '${esc(p)}')">${esc(p)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Affjedring</label>
+            <div class="cykelagent-chips-row">
+              ${SUSPENSION.map(s => `
+                <button type="button" class="cykelagent-chip-btn${_form.suspensions.includes(s) ? ' active' : ''}" onclick="toggleCykelagentArray('suspensions', '${esc(s)}')">${esc(s)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Geartype</label>
+            <div class="cykelagent-chips-row">
+              ${GEARTYPE.map(([val, label]) => `
+                <button type="button" class="cykelagent-chip-btn${_form.geartypes.includes(val) ? ' active' : ''}" onclick="toggleCykelagentArray('geartypes', '${esc(val)}')">${esc(label)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Indstigning</label>
+            <div class="cykelagent-chips-row">
+              ${STEP_TYPE.map(s => `
+                <button type="button" class="cykelagent-chip-btn${_form.stepTypes.includes(s) ? ' active' : ''}" onclick="toggleCykelagentArray('stepTypes', '${esc(s)}')">${esc(s)}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="cykelagent-field-row">
+            <div class="cykelagent-field">
+              <label class="cykelagent-label">Batteri min. (Wh)</label>
+              <input type="number" min="100" max="2000" step="1" class="cykelagent-input" id="cyk-battery-min" placeholder="fx 400" value="${_form.batteryMin ?? ''}" oninput="updateCykelagentField('batteryMin', this.value ? parseInt(this.value) : null)">
+            </div>
+            <div class="cykelagent-field">
+              <label class="cykelagent-label">Batteri maks. (Wh)</label>
+              <input type="number" min="100" max="2000" step="1" class="cykelagent-input" id="cyk-battery-max" placeholder="fx 750" value="${_form.batteryMax ?? ''}" oninput="updateCykelagentField('batteryMax', this.value ? parseInt(this.value) : null)">
+            </div>
           </div>
         </details>
 
@@ -423,7 +591,9 @@ export function createCykelagentPage({
       || _form.sizes.length || _form.wheelSizes.length || _form.colors.length
       || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty
       || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length
-      || _form.electronicShifting || _form.maxWeightKg;
+      || _form.electronicShifting || _form.maxWeightKg
+      || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax
+      || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length;
     if (!hasFilter) {
       showToast('⚠️ Tilføj mindst ét filter til din Cykelagent');
       return;
@@ -448,6 +618,17 @@ export function createCykelagentPage({
       groupsets:          _form.groupsets,
       electronicShifting: _form.electronicShifting || '',
       maxWeightKg:        _form.maxWeightKg,
+      // El-cykel (strict-match i edge function)
+      motors:         _form.motors,
+      motorPositions: _form.motorPositions,
+      batteryMin:     _form.batteryMin,
+      batteryMax:     _form.batteryMax,
+      // Affjedring (strict-match i edge function)
+      suspensions:    _form.suspensions,
+      // Geartype (strict-match i edge function)
+      geartypes:      _form.geartypes,
+      // Stel-type (strict-match i edge function)
+      stepTypes:      _form.stepTypes,
     };
 
     const currentUser = getCurrentUser();
@@ -482,16 +663,21 @@ export function createCykelagentPage({
 
   /* Kaldes fra main.js efter auth-events (SIGNED_IN) — hvis brugeren havde
      en pending Cykelagent i localStorage før login, oprettes den nu. */
-  async function flushPendingCykelagent() {
+  async function flushPendingCykelagent({ silent = false } = {}) {
     const currentUser = getCurrentUser();
-    if (!currentUser) return;
-    let pending;
+    if (!currentUser) return false;
+    let pending = null;
+    // 1. localStorage (samme browser-session)
     try {
       const raw = localStorage.getItem('_pendingCykelagent');
-      if (!raw) return;
-      pending = JSON.parse(raw);
-    } catch { return; }
-    if (!pending?.filters) return;
+      if (raw) pending = JSON.parse(raw);
+    } catch {}
+    // 2. user_metadata (overlever email-bekræftelse på tværs af browser/enhed)
+    if (!pending?.filters) {
+      const meta = currentUser.user_metadata || {};
+      if (meta.pending_cykelagent?.filters) pending = meta.pending_cykelagent;
+    }
+    if (!pending?.filters) return false;
     const { error } = await supabase.from('saved_searches').insert({
       user_id: currentUser.id,
       name: pending.name || 'Min Cykelagent',
@@ -499,16 +685,20 @@ export function createCykelagentPage({
     });
     if (error) {
       console.error('flushPendingCykelagent fejl:', error);
-      return;
+      return false;
     }
     try { localStorage.removeItem('_pendingCykelagent'); } catch {}
-    showToast('🔔 Din Cykelagent er nu aktiveret');
+    if (currentUser.user_metadata?.pending_cykelagent) {
+      supabase.auth.updateUser({ data: { pending_cykelagent: null } }).catch(() => {});
+    }
+    if (!silent) showToast('🔔 Din Cykelagent er nu aktiveret');
     // Re-render hvis bruger er på /cykelagenter siden
     if (location.pathname === '/cykelagenter' || location.pathname === '/cykelagent') {
       _editingId = null;
       _form = _emptyForm();
       await renderCykelagentPage();
     }
+    return true;
   }
 
   function _autoName() {

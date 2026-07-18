@@ -46,6 +46,21 @@ async function sendEmail(to: string, subject: string, html: string) {
   return body;
 }
 
+// Verificér caller-JWT og returnér brugeren (eller null). Bruges af de
+// notifikationstyper der mailer en ANDEN bruger med caller-leveret indhold —
+// uden dette kunne enhver sende troværdige mails under Cykelbørsens afsender.
+async function getCaller(req: Request, supabase: ReturnType<typeof createClient>) {
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (!jwt) return null;
+  const { data: { user } } = await supabase.auth.getUser(jwt);
+  return user ?? null;
+}
+
+// Fjern CRLF + afgræns længde før user-input går i et e-mail Subject (header-injection-værn).
+function safeSubject(s: unknown, maxLen = 120): string {
+  return String(s ?? "").replace(/[\r\n]+/g, " ").trim().slice(0, maxLen);
+}
+
 function emailWrapper(content: string) {
   return `<!DOCTYPE html>
 <html lang="da">
@@ -124,6 +139,40 @@ serve(async (req) => {
       }
     }
 
+    // ── UDLEJNING: NY BOOKING (→ forhandler) ──────────────────
+    if (payload.type === "rental_booked") {
+      const { data: b } = await supabase
+        .from("rental_bookings")
+        .select("dealer_id, start_date, end_date, days, rental_amount, platform_fee, rental_items!item_id(title), profiles!renter_id(name)")
+        .eq("id", payload.booking_id)
+        .single();
+      if (!b) return new Response("Booking not found", { status: 400, headers: corsHeaders });
+
+      const { data: { user: dealer } } = await supabase.auth.admin.getUserById(b.dealer_id);
+      if (!dealer?.email) {
+        return new Response(JSON.stringify({ ok: true, skipped: "no dealer email" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const item   = (b as any).rental_items || {};
+      const renter = (b as any).profiles || {};
+      const payout = (b.rental_amount || 0) - (b.platform_fee || 0);
+
+      const html = emailWrapper(`
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Ny udlejnings-booking! 🚲</h2>
+        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
+          <strong style="color:#1A1A18;">${esc(item.title ?? "Din udlejningscykel")}</strong> er booket af ${esc(renter.name ?? "en kunde")}.<br><br>
+          📅 ${esc(b.start_date)} – ${esc(b.end_date)} (${b.days} dage)<br>
+          💰 Din udbetaling: <strong style="color:#1A1A18;">${payout.toLocaleString("da-DK")} kr.</strong> (efter kommission)
+        </p>
+        <a href="https://cykelbørsen.dk/udlejning/bookinger"
+           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Se dine bookinger →
+        </a>
+      `);
+      const result = await sendEmail(dealer.email, "🚲 Ny udlejnings-booking – Cykelbørsen", html);
+      console.log("Rental-booking email sendt til:", dealer.email, "| ID:", result.id);
+      return new Response(JSON.stringify({ ok: true, id: result.id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // ── ID VERIFICERING GODKENDT ──────────────────────────────
     if (payload.type === "id_approved") {
       const { data: { user }, error } = await supabase.auth.admin.getUserById(payload.user_id);
@@ -197,7 +246,7 @@ serve(async (req) => {
         </a>
       `);
 
-      const result = await sendEmail(ADMIN_EMAIL, `📬 Ny kontakthenvendelse fra ${name} – Cykelbørsen`, html);
+      const result = await sendEmail(ADMIN_EMAIL, `📬 Ny kontakthenvendelse fra ${safeSubject(name, 60)} – Cykelbørsen`, html);
       console.log("Kontaktformular email sendt til admin | ID:", result.id);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -238,7 +287,7 @@ serve(async (req) => {
         </a>
       `);
 
-      await sendEmail(ADMIN_EMAIL, `🏪 Ny forhandleransøgning: ${shop_name ?? email} – Cykelbørsen`, html);
+      await sendEmail(ADMIN_EMAIL, `🏪 Ny forhandleransøgning: ${safeSubject(shop_name ?? email, 60)} – Cykelbørsen`, html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -266,20 +315,41 @@ serve(async (req) => {
         </a>
       `);
 
-      const result = await sendEmail(ADMIN_EMAIL, `🚩 Annonce rapporteret: ${bike_title ?? bike_id} – Cykelbørsen`, html);
+      const result = await sendEmail(ADMIN_EMAIL, `🚩 Annonce rapporteret: ${safeSubject(bike_title ?? bike_id, 60)} – Cykelbørsen`, html);
       console.log("Rapport email sendt til admin | ID:", result.id);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ── ANNONCE LIKED ────────────────────────────────────────
     if (payload.type === "listing_liked") {
-      const { bike_id, bike_brand, bike_model, bike_owner_id, liker_id, liker_name } = payload;
-      if (!bike_id || !bike_owner_id || !liker_id) {
+      // Auth: caller skal være logget ind OG faktisk have gemt annoncen.
+      // Alle viste felter hentes fra DB — ikke fra payload (anti-phishing).
+      const caller = await getCaller(req, supabase);
+      if (!caller) {
+        return new Response(JSON.stringify({ error: "Ikke logget ind" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const { bike_id } = payload;
+      if (!bike_id) {
         return new Response("Manglende felter", { status: 400, headers: corsHeaders });
       }
 
+      // Verificér at caller rent faktisk har gemt denne annonce
+      const { data: savedRow } = await supabase
+        .from("saved_bikes").select("user_id").eq("user_id", caller.id).eq("bike_id", bike_id).maybeSingle();
+      if (!savedRow) {
+        return new Response(JSON.stringify({ error: "Ingen like-record" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      // Hent annonce + ejer fra DB
+      const { data: likedBike } = await supabase
+        .from("bikes").select("user_id, brand, model").eq("id", bike_id).single();
+      if (!likedBike) {
+        return new Response("Annonce ikke fundet", { status: 404, headers: corsHeaders });
+      }
+      const bike_owner_id = likedBike.user_id;
+
       // Sælger og liker må ikke være samme person
-      if (bike_owner_id === liker_id) {
+      if (bike_owner_id === caller.id) {
         return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
@@ -289,9 +359,13 @@ serve(async (req) => {
         return new Response("Owner email not found", { status: 400, headers: corsHeaders });
       }
 
+      // liker_name fra callers EGEN profil — ikke payload
+      const { data: likerProfile } = await supabase.from("profiles").select("name").eq("id", caller.id).single();
+      const liker_name = likerProfile?.name ?? "En bruger";
+
       const { data: ownerProfile } = await supabase.from("profiles").select("name").eq("id", bike_owner_id).single();
       const ownerName = esc(ownerProfile?.name ?? "sælger");
-      const bikeName = esc(`${bike_brand || "Din cykel"} ${bike_model || ""}`.trim());
+      const bikeName = esc(`${likedBike.brand || "Din cykel"} ${likedBike.model || ""}`.trim());
 
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">❤️ Din annonce er blevet gemt!</h2>
@@ -316,11 +390,28 @@ serve(async (req) => {
     // der har "watchet" annoncen ved en pris HØJERE end den nye, sender
     // dem en email-notifikation, og opdaterer last_notified_at.
     if (payload.type === "price_drop") {
-      const { bike_id, bike_brand, bike_model, old_price, new_price } = payload;
-      if (!bike_id || old_price == null || new_price == null) {
+      // Auth: caller skal eje annoncen. brand/model/new_price hentes fra DB.
+      const caller = await getCaller(req, supabase);
+      if (!caller) {
+        return new Response(JSON.stringify({ error: "Ikke logget ind" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const { bike_id, old_price } = payload;
+      if (!bike_id || old_price == null) {
         return new Response("Manglende felter", { status: 400, headers: corsHeaders });
       }
-      if (new_price >= old_price) {
+
+      const { data: dropBike } = await supabase
+        .from("bikes").select("user_id, brand, model, price").eq("id", bike_id).single();
+      if (!dropBike) {
+        return new Response("Annonce ikke fundet", { status: 404, headers: corsHeaders });
+      }
+      if (dropBike.user_id !== caller.id) {
+        return new Response(JSON.stringify({ error: "Ikke ejer af annoncen" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const bike_brand = dropBike.brand;
+      const bike_model = dropBike.model;
+      const new_price  = dropBike.price;   // sandheden er DB'ens aktuelle pris
+      if (new_price == null || new_price >= old_price) {
         return new Response(JSON.stringify({ ok: true, note: "no drop" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
@@ -390,9 +481,24 @@ serve(async (req) => {
 
     // ── BUD ACCEPTERET ──────────────────────────────────────
     if (payload.type === "bid_accepted") {
-      const { bike_id, bike_brand, bike_model, bid_amount, bidder_id, seller_name } = payload;
+      // Auth: caller skal eje annoncen (kun sælger kan acceptere bud).
+      const caller = await getCaller(req, supabase);
+      if (!caller) {
+        return new Response(JSON.stringify({ error: "Ikke logget ind" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const { bike_id, bid_amount, bidder_id } = payload;
       if (!bike_id || !bidder_id) {
         return new Response("Manglende felter", { status: 400, headers: corsHeaders });
+      }
+
+      // Hent annonce + verificér ejerskab fra DB
+      const { data: bidBike } = await supabase
+        .from("bikes").select("user_id, brand, model").eq("id", bike_id).single();
+      if (!bidBike) {
+        return new Response("Annonce ikke fundet", { status: 404, headers: corsHeaders });
+      }
+      if (bidBike.user_id !== caller.id) {
+        return new Response(JSON.stringify({ error: "Ikke ejer af annoncen" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       const { data: { user: bidderUser }, error: authErr } = await supabase.auth.admin.getUserById(bidder_id);
@@ -401,9 +507,13 @@ serve(async (req) => {
         return new Response("Bidder email not found", { status: 400, headers: corsHeaders });
       }
 
+      // seller_name fra callers EGEN profil — ikke payload
+      const { data: sellerProfile } = await supabase.from("profiles").select("name, shop_name, seller_type").eq("id", caller.id).single();
+      const seller_name = sellerProfile?.seller_type === "dealer" ? sellerProfile?.shop_name : sellerProfile?.name;
+
       const { data: bidderProfile } = await supabase.from("profiles").select("name").eq("id", bidder_id).single();
       const bidderName = esc(bidderProfile?.name ?? "køber");
-      const bikeName = `${bike_brand || "cykel"} ${bike_model || ""}`.trim();
+      const bikeName = `${bidBike.brand || "cykel"} ${bidBike.model || ""}`.trim();
 
       const html = emailWrapper(`
         <h2 style="color:#2A7D4F;font-size:1.1rem;margin:0 0 12px;">✅ Dit bud blev accepteret! 🎉</h2>
@@ -424,23 +534,34 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // ── NY BESKED / BUD (eksisterende logik) ─────────────────
-    let message = payload.record ?? null;
-
-    if (!message && payload.message_id) {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("id", payload.message_id)
-        .single();
-      if (error) {
-        console.error("Kunne ikke hente besked:", error.message);
-        return new Response("Message not found", { status: 404, headers: corsHeaders });
-      }
-      message = data;
+    // ── NY BESKED / BUD ──────────────────────────────────────
+    // Auth: caller skal være logget ind OG afsenderen af beskeden.
+    // Vi henter ALTID beskeden fra DB via message_id — payload.record
+    // accepteres ikke (ellers kunne enhver fabrikere en besked til enhver
+    // bruger og sende den under Cykelbørsens afsender = phishing).
+    const caller = await getCaller(req, supabase);
+    if (!caller) {
+      return new Response(JSON.stringify({ error: "Ikke logget ind" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    if (!payload.message_id) {
+      return new Response("message_id påkrævet", { status: 400, headers: corsHeaders });
     }
 
-    if (!message?.receiver_id) {
+    const { data: message, error: msgErr } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("id", payload.message_id)
+      .single();
+    if (msgErr || !message) {
+      console.error("Kunne ikke hente besked:", msgErr?.message ?? "ukendt");
+      return new Response("Message not found", { status: 404, headers: corsHeaders });
+    }
+
+    if (message.sender_id !== caller.id) {
+      return new Response(JSON.stringify({ error: "Ikke afsender af beskeden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (!message.receiver_id) {
       return new Response("No valid message record", { status: 400, headers: corsHeaders });
     }
 

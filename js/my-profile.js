@@ -7,11 +7,13 @@ export function createMyProfile({
   getCurrentUser,
   getCurrentFilters,
   getCurrentFilterArgs,
+  getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
   // Collaborators
   loadBikes,
   updateFilterCounts,
   searchBikes,
   closeProfileModal,
+  openLoginModal,
 }) {
   function reloadMyListings() {
     if (document.getElementById('mp-listings-grid')) loadMyListings('mp-listings-grid');
@@ -54,6 +56,7 @@ export function createMyProfile({
     try {
       grid.innerHTML = data.map(b => {
         const isSold = !b.is_active;
+        const isFeatured = !isSold && b.featured_until && new Date(b.featured_until).getTime() > Date.now();
         const views  = b.views || 0;
         const daysOld = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
         const isOld  = !isSold && daysOld >= 30;
@@ -86,7 +89,8 @@ export function createMyProfile({
                 <div class="mp-listing-actions">
                   <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
                   ${!isSold
-                    ? `<button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                    ? `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">⭐ ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>
+                       <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                        <button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
                     : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                   <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
@@ -95,7 +99,8 @@ export function createMyProfile({
               <div class="mp-listing-actions-mobile">
                 <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
                 ${!isSold
-                  ? `<button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                  ? `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">⭐ ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>
+                     <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
                      <button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                 <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
@@ -203,7 +208,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, profiles!user_id(seller_type), bike_images(url, is_primary)')
+        .select('id, category, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
@@ -212,6 +217,7 @@ export function createMyProfile({
         body: {
           bike: {
             id:                  full.id,
+            category:            full.category || 'cykel',
             user_id:             newBike.user_id || null,
             brand:               full.brand,
             model:               full.model,
@@ -230,6 +236,12 @@ export function createMyProfile({
             groupset:            full.groupset,
             electronic_shifting: full.electronic_shifting,
             weight_kg:           full.weight_kg,
+            motor:               full.motor,
+            motor_position:      full.motor_position,
+            battery_wh:          full.battery_wh,
+            suspension:          full.suspension,
+            geartype:            full.geartype,
+            step_type:           full.step_type,
             seller_type:         full.profiles?.seller_type || 'private',
             image:               primaryImage,
           },
@@ -240,7 +252,6 @@ export function createMyProfile({
 
   async function saveCurrentSearch() {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at oprette en Cykelagent'); return; }
 
     const search = document.getElementById('search-input').value.trim();
     const type   = document.getElementById('search-type').value;
@@ -257,6 +268,13 @@ export function createMyProfile({
       || (fa.wheelSizes?.length > 0)
       || (fa.sizes?.length > 0)
       || (fa.colors?.length > 0)
+      || (fa.groupsets?.length > 0)
+      || (fa.motors?.length > 0)
+      || (fa.motorPositions?.length > 0)
+      || fa.batteryMin || fa.batteryMax
+      || (fa.suspensions?.length > 0)
+      || (fa.geartypes?.length > 0)
+      || (fa.stepTypes?.length > 0)
       || warranty;
 
     if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
@@ -271,16 +289,41 @@ export function createMyProfile({
     if (fa.wheelSizes?.length)     parts.push(...fa.wheelSizes.map(w => 'Hjul ' + w));
     if (fa.sizes?.length)          parts.push(...fa.sizes.map(s => 'Str. ' + s.split(' ')[0]));
     if (fa.colors?.length)         parts.push(...fa.colors);
+    if (fa.groupsets?.length)      parts.push(...fa.groupsets);
+    if (fa.motors?.length)         parts.push(...fa.motors);
+    if (fa.motorPositions?.length) parts.push(...fa.motorPositions);
+    if (fa.batteryMin && fa.batteryMax) parts.push(`${fa.batteryMin}–${fa.batteryMax} Wh`);
+    else if (fa.batteryMin)        parts.push(`fra ${fa.batteryMin} Wh`);
+    else if (fa.batteryMax)        parts.push(`til ${fa.batteryMax} Wh`);
+    if (fa.suspensions?.length)    parts.push(...fa.suspensions);
+    if (fa.geartypes?.length)      parts.push(...fa.geartypes.map(g => g + ' gear'));
+    if (fa.stepTypes?.length)      parts.push(...fa.stepTypes);
     if (warranty)                  parts.push('Med garanti');
     if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
     if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
     if (city)                      parts.push(city);
     const name = parts.join(' · ') || 'Min søgning';
+    // Stempl aktiv browse-kategori, så matchningen i notify-saved-searches
+    // aldrig krydser cykel/tilbehør. Eksisterende agenter uden category = 'cykel'.
+    const category = (getBrowseCategory ? getBrowseCategory() : 'cykel') || 'cykel';
+    const filters = { search, type, city, warranty, category, ...fa };
+
+    // Ikke logget ind: gem agenten som pending (samme flow som /cykelagenter) og
+    // bed brugeren oprette konto. flushPendingCykelagent i main.js aktiverer den
+    // efter signup, så useren kun mangler at oprette sig.
+    if (!currentUser) {
+      try {
+        localStorage.setItem('_pendingCykelagent', JSON.stringify({ name, filters, savedAt: Date.now() }));
+      } catch {}
+      showToast('Næsten færdig — opret en gratis konto for at aktivere din Cykelagent');
+      openLoginModal();
+      return;
+    }
 
     const { error } = await supabase.from('saved_searches').insert({
       user_id: currentUser.id,
       name,
-      filters: { search, type, city, warranty, ...fa },
+      filters,
     });
 
     if (error) { showToast('❌ Kunne ikke oprette Cykelagent'); return; }

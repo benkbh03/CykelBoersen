@@ -865,6 +865,75 @@ export const BRANDS_META = {
     },
     typical_price_range: '3.000 – 20.000 kr',
   },
+  ebsen: {
+    name: 'Ebsen',
+    country: 'Danmark',
+    founded: 1993,
+    tagline: 'Dansk retrodesign siden 1993',
+    description: 'Ebsen blev grundlagt i 1993 i Vojens, hvor Peter Ebsen startede med at levere cykler til en håndfuld danske cykelforretninger. Mærket er kendt for klassiske citybikes i retrolook som Amsterdam, Frappe og Fanøe Retro, og sortimentet dækker også børnecykler og el-cykler. Siden 2020 har Ebsen været en del af den tyske cykelkoncern Hermann Hartje.',
+    popular_models: {
+      'Citybike': ['Amsterdam', 'Frappe', 'Fanøe Retro'],
+    },
+    typical_price_range: '2.500 – 15.000 kr',
+  },
+  remington: {
+    name: 'Remington',
+    country: 'Danmark',
+    founded: 1913,
+    tagline: 'Klassiske stålcykler med dansk arv',
+    description: 'Remington er et klassisk dansk cykelmærke med rødder tilbage til 1913. Cyklerne blev oprindeligt produceret hos SCO, mens produktionen i dag ligger hos Ebsen under den tyske Hartje-koncern. Mærket laver stålcykler i retrodesign med moderne kvalitetsdele, og sortimentet omfatter også el-cykler.',
+    popular_models: null,
+    typical_price_range: '3.500 – 20.000 kr',
+  },
+  'van-de-falk': {
+    name: 'Van De Falk',
+    country: 'Danmark',
+    founded: null,
+    tagline: 'Dansk design, produceret i Tyskland',
+    description: 'Van De Falk er et dansk cykelmærke med klassiske citybikes, der designes i Danmark og produceres i Tyskland. Mærket føres blandt andet af cykelhandlere i København og dækker hele familien med dame-, herre-, junior- og børnemodeller. Cyklerne leveres typisk med rustfri fælge, navgear fra Shimano og dynamolys.',
+    popular_models: null,
+    typical_price_range: null,
+  },
+  velo: {
+    name: 'Velo',
+    country: null,
+    founded: null,
+    tagline: 'Enkle citybikes i retrolook',
+    description: 'Velo laver enkle citybikes i retrolook til hverdagskørsel i byen. Modelserien Velo Lux fås som både dame- og herrecykel med tre navgear og i flere klassiske farver, og mærket føres af danske cykelforhandlere.',
+    popular_models: {
+      'Citybike': ['Lux'],
+    },
+    typical_price_range: null,
+  },
+  'velo-lux': {
+    name: 'Velo Lux',
+    country: null,
+    founded: null,
+    tagline: 'Klassiske citybikes til hverdagen',
+    description: 'Velo Lux er et budgetvenligt cykelmærke med klassiske dame- og herrecykler til hverdagskørsel i byen. Cyklerne fås typisk med tre eller syv navgear, rustfri fælge, bagagebærer og skærme, og leveres i flere klassiske farver. Mærket føres bredt af danske cykelforhandlere som en simpel og prisbevidst transportcykel.',
+    popular_models: {
+      'Citybike': ['3G', '7G'],
+    },
+    typical_price_range: null,
+  },
+  falcon: {
+    name: 'Falcon',
+    country: null,
+    founded: null,
+    tagline: 'Retrocykler til bykørsel',
+    description: 'Falcon laver klassiske city- og retrocykler til hverdagsbrug, og mærket føres af flere danske cykelhandlere. Modellerne fås som både dame- og herrecykler, typisk med tre navgear og et tidløst udseende kombineret med moderne komponenter.',
+    popular_models: null,
+    typical_price_range: null,
+  },
+  brabus: {
+    name: 'Brabus',
+    country: null,
+    founded: null,
+    tagline: 'Klassiske citybikes med navgear',
+    description: 'Brabus er et citybike-mærke i klassisk retrodesign, som føres af flere danske cykelforhandlere. Cyklerne fås som dame- og herremodeller med navgear fra Shimano og er bygget til hverdagskørsel i byen.',
+    popular_models: null,
+    typical_price_range: null,
+  },
 };
 
 // Brand-aliaser (forskellige stavemåder → samme slug)
@@ -875,6 +944,7 @@ const ALIASES = {
   'riese-and-mueller': 'riese-mueller',
   'larry-vs-harry': 'larry-vs-harry-bullitt',
   'bullitt': 'larry-vs-harry-bullitt',
+  'van-der-falk': 'van-de-falk', // hyppig fejlstavning (bl.a. på DBA)
 };
 
 /**
@@ -935,19 +1005,20 @@ export function getBrandMeta(brandName) {
 // Komplet liste over kendte brands (synkroniseret med js/bikes-list.js)
 export const KNOWN_BRANDS = [
   'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi',
-  'Bike by Gubi','Black Iron Horse','BMC','Brompton',
+  'Bike by Gubi','Black Iron Horse','BMC','Brabus','Brompton',
   'Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion',
   'Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube',
-  'E-Fly','Early Rider','Electra','Everton','FACTOR','Felt','Focus',
+  'E-Fly','Early Rider','Ebsen','Electra','Everton','FACTOR','Falcon',
+  'Felt','Focus',
   'Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike',
   'Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler',
   'Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK',
   'Marin','Mate Bike','MBK','Merida','Momentum','Mondraker',
   'Motobecane','Moustache','Nihola','Nishiki','Norden','Norco',
   'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio',
-  'QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike',
+  'QWIC','Raleigh','Remington','Riese & Müller','Ridley','Royal Cargobike',
   'Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta',
   'Specialized','Stevens','Superior','Tern','Trek','Triobike',
-  'Urban Arrow','uVelo','VanMoof','Velo de Ville','Victoria','Wilier',
-  'Winther','Woom','Yuba',
+  'Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville',
+  'Velo Lux','Victoria','Wilier','Winther','Woom','Yuba',
 ];

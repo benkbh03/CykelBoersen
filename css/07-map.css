@@ -689,6 +689,34 @@ body.map-page-view { padding-bottom: 0 !important; }
 .msf-opt:hover { border-color: var(--rust); }
 .msf-opt.active { background: var(--forest); color: #fff; border-color: var(--forest); }
 .msf-opt--multi.active { background: var(--rust); border-color: var(--rust); }
+
+/* Farve-chip med swatch */
+.msf-opt--color { display: inline-flex; align-items: center; gap: 7px; }
+.msf-color-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.18); flex-shrink: 0;
+}
+.msf-opt--color.active .msf-color-dot { border-color: rgba(255,255,255,0.7); }
+
+/* Kollapsible avancerede filter-sektioner — mindre visuel støj */
+.msf-acc { border-top: 1px solid var(--border); padding: 14px 0; }
+.msf-acc-head {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--muted);
+  list-style: none; user-select: none;
+}
+.msf-acc-head::-webkit-details-marker { display: none; }
+.msf-acc-title { flex: 1; }
+.msf-acc-count {
+  background: var(--rust); color: #fff; border-radius: 999px;
+  min-width: 18px; height: 18px; padding: 0 6px;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.msf-acc-chevron { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; transition: transform 0.18s ease; }
+.msf-acc[open] .msf-acc-chevron { transform: rotate(180deg); }
+.msf-acc-body { margin-top: 12px; }
 .msf-price { display: flex; align-items: center; gap: 10px; }
 .msf-price input {
   flex: 1; min-width: 0; padding: 11px 14px; border: 1.5px solid var(--border);
@@ -806,17 +834,17 @@ body.map-page-view { padding-bottom: 0 !important; }
 }
 .split-popup-list {
   overflow-y: auto;
-  max-height: 320px;
-  padding: 6px 8px;
+  max-height: 232px;
+  padding: 4px 6px;
 }
 .split-popup-list-item {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   background: transparent;
   border: none;
   border-radius: 8px;
-  padding: 8px;
+  padding: 5px 6px;
   cursor: pointer;
   text-align: left;
   font-family: 'DM Sans', sans-serif;
@@ -824,43 +852,46 @@ body.map-page-view { padding-bottom: 0 !important; }
 }
 .split-popup-list-item:hover { background: var(--sand); }
 .split-popup-list-img {
-  width: 60px;
-  height: 60px;
+  width: 42px;
+  height: 42px;
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;
 }
 .split-popup-list-img-placeholder {
-  width: 60px;
-  height: 60px;
+  width: 42px;
+  height: 42px;
   background: var(--sand);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
 }
 .split-popup-list-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .split-popup-list-title {
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--charcoal);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .split-popup-list-meta {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   color: var(--muted);
-  margin: 2px 0 4px;
+  margin: 1px 0;
 }
 .split-popup-list-price {
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--rust);
 }
 

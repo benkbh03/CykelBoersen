@@ -22,7 +22,74 @@ export function createValuation({
   BASE_URL,
 }) {
 
+  // Aktuel kontekst for vurderingsformularen: 'page' (dedikeret side) eller
+  // 'modal' (åbnet fra sælg-flowet). Styrer hvilke CTA-knapper resultatet viser.
+  let _valuationMode = 'page';
+
+  // Fælles formular-markup brugt af både siden og modalen. prefill kan
+  // forhåndsudfylde felter (fx fra den igangværende sælg-annonce).
+  function valuationFormHTML(prefill = {}) {
+    const p = prefill;
+    const optHTML = (selected, values) => values
+      .map(v => `<option${v === selected ? ' selected' : ''}>${esc(v)}</option>`)
+      .join('');
+    return `
+        <form id="valuation-form" class="valuation-form" onsubmit="event.preventDefault();window.runValuation()">
+          <div class="valuation-form-row">
+            <div class="valuation-field">
+              <label>Mærke <span class="req">*</span></label>
+              <input type="text" id="val-brand" list="val-brand-list" placeholder="f.eks. Trek" value="${esc(p.brand || '')}" autocomplete="off" required>
+              <datalist id="val-brand-list">
+                ${KNOWN_BRANDS.map(b => `<option value="${esc(b)}">`).join('')}
+              </datalist>
+            </div>
+            <div class="valuation-field">
+              <label>Model <span class="req">*</span></label>
+              <input type="text" id="val-model" placeholder="f.eks. FX 3 Disc" value="${esc(p.model || '')}" required>
+            </div>
+          </div>
+
+          <div class="valuation-form-row">
+            <div class="valuation-field">
+              <label>Årgang <span class="req">*</span></label>
+              <input type="number" id="val-year" placeholder="f.eks. 2022" min="1990" max="2030" value="${esc(p.year || '')}" required>
+            </div>
+            <div class="valuation-field">
+              <label>Stand <span class="req">*</span></label>
+              <select id="val-condition" required>
+                <option value="">Vælg stand</option>
+                ${optHTML(p.condition || '', ['Ny', 'Som ny', 'God stand', 'Brugt'])}
+              </select>
+            </div>
+          </div>
+
+          <div class="valuation-form-row">
+            <div class="valuation-field">
+              <label>Stelstørrelse <span class="optional">(valgfri)</span></label>
+              <select id="val-size">
+                <option value="">Vælg</option>
+                ${optHTML(p.size || '', ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'])}
+              </select>
+            </div>
+            <div class="valuation-field">
+              <label>Cykeltype <span class="optional">(valgfri)</span></label>
+              <select id="val-type">
+                <option value="">Vælg</option>
+                ${optHTML(p.type || '', ['Racercykel', 'Mountainbike', 'Citybike', 'El-cykel', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'])}
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="valuation-submit">
+            <span class="valuation-submit-label">Få min vurdering →</span>
+          </button>
+        </form>
+
+        <div id="valuation-result" class="valuation-result" style="display:none;"></div>`;
+  }
+
   async function renderValuationPage() {
+    _valuationMode = 'page';
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
@@ -49,71 +116,7 @@ export function createValuation({
           </p>
         </header>
 
-        <form id="valuation-form" class="valuation-form" onsubmit="event.preventDefault();window.runValuation()">
-          <div class="valuation-form-row">
-            <div class="valuation-field">
-              <label>Mærke <span class="req">*</span></label>
-              <input type="text" id="val-brand" list="val-brand-list" placeholder="f.eks. Trek" autocomplete="off" required>
-              <datalist id="val-brand-list">
-                ${KNOWN_BRANDS.map(b => `<option value="${esc(b)}">`).join('')}
-              </datalist>
-            </div>
-            <div class="valuation-field">
-              <label>Model <span class="req">*</span></label>
-              <input type="text" id="val-model" placeholder="f.eks. FX 3 Disc" required>
-            </div>
-          </div>
-
-          <div class="valuation-form-row">
-            <div class="valuation-field">
-              <label>Årgang <span class="req">*</span></label>
-              <input type="number" id="val-year" placeholder="f.eks. 2022" min="1990" max="2030" required>
-            </div>
-            <div class="valuation-field">
-              <label>Stand <span class="req">*</span></label>
-              <select id="val-condition" required>
-                <option value="">Vælg stand</option>
-                <option value="Ny">Ny</option>
-                <option value="Som ny">Som ny</option>
-                <option value="God stand">God stand</option>
-                <option value="Brugt">Brugt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="valuation-form-row">
-            <div class="valuation-field">
-              <label>Stelstørrelse <span class="optional">(valgfri)</span></label>
-              <select id="val-size">
-                <option value="">Vælg</option>
-                <option>XS (44–48 cm)</option>
-                <option>S (49–52 cm)</option>
-                <option>M (53–56 cm)</option>
-                <option>L (57–60 cm)</option>
-                <option>XL (61+ cm)</option>
-              </select>
-            </div>
-            <div class="valuation-field">
-              <label>Cykeltype <span class="optional">(valgfri)</span></label>
-              <select id="val-type">
-                <option value="">Vælg</option>
-                <option>Racercykel</option>
-                <option>Mountainbike</option>
-                <option>Citybike</option>
-                <option>El-cykel</option>
-                <option>Ladcykel</option>
-                <option>Børnecykel</option>
-                <option>Gravel</option>
-              </select>
-            </div>
-          </div>
-
-          <button type="submit" class="valuation-submit">
-            <span class="valuation-submit-label">Få min vurdering →</span>
-          </button>
-        </form>
-
-        <div id="valuation-result" class="valuation-result" style="display:none;"></div>
+        ${valuationFormHTML()}
 
         <section class="valuation-info">
           <h2 class="valuation-info-title">Sådan fungerer vurderingen</h2>
@@ -157,6 +160,47 @@ export function createValuation({
         </section>
       </div>
     `;
+  }
+
+  // Åbn vurderingen som modal — bruges fra sælg-flowet så den igangværende
+  // annonce IKKE går tabt (modsat at navigere til /vurder-min-cykel-siden).
+  // Forhåndsudfylder fra sælg-formularens felter hvis de findes.
+  function openValuationModal() {
+    _valuationMode = 'modal';
+    const modal = document.getElementById('valuation-modal');
+    const body  = document.getElementById('valuation-modal-body');
+    if (!modal || !body) return;
+
+    const val = (id) => document.getElementById(id)?.value?.trim() || '';
+    const prefill = {
+      brand:     val('sell-brand'),
+      model:     val('sell-model'),
+      year:      val('sell-year'),
+      condition: val('sell-condition'),
+      size:      val('sell-size'),
+      type:      val('sell-type'),
+    };
+
+    body.innerHTML = valuationFormHTML(prefill);
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeValuationModal() {
+    const modal = document.getElementById('valuation-modal');
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = '';
+    _valuationMode = 'page';
+  }
+
+  // Sæt den fundne pris ind i sælg-formularens pris-felt og luk modalen.
+  function applyValuationPrice(price) {
+    const priceInput = document.getElementById('sell-price');
+    if (priceInput) {
+      priceInput.value = price;
+      priceInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    closeValuationModal();
   }
 
   async function runValuation() {
@@ -290,8 +334,10 @@ export function createValuation({
           <p>Vi har endnu ikke set nok handler af ${esc(input.brand)} ${esc(input.model)} til at give en præcis vurdering.</p>
           <p style="margin-top:12px;">Du kan stadig oprette annoncen og lade markedet vise dig den rigtige pris — eller spørge en af vores forhandlere om vejledning.</p>
           <div class="valuation-result-cta">
-            <button class="valuation-cta-primary" onclick="navigateTo('/sell')">Opret annonce →</button>
-            <button class="valuation-cta-secondary" onclick="navigateTo('/forhandlere')">Find forhandler</button>
+            ${_valuationMode === 'modal'
+              ? `<button class="valuation-cta-primary" onclick="closeValuationModal()">Tilbage til annoncen</button>`
+              : `<button class="valuation-cta-primary" onclick="navigateTo('/sell')">Opret annonce →</button>
+                 <button class="valuation-cta-secondary" onclick="navigateTo('/forhandlere')">Find forhandler</button>`}
           </div>
         </div>`;
       return;
@@ -349,10 +395,14 @@ export function createValuation({
         </div>
 
         <div class="valuation-result-cta">
-          <button class="valuation-cta-primary" onclick="navigateTo('/sell')">
-            🚀 Opret annonce til ${formatPrice(result.median)}
-          </button>
-          <button class="valuation-cta-secondary" onclick="window.runValuation();window.scrollTo({top:0,behavior:'smooth'});">
+          ${_valuationMode === 'modal'
+            ? `<button class="valuation-cta-primary" onclick="applyValuationPrice(${result.median})">
+                 ✓ Brug ${formatPrice(result.median)}
+               </button>`
+            : `<button class="valuation-cta-primary" onclick="navigateTo('/sell')">
+                 🚀 Opret annonce til ${formatPrice(result.median)}
+               </button>`}
+          <button class="valuation-cta-secondary" onclick="window.runValuation();">
             Beregn igen
           </button>
         </div>
@@ -395,5 +445,8 @@ export function createValuation({
   return {
     renderValuationPage,
     runValuation,
+    openValuationModal,
+    closeValuationModal,
+    applyValuationPrice,
   };
 }

@@ -118,6 +118,52 @@ nav {
   outline-offset: 3px;
 }
 
+/* ── HAMBURGER + MOBIL-MENU (kun ≤768px) ──
+   På mobil skjules tekst-nav-linksene; hamburgeren genskaber adgang til
+   Mærker/Forhandlere/Cykelagenter for udlogget førstegangs-besøgende.
+   Hamburger + logo grupperes til venstre (nav-left), så "site-menu" står
+   adskilt fra de personlige handlinger (inbox/avatar) i højre side. */
+.nav-left { display: flex; align-items: center; gap: 8px; }
+.nav-hamburger {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  color: var(--sand); padding: 6px; margin-left: -2px;
+  align-items: center; justify-content: center;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Kompakt sælg-label på mobil ("+ Sælg") for at give den tætte indloggede
+   nav-række luft; fuld tekst ("+ Sæt til salg") på desktop. */
+.sell-label-short { display: none; }
+@media (max-width: 768px) {
+  .sell-label-full { display: none; }
+  .sell-label-short { display: inline; }
+}
+.nav-hamburger:hover { background: rgba(245,240,232,0.10); }
+.nav-hamburger:focus-visible { outline: 2px solid rgba(245,240,232,0.7); outline-offset: 2px; }
+.mobile-menu-panel {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--forest-light);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+  display: flex; flex-direction: column;
+  padding: 6px 0 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+  z-index: 99;
+}
+.mobile-menu-panel[hidden] { display: none; }
+.mobile-menu-panel a {
+  color: var(--sand); text-decoration: none;
+  padding: 14px 24px; font-size: 1rem; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; opacity: 0.92;
+}
+.mobile-menu-panel a:hover, .mobile-menu-panel a:focus { background: rgba(245,240,232,0.07); opacity: 1; }
+@media (max-width: 768px) {
+  .nav-hamburger { display: inline-flex; }
+}
+@media (min-width: 769px) {
+  .mobile-menu-panel { display: none !important; }
+}
+
 /* Nav profil */
 .nav-profile { margin-left: 4px; display: flex; align-items: center; gap: 6px; }
 .profile-avatar-btn {
@@ -363,7 +409,7 @@ nav {
       rgba(14,22,15,0.01) 50%,
       rgba(14,22,15,0.20) 100%
     ),
-    url('/hero.jpg?v=20261113q');
+    url('/hero.jpg?v=hero1');
   background-size: auto, auto, auto, auto, cover;
   background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
@@ -443,7 +489,7 @@ nav {
 }
 /* ── HERO KATEGORI-CHIPS ── */
 .hero-cat-chips {
-  display: flex; justify-content: center; gap: 7px;
+  display: flex; justify-content: safe center; gap: 7px;
   flex-wrap: nowrap; white-space: nowrap;
   max-width: 960px; margin: 10px auto 0;
   overflow-x: auto; scrollbar-width: none;
@@ -471,7 +517,7 @@ nav {
 .search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
-  background: var(--cream); border-radius: 999px;
+  background: var(--cream); border-radius: 0;
   padding: 5px;
   box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(26,26,24,0.06);
   overflow: hidden;
@@ -538,7 +584,7 @@ nav {
 }
 .search-pill-btn {
   background: var(--rust); color: #fff;
-  border: none; padding: 10px 24px; border-radius: 999px;
+  border: none; padding: 10px 24px; border-radius: 0;
   cursor: pointer; font-size: 0.93rem; font-weight: 600;
   font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
   white-space: nowrap; transition: background 0.2s, transform 0.18s, box-shadow 0.18s;
@@ -626,7 +672,16 @@ nav {
 .sidebar-box.collapsed .sidebar-chevron { transform: rotate(-90deg); }
 .sidebar-section-body { padding: 0 18px 16px; }
 .sidebar-box.collapsed .sidebar-section-body { display: none; }
-.filter-group { display: flex; flex-direction: column; gap: 8px; }
+.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-group .filter-option {
+  flex: 1 1 calc(50% - 4px);
+  min-width: 0;
+  justify-content: center;
+  text-align: center;
+}
+.filter-group .filter-option--full {
+  flex: 1 1 100%;
+}
 /* "Gem din søgning" card */
 .sidebar-save-card {
   background: var(--forest); border-radius: 12px;
@@ -648,12 +703,24 @@ nav {
   width: 100%;
 }
 .sidebar-save-card button:hover { background: var(--rust-light); }
+/* Filter-chips: checkbox skjult, label styles som pille — konsistent med
+   kort-sheet og Cykelagent. Logikken læser stadig input:checked. */
 .filter-option {
-  display: flex; align-items: center; gap: 10px;
-  cursor: pointer; font-size: 0.88rem; color: var(--charcoal); padding: 4px 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; font-size: 0.85rem; color: var(--charcoal);
+  background: var(--sand); border: 1.5px solid var(--border);
+  border-radius: 999px; padding: 7px 13px; user-select: none;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
-.filter-option input[type="checkbox"] { accent-color: var(--rust); width: 15px; height: 15px; cursor: pointer; }
-.filter-count { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
+.filter-option:hover { border-color: var(--rust); }
+.filter-option input[type="checkbox"] {
+  position: absolute; opacity: 0; width: 0; height: 0; margin: 0; pointer-events: none;
+}
+.filter-option:has(input:checked) {
+  background: var(--rust); border-color: var(--rust); color: #fff;
+}
+.filter-count { color: var(--muted); font-size: 0.74rem; }
+.filter-option:has(input:checked) .filter-count { color: rgba(255,255,255,0.82); }
 .brand-search-input {
   width: 100%; box-sizing: border-box;
   padding: 7px 10px; border: 1px solid var(--border);
@@ -662,7 +729,8 @@ nav {
   outline: none;
 }
 .brand-search-input:focus { border-color: var(--forest); }
-.brand-filter-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
+.brand-filter-list { display: flex; flex-wrap: wrap; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
+.brand-filter-list .filter-option { flex: 1 1 calc(50% - 4px); min-width: 0; justify-content: center; text-align: center; }
 .brand-autocomplete-wrap { position: relative; }
 .brand-autocomplete-list {
   position: absolute; top: 100%; left: 0; right: 0; z-index: 100;

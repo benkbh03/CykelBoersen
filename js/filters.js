@@ -17,6 +17,7 @@ export function createFilters({
   setUserGeoCoords,
   getActiveRadius,
   setActiveRadius,
+  getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
 }) {
   function hasActiveFilters() {
     const cf = getCurrentFilters();
@@ -28,9 +29,21 @@ export function createFilters({
     const filterArgsSet = args && (
       (args.types && args.types.length > 0) ||
       (args.conditions && args.conditions.length > 0) ||
+      (args.sizes && args.sizes.length > 0) ||
       (args.wheelSizes && args.wheelSizes.length > 0) ||
       (args.colors && args.colors.length > 0) ||
       (args.brands && args.brands.length > 0) ||
+      (args.frameMaterials && args.frameMaterials.length > 0) ||
+      (args.brakeTypes && args.brakeTypes.length > 0) ||
+      (args.groupsets && args.groupsets.length > 0) ||
+      (args.motors && args.motors.length > 0) ||
+      (args.motorPositions && args.motorPositions.length > 0) ||
+      (args.suspensions && args.suspensions.length > 0) ||
+      (args.geartypes && args.geartypes.length > 0) ||
+      (args.stepTypes && args.stepTypes.length > 0) ||
+      args.electronicShifting === true || args.electronicShifting === false ||
+      args.batteryMin ||
+      args.batteryMax ||
       args.minPrice ||
       args.maxPrice ||
       args.maxWeight ||
@@ -71,6 +84,14 @@ export function createFilters({
       parts.push(`under ${args.maxPrice.toLocaleString('da-DK')} kr.`);
     }
     if (args?.maxWeight) parts.push(`under ${String(args.maxWeight).replace('.', ',')} kg`);
+    if (args?.motors?.length)         parts.push(args.motors.map(m => `motor: ${m}`).join(', '));
+    if (args?.motorPositions?.length) parts.push(args.motorPositions.join(', '));
+    if (args?.batteryMin && args?.batteryMax) parts.push(`${args.batteryMin}–${args.batteryMax} Wh`);
+    else if (args?.batteryMin) parts.push(`fra ${args.batteryMin} Wh`);
+    else if (args?.batteryMax) parts.push(`under ${args.batteryMax} Wh`);
+    if (args?.suspensions?.length)    parts.push(args.suspensions.join(', '));
+    if (args?.geartypes?.length)      parts.push(args.geartypes.map(g => `${g.toLowerCase()} gear`).join(', '));
+    if (args?.stepTypes?.length)      parts.push(args.stepTypes.join(', '));
     if (args?.sellerType === 'dealer')  parts.push('forhandlere');
     if (args?.sellerType === 'private') parts.push('private');
 
@@ -137,6 +158,18 @@ export function createFilters({
       pills.push({ label: `Under ${args.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
     }
     if (args?.maxWeight) pills.push({ label: `Under ${String(args.maxWeight).replace('.', ',')} kg`, type: 'weight' });
+    for (const m of (args?.motors || []))         pills.push({ label: `Motor: ${m}`, type: 'motor', value: m });
+    for (const p of (args?.motorPositions || [])) pills.push({ label: p, type: 'motor_position', value: p });
+    for (const s of (args?.suspensions || []))    pills.push({ label: s, type: 'suspension', value: s });
+    for (const g of (args?.geartypes || []))      pills.push({ label: `${g} gear`, type: 'geartype', value: g });
+    for (const st of (args?.stepTypes || []))     pills.push({ label: st, type: 'step_type', value: st });
+    if (args?.batteryMin && args?.batteryMax) {
+      pills.push({ label: `${args.batteryMin}–${args.batteryMax} Wh`, type: 'battery' });
+    } else if (args?.batteryMin) {
+      pills.push({ label: `Fra ${args.batteryMin} Wh`, type: 'battery' });
+    } else if (args?.batteryMax) {
+      pills.push({ label: `Under ${args.batteryMax} Wh`, type: 'battery' });
+    }
     if (args?.sellerType === 'dealer')  pills.push({ label: 'Forhandlere', type: 'seller', value: 'dealer' });
     if (args?.sellerType === 'private') pills.push({ label: 'Private', type: 'seller', value: 'private' });
 
@@ -145,7 +178,9 @@ export function createFilters({
       <div class="afb-pills">
         ${pills.map(p => `<span class="afb-pill">${esc(p.label)}<button class="afb-pill-remove" onclick="removeFilterPill('${p.type}','${(p.value || '').replace(/'/g, "\\'")}')">✕</button></span>`).join('')}
       </div>
-      <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
+      <div class="afb-actions">
+        <button class="afb-clear-all" onclick="clearAllFilters()">↺ Nulstil alle</button>
+      </div>
     `;
     updateMobileFilterCount(pills.length);
   }
@@ -243,7 +278,17 @@ export function createFilters({
       case 'brake_type':
       case 'groupset':
       case 'electronic_shifting':
+      case 'motor':
+      case 'motor_position':
+      case 'suspension':
+      case 'geartype':
+      case 'step_type':
         document.querySelectorAll(`[data-filter="${type}"][data-value="${value}"]`).forEach(cb => cb.checked = false);
+        applyFilters();
+        break;
+      case 'battery':
+        { const a = document.getElementById('battery-min'); if (a) a.value = '';
+          const b = document.getElementById('battery-max'); if (b) b.value = ''; }
         applyFilters();
         break;
     }
@@ -350,6 +395,11 @@ export function createFilters({
       const pB = parseInt(b.querySelector('.bike-price').textContent.replace(/\D/g, ''));
       if (value === 'price_asc')  return pA - pB;
       if (value === 'price_desc') return pB - pA;
+      if (value === 'biggest_saving') {
+        const sA = parseInt(a.dataset.saving || '0', 10);
+        const sB = parseInt(b.dataset.saving || '0', 10);
+        return sB - sA;   // størst besparelse først
+      }
       return 0;
     });
     cards.forEach(c => grid.appendChild(c));
@@ -357,12 +407,15 @@ export function createFilters({
 
   async function updateFilterCounts(data, dealerCount) {
     if (!data) {
+      // Tællere scopes til den aktive browse-kategori (Cykler | Tilbehør),
+      // så tilbehør aldrig tælles med under cykler — og omvendt.
+      const _cat = (getBrowseCategory ? getBrowseCategory() : 'cykel') || 'cykel';
       const [bikesRes, dealerRes] = await Promise.all([
-        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles!user_id(seller_type)').eq('is_active', true),
+        supabase.from('bikes').select('type, condition, size, wheel_size, colors, profiles!user_id(seller_type)').eq('is_active', true).eq('category', _cat),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true)
       ]);
       if (bikesRes.error || !bikesRes.data) {
-        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles!user_id(seller_type)').eq('is_active', true);
+        const { data: fallback } = await supabase.from('bikes').select('type, condition, size, profiles!user_id(seller_type)').eq('is_active', true).eq('category', _cat);
         if (!fallback) return;
         data = fallback;
       } else {
@@ -378,13 +431,12 @@ export function createFilters({
     setCount('seller', 'all',           total);
     setCount('seller', 'dealer',        dealers);
     setCount('seller', 'private',       privates);
-    setCount('type',   'Racercykel',    data.filter(b => b.type === 'Racercykel').length);
-    setCount('type',   'Mountainbike',  data.filter(b => b.type === 'Mountainbike').length);
-    setCount('type',   'El-cykel',      data.filter(b => b.type === 'El-cykel').length);
-    setCount('type',   'Citybike',      data.filter(b => b.type === 'Citybike').length);
-    setCount('type',   'Ladcykel',      data.filter(b => b.type === 'Ladcykel').length);
-    setCount('type',   'Børnecykel',    data.filter(b => b.type === 'Børnecykel').length);
-    setCount('type',   'Gravel',        data.filter(b => b.type === 'Gravel').length);
+    // Type-tællere: generisk over de checkboxes der faktisk står i sidebaren,
+    // så både cykel-typer og tilbehørs-underkategorier udfyldes (kategori-swap
+    // genbygger listen i setBrowseCategory).
+    const _typeVals = new Set();
+    document.querySelectorAll('[data-filter="type"]').forEach(cb => { if (cb.dataset.value) _typeVals.add(cb.dataset.value); });
+    _typeVals.forEach(v => setCount('type', v, data.filter(b => b.type === v).length));
     setCount('condition', 'Ny',         data.filter(b => b.condition === 'Ny').length);
     setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
     setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
@@ -394,10 +446,9 @@ export function createFilters({
     setCount('size', 'M (53–56 cm)',  data.filter(b => b.size === 'M (53–56 cm)').length);
     setCount('size', 'L (57–60 cm)',  data.filter(b => b.size === 'L (57–60 cm)').length);
     setCount('size', 'XL (61+ cm)',   data.filter(b => b.size === 'XL (61+ cm)').length);
-    setCount('wheel',  '26"',           data.filter(b => b.wheel_size === '26"').length);
-    setCount('wheel',  '27.5" / 650b',  data.filter(b => b.wheel_size === '27.5" / 650b').length);
-    setCount('wheel',  '28"',           data.filter(b => b.wheel_size === '28"').length);
-    setCount('wheel',  '29"',           data.filter(b => b.wheel_size === '29"').length);
+    for (const w of ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"']) {
+      setCount('wheel', w, data.filter(b => b.wheel_size === w).length);
+    }
 
     // Farve-counts: tæl hvor mange annoncer der har hver farve i deres colors-array
     const colorCounts = {};
@@ -412,7 +463,8 @@ export function createFilters({
 
     const countEl   = document.getElementById('listings-count');
     const statTotal = document.getElementById('stat-total');
-    if (countEl)   countEl.textContent   = `${total} cykler til salg`;
+    const _isAccCat = (getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer';
+    if (countEl)   countEl.textContent   = _isAccCat ? `${total} stykker tilbehør` : `${total} cykler til salg`;
     if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
 
     const statDealers = document.getElementById('stat-dealers');

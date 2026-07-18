@@ -246,6 +246,52 @@ export function createImageUpload({
     }
   }
 
+  // Generér en mindre thumbnail (max 800px, WebP ~0.78) til kort-visninger.
+  // Returnerer en Blob, eller null hvis det fejler (kalder falder pænt tilbage
+  // til fuld-størrelse-billedet). Egress-besparelse: ~3× mindre end fuld.
+  async function makeThumbnail(file) {
+    if (!file || file.type === 'image/gif') return null;
+    let objectUrl = null;
+    try {
+      let source;
+      if (typeof createImageBitmap === 'function') {
+        try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+        catch { source = null; }
+      }
+      if (!source) {
+        objectUrl = URL.createObjectURL(file);
+        source = await new Promise((resolve, reject) => {
+          const img = new Image();
+          const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
+          img.onload  = () => { clearTimeout(timeout); resolve(img); };
+          img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
+          img.src = objectUrl;
+        });
+      }
+      const MAX = 800;
+      let width  = source.width  || source.naturalWidth;
+      let height = source.height || source.naturalHeight;
+      if (!width || !height) return null;
+      if (width > MAX || height > MAX) {
+        const ratio = Math.min(MAX / width, MAX / height);
+        width  = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.drawImage(source, 0, 0, width, height);
+      if (source.close) source.close();
+      return await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.78));
+    } catch (e) {
+      console.warn('Thumbnail-generering fejlede, bruger fuld størrelse:', e);
+      return null;
+    } finally {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    }
+  }
+
   // ── selectedFiles management ───────────────────────────────
 
   async function previewImages(input) {
@@ -323,7 +369,11 @@ export function createImageUpload({
       if (typeof onProgress === 'function') onProgress(i + 1, total);
 
       const ext      = item.file.name.split('.').pop();
-      const filename = `${bikeId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const base     = `${bikeId}/${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const filename = `${base}.${ext}`;
+
+      // Generér thumbnail parallelt med fuld-upload (bruger mærker ikke dobbelt-tid)
+      const thumbBlobPromise = makeThumbnail(item.file);
 
       const { error } = await supabase.storage
         .from('bike-images')
@@ -335,9 +385,25 @@ export function createImageUpload({
         .from('bike-images')
         .getPublicUrl(filename);
 
+      // Upload thumbnail (best-effort — fejl her dropper bare thumb, ikke annoncen)
+      let thumbUrl = null;
+      try {
+        const thumbBlob = await thumbBlobPromise;
+        if (thumbBlob && thumbBlob.size > 0 && thumbBlob.size < item.file.size) {
+          const thumbName = `${base}-thumb.webp`;
+          const { error: thumbErr } = await supabase.storage
+            .from('bike-images')
+            .upload(thumbName, thumbBlob, { contentType: 'image/webp', upsert: false, cacheControl: '2592000' });
+          if (!thumbErr) {
+            thumbUrl = supabase.storage.from('bike-images').getPublicUrl(thumbName).data.publicUrl;
+          }
+        }
+      } catch (e) { console.warn('Thumb-upload sprang over:', e); }
+
       await supabase.from('bike_images').insert({
         bike_id:    bikeId,
         url:        publicUrl,
+        thumb_url:  thumbUrl,
         is_primary: item.isPrimary,
       });
     }

@@ -1,0 +1,58 @@
+name: Generate sitemap + prerender
+
+# Kører dagligt + manuelt + ved push der ændrer indhold/scripts.
+# 1) Genererer en frisk sitemap.xml (aktive annoncer + verificerede forhandlere).
+# 2) Prerenderer statiske SEO-sider (mærker + blog + oversigter) fra data-moduler.
+# Committer kun hvis noget faktisk ændrede sig.
+on:
+  schedule:
+    - cron: '0 3 * * *'   # dagligt 03:00 UTC (~05:00 dansk)
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/generate-sitemap.mjs'
+      - 'scripts/prerender.mjs'
+      - '.github/workflows/sitemap.yml'
+      # Prerendret indhold afhænger af disse — regenerér når de ændrer sig,
+      # så de statiske sider ikke peger på gamle asset-versioner eller tekst.
+      - 'index.html'
+      - 'js/brand-data-v2.js'
+      - 'js/blog-data-v2.js'
+      - 'js/category-data.js'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate sitemap.xml
+        run: node scripts/generate-sitemap.mjs
+
+      - name: Prerender statiske SEO-sider
+        run: node scripts/prerender.mjs
+
+      - name: Commit hvis ændret
+        run: |
+          # git add -A: robust — fanger sitemap.xml + ALLE prerendrede mapper
+          # (cykler, blog, maerker, kategorier, bike). I CI adskiller working
+          # tree sig kun ved genererede filer, så -A er sikkert og fremtidssikkert.
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(seo): regenerér sitemap + prerendrede sider"
+            git push
+          else
+            echo "Sitemap + prerender uændret — ingen commit."
+          fi

@@ -50,6 +50,37 @@ Brugeren bruger **IKKE terminal/kommandolinje**. Giv altid GUI-baserede instrukt
 
 Hvis et problem virkelig kræver terminal, sig det eksplicit og foreslå en GUI-vej hvis muligt.
 
+## Deploy-tjekliste (manuel) — VIGTIGT for hver ændring
+
+**Git push / merge deployer KUN frontend** (HTML/CSS/JS via GitHub Pages). Det
+deployer IKKE database-ændringer eller edge functions — de skal køres MANUELT i
+Supabase Dashboard. Derfor:
+
+> **REGEL: Hver gang en ændring rører `supabase/sql/*.sql` eller
+> `supabase/functions/*/index.ts`, SKAL svaret afsluttes med en "Deploy-tjekliste"
+> der lister de præcise filer + trin. Ellers tror brugeren ændringen er live, men
+> den er kun i koden.**
+
+Deploy-tjeklisten skal altid have tre dele (udelad dem der ikke er relevante):
+
+1. **SQL** (hvis `supabase/sql/` rørt): "Kopiér indholdet af `supabase/sql/<fil>.sql`
+   → Supabase Dashboard → SQL Editor → Run." Indsæt SQL'en inline i svaret så den er
+   nem at kopiere. Alle migrationer er idempotente (`IF NOT EXISTS`) = sikre at køre igen.
+2. **Edge functions** (hvis `supabase/functions/` rørt): list hvilke functions + 
+   "Supabase Dashboard → Edge Functions → vælg function → indsæt HELE filens indhold → Deploy."
+   Tilbyd at indsætte den komplette aktuelle fil (brugeren copy-paster hele indholdet —
+   giv aldrig kun en diff medmindre brugeren bekræfter at den forrige version er deployet).
+3. **Merge + hard-refresh**: github.com/benkbh03/CykelBoersen → Compare & pull request →
+   Merge → Ctrl+Shift+R.
+
+**Edge functions der findes (alle kræver manuel deploy):** `notify-message`,
+`notify-saved-searches`, `delete-account`, `chat-support`, `suggest-listing`,
+`admin-create-bike`, `admin-invite-dealer`, samt DORMANT Stripe-functions.
+`notify-message` skal have "Verify JWT" **slået fra** (anonyme kontaktformularer).
+
+**SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
+(fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
+
 ## Kodestil og filstruktur
 
 Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide eksisterende filer. Filer bør holdes under ~400 linjer. Eksportér funktioner og importér dem i `main.js` (eller den relevante modul). Husk at eksportere nye `onclick`-handlere til `window` i `main.js`.
@@ -230,6 +261,34 @@ Eksporter er samlet i blokke omkring linje 4184, 5433-5537, 5829-5838 og 6350-63
 - Maks 5 thumbnails synlige — viser "+N" overlay på den 5. hvis flere
 - `object-fit: contain` + blurred background (`.gallery-main-bg`) for at undgå cropping
 - `galleryGoto()` opdaterer baggrund: `bg.style.backgroundImage = url(...)`
+
+## Filter-konsistens (VIGTIGT — differentiering)
+
+Filtre er CykelBørsens kerne-differentiering. Et filter SKAL wires op ALLE steder — ellers
+opstår "filtrér her, men ikke der"-fejl. Når du tilføjer/ændrer et filter (fx ny teknisk
+spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs af alle flader.
+
+**Kanoniske lister (skal være identiske overalt):**
+- Motor-mærker: `Bosch, Shimano, Promovec, Yamaha, Bafang, Mahle` (matches som **prefix** — `bike.motor` starter med mærket)
+- Motor-placering: `Midtermotor, Forhjulsmotor, Baghjulsmotor` (eksakt)
+- Groupset: `Shimano 105, Shimano Ultegra, Shimano Dura-Ace, SRAM Rival, SRAM Force, SRAM Red, Shimano GRX, SRAM Apex, SRAM Rival XPLR, SRAM Force XPLR, SRAM Red XPLR, Campagnolo Ekar, Shimano Deore, Shimano XT` (matches som **prefix**; GRX/Apex/XPLR/Ekar = gravel)
+- Affjedring: `Forgaffel (hardtail), Fuld affjedring (fully)` (eksakt; vises for Mountainbike/Gravel/El-cykel. Stiv cykel = felt tomt)
+
+**Tjekliste — et nyt filter skal tilføjes i ALLE disse:**
+1. **DB**: kolonne + index via `supabase/sql/*.sql` (kør i Dashboard)
+2. **Sidebar-filter (forsiden)**: `index.html` (filter-UI med `data-filter`/`data-value` eller inputs), `main.js applyFilters()` (indsaml værdier), `js/bikes-list.js loadBikesWithFilters()` (query: prefix=`ilike 'X*'` via `.or`, eksakt=`.in`, range=`.gte/.lte`) + `setCurrentFilterArgs()` + `.select()`-felter, `js/filters.js` (aktive-filter-pills + ryd-handlers), `updateFilterCounts()` hvis tæller vises
+3. **Kort** (`js/map-page.js`): `MAP_FILTER_*`-liste, `_mapAdvFilters` (init + reset), `.select()`, filter-logik i bike-filter, badge-tæller, filter-sheet-UI (advGroups eller input + handler)
+4. **Sælg-flow** (`js/sell-page.js`): form-felt (+ datalist/select), `updatePerfFieldsVisibility` (type-tilpasning), submit-payload
+5. **Rediger-annonce** (`js/listing-edit.js` + `partials/modals.html`): populér felt, `updateEditFieldsVisibility`, datalist (samme værdier som sælg), save-payload
+6. **Cykelagent** (`js/cykelagent-page.js`): `_form` default, editor-UI (chips/inputs), migration ved load (`openCykelagentEditor`), `hasFilter`-validering, gemt `filters`-objekt, kort-chip-summary
+7. **Cykelagent-match** (`supabase/functions/notify-saved-searches/index.ts`): `bikeMatchesSearch()` (samme semantik: prefix/eksakt/range) — **manuel deploy**
+8. **Match-payload** (`js/my-profile.js notifySavedSearches`): `.select()` + bike-payload-felter (ellers ser matchen feltet som null)
+9. **Gem-søgning** (`js/my-profile.js saveCurrentSearch`): `hasFilters`-guard + navn-`parts` (persistering sker via `...fa`-spread)
+10. **Visning**: `js/bike-detail.js` (techRows), `js/compare.js` (`.select()` + rows + `rawValue`)
+11. **Admin-oprettelse**: `js/admin-bulk-import.js OPTIONAL_FIELDS`, `supabase/functions/admin-create-bike ALLOWED_BIKE_FIELDS`
+12. Bump `ASSET_VERSION` (config.js) + CSS-`?v=` i `index.html` hvis CSS rørt
+
+Bemærk: edge functions (#7) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
 
 ## Database-tabeller (Supabase)
 

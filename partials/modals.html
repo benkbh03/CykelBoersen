@@ -187,7 +187,7 @@
           <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" placeholder="f.eks. FX 3 Disc"></div>
           <div class="form-group">
             <label>Cykeltype *</label>
-            <select><option value="">Vælg type</option><option>Racercykel</option><option>Mountainbike</option><option>Citybike</option><option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option></select>
+            <select><option value="">Vælg type</option><option>Racercykel</option><option>Mountainbike</option><option>Citybike</option><option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option><option>Senior cykel</option></select>
           </div>
           <div class="form-group">
             <label>Ramme / str.</label>
@@ -195,7 +195,7 @@
           </div>
           <div class="form-group">
             <label>Hjulstørrelse</label>
-            <select id="modal-wheel-size"><option value="">Vælg</option><option>26"</option><option>27.5" / 650b</option><option>28"</option><option>29"</option></select>
+            <select id="modal-wheel-size"><option value="">Vælg</option><option>12"</option><option>14"</option><option>16"</option><option>18"</option><option>20"</option><option>24"</option><option>26"</option><option>27.5" / 650b</option><option>28"</option><option>29"</option></select>
           </div>
           <div class="form-group"><label>Pris (kr.) *</label><input type="number" placeholder="f.eks. 4500"><div id="price-suggestion" class="price-suggestion" style="display:none;"></div></div>
           <div class="form-group"><label>Årstal</label><input type="number" placeholder="f.eks. 2021"></div>
@@ -429,11 +429,14 @@
           <!-- Cykelbørsen onboarding-service (admin opretter annoncer på forhandlers vegne) -->
           <div class="onboarding-service-box" id="admin-onboarding-box" style="display:none;">
             <div class="onboarding-service-title">🛠️ Cykelbørsen onboarding-service</div>
-            <p class="onboarding-service-desc">Lad Cykelbørsen oprette annoncer på dine vegne mens du kommer i gang. Vi kan KUN oprette annoncer — vi har ikke adgang til dine beskeder, indstillinger eller andet på din profil.</p>
+            <p class="onboarding-service-desc">Lad Cykelbørsen oprette og løbende vedligeholde dine cykel-annoncer på dine vegne — import fra dit webshop-feed, automatisk pris- og lager-synkronisering, og rettelser af annonce-detaljer. Vi har KUN adgang til dine annoncer (oprette, redigere, deaktivere) — ikke dine beskeder, indstillinger eller andet på din profil.</p>
             <a href="/databehandleraftale" onclick="event.preventDefault();navigateTo('/databehandleraftale')" class="onboarding-service-dpa-link">Læs databehandleraftalen →</a>
 
-            <!-- Vises når IKKE opt-in -->
+            <!-- Vises når IKKE opt-in (eller når vilkårene er opdateret og kræver gen-accept) -->
             <div id="admin-onboarding-grant">
+              <div id="admin-onboarding-reaccept-notice" style="display:none;background:#fff7e6;border:1px solid #e0a800;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:0.82rem;color:#7a5a00;line-height:1.5;">
+                ⚠️ <strong>Vilkårene er opdateret.</strong> Onboarding-servicen dækker nu også <strong>løbende vedligehold og rettelser</strong> af dine annoncer (ud over oprettelse). Bekræft venligst de opdaterede vilkår for at fortsætte.
+              </div>
               <label class="onboarding-service-consent">
                 <input type="checkbox" id="admin-onboarding-consent-cb">
                 <span>Jeg har læst databehandleraftalen og giver tilladelse</span>
@@ -608,17 +611,17 @@
         <div class="form-grid">
           <div class="form-group"><label>Mærke *</label>
             <div class="brand-autocomplete-wrap">
-              <input type="text" id="edit-brand" placeholder="f.eks. Trek" oninput="brandAutocomplete(this, 'edit-brand-list')" autocomplete="off">
+              <input type="text" id="edit-brand" placeholder="f.eks. Trek" oninput="brandAutocomplete(this, 'edit-brand-list')" autocomplete="off" maxlength="60">
               <div id="edit-brand-list" class="brand-autocomplete-list" style="display:none"></div>
             </div>
           </div>
-          <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" id="edit-model" placeholder="f.eks. FX 3"></div>
+          <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" id="edit-model" placeholder="f.eks. FX 3" maxlength="60"></div>
           <div class="form-group">
             <label>Cykeltype *</label>
             <select id="edit-type">
               <option value="">Vælg type</option>
               <option>Racercykel</option><option>Mountainbike</option><option>Citybike</option>
-              <option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option>
+              <option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option><option>Senior cykel</option>
             </select>
           </div>
           <div class="form-group">
@@ -633,7 +636,7 @@
               <span class="size-cm-unit">cm <span class="size-cm-hint">– valgfri præcis størrelse</span></span>
             </div>
           </div>
-          <div class="form-group"><label>Pris (kr.) *</label><input type="number" id="edit-price" placeholder="f.eks. 4500"></div>
+          <div class="form-group"><label>Pris (kr.) *</label><input type="number" id="edit-price" placeholder="f.eks. 4500" min="1" max="9999999" step="1" onwheel="this.blur()"></div>
           <div class="form-group"><label>Årstal</label><input type="number" id="edit-year" placeholder="f.eks. 2021"></div>
           <div class="form-group">
             <label>Stand *</label>
@@ -653,10 +656,11 @@
             <label>Hjulstørrelse</label>
             <select id="edit-wheel-size">
               <option value="">Vælg</option>
+              <option>12"</option><option>14"</option><option>16"</option><option>18"</option><option>20"</option><option>24"</option>
               <option>26"</option><option>27.5" / 650b</option><option>28"</option><option>29"</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-perf-only>
             <label>Stelmaterial</label>
             <select id="edit-frame-material">
               <option value="">Vælg</option>
@@ -671,7 +675,7 @@
               <option>Fælgbremser</option><option>Tromlebremser</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" data-perf-only>
             <label>Gear-skifte</label>
             <select id="edit-electronic-shifting">
               <option value="">Vælg</option>
@@ -679,12 +683,39 @@
               <option value="true">Elektronisk (Di2/eTap/AXS)</option>
             </select>
           </div>
+          <div class="form-group" data-suspension-only>
+            <label>Affjedring</label>
+            <select id="edit-suspension">
+              <option value="">Vælg</option>
+              <option>Forgaffel (hardtail)</option>
+              <option>Fuld affjedring (fully)</option>
+            </select>
+          </div>
           <div class="form-group">
+            <label>Geartype</label>
+            <select id="edit-geartype">
+              <option value="">Vælg</option>
+              <option value="Indvendig">Indvendig gear</option>
+              <option value="Udvendig">Udvendig gear</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Indstigning</label>
+            <select id="edit-step-type">
+              <option value="">Vælg</option>
+              <option value="Lav indstigning">Lav indstigning</option>
+              <option value="Høj indstigning">Høj indstigning</option>
+            </select>
+          </div>
+          <div class="form-group" data-perf-only>
             <label>Komponentgruppe <small style="color:var(--muted);font-weight:400">(fx Shimano 105)</small></label>
             <input type="text" id="edit-groupset" list="edit-groupset-list" placeholder="Shimano 105" autocomplete="off">
             <datalist id="edit-groupset-list">
               <option value="Shimano 105"><option value="Shimano Ultegra"><option value="Shimano Dura-Ace">
               <option value="SRAM Rival"><option value="SRAM Force"><option value="SRAM Red">
+              <option value="Shimano GRX 400"><option value="Shimano GRX 600"><option value="Shimano GRX 800"><option value="Shimano GRX Di2">
+              <option value="SRAM Apex"><option value="SRAM Apex XPLR"><option value="SRAM Rival XPLR"><option value="SRAM Force XPLR"><option value="SRAM Red XPLR">
+              <option value="Campagnolo Ekar">
               <option value="Shimano Deore"><option value="Shimano XT"><option value="Shimano SLX">
             </datalist>
           </div>
@@ -692,8 +723,28 @@
             <label>Vægt <small style="color:var(--muted);font-weight:400">(kg)</small></label>
             <input type="number" id="edit-weight-kg" placeholder="f.eks. 8.2" min="2" max="50" step="0.1">
           </div>
+          <div class="form-group" data-ebike-only>
+            <label>Motor <small style="color:var(--muted);font-weight:400">(el-cykel)</small></label>
+            <input type="text" id="edit-motor" list="edit-motor-list" placeholder="Bosch / Shimano / Promovec…" autocomplete="off">
+            <datalist id="edit-motor-list">
+              <option value="Bosch Performance Line CX"><option value="Bosch Active Line Plus"><option value="Shimano STEPS E6100"><option value="Shimano EP8"><option value="Promovec"><option value="Yamaha"><option value="Bafang"><option value="Mahle">
+            </datalist>
+          </div>
+          <div class="form-group" data-ebike-only>
+            <label>Motor-placering <small style="color:var(--muted);font-weight:400">(el-cykel)</small></label>
+            <select id="edit-motor-position">
+              <option value="">Vælg</option>
+              <option value="Midtermotor">Midtermotor</option>
+              <option value="Forhjulsmotor">Forhjulsmotor</option>
+              <option value="Baghjulsmotor">Baghjulsmotor</option>
+            </select>
+          </div>
+          <div class="form-group" data-ebike-only>
+            <label>Batteri <small style="color:var(--muted);font-weight:400">(Wh, el-cykel)</small></label>
+            <input type="number" id="edit-battery-wh" placeholder="f.eks. 500" min="100" max="2000" step="1">
+          </div>
           <div class="form-group full"><label>Farve(r) <small style="color:var(--muted);font-weight:400">(vælg én eller flere)</small></label><div class="color-swatch-grid" id="edit-color-grid"></div></div>
-          <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..."></textarea></div>
+          <div class="form-group full"><label>Beskrivelse</label><textarea id="edit-description" placeholder="Beskriv din cykel..." maxlength="2000"></textarea></div>
           <div class="form-group full" id="edit-warranty-group" style="display:none;">
             <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
             <input type="text" id="edit-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
@@ -701,6 +752,10 @@
           <div class="form-group full" id="edit-external-url-group" style="display:none;">
             <label>Link til din webshop <small style="color:var(--muted);font-weight:400">(valgfrit — skjuler bud-knap)</small></label>
             <input type="url" id="edit-external-url" placeholder="https://din-webshop.dk/cykler/cube-attain">
+          </div>
+          <div class="form-group full">
+            <label>Stelnummer <small style="color:var(--muted);font-weight:400">🔒 valgfrit — tyveri-tjekkes; kun sidste 4 cifre vises offentligt, hele nummeret gemmes ikke</small></label>
+            <input type="text" id="edit-frame-number" maxlength="50" autocomplete="off" placeholder="Indtast stelnummer">
           </div>
           <div class="form-group full">
             <label class="toggle-label">
@@ -779,8 +834,10 @@
         <div class="profile-tabs" style="margin-bottom:20px;">
           <button class="profile-tab active" id="atab-applications" onclick="switchAdminTab('applications')">Forhandler ansøgninger</button>
           <button class="profile-tab" id="atab-users" onclick="switchAdminTab('users')">Alle brugere</button>
-          <button class="profile-tab" id="atab-id" onclick="switchAdminTab('id')">ID ansøgninger</button>
           <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
+          <button class="profile-tab" id="atab-feed-import" onclick="switchAdminTab('feed-import')">🔗 Feed-sync</button>
+          <button class="profile-tab" id="atab-invite" onclick="switchAdminTab('invite')">➕ Invitér forhandler</button>
+          <button class="profile-tab" id="atab-stats" onclick="switchAdminTab('stats')">📊 Statistik</button>
         </div>
         <div id="admin-applications">
           <div id="admin-applications-list">
@@ -792,12 +849,28 @@
             <p style="color:var(--muted)">Indlæser...</p>
           </div>
         </div>
-        <div id="admin-id" style="display:none;">
-          <div id="admin-id-list">
-            <p style="color:var(--muted)">Indlæser...</p>
-          </div>
-        </div>
         <div id="admin-bulk-import" style="display:none;">
+          <p style="color:var(--muted)">Indlæser…</p>
+        </div>
+        <div id="admin-feed-import" style="display:none;">
+          <p style="color:var(--muted)">Indlæser…</p>
+        </div>
+        <div id="admin-invite" style="display:none;">
+          <p style="color:var(--muted);font-size:0.9rem;margin:0 0 16px;line-height:1.5;">
+            Opret en forhandler uden at kende deres adgangskode. De får en mail hvor de
+            <strong>selv vælger password</strong> — du sætter resten op (logo/cykler via bulk-import).
+          </p>
+          <div class="form-group"><label>Email *</label><input type="email" id="di-email" placeholder="forhandler@eksempel.dk"></div>
+          <div class="form-group"><label>Butiksnavn</label><input type="text" id="di-shop" placeholder="f.eks. Lindebjerg Cykler"></div>
+          <div class="form-group"><label>CVR-nummer</label><input type="text" inputmode="numeric" pattern="\d*" id="di-cvr" placeholder="f.eks. 12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'')"></div>
+          <div class="form-group"><label>Kontaktperson</label><input type="text" id="di-contact" placeholder="f.eks. Anders"></div>
+          <div class="form-group"><label>Telefon</label><input type="tel" inputmode="tel" id="di-phone" placeholder="f.eks. 12 34 56 78" maxlength="20"></div>
+          <div class="form-group"><label>Adresse</label><input type="text" id="di-address" placeholder="Vej + nr."></div>
+          <div class="form-group"><label>By</label><input type="text" id="di-city" placeholder="f.eks. Odense"></div>
+          <button id="di-submit" class="form-submit" onclick="submitDealerInvite()">Send invitation</button>
+          <div id="di-result" style="margin-top:14px;font-size:0.9rem;line-height:1.5;"></div>
+        </div>
+        <div id="admin-stats" style="display:none;">
           <p style="color:var(--muted)">Indlæser…</p>
         </div>
       </div>
@@ -854,10 +927,58 @@
         <div class="success-bike-name" id="success-bike-title"></div>
         <div class="success-bike-price" id="success-bike-price"></div>
       </div>
+      <button class="success-boost-cta" id="success-boost-btn">
+        <span class="success-boost-cta-star">⭐</span>
+        <span class="success-boost-cta-text">
+          <strong>Fremhæv din annonce</strong>
+          <span>Få den vist i toppen — første gang er gratis</span>
+        </span>
+        <span class="success-boost-cta-arrow">→</span>
+      </button>
       <div class="success-actions">
         <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce →</button>
         <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
       </div>
+      <style>
+        .success-crosssell{display:none;align-items:center;gap:12px;margin-top:16px;padding:14px 16px;background:var(--sand);border:1px solid var(--border);border-radius:14px;text-align:left;}
+        .success-crosssell-emoji{font-size:1.7rem;flex-shrink:0;line-height:1;}
+        .success-crosssell-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+        .success-crosssell-text strong{font-size:0.92rem;color:var(--charcoal);font-family:'DM Sans',sans-serif;}
+        .success-crosssell-text span{font-size:0.8rem;color:var(--muted);line-height:1.4;}
+        .success-crosssell-btn{flex-shrink:0;background:var(--forest);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s;}
+        .success-crosssell-btn:hover{background:#24331f;}
+        @media(max-width:480px){.success-crosssell{flex-wrap:wrap;} .success-crosssell-btn{width:100%;}}
+      </style>
+      <div class="success-crosssell" id="success-crosssell">
+        <span class="success-crosssell-emoji">🎒</span>
+        <div class="success-crosssell-text">
+          <strong>Har du også cykeltilbehør?</strong>
+          <span>Sælg dit gamle grej — hjelm, lygter, tasker … det er gratis.</span>
+        </div>
+        <button class="success-crosssell-btn" id="success-crosssell-btn">Sæt til salg →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FREMHÆV ANNONCE (BOOST) MODAL — udfyldes dynamisk af js/listing-boost.js ── -->
+  <div class="modal-overlay" id="boost-modal" role="dialog" aria-modal="true" style="z-index:6000;" onclick="if(event.target===this)closeBoostModal()">
+    <div class="modal boost-modal-inner" style="max-width:440px;">
+      <div class="modal-header">
+        <h2>⭐ Fremhæv annonce</h2>
+        <button class="modal-close" onclick="closeBoostModal()" aria-label="Luk">✕</button>
+      </div>
+      <div class="modal-body" id="boost-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ── CYKEL-VURDERING MODAL (åbnes fra sælg-flow så form-data ikke mistes) ── -->
+  <div class="modal-overlay" id="valuation-modal" role="dialog" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeValuationModal()">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2>💡 Gratis prisvurdering</h2>
+        <button class="modal-close" onclick="closeValuationModal()" aria-label="Luk">✕</button>
+      </div>
+      <div class="modal-body" id="valuation-modal-body"></div>
     </div>
   </div>
 

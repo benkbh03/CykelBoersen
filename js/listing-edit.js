@@ -25,9 +25,31 @@ export function createListingEdit({
   renderUserProfilePage,
   renderDealerProfilePage,
   attachCityAutocomplete,
+  accessoryTypes,
 }) {
   let editNewFiles     = [];  // { file, url, isPrimary }
   let editExistingImgs = [];  // { id, url, is_primary, toDelete }
+
+  // Kategori for den annonce der redigeres nu. 'tilbehoer' → let feltsæt
+  // (samme modal, cykel-specs skjult). Sættes i openEditModal.
+  let editCategory = 'cykel';
+  const ACC_TYPES  = Array.isArray(accessoryTypes) ? accessoryTypes : [];
+  // Kanonisk cykel-type-liste (skal matche edit-modal-markuppen + salg-formen).
+  const BIKE_TYPES = ['Racercykel','Mountainbike','Citybike','El-cykel','Ladcykel','Børnecykel','Gravel','Senior cykel'];
+  // Cykel-specifikke felt-grupper der skjules for tilbehør (id → nærmeste .form-group).
+  const ACC_HIDDEN_FIELDS = [
+    'edit-size','edit-year','edit-wheel-size','edit-frame-material','edit-brake-type',
+    'edit-electronic-shifting','edit-suspension','edit-geartype','edit-step-type',
+    'edit-groupset','edit-weight-kg','edit-motor','edit-motor-position','edit-battery-wh',
+    'edit-color-grid','edit-frame-number',
+  ];
+
+  // Admin-redigerer-anden-forhandlers-annonce kontekst. Når true gemmer vi
+  // bikes-rækken via SECURITY DEFINER-RPC'en admin_update_bike (RLS tillader
+  // ikke direkte update af andres annonce) og springer billed-mutationer over
+  // (de er stadig RLS-beskyttede — admin retter felter, ikke feed-billeder).
+  let editBikeOwnerId  = null;
+  let editIsAdminOther = false;
 
   // ── State accessors ────────────────────────────────────────
 
@@ -170,6 +192,16 @@ export function createListingEdit({
       .eq('id', id).single();
     if (error || !b) { showToast('❌ Kunne ikke hente annonce'); return; }
 
+    // Admin der redigerer en ANDEN forhandlers annonce? (feed-rettelse + lås)
+    const _cu = getCurrentUser();
+    editBikeOwnerId  = b.user_id;
+    editIsAdminOther = !!(_cu && b.user_id && b.user_id !== _cu.id && getCurrentProfile()?.is_admin);
+
+    // Kategori-layout FØR felterne udfyldes (swapper type-options + skjuler
+    // cykel-specs), så edit-type.value = b.type rammer den rigtige option-liste.
+    editCategory = b.category === 'tilbehoer' ? 'tilbehoer' : 'cykel';
+    applyEditCategoryLayout();
+
     document.getElementById('edit-bike-id').value       = b.id;
     document.getElementById('edit-brand').value         = b.brand || '';
     document.getElementById('edit-model').value         = b.model || '';
@@ -194,8 +226,16 @@ export function createListingEdit({
       b.electronic_shifting === true ? 'true' : (b.electronic_shifting === false ? 'false' : '');
     document.getElementById('edit-groupset').value           = b.groupset || '';
     document.getElementById('edit-weight-kg').value          = b.weight_kg ?? '';
+    document.getElementById('edit-motor').value              = b.motor || '';
+    document.getElementById('edit-motor-position').value     = b.motor_position || '';
+    { const s = document.getElementById('edit-suspension'); if (s) s.value = b.suspension || ''; }
+    { const g = document.getElementById('edit-geartype'); if (g) g.value = b.geartype || ''; }
+    { const st = document.getElementById('edit-step-type'); if (st) st.value = b.step_type || ''; }
+    document.getElementById('edit-battery-wh').value         = b.battery_wh ?? '';
 
-    const isDealer = getCurrentProfile()?.seller_type === 'dealer';
+    // Forhandler-felter (garanti, webshop-link): vis for forhandlere — og for
+    // admins der redigerer en forhandlers annonce (editIsAdminOther).
+    const isDealer = editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer';
     const warrantyGroup = document.getElementById('edit-warranty-group');
     if (warrantyGroup) warrantyGroup.style.display = isDealer ? '' : 'none';
     document.getElementById('edit-warranty').value = b.warranty || '';
@@ -203,6 +243,16 @@ export function createListingEdit({
     const extUrlGroup = document.getElementById('edit-external-url-group');
     if (extUrlGroup) extUrlGroup.style.display = isDealer ? '' : 'none';
     document.getElementById('edit-external-url').value = b.external_url || '';
+
+    // Stelnummer: vis kun status/sidste 4 (vi gemmer aldrig hele nummeret).
+    // Tomt felt = uændret; indtast igen for at gen-tjekke.
+    { const fn = document.getElementById('edit-frame-number');
+      if (fn) {
+        fn.value = '';
+        fn.placeholder = b.frame_last4
+          ? `Tjekket · slutter på ••${b.frame_last4} — indtast igen for at gen-tjekke`
+          : 'Indtast stelnummer';
+      } }
 
     editNewFiles     = [];
     editExistingImgs = (b.bike_images || []).map(img => ({
@@ -217,8 +267,69 @@ export function createListingEdit({
     const editCityInput = document.getElementById('edit-city');
     if (editCityInput) attachCityAutocomplete(editCityInput);
 
+    // Type-tilpassede tekniske felter (som salg-formen): vis kun de relevante.
+    updateEditFieldsVisibility(b.type);
+    const editTypeEl = document.getElementById('edit-type');
+    if (editTypeEl && !editTypeEl._visBound) {
+      editTypeEl.addEventListener('change', () => updateEditFieldsVisibility(editTypeEl.value));
+      editTypeEl._visBound = true;
+    }
+
     document.getElementById('edit-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+  }
+
+  // Tilpas edit-modalen til kategori: 'tilbehoer' skjuler cykel-specs, swapper
+  // type-dropdownen til tilbehørs-underkategorier og omdøber labels. Toggler
+  // BEGGE veje (modalen genbruges på tværs af cykel/tilbehør-redigeringer).
+  function applyEditCategoryLayout() {
+    const isAcc = editCategory === 'tilbehoer';
+
+    ACC_HIDDEN_FIELDS.forEach(id => {
+      const grp = document.getElementById(id)?.closest('.form-group');
+      if (grp) grp.style.display = isAcc ? 'none' : '';
+    });
+
+    // Type-dropdown: tilbehørs-underkategorier vs cykel-typer.
+    const typeSel = document.getElementById('edit-type');
+    if (typeSel) {
+      typeSel.innerHTML = isAcc
+        ? '<option value="">Vælg kategori</option>' + ACC_TYPES.map(t => `<option>${t}</option>`).join('')
+        : '<option value="">Vælg type</option>' + BIKE_TYPES.map(t => `<option>${t}</option>`).join('');
+    }
+
+    // Labels
+    const typeLabel = typeSel?.closest('.form-group')?.querySelector('label');
+    if (typeLabel) typeLabel.textContent = isAcc ? 'Kategori *' : 'Cykeltype *';
+    const modelLabel = document.getElementById('edit-model')?.closest('.form-group')?.querySelector('label');
+    if (modelLabel) modelLabel.innerHTML = isAcc
+      ? 'Titel *'
+      : 'Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span>';
+    const brandLabel = document.getElementById('edit-brand')?.closest('.form-group')?.querySelector('label');
+    if (brandLabel) brandLabel.innerHTML = isAcc
+      ? 'Mærke <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(valgfrit)</span>'
+      : 'Mærke *';
+    const descEl = document.getElementById('edit-description');
+    if (descEl) descEl.placeholder = isAcc ? 'Beskriv tilbehøret — stand, størrelse, alder, evt. fejl…' : 'Beskriv din cykel...';
+  }
+
+  // Vis kun de tekniske felter der giver mening for cykeltypen (spejler salg-formen).
+  // Skjulte felter beholder deres værdi i DOM'en, så data ikke mistes ved gem.
+  function updateEditFieldsVisibility(type) {
+    if (editCategory === 'tilbehoer') return;  // tilbehør styres af applyEditCategoryLayout
+    const PERF = ['Racercykel', 'Mountainbike', 'Gravel'];
+    const SUSPENSION = ['Mountainbike', 'Gravel', 'El-cykel'];
+    const isPerf  = PERF.includes(type);
+    const isEbike = type === 'El-cykel';
+    document.querySelectorAll('#edit-modal [data-perf-only]').forEach(el => {
+      el.style.display = isPerf ? '' : 'none';
+    });
+    document.querySelectorAll('#edit-modal [data-ebike-only]').forEach(el => {
+      el.style.display = isEbike ? '' : 'none';
+    });
+    document.querySelectorAll('#edit-modal [data-suspension-only]').forEach(el => {
+      el.style.display = SUSPENSION.includes(type) ? '' : 'none';
+    });
   }
 
   function closeEditModal() {
@@ -234,10 +345,40 @@ export function createListingEdit({
   async function saveEditedListing() {
     const id = document.getElementById('edit-bike-id').value;
     const editModel = document.getElementById('edit-model').value.trim();
-    if (!editModel && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du gemme uden model alligevel?')) {
+    if (editCategory !== 'tilbehoer' && !editModel && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du gemme uden model alligevel?')) {
       return;
     }
     enforceSinglePrimaryImage();
+
+    // ── TILBEHØR: let feltsæt (ingen cykel-specs), egen validering ──
+    if (editCategory === 'tilbehoer') {
+      const title = document.getElementById('edit-model').value.trim();
+      const brand = document.getElementById('edit-brand').value.trim();
+      const type  = document.getElementById('edit-type').value;
+      const cond  = document.getElementById('edit-condition').value;
+      const price = parseInt(document.getElementById('edit-price').value);
+      const desc  = document.getElementById('edit-description').value;
+      const city  = document.getElementById('edit-city').value.trim();
+      if (!title || !type || !cond || !city) { showToast('⚠️ Udfyld alle påkrævede felter'); return; }
+      if (!Number.isFinite(price) || price < 1 || price > 9999999) {
+        showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
+      }
+      const accUpdates = {
+        category:    'tilbehoer',
+        brand:       brand || '',
+        model:       title,
+        title:       bikeTitle(brand, title),
+        type,
+        price,
+        condition:   cond,
+        city,
+        description: desc || null,
+        is_active:   document.getElementById('edit-is-active').checked,
+        feed_locked: true,
+      };
+      await _persistEditedListing(id, accUpdates);
+      return;
+    }
 
     const electronicRaw = document.getElementById('edit-electronic-shifting').value;
     const weightRaw     = document.getElementById('edit-weight-kg').value;
@@ -258,20 +399,39 @@ export function createListingEdit({
       size_cm:     parseInt(document.getElementById('edit-size-cm').value) || null,
       condition:   document.getElementById('edit-condition').value,
       is_active:   document.getElementById('edit-is-active').checked,
-      warranty:    (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-warranty').value.trim() : null) || null,
-      external_url: (getCurrentProfile()?.seller_type === 'dealer' ? document.getElementById('edit-external-url').value.trim() : null) || null,
+      warranty:    ((editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer') ? document.getElementById('edit-warranty').value.trim() : null) || null,
+      external_url: ((editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer') ? document.getElementById('edit-external-url').value.trim() : null) || null,
       wheel_size:         document.getElementById('edit-wheel-size').value || null,
       frame_material:     document.getElementById('edit-frame-material').value || null,
       brake_type:         document.getElementById('edit-brake-type').value || null,
       electronic_shifting: electronicRaw === 'true' ? true : (electronicRaw === 'false' ? false : null),
       groupset:           document.getElementById('edit-groupset').value.trim() || null,
       weight_kg:          (weightKg != null && !isNaN(weightKg)) ? weightKg : null,
+      motor:              document.getElementById('edit-motor').value.trim() || null,
+      motor_position:     document.getElementById('edit-motor-position').value || null,
+      battery_wh:         parseInt(document.getElementById('edit-battery-wh').value) || null,
+      suspension:         document.getElementById('edit-suspension')?.value || null,
+      geartype:           document.getElementById('edit-geartype')?.value || null,
+      step_type:          document.getElementById('edit-step-type')?.value || null,
+      // Manuel redigering låser annoncen, så den natlige feed-sync ikke
+      // overskriver dine rettelser (kun pris opdateres for låste cykler).
+      feed_locked:        true,
     };
 
     if (!updates.brand || !updates.price || !updates.city) {
       showToast('⚠️ Udfyld alle påkrævede felter'); return;
     }
+    if (!Number.isFinite(updates.price) || updates.price < 1 || updates.price > 9999999) {
+      showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
+    }
 
+    await _persistEditedListing(id, updates);
+  }
+
+  // Fælles gem-logik (både cykel og tilbehør): btnLoading, opdater bikes-rækken
+  // (RPC ved admin-på-anden), stelnr-tjek, prisfald-notifikation, billed-
+  // mutationer, cache-clear og genrender af relevante views.
+  async function _persistEditedListing(id, updates) {
     const restore = btnLoading('edit-save-btn', 'Gemmer annonce...');
     try {
     // Hent den gamle pris så vi kan opdage et prisfald og trigge alarmer
@@ -282,8 +442,30 @@ export function createListingEdit({
       .single();
     const oldPrice = oldBike?.price ?? null;
 
-    const { error } = await supabase.from('bikes').update(updates).eq('id', id);
-    if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+    if (editIsAdminOther) {
+      // Admin retter en forhandlers annonce → SECURITY DEFINER-RPC (omgår RLS,
+      // håndhæver admin + udvidet samtykke server-side, sætter feed_locked=true).
+      const { error } = await supabase.rpc('admin_update_bike', { p_bike_id: id, p_updates: updates });
+      if (error) {
+        showToast(error.message?.includes('opdaterede onboarding')
+          ? '❌ Forhandleren har ikke accepteret de opdaterede onboarding-vilkår'
+          : '❌ Kunne ikke gemme ændringer');
+        console.error(error); return;
+      }
+    } else {
+      const { error } = await supabase.from('bikes').update(updates).eq('id', id);
+      if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+    }
+
+    // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret). Tyveri-
+    // tjekkes server-side; kun sidste 4 + resultat gemmes (aldrig hele nummeret).
+    const frameInput = document.getElementById('edit-frame-number');
+    const frameVal = frameInput ? frameInput.value.trim() : '';
+    if (frameVal) {
+      supabase.functions.invoke('check-frame-number', {
+        body: { bike_id: id, frame_number: frameVal },
+      }).catch(() => { /* fire-and-forget */ });
+    }
 
     // Prisfald-trigger: hvis sælgeren har sat prisen ned, send notifikation til
     // alle der watcher annoncen ved en pris HØJERE end den nye pris.
@@ -300,6 +482,10 @@ export function createListingEdit({
       }).catch(() => { /* fire-and-forget */ });
     }
 
+    // Billed-mutationer: kun for ejeren. Admin der retter en anden forhandlers
+    // annonce rører IKKE billederne (bike_images er RLS-beskyttet, og admin-
+    // rettelsen handler om specs/tekst — feed-billederne bevares som de er).
+    if (!editIsAdminOther) {
     const toDelete = editExistingImgs.filter(img => img.toDelete);
     const toKeep   = editExistingImgs.filter(img => !img.toDelete);
     for (const img of toDelete) {
@@ -345,6 +531,7 @@ export function createListingEdit({
       const { data: firstImg } = await supabase.from('bike_images').select('id').eq('bike_id', id).limit(1).single();
       if (firstImg) await supabase.from('bike_images').update({ is_primary: true }).eq('id', firstImg.id).eq('bike_id', id);
     }
+    } // end !editIsAdminOther image mutations
 
     bikeCache.delete(id);
     bikeCache.delete(Number(id));
@@ -354,6 +541,9 @@ export function createListingEdit({
     reloadMyListings();
     loadBikes();
     updateFilterCounts();
+    // Genindlæs admin-gennemgå-listen (hvis åben) så nye værdier + 🔒 vises
+    // med det samme — uanset om det var admin-på-anden eller egen feed-cykel.
+    if (typeof window.reviewFeedRefresh === 'function') window.reviewFeedRefresh();
 
     const currentPath   = window.location.pathname;
     const bikeModalOpen = document.getElementById('bike-modal')?.classList.contains('open');

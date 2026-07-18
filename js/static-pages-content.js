@@ -77,7 +77,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -93,7 +93,8 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Du skal være mindst 18 år for at oprette en konto. Hver person må kun have én aktiv konto.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Platformens rolle</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
+      <p style="margin-bottom:8px;">Ved <strong>køb og salg</strong> af cykler er Cykelbørsen udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
+      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
@@ -106,34 +107,28 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4a. Tilladt sortiment</h3>
-      <p style="margin-bottom:8px;">Cykelbørsen er udelukkende en markedsplads for cykler. Følgende må sælges på platformen:</p>
+      <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Almindelige cykler</strong> i alle kategorier — racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
         <li><strong>El-cykler (pedelec)</strong> med motor op til 250W og max 25 km/t med pedal-assist. Det er det færdselsloven definerer som "cykel" og kræver ikke registrering, kørekort eller forsikring.</li>
+        <li><strong>Speed pedelecs (S-pedelec)</strong> — pedelecs med pedal-assist over 25 km/t (op til 45 km/t). <strong>Vigtigt:</strong> en speed pedelec er juridisk en lille knallert (L1e-B) og kræver registrering med nummerplade, lovpligtig ansvarsforsikring, kørekort (mindst kategori AM) og styrthjelm. Sælger skal oplyse dette tydeligt i annoncen (se nedenfor).</li>
+        <li><strong>Cykeltilbehør og -udstyr</strong> — fx hjelme, lygter, låse, cykelcomputere, tasker, pumper, barnestole, hometrainere, cykelsko, cykelbeklædning, skærme og dæk/slanger.</li>
+        <li><strong>Reservedele og komponenter</strong> — fx hjul, dæk/slanger, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr og forgafler.</li>
       </ul>
-      <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke er cykler jvf. dansk lovgivning:</p>
+      <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke har trædefunktion / ikke er cykler eller speed pedelecs jvf. dansk lovgivning:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>El-løbehjul og el-scootere</strong> — andet køretøj-segment.</li>
-        <li><strong>Speed pedelecs</strong> (cykler med motor 250-1000W eller hastighed over 25 km/t med pedal-assist) — kræver registrering som lille knallert (L1e), nummerplade og ansvarsforsikring.</li>
-        <li><strong>El-motocross, el-motorcykler og el-mopeder</strong> over 1000W eller over 45 km/t — kræver kørekort og fuld registrering som motorkøretøj.</li>
-        <li><strong>Almindelige knallerter, scootere og motorcykler.</strong></li>
-        <li><strong>Cykelreservedele eller tilbehør uden tilhørende cykel</strong> (kan ændres i en fremtidig version af platformen).</li>
+        <li><strong>El-motorcykler, el-motocross og el-mopeder</strong> — motorkøretøjer uden pedal-assist eller med tophastighed over 45 km/t.</li>
+        <li><strong>Almindelige knallerter, scootere og motorcykler</strong> uden trædefunktion.</li>
       </ul>
-      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist, så køber kan verificere at cyklen falder inden for cykel-definitionen.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist. Sælger du en <strong>speed pedelec</strong>, skal du derudover tydeligt angive i annoncen, at det er en speed pedelec der kræver registrering, nummerplade, ansvarsforsikring og kørekort — så køber kender de juridiske krav inden køb.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
       <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
-      <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 30 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 90 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres reklamationsforpligtelser</h3>
-      <p style="margin-bottom:8px;">Forhandlere der sælger brugte cykler til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning, herunder:</p>
-      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>Reklamationsret:</strong> Forbrugere har 2 års reklamationsret på nye varer og mindst 1 års reklamationsret på brugte varer jf. købelovens § 83.</li>
-        <li><strong>Fortrydelsesret:</strong> Ved fjernsalg (fx aftaler indgået via beskedsystemet) har forbrugere 14 dages fortrydelsesret jf. forbrugeraftalelovens § 18.</li>
-        <li><strong>Oplysningspligt:</strong> Forhandlere skal tydeligt oplyse om reklamationsret, pris inkl. eventuelle gebyrer og leveringsbetingelser.</li>
-        <li><strong>Markedsføringsloven:</strong> Al kommunikation og annoncering skal være sandfærdig og ikke vildledende.</li>
-      </ul>
-      <p style="margin-bottom:16px;">Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse af ovenstående. Tvister mellem forbrugere og forhandlere skal løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres forbrugeransvar</h3>
+      <p style="margin-bottom:16px;">Forhandlere der sælger til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning — herunder reklamationsret, fortrydelsesret ved fjernsalg, oplysningspligt og markedsføringsloven. Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse heraf. Tvister mellem forbrugere og forhandlere løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
@@ -163,7 +158,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Fortrydelsesret</h3>
-      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, gælder der ingen fortrydelsesret for oprettelse af brugerkonti eller annoncer — disse kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger, og er underlagt købelovens almindelige regler om fortrydelsesret ved fjernsalg mellem forbruger og erhvervsdrivende (14 dages fortrydelsesret jf. forbrugeraftalelovens kap. 4). Ved private handler mellem to privatpersoner gælder fortrydelsesretten ikke.</p>
+      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, er der ingen fortrydelsesret forbundet med at oprette en brugerkonto eller en annonce — begge kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger; om der gælder fortrydelsesret — fx 14 dage ved fjernkøb fra en erhvervsdrivende, jf. forbrugeraftaleloven — afhænger af den konkrete handel og er sælgers ansvar (se §5a). Ved handler mellem to private gælder der ingen fortrydelsesret.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. AI-chatassistent</h3>
       <p style="margin-bottom:16px;">Platformen tilbyder en AI-baseret chatassistent til generel hjælp og support. Svar fra AI-assistenten er udelukkende vejledende og udgør ikke juridisk, økonomisk eller professionel rådgivning. Vi garanterer ikke for rigtigheden eller fuldstændigheden af AI-assistentens svar. Ved tvivl bør du altid kontakte os direkte eller søge professionel rådgivning.</p>
@@ -181,7 +176,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -200,8 +195,13 @@ export const footerContent = {
         <li><strong>Sidst sete annoncer:</strong> Vi gemmer lokalt i din browser (localStorage) de seneste 8 annoncer du har klikket på, så vi kan vise dem i "Sidst set"-rækken på forsiden. Data forlader aldrig din browser og slettes når du rydder browserdata.</li>
         <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
-        <li><strong>Betalingsdata:</strong> Forhandlerabonnementer er gratis under platformens lanceringsfase. Når betaling senere aktiveres, håndteres den af Stripe — vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
+        <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
+        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres af Stripe — se betalingsdata.</li>
+        <li><strong>Betalingsdata:</strong> Betalt fremhævning (boost) af annoncer samt udlejnings-bookinger håndteres af Stripe. Forhandlerabonnementer er gratis under platformens lanceringsfase; når betaling for abonnementer senere aktiveres, håndteres den ligeledes af Stripe. Vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
+        <li><strong>Udlejningsdata:</strong> Hvis du udbyder cykler til udlejning som forhandler, gemmer vi dine udlejningsopslag (titel, type, priser, depositum, tilgængelighed, billeder). Hvis du booker en udlejningscykel som kunde, gemmer vi bookingen (den valgte cykel, forhandler, datoer, beløb og status) for at gennemføre lejeaftalen mellem dig og forhandleren.</li>
+        <li><strong>Udlejer-verifikation (Stripe Connect):</strong> For at en forhandler kan modtage udlejningsbetalinger opretter Stripe en konto til forhandleren, hvor forhandleren afgiver identitets-, virksomheds- og bankoplysninger direkte til Stripe (KYC-verifikation). Vi opbevarer kun en reference til Stripe-kontoen og dens status — ikke selve identitets- eller bankoplysningerne.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
+        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, sender vi det til tyveriregisteret BikeIndex for et opslag. Vi gemmer <strong>aldrig</strong> hele stelnummeret — kun de sidste 4 cifre samt resultatet af opslaget (om der blev fundet et muligt match). Det fulde nummer kasseres efter opslaget.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
@@ -239,9 +239,29 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Forebyggelse af misbrug og svindel</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Henvendelser via kontaktformular</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Fremhævning/boost af annoncer</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Tyveri-tjek af oplyst stelnummer mod BikeIndex</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse (bekæmpelse af tyverihæleri)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Udlejnings-booking, betaling og udbetaling til forhandler</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Bogføring af udlejningsbetalinger og kommission</td>
+          <td style="padding:8px 0;">Art. 6(1)(c) — retlig forpligtelse (bogføringsloven)</td>
         </tr>
       </table>
 
@@ -249,11 +269,12 @@ export const footerContent = {
       <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Supabase (USA)</strong> — Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
-        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for forhandlerabonnementer. Stripe er selvstændig dataansvarlig for betalingsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
+        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
         <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
         <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
+        <li><strong>BikeIndex (USA)</strong> — Internationalt tyveriregister for cykler. Hvis du oplyser et stelnummer på en annonce, sendes det til BikeIndex for et opslag mod efterlyste cykler. Vi gemmer kun resultatet og de sidste 4 cifre — aldrig hele nummeret. Se <a href="https://bikeindex.org/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">BikeIndex' privatlivspolitik</a>.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 
@@ -267,6 +288,8 @@ export const footerContent = {
         <li><strong>Beskeder:</strong> Opbevares så længe kontoen eksisterer og slettes ved kontosletning.</li>
         <li><strong>ID-dokumenter:</strong> Slettes efter verificeringsprocessen er afsluttet.</li>
         <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
+        <li><strong>Visningstæller-log:</strong> Bruges kun til at undgå dobbelttælling og slettes automatisk, når den tilhørende annonce slettes.</li>
+        <li><strong>Udlejnings-bookinger:</strong> Bookingoplysninger opbevares så længe kontoen eksisterer. Betalings- og regnskabsrelaterede oplysninger om gennemførte udlejningsbetalinger opbevares dog i op til 5 år efter udgangen af regnskabsåret, jf. bogføringslovens krav.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
@@ -298,7 +321,7 @@ export const footerContent = {
     title: 'Cookiepolitik',
     metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 13. maj 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. juni 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
       <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde — små data-poster i din browser, vi bruger til at huske dig.</p>
@@ -333,10 +356,15 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">Cursor til notifikationer om gemte søgninger (Cykelagent), så vi ikke sender dobbeltbeskeder. Forlader aldrig din browser.</td>
           <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
-        <tr>
+        <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">dealer_signup_source (sessionStorage)</td>
           <td style="padding:8px 8px 8px 0;">Hvis du klikker på et link med UTM-parametre (fx fra en e-mail-kampagne) til "Bliv forhandler", husker vi kilden midlertidigt, så vi kan se hvilken kanal der har skabt ansøgningen. Slettes når du lukker browseren.</td>
           <td style="padding:8px 0;">Session</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">cb_viewer_id</td>
+          <td style="padding:8px 8px 8px 0;">En tilfældig, anonym kode der bruges til at tælle annonce-visninger korrekt uden dobbelttælling, hvis du ikke er logget ind. Indeholder ingen oplysninger om dig.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
       </table>
 
@@ -358,9 +386,9 @@ export const footerContent = {
   },
   sortiment: {
     title: 'Tilladt sortiment',
-    metaDesc: 'Hvad må sælges på Cykelbørsen? Alle cykler og el-cykler op til 250W. Ikke el-løbehjul, knallerter eller motorcykler.',
+    metaDesc: 'Hvad må sælges på Cykelbørsen? Alle cykler, el-cykler op til 250W og cykeltilbehør. Ikke el-løbehjul, knallerter eller motorcykler.',
     body: `
-      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler. Her er hvad der må sælges, og hvad der ikke gør — så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
+      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler og cykeltilbehør. Her er hvad der må sælges, og hvad der ikke gør — så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
         <div style="background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:18px 20px;">
@@ -368,24 +396,25 @@ export const footerContent = {
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>Alle slags cykler — racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
+            <li>Speed pedelecs (op til <strong>45 km/t</strong>) — kræver registrering, forsikring &amp; kørekort; skal oplyses i annoncen</li>
+            <li>Cykeltilbehør og -udstyr — hjelme, lygter, låse, computere, tasker, pumper, barnestole, hometrainere, sko, beklædning, skærme, dæk/slanger m.m.</li>
+            <li>Reservedele og komponenter — hjul, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr, forgafler m.m.</li>
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
           <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#c8302a;margin:0 0 12px;display:flex;align-items:center;gap:8px;">❌ Må IKKE sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>El-løbehjul og el-scootere</li>
-            <li>Speed pedelecs (250-1000W eller over 25 km/t)</li>
-            <li>El-motocross, el-motorcykler, el-mopeder</li>
-            <li>Almindelige knallerter og motorcykler</li>
-            <li>Cykelreservedele eller tilbehør alene (uden cykel)</li>
+            <li>El-motorcykler, el-motocross &amp; el-mopeder (uden pedaler / over 45 km/t)</li>
+            <li>Almindelige knallerter, scootere og motorcykler</li>
           </ul>
         </div>
       </div>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Hvorfor er grænsen ved 250W og 25 km/t?</h3>
       <p style="margin-bottom:16px;">Det er Færdselslovens definition af en "cykel". En el-cykel med motor på højst 250W og maksimal hastighed 25 km/t med pedal-assist betragtes juridisk som en cykel og kræver ikke registrering, nummerplade, kørekort eller forsikring.</p>
-      <p style="margin-bottom:16px;">Så snart en cykel overstiger 250W eller kan køre over 25 km/t på motorkraft, klassificeres den som <strong>lille knallert (L1e)</strong> eller motorcykel. Det betyder registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring, og at føreren skal have kørekort til kategorien.</p>
-      <p style="margin-bottom:24px;">Vi tillader ikke disse på Cykelbørsen fordi det forvirrer købere (mange ved ikke at en 1000W "el-cykel" er en knallert juridisk) og lægger juridisk risiko på dig som sælger.</p>
+      <p style="margin-bottom:16px;">En pedelec der hjælper over 25 km/t (op til 45 km/t) er en <strong>speed pedelec</strong> — juridisk en lille knallert (L1e-B). Den <strong>må gerne sælges på Cykelbørsen</strong>, men den kræver registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring og kørekort (mindst kategori AM). Derfor skal sælger oplyse dette tydeligt i annoncen, så køber kender kravene inden køb.</p>
+      <p style="margin-bottom:24px;">Rene motorkøretøjer <strong>uden trædefunktion</strong> — eller køretøjer der kan køre over 45 km/t — hører ikke hjemme på en cykel-markedsplads og må ikke sælges her.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Oplysningspligt ved salg af el-cykler</h3>
       <p style="margin-bottom:16px;">Sælger du en el-cykel, skal du i selve annonceteksten oplyse:</p>
@@ -395,6 +424,7 @@ export const footerContent = {
         <li><strong>Batterikapacitet</strong> i Wh eller Ah (fx "504 Wh / 14 Ah")</li>
       </ul>
       <p style="margin-bottom:16px;">Det giver køberen tryghed for at cyklen falder inden for cykel-definitionen og ikke kræver registrering.</p>
+      <p style="margin-bottom:16px;">Sælger du en <strong>speed pedelec</strong> (over 25 km/t), skal du derudover tydeligt skrive i annoncen, at det er en speed pedelec, og at den kræver <strong>registrering, nummerplade, ansvarsforsikring og kørekort</strong> (mindst kategori AM). Så ved køber præcis hvad der følger med.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Tvivlstilfælde</h3>
       <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs — så svarer vi indenfor et par timer.</p>
@@ -417,7 +447,7 @@ export const footerContent = {
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
           <span style="font-size:1.4rem;">⏱️</span>
           <div>
-            <div style="font-weight:600;font-size:0.88rem;">Svartid</div>
+            <div style="font-weight:600;font-size:0.88rem;">Du hører fra os</div>
             <div style="color:var(--muted);font-size:0.85rem;">Hverdage kl. 9–17</div>
           </div>
         </div>
@@ -489,43 +519,74 @@ export const footerContent = {
       </div>
     `
   },
+  udlejningsvilkaar: {
+    title: 'Udlejningsvilkår',
+    metaDesc: 'Vilkår for cykeludlejning via Cykelbørsen — booking, betaling, depositum, afbestilling og ansvar mellem kunde og forhandler.',
+    body: `
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 10. juli 2026</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Om udlejningstjenesten</h3>
+      <p style="margin-bottom:16px;">Cykelbørsen formidler udlejning af cykler mellem private kunder og registrerede forhandlere ("udlejere"). Selve lejeaftalen indgås mellem kunden og forhandleren; Cykelbørsen håndterer booking og betaling som betalingsformidler via Stripe. Forhandleren er ansvarlig for cyklens stand, udlevering og for at leve op til lejeaftalen.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Booking og betaling</h3>
+      <p style="margin-bottom:8px;">Når du booker, betaler du leje og et eventuelt depositum via Stripe. Bookingen bekræftes automatisk ved gennemført betaling. Cykelbørsen opkræver en kommission af forhandleren og udbetaler resten til forhandleren.</p>
+      <p style="margin-bottom:16px;">Betalinger behandles sikkert af Stripe. Cykelbørsen opbevarer ikke dine kortoplysninger.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Depositum</h3>
+      <p style="margin-bottom:16px;">Hvis forhandleren kræver depositum, opkræves det sammen med lejen og <strong>tilbagebetales efter aflevering</strong>, forudsat at cyklen afleveres uden skader ud over normal brug. Ved skade kan forhandleren tilbageholde depositummet helt eller delvist. Uenigheder om skade afgøres mellem kunde og forhandler; Cykelbørsen er ikke part i vurderingen.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Afbestilling og refusion</h3>
+      <p style="margin-bottom:16px;">En booking kan afbestilles af både kunde og forhandler frem til lejeperiodens start. Ved afbestilling refunderes hele det betalte beløb (leje + depositum). Forhandleren kan fastsætte yderligere betingelser i sin egen beskrivelse.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Ansvar</h3>
+      <p style="margin-bottom:16px;">Kunden er ansvarlig for cyklen i lejeperioden og skal behandle den forsvarligt og følge færdselsloven. Forhandleren er ansvarlig for at cyklen er i lovlig og sikker stand ved udlevering. Cykelbørsen er alene betalingsformidler og platform og er ikke ansvarlig for skader, tyveri, personskade eller tab i forbindelse med udlejningen. Kunde og forhandler opfordres til at aftale forsikringsforhold indbyrdes.</p>
+
+      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Persondata</h3>
+      <p style="margin-bottom:16px;">Ved en booking behandles nødvendige oplysninger (navn, kontakt, datoer, beløb) for at gennemføre lejeaftalen. Se <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')" style="color:var(--rust);">privatlivspolitikken</a> for detaljer.</p>
+    `
+  },
   databehandleraftale: {
     title: 'Databehandleraftale — Cykelbørsen onboarding-service',
     metaDesc: 'Databehandleraftale for forhandlere der ønsker at Cykelbørsen opretter annoncer på deres vegne under onboarding.',
     body: `
-      <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 14. maj 2026</p>
+      <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 19. juni 2026</p>
       <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
+      <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;">⚠️ <strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen — udover at oprette annoncer — også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Formål og omfang</h3>
-      <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette annoncer på dine vegne i en begrænset onboarding-fase. Konkret må Cykelbørsen:</p>
+      <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette <em>og løbende vedligeholde</em> annoncer på dine vegne. Konkret må Cykelbørsen:</p>
       <ul style="margin-bottom:16px;">
-        <li>Indsætte rækker i tabellen <code>bikes</code> med dit bruger-id som ejer</li>
-        <li>Indsætte rækker i tabellen <code>bike_images</code> linket til disse annoncer</li>
+        <li><strong>Oprette annoncer:</strong> indsætte rækker i tabellen <code>bikes</code> med dit bruger-id som ejer, samt tilhørende billeder i <code>bike_images</code></li>
+        <li><strong>Importere fra dit feed:</strong> hente dine produkter fra den feed-URL du selv angiver (fx <code>products.json</code>) og oprette tilsvarende annoncer</li>
+        <li><strong>Synkronisere automatisk:</strong> køre en natlig synkronisering der opdaterer pris og lagerstatus (aktiv/inaktiv) på de annoncer der stammer fra dit feed, så de matcher din webshop</li>
+        <li><strong>Rette specifikationer:</strong> manuelt korrigere felter på de importerede annoncer (fx type, mærke, beskrivelse, billeder) for at sikre korrekt visning</li>
       </ul>
-      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette dine annoncer eller andre data, ændre din pris efter oprettelse, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge function (<code>admin-create-bike</code>) — der findes ingen genvej til andre handlinger.</p>
+      <p style="margin-bottom:16px;"><strong>Låsning af manuelt rettede annoncer:</strong> Når en Cykelbørsen-administrator manuelt retter en importeret annonce, "låses" den (<code>feed_locked=true</code>), så den natlige synkronisering derefter <em>kun</em> opdaterer pris og lagerstatus — dine manuelle rettelser overskrives ikke.</p>
+      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette din konto, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge functions og database-funktioner (<code>admin-create-bike</code>, <code>import-dealer-feed</code>, <code>admin_update_bike</code>) — der findes ingen genvej til andre handlinger, og hver funktion verificerer dit aktive samtykke før den kører.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Forhandlerens ansvar (Dataansvarlig)</h3>
-      <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes på dine vegne. Det betyder konkret:</p>
+      <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes eller vedligeholdes på dine vegne. Det betyder konkret:</p>
       <ul style="margin-bottom:16px;">
         <li>Du skal selv reviewe annoncen efter oprettelse — vi anbefaler du gør det inden for 48 timer</li>
-        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig</li>
+        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig — også de værdier der importeres automatisk fra dit feed</li>
+        <li>Du er ansvarlig for at den feed-URL du angiver er din egen, og at du har ret til at offentliggøre produkterne på den</li>
         <li>Du er ansvarlig for kommunikation med købere og opfølgning på handler</li>
-        <li>Du kan til enhver tid redigere eller slette enhver annonce der er oprettet på dine vegne</li>
+        <li>Du kan til enhver tid redigere, deaktivere eller slette enhver annonce der er oprettet på dine vegne — også de importerede</li>
         <li>Du er forbrugerretsligt ansvarlig sælger jf. Købeloven og Markedsføringsloven</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Cykelbørsens forpligtelser (Databehandler)</h3>
       <p style="margin-bottom:8px;">Cykelbørsen forpligter sig til:</p>
       <ul style="margin-bottom:16px;">
-        <li>Kun at behandle dine data inden for ovennævnte scope</li>
-        <li>At føre audit-log for hver handling: hvilken admin oprettede hvilken annonce hvornår (logges i <code>bikes.created_by_admin_id</code> + Supabase function-logs i 90 dage)</li>
+        <li>Kun at behandle dine data inden for ovennævnte scope, og kun så længe dit samtykke er aktivt</li>
+        <li>At føre audit-log for hver handling: hvilken admin oprettede eller rettede hvilken annonce hvornår (logges i <code>bikes.created_by_admin_id</code> + Supabase function-logs i 90 dage)</li>
         <li>At gøre audit-loggen tilgængelig for dig på forespørgsel — du kan altid kontakte os på <strong>hej@cykelbørsen.dk</strong> for udtræk</li>
-        <li>At sikre at kun verificerede Cykelbørsen-administratorer har adgang til funktionen</li>
-        <li>At underrette dig hvis Aftalens omfang ændres</li>
+        <li>At sikre at kun verificerede Cykelbørsen-administratorer har adgang til funktionerne</li>
+        <li>At indhente fornyet samtykke fra dig, før et udvidet omfang af Aftalen tages i brug</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Tilbagekaldelse</h3>
-      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå "Tillad Cykelbørsen at oprette annoncer på mine vegne" fra. Tilbagekaldelse træder i kraft med det samme — vi kan ikke oprette nye annoncer efter det tidspunkt. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
+      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå onboarding-servicen fra. Tilbagekaldelse træder i kraft med det samme — vi kan ikke oprette, importere, synkronisere eller rette nye annoncer efter det tidspunkt, og den natlige synkronisering stopper. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Varighed</h3>
       <p style="margin-bottom:16px;">Aftalen gælder fra du aktiverer onboarding-servicen og indtil du selv tilbagekalder den. Der er ingen automatisk udløb. Cykelbørsen anbefaler dog at du tilbagekalder tilladelsen når du selv er fortrolig med at oprette annoncer (typisk efter 1-2 ugers brug af platformen).</p>

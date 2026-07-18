@@ -153,7 +153,7 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, warranty, frame_material, brake_type, groupset, electronic_shifting, weight_kg, wheel_size, is_active, profiles!user_id(name, shop_name, seller_type, verified, avatar_url, city), bike_images(url, is_primary)')
+      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, warranty, frame_material, brake_type, groupset, electronic_shifting, weight_kg, wheel_size, motor, motor_position, battery_wh, suspension, geartype, step_type, is_active, profiles!user_id(name, shop_name, seller_type, verified, avatar_url, city), bike_images(url, is_primary)')
       .in('id', ids);
 
     if (error || !bikes || bikes.length === 0) {
@@ -213,6 +213,14 @@ function renderCompareTable(bikes, _navigateTo) {
           if (!gs && !b.electronic_shifting) return emptyVal;
           return (gs || '–') + (b.electronic_shifting ? ' <span class="cmp-tag-mini">elektronisk</span>' : '');
         }},
+        { label: 'Motor', fn: b => {
+          if (!b.motor && !b.motor_position) return emptyVal;
+          return (esc(b.motor) || '–') + (b.motor_position ? ` <span class="cmp-tag-mini">${esc(b.motor_position)}</span>` : '');
+        }},
+        { label: 'Batteri', fn: b => b.battery_wh ? `${b.battery_wh} Wh` : emptyVal },
+        { label: 'Affjedring', fn: b => esc(b.suspension) || emptyVal },
+        { label: 'Geartype', fn: b => b.geartype ? esc(b.geartype) + ' gear' : emptyVal },
+        { label: 'Indstigning', fn: b => b.step_type ? esc(b.step_type) : emptyVal },
         { label: 'Farve', fn: b => esc(b.color) || emptyVal },
       ],
     },
@@ -239,6 +247,11 @@ function renderCompareTable(bikes, _navigateTo) {
       case 'Stelmateriale': return b.frame_material || '';
       case 'Bremser': return b.brake_type || '';
       case 'Gear': return (b.groupset || '') + (b.electronic_shifting ? 'e' : '');
+      case 'Motor': return (b.motor || '') + (b.motor_position || '');
+      case 'Batteri': return String(b.battery_wh || '');
+      case 'Affjedring': return b.suspension || '';
+      case 'Geartype': return b.geartype || '';
+      case 'Indstigning': return b.step_type || '';
       case 'Farve': return b.color || '';
       case 'Garanti': return b.warranty || '';
       case 'By': return b.city || '';

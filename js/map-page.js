@@ -3,23 +3,29 @@
    ============================================================ */
 
 import { bikeTitle } from './utils.js';
+import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
 const MAP_FILTER_SIZES = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
-const MAP_FILTER_WHEELS = ['26"', '27.5" / 650b', '28"', '29"'];
+const MAP_FILTER_WHEELS = ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"'];
 const MAP_FILTER_FRAME = ['Carbon', 'Aluminium', 'Stål', 'Titanium'];
 const MAP_FILTER_BRAKES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fælgbremser', 'Tromlebremser'];
-const MAP_FILTER_GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano Deore', 'Shimano XT'];
+const MAP_FILTER_GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'SRAM Rival XPLR', 'SRAM Force XPLR', 'SRAM Red XPLR', 'Campagnolo Ekar', 'Shimano Deore', 'Shimano XT'];
+const MAP_FILTER_MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
+const MAP_FILTER_MOTOR_POS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
+const MAP_FILTER_SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
+const MAP_FILTER_GEARTYPE = ['Indvendig', 'Udvendig'];
+const MAP_FILTER_STEP_TYPE = ['Lav indstigning', 'Høj indstigning'];
 const MAP_FILTER_COLORS = ['Sort', 'Hvid', 'Grå', 'Sølv', 'Rød', 'Blå', 'Grøn', 'Gul', 'Orange', 'Lyserød', 'Lilla', 'Brun', 'Beige'];
 const MAP_FILTER_BRANDS = [
-  'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brompton',
+  'Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brabus','Brompton',
   'Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube',
-  'E-Fly','Early Rider','Electra','Everton','FACTOR','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike',
+  'E-Fly','Early Rider','Ebsen','Electra','Everton','FACTOR','Falcon','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike',
   'Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK',
   'Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco',
-  'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Riese & Müller','Ridley','Royal Cargobike',
+  'Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Remington','Riese & Müller','Ridley','Royal Cargobike',
   'Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike',
-  'Urban Arrow','uVelo','VanMoof','Velo de Ville','Victoria','Wilier','Winther','Woom','Yuba',
+  'Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville','Velo Lux','Victoria','Wilier','Winther','Woom','Yuba',
 ];
 
 export function createMapPage({
@@ -72,6 +78,8 @@ export function createMapPage({
     brand: new Set(), size: new Set(), wheel_size: new Set(), color: new Set(),
     frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
     groupset: new Set(), weight_max: null,
+    motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
+    suspension: new Set(), geartype: new Set(), step_type: new Set(),
   };
 
   /* ── setView ────────────────────────────────────────────── */
@@ -324,8 +332,9 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, is_primary)')
+      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
+      .eq('category', 'cykel')  // kortet er cykel-only i v1
       .order('created_at', { ascending: false })
       .limit(MAP_PAGE_LIMIT);
     _mapPageBikes = (!error && data) ? data : [];
@@ -386,6 +395,14 @@ export function createMapPage({
       }
       if (adv.groupset.size && !adv.groupset.has(b.groupset)) return false;
       if (adv.weight_max != null && (b.weight_kg == null || b.weight_kg > adv.weight_max)) return false;
+      // El-cykel: motor-mærke som prefix (fx "Bosch" matcher "Bosch Performance Line CX")
+      if (adv.motor.size && !(b.motor && [...adv.motor].some(m => b.motor.toLowerCase().startsWith(m.toLowerCase())))) return false;
+      if (adv.motor_position.size && !adv.motor_position.has(b.motor_position)) return false;
+      if (adv.battery_min != null && (b.battery_wh == null || b.battery_wh < adv.battery_min)) return false;
+      if (adv.battery_max != null && (b.battery_wh == null || b.battery_wh > adv.battery_max)) return false;
+      if (adv.suspension.size && !adv.suspension.has(b.suspension)) return false;
+      if (adv.geartype.size && !adv.geartype.has(b.geartype)) return false;
+      if (adv.step_type.size && !adv.step_type.has(b.step_type)) return false;
       if (f.nearCoords && f.radius && _mapPageGeocoded) {
         const g = _mapPageGeocoded.get(b.id);
         if (!g) return false;
@@ -417,7 +434,9 @@ export function createMapPage({
     const adv = _mapAdvFilters;
     n += adv.brand.size + adv.size.size + adv.wheel_size.size + adv.color.size
        + adv.frame_material.size + adv.brake_type.size + adv.electronic_shifting.size
-       + adv.groupset.size + (adv.weight_max != null ? 1 : 0);
+       + adv.groupset.size + (adv.weight_max != null ? 1 : 0)
+       + adv.motor.size + adv.motor_position.size + adv.suspension.size + adv.geartype.size + adv.step_type.size
+       + (adv.battery_min != null ? 1 : 0) + (adv.battery_max != null ? 1 : 0);
 
     // Opdater alle badge-elementer (mobil-chip + desktop "Flere filtre"-knap)
     ['map-filter-badge', 'map-filter-badge-desktop'].forEach(id => {
@@ -509,6 +528,8 @@ export function createMapPage({
       brand: new Set(), size: new Set(), wheel_size: new Set(), color: new Set(),
       frame_material: new Set(), brake_type: new Set(), electronic_shifting: new Set(),
       groupset: new Set(), weight_max: null,
+      motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
+    suspension: new Set(), geartype: new Set(), step_type: new Set(),
     };
     resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
     resetMapDd('dd-bike-type',   '',    'Alle typer');
@@ -683,6 +704,12 @@ export function createMapPage({
     let _initialMoveDone = false;
     const _showSearchAreaBtn = () => {
       if (!_initialMoveDone) { _initialMoveDone = true; return; } // skip initial fitBounds
+      // Spring auto-gensøgning over hvis en popup eller annonce-modal er åben:
+      // moveend her stammer fra openPopup's autoPan (marker-klik), ikke fra at
+      // brugeren panorerer for at søge. Ellers re-renderer vi og lukker det
+      // brugeren lige åbnede (symptom: skal klikke 2 gange).
+      if (document.querySelector('.leaflet-popup') ||
+          document.getElementById('bike-modal')?.classList.contains('open')) return;
       const btn = document.getElementById('map-search-area-btn');
       if (!btn) return;
       // Hvis filter allerede er aktivt: re-apply automatisk + skjul knap
@@ -700,6 +727,20 @@ export function createMapPage({
     };
     _mapBoundsDebounced = debounce(_showSearchAreaBtn, 280);
     splitMapInstance.on('moveend', _mapBoundsDebounced);
+
+    // Skjul "Søg dette område"-knappen mens en popup er åben (de overlappede
+    // visuelt i toppen). Gendan knappens tidligere tilstand når popup'en lukkes.
+    let _searchBtnWasVisible = false;
+    splitMapInstance.on('popupopen', function() {
+      const btn = document.getElementById('map-search-area-btn');
+      if (!btn) return;
+      _searchBtnWasVisible = btn.style.display !== 'none';
+      btn.style.display = 'none';
+    });
+    splitMapInstance.on('popupclose', function() {
+      const btn = document.getElementById('map-search-area-btn');
+      if (btn && _searchBtnWasVisible) btn.style.display = 'inline-flex';
+    });
     splitMarkerMap = {};
     _mapPageGeocoded = new Map();
 
@@ -791,7 +832,7 @@ export function createMapPage({
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
         const cardsHtml = items.map(it => {
           const b = it.bike;
-          const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+          const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
           return '<button class="split-popup-list-item" onclick="navigateToBike(\'' + b.id + '\')">'
             + (primaryImg
                 ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + '" class="split-popup-list-img">'
@@ -821,7 +862,7 @@ export function createMapPage({
       } else {
         // Single-popup: som før
         const b = first.bike;
-        const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+        const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
         const sellerName = isDealer ? profile.shop_name : profile.name;
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
         const imgCount = (b.bike_images || []).length || 0;
@@ -913,7 +954,7 @@ export function createMapPage({
     container.innerHTML = bikes.map(b => {
       const profile    = b.profiles || {};
       const isDealer   = profile.seller_type === 'dealer';
-      const primaryImg = (b.bike_images || []).find(i => i.is_primary)?.url || (b.bike_images || [])[0]?.url || null;
+      const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
       const sellerBadge = isDealer
         ? '<span class="split-card-badge split-card-badge--dealer">Forhandler</span>'
         : '<span class="split-card-badge split-card-badge--private">Privat</span>';
@@ -951,7 +992,7 @@ export function createMapPage({
         + (distStr ? '<span class="split-card-loc-dist"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/></svg>' + distStr + '</span>' : '')
         + '</div>'
         + (chips.length ? '<div class="split-card-chips">' + chips.map(c => '<span class="split-card-chip">' + c + '</span>').join('') + '</div>' : '')
-        + '<div class="split-card-cta">Se annonce →</div>'
+        + '<div class="split-card-cta" onclick="event.stopPropagation();navigateToBike(\'' + b.id + '\')">Se annonce →</div>'
         + '</div>'
         + '</div>';
     }).join('');
@@ -1056,7 +1097,7 @@ export function createMapPage({
 
     // Single-select grupper (synkroniserer med dd-* desktop-pills)
     const singleGroups = [
-      { key:'type',      title:'Cykeltype',  opts:[['','Alle'],['Racercykel','Racercykel'],['Mountainbike','Mountainbike'],['Citybike','Citybike'],['El-cykel','El-cykel'],['Gravel','Gravel'],['Ladcykel','Ladcykel'],['Børnecykel','Børnecykel']] },
+      { key:'type',      title:'Cykeltype',  opts:[['','Alle'],['Racercykel','Racercykel'],['Mountainbike','Mountainbike'],['Citybike','Citybike'],['El-cykel','El-cykel'],['Gravel','Gravel'],['Ladcykel','Ladcykel'],['Børnecykel','Børnecykel'],['Senior cykel','Senior cykel']] },
       { key:'seller',    title:'Sælger',     opts:[['all','Alle'],['private','Privat'],['dealer','Forhandler']] },
       { key:'condition', title:'Stand',      opts:[['','Alle'],['Ny','Ny'],['Som ny','Som ny'],['God stand','God stand'],['Brugt','Brugt']] },
       { key:'radius',    title:'Afstand',    opts:[['5','5 km'],['10','10 km'],['25','25 km'],['50','50 km'],['100','100 km'],['','Hele landet']] },
@@ -1072,6 +1113,9 @@ export function createMapPage({
       { key:'frame_material', title:'Stelmateriale',  vals:MAP_FILTER_FRAME },
       { key:'brake_type',     title:'Bremser',        vals:MAP_FILTER_BRAKES },
       { key:'groupset',       title:'Komponentgruppe',vals:MAP_FILTER_GROUPSETS },
+      { key:'motor',          title:'Motor (el-cykel)',vals:MAP_FILTER_MOTORS },
+      { key:'motor_position', title:'Motor-placering', vals:MAP_FILTER_MOTOR_POS },
+      { key:'suspension',     title:'Affjedring',      vals:MAP_FILTER_SUSPENSION },
     ];
 
     let html = singleGroups.map(g => {
@@ -1084,7 +1128,7 @@ export function createMapPage({
         + '</div></div>';
     }).join('');
 
-    // Pris
+    // Pris (altid synlig — primært filter)
     html += '<div class="msf-group"><div class="msf-group-title">PRIS</div><div class="msf-price">'
       + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
       + '<span class="msf-price-sep">—</span>'
@@ -1092,41 +1136,75 @@ export function createMapPage({
       + '<span class="msf-price-unit">kr.</span>'
       + '</div></div>';
 
-    // Mærke — egen gruppe med søgefelt (99 muligheder)
-    html += '<div class="msf-group"><div class="msf-group-title">MÆRKE</div>'
-      + '<input type="search" id="msf-brand-search" class="msf-search" placeholder="Søg mærke…" autocomplete="off">'
+    // ── Avancerede filtre i kollapsible sektioner ──
+    // Mindre visuel støj: hver gruppe er foldet sammen som standard og åbner
+    // kun hvis den har aktive valg. Tæller-badge viser antal valgte.
+    const COLOR_HEX = Object.fromEntries(BIKE_COLORS.map(c => [c.name, c.hex]));
+    const acc = (title, inner, count) =>
+      '<details class="msf-acc"' + (count ? ' open' : '') + '>'
+      + '<summary class="msf-acc-head"><span class="msf-acc-title">' + esc(title) + '</span>'
+      + (count ? '<span class="msf-acc-count">' + count + '</span>' : '')
+      + '<svg class="msf-acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>'
+      + '</summary><div class="msf-acc-body">' + inner + '</div></details>';
+
+    // Multi-select chips for en advGroup. Farve-gruppen får farve-swatch.
+    const advChips = (key, vals) => '<div class="msf-opts">' + vals.map(v => {
+      const active = _mapAdvFilters[key].has(v);
+      if (key === 'color') {
+        const hex = COLOR_HEX[v] || '#cccccc';
+        return '<button type="button" class="msf-opt msf-opt--multi msf-opt--color' + (active ? ' active' : '') + '" data-adv="color" data-v="' + esc(v) + '"><span class="msf-color-dot" style="background:' + hex + '"></span>' + esc(v) + '</button>';
+      }
+      return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="' + esc(key) + '" data-v="' + esc(v) + '">' + esc(v) + '</button>';
+    }).join('') + '</div>';
+
+    // Mærke — søgefelt + chips (99 muligheder)
+    const brandInner = '<input type="search" id="msf-brand-search" class="msf-search" placeholder="Søg mærke…" autocomplete="off">'
       + '<div class="msf-opts" id="msf-brand-opts">'
       + MAP_FILTER_BRANDS.map(v => {
           const active = _mapAdvFilters.brand.has(v);
           return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="brand" data-v="' + esc(v) + '">' + esc(v) + '</button>';
         }).join('')
-      + '</div></div>';
+      + '</div>';
+    html += acc('Mærke', brandInner, _mapAdvFilters.brand.size);
 
     // Avancerede multi-select grupper (fulde kanoniske lister)
     advGroups.forEach(g => {
-      html += '<div class="msf-group"><div class="msf-group-title">' + g.title.toUpperCase() + '</div><div class="msf-opts">'
-        + g.vals.map(v => {
-            const active = _mapAdvFilters[g.key].has(v);
-            return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="' + g.key + '" data-v="' + esc(v) + '">' + esc(v) + '</button>';
-          }).join('')
-        + '</div></div>';
+      html += acc(g.title, advChips(g.key, g.vals), _mapAdvFilters[g.key].size);
     });
 
-    // Gear-skifte (electronic_shifting) — vis altid
-    {
-      html += '<div class="msf-group"><div class="msf-group-title">GEAR-SKIFTE</div><div class="msf-opts">'
-        + [['true','Elektronisk'],['false','Mekanisk']].map(([v,label]) => {
-            const active = _mapAdvFilters.electronic_shifting.has(v);
-            return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="electronic_shifting" data-v="' + v + '">' + label + '</button>';
-          }).join('')
-        + '</div></div>';
-    }
+    // Gear-skifte (label ≠ value, derfor ikke advChips)
+    const gearInner = '<div class="msf-opts">'
+      + [['true','Elektronisk'],['false','Mekanisk']].map(([v,label]) => {
+          const active = _mapAdvFilters.electronic_shifting.has(v);
+          return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="electronic_shifting" data-v="' + v + '">' + label + '</button>';
+        }).join('')
+      + '</div>';
+    html += acc('Gear-skifte', gearInner, _mapAdvFilters.electronic_shifting.size);
 
-    // Vægt (max) — vis altid
-    html += '<div class="msf-group"><div class="msf-group-title">MAX VÆGT</div><div class="msf-price">'
-      + '<input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="' + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '">'
-      + '<span class="msf-price-unit">kg</span>'
-      + '</div></div>';
+    // Geartype (label ≠ value: "Indvendig gear"/"Udvendig gear" vises, "Indvendig"/"Udvendig" gemmes)
+    const geartypeInner = '<div class="msf-opts">'
+      + [['Indvendig','Indvendig gear'],['Udvendig','Udvendig gear']].map(([v,label]) => {
+          const active = _mapAdvFilters.geartype.has(v);
+          return '<button type="button" class="msf-opt msf-opt--multi' + (active ? ' active' : '') + '" data-adv="geartype" data-v="' + v + '">' + label + '</button>';
+        }).join('')
+      + '</div>';
+    html += acc('Geartype', geartypeInner, _mapAdvFilters.geartype.size);
+
+    // Indstigning (Stel-type)
+    html += acc('Indstigning', advChips('step_type', MAP_FILTER_STEP_TYPE), _mapAdvFilters.step_type.size);
+
+    // Max vægt
+    const weightInner = '<div class="msf-price"><input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="'
+      + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '"><span class="msf-price-unit">kg</span></div>';
+    html += acc('Max vægt', weightInner, _mapAdvFilters.weight_max != null ? 1 : 0);
+
+    // Batteri (Wh, el-cykel)
+    const batteryInner = '<div class="msf-price">'
+      + '<input type="number" id="msf-battery-min" placeholder="Min Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_min != null ? _mapAdvFilters.battery_min : '') + '">'
+      + '<span class="msf-price-sep">—</span>'
+      + '<input type="number" id="msf-battery-max" placeholder="Max Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_max != null ? _mapAdvFilters.battery_max : '') + '">'
+      + '<span class="msf-price-unit">Wh</span></div>';
+    html += acc('Batteri (Wh)', batteryInner, (_mapAdvFilters.battery_min != null || _mapAdvFilters.battery_max != null) ? 1 : 0);
 
     body.innerHTML = html;
 
@@ -1184,6 +1262,19 @@ export function createMapPage({
       applyMapFilters(); updateMapFilterBadge();
     });
 
+    const msfBatMin = document.getElementById('msf-battery-min');
+    if (msfBatMin) msfBatMin.addEventListener('input', () => {
+      const val = parseInt(msfBatMin.value, 10);
+      _mapAdvFilters.battery_min = (!isNaN(val) && val > 0) ? val : null;
+      applyMapFilters(); updateMapFilterBadge();
+    });
+    const msfBatMax = document.getElementById('msf-battery-max');
+    if (msfBatMax) msfBatMax.addEventListener('input', () => {
+      const val = parseInt(msfBatMax.value, 10);
+      _mapAdvFilters.battery_max = (!isNaN(val) && val > 0) ? val : null;
+      applyMapFilters(); updateMapFilterBadge();
+    });
+
     sheet.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -1229,7 +1320,8 @@ export function createMapPage({
     var result = await supabase
       .from('bikes')
       .select('*, profiles!user_id(name, seller_type, shop_name, verified, address, lat, lng, location_precision)')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .eq('category', 'cykel');  // kortet er cykel-only i v1
 
     if (!result.data || result.data.length === 0) return;
 

@@ -110,6 +110,15 @@
   white-space: nowrap; transition: border-color 0.15s, color 0.15s;
 }
 .afb-clear-all:hover { border-color: var(--rust); color: var(--rust); }
+.afb-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+.afb-save-agent {
+  flex-shrink: 0; background: var(--rust); border: 1.5px solid var(--rust);
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 0.78rem; font-weight: 700; color: #fff;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  white-space: nowrap; transition: background 0.15s, border-color 0.15s;
+}
+.afb-save-agent:hover { background: #a63f1f; border-color: #a63f1f; }
 
 /* ── POPULÆRE SØGNINGER chips (SEO landing) ── */
 .popular-searches {
@@ -187,6 +196,13 @@
   font-size: 4.5rem; position: relative; overflow: hidden;
 }
 .bike-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* To-lags krydsfade ved hover (cykler gennem op til 4 billeder).
+   Begge lag stables absolut oven på hinanden; opacity-transition giver smooth swap. */
+.bike-card-img .bcimg {
+  position: absolute; inset: 0;
+  transition: opacity 0.4s ease;
+}
+.bike-card-img .bcimg--back { opacity: 0; }
 .bike-card-img::after {
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.10));
@@ -198,9 +214,21 @@
   max-width: calc(100% - 58px); /* plads til save-btn i højre side */
   z-index: 1;
 }
+/* ── Fremhævet (boost) annonce — diskret badge, blender ind (DBA-stil) ── */
+.featured-card-badge {
+  display: inline-flex; align-items: center;
+  background: linear-gradient(135deg, #f7e4a1, #e6c25c);
+  color: #6e4e00;
+  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.1px;
+  padding: 2px 5px; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(184,134,11,0.3);
+}
+.featured-card-img-placeholder { font-size: 4rem; }
+
 .condition-tag {
   border-radius: 6px;
-  padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2px;
+  padding: 3px 8px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2px;
   background: rgba(255,255,255,0.92); color: var(--charcoal);
   white-space: nowrap;
 }
@@ -210,8 +238,8 @@
 .condition-tag--brugt   { background: #efeae0; color: #5a544a; }
 .warranty-card-badge {
   background: #e8f5e9; color: #2e7d32;
-  border-radius: 6px; padding: 4px 9px;
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3px;
+  border-radius: 6px; padding: 3px 7px;
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.3px;
   text-transform: uppercase;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
@@ -219,25 +247,29 @@
 .demo-badge {
   background: #fff3e0; color: #bf360c;
   border: 1px solid #ff8b60;
-  border-radius: 6px; padding: 4px 9px;
-  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.4px;
+  border-radius: 6px; padding: 3px 7px;
+  font-size: 0.58rem; font-weight: 800; letter-spacing: 0.4px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
   box-shadow: 0 2px 6px rgba(191,54,12,0.18);
 }
 .price-reduced-card-badge {
   background: #c8302a; color: #fff;
-  border-radius: 6px; padding: 4px 9px;
-  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.3px;
+  border-radius: 4px; padding: 2px 5px;
+  font-size: 0.5rem; font-weight: 800; letter-spacing: 0.3px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 2px;
   box-shadow: 0 2px 6px rgba(200,48,42,0.25);
 }
 @media (max-width: 560px) {
-  .bike-card-badges { gap: 4px; }
-  .warranty-card-badge { font-size: 0.6rem; padding: 3px 7px; }
-  .demo-badge { font-size: 0.6rem; padding: 3px 7px; }
-  .condition-tag { font-size: 0.65rem; padding: 3px 8px; }
+  /* Kompakte badges på mobil — de må ikke dække cyklen. Mindre tekst/padding,
+     tættere i hjørnet, ingen skygge, og kun ÉT ord-mellemrum så de wrapper mindre. */
+  .bike-card-badges { gap: 3px; top: 6px; left: 6px; max-width: calc(100% - 38px); }
+  .featured-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
+  .price-reduced-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
+  .warranty-card-badge { font-size: 0.48rem; padding: 2px 5px; letter-spacing: 0; }
+  .demo-badge { font-size: 0.48rem; padding: 2px 5px; box-shadow: none; }
+  .condition-tag { font-size: 0.52rem; padding: 2px 6px; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
@@ -252,11 +284,17 @@
 }
 .save-btn:hover { background: #fff; transform: scale(1.08); }
 .save-btn:focus-visible { outline-color: var(--rust-light); }
+/* Mobil-overrides for save-btn — placeret EFTER base-reglen så cascade-orden
+   gør at de faktisk vinder over de generelle størrelser ovenfor. */
+@media (max-width: 560px) {
+  .save-btn { width: 28px; height: 28px; font-size: 0.85rem; top: 8px; right: 8px; }
+}
 .bike-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
 .bike-title {
   font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; line-height: 1.35;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  overflow-wrap: break-word; /* lange ord ombrydes i stedet for at klippes af overflow:hidden */
   min-height: calc(2 * 1.35 * 1.05rem); /* altid 2 linjer høj → sælger-navn altid alignet */
 }
 .bike-price { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 900; color: var(--rust); white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
@@ -286,14 +324,8 @@
   font-size: 0.78rem; color: var(--charcoal); font-weight: 600;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
 }
-.trust-chip {
-  display: inline-flex; align-items: center;
-  background: rgba(46,125,50,0.1); color: #2e7d32;
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
-  padding: 2px 6px; border-radius: 4px; white-space: nowrap;
-}
 .card-location { font-size: 0.74rem; color: var(--muted); white-space: nowrap; }
-.card-last-seen { font-size: 0.67rem; color: var(--muted); white-space: nowrap; }
+.card-last-seen { font-size: 0.67rem; color: var(--muted); white-space: normal; line-height: 1.3; }
 
 /* ── FORHANDLER SEKTION ── */
 .dealer-strip { background: var(--forest); padding: 48px; }
@@ -428,65 +460,123 @@
 .skeleton-line--sub    { height: 13px; width: 55%; }
 .skeleton-line--price  { height: 18px; width: 40%; }
 
-/* ── SIDST SETE CYKLER (recently viewed) ── */
-.recently-viewed { margin: 0 0 24px; }
+/* ── SIDST SETE CYKLER (recently viewed) — slank vandret stribe ── */
+.recently-viewed { margin: 0 0 18px; }
 .rv-header {
   display: flex; align-items: baseline; justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .rv-heading {
   font-family: 'Playfair Display', serif;
-  font-size: 1.35rem; font-weight: 700; color: var(--charcoal);
+  font-size: 1.05rem; font-weight: 700; color: var(--charcoal);
   margin: 0;
 }
 .rv-clear {
   border: none; background: none; color: var(--muted);
-  font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
-  font-weight: 500; cursor: pointer; padding: 4px 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.76rem;
+  font-weight: 500; cursor: pointer; padding: 3px 8px;
   border-radius: 6px; transition: color 0.15s, background 0.15s;
 }
 .rv-clear:hover { color: var(--charcoal); background: var(--sand-2); }
 .rv-scroll {
-  display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
-  scrollbar-width: auto; scrollbar-color: var(--border) transparent;
-  scroll-snap-type: x proximity;
-  scroll-behavior: smooth;
+  display: flex; gap: 9px; overflow-x: auto; padding-bottom: 6px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  scroll-snap-type: x proximity; scroll-behavior: smooth;
 }
-.rv-scroll::-webkit-scrollbar { height: 10px; }
-.rv-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: 5px; }
-.rv-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+.rv-scroll::-webkit-scrollbar { height: 7px; }
+.rv-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: 4px; }
+.rv-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 .rv-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 .rv-card {
-  flex: 0 0 180px; width: 180px; min-width: 180px;
+  flex: 0 0 auto;
   scroll-snap-align: start;
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: row; align-items: center; gap: 9px;
   background: var(--cream); border: 1px solid var(--border);
-  border-radius: 10px; padding: 0; cursor: pointer;
+  border-radius: 9px; padding: 5px 13px 5px 5px; cursor: pointer;
   text-align: left; font-family: inherit;
-  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s;
   overflow: hidden;
 }
 .rv-card:hover {
-  transform: translateY(-2px); border-color: rgba(42,61,46,0.18);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-1px); border-color: rgba(42,61,46,0.18);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
 }
 .rv-card-img {
-  width: 100%; aspect-ratio: 4/3; background: var(--sand-2);
+  width: 46px; height: 46px; flex-shrink: 0;
+  background: var(--sand-2); border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 2.4rem; overflow: hidden;
+  font-size: 1.3rem; overflow: hidden;
 }
 .rv-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .rv-placeholder { color: var(--muted); }
-.rv-card-body { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+.rv-card-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; max-width: 150px; }
 .rv-card-title {
-  font-size: 0.82rem; font-weight: 600; color: var(--charcoal);
+  font-size: 0.8rem; font-weight: 600; color: var(--charcoal);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .rv-card-price {
   font-family: 'Playfair Display', serif;
-  font-size: 0.95rem; font-weight: 700; color: var(--rust);
+  font-size: 0.9rem; font-weight: 700; color: var(--rust);
 }
 @media (max-width: 768px) {
-  .rv-card { flex: 0 0 130px; }
-  .rv-heading { font-size: 1.15rem; }
+  .rv-heading { font-size: 0.98rem; }
+  .rv-card-body { max-width: 132px; }
 }
+
+/* ============================================================
+   FREMHÆV-MODAL (boost)
+   ============================================================ */
+.boost-loading, .boost-msg { text-align: center; color: var(--muted); padding: 18px 0; }
+.boost-pitch { font-size: 0.95rem; color: var(--charcoal); margin: 2px 0 14px; line-height: 1.5; }
+.boost-benefits {
+  list-style: none; margin: 0 0 16px; padding: 0;
+  display: flex; flex-direction: column; gap: 9px;
+}
+.boost-benefits li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 0.9rem; color: var(--charcoal); line-height: 1.4;
+}
+.boost-benefits li span { flex-shrink: 0; }
+.boost-cta-btn {
+  width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+  font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; color: #fff;
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
+  box-shadow: 0 3px 10px rgba(212,160,23,0.32);
+  transition: filter 0.15s, transform 0.1s;
+}
+.boost-cta-btn:hover { filter: brightness(1.05); }
+.boost-cta-btn:active { transform: translateY(1px); }
+.boost-cta-btn:disabled { cursor: default; opacity: 0.85; }
+.boost-cta-btn--soon {
+  background: var(--sand); color: var(--muted);
+  box-shadow: none; border: 1px solid var(--border);
+}
+.boost-fineprint { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 11px 0 0; line-height: 1.45; }
+.boost-soon-note { font-size: 0.82rem; color: var(--muted); text-align: center; margin: 4px 0 0; }
+.boost-state-active { text-align: center; }
+.boost-state-active .boost-benefits { text-align: left; }
+.boost-badge-big {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%); color: #fff;
+  font-weight: 800; font-size: 0.8rem; letter-spacing: 0.4px; text-transform: uppercase;
+  padding: 6px 16px; border-radius: 999px; box-shadow: 0 2px 8px rgba(212,160,23,0.4);
+  margin-bottom: 10px;
+}
+.boost-active-text { font-size: 0.95rem; color: var(--charcoal); margin: 0 0 14px; line-height: 1.5; }
+
+/* Boost-CTA i "annonce oprettet"-modalen */
+.success-boost-cta {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  margin: 4px 0 14px; padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(212,160,23,0.12), rgba(232,185,51,0.08));
+  border: 1px solid rgba(212,160,23,0.4); border-radius: 12px;
+  cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.success-boost-cta:hover { border-color: #d4a017; box-shadow: 0 4px 14px rgba(212,160,23,0.18); }
+.success-boost-cta-star { font-size: 1.5rem; flex-shrink: 0; }
+.success-boost-cta-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.success-boost-cta-text strong { font-size: 0.92rem; color: #6e4e00; }
+.success-boost-cta-text span { font-size: 0.8rem; color: #8a6817; }
+.success-boost-cta-arrow { font-size: 1.1rem; color: #b8860b; flex-shrink: 0; }

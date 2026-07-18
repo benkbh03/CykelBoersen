@@ -2,3 +2,12 @@ supabase/.temp/
 node_modules/
 package.json
 package-lock.json
+
+# Personlige regneark/notater — ikke en del af produktet
+*.xlsx
+*.xls
+*.numbers
+
+# Marketing-assets genereret lokalt (LinkedIn-banner mv.) — leveres direkte, ikke checked in
+linkedin-*.jpg
+linkedin-*.png

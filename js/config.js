@@ -1,16 +1,17 @@
-export const BIKES_PAGE_SIZE = 12;
-// Hvor mange cykler "Vis flere cykler"-knappen indlæser ad gangen.
-// Asymmetrisk pagination: kompakt første visning (12) + større batches (24)
-// per klik, så engagerede brugere ikke skal klikke knappen mange gange.
-export const BIKES_LOAD_MORE_SIZE = 24;
+// Første visning: 51 annoncer (lav friktion — brugeren ser et stort udvalg med
+// det samme før paginering, i tråd med DBA/Trendsales der viser mange før "vis flere").
+// Billeder er loading="lazy", så off-screen-kort belaster ikke first-paint.
+export const BIKES_PAGE_SIZE = 51;
+// Hvor mange cykler "Vis flere cykler"-knappen indlæser ad gangen (samme batch-størrelse
+// som første visning, så hvert klik også henter en stor sats).
+export const BIKES_LOAD_MORE_SIZE = 51;
 export const MAP_PAGE_LIMIT = 500;
 
 /* Cache-busting version til dynamiske imports.
    BUMP når lazy-loaded moduler ændres, så browseren henter ny version
    i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
    rydder ikke altid module-cachen. */
-export const ASSET_VERSION = '20261113ek2';
-
+export const ASSET_VERSION = '20260718a';
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
    + browser-side decoding holder dem ude af first-paint kritisk sti). */
@@ -33,6 +34,56 @@ export const BIKE_COLORS = [
   { name: 'Beige',    hex: '#d8c8a8', dark: false },
 ];
 
+/* ── Top-level listing-kategorier ────────────────────────────
+   `category`-kolonnen på bikes-tabellen. Hård top-level akse: alle
+   liste-queries scopes på den, så cykler og tilbehør ALDRIG blandes.
+   Default (og alle eksisterende annoncer) = 'cykel'. */
+export const LISTING_CATEGORY = { BIKE: 'cykel', ACCESSORY: 'tilbehoer' };
+
+/* Kanonisk underkategori-liste for tilbehør (én bred spand, ingen spec-felter
+   pr. underkategori). Gemmes i `type`-kolonnen når category='tilbehoer'.
+   ÉN kilde — spejles i sælg-flow, sidebar/hero-filtre og filter-tællere. */
+export const ACCESSORY_TYPES = [
+  // Sikkerhed & synlighed
+  'Hjelm',
+  'Briller',
+  'Lygter',
+  'Ringeklokke',
+  'Lås',
+  // Elektronik & holdere
+  'Computer/GPS',
+  'Mobilholdere',
+  // Opbevaring & transport
+  'Tasker & kurve',
+  'Flasker & flaskeholdere',
+  'Skærme & bagagebærere',
+  'Barnestol & anhænger',
+  'Cykelstativer',
+  // Vedligehold
+  'Pumpe & værktøj',
+  'Kædeolie & rengøring',
+  // Reservedele & komponenter
+  'Dæk & slanger',
+  'Hjul',
+  'Forgaffel & affjedring',
+  'Pedaler',
+  'Sadler',
+  'Sadelpind',
+  'Styr & frempind',
+  'Håndtag & styrbånd',
+  'Bremseklodser',
+  'Gear & skiftere',
+  'Kæder & kassetter',
+  // El-cykel
+  'Batterier & opladere (elcykel)',
+  // Træning & beklædning
+  'Hometrainer',
+  'Cykelsko',
+  'Beklædning',
+  // Catch-all (skal blive sidst)
+  'Øvrigt tilbehør',
+];
+
 export const STATIC_PAGE_ROUTES = {
   about: '/om-os',
   terms: '/vilkaar',
@@ -43,4 +94,5 @@ export const STATIC_PAGE_ROUTES = {
   cookies: '/cookiepolitik',
   sortiment: '/tilladt-sortiment',
   databehandleraftale: '/databehandleraftale',
+  udlejningsvilkaar: '/udlejningsvilkaar',
 };
