@@ -2065,6 +2065,13 @@ function expandBikeDesc() {
     }
   } else {
     btn.textContent = '− Vis mindre';
+    // Scroll ned så den nyligt udvidede tekst rent faktisk bliver synlig —
+    // uden dette springer boksen bare højere uden at brugeren ser det, hvis
+    // knappen i forvejen sad nær bunden af skærmen. requestAnimationFrame
+    // venter til layoutet er opdateret (max-height fjernet) før vi måler.
+    requestAnimationFrame(() => {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
   }
 }
 
