@@ -2505,6 +2505,23 @@ function expandBikeDesc() {
   }
 }
 
+// "Se mere ↓" ved den 2-linjers intro-beskrivelse øverst på annonce-siden:
+// fold den fulde Beskrivelse-sektion ud og scroll ned til den i én bevægelse.
+function jumpToBikeDesc() {
+  const wrap = document.getElementById('bike-desc-wrap');
+  const btn  = document.getElementById('bike-desc-btn');
+  if (!wrap) return;
+  if (wrap.classList.contains('is-clamped')) {
+    wrap.classList.remove('is-clamped');
+    if (btn) btn.textContent = '− Vis mindre';
+  }
+  // Scroll til forælderen så "Beskrivelse"-overskriften også er synlig.
+  // requestAnimationFrame: vent på layout efter at clampen er fjernet.
+  requestAnimationFrame(() => {
+    (wrap.parentElement || wrap).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
 function toggleConditionInfo() {
   const popup = document.getElementById('condition-info-popup');
   if (!popup) return;
@@ -2907,6 +2924,7 @@ window.toggleSellConditionInfo = function() {
 };
 window.updateConditionGuide   = updateConditionGuide;
 window.expandBikeDesc         = expandBikeDesc;
+window.jumpToBikeDesc         = jumpToBikeDesc;
 window.startBikeQuiz          = startBikeQuiz;
 window.quizPick               = quizPick;
 window.quizBack               = quizBack;

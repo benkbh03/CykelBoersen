@@ -258,7 +258,7 @@ export function createBikeDetail({
             ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
             ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${esc(b.warranty)}</span>` : ''}
           </div>
-          ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>` : ''}
+          ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>${b.description.length > 100 ? `<button onclick="jumpToBikeDesc()" style="background:none;border:none;padding:2px 0 0;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--forest);cursor:pointer;">Se mere ↓</button>` : ''}` : ''}
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             <div class="seller-avatar-large">${avatarContent}</div>
             <div style="flex:1">
