@@ -71,7 +71,7 @@
   <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
   <link rel="stylesheet" href="/css/04-modals.css?v=20260628c">
   <link rel="stylesheet" href="/css/05-pages.css?v=20260628h">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260614a">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260718d">
   <link rel="stylesheet" href="/css/07-map.css?v=20260526ng">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
@@ -1146,7 +1146,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260718b';
+    const V = '20260718c';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
