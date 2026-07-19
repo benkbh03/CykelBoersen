@@ -133,13 +133,20 @@ export function createBikesList({
       ? BIKES_LOAD_MORE_SIZE
       : (initialVist || BIKES_PAGE_SIZE);
 
-    const SELECT_FIELDS = 'id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)';
+    // Sælgertype-filter kræver INNER join: med almindeligt (left) join fjerner
+    // .eq('profiles.seller_type', …) IKKE rækkerne — PostgREST nuller bare det
+    // embeddede profiles-objekt, så alle cykler stadig vises (med "Ukendt"
+    // sælger). !inner gør filteret til et rigtigt WHERE på forælder-rækkerne,
+    // og .range()-pagineringen tæller så også korrekt server-side.
+    const profilesJoin = filters.sellerType ? 'profiles!user_id!inner' : 'profiles!user_id';
+    const SELECT_FIELDS = `id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${profilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`;
 
     // Fælles filtre — anvendes på BÅDE hoved-listen og fremhævede-query, så et
     // boost kun løftes op når annoncen rent faktisk matcher det aktuelle filter.
     const applyListFilters = (q) => {
       // Hård top-level separation: browse viser én kategori ad gangen (default cykel).
       q = q.eq('category', filters.category || (getBrowseCategory ? getBrowseCategory() : 'cykel'));
+      if (filters.sellerType) q = q.eq('profiles.seller_type', filters.sellerType);
       if (filters.type) q = q.eq('type', filters.type);
       if (filters.city) {
         const group = CITY_GROUPS[filters.city];
@@ -170,9 +177,8 @@ export function createBikesList({
           .order('featured_until', { ascending: false })
           .limit(24)
       );
-      featuredData = filters.sellerType
-        ? (fd || []).filter(b => b.profiles?.seller_type === filters.sellerType)
-        : (fd || []);
+      // Sælgertype håndteres DB-side via !inner-join i applyListFilters.
+      featuredData = fd || [];
       _featuredIds = featuredData.map(b => b.id);
     }
 
@@ -203,9 +209,10 @@ export function createBikesList({
       return;
     }
 
-    const normalData = filters.sellerType
-      ? (rawData || []).filter(b => b.profiles?.seller_type === filters.sellerType)
-      : (rawData || []);
+    // Sælgertype er allerede filtreret DB-side (!inner-join) — ingen klient-
+    // filtrering her: den fik offset/pagination til at tælle forkert (offset
+    // steg med det filtrerede antal, mens .range() var rykket det rå antal).
+    const normalData = rawData || [];
 
     // Render-rækkefølge: fremhævede øverst (kun initial load), derefter normale.
     const data = append ? normalData : [...featuredData, ...normalData];
@@ -455,9 +462,13 @@ export function createBikesList({
     const offset = getFilterOffset();
     // Samme asymmetriske pagination som loadBikes: kompakt initial, større append
     const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
+    // Samme !inner-regel som i loadBikes: sælgertype-filter på et left join
+    // fjerner ikke rækkerne — det nuller kun profiles-objektet. !inner gør
+    // .eq('profiles.seller_type', …) til et rigtigt filter.
+    const fProfilesJoin = (sellerType && !dealerId) ? 'profiles!user_id!inner' : 'profiles!user_id';
     let query = supabase
       .from('bikes')
-      .select('id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)')
+      .select(`id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${fProfilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`)
       .eq('is_active', true)
       .eq('category', category)
       .order('created_at', { ascending: false })
