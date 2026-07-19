@@ -370,7 +370,9 @@ export function createFilters({
       if (!distTag) {
         distTag = document.createElement('span');
         distTag.className = 'nearme-dist';
-        card.querySelector('.bike-card-img')?.appendChild(distTag);
+        // Ind i badge-containeren (flex-flow ved siden af pris-nedsættelses-
+        // badget) — absolut placering i .bike-card-img lå oveni det.
+        (card.querySelector('.bike-card-badges') || card.querySelector('.bike-card-img'))?.appendChild(distTag);
       }
       distTag.textContent = (precise ? '' : '~') + formatDistanceKm(km);
       distTag.title = precise ? 'Præcis afstand (forhandler-adresse)' : 'Ca. afstand (by-center)';
