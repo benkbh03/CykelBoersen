@@ -3672,11 +3672,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .ask-available-btn { opacity: 0.85; }
 }
 
-/* ── NÆR MIG AFSTANDSTAG ── */
+/* ── NÆR MIG AFSTANDSTAG ──
+   Ligger i .bike-card-badges (flex) sammen med pris-nedsættelses-badget —
+   IKKE absolut placeret; det lå oveni badges i samme hjørne. */
 .nearme-dist {
-  position: absolute; top: 8px; left: 8px;
+  display: inline-flex; align-items: center;
   background: rgba(42,61,46,0.88); color: #fff; border-radius: 6px;
   padding: 2px 8px; font-size: 0.72rem; font-weight: 600;
+  white-space: nowrap;
 }
 
 /* ── SAVED SEARCH NOTIFIKATION ── */
