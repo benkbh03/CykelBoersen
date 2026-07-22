@@ -732,6 +732,10 @@ export function createBikeDetail({
   }
 
   async function renderBikePage(bikeId) {
+    // Stale-request guard: deles med openBikeModal (samme _bikeModalToken), så
+    // hurtig navigation mellem annoncer ikke lader et gammelt fetch-svar
+    // overskrive en nyere visning med blank/forkert indhold.
+    const myToken = ++_bikeModalToken;
     showDetailView();
     document.body.classList.add('viewing-bike-page');
     const detailView = document.getElementById('detail-view');
@@ -743,6 +747,8 @@ export function createBikeDetail({
     } catch (e) {
       error = e;
     }
+
+    if (myToken !== _bikeModalToken) return;
 
     if (error || !b) {
       const errBackAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
