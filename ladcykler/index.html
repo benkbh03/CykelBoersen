@@ -75,7 +75,7 @@
   <link rel="stylesheet" href="/css/07-map.css?v=20260526ng">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260701n">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260722c">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
   <link rel="stylesheet" href="/css/12-rental.css?v=20260701r">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
@@ -766,6 +766,8 @@
           <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Yamaha" onchange="applyFilters()"> Yamaha</label>
           <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Bafang" onchange="applyFilters()"> Bafang</label>
           <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Mahle" onchange="applyFilters()"> Mahle</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Brose" onchange="applyFilters()"> Brose</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Fazua" onchange="applyFilters()"> Fazua</label>
         </div>
       </div>
       <div class="sidebar-box collapsed">
@@ -1108,7 +1110,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260718c';
+    const V = '20260722c';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
