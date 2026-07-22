@@ -763,6 +763,8 @@
           <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Yamaha" onchange="applyFilters()"> Yamaha</label>
           <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Bafang" onchange="applyFilters()"> Bafang</label>
           <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Mahle" onchange="applyFilters()"> Mahle</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Brose" onchange="applyFilters()"> Brose</label>
+          <label class="filter-option"><input type="checkbox" data-filter="motor" data-value="Fazua" onchange="applyFilters()"> Fazua</label>
         </div>
       </div>
       <div class="sidebar-box collapsed">
@@ -1068,7 +1070,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260718c';
+    const V = '20260722b';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
