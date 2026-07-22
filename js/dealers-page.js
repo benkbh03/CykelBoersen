@@ -496,6 +496,40 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
       </div>
 
+      <div class="bd-why">
+        <h2 class="bd-why-title">Derfor vælger forhandlere Cykelbørsen</h2>
+        <div class="bd-why-grid">
+          <div class="bd-why-item">
+            <span class="bd-why-icon" aria-hidden="true">🚲</span>
+            <div class="bd-why-text">
+              <strong>Cykler i centrum</strong>
+              <p>Her drukner jeres cykler ikke mellem møbler, tøj og alt muligt andet. Køberne kommer for cykler — og kun cykler.</p>
+            </div>
+          </div>
+          <div class="bd-why-item">
+            <span class="bd-why-icon" aria-hidden="true">🔍</span>
+            <div class="bd-why-text">
+              <strong>Købere finder præcis jeres cykel</strong>
+              <p>Filtre for gearsæt, stelmateriale, motor, vægt og størrelse. Når nogen leder efter en Shimano 105-racer i str. 56, dukker jeres annonce op.</p>
+            </div>
+          </div>
+          <div class="bd-why-item">
+            <span class="bd-why-icon" aria-hidden="true">✓</span>
+            <div class="bd-why-text">
+              <strong>I står frem som en rigtig butik</strong>
+              <p>Det verificerede forhandler-badge med CVR-tjek adskiller jer tydeligt fra private sælgere. Køberne ved, de handler med en professionel forhandler.</p>
+            </div>
+          </div>
+          <div class="bd-why-item">
+            <span class="bd-why-icon" aria-hidden="true">🇩🇰</span>
+            <div class="bd-why-text">
+              <strong>Dansk og lokalt</strong>
+              <p>Dansk platform, dansk support og lokal afhentning. Bygget til det danske cykelmarked.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <a href="/tilladt-sortiment" onclick="event.preventDefault();navigateTo('/tilladt-sortiment')" class="bd-scope-mini">
         <span class="bd-scope-mini-icon" aria-hidden="true">🚴</span>
         <span class="bd-scope-mini-text">Hvad må jeg sælge på Cykelbørsen?</span>

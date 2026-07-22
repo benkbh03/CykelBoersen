@@ -3053,6 +3053,53 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-weight: 500;
 }
 
+/* "Derfor vælger forhandlere Cykelbørsen" — differentierings-sektion.
+   Testet: ≤480, ≤768, 769-1024, ≥1025 */
+.bd-why { margin-bottom: 24px; }
+.bd-why-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--charcoal);
+  margin: 0 0 16px;
+  letter-spacing: -0.3px;
+}
+.bd-why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.bd-why-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.bd-why-icon {
+  font-size: 1.35rem;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+.bd-why-text strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+}
+.bd-why-text p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+@media (max-width: 680px) {
+  .bd-why-grid { grid-template-columns: 1fr; }
+  .bd-why-title { font-size: 1.15rem; }
+}
+
 .bd-plans {
   display: grid;
   grid-template-columns: 1fr 1fr;
