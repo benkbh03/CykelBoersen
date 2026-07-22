@@ -10,7 +10,6 @@ export function createProfileModals({
   getCurrentUser,
   userSavedSet, // Set reference (read)
   // Collaborators
-  closeAllDealersModal,
   closeAllModals,
   highlightStars,
   followDealer,
@@ -24,7 +23,6 @@ export function createProfileModals({
 
   async function openDealerProfile(dealerId) {
     const myToken = ++dealerProfileToken;
-    closeAllDealersModal();
     const modal = document.getElementById('dealer-profile-modal');
     const header = document.getElementById('dealer-profile-header');
     const bikesGrid = document.getElementById('dealer-profile-bikes');

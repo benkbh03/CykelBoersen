@@ -53,7 +53,3 @@ export function ensureCropper() {
     loadScript('https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js'),
   ]);
 }
-
-/* Route-specifik CSS — absolutte paths så hard-refresh på fx /bike/:id virker */
-export function ensureProfilePageCss() { return loadCss('/css/06-profile-page.css'); }
-export function ensureMapCss()         { return loadCss('/css/07-map.css'); }

@@ -102,8 +102,3 @@ export function maybeShowScamWarning() {
     setTimeout(() => overlay.querySelector('#scam-confirm').focus(), 100);
   });
 }
-
-/* Eksporteret til /me hvis vi senere vil tilbyde "Vis advarslen igen" */
-export function resetScamWarningAck() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-}

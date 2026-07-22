@@ -186,7 +186,6 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       distKm:      null,
     }));
 
-    window._allDealers     = dealers;
     window._dealerCountMap = countMap;
 
     sortAndRenderDealers();

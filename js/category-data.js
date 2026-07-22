@@ -103,5 +103,3 @@ export const CATEGORY_META = {
     related: ['racercykler', 'mountainbikes', 'citybikes'],
   },
 };
-
-export const CATEGORY_SLUGS = Object.keys(CATEGORY_META);
