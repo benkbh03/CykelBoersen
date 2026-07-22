@@ -18,7 +18,7 @@ const BRAKE_TYPES = ['Skivebremser hydrauliske', 'Skivebremser mekaniske', 'Fæl
 const GROUPSETS = ['Shimano 105', 'Shimano Ultegra', 'Shimano Dura-Ace', 'SRAM Rival', 'SRAM Force', 'SRAM Red', 'Shimano GRX', 'SRAM Apex', 'SRAM Rival XPLR', 'SRAM Force XPLR', 'SRAM Red XPLR', 'Campagnolo Ekar', 'Shimano Deore', 'Shimano XT'];
 // El-cykel: motor-mærke matches som prefix (bike.motor starter med fx "Bosch ...").
 // Samme værdier som sidebar-filteret i index.html.
-const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle'];
+const MOTORS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle', 'Brose', 'Fazua'];
 const MOTOR_POSITIONS = ['Midtermotor', 'Forhjulsmotor', 'Baghjulsmotor'];
 const SUSPENSION = ['Forgaffel (hardtail)', 'Fuld affjedring (fully)'];
 // Geartype: value → label (value gemmes, label vises)

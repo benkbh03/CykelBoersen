@@ -27,7 +27,6 @@ import { createEmailConfirmationActions } from './js/email-confirmation.js';
 import { createInboxBadgeActions } from './js/inbox-badge.js';
 import { updateNavAvatarUI } from './js/nav-avatar.js';
 import { retryHTML, showToast } from './js/ui-feedback.js';
-import { showSectionNavigation } from './js/section-nav.js';
 import { openBecomeDealerPage, closeBecomeDealerModalCompat, selectDealerPlanButton } from './js/dealer-modal-actions.js';
 import { isPendingDealerProfile, blockIfPendingDealerProfile } from './js/dealer-guards.js';
 import { createAuthActions } from './js/auth.js';
@@ -112,9 +111,6 @@ let _userSavedSet = new Set();
 // In-memory cache til bike-data — forhindrer dobbelt-fetch ved tilbage-navigation
 const bikeCache = new Map();
 
-// Stale-request guards: hvert modal-open incrementerer sit token.
-// Async responses tjekker om tokenet stadig matcher — ellers ignoreres response.
-let _bikeModalToken = 0;
 
 // Pending inbox-tråd-oprettelse: sættes af bike-detail, læses af indbakke-siden
 let _pendingInboxThread = null;
@@ -314,7 +310,6 @@ const _ensureProfileModals = lazyCtrl(
     supabase, esc, safeAvatarUrl, getInitials, formatLastSeen, retryHTML, showToast,
     getCurrentUser:       () => currentUser,
     userSavedSet:         _userSavedSet,
-    closeAllDealersModal: (...args) => closeAllDealersModal(...args),
     closeAllModals:       (...args) => closeAllModals(...args),
     highlightStars,
     followDealer,
@@ -1231,7 +1226,7 @@ async function init() {
 
   function _isAnyModalOpen() {
     // Display: flex modals — kun dem der faktisk åbnes via inline style.
-    for (const id of ['dealer-profile-modal', 'user-profile-modal', 'all-dealers-modal', 'report-modal', 'listing-success-modal', 'rate-now-modal', 'delete-account-modal', 'buyer-picker-modal']) {
+    for (const id of ['dealer-profile-modal', 'user-profile-modal', 'report-modal', 'listing-success-modal', 'rate-now-modal', 'delete-account-modal', 'buyer-picker-modal']) {
       const el = document.getElementById(id);
       if (el && el.style.display === 'flex') return true;
     }
@@ -1443,7 +1438,6 @@ async function init() {
     if (document.getElementById('valuation-modal')?.style.display === 'flex')       { closeValuationModal(); return; }
     if (document.getElementById('user-profile-modal')?.style.display === 'flex')   { closeUserProfileModal(); return; }
     if (document.getElementById('dealer-profile-modal')?.style.display === 'flex') { closeDealerProfileModal(); return; }
-    if (document.getElementById('all-dealers-modal')?.style.display === 'flex')    { closeAllDealersModal(); return; }
   });
 }
 
@@ -1610,8 +1604,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     }
   }
 
-  // Gem alle forhandlere til modal brug
-  window._allDealers    = dealers;
+  // Forhandler-antal pr. id — læses af openDealerProfile til "N cykler til salg"
   window._dealerCountMap = countMap;
 }
 
@@ -1690,23 +1683,6 @@ function toggleRestDealers() {
     : `Se resten (${grid.querySelectorAll('.dealer-card').length} forhandlere) ↓`;
 }
 
-function openAllDealersModal() {
-  const modal = document.getElementById('all-dealers-modal');
-  if (!modal) return;
-  const grid = document.getElementById('all-dealers-grid');
-  const dealers   = window._allDealers    || [];
-  const countMap  = window._dealerCountMap || {};
-  grid.innerHTML = dealers.map(d => buildDealerCard(d, countMap, false)).join('');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeAllDealersModal() {
-  const modal = document.getElementById('all-dealers-modal');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
 function closeMapBikeModal() {
   const el = document.getElementById('map-bike-modal');
   if (el) el.classList.remove('open');
@@ -1715,7 +1691,7 @@ function closeMapBikeModal() {
 
 function closeAllModals() {
   // Modaler der bruger display:flex/none
-  ['all-dealers-modal','dealer-profile-modal','user-profile-modal'].forEach(id => {
+  ['dealer-profile-modal','user-profile-modal'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1875,10 +1851,6 @@ const { useQuickReply, getQuickReplies, renderQuickRepliesHTML } = createQuickRe
   esc,
   getCurrentProfile: () => currentProfile,
 });
-
-function showSection(section) {
-  return showSectionNavigation(section, { navigateTo });
-}
 
 function selectHeroCatChip(el, type) {
   document.getElementById('search-type').value = type;
@@ -2882,7 +2854,6 @@ window.saveCurrentSearch  = saveCurrentSearch;
 window.applySavedSearch   = applySavedSearch;
 window.deleteSavedSearch  = deleteSavedSearch;
 window.loadTradeHistory   = loadTradeHistory;
-window.showSection         = showSection;
 window.selectHeroCatChip  = selectHeroCatChip;
 window.applyPopularSearch = applyPopularSearch;
 window.logout                  = logout;
@@ -3536,9 +3507,7 @@ window.submitRatingFromModal = submitRatingFromModal;
 window.toggleProfileContact  = toggleProfileContact;
 window.sendProfileMessage    = sendProfileMessage;
 window.toggleRestDealers     = toggleRestDealers;
-window.closeAllDealersModal  = closeAllDealersModal;
 window.closeDealerProfileModal = closeDealerProfileModal;
-window.openAllDealersModal   = openAllDealersModal;
 window.openDealerProfile     = openDealerProfile;
 window.filterByDealerCard    = filterByDealerCard;
 

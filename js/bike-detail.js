@@ -250,20 +250,20 @@ export function createBikeDetail({
           <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
           ${renderPriceHistory(b)}
           <div class="bike-detail-tags">
-            <span class="detail-tag">${b.type}</span>
+            <span class="detail-tag">${esc(b.type)}</span>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
             ${(b.size || b.size_cm) ? `<span class="detail-tag">Str. ${b.size_cm ? b.size_cm + ' cm' : esc(b.size)}${b.size_cm && b.size ? ` <span style="color:var(--muted);font-weight:400;">(${esc(b.size)})</span>` : ''}</span>` : ''}
-            ${b.condition ? `<span class="detail-tag">${b.condition}</span>` : ''}
+            ${b.condition ? `<span class="detail-tag">${esc(b.condition)}</span>` : ''}
             ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
-            ${b.city ? `<span class="detail-tag">📍 ${b.city}</span>` : ''}
+            ${b.city ? `<span class="detail-tag">📍 ${esc(b.city)}</span>` : ''}
             ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${esc(b.warranty)}</span>` : ''}
           </div>
           ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>${b.description.length > 100 ? `<button onclick="jumpToBikeDesc()" style="background:none;border:none;padding:2px 0 0;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--forest);cursor:pointer;">Se mere ↓</button>` : ''}` : ''}
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             <div class="seller-avatar-large">${avatarContent}</div>
             <div style="flex:1">
-              <div class="seller-detail-name">${sellerName || 'Ukendt'}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
-              <div class="seller-detail-city">${profile.city || ''}</div>
+              <div class="seller-detail-name">${esc(sellerName || 'Ukendt')}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
+              <div class="seller-detail-city">${esc(profile.city || '')}</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;">
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
@@ -732,6 +732,10 @@ export function createBikeDetail({
   }
 
   async function renderBikePage(bikeId) {
+    // Stale-request guard: deles med openBikeModal (samme _bikeModalToken), så
+    // hurtig navigation mellem annoncer ikke lader et gammelt fetch-svar
+    // overskrive en nyere visning med blank/forkert indhold.
+    const myToken = ++_bikeModalToken;
     showDetailView();
     document.body.classList.add('viewing-bike-page');
     const detailView = document.getElementById('detail-view');
@@ -743,6 +747,8 @@ export function createBikeDetail({
     } catch (e) {
       error = e;
     }
+
+    if (myToken !== _bikeModalToken) return;
 
     if (error || !b) {
       const errBackAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";

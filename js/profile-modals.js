@@ -10,7 +10,6 @@ export function createProfileModals({
   getCurrentUser,
   userSavedSet, // Set reference (read)
   // Collaborators
-  closeAllDealersModal,
   closeAllModals,
   highlightStars,
   followDealer,
@@ -24,7 +23,6 @@ export function createProfileModals({
 
   async function openDealerProfile(dealerId) {
     const myToken = ++dealerProfileToken;
-    closeAllDealersModal();
     const modal = document.getElementById('dealer-profile-modal');
     const header = document.getElementById('dealer-profile-header');
     const bikesGrid = document.getElementById('dealer-profile-bikes');
@@ -70,10 +68,10 @@ export function createProfileModals({
         <div class="dealer-profile-logo">${dealerLogoContent}</div>
         <div class="dealer-profile-info">
           <h2 class="dealer-profile-name">
-            ${displayName}
+            ${esc(displayName)}
             ${dealer.verified ? '<span class="dealer-verified-tick" title="Verificeret forhandler">✓</span>' : ''}
           </h2>
-          ${dealer.city ? `<div class="dealer-profile-city">📍 ${dealer.city}</div>` : ''}
+          ${dealer.city ? `<div class="dealer-profile-city">📍 ${esc(dealer.city)}</div>` : ''}
           ${bikeCount !== null ? `<div class="dealer-profile-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>` : ''}
         </div>
       </div>
@@ -118,34 +116,34 @@ export function createProfileModals({
       const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
       const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
       const imgContent = primaryImg
-        ? `<img src="${primaryImg}" alt="${b.brand} ${b.model}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
+        ? `<img src="${esc(primaryImg)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : '<span style="font-size:4rem">🚲</span>';
       return `
         <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
           <div class="bike-card-img">
             ${imgContent}
             <div class="bike-card-badges">
-              <span class="condition-tag">${b.condition}</span>
+              <span class="condition-tag">${esc(b.condition)}</span>
             </div>
             <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>
           </div>
           <div class="bike-card-body">
             <div class="card-top">
-              <div class="bike-title">${b.brand} ${b.model}</div>
+              <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
               <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
             </div>
             <div class="bike-meta">
-              <span>${b.type}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
+              <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${esc(b.size || '–')}</span>
             </div>
             <div class="card-footer">
               <div class="seller-info">
                 <div class="seller-avatar">${avatarInit}</div>
                 <div>
-                  <div class="seller-name">${sellerName}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
+                  <div class="seller-name">${esc(sellerName)}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
                   <span class="badge badge-dealer">🏪 Forhandler</span>
                 </div>
               </div>
-              <div class="card-location">📍 ${b.city}</div>
+              <div class="card-location">📍 ${esc(b.city)}</div>
             </div>
           </div>
         </div>`;

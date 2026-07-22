@@ -1,3 +1,5 @@
+import { esc } from './utils.js';
+
 export function createSoldActions({ supabase, getCurrentUser, showToast, reloadMyListings, loadBikes, updateFilterCounts, openUserProfileWithReview }) {
   async function markBikeSold(bikeId, buyerId, buyerName) {
     const currentUser = getCurrentUser();
@@ -45,7 +47,7 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
       const name = m.sender?.seller_type === 'dealer' ? (m.sender?.shop_name || m.sender?.name) : m.sender?.name;
       const safe = (name || 'Ukendt').replace(/'/g, "\\'");
       return `<button class="buyer-pick-btn" onclick="confirmBuyerSelection('${bikeId}','${m.sender_id}','${safe}')">
-        <span style="font-weight:600;">${name || 'Ukendt'}</span>
+        <span style="font-weight:600;">${esc(name || 'Ukendt')}</span>
         <span style="display:block;font-size:0.74rem;color:var(--muted);font-weight:400;margin-top:2px;">📨 Skrev til dig om denne cykel</span>
       </button>`;
     }).join('');
