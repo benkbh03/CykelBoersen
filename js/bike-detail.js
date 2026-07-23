@@ -450,16 +450,16 @@ export function createBikeDetail({
         let icon, title, sub, color, bg, border;
         if (b.frame_check_status === 'clear') {
           icon = '✓'; color = '#2e7d32'; bg = 'rgba(46,125,50,0.08)'; border = '#2e7d32';
-          title = 'Stelnummer oplyst · ingen tyveri-match';
-          sub = `Tjekket mod BikeIndex${dateStr ? ' ' + dateStr : ''}. Internationalt register — ingen garanti. Få hele nummeret af sælger ved overlevering.`;
+          title = 'Stelnummer oplyst af sælger';
+          sub = `Tjekket mod BikeIndex (internationalt cykel-tyveriregister)${dateStr ? ' ' + dateStr : ''} — ingen match. Tjek også hos politiets danske register nedenfor inden du køber.`;
         } else if (b.frame_check_status === 'match') {
           icon = '⚠️'; color = '#c8302a'; bg = 'rgba(200,48,42,0.08)'; border = '#c8302a';
           title = 'Muligt tyveri-match — undersøg før køb';
-          sub = 'Stelnummeret ligner en efterlyst cykel i BikeIndex (omtrentligt match). Bekræft nummeret med sælger og tjek selv inden køb.';
+          sub = 'Stelnummeret ligner en efterlyst cykel i BikeIndex (internationalt register, omtrentligt match). Bekræft med sælger og tjek hos politiet inden køb.';
         } else {
           icon = '🔒'; color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
           title = 'Stelnummer oplyst af sælger';
-          sub = 'Sælger har registreret cyklens stelnummer.';
+          sub = 'Tjek stelnummeret hos politiets register nedenfor inden du køber.';
         }
         return `<div class="frame-trust-badge" style="display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;border-radius:12px;background:${bg};border:1px solid ${border};">
           <span style="font-size:1.2rem;line-height:1.2;">${icon}</span>
@@ -473,7 +473,7 @@ export function createBikeDetail({
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>
           <strong>Tjek stelnummeret</strong>
-          <span>Politiet har et gratis register over stjålne cykler — tjek inden du køber</span>
+          <span>Politiets register er den danske, autoritative kilde — tjek stelnummeret gratis inden du køber</span>
         </div>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
