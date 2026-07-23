@@ -647,6 +647,7 @@ const toggleDealerServiceFilter = lazyMethod(_ensureDealersPage, 'toggleDealerSe
 const expandAllDealers         = lazyMethod(_ensureDealersPage, 'expandAllDealers');
 const renderBecomeDealerPage   = lazyMethod(_ensureDealersPage, 'renderBecomeDealerPage');
 const submitDealerApplication  = lazyMethod(_ensureDealersPage, 'submitDealerApplication');
+const lookupDealerCvr          = lazyMethod(_ensureDealersPage, 'lookupDealerCvr');
 const openSubscriptionPortal   = lazyMethod(_ensureDealersPage, 'openSubscriptionPortal');
 
 // Brand-landingsside — lazy-loaded (/cykler/:brand)
@@ -882,6 +883,7 @@ window.filterBlogCategory = filterBlogCategory;
 window.openBecomeDealerModal   = openBecomeDealerModal;
 window.closeBecomeDealerModal  = closeBecomeDealerModal;
 window.submitDealerApplication = submitDealerApplication;
+window.lookupDealerCvr         = lookupDealerCvr;
 window.selectDealerPlan        = selectDealerPlan;
 window.openSubscriptionPortal  = openSubscriptionPortal;
 window.renderDealersPage       = renderDealersPage;
