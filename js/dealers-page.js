@@ -540,7 +540,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <h3 class="bd-form-title">Butiksinformation</h3>
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
           <div class="form-group"><label>Butiksnavn *</label><input type="text" id="dealer-shop-name" placeholder="f.eks. VeloShop ApS" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
-          <div class="form-group"><label>CVR-nummer *</label><input type="text" inputmode="numeric" pattern="\d*" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>CVR-nummer *</label><input type="text" inputmode="numeric" pattern="\d*" id="dealer-cvr" placeholder="f.eks. 12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'');document.getElementById('dealer-cvr-status').textContent=''" onblur="lookupDealerCvr()" onkeydown="if(event.key==='Enter')submitDealerApplication()"><div id="dealer-cvr-status" class="cvr-status" aria-live="polite"></div></div>
           <div class="form-group"><label>Kontaktperson *</label><input type="text" id="dealer-contact" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Telefon</label><input type="tel" inputmode="tel" id="dealer-phone" placeholder="f.eks. 12 34 56 78" maxlength="20" autocomplete="tel" data-1p-ignore="true" data-lpignore="true" data-form-type="other" data-bwignore="true" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group"><label>Adresse *</label><input type="text" id="dealer-address" placeholder="Start med at skrive gadenavn…" autocomplete="off"></div>
@@ -611,6 +611,46 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     } catch {}
   }
 
+  // Seneste CVR-opslag (fra real-time blur-tjek), så submit kan genbruge det
+  // uden et ekstra kald når nummeret er uændret.
+  let _cvrVerified = null;
+
+  // Slå CVR op mod registret (verify-cvr edge function) og vis status ved feltet.
+  // Auto-udfylder butiksnavn hvis tomt. Blokerer ikke her — kun submit blokerer.
+  async function lookupDealerCvr() {
+    const input  = document.getElementById('dealer-cvr');
+    const status = document.getElementById('dealer-cvr-status');
+    if (!input || !status) return;
+    const cvr = (input.value || '').replace(/\D/g, '');
+    _cvrVerified = null;
+    if (cvr.length !== 8) { status.textContent = ''; status.className = 'cvr-status'; return; }
+    status.textContent = 'Slår op i CVR-registret…';
+    status.className = 'cvr-status cvr-status--checking';
+    try {
+      const { data } = await supabase.functions.invoke('verify-cvr', { body: { cvr } });
+      _cvrVerified = data ? { ...data, _cvr: cvr } : null;
+      if (data?.valid) {
+        status.textContent = `✓ ${data.name}${data.city ? ', ' + data.city : ''}`;
+        status.className = 'cvr-status cvr-status--ok';
+        const shopInput = document.getElementById('dealer-shop-name');
+        if (shopInput && !shopInput.value.trim() && data.name) shopInput.value = data.name;
+      } else if (data?.reason === 'lookup_error') {
+        status.textContent = 'Kunne ikke tjekke lige nu — vi verificerer manuelt.';
+        status.className = 'cvr-status cvr-status--warn';
+      } else if (data?.reason === 'ceased') {
+        status.textContent = `✗ ${data.name || 'Virksomheden'} står som ophørt i CVR-registret.`;
+        status.className = 'cvr-status cvr-status--err';
+      } else {
+        status.textContent = '✗ CVR-nummer ikke fundet i registret.';
+        status.className = 'cvr-status cvr-status--err';
+      }
+    } catch (_e) {
+      _cvrVerified = { valid: false, reason: 'lookup_error', _cvr: cvr };
+      status.textContent = 'Kunne ikke tjekke lige nu — vi verificerer manuelt.';
+      status.className = 'cvr-status cvr-status--warn';
+    }
+  }
+
   async function submitDealerApplication() {
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
@@ -632,6 +672,25 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     if (!/^\d{8}$/.test(cvr)) {
       showToast('⚠️ CVR-nummer skal være 8 cifre'); return;
     }
+
+    // Verificér CVR mod registret så fake-numre (fx 00000000) ikke når køen.
+    // Genbrug real-time-opslaget hvis nummeret er uændret; ellers slå op nu.
+    let cvrCheck = (_cvrVerified && _cvrVerified._cvr === cvr) ? _cvrVerified : null;
+    if (!cvrCheck) {
+      try {
+        const { data } = await supabase.functions.invoke('verify-cvr', { body: { cvr } });
+        cvrCheck = data || null;
+      } catch { cvrCheck = { reason: 'lookup_error' }; }
+    }
+    // Hård blok kun ved format/fake/not_found/ceased. Ved lookup_error (API-udfald)
+    // lader vi den passere — admin verificerer manuelt som backstop.
+    if (cvrCheck && !cvrCheck.valid && cvrCheck.reason !== 'lookup_error') {
+      showToast(cvrCheck.reason === 'ceased'
+        ? '⚠️ Virksomheden står som ophørt i CVR-registret. Tjek nummeret.'
+        : '⚠️ CVR-nummer ikke fundet i registret. Tjek at det er korrekt.');
+      return;
+    }
+
     if (!address || !addrData.lat || !addrData.lng) {
       showToast('⚠️ Vælg din butiks-adresse fra listen så kortet viser jer korrekt'); return;
     }
@@ -811,6 +870,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     renderStars,
     renderBecomeDealerPage,
     submitDealerApplication,
+    lookupDealerCvr,
     openSubscriptionPortal,
   };
 }

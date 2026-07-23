@@ -3107,6 +3107,18 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 28px;
 }
 
+/* CVR-verifikations-status under CVR-feltet på /bliv-forhandler */
+.cvr-status {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  margin-top: 5px;
+  min-height: 1em;
+}
+.cvr-status--checking { color: var(--muted); }
+.cvr-status--ok       { color: #2e7d32; font-weight: 600; }
+.cvr-status--warn     { color: #8a6d1a; }
+.cvr-status--err      { color: var(--rust); font-weight: 600; }
+
 /* Diskret link på /bliv-forhandler der åbner /tilladt-sortiment. Skal IKKE
    skræmme forhandlere — det er kun en henvisning, ikke en advarsel.
    Testet: ≤480, ≤768, 769-1024, ≥1025 */
