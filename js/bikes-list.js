@@ -1,4 +1,4 @@
-import { bikeTitle, frameSizeLetter } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -370,7 +370,7 @@ export function createBikesList({
               ${!isSold && !isDemo && saving > 0
                 ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${saving.toLocaleString('da-DK')} kr.</span>`
                 : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
-              ${b.warranty && !isSold && !isDemo ? '<span class="warranty-card-badge">🛡️ Garanti</span>' : ''}
+              ${b.warranty && !isSold && !isDemo ? `<span class="warranty-card-badge">${iconShield()}Garanti</span>` : ''}
             </div>
             ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
             ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
@@ -389,7 +389,7 @@ export function createBikesList({
               <div class="card-seller-details">
                 <div class="card-seller-top">
                   <span class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</span>
-                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}</span>
+                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}</span>
                 </div>
                 <div class="card-seller-bottom">
                   <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>

@@ -104,6 +104,16 @@ export function frameSizeLetter(size) {
   return m ? m[1].toUpperCase() : null;
 }
 
+/* Små inline-SVG-ikoner til trust-badges (sælgertype, garanti). currentColor
+   arver badgens tekstfarve, ~1em så de flugter med teksten. Erstatter emoji
+   (🏪/👤/🛡️) der renderede forskelligt pr. styresystem og brød det editorial-
+   udtryk. Skjold-stien er den samme som tyveri-tippet — bevidst konsistens. */
+const _svgIcon = (paths) =>
+  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true">${paths}</svg>`;
+export const iconDealer  = () => _svgIcon('<path d="M3 9l1.5-5h15L21 9"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/>');
+export const iconPrivate = () => _svgIcon('<circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/>');
+export const iconShield  = () => _svgIcon('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>');
+
 // Escape en værdi til brug som JS-streng inde i et inline on*-attribut (dobbelt-quoted),
 // fx onclick="fn('HER')". Forhindrer BÅDE attribut-breakout (") og JS-string-breakout
 // (' og \). Brug esc() til almindeligt tekst-indhold; escAttr() KUN til on*-handler-args.

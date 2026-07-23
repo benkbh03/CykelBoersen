@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -261,7 +261,7 @@ export function createBikeDetail({
             ${b.condition ? `<span class="detail-tag">${esc(b.condition)}</span>` : ''}
             ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
             ${b.city ? `<span class="detail-tag">📍 ${esc(b.city)}</span>` : ''}
-            ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">🛡️ ${esc(b.warranty)}</span>` : ''}
+            ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">${iconShield()} ${esc(b.warranty)}</span>` : ''}
           </div>
           ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>${b.description.length > 100 ? `<button onclick="jumpToBikeDesc()" style="background:none;border:none;padding:2px 0 0;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--forest);cursor:pointer;">Se mere ↓</button>` : ''}` : ''}
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
@@ -271,7 +271,7 @@ export function createBikeDetail({
               <div class="seller-detail-city">${esc(profile.city || '')}</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;">
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
-                  ${sellerType === 'dealer' ? '🏪 Forhandler' : '👤 Privat'}
+                  ${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}
                 </span>
                 ${!isDemo ? '<span id="seller-trust-pill-slot"></span>' : ''}
                 <span id="response-time-badge" style="font-size:0.75rem;color:var(--muted);">⏱ Henter responstid...</span>
