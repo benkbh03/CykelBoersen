@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle } from './utils.js';
+import { bikeTitle, frameSizeLetter } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -252,7 +252,12 @@ export function createBikeDetail({
           <div class="bike-detail-tags">
             <span class="detail-tag">${esc(b.type)}</span>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
-            ${(b.size || b.size_cm) ? `<span class="detail-tag">Str. ${b.size_cm ? b.size_cm + ' cm' : esc(b.size)}${b.size_cm && b.size ? ` <span style="color:var(--muted);font-weight:400;">(${esc(b.size)})</span>` : ''}</span>` : ''}
+            ${(b.size || b.size_cm) ? (() => {
+              const _sl = frameSizeLetter(b.size);
+              const _cm = b.size_cm ? `${b.size_cm} cm` : (_sl || esc(b.size));
+              const _guide = (b.size_cm && _sl) ? ` <span style="color:var(--muted);font-weight:400;" title="Bogstav-størrelser (S/M/L) varierer mellem mærker — cm er det pålidelige mål">· ca. ${_sl}</span>` : '';
+              return `<span class="detail-tag">Str. ${_cm}${_guide}</span>`;
+            })() : ''}
             ${b.condition ? `<span class="detail-tag">${esc(b.condition)}</span>` : ''}
             ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
             ${b.city ? `<span class="detail-tag">📍 ${esc(b.city)}</span>` : ''}
@@ -387,7 +392,7 @@ export function createBikeDetail({
             ${(b.size || b.size_cm) ? `
             <div class="fit-card">
               <div class="fit-card-label">Rammestørrelse</div>
-              <div class="fit-card-value">${b.size_cm ? `${b.size_cm} cm` : esc(b.size)}${b.size_cm && b.size ? ` <span style="color:var(--muted);font-weight:400;font-size:0.85em;">(${esc(b.size)})</span>` : ''}</div>
+              <div class="fit-card-value">${b.size_cm ? `${b.size_cm} cm` : (frameSizeLetter(b.size) || esc(b.size))}${(b.size_cm && frameSizeLetter(b.size)) ? ` <span style="color:var(--muted);font-weight:400;font-size:0.85em;">· ca. ${frameSizeLetter(b.size)}</span>` : ''}</div>
             </div>` : ''}
             ${b.wheel_size ? `
             <div class="fit-card">

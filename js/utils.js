@@ -93,6 +93,17 @@ export function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/* Bogstav-størrelse (XS/S/M/L/XL) er mærke-afhængig og kun vejledende — cm-målet
+   er det pålidelige. Træk KUN bogstavet ud af det gemte "M (53–56 cm)"-format,
+   så den strenge cm-range ikke modsiger sælgerens mærke-størrelse (fx en Scott
+   der markedsføres som L ved 56 cm, hvor vores skala kalder 56 for M).
+   Returnerer fx "M", eller null hvis værdien ikke starter med et kendt bogstav. */
+export function frameSizeLetter(size) {
+  if (!size) return null;
+  const m = String(size).trim().match(/^(XS|S|M|L|XL)\b/i);
+  return m ? m[1].toUpperCase() : null;
+}
+
 // Escape en værdi til brug som JS-streng inde i et inline on*-attribut (dobbelt-quoted),
 // fx onclick="fn('HER')". Forhindrer BÅDE attribut-breakout (") og JS-string-breakout
 // (' og \). Brug esc() til almindeligt tekst-indhold; escAttr() KUN til on*-handler-args.
