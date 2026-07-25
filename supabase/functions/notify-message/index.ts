@@ -120,7 +120,7 @@ serve(async (req) => {
     // id_approved/id_rejected sender en troværdig "dit ID er godkendt/afvist"-mail.
     // Kun en admin må udløse dem — ellers er det en phishing-vektor (hvem som helst
     // kunne sende en falsk "ID godkendt"-mail til enhver bruger).
-    const ADMIN_ONLY_TYPES = new Set(["id_approved", "id_rejected"]);
+    const ADMIN_ONLY_TYPES = new Set(["id_approved", "id_rejected", "dealer_rejected"]);
     if (ADMIN_ONLY_TYPES.has(payload.type)) {
       const callerJwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
       let callerIsAdmin = false;
@@ -224,6 +224,34 @@ serve(async (req) => {
 
       const result = await sendEmail(user.email, "Din ID-ansøgning er afvist – Cykelbørsen", html);
       console.log("ID-afvisning email sendt til:", user.email, "| ID:", result.id);
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // ── FORHANDLER-ANSØGNING AFVIST ───────────────────────────
+    if (payload.type === "dealer_rejected") {
+      const { data: { user }, error } = await supabase.auth.admin.getUserById(payload.user_id);
+      if (error || !user?.email) {
+        return new Response("User not found", { status: 400, headers: corsHeaders });
+      }
+      const { data: profile } = await supabase.from("profiles").select("shop_name, name").eq("id", payload.user_id).single();
+      const name = esc(profile?.shop_name ?? profile?.name ?? "");
+
+      const html = emailWrapper(`
+        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Din forhandler-ansøgning kunne ikke godkendes</h2>
+        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
+          Hej ${name || "der"},<br><br>
+          Vi kunne desværre ikke godkende jeres ansøgning om en forhandlerprofil på Cykelbørsen lige nu.
+          Det kan fx skyldes at vi mangler dokumentation, eller at CVR-nummeret ikke kunne bekræftes.<br><br>
+          Har du spørgsmål eller vil du prøve igen, er du meget velkommen til at skrive til os — så hjælper vi dig videre.
+        </p>
+        <a href="mailto:hej@cykelbørsen.dk"
+           style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
+          Kontakt os →
+        </a>
+      `);
+
+      const result = await sendEmail(user.email, "Din forhandler-ansøgning – Cykelbørsen", html);
+      console.log("Forhandler-afvisning email sendt til:", user.email, "| ID:", result.id);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 

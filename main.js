@@ -3114,6 +3114,7 @@ async function loadDealerApplications() {
       + '<div class="admin-row-actions">'
       + '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Godkend</button>'
       + '<button class="btn-reject" onclick="rejectDealer(\'' + p.id + '\')">✕ Afvis</button>'
+      + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + escAttr(p.name || 'Ukendt') + '\')" title="Slet permanent — til spam/bots">🗑️ Slet</button>'
       + '</div></div>';
   }).join('');
 }
@@ -3206,10 +3207,12 @@ async function approveDealer(userId) {
 }
 
 async function rejectDealer(userId) {
-  if (!confirm('Afvis denne ansøgning og fjern forhandlerstatus?')) return;
+  if (!confirm('Afvis ansøgningen?\n\nForhandleren nedgraderes til privat bruger og får en mail om at ansøgningen ikke kunne godkendes.\n\nLigner det spam/en bot? Brug "Slet" i stedet.')) return;
   const res = await _callAdminAction('reject_dealer', userId);
   if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('🗑️ Ansøgning afvist');
+  // Notificér forhandleren (fire-and-forget; admin-JWT sendes automatisk med).
+  supabase.functions.invoke('notify-message', { body: { type: 'dealer_rejected', user_id: userId } }).catch(() => {});
+  showToast('✉️ Ansøgning afvist — forhandleren er notificeret');
   loadDealerApplications();
 }
 
