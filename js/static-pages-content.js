@@ -176,7 +176,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 26. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -186,7 +186,7 @@ export const footerContent = {
       <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Kontooplysninger:</strong> Navn, e-mailadresse, adgangskode (krypteret), profilbillede (valgfrit).</li>
-        <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere).</li>
+        <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere; CVR-nummeret verificeres via opslag i CVR-registret hos cvrapi.dk).</li>
         <li><strong>Annoncedata:</strong> Cykelbeskrivelser, billeder, priser, kontaktoplysninger i annoncer.</li>
         <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
         <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
@@ -274,6 +274,7 @@ export const footerContent = {
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
         <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
+        <li><strong>cvrapi.dk (Danmark)</strong> — CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
         <li><strong>BikeIndex (USA)</strong> — Internationalt tyveriregister for cykler. Hvis du oplyser et stelnummer på en annonce, sendes det til BikeIndex for et opslag mod efterlyste cykler. Vi gemmer kun resultatet og de sidste 4 cifre — aldrig hele nummeret. Se <a href="https://bikeindex.org/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">BikeIndex' privatlivspolitik</a>.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
@@ -321,7 +322,7 @@ export const footerContent = {
     title: 'Cookiepolitik',
     metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. juni 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 26. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
       <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde — små data-poster i din browser, vi bruger til at huske dig.</p>
@@ -360,6 +361,11 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">dealer_signup_source (sessionStorage)</td>
           <td style="padding:8px 8px 8px 0;">Hvis du klikker på et link med UTM-parametre (fx fra en e-mail-kampagne) til "Bliv forhandler", husker vi kilden midlertidigt, så vi kan se hvilken kanal der har skabt ansøgningen. Slettes når du lukker browseren.</td>
           <td style="padding:8px 0;">Session</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">_geocodeCache_* (localStorage)</td>
+          <td style="padding:8px 8px 8px 0;">Gemmer lokalt de adresser og byer du har slået op mod kortet (omsat til koordinater), så "Nær mig" og afstands-visning er hurtigere. Forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
         <tr>
           <td style="padding:8px 8px 8px 0;">cb_viewer_id</td>
