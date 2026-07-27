@@ -39,6 +39,7 @@ import { createImageUpload } from './js/image-upload.js';
 import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
+import { iconDealer, iconPrivate } from './utils.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
 // supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
@@ -3156,7 +3157,7 @@ async function loadAllUsers() {
       + (isVerified ? ' <span class="verified-badge">✓</span>' : '')
       + (canOnboard ? ' <span class="onboard-indicator" title="Forhandler har givet tilladelse til at admin opretter annoncer på deres vegne">🛠️</span>' : '')
       + '</div>'
-      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (isDealer ? '🏪 Forhandler' : '👤 Privat') + '</div>'
+      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat') + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'
       + (isDealer && !isVerified ? '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Verificer</button>' : '')

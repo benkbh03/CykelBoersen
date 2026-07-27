@@ -811,7 +811,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  /* font-size fjernet: ikonet er inline-SVG med egen størrelse (iconDealer(18)) */
   flex-shrink: 0;
 }
 .split-popup-group-meta {
@@ -1057,7 +1057,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   min-width: 0;
 }
 .split-popup-info-icon {
-  font-size: 1rem;
+  /* font-size fjernet: inline-SVG, se iconDealer(14) i map-page.js */
   line-height: 1.2;
   flex-shrink: 0;
 }

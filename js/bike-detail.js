@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -343,7 +343,7 @@ export function createBikeDetail({
               return `
             <div class="dealer-perks">
               <div class="dealer-perks-header">
-                <span class="dealer-perks-icon">🏪</span>
+                <span class="dealer-perks-icon">${iconDealer(20)}</span>
                 <span class="dealer-perks-title">Køb hos forhandler</span>
               </div>
               <ul class="dealer-perks-list">
@@ -623,9 +623,9 @@ export function createBikeDetail({
 
     // Sælger-marker — rust for privat, forest for forhandler
     const markerColor = isDealer ? '#2A3D2E' : '#C8502A';
-    const sellerLabel = isDealer ? '🏪 Forhandler' : '👤 Privat sælger';
+    const sellerLabel = isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat sælger';
     const sellerIcon = L.divIcon({
-      html: `<div style="background:${markerColor};border-radius:50% 50% 50% 0;width:30px;height:30px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;"><span style="transform:rotate(45deg);font-size:13px;">${isDealer ? '🏪' : '🚲'}</span></div>`,
+      html: `<div style="background:${markerColor};border-radius:50% 50% 50% 0;width:30px;height:30px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;"><span style="transform:rotate(45deg);display:flex;color:#fff;">${isDealer ? iconDealer(15) : iconBike(15)}</span></div>`,
       className: '',
       iconSize: [30, 30],
       iconAnchor: [15, 30],

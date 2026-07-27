@@ -1,3 +1,4 @@
+import { iconShield } from './utils.js';
 export function showOnboardingBanner() {
   if (document.getElementById('welcome-modal-overlay')) return;
 
@@ -27,7 +28,7 @@ export function showOnboardingBanner() {
           </div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:14px;">
-          <span style="font-size:1.3rem;line-height:1;margin-top:1px;">🛡️</span>
+          <span style="line-height:1;margin-top:1px;">${iconShield(20)}</span>
           <div>
             <div style="font-weight:600;font-size:0.9rem;color:#1A1A18;margin-bottom:2px;">Del aldrig kortoplysninger</div>
             <div style="font-size:0.84rem;color:#6B6760;">Vi beder aldrig om betalingsoplysninger. Vær opmærksom på svindlere der vil have betaling via link eller overførsel på forhånd.</div>

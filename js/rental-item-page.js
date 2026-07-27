@@ -1,3 +1,4 @@
+import { iconDealer } from './utils.js';
 /* ============================================================
    UDLEJNING — item-detalje + booking (/udlejning/:id)
    ------------------------------------------------------------
@@ -103,7 +104,7 @@ export function createRentalItemPage({
                 <p class="rental-book-note">Denne forhandler er ved at færdiggøre sin opsætning. Kontakt dem direkte.</p>
               </div>`}
 
-              <a class="rental-dealer-link" href="/dealer/${dealer.id}" onclick="event.preventDefault();navigateToDealer('${dealer.id}')">🏪 ${esc(dealerName)}${dealer.verified ? ' ✓' : ''} →</a>
+              <a class="rental-dealer-link" href="/dealer/${dealer.id}" onclick="event.preventDefault();navigateToDealer('${dealer.id}')">${iconDealer()} ${esc(dealerName)}${dealer.verified ? ' ✓' : ''} →</a>
             </div>
 
             ${it.description ? `<div class="rental-item-desc">${esc(it.description).replace(/\n/g, '<br>')}</div>` : ''}

@@ -7,7 +7,7 @@
    - State i sessionStorage (slettes når browseren lukkes)
    ============================================================ */
 
-import { esc, bikeTitle } from './utils.js';
+import { esc, bikeTitle, iconDealer, iconPrivate, iconShield } from './utils.js';
 
 const STORAGE_KEY = 'cb_compare_ids';
 const MAX_COMPARE = 3;
@@ -179,7 +179,7 @@ function renderCompareTable(bikes, _navigateTo) {
   const sellerFn = b => {
     const p = b.profiles || {};
     const name = p.seller_type === 'dealer' ? p.shop_name : p.name;
-    const badge = p.seller_type === 'dealer' ? '🏪 Forhandler' : '👤 Privat';
+    const badge = p.seller_type === 'dealer' ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat';
     const verified = p.verified ? '<span class="cmp-verified" title="Verificeret">✓</span>' : '';
     return `<div class="cmp-seller-cell"><span class="cmp-seller-name">${esc(name || 'Ukendt')}${verified}</span><span class="cmp-seller-type">${badge}</span></div>`;
   };
@@ -227,7 +227,7 @@ function renderCompareTable(bikes, _navigateTo) {
     {
       title: 'Køb og sælger',
       rows: [
-        { label: 'Garanti', fn: b => b.warranty ? `🛡️ ${esc(b.warranty)}` : emptyVal },
+        { label: 'Garanti', fn: b => b.warranty ? iconShield() + ` ${esc(b.warranty)}` : emptyVal },
         { label: 'By', fn: b => esc(b.city) || emptyVal },
         { label: 'Sælger', fn: sellerFn },
       ],

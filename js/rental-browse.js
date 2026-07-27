@@ -6,6 +6,7 @@
    ============================================================ */
 
 import { RENTAL_TYPES } from './rental-data.js';
+import { iconDealer } from './utils.js';
 
 export function createRentalBrowse({
   supabase,
@@ -102,7 +103,7 @@ export function createRentalBrowse({
           <div class="rental-card-meta">
             ${it.type ? `<span>${esc(it.type)}</span>` : ''}${it.city ? `<span>📍 ${esc(it.city)}</span>` : ''}
           </div>
-          <div class="rental-card-dealer">🏪 ${esc(dealerName)}${dealer.verified ? ' ✓' : ''}</div>
+          <div class="rental-card-dealer">${iconDealer()} ${esc(dealerName)}${dealer.verified ? ' ✓' : ''}</div>
         </div>
       </div>`;
   }

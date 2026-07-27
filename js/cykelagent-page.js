@@ -8,6 +8,7 @@
 
 import { BIKE_COLORS } from './config.js';
 import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
+import { iconDealer, iconPrivate, iconShield } from './utils.js';
 
 const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
@@ -243,11 +244,11 @@ export function createCykelagentPage({
     if (Array.isArray(f.sizes))       f.sizes.forEach(s => chips.push('Str. ' + esc(s.split(' ')[0])));
     if (Array.isArray(f.wheelSizes))  f.wheelSizes.forEach(w => chips.push('Hjul ' + esc(w)));
     if (Array.isArray(f.colors))      f.colors.forEach(c => chips.push('🎨 ' + esc(c)));
-    if (f.sellerType === 'dealer')    chips.push('🏪 Forhandlere');
-    if (f.sellerType === 'private')   chips.push('👤 Private');
+    if (f.sellerType === 'dealer')    chips.push(iconDealer() + ' Forhandlere');
+    if (f.sellerType === 'private')   chips.push(iconPrivate() + ' Private');
     if (f.minPrice)                   chips.push(`Fra ${Number(f.minPrice).toLocaleString('da-DK')} kr.`);
     if (f.maxPrice)                   chips.push(`Op til ${Number(f.maxPrice).toLocaleString('da-DK')} kr.`);
-    if (f.warranty)                   chips.push('🛡️ Med garanti');
+    if (f.warranty)                   chips.push(iconShield() + ' Med garanti');
     if (f.city)                       chips.push('📍 ' + esc(f.city));
     if (Array.isArray(f.frameMaterials)) f.frameMaterials.forEach(m => chips.push('🔩 ' + esc(m)));
     if (Array.isArray(f.brakeTypes))     f.brakeTypes.forEach(b => chips.push('🛑 ' + esc(b)));
@@ -416,15 +417,15 @@ export function createCykelagentPage({
           <label class="cykelagent-label">Sælgertype</label>
           <div class="cykelagent-chips-row">
             <button type="button" class="cykelagent-chip-btn${_form.sellerType === '' || _form.sellerType === 'all' ? ' active' : ''}" onclick="setCykelagentSellerType('')">Alle</button>
-            <button type="button" class="cykelagent-chip-btn${_form.sellerType === 'dealer' ? ' active' : ''}" onclick="setCykelagentSellerType('dealer')">🏪 Forhandlere</button>
-            <button type="button" class="cykelagent-chip-btn${_form.sellerType === 'private' ? ' active' : ''}" onclick="setCykelagentSellerType('private')">👤 Private</button>
+            <button type="button" class="cykelagent-chip-btn${_form.sellerType === 'dealer' ? ' active' : ''}" onclick="setCykelagentSellerType('dealer')">${iconDealer()} Forhandlere</button>
+            <button type="button" class="cykelagent-chip-btn${_form.sellerType === 'private' ? ' active' : ''}" onclick="setCykelagentSellerType('private')">${iconPrivate()} Private</button>
           </div>
         </div>
 
         <div class="cykelagent-field">
           <label class="cykelagent-toggle">
             <input type="checkbox" ${_form.warranty ? 'checked' : ''} onchange="updateCykelagentField('warranty', this.checked)">
-            <span>🛡️ Kun cykler med garanti</span>
+            <span>${iconShield()} Kun cykler med garanti</span>
           </label>
         </div>
 

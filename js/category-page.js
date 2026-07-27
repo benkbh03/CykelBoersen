@@ -8,6 +8,7 @@
    ============================================================ */
 
 import { CATEGORY_META } from './category-data.js';
+import { iconDealer, iconPrivate } from './utils.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
@@ -172,7 +173,7 @@ export function createCategoryPage({
           </div>
           <div class="card-footer">
             <span class="card-location">📍 ${esc(b.city || '')}</span>
-            <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? '🏪 ' + esc(sellerName) : '👤 Privat'}</span>
+            <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + ' ' + esc(sellerName) : iconPrivate() + ' Privat'}</span>
           </div>
         </div>
       </div>`;

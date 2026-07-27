@@ -1,3 +1,5 @@
+import { iconShield } from './utils.js';
+
 export const footerContent = {
   'guide-tjek': {
     title: 'Sådan tjekker du en brugt cykel inden køb',
@@ -495,7 +497,7 @@ export const footerContent = {
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
       <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler — det tager under et minut.</p>
-      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">🛡️ Åbn politiets register →</a>
+      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">${iconShield()} Åbn politiets register →</a>
       <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>
