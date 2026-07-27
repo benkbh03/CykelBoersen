@@ -1408,6 +1408,55 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--forest); color: var(--cream);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;
 }
+
+/* ── Automatisk AI-analyse på trin 1 ──────────────────────────────
+   Erstatter "Få AI-forslag"-knappen: analysen kører af sig selv når
+   billederne lægges ind, og dette kort viser status. */
+.sell-ai-notice {
+  margin: 10px 2px 0; font-family: 'DM Sans', sans-serif;
+  font-size: 12px; line-height: 1.45; color: var(--muted);
+}
+.sell-ai-auto {
+  margin-top: 12px; padding: 12px 14px;
+  background: rgba(42,61,46,0.07); border: 1px solid rgba(42,61,46,0.14); border-radius: 12px;
+  display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
+  font-family: 'DM Sans', sans-serif; color: var(--charcoal);
+}
+.sell-ai-auto-text { flex: 1 1 190px; min-width: 0; }
+.sell-ai-auto-text b {
+  display: block; font-family: 'Fraunces', serif; font-weight: 500;
+  font-size: 14px; letter-spacing: -0.2px; margin-bottom: 2px;
+}
+.sell-ai-auto-text span { display: block; font-size: 12px; line-height: 1.4; color: var(--muted); }
+.sell-ai-auto-check {
+  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+  background: var(--forest); color: var(--cream);
+  display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+}
+.sell-ai-auto-spinner {
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+  border: 2.5px solid rgba(42,61,46,0.18); border-top-color: var(--forest);
+  animation: sell-ai-spin 0.75s linear infinite;
+}
+@keyframes sell-ai-spin { to { transform: rotate(360deg); } }
+.sell-ai-auto.is-failed { background: var(--cream); border-color: var(--border); }
+.sell-ai-retry {
+  flex-shrink: 0; min-height: 44px; padding: 10px 14px;
+  background: none; border: 1px solid rgba(42,61,46,0.28); border-radius: 10px;
+  color: var(--forest); font-family: 'DM Sans', sans-serif; font-size: 13px;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.sell-ai-retry:hover { background: rgba(42,61,46,0.08); border-color: var(--forest); }
+
+@media (max-width: 480px) {
+  .sell-ai-auto { padding: 11px 12px; gap: 9px; }
+  .sell-ai-auto-text { flex-basis: 100%; }
+  .sell-ai-retry { width: 100%; }   /* fuld bredde = nemt touch-mål på 375px */
+}
+@media (prefers-reduced-motion: reduce) {
+  .sell-ai-auto-spinner { animation-duration: 2.4s; }
+}
+
 /* Photo grid header */
 .sell-photo-grid-header {
   display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 8px;

@@ -70,6 +70,13 @@ export function createSellPage({
   let _sellStep = 1;
   let _aiSuggestionPending = null;
   let _aiApplied = false;
+  // _aiAutoFired: auto-analysen kører ÉN gang pr. kladde, ikke pr. tilføjet billede
+  // (hvert kald koster et Claude-kald). _aiRunning: guard mod overlappende kald.
+  let _aiAutoFired = false;
+  let _aiRunning = false;
+  // id → værdien AI'en skrev. Bruges af "Analysér igen" til at rydde egne
+  // forslag uden at røre felter brugeren selv har rettet.
+  let _aiFilledValues = {};
   let _sellFormCache = {};
   // Guard mod dobbelt-submit: sættes til true mens submitSellPage() kører,
   // så hurtige klik (hvor knappen ikke når at blive deaktiveret) ikke kan
@@ -632,6 +639,10 @@ export function createSellPage({
     getSelectedFiles().splice(0);
     _sellStep = 1;
     _aiApplied = false;
+    _aiAutoFired = false;
+    _aiRunning = false;
+    _aiState = 'idle';
+    _aiFilledValues = {};
     _aiSuggestionPending = null;
     _sellFormCache = {};
 
@@ -731,10 +742,11 @@ export function createSellPage({
   }
 
   function renderSellStep1HTML() {
-    const aiDone = _aiApplied;
     return `
       <h1 class="sell-step-heading">Start med <em>billeder</em></h1>
-      <p class="sell-step-subtitle">Gode billeder sælger bedre. Tilføj mindst ét — gerne fra flere vinkler.</p>
+      <p class="sell-step-subtitle">${_isAcc()
+        ? 'Gode billeder sælger bedre. Tilføj mindst ét — gerne fra flere vinkler.'
+        : 'Læg billederne ind — så udfylder vi resten for dig.'}</p>
 
       <div class="sell-drop-zone" id="sell-drop-zone" onclick="document.getElementById('sell-file-input').click()"
         ondragover="event.preventDefault();this.classList.add('dragover')"
@@ -748,6 +760,9 @@ export function createSellPage({
         <div class="sell-drop-badge">JPG, PNG, WEBP · op til 10 MB</div>
       </div>
       <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
+
+      ${_isAcc() ? '' : `
+      <p class="sell-ai-notice">Billederne analyseres automatisk af AI, så vi kan udfylde felterne for dig. Tjek altid, at oplysningerne passer.</p>`}
 
       ${_isAcc() ? '' : `
       <div class="sell-import-link" style="margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--surface-2,rgba(0,0,0,.02))">
@@ -767,21 +782,8 @@ export function createSellPage({
         </div>
       </div>`}
 
-      <div id="ai-suggest-wrap" style="display:${getSelectedFiles().length > 0 ? 'block' : 'none'}">
-        ${aiDone ? `
-          <div class="sell-ai-applied">
-            <div class="sell-ai-applied-icon">✓</div>
-            <div><b>AI-forslag anvendt.</b> Gennemse i næste trin.</div>
-          </div>` : _isAcc() ? '' : `
-          <button type="button" id="ai-suggest-btn" class="sell-ai-btn" onclick="suggestListingFromImages()">
-            <div class="sell-ai-btn-icon">✨</div>
-            <div>
-              <div class="sell-ai-btn-title">Få AI-forslag</div>
-              <div class="sell-ai-btn-sub">AI udfylder felterne ud fra billederne. Tjek altid, at oplysningerne er korrekte.</div>
-            </div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg);opacity:.6"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div id="ai-suggest-status" class="ai-suggest-status"></div>`}
+      <div id="ai-suggest-wrap" style="display:${!_isAcc() && getSelectedFiles().length > 0 ? 'block' : 'none'}">
+        ${renderAiStatusHTML(currentAiState())}
       </div>
 
       ${getSelectedFiles().length > 0 ? `
@@ -1449,7 +1451,11 @@ export function createSellPage({
       }
       initSellDraft();
       if (_aiSuggestionPending) {
-        setTimeout(() => { applyAiSuggestion(_aiSuggestionPending); _aiSuggestionPending = null; }, 50);
+        // Værdierne ligger allerede i _sellFormCache (og er dermed renderet ind
+        // ovenfor) — her mangler kun DOM-bivirkningerne.
+        const pending = _aiSuggestionPending;
+        _aiSuggestionPending = null;
+        setTimeout(() => applyAiDomEffects(pending), 50);
       }
       // Color swatches
       const colorGrid = document.getElementById('sell-color-grid');
@@ -1579,9 +1585,15 @@ export function createSellPage({
       const draft = {};
       let hasAny = false;
       SELL_DRAFT_FIELDS.forEach(id => {
+        // Wizard'en renderer ét trin ad gangen, så felter fra de andre trin er
+        // ikke i DOM'en. Fald tilbage til _sellFormCache, ellers taber kladden
+        // fx AI-beskrivelsen når brugeren står på trin 1.
         const el = document.getElementById(id);
-        if (el && el.value != null && el.value !== '') {
-          draft[id] = el.value;
+        const value = (el && el.value != null && el.value !== '')
+          ? el.value
+          : _sellFormCache[id];
+        if (value != null && value !== '' && !Array.isArray(value)) {
+          draft[id] = value;
           hasAny = true;
         }
       });
@@ -1603,6 +1615,8 @@ export function createSellPage({
   function applySellDraft(draft) {
     SELL_DRAFT_FIELDS.forEach(id => {
       if (draft[id] != null) {
+        // Cachen først, så felter fra trin der ikke er renderet også gendannes.
+        if (id !== 'sell-colors') _sellFormCache[id] = draft[id];
         const el = document.getElementById(id);
         if (el) el.value = draft[id];
       }
@@ -1717,6 +1731,7 @@ export function createSellPage({
 
     renderSellImagePreviews();
     updateAiSuggestVisibility();
+    maybeAutoSuggest();
     const label = document.getElementById('sell-upload-label');
     if (label) label.textContent = `${sf.length} billede${sf.length !== 1 ? 'r' : ''} valgt`;
   }
@@ -1743,7 +1758,67 @@ export function createSellPage({
   function updateAiSuggestVisibility() {
     const wrap = document.getElementById('ai-suggest-wrap');
     if (!wrap) return;
-    wrap.style.display = getSelectedFiles().length > 0 ? 'block' : 'none';
+    wrap.style.display = (!_isAcc() && getSelectedFiles().length > 0) ? 'block' : 'none';
+  }
+
+  /* ------ AI-status-kort på trin 1 ---------------------------- */
+
+  // 'analyzing' | 'done' | 'failed' | 'idle'
+  let _aiState = 'idle';
+
+  function currentAiState() {
+    // _aiRunning først: under en gen-kørsel er _aiApplied stadig true, og
+    // brugeren skal se "Analyserer…", ikke "Vi har udfyldt det vigtigste".
+    if (_aiRunning) return 'analyzing';
+    if (_aiApplied) return 'done';
+    return _aiState;
+  }
+
+  function renderAiStatusHTML(state) {
+    if (_isAcc()) return '';
+    if (state === 'analyzing') {
+      return `
+        <div class="sell-ai-auto is-analyzing" role="status" aria-live="polite">
+          <span class="sell-ai-auto-spinner" aria-hidden="true"></span>
+          <div class="sell-ai-auto-text">
+            <b>Analyserer dine billeder…</b>
+            <span>Vi udfylder mærke, model, stand, pris og beskrivelse.</span>
+          </div>
+        </div>`;
+    }
+    if (state === 'done') {
+      return `
+        <div class="sell-ai-auto is-done" role="status" aria-live="polite">
+          <span class="sell-ai-auto-check" aria-hidden="true">✓</span>
+          <div class="sell-ai-auto-text">
+            <b>Vi har udfyldt det vigtigste.</b>
+            <span>Gennemse og ret i de næste trin.</span>
+          </div>
+          <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Analysér igen</button>
+        </div>`;
+    }
+    if (state === 'failed') {
+      // Bevidst neutral — ingen rød fejl. Det må aldrig føles som om noget gik i stykker.
+      return `
+        <div class="sell-ai-auto is-failed">
+          <div class="sell-ai-auto-text">
+            <b>Vi kunne ikke læse billederne denne gang.</b>
+            <span>Du kan udfylde felterne selv i næste trin — eller prøve igen.</span>
+          </div>
+          <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Prøv igen</button>
+        </div>`;
+    }
+    return '';
+  }
+
+  // Opdaterer KUN status-kortet. Vi må ikke re-rendere hele trin 1 her — så ryger
+  // billed-griddet (#sell-preview-grid fyldes af renderSellImagePreviews bagefter).
+  function setAiStatus(state) {
+    _aiState = state;
+    const wrap = document.getElementById('ai-suggest-wrap');
+    if (!wrap) return;
+    wrap.innerHTML = renderAiStatusHTML(state);
+    updateAiSuggestVisibility();
   }
 
   function setSellPrimary(index) {
@@ -1766,32 +1841,74 @@ export function createSellPage({
 
   /* ------ AI suggestion --------------------------------------- */
 
-  async function suggestListingFromImages() {
-    const currentUser = getCurrentUser();
-    const sf = getSelectedFiles();
-    if (!sf.length) {
+  /* Auto-analyse: kører ÉN gang pr. kladde, kort efter at brugeren har lagt
+     billeder ind. Debounce'en gør at 3 billeder valgt på én gang giver ét kald
+     og ikke tre. Kun cykler — suggest-listing's prompt er cykel-specifik. */
+  const _autoSuggestDebounced = debounce(() => {
+    // Tilstanden kan have ændret sig i debounce-vinduet (fx alle billeder fjernet).
+    if (_isAcc() || _aiAutoFired || _aiApplied || _aiRunning || !getSelectedFiles().length) {
+      if (_aiState === 'analyzing' && !_aiRunning) setAiStatus('idle');
+      return;
+    }
+    _aiAutoFired = true;
+    runAiSuggest({ auto: true });
+  }, 800);
+
+  function maybeAutoSuggest() {
+    if (_isAcc() || _aiAutoFired || _aiApplied || _aiRunning) return;
+    if (!getSelectedFiles().length) return;
+    setAiStatus('analyzing');
+    _autoSuggestDebounced();
+  }
+
+  // Manuel kørsel (fallback-knap + "Analysér igen"). Bruger 4 billeder.
+  function suggestListingFromImages() {
+    if (!getSelectedFiles().length) {
       showToast('⚠️ Upload mindst ét billede først');
       return;
     }
+    _aiAutoFired = true;   // undgå at auto-passet fyrer oveni
+    clearUntouchedAiFields();
+    return runAiSuggest({ auto: false, maxImages: 4 });
+  }
+
+  /* Uden det her ville "Analysér igen" være en no-op: applyAiSuggestion springer
+     alle felter over der allerede har en værdi. Vi rydder derfor de felter AI'en
+     selv udfyldte SIDST — men kun hvis brugeren ikke har rettet i dem bagefter
+     (vi sammenligner med den værdi AI'en skrev). Brugerens egne rettelser overlever. */
+  function clearUntouchedAiFields() {
+    Object.keys(_aiFilledValues).forEach(id => {
+      const written = _aiFilledValues[id];
+      const el = document.getElementById(id);
+      const current = el ? el.value : _sellFormCache[id];
+      if (String(current ?? '') !== String(written)) return;  // brugeren har rettet — lad stå
+      delete _sellFormCache[id];
+      if (el) el.value = '';
+    });
+    _aiFilledValues = {};
+  }
+
+  async function runAiSuggest({ auto = false, maxImages } = {}) {
+    const currentUser = getCurrentUser();
+    const sf = getSelectedFiles();
+    if (!sf.length || _aiRunning) return;
     if (!currentUser) {
-      openLoginModal();
+      // Bør ikke ske — renderSellPage kræver login — men aldrig en uventet
+      // login-modal i ansigtet på et automatisk kald.
+      if (!auto) openLoginModal();
       return;
     }
 
-    const btn = document.getElementById('ai-suggest-btn');
-    const status = document.getElementById('ai-suggest-status');
-    if (!btn) return;
-    btn.disabled = true;
-    btn.classList.add('loading');
-    const labelEl = btn.querySelector('.sell-ai-btn-title') || btn.querySelector('.ai-suggest-label');
-    const originalLabel = labelEl ? labelEl.textContent : '';
-    if (labelEl) labelEl.textContent = 'Analyserer billeder...';
-    if (status) { status.textContent = ''; status.className = 'ai-suggest-status'; }
+    _aiRunning = true;
+    setAiStatus('analyzing');
 
     try {
-      // Brug op til 4 billeder, prioriter forsidebilledet først
+      // Prioritér forsidebilledet først. Auto-passet bruger 3 billeder i stedet
+      // for 4: hver påbegyndt kladde koster nu et Claude-kald (også dem der
+      // aldrig udgives), og det meste af genkendelsen sidder i forsidebilledet.
+      const limit = maxImages || (auto ? 3 : 4);
       const ordered = sf.slice().sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
-      const picks = ordered.slice(0, 4);
+      const picks = ordered.slice(0, limit);
 
       // Brug originalfilen (eller en højere-kvalitet AI-komprimering) i stedet
       // for den display-komprimerede version — så CUBE-logo og lignende detaljer
@@ -1803,10 +1920,11 @@ export function createSellPage({
         return { media_type: mediaType, data: base64 };
       }));
 
-      // Brug evt. eksisterende tekst som hint (hvis brugeren allerede har skrevet noget)
+      // Brug evt. eksisterende tekst som hint (hvis brugeren allerede har skrevet
+      // noget, eller hvis link-importen har hentet en titel).
       const hint = [
-        document.getElementById('sell-brand')?.value,
-        document.getElementById('sell-model')?.value,
+        document.getElementById('sell-brand')?.value || _sellFormCache['sell-brand'],
+        document.getElementById('sell-model')?.value || _sellFormCache['sell-model'],
       ].filter(Boolean).join(' ').trim();
 
       const { data, error } = await supabase.functions.invoke('suggest-listing', {
@@ -1815,19 +1933,17 @@ export function createSellPage({
 
       if (error || !data?.suggestion) {
         console.error('suggest-listing fejl:', error || data);
-        if (status) { status.textContent = '❌ Kunne ikke hente forslag. Prøv igen.'; status.className = 'ai-suggest-status error'; }
+        setAiStatus('failed');
         return;
       }
 
       applyAiSuggestion(data.suggestion);
-      if (status) { status.textContent = '✓ Felter udfyldt med AI-forslag. Tjek og ret inden du opretter.'; status.className = 'ai-suggest-status success'; }
+      setAiStatus('done');
     } catch (err) {
-      console.error('suggestListingFromImages fejl:', err);
-      if (status) { status.textContent = '❌ Noget gik galt. Prøv igen.'; status.className = 'ai-suggest-status error'; }
+      console.error('runAiSuggest fejl:', err);
+      setAiStatus('failed');
     } finally {
-      btn.disabled = false;
-      btn.classList.remove('loading');
-      if (labelEl) labelEl.textContent = originalLabel;
+      _aiRunning = false;
     }
   }
 
@@ -1944,26 +2060,29 @@ export function createSellPage({
   function applyAiSuggestion(s) {
     if (!s || typeof s !== 'object') return;
     _aiApplied = true;
-    // Vi tjekker om wizard-step-2 form er renderet ved at lede efter et felt
-    // der KUN findes i wizard'en (sell-type select). Tidligere brugte vi
-    // sell-brand, men der var en kollision med en gammel modal-input i
-    // index.html med samme id, så vi troede step 2 var klar selvom det ikke var.
-    if (!document.getElementById('sell-type')) {
-      _aiSuggestionPending = s;
-      // Re-render step 1 to show "AI applied" state
-      const body = document.getElementById('sell-step-body');
-      if (body && _sellStep === 1) body.innerHTML = renderSellStep1HTML();
-      return;
-    }
 
+    // VIGTIGT: _sellFormCache er sandhedskilden — IKKE DOM'en.
+    // Wizard'en renderer ét trin ad gangen, så de fleste felter findes slet ikke
+    // i DOM'en når forslaget ankommer (fx #sell-desc bor i trin 3, mens forslaget
+    // typisk lander mens brugeren står på trin 1). Skrev vi kun til DOM'en, blev
+    // netop beskrivelsen droppet lydløst — og trin 3 kræver ≥10 tegn beskrivelse
+    // for at kunne fortsætte. renderSellStep2HTML/3HTML læser begge fra
+    // _sellFormCache, så cache-skrivning virker uanset hvilket trin der vises.
     const setField = (id, value) => {
       if (value == null || value === '') return;
+      // Skriv ikke over hvis brugeren allerede har udfyldt feltet — hverken
+      // i cachen eller i det aktuelt renderede trin.
+      const cached = _sellFormCache[id];
+      if (cached != null && String(cached).trim() !== '') return;
       const el = document.getElementById(id);
-      if (!el) return;
-      // Skriv ikke over hvis brugeren allerede har udfyldt feltet
-      if (el.value && el.value.trim() !== '') return;
-      el.value = String(value);
-      el.dispatchEvent(new Event('change', { bubbles: true }));
+      if (el && el.value && el.value.trim() !== '') return;
+
+      _sellFormCache[id] = String(value);
+      _aiFilledValues[id] = String(value);   // så "Analysér igen" kan rydde igen
+      if (el) {
+        el.value = String(value);
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     };
 
     setField('sell-brand', s.brand);
@@ -1986,6 +2105,42 @@ export function createSellPage({
     setField('sell-geartype', s.geartype);
     setField('sell-step-type', s.step_type);
 
+    if (s.color) {
+      const colorList = BIKE_COLORS.map(c => c.name);
+      const matched = colorList.filter(name => s.color.toLowerCase().includes(name.toLowerCase()));
+      if (!Array.isArray(_sellFormCache['sell-colors']) || !_sellFormCache['sell-colors'].length) {
+        _sellFormCache['sell-colors'] = matched;
+      }
+    }
+    setField('sell-desc', s.description);
+
+    // Pris: brug midten af intervallet hvis både min og max er givet
+    if (s.price_min != null && s.price_max != null) {
+      const mid = Math.round((Number(s.price_min) + Number(s.price_max)) / 2);
+      if (!isNaN(mid)) setField('sell-price', mid);
+    } else if (s.price_min != null) {
+      setField('sell-price', s.price_min);
+    }
+
+    // DOM-bivirkninger (åbn avanceret-sektion, tegn farve-swatches) kræver at
+    // trin 2 er renderet. Er det ikke, gemmes forslaget og køres af setSellStep(2).
+    if (document.getElementById('sell-type')) {
+      applyAiDomEffects(s);
+    } else {
+      _aiSuggestionPending = s;
+    }
+
+    // Trigger draft-save så AI-forslag også persisteres
+    saveSellDraft();
+    updateSellFooter();
+    updateSellDesktopPreview();
+  }
+
+  // Bivirkninger der KUN giver mening når trin 2 er i DOM'en. Selve felt-værdierne
+  // er allerede lagt i _sellFormCache af applyAiSuggestion.
+  function applyAiDomEffects(s) {
+    if (!s) return;
+
     const aiFilledAdvanced = Boolean(
       s.groupset || s.frame_material || s.brake_type ||
       s.electronic_shifting != null || s.weight_kg != null || s.suspension
@@ -2001,25 +2156,11 @@ export function createSellPage({
       }
     }
 
-    if (s.color) {
-      const colorList = BIKE_COLORS.map(c => c.name);
-      const matched = colorList.filter(name => s.color.toLowerCase().includes(name.toLowerCase()));
-      _sellFormCache['sell-colors'] = matched;
+    const colors = _sellFormCache['sell-colors'];
+    if (Array.isArray(colors) && colors.length) {
       const grid = document.getElementById('sell-color-grid');
-      if (grid) setSelectedColors(grid, matched);
+      if (grid) setSelectedColors(grid, colors);
     }
-    setField('sell-desc', s.description);
-
-    // Pris: brug midten af intervallet hvis både min og max er givet
-    if (s.price_min != null && s.price_max != null) {
-      const mid = Math.round((Number(s.price_min) + Number(s.price_max)) / 2);
-      if (!isNaN(mid)) setField('sell-price', mid);
-    } else if (s.price_min != null) {
-      setField('sell-price', s.price_min);
-    }
-
-    // Trigger draft-save så AI-forslag også persisteres
-    saveSellDraft();
   }
 
   /* ------ Success modal --------------------------------------- */
