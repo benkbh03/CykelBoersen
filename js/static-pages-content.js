@@ -176,7 +176,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 26. juli 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 27. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -188,6 +188,7 @@ export const footerContent = {
         <li><strong>Kontooplysninger:</strong> Navn, e-mailadresse, adgangskode (krypteret), profilbillede (valgfrit).</li>
         <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere; CVR-nummeret verificeres via opslag i CVR-registret hos cvrapi.dk).</li>
         <li><strong>Annoncedata:</strong> Cykelbeskrivelser, billeder, priser, kontaktoplysninger i annoncer.</li>
+        <li><strong>AI-analyse af annoncebilleder:</strong> Når du opretter en annonce, sendes de billeder du uploader automatisk til Anthropics API, så vi kan foreslå mærke, model, type, størrelse, stand, pris og en beskrivelse for dig. Formålet er alene at udfylde annoncefelterne — du kan altid rette forslagene. Billederne bruges ikke til at træne AI-modeller.</li>
         <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
         <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
         <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
@@ -217,6 +218,10 @@ export const footerContent = {
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Visning af dine annoncer</td>
+          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">AI-analyse af annoncebilleder for at udfylde annoncefelter</td>
           <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
@@ -272,7 +277,7 @@ export const footerContent = {
         <li><strong>Stripe (USA)</strong> — Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
         <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
-        <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support). Chatbeskeder sendes til Anthropic's API for at generere svar. Beskeder logges ikke permanent af os, men behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten.</li>
+        <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support) samt automatisk analyse af annoncebilleder ved oprettelse af en annonce. Chatbeskeder og annoncebilleder sendes til Anthropic's API for henholdsvis at generere svar og foreslå annoncefelter. Hverken beskeder eller billeder logges permanent af os, og de behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten, og undgå at uploade billeder hvor personer kan identificeres.</li>
         <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
         <li><strong>cvrapi.dk (Danmark)</strong> — CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
         <li><strong>BikeIndex (USA)</strong> — Internationalt tyveriregister for cykler. Hvis du oplyser et stelnummer på en annonce, sendes det til BikeIndex for et opslag mod efterlyste cykler. Vi gemmer kun resultatet og de sidste 4 cifre — aldrig hele nummeret. Se <a href="https://bikeindex.org/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">BikeIndex' privatlivspolitik</a>.</li>
