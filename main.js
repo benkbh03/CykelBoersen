@@ -2,7 +2,7 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword } from './js/utils.js';
+import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword, iconDealer, iconPrivate } from './js/utils.js';
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
@@ -39,7 +39,6 @@ import { createImageUpload } from './js/image-upload.js';
 import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
-import { iconDealer, iconPrivate } from './utils.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
 // supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
