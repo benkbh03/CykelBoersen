@@ -5,8 +5,8 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import {
 import { iconDealer, iconPrivate } from './utils.js';
+import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
 

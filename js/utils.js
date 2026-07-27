@@ -107,7 +107,7 @@ export function frameSizeLetter(size) {
 /* Små inline-SVG-ikoner til trust-badges (sælgertype, garanti). currentColor
    arver badgens tekstfarve, ~1em så de flugter med teksten. Erstatter emoji
    (🏪/👤/🛡️) der renderede forskelligt pr. styresystem og brød det editorial-
-   udtryk. Skjold-stien er den samme som tyveri-tippet — bevidst konsistens. */
+   udtryk. Skjold-stien er den samme som tyveri-tippet — bevidst konsistens.
    Størrelsen kan overstyres (fx iconShield(28)) til de steder hvor ikonet er
    et selvstændigt grafisk element frem for et inline-badge. Stregtykkelsen
    skaleres ned ved store størrelser, så de ikke bliver klodsede. */
