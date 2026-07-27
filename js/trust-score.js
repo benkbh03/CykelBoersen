@@ -6,7 +6,7 @@
    anmeldelser, så fake-handler (markér 5 cykler solgt med det samme)
    boost'er ikke trust-scoren. */
 
-import { esc } from './utils.js';
+import { esc, iconShield } from './utils.js';
 
 export async function fetchTrustData(supabase, profileId) {
   const [reviewsRes, allReviewsRes] = await Promise.all([
@@ -67,7 +67,7 @@ export function calculateTrustScore(profile, stats) {
    findes alligevel på sælgers profil → Vurderinger-tab. */
 export function buildTrustPillHTML(score) {
   if (!score.isTrusted) return '';
-  return `<span class="trust-pill" title="Trust-score: ${score.trustScore}/9. Bygges på verifikationer, handelshistorik og anmeldelser.">🛡️ Trygt køb</span>`;
+  return `<span class="trust-pill" title="Trust-score: ${score.trustScore}/9. Bygges på verifikationer, handelshistorik og anmeldelser.">${iconShield()} Trygt køb</span>`;
 }
 
 /* Fuld breakdown — bruges øverst på Vurderinger-tabben på profilsider. */
@@ -85,7 +85,7 @@ export function buildTrustBreakdownHTML(profile, stats, score) {
     <div class="trust-card ${isTrusted ? 'trust-card--trusted' : 'trust-card--neutral'}">
       ${isTrusted ? `
       <div class="trust-card-badge" title="Trust-score: ${trustScore}/9. Bygges på verifikationer, handelshistorik og anmeldelser.">
-        <span class="trust-card-badge-icon" aria-hidden="true">🛡️</span>
+        <span class="trust-card-badge-icon">${iconShield(18)}</span>
         <div class="trust-card-badge-text">
           <strong>Trygt køb</strong>
           <span>Verificeret sælger med god handelshistorik</span>

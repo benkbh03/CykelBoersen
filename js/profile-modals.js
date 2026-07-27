@@ -1,3 +1,4 @@
+import { iconDealer, iconPrivate } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -140,7 +141,7 @@ export function createProfileModals({
                 <div class="seller-avatar">${avatarInit}</div>
                 <div>
                   <div class="seller-name">${esc(sellerName)}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
-                  <span class="badge badge-dealer">🏪 Forhandler</span>
+                  <span class="badge badge-dealer">${iconDealer()} Forhandler</span>
                 </div>
               </div>
               <div class="card-location">📍 ${esc(b.city)}</div>
@@ -350,7 +351,7 @@ export function createProfileModals({
           ${isDealer && profile.address ? `<div class="up-city">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">📍 ${esc(profile.city)}</div>` : ''}
           ${lastSeenText ? `<div class="up-last-seen">🕐 ${lastSeenText}</div>` : ''}
           <div class="up-badges">
-            <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
+            <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat sælger'}</span>
             ${memberYear ? `<span class="up-member-since">Medlem siden ${memberYear}</span>` : ''}
             ${followerCount > 0 ? `<span class="up-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
           </div>

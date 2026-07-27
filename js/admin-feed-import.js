@@ -8,7 +8,7 @@
    Selve hentning/parsing/upsert sker i edge-functionen import-dealer-feed.
    ============================================================ */
 
-import { esc } from './utils.js';
+import { esc, iconShield } from './utils.js';
 
 export function createAdminFeedImport({ supabase, showToast }) {
   let _dealers = [];
@@ -344,7 +344,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
     if (b.weight_kg)                   p.push(Number(b.weight_kg).toFixed(1).replace('.', ',') + ' kg');
     if (b.condition)                   p.push(esc(b.condition));
     if (b.year)                        p.push(String(b.year));
-    if (b.warranty)                    p.push('🛡️ ' + esc(b.warranty));
+    if (b.warranty)                    p.push(iconShield() + ' ' + esc(b.warranty));
     return p;
   }
 

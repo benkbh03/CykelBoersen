@@ -6,6 +6,7 @@ import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
 import {
+import { iconDealer, iconPrivate } from './utils.js';
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
 
@@ -270,7 +271,7 @@ export function createProfilePages({
               ${profile.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
             </h1>
             <div class="pp-badges">
-              <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? '🏪 Forhandler' : '👤 Privat sælger'}</span>
+              <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat sælger'}</span>
               ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
               ${followerCount > 0 ? `<span class="pp-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
             </div>
@@ -420,7 +421,7 @@ export function createProfilePages({
               ${dealer.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
             </h1>
             <div class="pp-badges">
-              <span class="badge badge-dealer">🏪 Forhandler</span>
+              <span class="badge badge-dealer">${iconDealer()} Forhandler</span>
               ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
               ${followerHtml}
             </div>

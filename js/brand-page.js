@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
+import { iconDealer, iconPrivate } from './utils.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
@@ -201,7 +202,7 @@ export function createBrandPage({
           </div>
           <div class="card-footer">
             <span class="card-location">📍 ${esc(b.city || '')}</span>
-            <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? '🏪 ' + esc(sellerName) : '👤 Privat'}</span>
+            <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + ' ' + esc(sellerName) : iconPrivate() + ' Privat'}</span>
           </div>
         </div>
       </div>`;

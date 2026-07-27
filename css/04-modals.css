@@ -280,7 +280,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   cursor: pointer; text-align: center; transition: all 0.2s;
 }
 .seller-type-btn.selected { border-color: var(--forest); background: var(--forest); color: var(--sand); }
-.seller-type-btn .type-icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+.seller-type-btn .type-icon { display: block; margin-bottom: 6px; }
 .seller-type-btn .type-label { font-weight: 600; font-size: 0.9rem; display: block; }
 .seller-type-btn .type-sub { font-size: 0.78rem; opacity: 0.7; }
 .dealer-fields-hidden { display: none; margin-bottom: 16px; }

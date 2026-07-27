@@ -143,12 +143,12 @@
         <p class="modal-seller-label">Hvem sælger du som?</p>
         <div class="seller-toggle">
           <div class="seller-type-btn selected" id="type-private" onclick="selectType('private')">
-            <span class="type-icon">👤</span>
+            <span class="type-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></span>
             <span class="type-label">Privatperson</span>
             <span class="type-sub">Sælger min egen cykel</span>
           </div>
           <div class="seller-type-btn" id="type-dealer" onclick="selectType('dealer')">
-            <span class="type-icon">🏪</span>
+            <span class="type-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg></span>
             <span class="type-label">Forhandler</span>
             <span class="type-sub">Jeg er cykelbutik / forhandler</span>
           </div>
@@ -323,7 +323,7 @@
           <div>
             <div class="profile-name" id="profile-display-name">Indlæser...</div>
             <div class="profile-email" id="profile-display-email"></div>
-            <span class="badge badge-private" id="profile-type-badge">👤 Privat</span>
+            <span class="badge badge-private" id="profile-type-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg> Privat</span>
           </div>
         </div>
 
@@ -351,8 +351,8 @@
               <label>Sælgertype</label>
               <p id="edit-seller-type-display" style="margin:0;padding:10px 14px;background:var(--sand);border:1px solid var(--border);border-radius:10px;font-size:0.9rem;color:var(--charcoal);"></p>
               <select id="edit-seller-type" style="display:none;">
-                <option value="private">👤 Privatperson</option>
-                <option value="dealer">🏪 Forhandler</option>
+                <option value="private">Privatperson</option>
+                <option value="dealer">Forhandler</option>
               </select>
             </div>
             <div class="form-group" id="edit-shop-group" style="display:none;">
@@ -448,7 +448,7 @@
           <div class="subscription-box" id="subscription-box" style="display:none;">
             <div class="subscription-header">
               <div>
-                <div class="subscription-title">🏪 Forhandlerabonnement</div>
+                <div class="subscription-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg> Forhandlerabonnement</div>
                 <div class="subscription-sub">Administrer dit aktive abonnement</div>
               </div>
               <span id="subscription-status-badge" class="sub-status-active">Aktivt</span>

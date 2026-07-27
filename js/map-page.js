@@ -2,7 +2,7 @@
    KORTVISNING MED LEAFLET — factory module
    ============================================================ */
 
-import { bikeTitle } from './utils.js';
+import { bikeTitle, iconDealer, iconPrivate, iconBike } from './utils.js';
 import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
@@ -814,9 +814,9 @@ export function createMapPage({
 
       const iconHtml = isMulti
         ? '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
-          + (isDealer ? '🏪' : '🚲') + '<span class="split-marker-count">' + items.length + '</span></div>'
+          + (isDealer ? iconDealer(16) : iconBike(16)) + '<span class="split-marker-count">' + items.length + '</span></div>'
         : '<div class="split-marker ' + (isDealer ? 'split-marker--dealer' : 'split-marker--private') + '">'
-          + (isDealer ? '🏪' : '🚲') + '</div>';
+          + (isDealer ? iconDealer(16) : iconBike(16)) + '</div>';
 
       const icon = L.divIcon({
         html: iconHtml,
@@ -847,7 +847,7 @@ export function createMapPage({
 
         popupHtml = '<div class="split-popup split-popup--group">'
           + '<div class="split-popup-group-header">'
-          + '<div class="split-popup-group-icon">' + (isDealer ? '🏪' : '👤') + '</div>'
+          + '<div class="split-popup-group-icon">' + (isDealer ? iconDealer(18) : iconPrivate(18)) + '</div>'
           + '<div class="split-popup-group-meta">'
           + '<div class="split-popup-group-name">' + esc(sellerName || 'Ukendt') + '</div>'
           + '<div class="split-popup-group-sub">' + items.length + ' cykler · ' + sellerLabel + '</div>'
@@ -898,7 +898,7 @@ export function createMapPage({
           + '<div class="split-popup-divider"></div>'
           + '<div class="split-popup-info">'
           + '<div class="split-popup-info-col">'
-          + '<div class="split-popup-info-icon">' + (isDealer ? '🏪' : '👤') + '</div>'
+          + '<div class="split-popup-info-icon">' + (isDealer ? iconDealer(14) : iconPrivate(14)) + '</div>'
           + '<div class="split-popup-info-text">'
           + '<div class="split-popup-info-main">' + esc(sellerName || 'Ukendt') + '</div>'
           + '<div class="split-popup-info-sub">' + sellerLabel + '</div>'
@@ -1347,7 +1347,7 @@ export function createMapPage({
       var color = isDealer ? '#2A3D2E' : '#C8502A';
       var icon = L.divIcon({
         html: '<div style="background:' + color + ';color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">'
-            + (isDealer ? '🏪' : '🚲') + '</div>',
+            + (isDealer ? iconDealer(16) : iconBike(16)) + '</div>',
         className: '',
         iconSize: [32, 32],
         iconAnchor: [16, 16],
@@ -1362,7 +1362,7 @@ export function createMapPage({
         + '<div class="map-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
         + '<div class="map-popup-meta">' + b.type + ' · ' + b.condition + ' · ' + (sellerName || 'Ukendt')
         + ' <span style="background:' + (isDealer ? '#E8F0E8' : '#FBF0E8') + ';color:' + (isDealer ? '#2A3D2E' : '#8A4A20') + ';padding:2px 7px;border-radius:100px;font-size:.7rem;">'
-        + (isDealer ? '🏪 Forhandler' : '👤 Privat') + '</span></div>'
+        + (isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat') + '</span></div>'
         + '<button class="map-popup-btn" onclick="openFromMap(&quot;' + b.id + '&quot;)">Se annonce →</button>'
         + '</div>';
 
@@ -1425,7 +1425,7 @@ export function createMapPage({
               var lat = coords[0] + stableOffset(d.id, 0) * 0.0002;
               var lng = coords[1] + stableOffset(d.id, 1) * 0.0002;
               var icon = L.divIcon({
-                html: '<div style="background:#2A3D2E;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏪</div>',
+                html: '<div style="background:#2A3D2E;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">' + iconDealer(16) + '</div>',
                 className: '',
                 iconSize: [32, 32],
                 iconAnchor: [16, 16],

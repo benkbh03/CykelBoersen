@@ -7,6 +7,7 @@ import {
   buildServicesEditor, bindServicesEditor, readServicesFromDOM,
 } from './dealer-extras.js';
 import { PROFILE_SESSION_FIELDS } from './supabase-client.js';
+import { iconDealer, iconPrivate } from './utils.js';
 
 export function createProfilePage({
   supabase,
@@ -93,11 +94,13 @@ export function createProfilePage({
     document.getElementById('profile-display-email').textContent = currentUser?.email || '';
 
     const badge = document.getElementById('profile-type-badge');
+    // innerHTML (ikke textContent) fordi ikonerne er inline-SVG. Begge strenge
+    // er faste literaler — ingen bruger-input, så ingen XSS-flade.
     if (profile.seller_type === 'dealer') {
-      badge.textContent = '🏪 Forhandler';
+      badge.innerHTML   = `${iconDealer()} Forhandler`;
       badge.className   = 'badge badge-dealer';
     } else {
-      badge.textContent = '👤 Privat';
+      badge.innerHTML   = `${iconPrivate()} Privat`;
       badge.className   = 'badge badge-private';
     }
 
@@ -163,7 +166,10 @@ export function createProfilePage({
 
     // Vis sælgertype som tekst (ikke redigerbar dropdown)
     const sellerDisplay = document.getElementById('edit-seller-type-display');
-    if (sellerDisplay) sellerDisplay.textContent = isDealer ? '🏪 Forhandler' : '👤 Privatperson';
+    // innerHTML pga. inline-SVG-ikonet; begge strenge er faste literaler.
+    if (sellerDisplay) sellerDisplay.innerHTML = isDealer
+      ? `${iconDealer()} Forhandler`
+      : `${iconPrivate()} Privatperson`;
 
     // Kobl DAWA-autocomplete: forhandlere → præcis adresse, private → by
     const cityInput    = document.getElementById('edit-city');

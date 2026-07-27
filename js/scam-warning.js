@@ -1,3 +1,4 @@
+import { iconShield } from './utils.js';
 /* ============================================================
    ANTI-SCAM WARNING — vises før første besked/bud til en sælger
    ============================================================
@@ -43,7 +44,7 @@ export function maybeShowScamWarning() {
     overlay.setAttribute('aria-labelledby', 'scam-title');
     overlay.innerHTML = `
       <div class="scam-card" role="document">
-        <div class="scam-icon" aria-hidden="true">🛡️</div>
+        <div class="scam-icon">${iconShield(30)}</div>
         <h2 id="scam-title" class="scam-title">Inden du tager kontakt</h2>
         <p class="scam-lede">Vi vil hjælpe dig med at handle trygt. Husk disse tre regler — særligt ved køb af brugte cykler:</p>
         <ol class="scam-rules">

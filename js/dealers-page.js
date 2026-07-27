@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
-import { validatePassword } from './utils.js';
+import { validatePassword, iconDealer } from './utils.js';
 
 export function createDealersPage({
   supabase,
@@ -119,7 +119,7 @@ export function createDealersPage({
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="dealers-page-title">Autoriserede forhandlere</h1>
         <p class="dealers-page-subtitle">Køb med tryghed fra verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
-        <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">🏪 Bliv forhandler</button>
+        <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">${iconDealer()} Bliv forhandler</button>
       </div>
       <div class="dealers-toolbar">
         <button class="dealers-gps-btn" id="dealers-gps-btn" onclick="toggleDealerGPS()">📍 Brug min position</button>
@@ -422,7 +422,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         </div>
 
         <div class="bd-form" style="text-align:center;">
-          <div style="font-size:2.8rem;margin-bottom:16px;">🏪</div>
+          <div style="margin-bottom:16px;color:var(--muted);">${iconDealer(44)}</div>
           <h3 class="bd-form-title" style="margin-bottom:10px;">Opret dig som forhandler</h3>
           <p style="font-size:0.92rem;color:var(--muted);line-height:1.6;max-width:420px;margin:0 auto 28px;">
             Du er logget ind som <strong>${name}</strong> (privat bruger).
