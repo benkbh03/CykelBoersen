@@ -749,6 +749,24 @@ export function createSellPage({
       </div>
       <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
 
+      ${_isAcc() ? '' : `
+      <div class="sell-import-link" style="margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--surface-2,rgba(0,0,0,.02))">
+        <div style="font-weight:600;font-size:.95rem;margin-bottom:2px">Har du allerede annoncen online?</div>
+        <div style="font-size:.82rem;color:var(--text-muted,#666);margin-bottom:10px">Indsæt linket, så henter vi billede, tekst og pris automatisk.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="url" id="sell-import-url" inputmode="url" autocomplete="off"
+            placeholder="Indsæt link fra DBA, Gul&amp;Gratis m.fl."
+            style="flex:1;min-width:180px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:.9rem"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();importSellFromLink()}">
+          <button type="button" id="sell-import-btn" class="btn-secondary" onclick="importSellFromLink()"
+            style="padding:10px 18px;border-radius:8px;white-space:nowrap">Hent annonce</button>
+        </div>
+        <div id="sell-import-status" class="ai-suggest-status" style="margin-top:8px"></div>
+        <div style="font-size:.72rem;color:var(--text-muted,#888);margin-top:8px;line-height:1.4">
+          Ved at hente bekræfter du, at annoncen er din egen, og at vi må hente indholdet på dine vegne. Tjek altid oplysningerne bagefter.
+        </div>
+      </div>`}
+
       <div id="ai-suggest-wrap" style="display:${getSelectedFiles().length > 0 ? 'block' : 'none'}">
         ${aiDone ? `
           <div class="sell-ai-applied">
@@ -1813,6 +1831,101 @@ export function createSellPage({
     }
   }
 
+  /* ------ Import fra eksternt link (DBA, Gul&Gratis m.fl.) ----- */
+
+  // Konverterer base64 (uden data:-prefix) til en File, så billedet kan køre
+  // gennem den samme upload-pipeline som manuelt valgte billeder.
+  function base64ToFile(base64, mediaType, name) {
+    const bin = atob(base64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const ext = (mediaType.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+    return new File([bytes], `${name || 'import'}.${ext}`, { type: mediaType });
+  }
+
+  async function importSellFromLink() {
+    const input = document.getElementById('sell-import-url');
+    const status = document.getElementById('sell-import-status');
+    const btn = document.getElementById('sell-import-btn');
+    if (!input) return;
+
+    const url = input.value.trim();
+    const setStatus = (msg, cls) => {
+      if (status) { status.textContent = msg; status.className = `ai-suggest-status ${cls || ''}`.trim(); }
+    };
+
+    if (!/^https?:\/\/.+\..+/i.test(url)) {
+      setStatus('⚠️ Indsæt et gyldigt link (fx https://www.dba.dk/...).', 'error');
+      return;
+    }
+
+    const originalLabel = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Henter...'; }
+    setStatus('Henter annoncen...', '');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('import-listing', { body: { url } });
+
+      if (error || !data) {
+        setStatus('❌ Kunne ikke hente linket. Udfyld manuelt, eller upload billeder.', 'error');
+        return;
+      }
+      if (!data.ok) {
+        const host = data.source_host ? ` (${data.source_host})` : '';
+        if (data.blocked) {
+          setStatus(`⚠️ Siden${host} tillod ikke automatisk hentning. Upload billeder og udfyld manuelt.`, 'error');
+        } else {
+          setStatus('⚠️ Fandt ingen annonce-data på linket. Udfyld manuelt.', 'error');
+        }
+        return;
+      }
+
+      // Billede → upload-pipeline (kun hvis der er plads).
+      let addedImage = false;
+      if (data.image_base64 && data.image_media_type) {
+        try {
+          const file = base64ToFile(data.image_base64, data.image_media_type, 'annonce');
+          if (validateImageFile(file) && getSelectedFiles().length < 8) {
+            previewSellImages({ files: [file] });
+            addedImage = true;
+          }
+        } catch (_) { /* billede-fejl må ikke stoppe tekst-import */ }
+      }
+
+      // Tekst + pris → skriv til draft-cachen (skriv IKKE over hvad brugeren har).
+      const put = (id, val) => {
+        if (val == null || val === '') return;
+        const existing = String(_sellFormCache[id] ?? '').trim();
+        if (!existing) _sellFormCache[id] = String(val);
+      };
+      // Titlen bruges som udgangspunkt for model-feltet; brugeren finpudser.
+      if (data.title) put('sell-model', data.title.slice(0, 80));
+      if (data.description) put('sell-desc', data.description);
+      if (data.price != null) put('sell-price', data.price);
+
+      // Re-render step 1 så header/AI-knap opdateres, og fyld billed-grid igen
+      // (innerHTML-erstatningen rydder #sell-preview-grid).
+      const body = document.getElementById('sell-step-body');
+      if (body && _sellStep === 1) {
+        body.innerHTML = renderSellStep1HTML();
+        renderSellImagePreviews();
+        updateAiSuggestVisibility();
+      }
+
+      const parts = [];
+      if (addedImage) parts.push('billede');
+      if (data.title || data.description) parts.push('tekst');
+      if (data.price != null) parts.push('pris');
+      const what = parts.length ? parts.join(', ') : 'data';
+      showToast(`✓ Hentede ${what}. Tjek felterne i næste trin.`);
+    } catch (err) {
+      console.error('importSellFromLink fejl:', err);
+      setStatus('❌ Noget gik galt. Prøv igen, eller udfyld manuelt.', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = originalLabel || 'Hent annonce'; }
+    }
+  }
+
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -2023,6 +2136,7 @@ export function createSellPage({
     setSellPrimary,
     removeSellImage,
     suggestListingFromImages,
+    importSellFromLink,
     applyAiSuggestion,
     fileToBase64,
     setSellStep,
