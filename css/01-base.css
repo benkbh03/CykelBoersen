@@ -22,6 +22,12 @@ html {
   overflow-x: clip;
   max-width: 100%;
   background: var(--forest-2);
+  /* Nav'en er position:sticky;top:0 og ~64px høj, så den dækker toppen af
+     viewporten. Uden dette lander ALLE scrollIntoView({block:'start'}) og
+     anker-hop bag headeren — målets overskrift bliver usynlig. scroll-padding
+     gælder hele dokumentets scrollport, så ét sted dækker alle kaldssteder
+     (beskrivelse, filtrering, quiz, prisvurdering, størrelsesguide). */
+  scroll-padding-top: 80px;
 }
 
 /* Forhindrer iOS Safari auto-zoom ved fokus på inputs (sker når font-size < 16px) */
