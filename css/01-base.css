@@ -661,6 +661,26 @@ nav {
   background: var(--sand); border-radius: 12px;
   padding: 0; border: 1px solid var(--border); overflow: hidden;
 }
+/* Filtrenes rækkefølge styres med flex-order frem for at flytte markup.
+   .sidebar er display:flex;flex-direction:column, så order virker direkte —
+   og en omrokering er dermed ren CSS og triviel at rulle tilbage.
+
+   Baggrund: Stelstørrelse lå som nr. 2, men kun ~3 % af annoncerne har en
+   størrelse (filtertællerne viste 3 ud af 103), så sektionen stod med nuller
+   og fik siden til at se tom ud. Cykeltype — den eneste der er udfyldt på
+   100 % — lå nr. 4. De to har byttet plads.
+
+   .sidebar-box får order:10 som basis, så utaggede sektioner (de tekniske
+   filtre) altid lander efter de seks prioriterede. Quiz-boksen og
+   mobil-headeren er ikke .sidebar-box og bliver liggende øverst. */
+.sidebar-box { order: 10; }
+.sidebar-box[data-fsec="cykeltype"]      { order: 1; }
+.sidebar-box[data-fsec="pris"]           { order: 2; }
+.sidebar-box[data-fsec="maerke"]         { order: 3; }
+.sidebar-box[data-fsec="stand"]          { order: 4; }
+.sidebar-box[data-fsec="stelstoerrelse"] { order: 5; }
+.sidebar-box[data-fsec="farve"]          { order: 6; }
+
 .sidebar-box-header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 14px 18px; cursor: pointer; user-select: none;
