@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
@@ -197,9 +197,12 @@ export function createBrandPage({
             <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
             <div class="bike-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
           </div>
-          <div class="bike-meta">
-            <span>${esc(b.type || '')}</span><span>${b.year || '–'}</span>${b.size || b.size_cm ? `<span>Str. ${b.size_cm ? b.size_cm + ' cm' : esc(b.size)}</span>` : ''}
-          </div>
+          ${(() => {
+            const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+            return facts.length
+              ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
+              : '';
+          })()}
           <div class="card-footer">
             <span class="card-location">📍 ${esc(b.city || '')}</span>
             <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + ' ' + esc(sellerName) : iconPrivate() + ' Privat'}</span>

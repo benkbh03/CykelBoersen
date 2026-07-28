@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -133,9 +133,12 @@ export function createProfileModals({
               <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
               <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
             </div>
-            <div class="bike-meta">
-              <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${esc(b.size || '–')}</span>
-            </div>
+            ${(() => {
+              const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+              return facts.length
+                ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
+                : '';
+            })()}
             <div class="card-footer">
               <div class="seller-info">
                 <div class="seller-avatar">${avatarInit}</div>

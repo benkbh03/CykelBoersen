@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
@@ -167,9 +167,12 @@ export function createProfilePages({
               <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
               <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
             </div>
-            <div class="bike-meta">
-              <span>${esc(b.type)}</span><span>${b.year || '–'}</span><span>Str. ${b.size || '–'}</span>
-            </div>
+            ${(() => {
+              const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+              return facts.length
+                ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
+                : '';
+            })()}
             <div class="card-footer">
               <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
             </div>

@@ -8,7 +8,7 @@
    ============================================================ */
 
 import { CATEGORY_META } from './category-data.js';
-import { iconDealer, iconPrivate } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
@@ -168,9 +168,12 @@ export function createCategoryPage({
             <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
             <div class="bike-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
           </div>
-          <div class="bike-meta">
-            <span>${esc(b.type || '')}</span><span>${b.year || '–'}</span>${b.size || b.size_cm ? `<span>Str. ${b.size_cm ? b.size_cm + ' cm' : esc(b.size)}</span>` : ''}
-          </div>
+          ${(() => {
+            const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+            return facts.length
+              ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
+              : '';
+          })()}
           <div class="card-footer">
             <span class="card-location">📍 ${esc(b.city || '')}</span>
             <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + ' ' + esc(sellerName) : iconPrivate() + ' Privat'}</span>
