@@ -733,7 +733,24 @@ body:has(.inbox-page) #chat-widget { display: none; }
    modalen ser ud præcis som før. Annoncesiden bruger i stedet
    .bike-detail-grid--sticky nedenfor, som løser det med et 3-kolonne-grid. */
 .bike-detail-info { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
-.bike-detail-price { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; color: var(--rust); }
+.bike-detail-price {
+  font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; color: var(--rust);
+  /* Førpris og rabat står PÅ prislinjen — baseline-justeret, så de læses som
+     én oplysning frem for et kort nedenunder. */
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px;
+}
+.bike-price-was {
+  font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500;
+  color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px;
+}
+.bike-price-off {
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 700;
+  color: var(--rust); letter-spacing: -0.2px;
+}
+@media (max-width: 480px) {
+  .bike-detail-price { gap: 8px; }
+  .bike-price-was, .bike-price-off { font-size: 0.85rem; }
+}
 
 /* ── Sticky pris/CTA-kolonne — KUN den fulde annonceside (/bike/:id) ──
    Tre grid-børn: media (galleri) og body (beskrivelse, specs, tyveri-tjek)
