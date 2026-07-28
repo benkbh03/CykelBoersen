@@ -727,8 +727,53 @@ body:has(.inbox-page) #chat-widget { display: none; }
 .bike-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
 .bike-detail-img { background: var(--sand); border-radius: 12px; height: 420px; display: flex; align-items: center; justify-content: center; font-size: 6rem; overflow: hidden; }
 .bike-detail-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+/* NB: `position: sticky` herunder har aldrig haft nogen effekt i bike-modalen:
+   de to grid-kolonner er næsten lige høje, så rækkens højde er lig med selve
+   elementets, og der er nul plads at glide i. Reglen efterlades urørt, så
+   modalen ser ud præcis som før. Annoncesiden bruger i stedet
+   .bike-detail-grid--sticky nedenfor, som løser det med et 3-kolonne-grid. */
 .bike-detail-info { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
 .bike-detail-price { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; color: var(--rust); }
+
+/* ── Sticky pris/CTA-kolonne — KUN den fulde annonceside (/bike/:id) ──
+   Tre grid-børn: media (galleri) og body (beskrivelse, specs, tyveri-tjek)
+   ligger i venstre kolonne over hinanden, mens info spænder begge rækker i
+   højre. Det er `grid-row: 1 / span 2` der giver info-kolonnen en containing
+   block højere end den selv er — uden den er der ingen glide-plads.
+   Tre børn frem for to er nødvendigt fordi grid-row kun virker mellem
+   søskende: på mobil skal info kunne placeres MELLEM media og body. */
+.bike-detail-grid--sticky .bd-col-media { grid-column: 1; grid-row: 1; min-width: 0; }
+.bike-detail-grid--sticky .bd-col-body  { grid-column: 1; grid-row: 2; min-width: 0; }
+.bike-detail-grid--sticky .bd-col-info {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  position: sticky;
+  top: 20px;
+  min-width: 0;
+  /* Er et sticky element højere end viewporten, kan man ikke scrolle ned til
+     dets nederste del — den bliver uopnåelig. Forhandler-annoncer med
+     fordele-listen kan overstige en lav laptop-skærm, så kolonnen scroller
+     internt i stedet for at gemme "Anmeld annonce". */
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Mobil: én kolonne, og rækkefølgen skal være PRÆCIS som før ændringen —
+   galleri → pris/CTA → beskrivelse. position:static er vigtig, ellers ville
+   kolonnen klæbe oven i den eksisterende .bike-sticky-bar i bunden. */
+@media (max-width: 768px) {
+  .bike-detail-grid--sticky { grid-template-columns: 1fr; }
+  .bike-detail-grid--sticky .bd-col-media { grid-column: 1; grid-row: 1; }
+  .bike-detail-grid--sticky .bd-col-info  {
+    grid-column: 1; grid-row: 2;
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  .bike-detail-grid--sticky .bd-col-body  { grid-column: 1; grid-row: 3; }
+}
 /* ── PRISFALD-kort (kompakt): én linje med procent-chip, besparelse og
    gennemstreget førpris. "Nu"-prisen gentages ikke — den står stort lige over. */
 .price-history-card {

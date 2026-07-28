@@ -157,7 +157,16 @@ export function createBikeDetail({
       </div>`;
   }
 
-  function buildBikeBodyHTML(b) {
+  /* opts.sticky = true lægger pris/CTA-kolonnen i et 3-kolonne-grid hvor den
+     klæber under scroll. KUN annoncesiden sender den — bike-modalen scroller i
+     sin egen 88vh-boks, hvor et sticky-barn ville klæbe under modal-headeren.
+     Uden opts renderes præcis som før. */
+  function buildBikeBodyHTML(b, opts = {}) {
+    const sticky     = opts.sticky === true;
+    // Tomme klasser når sticky er slået fra → identisk markup med tidligere.
+    const gridCls    = sticky ? ' bike-detail-grid--sticky' : '';
+    const colMedia   = sticky ? ' class="bd-col-media"' : '';
+    const colInfoCls = sticky ? 'bike-detail-info bd-col-info' : 'bike-detail-info';
     const profile    = b.profiles || {};
     const sellerType = profile.seller_type || 'private';
     const sellerName = sellerType === 'dealer' ? profile.shop_name : profile.name;
@@ -228,8 +237,8 @@ export function createBikeDetail({
           <span>Den er oprettet til at vise hvordan annoncer ser ud på Cykelbørsen. Cyklen er ikke til salg, og du kan ikke kontakte sælgeren.</span>
         </div>
       </div>` : ''}
-      <div class="bike-detail-grid">
-        <div>
+      <div class="bike-detail-grid${gridCls}">
+        <div${colMedia}>
           ${galleryHtml}
           ${(profile.city || profile.address) ? `
           <a class="bike-location-card" id="bike-location-card" href="/" onclick="showBikeOnMap('${b.id}');return false;">
@@ -246,7 +255,7 @@ export function createBikeDetail({
             </div>
           </a>` : ''}
         </div>
-        <div class="bike-detail-info">
+        <div class="${colInfoCls}">
           <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
           ${renderPriceHistory(b)}
           <div class="bike-detail-tags">
@@ -362,7 +371,9 @@ export function createBikeDetail({
             </div>
           </div>`}
         </div>
-      </div>
+        ${/* sticky: gridet holdes åbent og det lange indhold bliver 3. grid-barn.
+              ellers: gridet lukkes her, præcis som før. */''}
+        ${sticky ? '<div class="bd-col-body">' : '</div>'}
       ${b.description ? `
       <div style="margin-top:20px;">
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
@@ -477,6 +488,8 @@ export function createBikeDetail({
         </div>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
+        ${sticky ? '</div>' : ''}
+      ${sticky ? '</div>' : ''}
       <div id="seller-other-listings" style="margin-top:28px;"></div>
       <div id="similar-listings" style="margin-top:24px;"></div>
       <div class="listing-meta">
@@ -849,7 +862,8 @@ export function createBikeDetail({
         .catch(() => {});
     }
 
-    const { html, profile } = buildBikeBodyHTML(b);
+    // Kun den fulde annonceside får sticky-kolonnen — se noten på buildBikeBodyHTML.
+    const { html, profile } = buildBikeBodyHTML(b, { sticky: true });
     const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `
       <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
