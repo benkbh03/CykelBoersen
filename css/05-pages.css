@@ -1379,7 +1379,13 @@
 #page-layout {
   min-height: calc(100vh - 64px);
   width: 100%;
-  overflow-x: hidden;
+  /* `clip` og IKKE `hidden`: når den ene akse er hidden og den anden visible,
+     beregner CSS den visible akse om til `auto`. Så bliver #page-layout en
+     scroll-container, og enhver position:sticky indeni (fx pris-kortet på
+     annoncesiden) klæber mod DEN i stedet for mod siden — og da den ikke selv
+     scroller, sker der ingenting. `clip` klipper vandret uden at lave en
+     scroll-container. Samme mønster som html/body i 01-base.css. */
+  overflow-x: clip;
   background: var(--cream);
   flex: 1 0 auto;
 }

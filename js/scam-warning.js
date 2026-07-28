@@ -11,8 +11,10 @@ import { iconShield } from './utils.js';
    Persisterer i localStorage ('cb_scam_warning_ack' = '1')
    så advarslen kun vises én gang per browser. Vi viser den ikke
    ved hver besked — det ville være støjende. Brugeren har
-   bekræftet at de har forstået, og guidance er stadig synlig
-   som den lille "antiscam-tip"-tekst under handlingsknapperne.
+   bekræftet at de har forstået.
+   NB: den lille "antiscam-tip"-tekst på annoncesiden er fjernet
+   (den fyldte på hver annonce), så DENNE modal er nu det eneste
+   sted budskabet leveres. Fjern den ikke uden en erstatning.
    ============================================================ */
 
 const STORAGE_KEY = 'cb_scam_warning_ack';

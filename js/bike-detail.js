@@ -104,7 +104,9 @@ export function createBikeDetail({
     return result;
   }
 
-  function renderPriceHistory(b) {
+  /* Besparelsen står PÅ prislinjen — førpris overstreget + procent — i stedet
+     for i et kort nedenunder. Ét blik, ingen ekstra boks. */
+  function renderPriceDrop(b) {
     // Prisnedsættelse vises KUN for forhandlere (ægte før-pris, lovbundet). Private
     // kunne ellers liste højt og straks sætte ned for at fake et tilbud — samme
     // regel som rabat-badgen på kortene.
@@ -112,49 +114,17 @@ export function createBikeDetail({
     const history = Array.isArray(b.bike_price_history) ? [...b.bike_price_history] : [];
     history.sort((a, z) => new Date(a.changed_at) - new Date(z.changed_at));
 
-    const drops = history.filter(h => h.new_price < h.old_price);
     const peak = history.length
       ? Math.max(history[0].old_price, ...history.map(h => h.new_price))
       : (b.original_price || b.price);
     const totalDrop = peak - b.price;
-
     if (totalDrop <= 0) return '';
 
-    const dropCount = drops.length || 1;
-    const dropsHtml = drops.length >= 2 ? drops.slice().reverse().map(h => {
-      const diff = h.old_price - h.new_price;
-      const sign = diff > 0 ? '−' : '+';
-      const date = new Date(h.changed_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
-      return `
-        <li class="price-history-item">
-          <span class="price-history-date">${date}</span>
-          <span class="price-history-change">${h.old_price.toLocaleString('da-DK')} → <strong>${h.new_price.toLocaleString('da-DK')}</strong> kr.</span>
-          <span class="price-history-diff">${sign}${Math.abs(diff).toLocaleString('da-DK')} kr.</span>
-        </li>`;
-    }).join('') : '';
-
-    const expandable = drops.length >= 2;
-    const detailsAttr = expandable ? '' : ' style="pointer-events:none;"';
-
-    // Rabat i procent (afrundet). Vises kun når den er ≥1 % — undgår "−0 %"
-    // ved en mikroskopisk nedsættelse. Typografisk minus (−) som resten af
-    // prishistorikken. "Nu"-prisen gentages IKKE her — den står stort lige over
-    // boksen, så vi holder kortet på én kompakt linje: procent · spar · førpris.
+    // Procent vises kun ved ≥1 % — undgår "−0 %" ved en mikroskopisk nedsættelse.
     const pctOff = peak > 0 ? Math.round((totalDrop / peak) * 100) : 0;
 
-    return `
-      <div class="price-history-card" data-drops="${dropCount}">
-        <div class="price-history-row">
-          ${pctOff >= 1 ? `<span class="price-history-pct" aria-label="${pctOff} procent lavere end før"><svg class="price-history-svg" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6.5 6.5 4-4L21 17"></path><path d="M21 11.5V17h-5.5"></path></svg>−${pctOff}%</span>` : ''}
-          <span class="price-history-save"><span class="price-history-cap">Spar</span><strong>${totalDrop.toLocaleString('da-DK')} kr.</strong></span>
-          <span class="price-history-was"><span class="price-history-cap">Før</span><span class="price-history-from">${peak.toLocaleString('da-DK')} kr.</span></span>
-        </div>
-        ${expandable ? `
-          <details class="price-history-details"${detailsAttr}>
-            <summary class="price-history-toggle">Se prisudvikling</summary>
-            <ol class="price-history-list">${dropsHtml}</ol>
-          </details>` : ''}
-      </div>`;
+    return `<span class="bike-price-was" aria-label="Førpris ${peak.toLocaleString('da-DK')} kroner">${peak.toLocaleString('da-DK')} kr.</span>`
+         + (pctOff >= 1 ? `<span class="bike-price-off" aria-label="${pctOff} procent lavere end før">−${pctOff}%</span>` : '');
   }
 
   /* opts.sticky = true lægger pris/CTA-kolonnen i et 3-kolonne-grid hvor den
@@ -256,8 +226,7 @@ export function createBikeDetail({
           </a>` : ''}
         </div>
         <div class="${colInfoCls}">
-          <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.</div>
-          ${renderPriceHistory(b)}
+          <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.${renderPriceDrop(b)}</div>
           <div class="bike-detail-tags">
             <span class="detail-tag">${esc(b.type)}</span>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
@@ -337,29 +306,17 @@ export function createBikeDetail({
               <textarea id="message-text" placeholder="Skriv en besked til sælgeren..."></textarea>
               <button onclick="sendMessage('${b.id}', '${profile.id}')">Send besked</button>
             </div>
-            <div class="antiscam-tip">🔒 Mød op personligt og betal ved levering. Del aldrig kontooplysninger.</div>
+            ${/* Anti-svindel-teksten er fjernet herfra: den fyldte på hver eneste
+                  annonce, og budskabet leveres allerede i maybeShowScamWarning()
+                  (js/scam-warning.js) præcis når brugeren kontakter en sælger. */''}
             <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
             <button class="btn-save-listing" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})">🔔 Få besked ved prisfald</button>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
             <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🚩 Rapporter annonce</button>
-            ${sellerType === 'dealer' ? (() => {
-              const perks = [];
-              if (profile.verified) perks.push('Verificeret virksomhed');
-              if (b.warranty) perks.push(`Garanti: ${esc(b.warranty)}`);
-              else perks.push('Service & faglig rådgivning');
-              if (profile.offers_tradein)   perks.push('Byttetilbud muligt');
-              if (profile.offers_financing) perks.push('Finansiering muligt');
-              return `
-            <div class="dealer-perks">
-              <div class="dealer-perks-header">
-                <span class="dealer-perks-icon">${iconDealer(20)}</span>
-                <span class="dealer-perks-title">Køb hos forhandler</span>
-              </div>
-              <ul class="dealer-perks-list">
-                ${perks.map(p => `<li><span class="dp-check">✓</span>${p}</li>`).join('')}
-              </ul>
-            </div>`;
-            })() : ''}
+            ${/* "Køb hos forhandler"-fordelene er fjernet fra annoncen — de stod
+                  på hver eneste forhandlerannonce og gentog information der
+                  hører hjemme på forhandlerens egen profil. CSS'en (.dealer-perks
+                  i css/03-profiles.css) er bevaret, så blokken kan genbruges der. */''}
           </div>
           ` : `
           <div class="owner-panel">
