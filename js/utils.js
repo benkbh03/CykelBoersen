@@ -104,6 +104,25 @@ export function frameSizeLetter(size) {
   return m ? m[1].toUpperCase() : null;
 }
 
+/* Fakta til annoncekortets meta-linje — KUN dem der faktisk findes.
+   Årstal og størrelse er de to mindst udfyldte felter i basen (kun ~3 % af
+   annoncerne har en stelstørrelse), og netop dem havde kortene hardcodet med
+   "–" som fallback. Resultatet var "Citybike · –" på næsten hvert eneste kort.
+   En tankestreg ser ud som en fejl; fravær ser ud som en beslutning.
+   Rækkefølgen er prioriteret: de mest købsrelevante fakta først. Felter der
+   ikke er hentet i den pågældende query er bare undefined og springes over. */
+export function bikeMetaFacts(b, max = 2) {
+  if (!b) return [];
+  const out = [];
+  if (b.year) out.push(String(b.year));
+  const sz = b.size_cm ? `${b.size_cm} cm` : (frameSizeLetter(b.size) || b.size || '');
+  if (sz) out.push(`Str. ${sz}`);
+  if (b.warranty) out.push('Garanti');
+  const color = Array.isArray(b.colors) && b.colors.length ? b.colors[0] : b.color;
+  if (color) out.push(String(color));
+  return out.slice(0, max);
+}
+
 /* Små inline-SVG-ikoner til trust-badges (sælgertype, garanti). currentColor
    arver badgens tekstfarve, ~1em så de flugter med teksten. Erstatter emoji
    (🏪/👤/🛡️) der renderede forskelligt pr. styresystem og brød det editorial-

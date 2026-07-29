@@ -1,4 +1,4 @@
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -381,9 +381,12 @@ export function createBikesList({
               <div class="bike-title">${esc(bikeTitle(b.brand, b.model))}</div>
               <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
             </div>
-            <div class="bike-meta">
-              <span>${esc(b.type)}</span><span>${b.year || '–'}</span>${b.size || b.size_cm ? `<span>Str. ${b.size_cm ? b.size_cm + ' cm' : (frameSizeLetter(b.size) || esc(b.size))}</span>` : ''}
-            </div>
+            ${(() => {
+              const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+              return facts.length
+                ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
+                : '';
+            })()}
             <div class="card-footer">
               <div class="seller-avatar">${avatarHtml}</div>
               <div class="card-seller-details">

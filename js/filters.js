@@ -476,8 +476,13 @@ export function createFilters({
   function setCount(filterAttr, filterValue, count) {
     document.querySelectorAll(`[data-filter="${filterAttr}"]`).forEach(input => {
       if (input.dataset.value !== filterValue) return;
-      const countEl = input.closest('.filter-option')?.querySelector('.filter-count');
+      const opt     = input.closest('.filter-option');
+      const countEl = opt?.querySelector('.filter-count');
       if (countEl) countEl.textContent = count > 0 ? count.toLocaleString('da-DK') : '0';
+      // Skjul valg uden resultater — en liste med lutter nuller får siden til at
+      // se tom ud, selvom informationen er den samme. MEN aldrig et valg der er
+      // markeret: så ville brugeren ikke kunne fjerne sit eget filter igen.
+      if (opt) opt.style.display = (count === 0 && !input.checked) ? 'none' : '';
     });
   }
 
