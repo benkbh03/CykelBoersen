@@ -839,7 +839,31 @@ export function createBikeDetail({
     initBikeDetailMap(b);
     initPriceDropButton(b.id);
     maybeOpenAskBox();
+    initStickyPriceBar();
     if (currentUser && currentUser.id === b.user_id) loadInterestedUsers(b.id);
+  }
+
+  /* Viser bund-pillen med pris + CTA på desktop, men KUN når den store pris er
+     ude af billedet — ellers står prisen to steder på én gang. Den sticky
+     info-kolonne slipper når venstre kolonne er scrollet igennem, og derfra
+     overtager pillen, så pris og handling altid er inden for rækkevidde.
+     IntersectionObserver frem for en scroll-lytter: ingen arbejde pr. scroll-
+     event, og den rydder sig selv op når elementet forsvinder fra DOM'en. */
+  let _stickyPriceObserver = null;
+  function initStickyPriceBar() {
+    if (_stickyPriceObserver) { _stickyPriceObserver.disconnect(); _stickyPriceObserver = null; }
+    const bar   = document.getElementById('bike-sticky-bar');
+    const price = document.querySelector('.bd-col-info .bike-detail-price');
+    // Ingen bar for ejeren af annoncen, og intet at observere uden pris.
+    if (!bar || !price || typeof IntersectionObserver === 'undefined') return;
+
+    _stickyPriceObserver = new IntersectionObserver(([entry]) => {
+      bar.classList.toggle('is-visible', !entry.isIntersecting);
+    // rootMargin trækker toppen ned bag den sticky nav (~64px), så pillen først
+    // kommer frem når prisen reelt er ude af syne — ikke når den gemmer sig
+    // bag headeren.
+    }, { rootMargin: '-72px 0px 0px 0px', threshold: 0 });
+    _stickyPriceObserver.observe(price);
   }
 
   function showDetailView() {
