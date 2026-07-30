@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, escAttr } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -228,17 +228,26 @@ export function createBikeDetail({
         <div class="${colInfoCls}">
           <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.${renderPriceDrop(b)}</div>
           <div class="bike-detail-tags">
-            <span class="detail-tag">${esc(b.type)}</span>
+            ${/* Tags der svarer til et RIGTIGT sidebar-filter gøres klikbare og
+                 fører til en ren søgning på netop den egenskab. Årstal har intet
+                 filter, og stelnummer er ikke en søgeegenskab — de forbliver
+                 statiske, så vi ikke lover en søgning der ikke findes. */''}
+            <button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('type','${escAttr(b.type)}')" title="Se alle ${escAttr(b.type)}-annoncer">${esc(b.type)}</button>
             ${b.year ? `<span class="detail-tag">${b.year}</span>` : ''}
             ${(b.size || b.size_cm) ? (() => {
               const _sl = frameSizeLetter(b.size);
               const _cm = b.size_cm ? `${b.size_cm} cm` : (_sl || esc(b.size));
               const _guide = (b.size_cm && _sl) ? ` <span style="color:var(--muted);font-weight:400;" title="Bogstav-størrelser (S/M/L) varierer mellem mærker — cm er det pålidelige mål">· ca. ${_sl}</span>` : '';
-              return `<span class="detail-tag">Str. ${_cm}${_guide}</span>`;
+              return b.size
+                ? `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('size','${escAttr(b.size)}')" title="Se alle i str. ${escAttr(b.size)}">Str. ${_cm}${_guide}</button>`
+                : `<span class="detail-tag">Str. ${_cm}${_guide}</span>`;
             })() : ''}
-            ${b.condition ? `<span class="detail-tag">${esc(b.condition)}</span>` : ''}
-            ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
-            ${b.city ? `<span class="detail-tag">📍 ${esc(b.city)}</span>` : ''}
+            ${b.condition ? `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('condition','${escAttr(b.condition)}')" title="Se alle i stand: ${escAttr(b.condition)}">${esc(b.condition)}</button>` : ''}
+            ${(() => {
+              const cols = (Array.isArray(b.colors) && b.colors.length) ? b.colors : (b.color ? [b.color] : []);
+              return cols.map(c => `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('color','${escAttr(c)}')" title="Se alle ${escAttr(c)}e cykler">${esc(c)}</button>`).join('');
+            })()}
+            ${b.city ? `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('city','${escAttr(b.city)}')" title="Se alle cykler i ${escAttr(b.city)}">${esc(b.city)}</button>` : ''}
             ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">${iconShield()} ${esc(b.warranty)}</span>` : ''}
             ${(() => {
               /* Stelnummer-tag: gør åbenheden synlig ved første øjekast i stedet for
