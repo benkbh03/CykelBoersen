@@ -776,6 +776,16 @@ body:has(.inbox-page) #chat-widget { display: none; }
   overscroll-behavior: contain;
   scrollbar-width: thin;
 }
+/* Når kolonnen er højere end skærmen og scroller internt, må prisen ikke
+   glide ud af den. Den klæber til kolonnens egen top. Baggrunden er
+   nødvendig, ellers scroller indholdet synligt bag den. */
+.bike-detail-grid--sticky .bd-col-info .bike-detail-price {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--cream);
+  padding-bottom: 6px;
+}
 
 /* Mobil: én kolonne, og rækkefølgen skal være PRÆCIS som før ændringen —
    galleri → pris/CTA → beskrivelse. position:static er vigtig, ellers ville
@@ -1430,6 +1440,60 @@ body:has(.inbox-page) #chat-widget { display: none; }
 
 /* ── Sticky mobil bund-bar på annonce-detalje ── */
 .bike-sticky-bar { display: none; }
+
+/* ── Desktop: prisen må ikke forsvinde ──────────────────────────────
+   Den sticky info-kolonne slipper når venstre kolonne er scrollet igennem,
+   og derefter er pris og CTA væk mens man ser "Sælgerens andre annoncer" og
+   "Lignende annoncer". Her genbruges den samme bar som på mobil, men som en
+   flydende pille — og KUN når den store pris er ude af billedet, så vi ikke
+   viser prisen to gange samtidig. Klassen sættes af en IntersectionObserver
+   i renderBikePage (js/bike-detail.js). */
+@media (min-width: 701px) {
+  .bike-sticky-bar.is-visible {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2600;
+    width: max-content;
+    max-width: calc(100vw - 40px);
+    padding: 10px 12px 10px 20px;
+    background: rgba(255,255,255,0.97);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    box-shadow: 0 8px 28px rgba(26,26,24,0.16);
+    align-items: center;
+    gap: 16px;
+    backdrop-filter: blur(10px);
+    animation: bike-sticky-rise 0.18s ease-out;
+  }
+  .bike-sticky-bar.is-visible .bike-sticky-price {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.15rem;
+    color: var(--charcoal); flex-shrink: 0;
+  }
+  .bike-sticky-bar.is-visible .bike-sticky-actions { display: flex; gap: 8px; }
+  .bike-sticky-bar.is-visible .bike-sticky-contact,
+  .bike-sticky-bar.is-visible .bike-sticky-bid {
+    border: none; border-radius: 100px; padding: 10px 20px;
+    font-size: 0.88rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; white-space: nowrap; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: opacity 0.15s;
+  }
+  .bike-sticky-bar.is-visible .bike-sticky-contact { background: var(--forest); color: var(--sand); }
+  .bike-sticky-bar.is-visible .bike-sticky-bid     { background: var(--rust);   color: #fff; }
+  .bike-sticky-bar.is-visible .bike-sticky-contact:hover,
+  .bike-sticky-bar.is-visible .bike-sticky-bid:hover { opacity: 0.88; }
+}
+@keyframes bike-sticky-rise {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bike-sticky-bar.is-visible { animation: none; }
+}
+
 @media (max-width: 700px) {
   .bike-sticky-bar {
     display: flex;

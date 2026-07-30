@@ -207,7 +207,7 @@ export function createListingEdit({
     document.getElementById('edit-model').value         = b.model || '';
     document.getElementById('edit-price').value         = b.price || '';
     document.getElementById('edit-year').value          = b.year || '';
-    document.getElementById('edit-city').value          = b.city || '';
+    document.getElementById('edit-bike-city').value          = b.city || '';
     const editColorGrid = document.getElementById('edit-color-grid');
     const initialEditColors = Array.isArray(b.colors) ? b.colors : (b.color ? b.color.split(/[,/]\s*/).map(s => s.trim()).filter(Boolean) : []);
     renderColorSwatches(editColorGrid, { selected: initialEditColors, variant: 'tile', max: 3 });
@@ -264,7 +264,7 @@ export function createListingEdit({
     renderEditExistingImages();
     renderEditNewImages();
 
-    const editCityInput = document.getElementById('edit-city');
+    const editCityInput = document.getElementById('edit-bike-city');
     if (editCityInput) attachCityAutocomplete(editCityInput);
 
     // Type-tilpassede tekniske felter (som salg-formen): vis kun de relevante.
@@ -358,7 +358,7 @@ export function createListingEdit({
       const cond  = document.getElementById('edit-condition').value;
       const price = parseInt(document.getElementById('edit-price').value);
       const desc  = document.getElementById('edit-description').value;
-      const city  = document.getElementById('edit-city').value.trim();
+      const city  = document.getElementById('edit-bike-city').value.trim();
       if (!title || !type || !cond || !city) { showToast('⚠️ Udfyld alle påkrævede felter'); return; }
       if (!Number.isFinite(price) || price < 1 || price > 9999999) {
         showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
@@ -390,7 +390,7 @@ export function createListingEdit({
       title:       bikeTitle(document.getElementById('edit-brand').value, document.getElementById('edit-model').value),
       price:       parseInt(document.getElementById('edit-price').value),
       year:        parseInt(document.getElementById('edit-year').value) || null,
-      city:        document.getElementById('edit-city').value,
+      city:        document.getElementById('edit-bike-city').value,
       color:       (() => { const cs = getSelectedColors(document.getElementById('edit-color-grid')); return cs.length ? cs.join(', ') : null; })(),
       colors:      (() => { const cs = getSelectedColors(document.getElementById('edit-color-grid')); return cs.length ? cs : null; })(),
       description: document.getElementById('edit-description').value,
