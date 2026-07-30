@@ -985,7 +985,7 @@ export function createSellPage({
         <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off" oninput="checkFrameNumberFormat(this)">
         <div id="sell-frame-warn" class="sell-frame-warn" hidden></div>
         <div class="sell-frame-privacy">
-          ${iconShield()} Vi tjekker det mod tyveriregisteret BikeIndex og viser kun de <strong>sidste 4 cifre</strong> offentligt. Det fulde nummer gemmes ikke — du giver det til køber ved overlevering.
+          ${iconShield()} Vi viser kun de <strong>sidste 4 cifre</strong> offentligt — det fulde nummer gemmes ikke og gives til køber ved overleveringen. Vi slår det op i det internationale register BikeIndex; et hit advarer vi om, men et ikke-hit er ingen garanti, da danske tyverier registreres hos politiet.
         </div>
       </div>
 

@@ -257,10 +257,7 @@ export function createBikeDetail({
                  offentligt FØR mødet, så køber kan holde det op mod stellet ved
                  overdragelse. Det gør en løgn kontrollerbar — og det er dét
                  tooltip'en fortæller køberen at gøre. */
-              const clear = b.frame_check_status === 'clear';
-              return `<span class="detail-tag detail-tag--frame" title="Sælger har oplyst stelnummeret på forhånd${clear
-                ? ' (ingen match i tyveriregisteret BikeIndex)'
-                : ''}. Sammenlign det med nummeret på stellet, når I mødes — og slå det op i politiets register inden du køber.">`
+              return `<span class="detail-tag detail-tag--frame" title="Sælger har oplyst stelnummeret på forhånd. Slå det op i politiets register, og sammenlign det med stellet når I mødes.">`
                 + `${iconShield()} Stelnummer oplyst</span>`;
             })()}
           </div>
@@ -439,16 +436,23 @@ export function createBikeDetail({
         const l4 = b.frame_last4 ? esc(b.frame_last4) : '';
         const dateStr = b.frame_check_at ? new Date(b.frame_check_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
         let icon, title, sub, color, bg, border;
+        /* BEMÆRK: 'clear' fra BikeIndex giver IKKE et positivt signal her.
+           BikeIndex er primært amerikansk, og en dansk stjålet cykel står stort
+           set aldrig i det register — så "ingen match" er nær-intetsigende for
+           danske cykler og ville være falsk tryghed. Asymmetrien er pointen:
+           et MATCH er værd at advare om, et ikke-match beviser ingenting.
+           Derfor ser 'clear' ud præcis som "ikke tjekket", og køberen henvises
+           til politiets register, som er den danske, autoritative kilde. */
         if (b.frame_check_status === 'clear') {
-          icon = '✓'; color = '#2e7d32'; bg = 'rgba(46,125,50,0.08)'; border = '#2e7d32';
+          icon = iconShield(18); color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
           title = 'Stelnummer oplyst af sælger';
-          sub = `Tjekket mod BikeIndex (internationalt cykel-tyveriregister)${dateStr ? ' ' + dateStr : ''} — ingen match. Tjek også hos politiets danske register nedenfor inden du køber.`;
+          sub = 'Slå nummeret op i politiets register nedenfor, og sammenlign det med stellet når I mødes.';
         } else if (b.frame_check_status === 'match') {
-          icon = '⚠️'; color = '#c8302a'; bg = 'rgba(200,48,42,0.08)'; border = '#c8302a';
+          icon = '!'; color = '#c8302a'; bg = 'rgba(200,48,42,0.08)'; border = '#c8302a';
           title = 'Muligt tyveri-match — undersøg før køb';
           sub = 'Stelnummeret ligner en efterlyst cykel i BikeIndex (internationalt register, omtrentligt match). Bekræft med sælger og tjek hos politiet inden køb.';
         } else {
-          icon = '🔒'; color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
+          icon = iconShield(18); color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
           title = 'Stelnummer oplyst af sælger';
           sub = 'Tjek stelnummeret hos politiets register nedenfor inden du køber.';
         }
