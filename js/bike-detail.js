@@ -850,6 +850,11 @@ export function createBikeDetail({
      IntersectionObserver frem for en scroll-lytter: ingen arbejde pr. scroll-
      event, og den rydder sig selv op når elementet forsvinder fra DOM'en. */
   let _stickyPriceObserver = null;
+  // Læs nav-højden fra CSS så JS og CSS ikke kan divergere. Fallback 64px.
+  const NAV_H = (() => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--nav-h');
+    return parseInt(v, 10) || 64;
+  })();
   function initStickyPriceBar() {
     if (_stickyPriceObserver) { _stickyPriceObserver.disconnect(); _stickyPriceObserver = null; }
     const bar   = document.getElementById('bike-sticky-bar');
@@ -859,10 +864,10 @@ export function createBikeDetail({
 
     _stickyPriceObserver = new IntersectionObserver(([entry]) => {
       bar.classList.toggle('is-visible', !entry.isIntersecting);
-    // rootMargin trækker toppen ned bag den sticky nav (~64px), så pillen først
-    // kommer frem når prisen reelt er ude af syne — ikke når den gemmer sig
-    // bag headeren.
-    }, { rootMargin: '-72px 0px 0px 0px', threshold: 0 });
+    // rootMargin trækker toppen ned bag den sticky nav, så "synlig" betyder
+    // faktisk synlig og ikke skjult bag headeren. Værdien læses fra --nav-h,
+    // så den ikke kan komme ud af sync med CSS'en.
+    }, { rootMargin: `-${NAV_H}px 0px 0px 0px`, threshold: 0 });
     _stickyPriceObserver.observe(price);
   }
 

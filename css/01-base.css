@@ -3,6 +3,11 @@
    ============================================================ */
 
 :root {
+  /* Nav'ens højde. Den er position:sticky;top:0 og dækker altså toppen af
+     viewporten, så alt der skal være synligt under den — sticky-kolonner,
+     scroll-mål — skal forskydes med mindst så meget. Flere calc(100vh - 64px)
+     i kodebasen bygger på samme tal; brug variablen i nyt arbejde. */
+  --nav-h: 64px;
   --sand:         #F5F0E8;
   --sand-2:       #EDE8DF;
   --rust:         #C8502A;
