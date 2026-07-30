@@ -684,7 +684,7 @@ export function createBikeDetail({
   function renderBikeSkeleton() {
     const s = 'background:linear-gradient(90deg,#e8e3d9 25%,#f0ebe3 50%,#e8e3d9 75%);background-size:200% 100%;animation:skeleton-shimmer 1.4s infinite;border-radius:6px;';
     return `
-      <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
+      <div style="max-width:1200px;margin:0 auto;padding:20px 16px;">
         <div style="${s}height:34px;width:90px;margin-bottom:24px;"></div>
         <div style="${s}height:36px;width:55%;margin-bottom:24px;"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
@@ -823,7 +823,7 @@ export function createBikeDetail({
     const { html, profile } = buildBikeBodyHTML(b, { sticky: true });
     const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `
-      <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
+      <div style="max-width:1200px;margin:0 auto;padding:20px 16px;">
         <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
         <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;color:var(--charcoal);">${esc(bikeTitle(b.brand, b.model))}</h1>
         ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler →</a>` : ''}

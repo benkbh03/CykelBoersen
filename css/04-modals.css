@@ -759,6 +759,26 @@ body:has(.inbox-page) #chat-widget { display: none; }
    block højere end den selv er — uden den er der ingen glide-plads.
    Tre børn frem for to er nødvendigt fordi grid-row kun virker mellem
    søskende: på mobil skal info kunne placeres MELLEM media og body. */
+/* Galleriet vægtes tungere end info-kolonnen (~56/44). Ved 1200px sidebredde
+   giver det galleriet ~640px og info ~500px — altså bliver BEGGE bredere end
+   de 470px de havde ved 1000px og 1fr 1fr. Ingen kolonne klemmes. */
+.bike-detail-grid--sticky { grid-template-columns: 1.28fr 1fr; }
+
+/* Højere galleri. Billederne bruger object-fit:contain (bevidst — beskæring af
+   en cykel er værre end letterboxing), og for STÅENDE fotos er det derfor
+   højden der binder: et 3:4-foto i en 470x420-boks vises 315x420, uanset hvor
+   bred kolonnen bliver. 520px højde giver 390x520 — 54% mere areal.
+   min-width:769px er nødvendig: uden den ville denne regel (0,2,0) slå
+   mobil-overriden på 300px (0,1,0) i css/05-pages.css:781-783. */
+@media (min-width: 769px) {
+  .bike-detail-grid--sticky .gallery-main,
+  .bike-detail-grid--sticky .bike-detail-img { height: 520px; }
+  /* Beskrivelsen følger ikke spaltebredden hele vejen: ved 640px ville
+     linjelængden være ~87 tegn, hvor ~70 læses bedst. Kun tekstkortet
+     begrænses — specs-kortene nedenunder må gerne fylde spalten. */
+  .bike-detail-grid--sticky .desc-wrap { max-width: 540px; }
+}
+
 .bike-detail-grid--sticky .bd-col-media { grid-column: 1; grid-row: 1; min-width: 0; }
 .bike-detail-grid--sticky .bd-col-body  { grid-column: 1; grid-row: 2; min-width: 0; }
 .bike-detail-grid--sticky .bd-col-info {
