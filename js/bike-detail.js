@@ -240,6 +240,29 @@ export function createBikeDetail({
             ${(Array.isArray(b.colors) && b.colors.length) ? b.colors.map(c => `<span class="detail-tag">🎨 ${esc(c)}</span>`).join('') : (b.color ? `<span class="detail-tag">🎨 ${esc(b.color)}</span>` : '')}
             ${b.city ? `<span class="detail-tag">📍 ${esc(b.city)}</span>` : ''}
             ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">${iconShield()} ${esc(b.warranty)}</span>` : ''}
+            ${(() => {
+              /* Stelnummer-tag: gør åbenheden synlig ved første øjekast i stedet for
+                 kun i badgen længere nede. VIGTIGT — status-bevidst: ved 'match'
+                 vises INTET tag. Et tryghedssignal på en cykel der ligner en
+                 efterlyst ville sende det stik modsatte af det rigtige; advarslen
+                 nedenfor er den korrekte behandling af det tilfælde.
+                 Vi viser aldrig nummeret — kun at det er oplyst (privatlivspolitik
+                 §2: kun de sidste 4 cifre gemmes). */
+              if (!b.frame_last4 || b.frame_check_status === 'match') return '';
+              /* Teksten siger ALTID "oplyst" — aldrig "tjekket" eller "verificeret".
+                 BikeIndex' 'clear' betyder kun "ikke fundet blandt stjålne"; et
+                 opdigtet nummer får samme svar. Vi har altså ikke verificeret at
+                 nummeret er ægte, og må ikke antyde det.
+                 Værdien ligger i forhåndsbindingen: sælger har oplyst et nummer
+                 offentligt FØR mødet, så køber kan holde det op mod stellet ved
+                 overdragelse. Det gør en løgn kontrollerbar — og det er dét
+                 tooltip'en fortæller køberen at gøre. */
+              const clear = b.frame_check_status === 'clear';
+              return `<span class="detail-tag detail-tag--frame" title="Sælger har oplyst stelnummeret på forhånd${clear
+                ? ' (ingen match i tyveriregisteret BikeIndex)'
+                : ''}. Sammenlign det med nummeret på stellet, når I mødes — og slå det op i politiets register inden du køber.">`
+                + `${iconShield()} Stelnummer oplyst</span>`;
+            })()}
           </div>
           ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>${b.description.length > 100 ? `<button onclick="jumpToBikeDesc()" style="background:none;border:none;padding:2px 0 0;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--forest);cursor:pointer;">Se mere ↓</button>` : ''}` : ''}
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
