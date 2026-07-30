@@ -4,7 +4,7 @@
    ============================================================ */
 
 import { BIKE_COLORS } from './config.js';
-import { bikeTitle } from './utils.js';
+import { bikeTitle, iconShield } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
 
 /**
@@ -975,11 +975,17 @@ export function createSellPage({
         <input type="url" id="sell-external-url" placeholder="https://din-webshop.dk/cykler/..." value="${esc(c['sell-external-url'] || '')}">
       </div>` : ''}
 
-      <div class="sell-field">
-        <label>Stelnummer <span class="hint">(valgfrit — øger tryghed)</span></label>
-        <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off">
-        <div style="margin-top:6px;font-size:0.78rem;color:var(--muted);line-height:1.5;">
-          🔒 Vi tjekker det mod tyveriregisteret BikeIndex og viser kun de <strong>sidste 4 cifre</strong> offentligt. Det fulde nummer gemmes ikke — du giver det til køber ved overlevering.
+      <div class="sell-field sell-field--frame">
+        <label>Stelnummer <span class="sell-recommended">Anbefalet</span></label>
+        <p class="sell-frame-why">
+          Når du oplyser nummeret på forhånd, kan køberen slå det op i politiets
+          register og holde det op mod stellet, når I mødes. Netop fordi det kan
+          kontrolleres, betyder det noget — og annoncen får et synligt mærke.
+        </p>
+        <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off" oninput="checkFrameNumberFormat(this)">
+        <div id="sell-frame-warn" class="sell-frame-warn" hidden></div>
+        <div class="sell-frame-privacy">
+          ${iconShield()} Vi viser kun de <strong>sidste 4 cifre</strong> offentligt — det fulde nummer gemmes ikke og gives til køber ved overleveringen. Vi slår det op i det internationale register BikeIndex; et hit advarer vi om, men et ikke-hit er ingen garanti, da danske tyverier registreres hos politiet.
         </div>
       </div>
 
@@ -1947,6 +1953,39 @@ export function createSellPage({
     }
   }
 
+  /* ------ Stelnummer: friktion mod åbenlyst opdigtede numre ----- */
+
+  /* Vi kan ikke VERIFICERE et stelnummer — der findes ingen kontrolciffer-
+     standard som på et bilstelnummer, og BikeIndex' "clear" betyder kun
+     "ikke blandt de stjålne", ikke "ægte". Derfor er den primære værn ærlig
+     tekst: annoncen siger "oplyst", ikke "verificeret".
+     Det her er anden linje: fang det åbenlyse (1111, aaaa, 1234) så nogen
+     ikke får et mærke ved at hamre på tastaturet. Vi ADVARER frem for at
+     blokere — ægte serienumre er uforudsigelige, og en falsk afvisning af et
+     rigtigt nummer er værre end at lade et dårligt slippe igennem. */
+  function frameNumberLooksFake(raw) {
+    const s = String(raw || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    if (!s) return null;
+    if (s.length < 5) return 'Stelnumre er typisk mindst 5-6 tegn.';
+    if (/^(.)\1+$/.test(s)) return 'Det ligner ikke et rigtigt stelnummer.';
+    // Rent stigende eller faldende sekvens over hele længden (1234, ABCDE)
+    const seq = [...s].every((ch, i, a) =>
+      i === 0 || ch.charCodeAt(0) === a[i - 1].charCodeAt(0) + 1);
+    const rseq = [...s].every((ch, i, a) =>
+      i === 0 || ch.charCodeAt(0) === a[i - 1].charCodeAt(0) - 1);
+    if (seq || rseq) return 'Det ligner ikke et rigtigt stelnummer.';
+    if (!/\d/.test(s)) return 'Stelnumre indeholder næsten altid tal — tjek at du har skrevet det rigtigt.';
+    return null;
+  }
+
+  function checkFrameNumberFormat(el) {
+    const box = document.getElementById('sell-frame-warn');
+    if (!box) return;
+    const msg = frameNumberLooksFake(el.value);
+    box.hidden = !msg;
+    if (msg) box.textContent = `${msg} Nummeret står typisk under kranken eller på stellet.`;
+  }
+
   /* ------ Import fra eksternt link (DBA, Gul&Gratis m.fl.) ----- */
 
   // Konverterer base64 (uden data:-prefix) til en File, så billedet kan køre
@@ -2277,6 +2316,7 @@ export function createSellPage({
     setSellPrimary,
     removeSellImage,
     suggestListingFromImages,
+    checkFrameNumberFormat,
     importSellFromLink,
     applyAiSuggestion,
     fileToBase64,

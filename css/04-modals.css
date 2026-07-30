@@ -937,6 +937,16 @@ body:has(.inbox-page) #chat-widget { display: none; }
 }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
+/* Stelnummer-tag: bevidst dæmpet frem for grønt. Det er et tillidssignal, ikke
+   en reklame — og resten af siden er netop ryddet for grønne bokse. Ikonet og
+   den lidt mørkere ramme gør det tydeligt nok uden at råbe. */
+.detail-tag--frame {
+  background: rgba(42,61,46,0.06);
+  border-color: rgba(42,61,46,0.22);
+  color: var(--forest);
+  display: inline-flex; align-items: center; gap: 5px;
+  cursor: help;
+}
 .bike-detail-seller { display: flex; align-items: center; gap: 12px; background: var(--sand); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
 
 /* ── TRUST CARD: Trygt køb-badge + sælger-historik ─────────── */

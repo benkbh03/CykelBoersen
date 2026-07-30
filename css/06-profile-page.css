@@ -1520,6 +1520,37 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .sell-field label .req { color: var(--rust); margin-left: 2px; }
 .sell-field label .hint { font-weight: 400; color: var(--muted); font-size: 11px; margin-left: 4px; }
+
+/* ── Stelnummer: anbefalet, ikke bare valgfrit ─────────────────────
+   Feltet lå som en neutral "(valgfrit)"-linje og blev derfor sprunget over.
+   Det får nu sin egen ramme, så det læses som en anbefaling — men bevidst
+   uden grøn baggrund: resten af siden er netop ryddet for grønne bokse, og
+   et tillidssignal skal være roligt, ikke råbende. */
+.sell-field--frame {
+  border: 1px solid rgba(42,61,46,0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: rgba(42,61,46,0.035);
+}
+.sell-recommended {
+  display: inline-block; margin-left: 6px; padding: 2px 8px;
+  border-radius: 100px; background: var(--forest); color: var(--sand);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+  font-family: 'DM Sans', sans-serif; vertical-align: 1px;
+}
+.sell-frame-why {
+  margin: 6px 0 10px; font-size: 12px; line-height: 1.55;
+  color: var(--charcoal); opacity: 0.85;
+}
+.sell-frame-privacy {
+  margin-top: 8px; font-size: 11.5px; line-height: 1.5; color: var(--muted);
+  display: flex; align-items: flex-start; gap: 6px;
+}
+.sell-frame-privacy svg { flex-shrink: 0; margin-top: 2px; }
+@media (max-width: 480px) {
+  .sell-field--frame { padding: 12px 13px; }
+  .sell-frame-why { font-size: 11.5px; }
+}
 .sell-field input,
 .sell-field select,
 .sell-field textarea {
@@ -3864,3 +3895,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* Mobil sub-header — skjult på desktop */
 .map-mobile-subheader { display: none; }
 
+
+/* Advarsel ved åbenlyst opdigtet stelnummer. Bevidst en blød advarsel, ikke en
+   fejl: ægte serienumre er uforudsigelige, og at afvise et rigtigt nummer er
+   værre end at lade et dårligt slippe igennem. */
+.sell-frame-warn {
+  margin-top: 8px; padding: 8px 10px; border-radius: 8px;
+  background: rgba(200,80,42,0.07); border: 1px solid rgba(200,80,42,0.25);
+  font-size: 11.5px; line-height: 1.5; color: var(--charcoal);
+}
