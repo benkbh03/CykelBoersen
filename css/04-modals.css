@@ -765,13 +765,16 @@ body:has(.inbox-page) #chat-widget { display: none; }
   grid-column: 2;
   grid-row: 1 / span 2;
   position: sticky;
-  top: 20px;
+  /* SKAL rydde nav'en. `top` måles fra viewportens top, og nav'en er
+     position:sticky;top:0 — så top:20px pinnede kolonnen fast BAG headeren,
+     hvor prisen var usynlig. Sticky virkede; offsettet var forkert. */
+  top: calc(var(--nav-h) + 20px);
   min-width: 0;
   /* Er et sticky element højere end viewporten, kan man ikke scrolle ned til
      dets nederste del — den bliver uopnåelig. Forhandler-annoncer med
      fordele-listen kan overstige en lav laptop-skærm, så kolonnen scroller
      internt i stedet for at gemme "Anmeld annonce". */
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - var(--nav-h) - 40px);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
