@@ -48,8 +48,41 @@ function emailWrapper(content) {
 </html>`;
 }
 
+/* Har agenten overhovedet ét reelt søgekriterium?
+   Uden dette tjek matcher en agent med tomme filtre ALT: `{}` er sandt, og hver
+   eneste kontrol i bikeMatchesSearch er betinget (`if (filters.types?.length)`),
+   så en tom agent falder igennem hele funktionen og returnerer true. Det er
+   sådan en agent ved navn "Brugte cykler" kunne udløse en mail om en el-cykel.
+   `category` tæller IKKE med — den er en akse der altid er sat (cykel/tilbehør),
+   ikke noget brugeren har valgt at søge efter. */
+function hasEffectiveCriteria(f) {
+  if (!f || typeof f !== "object") return false;
+
+  const arrays = [
+    "types", "conditions", "sizes", "wheelSizes", "colors",
+    "frameMaterials", "brakeTypes", "groupsets",
+    "motors", "motorPositions", "suspensions", "geartypes", "stepTypes",
+  ];
+  if (arrays.some((k) => Array.isArray(f[k]) && f[k].length > 0)) return true;
+
+  const texts = ["type", "search", "city", "sellerType", "dealerId"];
+  if (texts.some((k) => f[k] != null && String(f[k]).trim() !== "")) return true;
+
+  const numbers = ["minPrice", "maxPrice", "batteryMin", "batteryMax", "maxWeightKg"];
+  if (numbers.some((k) => f[k] != null && f[k] !== "" && !isNaN(Number(f[k])))) return true;
+
+  if (f.warranty) return true;
+  if (f.electronicShifting === "true" || f.electronicShifting === "false") return true;
+
+  return false;
+}
+
 function bikeMatchesSearch(bike, filters) {
   if (!filters) return false;
+  // En agent uden kriterier må ALDRIG notificere. Frontendens hasFilters-guard
+  // dækker kun nye agenter — rækker gemt før den fandtes, eller via
+  // _pendingCykelagent-stien, kan stadig ligge med tomme filtre.
+  if (!hasEffectiveCriteria(filters)) return false;
 
   // Hård kategori-akse: en cykel-agent matcher ALDRIG tilbehør (og omvendt).
   // Eksisterende cykel-agenter har ingen filters.category → defaulter til 'cykel';

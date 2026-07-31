@@ -275,7 +275,9 @@ export function createCykelagentPage({
           <span class="cykelagent-card-date">Oprettet ${dateStr}</span>
         </div>
         <div class="cykelagent-card-name">${esc(agent.name) || 'Min Cykelagent'}</div>
-        ${chips.length ? `<div class="cykelagent-card-chips">${chips.map(c => `<span class="cykelagent-chip">${c}</span>`).join('')}</div>` : ''}
+        ${chips.length
+          ? `<div class="cykelagent-card-chips">${chips.map(c => `<span class="cykelagent-chip">${c}</span>`).join('')}</div>`
+          : `<div class="cykelagent-card-warn">Denne agent har ingen filtre og kan derfor ikke matche præcist. Åbn den og vælg mindst ét kriterium.</div>`}
         <div class="cykelagent-card-cta">Rediger →</div>
       </div>
     `;
