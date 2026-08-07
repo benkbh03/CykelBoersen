@@ -3388,16 +3388,49 @@ async function loadAdminStats() {
   el.innerHTML = '<p style="color:var(--muted)">Indlæser statistik…</p>';
   try {
     const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-    const [profRes, bikeRes, revRes, searchRes] = await Promise.all([
+    // 14 dages vindue til trafikoversigten. Vi henter KUN tidsstempler —
+    // rækkerne kan blive mange, og resten af kolonnerne bruges ikke.
+    const DAYS = 14;
+    const since = new Date(Date.now() - (DAYS - 1) * 86400000);
+    since.setHours(0, 0, 0, 0);
+    const sinceIso = since.toISOString();
+    const [profRes, bikeRes, revRes, searchRes, trafSearchRes, trafViewRes] = await Promise.all([
       supabase.from('profiles').select('seller_type, verified, created_at'),
       supabase.from('bikes').select('type, price, is_active, sold_via, views, created_at'),
       supabase.from('reviews').select('rating'),
       supabase.from('search_logs').select('query, result_count').order('created_at', { ascending: false }).limit(2000),
+      supabase.from('search_logs').select('created_at').gte('created_at', sinceIso),
+      supabase.from('bike_views').select('viewed_at').gte('viewed_at', sinceIso),
     ]);
     const profiles = profRes.data || [];
     const bikes    = bikeRes.data || [];
     const reviews  = revRes.data || [];
     const searches = searchRes.data || [];
+
+    /* ── Rigtig trafik ──────────────────────────────────────────
+       Cloudflares "unique visitors" tæller crawlere med og er derfor
+       ubrugelig til beslutninger. Søgninger og annonce-visninger kræver
+       BEGGE at JavaScript rent faktisk kører, og udløses derfor stort set
+       aldrig af crawlere. bike_views er oveni dedupliceret pr. viewer_key
+       pr. cykel pr. 24 timer, så én person der genindlæser ikke tæller igen. */
+    const dayKeys = Array.from({ length: DAYS }, (_, i) => {
+      const d = new Date(since.getTime() + i * 86400000);
+      return d.toISOString().slice(0, 10);
+    });
+    const bucket = (rows, field) => {
+      const m = Object.fromEntries(dayKeys.map(k => [k, 0]));
+      (rows || []).forEach(r => {
+        const k = String(r[field] || '').slice(0, 10);
+        if (k in m) m[k]++;
+      });
+      return m;
+    };
+    const searchByDay = bucket(trafSearchRes.data, 'created_at');
+    const viewByDay   = bucket(trafViewRes.data, 'viewed_at');
+    // bike_views kan mangle en select-policy (se supabase/sql/add_bike_views_admin_select.sql).
+    // Uden den returnerer Supabase en fejl frem for rækker — sig det klart
+    // i stedet for at vise nul og lade det ligne manglende trafik.
+    const viewsBlocked = !!trafViewRes.error;
 
     const dealers   = profiles.filter(p => p.seller_type === 'dealer');
     const verified  = dealers.filter(p => p.verified).length;
@@ -3451,7 +3484,53 @@ async function loadAdminStats() {
           </div>`).join('')
       : '<p style="color:var(--muted);font-size:0.86rem;">Ingen aktive annoncer endnu.</p>';
 
+    /* 14-dages søjlediagram uden bibliotek: hver dag er to søjler hvis højde
+       er en procentdel af periodens maksimum. Deler skala, så søgninger og
+       visninger kan sammenlignes visuelt. */
+    const maxDay = Math.max(1, ...dayKeys.map(k => Math.max(searchByDay[k], viewByDay[k])));
+    const sum = (m, n) => dayKeys.slice(-n).reduce((a, k) => a + m[k], 0);
+    const todayKey = new Date().toISOString().slice(0, 10);
+
+    const trafficChart = dayKeys.map(k => {
+      const sN = searchByDay[k], vN = viewByDay[k];
+      const d  = new Date(k + 'T00:00:00');
+      const lbl = d.toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
+      return `
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"
+             title="${lbl}: ${sN} søgning${sN === 1 ? '' : 'er'}, ${vN} visning${vN === 1 ? '' : 'er'}">
+          <div style="height:70px;display:flex;align-items:flex-end;gap:2px;">
+            <div style="width:7px;border-radius:2px 2px 0 0;background:var(--forest);height:${Math.max(2, Math.round(sN / maxDay * 70))}px;"></div>
+            <div style="width:7px;border-radius:2px 2px 0 0;background:var(--rust);height:${Math.max(2, Math.round(vN / maxDay * 70))}px;"></div>
+          </div>
+          <div style="font-size:9px;color:${k === todayKey ? 'var(--charcoal)' : 'var(--muted)'};font-weight:${k === todayKey ? '700' : '400'};white-space:nowrap;">${d.getDate()}</div>
+        </div>`;
+    }).join('');
+
+    const trafficBlock = `
+      <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px;">
+        <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 4px;color:var(--charcoal);">Rigtig trafik</h3>
+        <p style="font-size:0.76rem;color:var(--muted);margin:0 0 14px;line-height:1.5;">
+          Søgninger og annonce-visninger kræver at JavaScript kører, så crawlere tæller stort set ikke med.
+          Et mere pålideligt tal end "besøgende" i Cloudflare. Visninger er talt én gang pr. person pr. cykel pr. døgn.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px;">
+          ${card('Søgninger', sum(searchByDay, 7), 'seneste 7 dage')}
+          ${card('Annonce-visninger', viewsBlocked ? '–' : sum(viewByDay, 7), 'seneste 7 dage')}
+          ${card('I dag', searchByDay[todayKey] ?? 0, 'søgninger indtil nu')}
+        </div>
+        ${viewsBlocked ? `
+          <div style="padding:9px 11px;border-radius:8px;background:rgba(200,80,42,0.07);border:1px solid rgba(200,80,42,0.25);font-size:0.78rem;line-height:1.5;color:var(--charcoal);margin-bottom:12px;">
+            Visninger kan ikke læses endnu — kør <strong>supabase/sql/add_bike_views_admin_select.sql</strong> i SQL Editor. Søgetallene virker uafhængigt af det.
+          </div>` : ''}
+        <div style="display:flex;align-items:flex-end;gap:3px;">${trafficChart}</div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-size:0.74rem;color:var(--muted);">
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--forest);margin-right:5px;"></span>Søgninger</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--rust);margin-right:5px;"></span>Visninger</span>
+        </div>
+      </div>`;
+
     el.innerHTML = `
+      ${trafficBlock}
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;">
         ${card('Brugere i alt', profiles.length, `${newUsers7} nye seneste 7 dage`)}
         ${card('Forhandlere', dealers.length, `${verified} verificerede`)}
