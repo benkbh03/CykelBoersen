@@ -685,6 +685,11 @@ nav {
 .sidebar-box[data-fsec="stand"]          { order: 4; }
 .sidebar-box[data-fsec="stelstoerrelse"] { order: 5; }
 .sidebar-box[data-fsec="farve"]          { order: 6; }
+/* Quizzen er ikke en .sidebar-box og fik derfor order 0 — altså øverst, over
+   samtlige filtre. Filtrene er differentieringen mod DBA og skal stå først;
+   quizzen er et supplement. Order 7 = lige efter de seks prioriterede filtre,
+   før de tekniske (order 10). */
+.bike-quiz-box { order: 7; }
 
 .sidebar-box-header {
   display: flex; justify-content: space-between; align-items: center;
