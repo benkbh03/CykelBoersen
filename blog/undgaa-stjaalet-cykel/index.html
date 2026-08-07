@@ -66,7 +66,7 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260722u">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260723c">
   <link rel="stylesheet" href="/css/02-listings.css?v=20260628d">
   <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
   <link rel="stylesheet" href="/css/04-modals.css?v=20260722y">
@@ -218,7 +218,7 @@
         <span id="hero-listing-count"><span id="stat-total">–</span> aktive annoncer i Danmark</span>
       </div>
       <h1 class="search-hero-title">Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span></h1>
-      <p class="search-hero-sub">Danmarks dedikerede markedsplads for nye og brugte cykler.</p>
+      <p class="search-hero-sub">Kun cykler — fra både forhandlere og private. Find dem, der er tættest på dig.</p>
     </div>
     <div class="search-bar-wrap">
       <div class="search-bar">
@@ -813,7 +813,7 @@
         </div>
       </div>
       <div class="sidebar-save-card">
-        <h4>🔔 Cykelagent</h4>
+        <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Cykelagent</h4>
         <p>Få besked på e-mail når nye cykler matcher din søgning</p>
         <button onclick="saveCurrentSearch()">Opret Cykelagent</button>
       </div>
@@ -1150,7 +1150,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723b';
+    const V = '20260723c';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
