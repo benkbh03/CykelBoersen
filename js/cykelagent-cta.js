@@ -21,6 +21,19 @@ function _markDismissed(parts) {
   } catch {}
 }
 
+/* Flytter CTA-strippen over eller under annonce-gitteret.
+   DOM-flytning frem for to kopier, så der kun findes ét element med id'et og
+   dismiss-logikken ikke skal kende til placeringen. */
+function placeStrip(strip, where) {
+  const grid = document.getElementById('listings-grid');
+  if (!grid || !grid.parentNode) return;
+  const target = where === 'after' ? grid.nextSibling : grid;
+  // Undgå unødig DOM-mutation hvis den allerede står rigtigt.
+  if (where === 'after' && strip.previousElementSibling === grid) return;
+  if (where === 'before' && strip.nextElementSibling === grid) return;
+  grid.parentNode.insertBefore(strip, target);
+}
+
 export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory }) {
   function updateCykelagentCta(resultCount = null) {
     const strip = document.getElementById('cykelagent-cta-strip');
@@ -34,13 +47,16 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
     }
 
     if (!hasActiveFilters()) {
-      // Ingen aktive filtre: vis en permanent, generisk CTA (fører til
-      // /cykelagenter hvor man bygger agenten). Samme responsive strip-komponent,
-      // så den passer både desktop og mobil.
+      // Ingen aktive filtre = brugeren er lige landet og har ikke set en eneste
+      // cykel endnu. Så flyttes strippen NED under annoncerne: vis noget værd at
+      // abonnere på, før du beder om tilmeldingen. Med aktive filtre er den
+      // derimod kontekstuelt relevant ("kun X matcher") og bliver stående
+      // over listen — se placeStrip() nedenfor.
+      placeStrip(strip, 'after');
       strip.style.display = 'flex';
       strip.classList.remove('cykelagent-cta-strip--accent');
       strip.innerHTML = `
-        <span class="cta-strip-text">🔔 Få besked når din næste cykel dukker op — opret en gratis <strong>Cykelagent</strong></span>
+        <span class="cta-strip-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når din næste cykel dukker op — opret en gratis <strong>Cykelagent</strong></span>
         <div class="cta-strip-actions">
           <button class="cta-strip-btn" onclick="navigateTo('/cykelagenter')">Opret Cykelagent →</button>
         </div>
@@ -60,14 +76,15 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
 
     let leadText;
     if (isZero) {
-      leadText = `🔔 Ingen cykler matcher <strong>${label}</strong> lige nu — gem søgningen og få besked når en dukker op`;
+      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Ingen cykler matcher <strong>${label}</strong> lige nu — gem søgningen og få besked når en dukker op`;
     } else if (isFew) {
-      leadText = `🔔 Kun ${resultCount} ${resultCount === 1 ? 'cykel' : 'cykler'} matcher <strong>${label}</strong> — få besked når der kommer flere`;
+      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Kun ${resultCount} ${resultCount === 1 ? 'cykel' : 'cykler'} matcher <strong>${label}</strong> — få besked når der kommer flere`;
     } else {
-      leadText = `🔔 Få besked når der dukker op: <strong>${label}</strong>`;
+      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når der dukker op: <strong>${label}</strong>`;
     }
 
     strip.style.display = 'flex';
+    placeStrip(strip, 'before');
     strip.classList.toggle('cykelagent-cta-strip--accent', isFew || isZero);
     strip.innerHTML = `
       <span class="cta-strip-text">${leadText}</span>
