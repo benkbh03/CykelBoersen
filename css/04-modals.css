@@ -937,6 +937,25 @@ body:has(.inbox-page) #chat-widget { display: none; }
 }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
+/* Klikbare tags → ren søgning på netop den egenskab. De skal se trykbare ud
+   uden at skrige: samme form som de statiske tags, men med pointer, hover og
+   en synlig fokus-ring for tastaturbrug. <button> frem for <a> fordi det ikke
+   er en URL-navigation men en filtrering af den forside vi vender tilbage til. */
+.detail-tag--link {
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, border-color 0.15s;
+}
+.detail-tag--link:hover {
+  background: var(--sand-2);
+  border-color: var(--forest);
+  color: var(--forest);
+}
+.detail-tag--link:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+}
+
 /* Stelnummer-tag: bevidst dæmpet frem for grønt. Det er et tillidssignal, ikke
    en reklame — og resten af siden er netop ryddet for grønne bokse. Ikonet og
    den lidt mørkere ramme gør det tydeligt nok uden at råbe. */

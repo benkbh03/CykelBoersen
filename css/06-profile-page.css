@@ -3904,3 +3904,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: rgba(200,80,42,0.07); border: 1px solid rgba(200,80,42,0.25);
   font-size: 11.5px; line-height: 1.5; color: var(--charcoal);
 }
+
+/* Cykelagent uden filtre: gør det synligt i UI'et frem for at brugeren opdager
+   det via en irrelevant match-mail. Edge function'en sender ikke for sådan en
+   agent (hasEffectiveCriteria), så uden denne besked ville den bare virke død. */
+.cykelagent-card-warn {
+  margin-top: 8px; padding: 8px 10px; border-radius: 8px;
+  background: rgba(200,80,42,0.07); border: 1px solid rgba(200,80,42,0.25);
+  font-size: 12px; line-height: 1.5; color: var(--charcoal);
+}

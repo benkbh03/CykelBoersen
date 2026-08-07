@@ -1871,7 +1871,15 @@ function selectHeroCatChip(el, type) {
 // Skriver til samme felter som brugeren ville sætte manuelt — sidebar-checkboxes
 // for type, sidebar prisinputs for pris, hero-felt for by — så Cykelagenten
 // gemmer samme state som ved manuel filtrering.
-function applyPopularSearch({ type, size, maxPrice, minPrice, city, suspension } = {}) {
+/* Klik på et tag på en annonce → ren søgning på præcis den ene egenskab.
+   clearAllFilters() først, så man ikke arver et filter fra en tidligere søgning
+   og får nul resultater uden at forstå hvorfor. */
+function filterByTag(key, value) {
+  try { clearAllFilters(); } catch (_) {}
+  applyPopularSearch({ [key]: value });
+}
+
+function applyPopularSearch({ type, size, maxPrice, minPrice, city, suspension, condition, color } = {}) {
   navigateTo('/');
   setTimeout(() => {
     // Nulstil eksisterende type-checkboxes i sidebar, så vi starter rent
@@ -1915,6 +1923,28 @@ function applyPopularSearch({ type, size, maxPrice, minPrice, city, suspension }
     if (city) {
       const cityInput = document.getElementById('search-city');
       if (cityInput) cityInput.value = city;
+    }
+
+    if (condition) {
+      document.querySelectorAll('[data-filter="condition"]').forEach(cb => { cb.checked = false; });
+      const condCb = document.querySelector(`[data-filter="condition"][data-value="${condition}"]`);
+      if (condCb) {
+        condCb.checked = true;
+        condCb.closest('.sidebar-box')?.classList.remove('collapsed');
+      }
+    }
+
+    if (color) {
+      // Farve-swatches genereres dynamisk; .is-on styrer den visuelle markering.
+      document.querySelectorAll('[data-filter="color"]').forEach(cb => {
+        cb.checked = false; cb.closest('.color-swatch')?.classList.remove('is-on');
+      });
+      const colCb = document.querySelector(`[data-filter="color"][data-value="${color}"]`);
+      if (colCb) {
+        colCb.checked = true;
+        colCb.closest('.color-swatch')?.classList.add('is-on');
+        colCb.closest('.sidebar-box')?.classList.remove('collapsed');
+      }
     }
 
     if (suspension) {
@@ -2859,6 +2889,7 @@ window.applySavedSearch   = applySavedSearch;
 window.deleteSavedSearch  = deleteSavedSearch;
 window.loadTradeHistory   = loadTradeHistory;
 window.selectHeroCatChip  = selectHeroCatChip;
+window.filterByTag = filterByTag;
 window.applyPopularSearch = applyPopularSearch;
 window.logout                  = logout;
 window.resendConfirmationEmail = resendConfirmationEmail;

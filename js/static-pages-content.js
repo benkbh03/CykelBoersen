@@ -329,7 +329,7 @@ export const footerContent = {
     title: 'Cookiepolitik',
     metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 26. juli 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 28. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
       <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde — små data-poster i din browser, vi bruger til at huske dig.</p>
@@ -358,6 +358,31 @@ export const footerContent = {
           <td style="padding:8px 8px 8px 0;">cb_recently_viewed</td>
           <td style="padding:8px 8px 8px 0;">Husker dine sidst sete annoncer (vises i "Sidst set"-rækken). Gemmer cykel-ID, mærke, model, pris, billede og tidspunkt. Maks 8 annoncer. Forlader aldrig din browser.</td>
           <td style="padding:8px 0;">30 dage</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_compare_ids</td>
+          <td style="padding:8px 8px 8px 0;">Husker hvilke annoncer du har valgt til sammenligning (kun cykel-ID'er). Gemmes i sessionStorage og forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">Slettes når du lukker browseren</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_scam_warning_ack</td>
+          <td style="padding:8px 8px 8px 0;">Husker at du har set og bekræftet vores advarsel om svindel, så den ikke vises igen ved hver besked.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">onboarded</td>
+          <td style="padding:8px 8px 8px 0;">Husker at du har set velkomst-introduktionen, så den kun vises én gang.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">_pendingCykelagent</td>
+          <td style="padding:8px 8px 8px 0;">Hvis du opretter en Cykelagent uden at være logget ind, gemmes søgekriterierne og navnet midlertidigt, så de kan oprettes for dig lige efter login. Slettes når agenten er oprettet.</td>
+          <td style="padding:8px 0;">Indtil login gennemføres</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">bike_name_&lt;annonce-ID&gt;</td>
+          <td style="padding:8px 8px 8px 0;">Husker mærke og model på annoncer du har skrevet om, så din indbakke kan vise navnet med det samme — også hvis annoncen senere fjernes.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">ss_checked_*</td>
