@@ -495,7 +495,12 @@ export function createBikeDetail({
       <div class="listing-meta">
         <span>Annonce-ID: ${b.id}</span>
         <span title="${new Date(b.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}">Oprettet ${formatRelativeAge(b.created_at)}</span>
-        ${b.updated_at && new Date(b.updated_at) - new Date(b.created_at) > 60000 ? `<span title="${new Date(b.updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}">Sidst redigeret ${formatRelativeAge(b.updated_at)}</span>` : ''}
+        ${/* last_edited_at — IKKE updated_at. Sidstnævnte bumpes af
+              visningstælleren, den natlige feed-sync og friskheds-nudgen, så
+              etiketten sagde "Sidst redigeret" hver gang nogen bare kiggede
+              på annoncen. Er feltet NULL (annoncer fra før migrationen, eller
+              aldrig rettet), vises intet — det er mere ærligt end et gæt. */''}
+        ${b.last_edited_at && new Date(b.last_edited_at) - new Date(b.created_at) > 60000 ? `<span title="${new Date(b.last_edited_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}">Sidst redigeret ${formatRelativeAge(b.last_edited_at)}</span>` : ''}
       </div>
       ${!isOwner ? `
       <div class="bike-sticky-bar" id="bike-sticky-bar">
