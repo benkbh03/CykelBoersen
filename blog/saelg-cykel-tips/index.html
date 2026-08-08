@@ -812,11 +812,13 @@
           <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
-      <div class="sidebar-save-card">
-        <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Cykelagent</h4>
-        <p>Få besked på e-mail når nye cykler matcher din søgning</p>
-        <button onclick="saveCurrentSearch()">Opret Cykelagent</button>
-      </div>
+      <!-- Cykelagent-kortet er fjernet herfra: det duplikerede
+           #cykelagent-cta-strip. Uden aktive filtre kaldte knappen
+           saveCurrentSearch(), som kun kunne svare "Ingen aktive filtre
+           at gemme" — altså en knap der kun kunne fejle. MED filtre
+           kaldte de to præcis samme funktion. Strippen håndterer begge
+           tilstande: builder-link uden filtre, gem-søgning med.
+           CSS (.sidebar-save-card) er bevaret, så det er let at fortryde. -->
       <!-- Mobil-only footer (synlig kun på <=768px) -->
       <button class="sidebar-mobile-apply" id="sidebar-mobile-apply-btn" onclick="closeMobileFilters()">Vis cykler</button>
     </aside>
@@ -1153,7 +1155,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723c';
+    const V = '20260723d';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
