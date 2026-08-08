@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, escAttr } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -168,7 +168,7 @@ export function createBikeDetail({
 
     let galleryHtml;
     if (allImages.length === 0) {
-      galleryHtml = `<div class="bike-detail-img"><span style="font-size:4rem">🚲</span></div>`;
+      galleryHtml = `<div class="bike-detail-img"><span style="color:var(--muted);">${iconBike(56)}</span></div>`;
     } else if (allImages.length === 1) {
       galleryHtml = `<div class="bike-detail-img" style="cursor:zoom-in;" onclick="openLightbox(0)"><img src="${allImages[0].url}" alt="${esc(bikeTitle(b.brand, b.model))} – ${esc(b.type)}${b.city ? ' i ' + esc(b.city) : ''}" loading="lazy"></div>`;
     } else {
@@ -201,7 +201,7 @@ export function createBikeDetail({
       html: `
       ${isDemo ? `
       <div class="demo-banner" role="note">
-        <span class="demo-banner-icon">📝</span>
+        <span class="demo-banner-icon">${iconPencil(18)}</span>
         <div class="demo-banner-text">
           <strong>Dette er en eksempel-annonce</strong>
           <span>Den er oprettet til at vise hvordan annoncer ser ud på Cykelbørsen. Cyklen er ikke til salg, og du kan ikke kontakte sælgeren.</span>
@@ -214,7 +214,7 @@ export function createBikeDetail({
           <a class="bike-location-card" id="bike-location-card" href="/" onclick="showBikeOnMap('${b.id}');return false;">
             <div class="bike-location-header">
               <div class="bike-location-title">
-                <span class="bike-location-pin">📍</span>
+                <span class="bike-location-pin">${iconPin(15)}</span>
                 <div>
                   <div class="bike-location-label">Sælgers placering</div>
                   <div class="bike-location-place">${esc(profile.city || '')}</div>
@@ -274,7 +274,7 @@ export function createBikeDetail({
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             <div class="seller-avatar-large">${avatarContent}</div>
             <div style="flex:1">
-              <div class="seller-detail-name">${esc(sellerName || 'Ukendt')}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}</div>
+              <div class="seller-detail-name">${esc(sellerName || 'Ukendt')}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">${iconMail(12)}</span>' : ''}</div>
               <div class="seller-detail-city">${esc(profile.city || '')}</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;">
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
@@ -288,16 +288,16 @@ export function createBikeDetail({
           </div>
           ${adminCanEdit ? `
           <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
-            <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">🛠️ Admin · forhandler-annonce</div>
+            <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">${iconWrench(14)} Admin · forhandler-annonce</div>
             <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt — annoncen låses, så natlig sync herefter kun opdaterer pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
-            <button class="btn-save-listing" onclick="openEditModal('${b.id}')">✏️ Redigér som admin</button>
+            <button class="btn-save-listing" onclick="openEditModal('${b.id}')">${iconPencil(14)} Redigér som admin</button>
           </div>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">
               Cyklen er ikke til salg — det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
             </div>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">${iconShare(14)} Del annonce</button>
           </div>
           ` : (!isOwner && isSold) ? `
           <div class="action-buttons">
@@ -305,16 +305,16 @@ export function createBikeDetail({
               <span class="sold-detail-badge">SOLGT</span>
               Denne cykel er solgt og er ikke længere til salg.
             </div>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">${iconShare(14)} Del annonce</button>
           </div>
           ` : !isOwner ? `
           <div class="action-buttons">
             ${b.external_url ? `
             <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-external-cta">
-              🛒 Se hos ${esc(profile.shop_name || profile.name || 'forhandler')}
+              ${iconCart(16)} Se hos ${esc(profile.shop_name || profile.name || 'forhandler')}
               <span class="btn-external-cta-sub">Bestil direkte hos forhandleren</span>
             </a>` : `
-            <button class="btn-bid" onclick="toggleBidBox()">💰 Giv et bud</button>
+            <button class="btn-bid" onclick="toggleBidBox()">${iconTag(16)} Giv et bud</button>
             <div class="bid-box" id="bid-box">
               <div class="bid-box-inner">
                 <input type="text" inputmode="numeric" pattern="[0-9]*" id="bid-amount" placeholder="Dit bud i kr." oninput="updateMeetMiddle(${b.price})">
@@ -325,7 +325,7 @@ export function createBikeDetail({
                 <button class="meet-middle-btn" onclick="useMeetMiddle('${b.id}', '${profile.id}')">Send dette bud</button>
               </div>
             </div>`}
-            <button class="btn-contact" onclick="toggleMessageBox()">✉️ Kontakt sælger</button>
+            <button class="btn-contact" onclick="toggleMessageBox()">${iconMail(16)} Kontakt sælger</button>
             <div class="message-box" id="message-box">
               <div class="msg-presets">
                 <button class="msg-preset-chip" onclick="insertPresetMsg('Er den stadig til salg?')">Er den stadig til salg?</button>
@@ -501,10 +501,10 @@ export function createBikeDetail({
       <div class="bike-sticky-bar" id="bike-sticky-bar">
         <div class="bike-sticky-price">${b.price.toLocaleString('da-DK')} kr.</div>
         <div class="bike-sticky-actions">
-          <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">✉️ Kontakt</button>
+          <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">${iconMail(15)} Kontakt</button>
           ${b.external_url
-            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Se hos forhandler">🛒 Webshop</a>`
-            : `<button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">💰 Giv bud</button>`}
+            ? `<a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="bike-sticky-bid" aria-label="Se hos forhandler">${iconCart(15)} Webshop</a>`
+            : `<button class="bike-sticky-bid" onclick="stickyBarAction('bid')" aria-label="Giv bud">${iconTag(15)} Giv bud</button>`}
         </div>
       </div>` : ''}
     `,
@@ -673,7 +673,7 @@ export function createBikeDetail({
     });
     L.marker(userGeoCoords, { icon: userIcon })
       .addTo(_bikeDetailMap)
-      .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.85rem;font-weight:600;">📍 Din placering</div>');
+      .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.85rem;font-weight:600;">${iconPin(14)} Din placering</div>');
 
     // Linje mellem bruger og sælger
     L.polyline([userGeoCoords, sellerCoords], {
@@ -714,7 +714,7 @@ export function createBikeDetail({
       },
       () => {
         showToast('⚠️ Kunne ikke hente din lokation');
-        if (btn) { btn.disabled = false; btn.textContent = '📍 Vis min afstand'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = `${iconPin(14)} Vis min afstand`; }
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
     );
@@ -1113,7 +1113,7 @@ export function createBikeDetail({
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
-              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">🚲</span>'}
+              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">${iconBike(28)}</span>'}
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
@@ -1162,7 +1162,7 @@ export function createBikeDetail({
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
-              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">🚲</span>'}
+              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">${iconBike(28)}</span>'}
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
