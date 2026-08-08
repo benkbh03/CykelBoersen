@@ -140,6 +140,9 @@ export const iconPrivate = (s) => _svgIcon('<circle cx="12" cy="7" r="4"/><path 
 export const iconShield  = (s) => _svgIcon('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', s);
 // Cykel — bruges på kort-markører hvor den parres med iconDealer (privat annonce
 // vs. forhandler). To hjul, stel og styr; holdt enkel så den er læsbar ved 16-18 px.
+export const iconHeart   = (s) => _svgIcon('<path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/>', s);
+export const iconBell    = (s) => _svgIcon('<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>', s);
+export const iconShare   = (s) => _svgIcon('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/>', s);
 export const iconBike    = (s) => _svgIcon('<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/>', s);
 
 // Escape en værdi til brug som JS-streng inde i et inline on*-attribut (dobbelt-quoted),

@@ -199,7 +199,18 @@ const {
 // separation: alle liste-queries scopes på den (default cykel).
 let _browseCategory = 'cykel';
 const BIKE_TYPES = ['Racercykel','Mountainbike','El-cykel','Citybike','Gravel','Ladcykel','Børnecykel','Senior cykel'];
+/* Kortere etiketter til hero-chippene. VÆRDIEN der filtreres på er fortsat
+   den kanoniske type — kun visningsteksten forkortes, så chip-rækken ikke
+   bliver for bred. index.html bruger de samme korte former; uden dette map
+   skiftede chippene til "Racercykel"/"Senior cykel" så snart JS byggede dem
+   om ved et kategoriskift. */
+const TYPE_CHIP_LABEL = { 'Racercykel': 'Racer', 'Senior cykel': 'Senior' };
+const chipLabel = (t) => TYPE_CHIP_LABEL[t] || t;
 
+
+/* Oprindelig cykel-hero fra index.html, fanget ved første kategoriskift.
+   Én kilde til teksten, så den ikke kan drifte fra markuppen igen. */
+const _heroCykel = { title: null, sub: null };
 function setBrowseCategory(cat) {
   cat = (cat === 'tilbehoer') ? 'tilbehoer' : 'cykel';
   _browseCategory = cat;
@@ -218,7 +229,7 @@ function setBrowseCategory(cat) {
   if (sel) sel.innerHTML = '<option value="">Alle typer</option>' + types.map(t => `<option>${esc(t)}</option>`).join('');
   const chips = document.querySelector('.hero-cat-chips');
   if (chips) chips.innerHTML = '<button class="hero-cat-chip active" onclick="selectHeroCatChip(this,\'\')" aria-pressed="true">Alle</button>' +
-    types.map(t => `<button class="hero-cat-chip" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(t)}</button>`).join('');
+    types.map(t => `<button class="hero-cat-chip" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(chipLabel(t))}</button>`).join('');
   const stg = document.getElementById('sidebar-type-group');
   if (stg) stg.innerHTML = types.map(t => `<label class="filter-option"><input type="checkbox" data-filter="type" data-value="${esc(t)}" onchange="applyFilters()"> ${esc(t)} <span class="filter-count">–</span></label>`).join('');
   const sth = document.getElementById('sidebar-type-heading');
@@ -242,15 +253,21 @@ function setBrowseCategory(cat) {
       : 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler, cykeltilbehør og meget mere. Gratis at oprette annonce.',
     isAcc ? '/tilbehoer' : '/'
   );
-  // Hero-tekst tilpasses kategori, så landingssiden er sammenhængende.
+  /* Hero-tekst tilpasses kategori. Cykel-varianten kopieres IKKE her: den
+     læses fra index.html første gang og gemmes, så der kun findes ÉN kilde.
+     Tidligere stod teksten hardkodet begge steder, og da index.html blev
+     opdateret, kom den gamle version tilbage så snart man havde været forbi
+     tilbehør og retur. */
   const _hTitle = document.querySelector('.search-hero-title');
   const _hSub = document.querySelector('.search-hero-sub');
+  if (_hTitle && _heroCykel.title === null) _heroCykel.title = _hTitle.innerHTML;
+  if (_hSub && _heroCykel.sub === null) _heroCykel.sub = _hSub.textContent;
   if (_hTitle) _hTitle.innerHTML = isAcc
     ? 'Find alt til din cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
-    : 'Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>';
+    : _heroCykel.title;
   if (_hSub) _hSub.textContent = isAcc
     ? 'Hjelme, lygter, dæk, gear og reservedele — køb og sælg, nyt og brugt.'
-    : 'Danmarks dedikerede markedsplads for nye og brugte cykler.';
+    : _heroCykel.sub;
 
   // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)
   loadBikes({ category: cat });

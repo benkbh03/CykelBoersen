@@ -36,10 +36,18 @@ export function createRentalOnboarding({
 
     const user = getCurrentUser();
     if (!user) {
+      /* Udlejning kræver en forhandlerkonto. Tidligere stod her kun "Log ind",
+         hvorefter den generiske login-boks åbnede — så en privatperson kunne
+         nå at oprette en konto og FØRST derefter få at vide, at siden ikke er
+         for dem. Begge veje skal være tydelige her, før nogen registrerer sig. */
       dv.innerHTML = shell(`
         <h1 class="rental-onb-title">Udlej dine cykler gennem CykelBørsen</h1>
-        <p class="rental-onb-lead">Log ind som forhandler for at komme i gang med udlejning.</p>
-        <button class="rental-onb-btn" onclick="openLoginModal()">Log ind</button>
+        <p class="rental-onb-lead">Udlejning er kun for registrerede forhandlere — det er gratis at blive forhandler.</p>
+        <button class="rental-onb-btn" onclick="openLoginModal()">Log ind som forhandler</button>
+        <p class="rental-onb-fineprint" style="margin-top:14px;">
+          Er du ikke forhandler endnu?
+          <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler gratis →</a>
+        </p>
       `);
       return;
     }
