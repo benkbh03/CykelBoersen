@@ -22,7 +22,15 @@ export function createFilters({
   function hasActiveFilters() {
     const cf = getCurrentFilters();
     const args = getCurrentFilterArgs();
+    /* 'category' tæller IKKE som et aktivt filter. Den er en akse der ALTID er
+       sat (cykel/tilbehør) — ikke noget brugeren har valgt at filtrere på.
+       Uden undtagelsen returnerede hasActiveFilters() true straks efter et
+       kategoriskift, hvorefter CTA-banneret sprang op over listen og påstod
+       "dine aktive filtre" selvom ingen var valgt. Samme sondring som
+       hasEffectiveCriteria() i notify-saved-searches. */
+    const AXIS_KEYS = new Set(['category']);
     const filtersSet = cf && Object.keys(cf).some(k => {
+      if (AXIS_KEYS.has(k)) return false;
       const v = cf[k];
       return v !== null && v !== undefined && v !== '' && v !== false;
     });
