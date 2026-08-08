@@ -790,24 +790,14 @@ body:has(.inbox-page) #chat-widget { display: none; }
      hvor prisen var usynlig. Sticky virkede; offsettet var forkert. */
   top: calc(var(--nav-h) + 20px);
   min-width: 0;
-  /* Er et sticky element højere end viewporten, kan man ikke scrolle ned til
-     dets nederste del — den bliver uopnåelig. Forhandler-annoncer med
-     fordele-listen kan overstige en lav laptop-skærm, så kolonnen scroller
-     internt i stedet for at gemme "Anmeld annonce". */
-  max-height: calc(100vh - var(--nav-h) - 40px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-}
-/* Når kolonnen er højere end skærmen og scroller internt, må prisen ikke
-   glide ud af den. Den klæber til kolonnens egen top. Baggrunden er
-   nødvendig, ellers scroller indholdet synligt bag den. */
-.bike-detail-grid--sticky .bd-col-info .bike-detail-price {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: var(--cream);
-  padding-bottom: 6px;
+  /* BEVIDST INGEN max-height/overflow-y her.
+     Det gav kolonnen sin EGEN scrollbar ved siden af sidens — to scrollbars
+     lige ved siden af hinanden, hvilket er forvirrende at se på og at bruge.
+     Beskyttelsen den gav (at en meget høj kolonnes underkant ikke bliver
+     uopnåelig, når den er pinnet) er ikke længere nødvendig: kolonnen er
+     slanket (anti-svindel-tip og forhandler-fordele er fjernet), og de
+     primære handlinger — pris, Kontakt, Giv bud — findes under alle
+     omstændigheder i .bike-sticky-bar-pillen i bunden. */
 }
 
 /* Mobil: én kolonne, og rækkefølgen skal være PRÆCIS som før ændringen —
@@ -819,8 +809,6 @@ body:has(.inbox-page) #chat-widget { display: none; }
   .bike-detail-grid--sticky .bd-col-info  {
     grid-column: 1; grid-row: 2;
     position: static;
-    max-height: none;
-    overflow: visible;
   }
   .bike-detail-grid--sticky .bd-col-body  { grid-column: 1; grid-row: 3; }
 }
