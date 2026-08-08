@@ -1892,7 +1892,10 @@ function selectHeroCatChip(el, type) {
    clearAllFilters() først, så man ikke arver et filter fra en tidligere søgning
    og får nul resultater uden at forstå hvorfor. */
 function filterByTag(key, value) {
-  try { clearAllFilters(); } catch (_) {}
+  // reload:false — ellers afsendes to forespørgsler samtidig (den ufiltrerede
+  // her og den filtrerede fra applyPopularSearch), og den sidste der svarer
+  // vinder. Nulstil kun UI'et; applyPopularSearch laver den ene forespørgsel.
+  try { clearAllFilters({ reload: false }); } catch (_) {}
   applyPopularSearch({ [key]: value });
 }
 
