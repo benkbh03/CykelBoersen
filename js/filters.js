@@ -106,7 +106,14 @@ export function createFilters({
     return parts;
   }
 
-  function clearAllFilters() {
+  /* opts.reload = false nulstiller KUN brugerfladen og state — uden at hente
+     data. Bruges når kalderen selv sætter nye filtre bagefter og laver sin
+     egen forespørgsel. Uden det blev der afsendt TO forespørgsler samtidig
+     (én ufiltreret her, én filtreret fra kalderen), og den der svarede sidst
+     vandt — typisk den ufiltrerede, så filter-pillen viste et filter mens
+     alle annoncer blev vist. */
+  function clearAllFilters(opts = {}) {
+    const reload = opts.reload !== false;
     const s = document.getElementById('search-input'); if (s) s.value = '';
     const t = document.getElementById('search-type');  if (t) t.value = '';
     const c = document.getElementById('search-city');  if (c) c.value = '';
@@ -127,8 +134,10 @@ export function createFilters({
 
     setCurrentFilters({});
     setCurrentFilterArgs(null);
-    loadBikes();
-    showToast('Filtre nulstillet');
+    if (reload) {
+      loadBikes();
+      showToast('Filtre nulstillet');
+    }
   }
 
   function updateActiveFiltersBar() {

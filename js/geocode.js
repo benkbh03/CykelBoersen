@@ -153,8 +153,11 @@ export const KNOWN_CITY_CENTERS = {
 
 var _geocodeCache = (function() {
   try {
-    // v8: tilføjer hardcoded by-centre som primær kilde — rydder stale entries
-    var stored = localStorage.getItem('_geocodeCache_v8');
+    /* v9: navne-lighedskrav i _pickBestSted. Bump'et er nødvendigt, ikke
+       kosmetisk — koordinater fundet med den gamle, navneløse faldback ligger
+       cachet hos alle der har set kortet, og ville blive ved med at vise fx
+       en Charlottenlund-annonce i Jylland trods rettelsen. */
+    var stored = localStorage.getItem('_geocodeCache_v9');
     if (stored) return JSON.parse(stored);
     try {
       localStorage.removeItem('_geocodeCache');
@@ -164,13 +167,14 @@ var _geocodeCache = (function() {
       localStorage.removeItem('_geocodeCache_v5');
       localStorage.removeItem('_geocodeCache_v6');
       localStorage.removeItem('_geocodeCache_v7');
+      localStorage.removeItem('_geocodeCache_v8');
     } catch (e) {}
     return {};
   } catch (e) { return {}; }
 })();
 
 function _saveGeocodeCache() {
-  try { localStorage.setItem('_geocodeCache_v8', JSON.stringify(_geocodeCache)); } catch (e) {}
+  try { localStorage.setItem('_geocodeCache_v9', JSON.stringify(_geocodeCache)); } catch (e) {}
 }
 
 export function invalidateGeocodeEntry(key) {
@@ -275,6 +279,36 @@ export function geocodeCity(city) {
    3. Eksakt navn + anden Bebyggelse-undertype
    4. Højeste indbyggerantal blandt resterende kandidater
    Hver gruppe sorteres efter indbyggerantal faldende. */
+/* Er kandidatens navn tæt nok på det brugeren skrev?
+   DAWA's ?q= er en FUZZY søgning, så et fejlstavet bynavn returnerer bare det
+   nærmeste gæt. Uden dette tjek accepterede de sidste to faldbacks hvad som
+   helst — sorteret efter indbyggertal — og en annonce i "Charlottelund" (uden
+   n) kunne havne i Jylland. Ingen placering er bedre end en forkert.
+   Accepteres: eksakt match, præfiks i begge retninger ("Frederiksberg C" mod
+   "Frederiksberg"), eller redigeringsafstand ≤2, som fanger de almindelige
+   slåfejl uden at åbne for vilkårlige byer. */
+function _nameCloseEnough(candidate, query) {
+  if (!candidate || !query) return false;
+  if (candidate === query) return true;
+  if (candidate.indexOf(query) === 0 || query.indexOf(candidate) === 0) return true;
+  if (Math.abs(candidate.length - query.length) > 2) return false;
+  // Levenshtein med tidligt stop ved >2
+  var prev = [], cur = [], i, j;
+  for (j = 0; j <= query.length; j++) prev[j] = j;
+  for (i = 1; i <= candidate.length; i++) {
+    cur[0] = i;
+    var rowMin = i;
+    for (j = 1; j <= query.length; j++) {
+      var cost = candidate.charAt(i - 1) === query.charAt(j - 1) ? 0 : 1;
+      cur[j] = Math.min(cur[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+      if (cur[j] < rowMin) rowMin = cur[j];
+    }
+    if (rowMin > 2) return false;
+    prev = cur.slice();
+  }
+  return prev[query.length] <= 2;
+}
+
 function _pickBestSted(candidates, nameLower) {
   function name(p) { return (p.primærtnavn || p.navn || '').toLowerCase(); }
   function byPop(a, b) { return (b.indbyggerantal || 0) - (a.indbyggerantal || 0); }
@@ -282,9 +316,15 @@ function _pickBestSted(candidates, nameLower) {
   var exactBy     = candidates.filter(function(p) { return name(p) === nameLower && p.undertype === 'By'; }).sort(byPop);
   var exactBydel  = candidates.filter(function(p) { return name(p) === nameLower && p.undertype === 'Bydel'; }).sort(byPop);
   var exactOther  = candidates.filter(function(p) { return name(p) === nameLower && p.undertype !== 'By' && p.undertype !== 'Bydel'; }).sort(byPop);
-  var anyByOrBydel= candidates.filter(function(p) { return p.undertype === 'By' || p.undertype === 'Bydel'; }).sort(byPop);
-  var all         = candidates.slice().sort(byPop);
+  // De to sidste faldbacks kræver nu navne-lighed. Uden det placerede en
+  // slåfejl annoncen i en tilfældig, større by.
+  var closeByOrBydel = candidates.filter(function(p) {
+    return (p.undertype === 'By' || p.undertype === 'Bydel') && _nameCloseEnough(name(p), nameLower);
+  }).sort(byPop);
+  var closeAny = candidates.filter(function(p) {
+    return _nameCloseEnough(name(p), nameLower);
+  }).sort(byPop);
 
-  var best = exactBy[0] || exactBydel[0] || exactOther[0] || anyByOrBydel[0] || all[0];
+  var best = exactBy[0] || exactBydel[0] || exactOther[0] || closeByOrBydel[0] || closeAny[0];
   return best ? [best.visueltcenter[1], best.visueltcenter[0]] : null;
 }
