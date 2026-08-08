@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, escAttr } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, escAttr } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -338,10 +338,17 @@ export function createBikeDetail({
             ${/* Anti-svindel-teksten er fjernet herfra: den fyldte på hver eneste
                   annonce, og budskabet leveres allerede i maybeShowScamWarning()
                   (js/scam-warning.js) præcis når brugeren kontakter en sælger. */''}
-            <button class="btn-save-listing" onclick="toggleSaveFromModal(this, '${b.id}')">🤍 Gem annonce</button>
-            <button class="btn-save-listing" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})">🔔 Få besked ved prisfald</button>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🔗 Del annonce</button>
-            <button class="btn-report-listing" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">🚩 Rapporter annonce</button>
+            ${/* Gem, prisfald og del er HJÆLPEfunktioner, ikke beslutninger. De havde
+                  samme fuldbredde og vægt som selve købs-knappen, så seks knapper
+                  konkurrerede om opmærksomheden. Nu deler de én kompakt række, og
+                  "rapporter" er et tekstlink — det er en kant-handling, ikke noget
+                  man forventes at overveje. */''}
+            <div class="bike-util-row">
+              <button class="btn-util" data-saved="0" onclick="toggleSaveFromModal(this, '${b.id}')" title="Gem annonce">${iconHeart(15)}<span class="btn-icon-label">Gem</span></button>
+              <button class="btn-util" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})" title="Få besked ved prisfald">${iconBell(15)}<span class="btn-icon-label">Prisfald</span></button>
+              <button class="btn-util" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')" title="Del annonce">${iconShare(15)}<span class="btn-icon-label">Del</span></button>
+            </div>
+            <button class="btn-report-link" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">Rapporter annonce</button>
             ${/* "Køb hos forhandler"-fordelene er fjernet fra annoncen — de stod
                   på hver eneste forhandlerannonce og gentog information der
                   hører hjemme på forhandlerens egen profil. CSS'en (.dealer-perks
@@ -1531,15 +1538,20 @@ export function createBikeDetail({
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
     if (!currentUser) { showToast('⚠️ Log ind for at gemme'); return; }
-    const isSaved = btn.textContent.includes('❤️');
+    /* Tilstanden ligger i et data-attribut — IKKE i knappens tekst. Tidligere
+       blev der læst på om teksten indeholdt et hjerte-emoji, hvilket gjorde det
+       umuligt at give knappen et SVG-ikon uden at ødelægge logikken. */
+    const isSaved = btn.dataset.saved === '1';
     if (isSaved) {
       await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
-      btn.textContent = '🤍 Gem annonce';
+      btn.dataset.saved = '0';
+      btn.innerHTML = `${iconHeart(15)}<span class="btn-icon-label">Gem</span>`;
     } else {
       const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
       if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
       await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
-      btn.textContent = '❤️ Gemt';
+      btn.dataset.saved = '1';
+      btn.innerHTML = `${iconHeart(15)}<span class="btn-icon-label">Gemt</span>`;
 
       // Send email notification to bike owner (fire-and-forget)
       if (bike) {
@@ -1580,7 +1592,7 @@ export function createBikeDetail({
           .eq('bike_id', bikeId);
         if (error) { showToast('❌ Kunne ikke fjerne prisalarm'); return; }
         btn.dataset.watching = '0';
-        btn.textContent = '🔔 Få besked ved prisfald';
+        btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Prisfald</span>`;
         showToast('🔕 Prisalarm fjernet');
       } else {
         // Tjek at brugeren ikke watcher sin egen annonce
@@ -1597,14 +1609,14 @@ export function createBikeDetail({
           if (error.code === '23505') {
             // Allerede watcher (race condition) — sæt knap til watching-state
             btn.dataset.watching = '1';
-            btn.textContent = '🔔 Prisalarm aktiv';
+            btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Alarm til</span>`;
           } else {
             showToast('❌ Kunne ikke oprette prisalarm');
           }
           return;
         }
         btn.dataset.watching = '1';
-        btn.textContent = '🔔 Prisalarm aktiv';
+        btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Alarm til</span>`;
         showToast(`🔔 Du får besked hvis prisen falder under ${currentPrice.toLocaleString('da-DK')} kr.`);
       }
     } finally {
@@ -1632,7 +1644,7 @@ export function createBikeDetail({
         .maybeSingle();
       if (data) {
         btn.dataset.watching = '1';
-        btn.textContent = '🔔 Prisalarm aktiv';
+        btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Alarm til</span>`;
       } else {
         btn.dataset.watching = '0';
       }
