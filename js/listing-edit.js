@@ -364,6 +364,7 @@ export function createListingEdit({
         showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
       }
       const accUpdates = {
+        last_edited_at: new Date().toISOString(),   // se note i cykel-grenen
         category:    'tilbehoer',
         brand:       brand || '',
         model:       title,
@@ -385,6 +386,10 @@ export function createListingEdit({
     const weightKg      = weightRaw ? parseFloat(weightRaw) : null;
 
     const updates = {
+      // Markér at SÆLGER har rettet indholdet. updated_at kan ikke bruges til
+      // det: den bumpes også af visningstælleren, den natlige feed-sync og
+      // friskheds-nudgens "Aktuel"-knap.
+      last_edited_at: new Date().toISOString(),
       brand:       document.getElementById('edit-brand').value,
       model:       document.getElementById('edit-model').value,
       title:       bikeTitle(document.getElementById('edit-brand').value, document.getElementById('edit-model').value),
