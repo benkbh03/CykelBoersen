@@ -274,7 +274,7 @@ export function createBikeDetail({
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             <div class="seller-avatar-large">${avatarContent}</div>
             <div style="flex:1">
-              <div class="seller-detail-name">${esc(sellerName || 'Ukendt')}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ' <span class="email-badge" title="E-mail verificeret">${iconMail(12)}</span>' : ''}</div>
+              <div class="seller-detail-name">${esc(sellerName || 'Ukendt')}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ` <span class="email-badge" title="E-mail verificeret">${iconMail(12)}</span>` : ''}</div>
               <div class="seller-detail-city">${esc(profile.city || '')}</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;">
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
@@ -673,7 +673,7 @@ export function createBikeDetail({
     });
     L.marker(userGeoCoords, { icon: userIcon })
       .addTo(_bikeDetailMap)
-      .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.85rem;font-weight:600;">${iconPin(14)} Din placering</div>');
+      .bindPopup(`<div style="font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;">${iconPin(14)} Din placering</div>`);
 
     // Linje mellem bruger og sælger
     L.polyline([userGeoCoords, sellerCoords], {
@@ -1113,7 +1113,7 @@ export function createBikeDetail({
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
-              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">${iconBike(28)}</span>'}
+              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : `<span style="color:var(--muted);">${iconBike(28)}</span>`}
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
@@ -1162,7 +1162,7 @@ export function createBikeDetail({
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
             <div class="related-card-img">
-              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : '<span style="font-size:2rem">${iconBike(28)}</span>'}
+              ${rawImg ? `<img src="${img}" alt="${esc(bike.brand)} ${esc(bike.model)}" loading="lazy" decoding="async">` : `<span style="color:var(--muted);">${iconBike(28)}</span>`}
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
