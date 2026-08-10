@@ -6,6 +6,7 @@
 import { BIKE_COLORS } from './config.js';
 import { bikeTitle, iconShield } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
+import { parseImportedListing } from './import-parse.js';
 
 /**
  * @param {object} deps
@@ -77,6 +78,11 @@ export function createSellPage({
   // id → værdien AI'en skrev. Bruges af "Analysér igen" til at rydde egne
   // forslag uden at røre felter brugeren selv har rettet.
   let _aiFilledValues = {};
+  // Link-import (DBA m.fl.): sat når felter er udfyldt fra den hentede
+  // annonce-TEKST. Bevidst adskilt fra _aiApplied — der har IKKE kørt en
+  // AI-analyse, og trin 1 skal ikke påstå det.
+  let _importApplied = false;
+  let _importHost = null;
   let _sellFormCache = {};
   // Guard mod dobbelt-submit: sættes til true mens submitSellPage() kører,
   // så hurtige klik (hvor knappen ikke når at blive deaktiveret) ikke kan
@@ -644,6 +650,8 @@ export function createSellPage({
     _aiState = 'idle';
     _aiFilledValues = {};
     _aiSuggestionPending = null;
+    _importApplied = false;
+    _importHost = null;
     _sellFormCache = {};
 
     // Banner når admin opretter på vegne af forhandler (acting-as-mode)
@@ -761,7 +769,7 @@ export function createSellPage({
       </div>
       <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
 
-      ${_isAcc() ? '' : `
+      ${_isAcc() || _importApplied ? '' : `
       <p class="sell-ai-notice">Billederne analyseres automatisk af AI, så vi kan udfylde felterne for dig. Tjek altid, at oplysningerne passer.</p>`}
 
       ${_isAcc() ? '' : `
@@ -801,7 +809,10 @@ export function createSellPage({
     let _actingAs = null;
     try { _actingAs = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
     const isDealer = currentProfile?.seller_type === 'dealer' || !!_actingAs;
-    const ai = _aiApplied;
+    // Fremhæv forudfyldte felter uanset om værdierne kom fra AI-billedanalyse
+    // eller fra en hentet annonce-tekst — for brugeren er signalet det samme:
+    // "det her har vi udfyldt, tjek det".
+    const ai = _aiApplied || _importApplied;
     const c = _sellFormCache;
     const aiClass = ai ? ' ai-field' : '';
 
@@ -1764,12 +1775,15 @@ export function createSellPage({
   function updateAiSuggestVisibility() {
     const wrap = document.getElementById('ai-suggest-wrap');
     if (!wrap) return;
-    wrap.style.display = (!_isAcc() && getSelectedFiles().length > 0) ? 'block' : 'none';
+    // Import-kvitteringen skal også vises når linket ikke gav et billede
+    // (nogle sider blokerer billed-hentning, men leverer teksten fint).
+    const show = !_isAcc() && (getSelectedFiles().length > 0 || _aiState === 'imported');
+    wrap.style.display = show ? 'block' : 'none';
   }
 
   /* ------ AI-status-kort på trin 1 ---------------------------- */
 
-  // 'analyzing' | 'done' | 'failed' | 'idle'
+  // 'analyzing' | 'done' | 'failed' | 'imported' | 'idle'
   let _aiState = 'idle';
 
   function currentAiState() {
@@ -1801,6 +1815,21 @@ export function createSellPage({
             <span>Gennemse og ret i de næste trin.</span>
           </div>
           <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Analysér igen</button>
+        </div>`;
+    }
+    /* Link-import. Teksten fra den hentede annonce er allerede sælgerens
+       egne ord, så vi hverken kører eller foreslår AI-analyse af sig selv.
+       Knappen er der hvis sælgeren SELV vil have billedet læst igennem —
+       et bevidst valg, ikke noget der sker automatisk. */
+    if (state === 'imported') {
+      return `
+        <div class="sell-ai-auto is-done" role="status" aria-live="polite">
+          <span class="sell-ai-auto-check" aria-hidden="true">✓</span>
+          <div class="sell-ai-auto-text">
+            <b>Hentet fra ${esc(_importHost || 'din annonce')}.</b>
+            <span>Vi har brugt oplysningerne fra annoncens egen tekst. Gennemse og ret i de næste trin.</span>
+          </div>
+          <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Udfyld resten med AI</button>
         </div>`;
     }
     if (state === 'failed') {
@@ -2035,6 +2064,17 @@ export function createSellPage({
         return;
       }
 
+      /* AI-billedanalysen må IKKE fyre her. Annoncen vi lige har hentet er
+         sælgerens egen tekst, og den er en bedre kilde end et gæt ud fra ét
+         billede — samtidig koster hvert Claude-kald penge. _aiAutoFired
+         sættes derfor FØR previewSellImages(), som ellers ville kalde
+         maybeAutoSuggest() når billedet lægges i griddet. Sælgeren kan stadig
+         starte analysen selv via knappen på import-kvitteringen. */
+      _aiAutoFired = true;
+      _importApplied = true;
+      _importHost = data.source_host || null;
+      _aiState = 'imported';
+
       // Billede → upload-pipeline (kun hvis der er plads).
       let addedImage = false;
       if (data.image_base64 && data.image_media_type) {
@@ -2053,8 +2093,38 @@ export function createSellPage({
         const existing = String(_sellFormCache[id] ?? '').trim();
         if (!existing) _sellFormCache[id] = String(val);
       };
-      // Titlen bruges som udgangspunkt for model-feltet; brugeren finpudser.
-      if (data.title) put('sell-model', data.title.slice(0, 80));
+
+      /* Strukturerede felter læses ud af den hentede TEKST — ren regel-baseret
+         parsing, ingen AI. Kun det der står entydigt i annoncen bliver sat;
+         resten forbliver tomt, så sælgeren selv udfylder frem for at skulle
+         opdage et forkert gæt. */
+      const parsed = parseImportedListing({ title: data.title, description: data.description });
+
+      if (parsed.brand)          put('sell-brand', parsed.brand);
+      // Model: parseren har renset mærke/årstal/pris ud af titlen. Kunne den
+      // ikke finde noget, falder vi tilbage til den rå titel som før.
+      const model = parsed.model || (data.title ? data.title.slice(0, 80) : null);
+      if (model)                 put('sell-model', model);
+      if (parsed.type)           put('sell-type', parsed.type);
+      if (parsed.condition)      put('sell-condition', parsed.condition);
+      if (parsed.size)           put('sell-size', parsed.size);
+      if (parsed.size_cm != null)    put('sell-size-cm', parsed.size_cm);
+      if (parsed.wheel_size)     put('sell-wheel-size', parsed.wheel_size);
+      if (parsed.year != null)   put('sell-year', parsed.year);
+      if (parsed.groupset)       put('sell-groupset', parsed.groupset);
+      if (parsed.brake_type)     put('sell-brake-type', parsed.brake_type);
+      if (parsed.weight_kg != null)  put('sell-weight-kg', parsed.weight_kg);
+      if (parsed.geartype)       put('sell-geartype', parsed.geartype);
+      if (parsed.step_type)      put('sell-step-type', parsed.step_type);
+      if (parsed.suspension)     put('sell-suspension', parsed.suspension);
+      if (parsed.motor)          put('sell-motor', parsed.motor);
+      if (parsed.motor_position) put('sell-motor-position', parsed.motor_position);
+      if (parsed.battery_wh != null) put('sell-battery-wh', parsed.battery_wh);
+      if (Array.isArray(parsed.colors) && parsed.colors.length
+          && !(Array.isArray(_sellFormCache['sell-colors']) && _sellFormCache['sell-colors'].length)) {
+        _sellFormCache['sell-colors'] = parsed.colors;
+      }
+
       if (data.description) put('sell-desc', data.description);
       if (data.price != null) put('sell-price', data.price);
 
@@ -2066,6 +2136,18 @@ export function createSellPage({
         renderSellImagePreviews();
         updateAiSuggestVisibility();
       }
+
+      /* DOM-bivirkninger (fold "Tekniske detaljer" ud, tegn farve-swatches)
+         kræver at trin 2 er renderet. Det er det ikke her — importen sker på
+         trin 1 — så forslaget parkeres og køres af setSellStep(2). Uden det
+         ville fx et fundet groupset ligge i en sammenfoldet sektion. */
+      if (document.getElementById('sell-type')) applyAiDomEffects(parsed);
+      else _aiSuggestionPending = parsed;
+
+      // Persistér importen, så et sideskift ikke smider felterne væk.
+      saveSellDraft();
+      updateSellFooter();
+      updateSellDesktopPreview();
 
       const parts = [];
       if (addedImage) parts.push('billede');
@@ -2182,7 +2264,10 @@ export function createSellPage({
 
     const aiFilledAdvanced = Boolean(
       s.groupset || s.frame_material || s.brake_type ||
-      s.electronic_shifting != null || s.weight_kg != null || s.suspension
+      s.electronic_shifting != null || s.weight_kg != null || s.suspension ||
+      // Motor/batteri bor også i den sammenfoldede sektion — udfyldes de af
+      // en link-import, skal sælgeren kunne se dem uden at lede.
+      s.motor || s.motor_position || s.battery_wh != null
     );
     if (aiFilledAdvanced) {
       const sec = document.getElementById('sell-advanced-section');
