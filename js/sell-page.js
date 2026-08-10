@@ -522,8 +522,9 @@ export function createSellPage({
         }
       }
 
-      // Tyveri-tjek af stelnummer (fire-and-forget — annoncen er allerede oprettet).
-      // Edge-functionen gemmer kun sidste 4 cifre + resultat, aldrig hele nummeret.
+      // Stelnummer (fire-and-forget — annoncen er allerede oprettet).
+      // Edge-functionen gemmer KUN de sidste 4 cifre og kasserer resten.
+      // Nummeret sendes ikke videre til noget eksternt register.
       if (frameNumber && newBike?.id) {
         supabase.functions.invoke('check-frame-number', {
           body: { bike_id: newBike.id, frame_number: frameNumber },
@@ -1987,9 +1988,9 @@ export function createSellPage({
   /* ------ Stelnummer: friktion mod åbenlyst opdigtede numre ----- */
 
   /* Vi kan ikke VERIFICERE et stelnummer — der findes ingen kontrolciffer-
-     standard som på et bilstelnummer, og BikeIndex' "clear" betyder kun
-     "ikke blandt de stjålne", ikke "ægte". Derfor er den primære værn ærlig
-     tekst: annoncen siger "oplyst", ikke "verificeret".
+     standard som på et bilstelnummer, og intet register vi kan slå op i der
+     ville sige "ægte". Derfor er den primære værn ærlig tekst: annoncen siger
+     "oplyst", ikke "verificeret".
      Det her er anden linje: fang det åbenlyse (1111, aaaa, 1234) så nogen
      ikke får et mærke ved at hamre på tastaturet. Vi ADVARER frem for at
      blokere — ægte serienumre er uforudsigelige, og en falsk afvisning af et

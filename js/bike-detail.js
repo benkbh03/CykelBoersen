@@ -251,18 +251,16 @@ export function createBikeDetail({
             ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">${iconShield()} ${esc(b.warranty)}</span>` : ''}
             ${(() => {
               /* Stelnummer-tag: gør åbenheden synlig ved første øjekast i stedet for
-                 kun i badgen længere nede. VIGTIGT — status-bevidst: ved 'match'
-                 vises INTET tag. Et tryghedssignal på en cykel der ligner en
-                 efterlyst ville sende det stik modsatte af det rigtige; advarslen
-                 nedenfor er den korrekte behandling af det tilfælde.
-                 Vi viser aldrig nummeret — kun at det er oplyst (privatlivspolitik
-                 §2: kun de sidste 4 cifre gemmes). */
+                 kun i badgen længere nede. Vi viser aldrig nummeret — kun at det er
+                 oplyst (privatlivspolitik §2: kun de sidste 4 cifre gemmes).
+                 'match' er en LEGACY-status fra dengang numre blev slået op mod
+                 BikeIndex. Opslaget er fjernet, men gamle rækker kan stadig bære
+                 den, og de skal ikke have et tryghedstag før statussen er ryddet
+                 (supabase/sql/drop_bikeindex_frame_check.sql). */
               if (!b.frame_last4 || b.frame_check_status === 'match') return '';
               /* Teksten siger ALTID "oplyst" — aldrig "tjekket" eller "verificeret".
-                 BikeIndex' 'clear' betyder kun "ikke fundet blandt stjålne"; et
-                 opdigtet nummer får samme svar. Vi har altså ikke verificeret at
-                 nummeret er ægte, og må ikke antyde det.
-                 Værdien ligger i forhåndsbindingen: sælger har oplyst et nummer
+                 Vi kan ikke verificere at et stelnummer er ægte, og må ikke antyde
+                 det. Værdien ligger i forhåndsbindingen: sælger har oplyst et nummer
                  offentligt FØR mødet, så køber kan holde det op mod stellet ved
                  overdragelse. Det gør en løgn kontrollerbar — og det er dét
                  tooltip'en fortæller køberen at gøre. */
@@ -450,33 +448,22 @@ export function createBikeDetail({
       ${(() => {
         if (!b.frame_check_status && !b.frame_last4) return '';
         const l4 = b.frame_last4 ? esc(b.frame_last4) : '';
-        const dateStr = b.frame_check_at ? new Date(b.frame_check_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-        let icon, title, sub, color, bg, border;
-        /* BEMÆRK: 'clear' fra BikeIndex giver IKKE et positivt signal her.
-           BikeIndex er primært amerikansk, og en dansk stjålet cykel står stort
-           set aldrig i det register — så "ingen match" er nær-intetsigende for
-           danske cykler og ville være falsk tryghed. Asymmetrien er pointen:
-           et MATCH er værd at advare om, et ikke-match beviser ingenting.
-           Derfor ser 'clear' ud præcis som "ikke tjekket", og køberen henvises
-           til politiets register, som er den danske, autoritative kilde. */
-        if (b.frame_check_status === 'clear') {
-          icon = iconShield(18); color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
-          title = 'Stelnummer oplyst af sælger';
-          sub = 'Slå nummeret op i politiets register nedenfor, og sammenlign det med stellet når I mødes.';
-        } else if (b.frame_check_status === 'match') {
-          icon = '!'; color = '#c8302a'; bg = 'rgba(200,48,42,0.08)'; border = '#c8302a';
-          title = 'Muligt tyveri-match — undersøg før køb';
-          sub = 'Stelnummeret ligner en efterlyst cykel i BikeIndex (internationalt register, omtrentligt match). Bekræft med sælger og tjek hos politiet inden køb.';
-        } else {
-          icon = iconShield(18); color = 'var(--muted)'; bg = 'var(--sand)'; border = 'var(--border)';
-          title = 'Stelnummer oplyst af sælger';
-          sub = 'Tjek stelnummeret hos politiets register nedenfor inden du køber.';
-        }
-        return `<div class="frame-trust-badge" style="display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;border-radius:12px;background:${bg};border:1px solid ${border};">
-          <span style="font-size:1.2rem;line-height:1.2;">${icon}</span>
+        /* ÉN fremtoning, uanset status. Badgen havde tidligere tre grene, fordi
+           stelnummeret blev slået op mod BikeIndex. Det opslag er fjernet:
+           registeret er primært amerikansk, danske tyverier registreres hos
+           politiet, og matchet var fuzzy. Både "ingen match" og "muligt match"
+           var derfor for svage til at vise køberen — det ene som falsk tryghed,
+           det andet som en anklage vi ikke kunne stå inde for.
+
+           Tilbage står det der faktisk holder: sælger har bundet sig til et
+           nummer FØR mødet. Teksten siger derfor "oplyst", aldrig "tjekket"
+           eller "verificeret", og køberen sendes videre til politi.dk.
+           Gamle rækker med status 'clear'/'match'/'error' rammer samme gren. */
+        return `<div class="frame-trust-badge" style="display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;border-radius:12px;background:var(--sand);border:1px solid var(--border);">
+          <span style="font-size:1.2rem;line-height:1.2;">${iconShield(18)}</span>
           <div style="min-width:0;">
-            <div style="font-weight:600;color:${color};font-size:0.92rem;">${title}${l4 ? ` · ••${l4}` : ''}</div>
-            <div style="font-size:0.8rem;color:var(--muted);margin-top:3px;line-height:1.5;">${sub}${b.frame_check_status === 'match' && b.frame_check_ref ? ` <a href="${esc(b.frame_check_ref)}" target="_blank" rel="noopener" style="color:${color};font-weight:600;">Se i register →</a>` : ''}</div>
+            <div style="font-weight:600;color:var(--muted);font-size:0.92rem;">Stelnummer oplyst af sælger${l4 ? ` · ••${l4}` : ''}</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:3px;line-height:1.5;">Slå nummeret op i politiets register nedenfor, og sammenlign det med stellet når I mødes.</div>
           </div>
         </div>`;
       })()}
