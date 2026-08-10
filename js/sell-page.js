@@ -989,14 +989,16 @@ export function createSellPage({
       <div class="sell-field sell-field--frame">
         <label>Stelnummer <span class="sell-recommended">Anbefalet</span></label>
         <p class="sell-frame-why">
-          Når du oplyser nummeret på forhånd, kan køberen slå det op i politiets
-          register og holde det op mod stellet, når I mødes. Netop fordi det kan
-          kontrolleres, betyder det noget — og annoncen får et synligt mærke.
+          Køberen kan slå nummeret op i politiets register og holde det op mod
+          stellet, når I mødes. Annoncen får et synligt mærke.
         </p>
         <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off" oninput="checkFrameNumberFormat(this)">
         <div id="sell-frame-warn" class="sell-frame-warn" hidden></div>
+        <!-- Teksten SKAL ligge i ét <span>: .sell-frame-privacy er display:flex,
+             så løse tekstnoder og <strong> ville hver blive sin egen flex-item
+             og brække sætningen op i smalle kolonner. -->
         <div class="sell-frame-privacy">
-          ${iconShield()} Vi viser kun de <strong>sidste 4 cifre</strong> offentligt — det fulde nummer gemmes ikke og gives til køber ved overleveringen. Vi slår det op i det internationale register BikeIndex; et hit advarer vi om, men et ikke-hit er ingen garanti, da danske tyverier registreres hos politiet.
+          ${iconShield()}<span>Kun de <strong>sidste 4 cifre</strong> vises offentligt. Vi gemmer ikke hele nummeret.</span>
         </div>
       </div>
 
