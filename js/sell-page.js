@@ -2029,12 +2029,15 @@ export function createSellPage({
 
   async function importSellFromLink() {
     const input = document.getElementById('sell-import-url');
-    const status = document.getElementById('sell-import-status');
     const btn = document.getElementById('sell-import-btn');
     if (!input) return;
 
     const url = input.value.trim();
+    // Slå elementet op ved hvert kald: en vellykket import re-renderer trin 1,
+    // og en reference gemt på forhånd ville pege på et frakoblet element —
+    // beskeden ville så blive skrevet ind i noget der ikke er på siden.
     const setStatus = (msg, cls) => {
+      const status = document.getElementById('sell-import-status');
       if (status) { status.textContent = msg; status.className = `ai-suggest-status ${cls || ''}`.trim(); }
     };
 
@@ -2155,6 +2158,15 @@ export function createSellPage({
       if (data.price != null) parts.push('pris');
       const what = parts.length ? parts.join(', ') : 'data';
       showToast(`✓ Hentede ${what}. Tjek felterne i næste trin.`);
+
+      // Prisen er det eneste påkrævede felt importen kan komme til at mangle
+      // (nogle sider oplyser den slet ikke i deres metadata). Sig det direkte
+      // frem for at lade sælgeren opdage et tomt pris-felt to trin senere.
+      if (data.price == null) {
+        setStatus('Prisen stod ikke i annoncens data — den skal du taste selv.', '');
+      } else {
+        setStatus('', '');
+      }
     } catch (err) {
       console.error('importSellFromLink fejl:', err);
       setStatus('❌ Noget gik galt. Prøv igen, eller udfyld manuelt.', 'error');
