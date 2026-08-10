@@ -7,16 +7,28 @@
    ville både koste penge og risikere at gætte noget andet end det
    sælgeren selv har skrevet.
 
-   Derfor: ren regel-baseret parsing af titel + beskrivelse. Reglerne er
-   bevidst spejlet fra `supabase/functions/import-dealer-feed/index.ts`
-   (funktionen enrichFields), så et felt udledes ens uanset om annoncen
-   kommer fra et forhandler-feed eller fra et indsat link.
+   Derfor: ren regel-baseret parsing af titel + beskrivelse. Værdilisterne
+   og de fleste mønstre er hentet fra `supabase/functions/import-dealer-feed`
+   (funktionen enrichFields), så et felt læses ens uanset om annoncen kommer
+   fra et forhandler-feed eller fra et indsat link.
 
-   GRUNDREGEL: hellere et TOMT felt end et forkert. Alt herunder sættes
-   kun når teksten siger det entydigt — vi udleder aldrig et felt af et
-   andet felt, og vi gætter aldrig ved tvetydighed. Sælgeren retter selv
-   i trin 2 og 3, og et forkert forudfyldt felt er sværere at opdage end
-   et tomt.
+   Reglerne herunder er dog STRAMMERE end feed-importens på de punkter hvor
+   den udleder frem for at læse (indstigning ud fra dame/herre, 24" ud fra
+   børneord, motormærke ud fra et bart mærkenavn, vægt ud fra et løst "kg").
+   Feed'et kommer fra en forhandler med ensartede produkttekster; et indsat
+   DBA-link er fritekst skrevet af en tilfældig sælger, og de heuristikker
+   holder ikke der.
+
+   GRUNDREGEL — INGEN GÆT: et felt sættes kun når annoncens tekst siger
+   præcis det. Vi udleder ikke ét felt af et andet (en "damecykel" bliver
+   ikke automatisk lav indstigning), vi tolker ikke stemning som stand
+   ("velholdt" er ikke det samme som "God stand"), og ved tvetydighed
+   lader vi feltet stå tomt. Står der ikke noget, udfyldes der ikke noget.
+
+   Det er ikke forsigtighed for forsigtighedens skyld: et tomt felt ser
+   sælgeren og retter. Et forkert forudfyldt felt ser hverken sælger eller
+   køber — det ender bare som en forkert oplysning på annoncen, og køberne
+   filtrerer på præcis de felter.
 ──────────────────────────────────────────────────────────────── */
 
 import { KNOWN_BRANDS } from './brand-data-v2.js';
@@ -38,19 +50,24 @@ const TYPE_RULES = [
   [/\bel-?(cykel|mtb|mountainbike|racer|bike)\b|\be-?bike\b|\bebike\b|elektrisk\s*cykel|\bpedelec\b/i, 'El-cykel'],
   [/\bgravel\b|grusracer|cyclocross|\bcx-?cykel\b/i, 'Gravel'],
   [/racercykel|\bracer\b|road\s*bike|landev(e|ej)scykel/i, 'Racercykel'],
-  [/mountainbike|\bmtb\b|\bhardtail\b|\bfully\b|terr(æ|ae)ncykel/i, 'Mountainbike'],
+  // "hardtail"/"fully" er IKKE med: de beskriver affjedring, ikke cykeltype.
+  // En el-fully er en el-cykel, og en gravel kan have fjedergaffel.
+  [/mountainbike|\bmtb\b|terr(æ|ae)ncykel/i, 'Mountainbike'],
   [/b(ø|o)rnecykel|juniorcykel|\bdrengecykel\b|\bpigecykel\b/i, 'Børnecykel'],
   [/seniorcykel|senior\s*cykel|trehjulet|\btrike\b/i, 'Senior cykel'],
   [/bycykel|citybike|city\s*cykel|damecykel|herrecykel|classic\s*bike|\bpendlercykel\b/i, 'Citybike'],
 ];
 
-/* Stand: KUN når det står eksplicit. "brugt" alene er ikke et signal —
-   alt på DBA er brugt, og "Brugt" ville derfor blive standardsvaret
-   frem for sælgerens egen vurdering. */
+/* Stand: KUN når sælgeren har skrevet netop den kategori.
+   - "brugt" alene er ikke et signal — alt på DBA er brugt, så "Brugt"
+     ville blive standardsvaret frem for sælgerens egen vurdering.
+   - Rosende ord uden kategori ("velholdt", "mint", "pænt kørt") er heller
+     ikke med. De betyder noget forskelligt fra annonce til annonce, og at
+     oversætte dem til "God stand" er præcis den slags gæt vi ikke laver. */
 const CONDITION_RULES = [
   [/\bhelt\s*ny\b|\bfabriksny\b|\bubrugt\b|aldrig\s*(brugt|k(ø|o)rt)|\bny\s*i\s*kassen\b/i, 'Ny'],
-  [/\bsom\s*ny\b|næsten\s*ny|n(æ|ae)sten\s*ubrugt|\bmint\b/i, 'Som ny'],
-  [/\bgod\s*stand\b|\bvelholdt\b|\bfin\s*stand\b|\bpæn\s*stand\b|\bp(æ|ae)n\s*stand\b/i, 'God stand'],
+  [/\bsom\s*ny\b/i, 'Som ny'],
+  [/\bgod\s*stand\b/i, 'God stand'],
 ];
 
 const COLOR_RULES = [
@@ -79,9 +96,10 @@ const GROUPSETS = [
 
 const MOTOR_BRANDS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle', 'Brose', 'Fazua'];
 
-/* Stelstørrelse i cm → den bucket sælg-formularen bruger. Grænserne er
-   taget direkte fra option-labels, så tallet og bogstavet aldrig kommer
-   til at modsige hinanden på annoncen. */
+/* Stelstørrelse i cm → den bucket sælg-formularen bruger. Ikke et gæt:
+   grænserne står i selve option-labelen ("M (53–56 cm)"), så 56 cm ER M
+   efter appens egen definition. Opslaget sikrer bare at tallet og
+   bogstavet ikke kommer til at modsige hinanden på annoncen. */
 function sizeBucketFromCm(cm) {
   if (!Number.isFinite(cm)) return null;
   if (cm <= 48) return 'XS (44–48 cm)';
@@ -182,32 +200,31 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
      ville gøre cyklen sort fordi sadlen er det. Undtagelsen er en eksplicit
      farve-mærkat ("Farve: mat sort"), som er utvetydig. */
   const colorLabel = String(description || '').match(/\bfarve[nr]?\s*[:\-–]\s*([^\n.;,|]{2,40})/i);
-  const colors = extractColors(colorLabel ? `${name} ${colorLabel[1]}` : name);
+  // Mærket fjernes først: "Black Iron Horse" ville ellers gøre cyklen sort.
+  const nameNoBrand = brand ? name.replace(new RegExp(escapeRe(brand), 'ig'), ' ') : name;
+  const colors = extractColors(colorLabel ? `${nameNoBrand} ${colorLabel[1]}` : nameNoBrand);
   if (colors.length) out.colors = colors;
 
   /* Hjulstørrelse. Et bart tomme-tal er TVETYDIGT: gamle herre-/damecykler
      måles i tommer-STEL (fx »Raleigh Tourist 24"« = 24" stel, 28" hjul).
-     26/27.5/28/29" findes ikke som stelmål → entydigt hjul. 24" sættes kun
-     ved et tydeligt børne-/junior-signal. Samme regel som feed-importen. */
+     Alle mål på nær 24" er entydige: 12–20" findes ikke som stelmål, og
+     26"+ findes ikke som stelmål. KUN 24" kan være begge dele, og der
+     sætter vi ingenting. (Feed-importen afgør 24" ud fra børne-/voksen-ord
+     i titlen; det er et gæt, og det gør vi ikke her.) */
   if (/27[.,]5|650b/i.test(spec)) {
     out.wheel_size = '27.5" / 650b';
   } else {
-    const wm = spec.match(/\b(12|14|16|18|20|24|26|28|29)\s*("|''|″|tommer|inch)\b/i)
-            || spec.match(/\b(12|14|16|18|20|24|26|28|29)in\b/i);
-    if (wm) {
-      const inch = Number(wm[1]);
-      if (inch === 24) {
-        const kids  = /\bdreng[a-zæøå]*\b|\bpige[a-zæøå]*\b|\bjunior\b|\bb(ø|o)rn[a-zæøå]*\b|\bkids?\b|\byouth\b/i.test(name);
-        const adult = /\bherre[a-zæøå]*\b|\bdame[a-zæøå]*\b|\bvoksen\b|\bmen'?s\b|\bwomen'?s\b/i.test(name);
-        if (kids && !adult) out.wheel_size = '24"';
-      } else {
-        out.wheel_size = `${inch}"`;
-      }
-    }
+    const wm = spec.match(/\b(12|14|16|18|20|26|28|29)\s*("|''|″|tommer|inch)\b/i)
+            || spec.match(/\b(12|14|16|18|20|26|28|29)in\b/i);
+    if (wm) out.wheel_size = `${Number(wm[1])}"`;
   }
 
-  // Stelstørrelse i cm → både tallet og bogstav-bucket'en.
-  const sm = spec.match(/\b([3-7]\d)\s*cm\b/i);
+  /* Stelstørrelse i cm. Et bart "NN cm" i beskrivelsen kan være hvad som
+     helst ("sadelpind 30 cm", "styr 44 cm"), så tallet accepteres kun når
+     det står i titlen eller er mærket som en størrelse. */
+  const sm = spec.match(/\bst(?:ø|o)?r(?:relse)?\.?\s*[:\s]?\s*([3-7]\d)\s*cm\b/i)
+          || spec.match(/\bstel\w*\s*[:\s]?\s*([3-7]\d)\s*cm\b/i)
+          || name.match(/\b([3-7]\d)\s*cm\b/i);
   if (sm) {
     const n = Number(sm[1]);
     if (n >= 38 && n <= 70) {
@@ -252,8 +269,12 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
     }
   }
 
-  // Vægt
-  const gm = spec.match(/\b(\d{1,2}(?:[.,]\d)?)\s*kg\b/i);
+  /* Vægt — kun når tallet er mærket som cyklens vægt. Et løst "kg" i
+     beskrivelsen er oftest noget andet ("bagagebærer holder 25 kg",
+     "batteriet vejer 3 kg"), og der findes ingen måde at se forskel på. */
+  const gm = spec.match(/\bv(?:æ|ae)gt\w*\s*[:\s]?\s*(?:ca\.?\s*)?(\d{1,2}(?:[.,]\d)?)\s*kg\b/i)
+          || spec.match(/\bvejer\s*(?:ca\.?\s*)?(\d{1,2}(?:[.,]\d)?)\s*kg\b/i)
+          || spec.match(/\bweight\s*[:\s]?\s*(\d{1,2}(?:[.,]\d)?)\s*kg\b/i);
   if (gm) {
     const w = parseFloat(gm[1].replace(',', '.'));
     if (w >= 2 && w <= 50) out.weight_kg = w;
@@ -264,10 +285,11 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
   if (/navgear|indvendig[a-zæøå]*\s*gear|internal\s*(hub\s*)?gear|hub\s*gear/i.test(spec)) out.geartype = 'Indvendig';
   else if (/k(æ|ae)deskifter|derailleur|udvendig[a-zæøå]*\s*gear|external\s*gear/i.test(spec)) out.geartype = 'Udvendig';
 
-  // Indstigning — dame = step-through, herre = diamantstel. Pålidelig nok
-  // for cykler til at være en bevidst undtagelse fra "udled ikke"-reglen.
-  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through|\bwave\b|\bdame[a-zæøå]*\b|\bunisex\b/i.test(name)) out.step_type = 'Lav indstigning';
-  else if (/h(ø|o)j\s*indstigning|high[\s-]?step|\bherre[a-zæøå]*\b/i.test(name)) out.step_type = 'Høj indstigning';
+  /* Indstigning — kun når teksten siger det. Feed-importen udleder det af
+     "dame"/"herre" i titlen; det gør vi IKKE her. Det er en antagelse om
+     stellet ud fra hvem cyklen er tiltænkt, og de to følges ikke altid ad. */
+  if (/lav\s*indstigning|low[\s-]?step|step[\s-]?thru|step[\s-]?through/i.test(spec)) out.step_type = 'Lav indstigning';
+  else if (/h(ø|o)j\s*indstigning|high[\s-]?step|diamantstel/i.test(spec)) out.step_type = 'Høj indstigning';
 
   // Affjedring — kun relevant for MTB/Gravel/El-cykel, og kun når
   // affjedring nævnes eksplicit (en stiv cykel har også en "forgaffel").
@@ -278,8 +300,16 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
 
   // El-cykel: motor, placering, batteri
   if (out.type === 'El-cykel') {
+    /* Motormærket skal stå SAMMEN med ordet motor/drive. Shimano og Bosch
+       laver også gear og bremser, så en bar forekomst af mærket i teksten
+       siger intet om motoren — "Shimano Deore" ville ellers give motor
+       Shimano på en cykel med Bosch-motor. */
     for (const b of MOTOR_BRANDS) {
-      if (new RegExp(`\\b${escapeRe(b)}\\b`, 'i').test(spec)) { out.motor = b; break; }
+      const e = escapeRe(b);
+      // Ingen \b foran "motor": ordet står typisk sammensat ("midtermotor").
+      const near = new RegExp(
+        `\\b${e}\\b[^.;\\n]{0,30}(motor|drive|drivsystem)|(motor|drive|drivsystem)[^.;\\n]{0,30}\\b${e}\\b`, 'i');
+      if (near.test(spec)) { out.motor = b; break; }
     }
     if (/midtermotor|mid[\s-]?motor|mid[\s-]?drive/i.test(spec)) out.motor_position = 'Midtermotor';
     else if (/forhjuls?\s*motor|front[\s-]?(motor|hub)/i.test(spec)) out.motor_position = 'Forhjulsmotor';
