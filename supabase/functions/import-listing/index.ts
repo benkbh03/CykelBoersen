@@ -6,7 +6,7 @@
 // Kald:  POST { url: "https://www.dba.dk/..." }   (INGEN auth — åbent sælg-flow)
 // Svar:  {
 //   ok, blocked?, reason,
-//   title?, description?, price?,
+//   title?, description?, price?, price_source?,
 //   image_base64?, image_media_type?,
 //   source_host?
 // }
@@ -44,7 +44,10 @@ const BROWSER_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
 
-const MAX_HTML_BYTES  = 2_000_000;   // 2 MB HTML er rigeligt til <head>
+// 6 MB: <head> alene ville klare sig med langt mindre, men prisen ligger på
+// Next.js-sider (bl.a. DBA) i en JSON-blok NEDERST i <body>. Skæres HTML'en
+// af før den, findes prisen aldrig.
+const MAX_HTML_BYTES  = 6_000_000;
 const MAX_IMAGE_BYTES = 8_000_000;   // 8 MB billede-loft
 
 // ── SSRF-guard: afvis private/interne værter ────────────────────────────
@@ -106,24 +109,130 @@ function metaContent(html: string, ...keys: string[]): string | null {
   return null;
 }
 
-function extractPrice(html: string): number | null {
-  // 1) Struktureret pris (og:price:amount / product:price:amount / itemprop=price)
-  const structured =
-    metaContent(html, "og:price:amount", "product:price:amount") ||
-    html.match(/itemprop\s*=\s*["']price["'][^>]*content\s*=\s*["']([\d.,]+)["']/i)?.[1];
-  if (structured) {
-    const n = Number(String(structured).replace(/\./g, "").replace(",", "."));
-    if (Number.isFinite(n) && n > 0) return Math.round(n);
+/* Talparsing der klarer både dansk og engelsk formatering:
+   "1.234" → 1234, "1.234,50" → 1235, "1234.50" → 1235, "1 234" → 1234.
+   Reglen: står den SIDSTE separator foran præcis 1–2 cifre, er den decimal;
+   ellers er alle separatorer tusind-separatorer. */
+function parseAmount(raw: unknown): number | null {
+  if (raw == null) return null;
+  const s = String(raw).trim().replace(/\s| /g, "");
+  if (!/^\d[\d.,]*$/.test(s)) return null;
+
+  const lastSep = Math.max(s.lastIndexOf("."), s.lastIndexOf(","));
+  let normalized: string;
+  if (lastSep >= 0 && s.length - lastSep - 1 <= 2 && s.length - lastSep - 1 >= 1) {
+    normalized = s.slice(0, lastSep).replace(/[.,]/g, "") + "." + s.slice(lastSep + 1);
+  } else {
+    normalized = s.replace(/[.,]/g, "");
   }
-  // 2) Fald tilbage til "1.234 kr" / "1234 DKK" i titel/beskrivelse
-  const title = metaContent(html, "og:title") || "";
-  const desc  = metaContent(html, "og:description") || "";
-  const hay = `${title} ${desc}`;
+  const n = Number(normalized);
+  if (!Number.isFinite(n)) return null;
+  const rounded = Math.round(n);
+  // Samme grænser som pris-feltet i sælg-formularen.
+  if (rounded < 1 || rounded > 9_999_999) return null;
+  return rounded;
+}
+
+/* Går et JSON-LD-træ igennem og samler pris-kandidater. Vi tager KUN et
+   `price`-felt når objektet også oplyser en valuta (eller ligger under
+   `offers`) — et bart tal ved navn "price" kan lige så godt være fragt
+   eller en pris på en anden annonce på siden. Er valutaen oplyst og ikke
+   DKK, springer vi den over. */
+function collectJsonLdPrices(node: unknown, out: number[], underOffer = false): void {
+  if (Array.isArray(node)) {
+    for (const n of node) collectJsonLdPrices(n, out, underOffer);
+    return;
+  }
+  if (!node || typeof node !== "object") return;
+  const o = node as Record<string, unknown>;
+
+  const currency = String(o.priceCurrency ?? o.currency ?? "").toUpperCase();
+  const currencyOk = !currency || currency === "DKK";
+  if ((o.priceCurrency != null || o.currency != null || underOffer) && currencyOk) {
+    const v = parseAmount(o.price ?? o.lowPrice ?? o.highPrice);
+    if (v != null) out.push(v);
+  }
+
+  for (const [key, value] of Object.entries(o)) {
+    if (value && typeof value === "object") {
+      collectJsonLdPrices(value, out, underOffer || key === "offers" || key === "priceSpecification");
+    }
+  }
+}
+
+function jsonLdPrice(html: string): number | null {
+  const prices: number[] = [];
+  const re = /<script[^>]+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    try {
+      collectJsonLdPrices(JSON.parse(decodeEntities(m[1].trim())), prices);
+    } catch { /* ugyldig JSON-LD — spring over */ }
+  }
+  const distinct = [...new Set(prices)];
+  // Flere forskellige priser = vi kan ikke se hvilken der er annoncens.
+  // Så udfylder vi ingenting frem for at gætte.
+  return distinct.length === 1 ? distinct[0] : null;
+}
+
+/* Sidste udvej: Next.js/Nuxt-sider lægger hele annoncen som JSON i en
+   <script>-blok. Vi accepterer kun hvis ALLE "price"-forekomster på siden
+   har samme værdi — ellers står vi med relaterede annoncer og aner ikke
+   hvilken der er den rigtige. */
+function embeddedJsonPrice(html: string): number | null {
+  /* Valuta-spærre. Denne udtrækker læser rå tekst og ser derfor ikke om et
+     tal hører til en pris i DKK eller i euro — den ville ellers hente 499
+     ud af en JSON-LD-blok vi lige har afvist netop fordi valutaen var EUR.
+     Nævner siden overhovedet en anden valuta, holder vi os fra tallene. */
+  const currencies = new Set<string>();
+  const cre = /"(?:priceCurrency|currency|currencyCode)"\s*:\s*"([A-Z]{3})"/gi;
+  let cm: RegExpExecArray | null;
+  while ((cm = cre.exec(html)) !== null) currencies.add(cm[1].toUpperCase());
+  for (const c of currencies) if (c !== "DKK") return null;
+
+  const values: number[] = [];
+  const re = /"(?:price|amount|priceInDkk|total_price)"\s*:\s*"?(\d[\d.,]*)"?/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    const v = parseAmount(m[1]);
+    if (v != null) values.push(v);
+  }
+  const distinct = [...new Set(values)];
+  return distinct.length === 1 ? distinct[0] : null;
+}
+
+/* Pris — prøvet i rækkefølge efter hvor troværdig kilden er.
+   Hver kilde er struktureret eller sælgerens egen tekst; ingen af dem
+   gætter. Kan ingen af dem svare entydigt, returnerer vi null, og
+   sælgeren taster prisen selv. */
+function extractPrice(html: string): { value: number; source: string } | null {
+  // 1) JSON-LD Product/Offer — det marketplaces udstiller til Google.
+  const ld = jsonLdPrice(html);
+  if (ld != null) return { value: ld, source: "jsonld" };
+
+  // 2) Facebook/OpenGraph produkt-meta.
+  const meta = parseAmount(
+    metaContent(html, "og:price:amount", "product:price:amount", "product:price", "twitter:data1"),
+  );
+  if (meta != null) return { value: meta, source: "meta" };
+
+  // 3) Microdata itemprop="price" — begge attribut-rækkefølger.
+  const itemprop =
+    html.match(/itemprop\s*=\s*["']price["'][^>]*content\s*=\s*["']([\d.,\s]+)["']/i)?.[1] ??
+    html.match(/content\s*=\s*["']([\d.,\s]+)["'][^>]*itemprop\s*=\s*["']price["']/i)?.[1];
+  const ip = parseAmount(itemprop);
+  if (ip != null) return { value: ip, source: "itemprop" };
+
+  // 4) "1.234 kr" / "1234 DKK" i sælgerens egen titel eller beskrivelse.
+  const hay = `${metaContent(html, "og:title") || ""} ${metaContent(html, "og:description") || ""}`;
   const m = hay.match(/(\d{1,3}(?:[.\s]\d{3})+|\d{3,7})\s*(?:kr|dkk|,-)/i);
-  if (m) {
-    const n = Number(m[1].replace(/[.\s]/g, ""));
-    if (Number.isFinite(n) && n > 0 && n < 10_000_000) return n;
-  }
+  const text = m ? parseAmount(m[1]) : null;
+  if (text != null) return { value: text, source: "ogtext" };
+
+  // 5) Indlejret side-JSON, kun hvis den er entydig.
+  const emb = embeddedJsonPrice(html);
+  if (emb != null) return { value: emb, source: "embedded" };
+
   return null;
 }
 
@@ -193,7 +302,7 @@ serve(async (req) => {
       return json({ ok: false, reason: "no_data", source_host: u.hostname });
     }
 
-    // Læs op til MAX_HTML_BYTES (nok til <head>).
+    // Læs op til MAX_HTML_BYTES (skal dække både <head> og side-JSON'en i bunden).
     const buf = new Uint8Array(await res.arrayBuffer());
     const slice = buf.slice(0, MAX_HTML_BYTES);
     html = new TextDecoder("utf-8", { fatal: false }).decode(slice);
@@ -208,7 +317,7 @@ serve(async (req) => {
     html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() ||
     null;
   const description = metaContent(html, "og:description", "twitter:description", "description");
-  const price = extractPrice(html);
+  const priceHit = extractPrice(html);
   const imageUrl = metaContent(html, "og:image", "og:image:url", "twitter:image");
 
   // Intet brugbart fundet → sandsynligvis blokeret eller en side uden OG-tags.
@@ -231,7 +340,12 @@ serve(async (req) => {
     reason: "ok",
     title:  title ? title.slice(0, 200) : null,
     description: description ? description.slice(0, 4000) : null,
-    price,
+    price: priceHit ? priceHit.value : null,
+    // Hvilken kilde prisen kom fra ('jsonld' | 'meta' | 'itemprop' | 'ogtext'
+    // | 'embedded'), eller null hvis ingen kunne svare entydigt. Bruges ikke i
+    // UI'et — den er der så et "prisen kom ikke med"-problem kan diagnosticeres
+    // uden at gætte på hvilken udtrækker der fejlede.
+    price_source: priceHit ? priceHit.source : null,
     image_base64,
     image_media_type,
     source_host: u.hostname,
