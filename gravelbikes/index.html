@@ -854,11 +854,24 @@
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
-        /* Ny/brugt er en underopdeling af den valgte kategori, ikke et sidestillet
-           valg. Lidt smallere knapper + rust som aktiv-farve holder de to grupper
-           visuelt adskilt, så de ikke ligner én lang række på seks knapper. */
-        .cond-axis-toggle .browse-cat-btn{padding:8px 14px;}
-        .cond-axis-btn.active{background:var(--rust);color:#fff;}
+        /* Ny/brugt er en UNDERopdeling af den valgte kategori, ikke et sidestillet
+           valg. Med samme ramme og baggrund som kategori-toggle'en læste de to
+           grupper som én lang række på seks knapper. Derfor er denne holdt let:
+           ingen ramme, ingen boks — kun teksten. Så er det tydeligt hvad der er
+           hovedvalget, og hvad der filtrerer inden i det. */
+        .cond-axis-wrap{display:inline-flex;align-items:center;gap:10px;}
+        .cond-axis-label{color:var(--muted);font:600 0.78rem/1 'DM Sans',sans-serif;
+          text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+        .cond-axis-toggle{display:inline-flex;gap:2px;}
+        .cond-axis-btn{border:none;background:transparent;color:var(--muted);
+          font:600 0.85rem/1 'DM Sans',sans-serif;padding:8px 14px;border-radius:100px;
+          cursor:pointer;transition:background .15s,color .15s;}
+        .cond-axis-btn:hover{background:rgba(26,26,24,0.05);color:var(--charcoal);}
+        /* Aktiv = listen er indsnævret. "Alle" indsnævrer INTET, så den må ikke
+           se ud som et anvendt filter — ellers råber standardtilstanden lige så
+           højt som et faktisk valg. Derfor dæmpet grå, hvor Nye/Brugte er fyldt. */
+        .cond-axis-btn.active{background:var(--forest);color:#fff;}
+        .cond-axis-btn.active[data-cond="all"]{background:rgba(26,26,24,0.07);color:var(--charcoal);}
         /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
@@ -869,8 +882,14 @@
           .browse-cat-wrap{width:100%;display:block;flex-basis:auto;margin-top:0;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
-          .cond-axis-toggle{margin-top:8px;}
-          .cond-axis-toggle .browse-cat-btn{padding:9px 8px;}
+          /* Labelen ville stjæle bredde fra tre knapper på en smal skærm.
+             Gruppen er alligevel selvforklarende når den står alene på sin
+             egen række, og aria-label på gruppen bevarer betydningen for
+             skærmlæsere. */
+          .cond-axis-wrap{display:flex;width:100%;margin-top:10px;}
+          .cond-axis-label{display:none;}
+          .cond-axis-toggle{width:100%;display:flex;gap:4px;box-sizing:border-box;}
+          .cond-axis-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
         }
       </style>
       <div class="listings-header">
@@ -885,11 +904,17 @@
           </div>
           <!-- Ny/brugt er den første beslutning en køber tager. Den lå før kun i
                sidebarens Stand-boks, som er foldet sammen som standard. Knappen
-               her sætter de samme condition-checkboxes — ikke et nyt filter. -->
-          <div class="browse-cat-toggle cond-axis-toggle" role="group" aria-label="Ny eller brugt">
-            <button class="browse-cat-btn cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
-            <button class="browse-cat-btn cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
-            <button class="browse-cat-btn cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
+               her sætter de samme condition-checkboxes — ikke et nyt filter.
+               Overskriften "Stand" er ikke pynt: uden den står der to knapper
+               med teksten "Alle" på siden (den anden er typefilteret i heroen),
+               og den bruger samme ord som sidebar-boksen den styrer. -->
+          <div class="cond-axis-wrap">
+            <span class="cond-axis-label">Stand</span>
+            <div class="cond-axis-toggle" role="group" aria-label="Ny eller brugt">
+              <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
+              <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
+              <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
+            </div>
           </div>
         </div>
         <div class="listings-controls">
@@ -1138,7 +1163,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723u';
+    const V = '20260723v';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
