@@ -840,54 +840,36 @@
 
       <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
       <style>
-        /* To knaprækker kan ikke være i midten af .listings-header: den er
-           display:flex med overskrift til venstre og kontroller til højre, så
-           en ekstra gruppe klemmer "Seneste annoncer" ud i to linjer.
-           I stedet får de deres EGEN fulde række under headeren (order:3 +
-           flex-basis:100%), hvor der er plads til at stå side om side. */
-        .listings-header{flex-wrap:wrap;}
-        .browse-cat-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-          order:3;flex-basis:100%;margin-top:14px;}
+        .browse-cat-wrap{display:flex;}
         .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
-        /* Ny/brugt er en UNDERopdeling af den valgte kategori, ikke et sidestillet
-           valg. Med samme ramme og baggrund som kategori-toggle'en læste de to
-           grupper som én lang række på seks knapper. Derfor er denne holdt let:
-           ingen ramme, ingen boks — kun teksten. Så er det tydeligt hvad der er
-           hovedvalget, og hvad der filtrerer inden i det. */
-        .cond-axis-wrap{display:inline-flex;align-items:center;gap:10px;}
-        .cond-axis-label{color:var(--muted);font:600 0.78rem/1 'DM Sans',sans-serif;
-          text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
-        .cond-axis-toggle{display:inline-flex;gap:2px;}
+        /* Ny/brugt som FANEBLADE på sin egen linje over annoncerne. Som knapboks
+           ved siden af kategori-toggle'en havde de to kontroller samme ramme,
+           samme størrelse og samme form — øjet kunne ikke se hvad der var
+           hovedvalg og hvad der var filter. Faneblade har et andet formsprog og
+           en anden opgave: de siger "hvilket udsnit ser jeg". Understregningen
+           går helt ud i bredden og binder valget til listen nedenunder. */
+        .cond-tabs{display:flex;align-items:flex-end;gap:4px;
+          border-bottom:1.5px solid var(--border);margin:0 0 18px;}
         .cond-axis-btn{border:none;background:transparent;color:var(--muted);
-          font:600 0.85rem/1 'DM Sans',sans-serif;padding:8px 14px;border-radius:100px;
-          cursor:pointer;transition:background .15s,color .15s;}
-        .cond-axis-btn:hover{background:rgba(26,26,24,0.05);color:var(--charcoal);}
-        /* Aktiv = listen er indsnævret. "Alle" indsnævrer INTET, så den må ikke
-           se ud som et anvendt filter — ellers råber standardtilstanden lige så
-           højt som et faktisk valg. Derfor dæmpet grå, hvor Nye/Brugte er fyldt. */
-        .cond-axis-btn.active{background:var(--forest);color:#fff;}
-        .cond-axis-btn.active[data-cond="all"]{background:rgba(26,26,24,0.07);color:var(--charcoal);}
+          font:600 0.92rem/1 'DM Sans',sans-serif;padding:11px 4px;margin-right:22px;
+          border-bottom:2px solid transparent;margin-bottom:-1.5px;
+          cursor:pointer;transition:color .15s,border-color .15s;}
+        .cond-axis-btn:hover{color:var(--charcoal);}
+        .cond-axis-btn.active{color:var(--forest);border-bottom-color:var(--forest);}
         /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
         @media(max-width:768px){
-          /* .listings-header bliver flex-direction:column på mobil (05-pages.css),
-             og dér betyder flex-basis HØJDE. 100% ville strække rækken ud over
-             hele headerens højde — derfor tilbage til auto. */
-          .browse-cat-wrap{width:100%;display:block;flex-basis:auto;margin-top:0;}
+          .browse-cat-wrap{width:100%;display:block;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
-          /* Labelen ville stjæle bredde fra tre knapper på en smal skærm.
-             Gruppen er alligevel selvforklarende når den står alene på sin
-             egen række, og aria-label på gruppen bevarer betydningen for
-             skærmlæsere. */
-          .cond-axis-wrap{display:flex;width:100%;margin-top:10px;}
-          .cond-axis-label{display:none;}
-          .cond-axis-toggle{width:100%;display:flex;gap:4px;box-sizing:border-box;}
-          .cond-axis-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
+          /* Fanebladene deler bredden ligeligt, så de tre rammer hele skærmen
+             i stedet for at klumpe til venstre med tom plads til højre. */
+          .cond-tabs{margin-bottom:14px;}
+          .cond-axis-btn{flex:1;min-width:0;margin-right:0;padding:11px 4px;text-align:center;}
         }
       </style>
       <div class="listings-header">
@@ -899,20 +881,6 @@
           <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
             <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
             <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
-          </div>
-          <!-- Ny/brugt er den første beslutning en køber tager. Den lå før kun i
-               sidebarens Stand-boks, som er foldet sammen som standard. Knappen
-               her sætter de samme condition-checkboxes — ikke et nyt filter.
-               Overskriften "Stand" er ikke pynt: uden den står der to knapper
-               med teksten "Alle" på siden (den anden er typefilteret i heroen),
-               og den bruger samme ord som sidebar-boksen den styrer. -->
-          <div class="cond-axis-wrap">
-            <span class="cond-axis-label">Stand</span>
-            <div class="cond-axis-toggle" role="group" aria-label="Ny eller brugt">
-              <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
-              <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
-              <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
-            </div>
           </div>
         </div>
         <div class="listings-controls">
@@ -936,6 +904,21 @@
             <option value="biggest_saving">Største besparelse</option>
           </select>
         </div>
+      </div>
+      <!-- Ny/brugt er den første beslutning en køber tager. Den lå før kun i
+           sidebarens Stand-boks, som er foldet sammen som standard.
+           FANEBLADE, ikke en knapboks: ved siden af kategori-toggle'en havde de
+           to kontroller samme ramme, samme størrelse og samme form, og læste
+           derfor som én lang række hvor man ikke kunne se hvad der var
+           hovedvalget. Faneblade siger noget andet — "hvilket udsnit af
+           resultaterne ser jeg" — og stregen binder dem til listen nedenunder
+           i stedet for at konkurrere med headeren ovenfor.
+           Knapperne sætter sidebarens condition-checkboxes; det er ikke et
+           selvstændigt filter. -->
+      <div class="cond-tabs" role="group" aria-label="Ny eller brugt">
+        <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
+        <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
+        <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
@@ -1131,7 +1114,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723v';
+    const V = '20260723w';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
