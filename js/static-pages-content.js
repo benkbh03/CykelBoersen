@@ -178,7 +178,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 27. juli 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 10. august 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -204,7 +204,7 @@ export const footerContent = {
         <li><strong>Udlejningsdata:</strong> Hvis du udbyder cykler til udlejning som forhandler, gemmer vi dine udlejningsopslag (titel, type, priser, depositum, tilgængelighed, billeder). Hvis du booker en udlejningscykel som kunde, gemmer vi bookingen (den valgte cykel, forhandler, datoer, beløb og status) for at gennemføre lejeaftalen mellem dig og forhandleren.</li>
         <li><strong>Udlejer-verifikation (Stripe Connect):</strong> For at en forhandler kan modtage udlejningsbetalinger opretter Stripe en konto til forhandleren, hvor forhandleren afgiver identitets-, virksomheds- og bankoplysninger direkte til Stripe (KYC-verifikation). Vi opbevarer kun en reference til Stripe-kontoen og dens status — ikke selve identitets- eller bankoplysningerne.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
-        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, sender vi det til tyveriregisteret BikeIndex for et opslag. Vi gemmer <strong>aldrig</strong> hele stelnummeret — kun de sidste 4 cifre samt resultatet af opslaget (om der blev fundet et muligt match). Det fulde nummer kasseres efter opslaget.</li>
+        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, gemmer vi <strong>kun de sidste 4 cifre</strong> — aldrig hele nummeret. Resten kasseres med det samme og videregives ikke til nogen. Køberen får det fulde nummer af dig ved overleveringen.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
@@ -259,7 +259,7 @@ export const footerContent = {
           <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:8px 8px 8px 0;">Tyveri-tjek af oplyst stelnummer mod BikeIndex</td>
+          <td style="padding:8px 8px 8px 0;">Visning af de sidste 4 cifre af et oplyst stelnummer på annoncen</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse (bekæmpelse af tyverihæleri)</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
@@ -282,7 +282,6 @@ export const footerContent = {
         <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support) samt automatisk analyse af annoncebilleder ved oprettelse af en annonce. Chatbeskeder og annoncebilleder sendes til Anthropic's API for henholdsvis at generere svar og foreslå annoncefelter. Hverken beskeder eller billeder logges permanent af os, og de behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten, og undgå at uploade billeder hvor personer kan identificeres.</li>
         <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
         <li><strong>cvrapi.dk (Danmark)</strong> — CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
-        <li><strong>BikeIndex (USA)</strong> — Internationalt tyveriregister for cykler. Hvis du oplyser et stelnummer på en annonce, sendes det til BikeIndex for et opslag mod efterlyste cykler. Vi gemmer kun resultatet og de sidste 4 cifre — aldrig hele nummeret. Se <a href="https://bikeindex.org/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">BikeIndex' privatlivspolitik</a>.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 

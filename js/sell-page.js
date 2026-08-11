@@ -522,8 +522,9 @@ export function createSellPage({
         }
       }
 
-      // Tyveri-tjek af stelnummer (fire-and-forget — annoncen er allerede oprettet).
-      // Edge-functionen gemmer kun sidste 4 cifre + resultat, aldrig hele nummeret.
+      // Stelnummer (fire-and-forget — annoncen er allerede oprettet).
+      // Edge-functionen gemmer KUN de sidste 4 cifre og kasserer resten.
+      // Nummeret sendes ikke videre til noget eksternt register.
       if (frameNumber && newBike?.id) {
         supabase.functions.invoke('check-frame-number', {
           body: { bike_id: newBike.id, frame_number: frameNumber },
@@ -989,14 +990,16 @@ export function createSellPage({
       <div class="sell-field sell-field--frame">
         <label>Stelnummer <span class="sell-recommended">Anbefalet</span></label>
         <p class="sell-frame-why">
-          Når du oplyser nummeret på forhånd, kan køberen slå det op i politiets
-          register og holde det op mod stellet, når I mødes. Netop fordi det kan
-          kontrolleres, betyder det noget — og annoncen får et synligt mærke.
+          Køberen kan slå nummeret op i politiets register og holde det op mod
+          stellet, når I mødes. Annoncen får et synligt mærke.
         </p>
         <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off" oninput="checkFrameNumberFormat(this)">
         <div id="sell-frame-warn" class="sell-frame-warn" hidden></div>
+        <!-- Teksten SKAL ligge i ét <span>: .sell-frame-privacy er display:flex,
+             så løse tekstnoder og <strong> ville hver blive sin egen flex-item
+             og brække sætningen op i smalle kolonner. -->
         <div class="sell-frame-privacy">
-          ${iconShield()} Vi viser kun de <strong>sidste 4 cifre</strong> offentligt — det fulde nummer gemmes ikke og gives til køber ved overleveringen. Vi slår det op i det internationale register BikeIndex; et hit advarer vi om, men et ikke-hit er ingen garanti, da danske tyverier registreres hos politiet.
+          ${iconShield()}<span>Kun de <strong>sidste 4 cifre</strong> vises offentligt. Vi gemmer ikke hele nummeret.</span>
         </div>
       </div>
 
@@ -1985,9 +1988,9 @@ export function createSellPage({
   /* ------ Stelnummer: friktion mod åbenlyst opdigtede numre ----- */
 
   /* Vi kan ikke VERIFICERE et stelnummer — der findes ingen kontrolciffer-
-     standard som på et bilstelnummer, og BikeIndex' "clear" betyder kun
-     "ikke blandt de stjålne", ikke "ægte". Derfor er den primære værn ærlig
-     tekst: annoncen siger "oplyst", ikke "verificeret".
+     standard som på et bilstelnummer, og intet register vi kan slå op i der
+     ville sige "ægte". Derfor er den primære værn ærlig tekst: annoncen siger
+     "oplyst", ikke "verificeret".
      Det her er anden linje: fang det åbenlyse (1111, aaaa, 1234) så nogen
      ikke får et mærke ved at hamre på tastaturet. Vi ADVARER frem for at
      blokere — ægte serienumre er uforudsigelige, og en falsk afvisning af et
