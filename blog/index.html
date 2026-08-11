@@ -66,7 +66,7 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260723c">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260811a">
   <link rel="stylesheet" href="/css/02-listings.css?v=20260628d">
   <link rel="stylesheet" href="/css/03-profiles.css?v=20260526ng">
   <link rel="stylesheet" href="/css/04-modals.css?v=20260723h">
@@ -230,7 +230,7 @@
         <div class="search-bar-sep"></div>
         <div class="search-bar-field">
           <label for="search-type" class="sr-only">Vælg cykeltype</label>
-          <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="searchBikes()">
+          <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="selectHeroCatChip(this, this.value)">
             <option value="">Alle typer</option>
             <option>Racercykel</option>
             <option>Mountainbike</option>
@@ -266,15 +266,15 @@
     </div>
     <!-- ── KATEGORI CHIPS ── -->
     <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
-      <button class="hero-cat-chip active" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
-      <button class="hero-cat-chip" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
+      <button class="hero-cat-chip active" data-type="" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
+      <button class="hero-cat-chip" data-type="Racercykel" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
+      <button class="hero-cat-chip" data-type="Mountainbike" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
+      <button class="hero-cat-chip" data-type="El-cykel" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
+      <button class="hero-cat-chip" data-type="Citybike" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
+      <button class="hero-cat-chip" data-type="Gravel" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
+      <button class="hero-cat-chip" data-type="Ladcykel" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
+      <button class="hero-cat-chip" data-type="Børnecykel" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
+      <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
     </div>
   </div>
 
@@ -540,8 +540,11 @@
           </div>
         </div>
       </div>
-      <div data-fsec="cykeltype" class="sidebar-box">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+      <!-- Foldet sammen: typen kan vælges to steder over folden (dropdown i
+           søgefeltet + chip-rækken). Boksen er her for det de ikke kan —
+           flere typer på én gang, og antal pr. type. -->
+      <div data-fsec="cykeltype" class="sidebar-box collapsed">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
           <h3 id="sidebar-type-heading">Cykeltype</h3>
           <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
         </div>
@@ -1184,7 +1187,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723w';
+    const V = '20260723x';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
