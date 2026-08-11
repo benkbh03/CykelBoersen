@@ -245,12 +245,14 @@ export function createListingEdit({
     document.getElementById('edit-external-url').value = b.external_url || '';
 
     // Stelnummer: vis kun status/sidste 4 (vi gemmer aldrig hele nummeret).
-    // Tomt felt = uændret; indtast igen for at gen-tjekke.
+    /* Tomt felt = uændret; indtast igen for at erstatte.
+       Placeholderen sagde "Tjekket", men vi tjekker ikke noget — vi gemmer de
+       sidste 4 cifre. Ordet lovede en verifikation der aldrig har fundet sted. */
     { const fn = document.getElementById('edit-frame-number');
       if (fn) {
         fn.value = '';
         fn.placeholder = b.frame_last4
-          ? `Tjekket · slutter på ••${b.frame_last4} — indtast igen for at gen-tjekke`
+          ? `Oplyst · slutter på ••${b.frame_last4} — indtast igen for at rette`
           : 'Indtast stelnummer';
       } }
 
@@ -462,8 +464,8 @@ export function createListingEdit({
       if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
     }
 
-    // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret). Tyveri-
-    // tjekkes server-side; kun sidste 4 + resultat gemmes (aldrig hele nummeret).
+    // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret).
+    // Kun de sidste 4 cifre gemmes — resten kasseres og sendes ikke videre.
     const frameInput = document.getElementById('edit-frame-number');
     const frameVal = frameInput ? frameInput.value.trim() : '';
     if (frameVal) {
