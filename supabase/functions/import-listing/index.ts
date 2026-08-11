@@ -3,14 +3,14 @@
 // m.fl.) server-side og trækker Open Graph-metadata + hovedbillede ud, så sælgeren
 // kan genbruge sin EGEN annonce uden at taste alt forfra.
 //
-// Kald:  POST { url: "https://www.dba.dk/..." }   (INGEN auth — åbent sælg-flow)
+// Kald:  POST { url: "https://www.dba.dk/..." }   Authorization: Bearer <bruger-JWT>
 // Svar:  {
 //   ok, blocked?, reason,
 //   title?, description?, price?, price_source?,
 //   image_base64?, image_media_type?,
 //   source_host?
 // }
-//   reason: 'ok' | 'format' | 'blocked' | 'no_data' | 'fetch_error' | 'method'
+//   reason: 'ok' | 'auth' | 'format' | 'blocked' | 'no_data' | 'fetch_error' | 'method'
 //
 // SIKKERHED (SSRF): kun http/https, kun offentlige værter. Private/interne IP'er
 // (localhost, 10.x, 192.168.x, 169.254.x, .internal osv.) afvises FØR fetch, så
@@ -21,10 +21,19 @@
 // aldrig en hård fejl.
 //
 // Deploy: Supabase Dashboard → Edge Functions → import-listing → Deploy.
-//   "Verify JWT" SKAL være SLÅET FRA (åbent sælg-flow, også for ikke-loggede).
-//   Ingen secrets nødvendige.
+//   "Verify JWT with legacy secret": SLÅET FRA. Den indstilling accepterer
+//   den offentlige anon-nøgle og spærrer derfor ikke for nogen, og fordi
+//   projektet bruger den nye sb_publishable-nøgleformat kan den afvise vores
+//   egne brugeres tokens. Adgangskontrollen ligger i stedet i koden nedenfor
+//   (auth.getUser på Authorization-headeren), som Supabase selv anbefaler.
+//   Secrets: SUPABASE_URL og SUPABASE_SERVICE_ROLE_KEY — begge sættes
+//   automatisk af Supabase, der er ikke noget at udfylde manuelt.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -266,6 +275,29 @@ async function fetchImage(rawUrl: string): Promise<{ base64: string; mediaType: 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST")    return json({ ok: false, reason: "method" }, 405);
+
+  /* ── Kræv en rigtig, logget ind bruger ──────────────────────────────────
+     Dashboardets "Verify JWT with legacy secret" duer IKKE som spærre her:
+     den accepterer den offentlige anon-nøgle (står eksplicit i UI'et), så
+     den holder ingen ude. Og fordi projektet bruger den nye
+     sb_publishable-nøgleformat, er en brugers access-token ikke nødvendigvis
+     signeret med legacy-secret'en — slået til kan den afvise vores EGNE
+     brugere. Derfor: indstillingen SLÅET FRA, og den rigtige kontrol her.
+
+     Uden den er funktionen en åben proxy: hvem som helst kunne få vores
+     projekt til at hente vilkårlige URL'er på deres vegne. SSRF-guarden
+     nedenfor spærrer kun for interne adresser, ikke for at blive brugt som
+     gennemgangsled mod resten af internettet. */
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  if (!jwt) return json({ ok: false, reason: "auth" }, 401);
+  try {
+    const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const { data: { user } } = await supa.auth.getUser(jwt);
+    // Anon-/publishable-nøglen giver ingen bruger — kun en rigtig session gør.
+    if (!user) return json({ ok: false, reason: "auth" }, 401);
+  } catch {
+    return json({ ok: false, reason: "auth" }, 401);
+  }
 
   let rawUrl = "";
   try {

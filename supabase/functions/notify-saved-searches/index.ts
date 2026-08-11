@@ -238,6 +238,32 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    /* ── Kun annoncens ejer (eller en admin) må udløse notifikationen ──────
+       Funktionen mailer et vilkårligt antal af VORES brugere, og teksten i
+       mailen kommer fra `bike` i request-bodyen — mærke, model og pris skrives
+       direkte ind. Uden denne kontrol kunne enhver med den offentlige
+       anon-nøgle sende mails med selvvalgt indhold ud til brugere fra vores
+       eget afsender-domæne. Dashboardets "Verify JWT" hjælper ikke: anon-nøglen
+       opfylder den. Kontrollen skal ligge her.
+
+       Samme model som check-frame-number: ejer ELLER admin (admin kan oprette
+       annoncer på en forhandlers vegne, og så er user_id forhandlerens). */
+    const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+    if (!jwt) return new Response("Ikke logget ind", { status: 401, headers: corsHeaders });
+    const { data: { user: caller } } = await supabase.auth.getUser(jwt);
+    if (!caller) return new Response("Ugyldig session", { status: 401, headers: corsHeaders });
+
+    const { data: ownerRow } = await supabase
+      .from("bikes").select("user_id").eq("id", bike.id).single();
+    if (!ownerRow) return new Response("Annonce ikke fundet", { status: 404, headers: corsHeaders });
+    if (ownerRow.user_id !== caller.id) {
+      const { data: p } = await supabase
+        .from("profiles").select("is_admin").eq("id", caller.id).single();
+      if (!p?.is_admin) {
+        return new Response("Ingen adgang til denne annonce", { status: 403, headers: corsHeaders });
+      }
+    }
+
     // Hent alle gemte søgninger (ikke notificeret i 24 timer)
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: searches } = await supabase
