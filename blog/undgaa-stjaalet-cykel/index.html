@@ -841,17 +841,25 @@
 
       <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
       <style>
-        .browse-cat-wrap{display:flex;}
+        .browse-cat-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
         .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
-        /* På mobil: toggle'en fylder hele bredden, og de to knapper deles 50/50
-           ud til kanterne. Placeret EFTER base-reglerne så den vinder på source-order. */
+        /* Ny/brugt er en underopdeling af den valgte kategori, ikke et sidestillet
+           valg. Lidt smallere knapper + rust som aktiv-farve holder de to grupper
+           visuelt adskilt, så de ikke ligner én lang række på seks knapper. */
+        .cond-axis-toggle .browse-cat-btn{padding:8px 14px;}
+        .cond-axis-btn.active{background:var(--rust);color:#fff;}
+        /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
+           deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
+           vinder på source-order. */
         @media(max-width:768px){
           .browse-cat-wrap{width:100%;display:block;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
+          .cond-axis-toggle{margin-top:8px;}
+          .cond-axis-toggle .browse-cat-btn{padding:9px 8px;}
         }
       </style>
       <div class="listings-header">
@@ -863,6 +871,14 @@
           <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
             <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
             <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
+          </div>
+          <!-- Ny/brugt er den første beslutning en køber tager. Den lå før kun i
+               sidebarens Stand-boks, som er foldet sammen som standard. Knappen
+               her sætter de samme condition-checkboxes — ikke et nyt filter. -->
+          <div class="browse-cat-toggle cond-axis-toggle" role="group" aria-label="Ny eller brugt">
+            <button class="browse-cat-btn cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
+            <button class="browse-cat-btn cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
+            <button class="browse-cat-btn cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
           </div>
         </div>
         <div class="listings-controls">
@@ -1152,7 +1168,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723s';
+    const V = '20260723t';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
