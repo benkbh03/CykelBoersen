@@ -145,7 +145,7 @@ const {
   updateNearMeRadius,
   applyNearMeFilter,
   sortBikes,
-  updateFilterCounts,
+  updateFilterCounts: updateFilterCountsBase,
   setCount,
   togglePill,
 } = createFilters({
@@ -195,6 +195,18 @@ const {
   askedAvailableSet,
   getBrowseCategory: () => _browseCategory,
 });
+
+/* Tællerne er sorteringens input, så cykeltype-rækkefølgen opdateres lige
+   efter dem. Wrapperen ligger HER og ikke inde i filters.js, fordi main.js
+   altid hentes med ?v=ASSET_VERSION mens de statiske ./js/*.js-imports ikke
+   har nogen version-query. Efter et deploy kan browseren derfor stadig køre
+   en cached filters.js et stykke tid — og så ville sorteringen udeblive uden
+   at noget så i stykker ud. Sortering er idempotent, så det gør ikke noget
+   at filters.js også kalder den når den er frisk. */
+async function updateFilterCounts(...args) {
+  await updateFilterCountsBase(...args);
+  sortTypeFilterByCount();
+}
 
 // Aktiv browse-kategori for forside-toggle "Cykler | Tilbehør". Hård top-level
 // separation: alle liste-queries scopes på den (default cykel).
