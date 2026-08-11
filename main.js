@@ -14,6 +14,7 @@ import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
 import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701t';
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
+import { setConditionAxis as _setConditionAxis, syncConditionAxis, sortTypeFilterByCount } from './js/condition-axis.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
@@ -2467,6 +2468,11 @@ function applyFilters() {
   const city   = document.getElementById('search-city')?.value?.trim() || null;
   const search = document.getElementById('search-input')?.value?.trim() || null;
 
+  // Hold "Alle | Nye | Brugte" i sync med sidebarens condition-checkboxes.
+  // Knappen er kun en visning af dem, så den skal også opdateres når brugeren
+  // krydser af direkte i Stand-boksen eller rydder filtrene.
+  syncConditionAxis();
+
   debouncedLoadFilters({
     types, conditions, minPrice, maxPrice, sellerType,
     wheelSizes, sizes, colors, brands,
@@ -2476,6 +2482,11 @@ function applyFilters() {
     maxWeight, city, search,
   });
 }
+
+// Genvejen skriver i sidebarens checkboxes og lader applyFilters gøre resten,
+// så der kun findes ÉN kilde til sandheden om stand.
+function setConditionAxis(mode) { _setConditionAxis(mode, applyFilters); }
+window.setConditionAxis = setConditionAxis;
 
 const KNOWN_BRANDS = ['Amladcykler','Avenue','Babboe','Batavus','Bergamont','Bianchi','Bike by Gubi','Black Iron Horse','BMC','Brabus','Brompton','Butchers & Bicycles','Cannondale','Canyon','Carqon','Centurion','Cervélo','Christiania Bikes','Colnago','Conway','Corratec','Cube','E-Fly','Early Rider','Ebsen','Electra','Everton','FACTOR','Falcon','Felt','Focus','Frog Bikes','Gazelle','Ghost','Giant','GT','Gudereit','Haibike','Husqvarna','Kalkhoff','Kildemoes','Koga','Kona','Kreidler','Lapierre','Larry vs Harry / Bullitt','Lindebjerg','Liv','LOOK','Marin','Mate Bike','MBK','Merida','Momentum','Mondraker','Motobecane','Moustache','Nihola','Nishiki','Norden','Norco','Omnium','Orbea','Pegasus','Pinarello','Principia','Puky','Qio','QWIC','Raleigh','Remington','Riese & Müller','Ridley','Royal Cargobike','Santa Cruz','SCO','Scott','Seaside Bike','Silverback','Sparta','Specialized','Stevens','Superior','Tern','Trek','Triobike','Urban Arrow','uVelo','Van De Falk','VanMoof','Velo','Velo de Ville','Velo Lux','Victoria','Wilier','Winther','Woom','Yuba'];
 
