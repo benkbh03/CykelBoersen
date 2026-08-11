@@ -31,14 +31,28 @@ serve(async (req) => {
   }
 
   try {
-    const { user_id, return_url } = await req.json();
+    const { return_url } = await req.json();
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+    /* ── Kalderens egen session bestemmer hvis portal der åbnes ────────────
+       user_id blev tidligere læst fra request-bodyen og brugt direkte til at
+       slå en Stripe-kunde op. Enhver der kendte eller gættede et bruger-ID
+       kunne dermed få en billing-portal-adgang til DEN forhandlers abonnement
+       — kort, fakturaer, opsigelse. Dashboardets "Verify JWT" ville ikke have
+       fanget det: anon-nøglen opfylder den indstilling.
+
+       Nu kommer id'et udelukkende fra det verificerede token, og bodyens
+       user_id ignoreres. Frontenden må gerne blive ved med at sende det. */
+    const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+    if (!jwt) throw new Error("Ikke logget ind");
+    const { data: { user: caller } } = await supabase.auth.getUser(jwt);
+    if (!caller) throw new Error("Ugyldig session");
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("stripe_customer_id")
-      .eq("id", user_id)
+      .eq("id", caller.id)
       .single();
 
     if (profileError || !profile?.stripe_customer_id) {

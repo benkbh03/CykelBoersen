@@ -36,7 +36,7 @@ serve(async (req) => {
   }
 
   try {
-    const { plan, user_id, email, success_url, cancel_url } = await req.json();
+    const { plan, success_url, cancel_url } = await req.json();
 
     // Vælg Stripe Price ID baseret på valgt plan
     const priceId = plan === "yearly"
@@ -48,6 +48,23 @@ serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+    /* ── Abonnementet knyttes til kalderens egen konto ─────────────────────
+       user_id og email blev tidligere taget fra request-bodyen. Det betød at
+       en fremmed kunne oprette en Stripe-kunde på en anden brugers profil og
+       skrive stripe_customer_id ind på dennes række — altså binde en tilfældig
+       forhandler til et betalingsforhold vedkommende ikke havde bedt om.
+       Dashboardets "Verify JWT" fanger det ikke: anon-nøglen opfylder den.
+
+       Id og e-mail kommer nu fra det verificerede token. Funktionen er dormant
+       (forhandlere er gratis i lanceringsfasen), men rettes her, så den er
+       sikker den dag betalingen tændes — ikke noget der skal huskes til sidst. */
+    const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+    if (!jwt) throw new Error("Ikke logget ind");
+    const { data: { user: caller } } = await supabase.auth.getUser(jwt);
+    if (!caller) throw new Error("Ugyldig session");
+    const user_id = caller.id;
+    const email   = caller.email;
 
     // Hent eller opret Stripe-kunde
     const { data: profile } = await supabase
