@@ -841,7 +841,14 @@
 
       <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
       <style>
-        .browse-cat-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        /* To knaprækker kan ikke være i midten af .listings-header: den er
+           display:flex med overskrift til venstre og kontroller til højre, så
+           en ekstra gruppe klemmer "Seneste annoncer" ud i to linjer.
+           I stedet får de deres EGEN fulde række under headeren (order:3 +
+           flex-basis:100%), hvor der er plads til at stå side om side. */
+        .listings-header{flex-wrap:wrap;}
+        .browse-cat-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+          order:3;flex-basis:100%;margin-top:14px;}
         .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
@@ -855,7 +862,10 @@
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
         @media(max-width:768px){
-          .browse-cat-wrap{width:100%;display:block;}
+          /* .listings-header bliver flex-direction:column på mobil (05-pages.css),
+             og dér betyder flex-basis HØJDE. 100% ville strække rækken ud over
+             hele headerens højde — derfor tilbage til auto. */
+          .browse-cat-wrap{width:100%;display:block;flex-basis:auto;margin-top:0;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
           .cond-axis-toggle{margin-top:8px;}
@@ -1168,7 +1178,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723t';
+    const V = '20260723u';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
