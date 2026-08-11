@@ -3,7 +3,7 @@
 // m.fl.) server-side og trækker Open Graph-metadata + hovedbillede ud, så sælgeren
 // kan genbruge sin EGEN annonce uden at taste alt forfra.
 //
-// Kald:  POST { url: "https://www.dba.dk/..." }   (INGEN auth — åbent sælg-flow)
+// Kald:  POST { url: "https://www.dba.dk/..." }   Authorization: Bearer <bruger-JWT>
 // Svar:  {
 //   ok, blocked?, reason,
 //   title?, description?, price?, price_source?,
@@ -21,7 +21,14 @@
 // aldrig en hård fejl.
 //
 // Deploy: Supabase Dashboard → Edge Functions → import-listing → Deploy.
-//   "Verify JWT" SKAL være SLÅET FRA (åbent sælg-flow, også for ikke-loggede).
+//   "Verify JWT" skal være SLÅET TIL (standard). Sælg-siden kræver login —
+//   renderSellPage() åbner login-modalen og returnerer hvis der ikke er en
+//   bruger — så importen kaldes altid med en session, og supabase-js sender
+//   automatisk access-token med.
+//   Med JWT slået FRA ville funktionen være en åben proxy: hvem som helst
+//   kunne få vores Supabase-projekt til at hente vilkårlige offentlige URL'er
+//   på deres vegne. SSRF-guarden nedenfor spærrer for interne adresser, men
+//   ikke for at blive brugt som gennemgangsled mod resten af internettet.
 //   Ingen secrets nødvendige.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
