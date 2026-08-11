@@ -15,6 +15,7 @@ import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUT
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { setConditionAxis as _setConditionAxis, syncConditionAxis, sortTypeFilterByCount } from './js/condition-axis.js';
+import { setHeroType, syncTypeControls } from './js/type-sync.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
@@ -1886,15 +1887,13 @@ const { useQuickReply, getQuickReplies, renderQuickRepliesHTML } = createQuickRe
   getCurrentProfile: () => currentProfile,
 });
 
+/* Chip-rækken skrev tidligere kun til #search-type og kaldte searchBikes(),
+   som går uden om sidebarens type-checkboxes. applyFilters() læser omvendt
+   kun checkboxene. Klikkede man en chip og krydsede derefter en type af i
+   sidebaren, blev chippens valg lydløst droppet — mens chippen blev stående
+   fremhævet. Nu går begge veje gennem checkboxene. */
 function selectHeroCatChip(el, type) {
-  document.getElementById('search-type').value = type;
-  searchBikes();
-  document.querySelectorAll('.hero-cat-chip').forEach(c => {
-    c.classList.remove('active');
-    c.setAttribute('aria-pressed', 'false');
-  });
-  el.classList.add('active');
-  el.setAttribute('aria-pressed', 'true');
+  setHeroType(type || null, applyFilters);
 }
 
 // Anvend en pre-defineret 'populær søgning' fra forsiden-chips.
@@ -2484,6 +2483,9 @@ function applyFilters() {
   // Knappen er kun en visning af dem, så den skal også opdateres når brugeren
   // krydser af direkte i Stand-boksen eller rydder filtrene.
   syncConditionAxis();
+  // Samme for cykeltype: chip-rækken og "Alle typer"-dropdown'en er visninger
+  // af sidebarens type-checkboxes, ikke selvstændige filtre.
+  syncTypeControls();
 
   debouncedLoadFilters({
     types, conditions, minPrice, maxPrice, sellerType,
