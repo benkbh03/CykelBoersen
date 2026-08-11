@@ -1,3 +1,5 @@
+import { sortTypeFilterByCount, syncConditionAxis } from './condition-axis.js';
+
 export function createFilters({
   supabase,
   showToast,
@@ -131,6 +133,11 @@ export function createFilters({
 
     document.querySelectorAll('.price-range input[type="number"]').forEach(inp => inp.value = '');
     { const el = document.getElementById('sidebar-max-weight'); if (el) el.value = ''; }
+
+    /* Ryd-knappen kalder ikke applyFilters (den loader direkte via loadBikes),
+       så "Alle | Nye | Brugte" ville blive stående på fx Brugte selvom
+       afkrydsningerne lige er ryddet. Sync eksplicit her. */
+    syncConditionAxis();
 
     setCurrentFilters({});
     setCurrentFilterArgs(null);
@@ -488,6 +495,13 @@ export function createFilters({
 
     const statDealers = document.getElementById('stat-dealers');
     if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
+
+    /* Cykeltype sorteres efter antal, størst først. Markuppens rækkefølge er
+       fast, så listen begyndte med den type der tilfældigvis stod først —
+       også når den kun havde én annonce, mens typen med 88 lå i midten.
+       Skal køre HER, efter setCount: sorteringen læser de tal der lige er
+       skrevet ind, og fanger dermed også kategori-skift til tilbehør. */
+    sortTypeFilterByCount();
   }
 
   function setCount(filterAttr, filterValue, count) {
