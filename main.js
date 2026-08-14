@@ -1327,6 +1327,45 @@ async function init() {
     openInboxModal();
   }
 
+  /* ?q=<søgeord> — fritekstsøgning fra Googles sitelinks-søgefelt.
+     JSON-LD'en i index.html lover Google at cykelbørsen.dk/?q=racercykel
+     udfører en søgning (WebSite → SearchAction). Det gjorde den ikke: appen
+     læste type, bike, inbox, admin og de to Stripe-parametre, men aldrig q,
+     så folk landede på en ufiltreret forside.
+
+     Google Search Console fangede det — /?q={search_term_string} lå under
+     "Page with redirect", altså havde Googlebot forsøgt at bruge skabelonen.
+     Bliver søgefeltet tildelt uden at virke, sender det brugere et sted hen
+     hvor der ikke er søgt efter noget, og Google fjerner funktionen igen.
+
+     URL'en beholdes (ingen replaceState): den ER søgningen, og brugeren skal
+     kunne dele eller bogmærke den. */
+  {
+    const sp = new URLSearchParams(window.location.search);
+    const q = (sp.get('q') || '').trim();
+    if (q && !q.includes('{')) {                 // ignorér Googles rå skabelon
+      const input = document.getElementById('search-input');
+      if (input) { input.value = q; searchBikes(); }
+    } else {
+      /* ?type= og ?maxPrice= var i samme situation. Forside-chippene har
+         href="/?type=Tasker%20%26%20kurve", men filtreringen lå udelukkende i
+         deres onclick. Åbnede man en chip i ny fane, delte linket, eller var
+         man en crawler, landede man på en ufiltreret forside — linket lovede
+         noget det ikke holdt.
+
+         applyPopularSearch er præcis det klikket kalder, så de to veje kan
+         ikke længere komme ud af trit. */
+      const type = (sp.get('type') || '').trim();
+      const maxPrice = parseInt(sp.get('maxPrice'), 10);
+      if (type || Number.isFinite(maxPrice)) {
+        applyPopularSearch({
+          type: type || undefined,
+          maxPrice: Number.isFinite(maxPrice) ? maxPrice : undefined,
+        });
+      }
+    }
+  }
+
   // Åbn delt annonce automatisk hvis ?bike=ID er i URL'en
   const sharedBikeId = new URLSearchParams(window.location.search).get('bike');
   if (sharedBikeId) {

@@ -114,8 +114,18 @@ function bikeLinkList(bikes) {
 }
 
 /* ---------- Template-transformation ---------- */
-function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt }) {
-  const url = BASE_URL + canonicalPath;
+/* Skal give SAMME adresse som canonicalUrl() i js/utils.js — se noten der.
+   Prerenderede sider ligger som <rute>/index.html og serveres på /rute/, så
+   canonical skal pege dér og ikke på /rute, som blot omdirigerer. */
+function canonicalUrl(path) {
+  const p = String(path || '/');
+  if (p === '/' || p === '') return `${BASE_URL}/`;
+  if (p.includes('?') || p.includes('#')) return BASE_URL + p;
+  return BASE_URL + (p.endsWith('/') ? p : `${p}/`);
+}
+
+function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt, noindex }) {
+  const url = canonicalUrl(canonicalPath);
   const t = escHtml(title);
   const d = escHtml(description);
   let html = TEMPLATE;
@@ -155,6 +165,24 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
     // Fjern faste dimensioner fra hero-billedet — annonce-billeder har andre mål.
     html = html.replace(/\s*<meta property="og:image:width"[^>]*>/, '');
     html = html.replace(/\s*<meta property="og:image:height"[^>]*>/, '');
+  }
+
+  /* noindex på sider uden indhold at vise.
+     En mærkeside uden aktive annoncer lover "Find brugte og nye Trek-cykler"
+     og viser ingenting. Den slags får elendige adfærdssignaler, og med 61 af
+     dem trækker de hele domænet ned.
+
+     follow, ikke nofollow: siden har stadig interne links til kategorier og
+     andre mærker, og dem skal linkværdien gerne flyde videre gennem.
+
+     Selvhelende: prerender kører dagligt, så en side vipper automatisk tilbage
+     til indekserbar den dag der dukker en annonce op — og omvendt. Ingen liste
+     at vedligeholde. */
+  if (noindex) {
+    html = html.replace(
+      /<meta name="robots"[^>]*>/,
+      '<meta name="robots" content="noindex, follow">',
+    );
   }
 
   /* FJERN forsidens FAQ-schema fra alle andre sider.
@@ -275,7 +303,7 @@ function brandPage(slug, meta) {
       '@type': 'CollectionPage',
       name: `Brugte og nye ${name} cykler`,
       description: meta.description,
-      url: `${BASE_URL}${canonicalPath}`,
+      url: canonicalUrl(canonicalPath),
       about: {
         '@type': 'Brand',
         name,
@@ -290,7 +318,10 @@ function brandPage(slug, meta) {
     ]),
   ];
 
-  return { title, description, canonicalPath, jsonldBlocks, contentHtml };
+  /* Ingen aktive annoncer = ingenting at rangere for. Se noten i buildPage. */
+  const hasBikes = (BIKES_BY_BRAND.get(slug) || []).length > 0;
+
+  return { title, description, canonicalPath, jsonldBlocks, contentHtml, noindex: !hasBikes };
 }
 
 function blogArticlePage(article) {
@@ -350,7 +381,7 @@ function blogArticlePage(article) {
       datePublished: article.publishedAt,
       author: { '@type': 'Organization', name: 'Cykelbørsen' },
       publisher: { '@type': 'Organization', name: 'Cykelbørsen', url: BASE_URL },
-      mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}${canonicalPath}` },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl(canonicalPath) },
     },
     breadcrumb([
       ['Forside', '/'],
@@ -493,7 +524,7 @@ function categoryPage(slug, meta) {
       '@type': 'CollectionPage',
       name: meta.h1,
       description: meta.metaDesc,
-      url: `${BASE_URL}${canonicalPath}`,
+      url: canonicalUrl(canonicalPath),
     },
     breadcrumb([['Forside', '/'], [meta.name, canonicalPath]]),
   ];
@@ -554,7 +585,7 @@ function bikePage(b) {
       image: images.length ? images : (primary ? [primary] : []),
       brand: { '@type': 'Brand', name: b.brand },
       category: b.type,
-      url: `${BASE_URL}${canonicalPath}`,
+      url: canonicalUrl(canonicalPath),
       offers: {
         '@type': 'Offer',
         price,
@@ -562,7 +593,7 @@ function bikePage(b) {
         priceValidUntil,
         availability: 'https://schema.org/InStock',
         itemCondition: b.condition === 'Ny' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
-        url: `${BASE_URL}${canonicalPath}`,
+        url: canonicalUrl(canonicalPath),
         seller: {
           '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
           name: b.profiles?.shop_name || b.profiles?.name || 'Sælger',
@@ -627,13 +658,13 @@ function rentalItemPage(it) {
       description: it.description || `Udlejning: ${it.type || 'cykel'}`,
       image: images.length ? images : (primary ? [primary] : []),
       category: it.type,
-      url: `${BASE_URL}${canonicalPath}`,
+      url: canonicalUrl(canonicalPath),
       offers: {
         '@type': 'Offer',
         price: daily,
         priceCurrency: 'DKK',
         availability: 'https://schema.org/InStock',
-        url: `${BASE_URL}${canonicalPath}`,
+        url: canonicalUrl(canonicalPath),
       },
     },
     breadcrumb([['Forside', '/'], ['Udlejning', '/udlejning'], [name, canonicalPath]]),
@@ -654,7 +685,7 @@ function breadcrumb(items) {
       '@type': 'ListItem',
       position: i + 1,
       name,
-      item: `${BASE_URL}${path}`,
+      item: canonicalUrl(path),
     })),
   };
 }
@@ -738,7 +769,7 @@ function staticAppPage({ path, h1, title, description }) {
     '@type': 'WebPage',
     name: title,
     description,
-    url: `${BASE_URL}${path}`,
+    url: canonicalUrl(path),
     isPartOf: { '@type': 'WebSite', name: 'Cykelbørsen', url: BASE_URL },
   }];
   return { title, description, canonicalPath: path, jsonldBlocks, contentHtml };
