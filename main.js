@@ -3190,10 +3190,17 @@ const _ensureFeedImport = lazyCtrl(
 );
 const loadFeedImport = lazyMethod(_ensureFeedImport, 'loadFeedImportTab');
 
+const _ensureDealerTraction = lazyCtrl(
+  () => import(`./js/dealer-traction.js?v=${ASSET_VERSION}`),
+  'createDealerTraction',
+  () => ({ supabase, esc, retryHTML }),
+);
+const loadDealerTraction = lazyMethod(_ensureDealerTraction, 'loadDealerTraction');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -3478,15 +3485,13 @@ async function loadAdminStats() {
     const since = new Date(Date.now() - (DAYS - 1) * 86400000);
     since.setHours(0, 0, 0, 0);
     const sinceIso = since.toISOString();
-    const [profRes, bikeRes, revRes, searchRes, trafSearchRes, trafViewRes, funnelRes, msgRes] = await Promise.all([
+    const [profRes, bikeRes, revRes, searchRes, trafSearchRes, trafViewRes, funnelRes] = await Promise.all([
       supabase.from('profiles').select('id, shop_name, name, seller_type, verified, created_at'),
       supabase.from('bikes').select('id, user_id, type, price, is_active, sold_via, views, created_at'),
       supabase.from('reviews').select('rating'),
       supabase.from('search_logs').select('query, result_count').order('created_at', { ascending: false }).limit(2000),
       supabase.from('search_logs').select('created_at').gte('created_at', sinceIso),
       supabase.from('bike_views').select('bike_id, viewed_at').gte('viewed_at', sinceIso),
-      // Henvendelser pr. forhandler — beviset for at platformen sender dem kunder.
-      supabase.from('messages').select('sender_id, receiver_id, created_at').gte('created_at', sinceIso),
       supabase.from('sell_funnel_events').select('flow_id, step, prefilled').gte('created_at', sinceIso),
     ]);
     const profiles = profRes.data || [];
@@ -3558,57 +3563,6 @@ async function loadAdminStats() {
 
        Tælles pr. flow_id, ikke pr. hændelse: én person der klikker frem og
        tilbage mellem trin 2 og 3 skal tælle som ét forsøg. */
-    /* ── Forhandler-engagement ──────────────────────────────────
-       Det tal der afgør hvornår der kan tages betaling. En forhandler med 60
-       annoncer og nul henvendelser betaler ikke, uanset hvor mange andre
-       forhandlere der er. En der får fem seriøse henvendelser om måneden gør,
-       selv hvis de er den eneste.
-
-       Derfor er kolonnen "Henvendelser" den vigtigste her. Visninger er
-       kontekst; henvendelser er beviset. */
-    const dealerRows = profiles.filter(p => p.seller_type === 'dealer');
-    const msgs = msgRes.data || [];
-    const viewRows = trafViewRes.data || [];
-
-    const bikesByOwner = new Map();          // user_id -> [bike_id]
-    const ownerOfBike  = new Map();          // bike_id -> user_id
-    bikes.forEach(b => {
-      if (!b.user_id || !b.id) return;
-      ownerOfBike.set(b.id, b.user_id);
-      if (b.is_active) {
-        if (!bikesByOwner.has(b.user_id)) bikesByOwner.set(b.user_id, []);
-        bikesByOwner.get(b.user_id).push(b.id);
-      }
-    });
-
-    const viewsByOwner = new Map();
-    viewRows.forEach(v => {
-      const owner = ownerOfBike.get(v.bike_id);
-      if (owner) viewsByOwner.set(owner, (viewsByOwner.get(owner) || 0) + 1);
-    });
-
-    // Unikke afsendere pr. modtager — 5 beskeder fra samme person er ÉN
-    // interesseret køber, ikke fem.
-    const buyersByOwner = new Map();
-    const msgCountByOwner = new Map();
-    msgs.forEach(m => {
-      if (!m.receiver_id) return;
-      msgCountByOwner.set(m.receiver_id, (msgCountByOwner.get(m.receiver_id) || 0) + 1);
-      if (!buyersByOwner.has(m.receiver_id)) buyersByOwner.set(m.receiver_id, new Set());
-      buyersByOwner.get(m.receiver_id).add(m.sender_id);
-    });
-
-    const dealerStats = dealerRows.map(d => ({
-      name:    d.shop_name || d.name || 'Uden navn',
-      verified: d.verified,
-      listings: (bikesByOwner.get(d.id) || []).length,
-      views:    viewsByOwner.get(d.id) || 0,
-      msgs:     msgCountByOwner.get(d.id) || 0,
-      buyers:   (buyersByOwner.get(d.id) || new Set()).size,
-    })).sort((a, b) => b.msgs - a.msgs || b.views - a.views);
-
-    const dealersWithContact = dealerStats.filter(d => d.msgs > 0).length;
-
     const funnelRows = funnelRes.data || [];
     const flows = new Map();               // flow_id -> { steps:Set, prefilled }
     funnelRows.forEach(r => {
@@ -3732,35 +3686,6 @@ async function loadAdminStats() {
           ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
         </div>
       </div>
-      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:22px 0 4px;color:var(--charcoal);">Forhandlere — får de kunder? (${DAYS} dage)</h3>
-      <p style="font-size:0.76rem;color:var(--muted);margin:0 0 8px;">
-        Henvendelser er beviset. En forhandler med mange annoncer og nul henvendelser vil ikke betale;
-        en der får henvendelser vil. ${dealerStats.length ? `<strong style="color:var(--charcoal);">${dealersWithContact} af ${dealerStats.length}</strong> forhandlere er blevet kontaktet i perioden.` : ''}
-      </p>
-      ${dealerStats.length ? `
-      <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;font-size:0.86rem;min-width:460px;">
-          <tr style="border-bottom:1.5px solid var(--border);text-align:left;">
-            <th style="padding:6px 8px 6px 0;font-weight:600;">Forhandler</th>
-            <th style="padding:6px 8px;font-weight:600;text-align:right;">Annoncer</th>
-            <th style="padding:6px 8px;font-weight:600;text-align:right;">Visninger</th>
-            <th style="padding:6px 8px;font-weight:600;text-align:right;">Henvendelser</th>
-            <th style="padding:6px 0 6px 8px;font-weight:600;text-align:right;">Købere</th>
-          </tr>
-          ${dealerStats.map(d => `
-            <tr style="border-bottom:1px solid var(--border);">
-              <td style="padding:7px 8px 7px 0;">${esc(d.name)}${d.verified ? '' : ' <span style="color:var(--muted);font-size:0.76rem;">(afventer)</span>'}</td>
-              <td style="padding:7px 8px;text-align:right;color:var(--muted);">${d.listings}</td>
-              <td style="padding:7px 8px;text-align:right;color:var(--muted);">${d.views.toLocaleString('da-DK')}</td>
-              <td style="padding:7px 8px;text-align:right;font-weight:700;color:${d.msgs > 0 ? 'var(--forest)' : 'var(--muted)'};">${d.msgs}</td>
-              <td style="padding:7px 0 7px 8px;text-align:right;color:var(--muted);">${d.buyers}</td>
-            </tr>`).join('')}
-        </table>
-      </div>
-      <p style="font-size:0.74rem;color:var(--muted);margin-top:6px;">
-        Visninger kræver at <strong>add_bike_views_admin_select.sql</strong> er kørt. Står de på 0 for alle, mangler den.
-      </p>` : '<p style="color:var(--muted);font-size:0.86rem;">Ingen forhandlere endnu.</p>'}
-
       <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:22px 0 4px;color:var(--charcoal);">Sælg-tragt (${DAYS} dage)</h3>
       <p style="font-size:0.76rem;color:var(--muted);margin:0 0 8px;">Hvor langt folk når, når de begynder at oprette en annonce.</p>
       ${fStart === 0 ? '<p style="color:var(--muted);font-size:0.86rem;">Ingen forsøg logget endnu.</p>' : `
@@ -3833,6 +3758,7 @@ async function submitDealerInvite() {
 
 window.submitDealerInvite   = submitDealerInvite;
 window.loadAdminStats       = loadAdminStats;
+window.loadDealerTraction   = loadDealerTraction;
 window.updateVerifyUI       = updateVerifyUI;
 window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
