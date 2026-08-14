@@ -101,6 +101,25 @@
     gap: 10px;
   }
 }
+/* Prerendret link-liste over annoncer. Står i den rå HTML på mærke- og
+   kategorisider, så crawlere (og folk på en langsom forbindelse) ser de
+   faktiske cykler i stedet for "Henter Trek-cykler…". Appen erstatter
+   containeren med rigtige kort så snart JS er kørt, så den her er kun synlig
+   et øjeblik — men den skal ikke ligne en fejl imens.
+   grid-column: 1/-1 fordi forælderen er et grid; uden den ville listen blive
+   klemt ned i én kolonne på 250 px. */
+.prerender-bike-links {
+  grid-column: 1 / -1;
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.prerender-bike-links a {
+  display: inline-block;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--sand); color: var(--charcoal);
+  font-size: 0.85rem; text-decoration: none;
+}
+.prerender-bike-links a:hover { border-color: var(--forest); }
 /* Initielt kollapset: kun de første 4 cykler/forhandlere — resten åbnes
    med en "Vis alle"-knap nedenfor. Holder mærkesiden kompakt selv for
    store mærker som Trek, Specialized osv. */
