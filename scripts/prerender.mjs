@@ -114,7 +114,7 @@ function bikeLinkList(bikes) {
 }
 
 /* ---------- Template-transformation ---------- */
-function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt }) {
+function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt, noindex }) {
   const url = BASE_URL + canonicalPath;
   const t = escHtml(title);
   const d = escHtml(description);
@@ -155,6 +155,24 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
     // Fjern faste dimensioner fra hero-billedet — annonce-billeder har andre mål.
     html = html.replace(/\s*<meta property="og:image:width"[^>]*>/, '');
     html = html.replace(/\s*<meta property="og:image:height"[^>]*>/, '');
+  }
+
+  /* noindex på sider uden indhold at vise.
+     En mærkeside uden aktive annoncer lover "Find brugte og nye Trek-cykler"
+     og viser ingenting. Den slags får elendige adfærdssignaler, og med 61 af
+     dem trækker de hele domænet ned.
+
+     follow, ikke nofollow: siden har stadig interne links til kategorier og
+     andre mærker, og dem skal linkværdien gerne flyde videre gennem.
+
+     Selvhelende: prerender kører dagligt, så en side vipper automatisk tilbage
+     til indekserbar den dag der dukker en annonce op — og omvendt. Ingen liste
+     at vedligeholde. */
+  if (noindex) {
+    html = html.replace(
+      /<meta name="robots"[^>]*>/,
+      '<meta name="robots" content="noindex, follow">',
+    );
   }
 
   /* FJERN forsidens FAQ-schema fra alle andre sider.
@@ -290,7 +308,10 @@ function brandPage(slug, meta) {
     ]),
   ];
 
-  return { title, description, canonicalPath, jsonldBlocks, contentHtml };
+  /* Ingen aktive annoncer = ingenting at rangere for. Se noten i buildPage. */
+  const hasBikes = (BIKES_BY_BRAND.get(slug) || []).length > 0;
+
+  return { title, description, canonicalPath, jsonldBlocks, contentHtml, noindex: !hasBikes };
 }
 
 function blogArticlePage(article) {

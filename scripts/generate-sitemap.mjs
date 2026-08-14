@@ -14,6 +14,7 @@
  */
 
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { brandToSlug } from '../js/brand-data-v2.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ktufgncydxhkhfttojkh.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
@@ -118,7 +119,8 @@ async function main() {
   let dynamicFailed = false;
 
   try {
-    bikes = await fetchSupabase('bikes?is_active=eq.true&select=id');
+    // brand hentes med, så mærkesider uden aktive annoncer kan udelades nedenfor.
+    bikes = await fetchSupabase('bikes?is_active=eq.true&select=id,brand');
   } catch (err) {
     console.warn('Kunne ikke hente bikes:', err.message);
     dynamicFailed = true;
@@ -148,11 +150,26 @@ async function main() {
     }
   }
 
+  /* Kun mærkesider der faktisk har noget at vise.
+     61 af de 81 mærkesider havde ingen aktive annoncer, og de lå alle i
+     sitemappet — altså bad vi Google om at indeksere sider der lover
+     "Find brugte og nye Trek-cykler" og viser nul. prerender.mjs sætter
+     noindex på dem; her udelades de også fra sitemappet, så de to signaler
+     ikke modsiger hinanden.
+
+     Selvhelende på samme måde: dukker der en Trek op i morgen, er siden med
+     igen ved næste kørsel. */
+  const slugsWithBikes = new Set(
+    bikes.map(b => brandToSlug((b.brand || '').trim())).filter(Boolean)
+  );
+  const brandSlugsWithBikes = BRAND_SLUGS.filter(([slug]) => slugsWithBikes.has(slug));
+  console.log(`Mærkesider i sitemap: ${brandSlugsWithBikes.length} af ${BRAND_SLUGS.length} (resten har ingen aktive annoncer).`);
+
   const urls = [
     ...STATIC_URLS,
     ...CATEGORY_SLUGS.map(slug => ({ loc: `/${slug}`, changefreq: 'daily', priority: '0.9' })),
     ...BLOG_SLUGS.map(slug => ({ loc: `/blog/${slug}`, changefreq: 'monthly', priority: '0.7' })),
-    ...BRAND_SLUGS.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
+    ...brandSlugsWithBikes.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
     ...bikes.map(b => ({ loc: `/bike/${b.id}`, changefreq: 'weekly', priority: '0.6' })),
     ...dealers.map(d => ({ loc: `/dealer/${d.id}`, changefreq: 'weekly', priority: '0.6' })),
     ...rentals.map(r => ({ loc: `/udlejning/${r.id}`, changefreq: 'weekly', priority: '0.6' })),
