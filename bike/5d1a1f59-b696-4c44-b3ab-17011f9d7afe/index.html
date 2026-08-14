@@ -73,7 +73,7 @@
   <link rel="stylesheet" href="/css/07-map.css?v=20260722m">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260722c">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260811c">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
   <link rel="stylesheet" href="/css/12-rental.css?v=20260701r">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
@@ -126,13 +126,8 @@
     }
   }
   </script>
-<<<<<<< HEAD:bike/c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4/index.html
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Centurion aura grey","sku":"c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4","productID":"c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4","description":"Centurion Aura er den perfekte cykel til dig, der ønsker elegance og funktionalitet. Med sin oprejste kørestilling og kvalitetsudstyr tilbyder Aura en behagelig og stilfuld køreoplevelse. Dens skandinaviske og moderne design passer perfekt til byens livlige miljø og gør den til det ideelle valg for pendlere. Oplev ren og skær køreglæde på to hjul med Centurion Aura.","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/11.jpg?v=1777106267"],"brand":{"@type":"Brand","name":"Centurion"},"category":"Citybike","url":"https://cykelbørsen.dk/bike/c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4","offers":{"@type":"Offer","price":6799,"priceCurrency":"DKK","priceValidUntil":"2026-10-19","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Centurion aura grey","item":"https://cykelbørsen.dk/bike/c74ceec4-78ab-4e57-bcdb-e3d24eb12cc4"}]}</script>
-=======
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Centurion HELIUM FODBR. BLANK GRØN","sku":"5d1a1f59-b696-4c44-b3ab-17011f9d7afe","productID":"5d1a1f59-b696-4c44-b3ab-17011f9d7afe","description":"Centurion HELIUM FODBR. BLANK GRØN — ny cykel fra forhandleren. Kontakt forhandleren for nærmere info om udstyr og specifikationer.","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/IMG-1527.jpg?v=1786383272"],"brand":{"@type":"Brand","name":"Centurion"},"category":"Citybike","url":"https://cykelbørsen.dk/bike/5d1a1f59-b696-4c44-b3ab-17011f9d7afe","offers":{"@type":"Offer","price":4999,"priceCurrency":"DKK","priceValidUntil":"2026-11-12","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/5d1a1f59-b696-4c44-b3ab-17011f9d7afe","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Centurion HELIUM FODBR. BLANK GRØN","item":"https://cykelbørsen.dk/bike/5d1a1f59-b696-4c44-b3ab-17011f9d7afe"}]}</script>
->>>>>>> origin/main:bike/5d1a1f59-b696-4c44-b3ab-17011f9d7afe/index.html
 </head>
 <body>
 
@@ -1090,7 +1085,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723y';
+    const V = '20260723z';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

@@ -73,7 +73,7 @@
   <link rel="stylesheet" href="/css/07-map.css?v=20260722m">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260722c">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260811c">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
   <link rel="stylesheet" href="/css/12-rental.css?v=20260701r">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
@@ -126,11 +126,7 @@
     }
   }
   </script>
-<<<<<<< HEAD
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"MBK der har brug for kærlig hånd","sku":"189aab16-d60c-4698-82ad-acd6032470fa","productID":"189aab16-d60c-4698-82ad-acd6032470fa","description":"Mbk der har brug for en kærlig hånd","image":["https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629313991-27jr717sja4.jpeg","https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629312232-qhloyjiskhb.jpeg","https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629313512-kdmab5pmel.jpeg","https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629312984-5lm7ujm5u9g.jpeg"],"brand":{"@type":"Brand","name":"MBK"},"category":"Mountainbike","url":"https://cykelbørsen.dk/bike/189aab16-d60c-4698-82ad-acd6032470fa","offers":{"@type":"Offer","price":400,"priceCurrency":"DKK","priceValidUntil":"2026-10-19","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/UsedCondition","url":"https://cykelbørsen.dk/bike/189aab16-d60c-4698-82ad-acd6032470fa","seller":{"@type":"Person","name":"Pedalplace"}}}</script>
-=======
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"MBK der har brug for kærlig hånd","sku":"189aab16-d60c-4698-82ad-acd6032470fa","productID":"189aab16-d60c-4698-82ad-acd6032470fa","description":"Mbk der har brug for en kærlig hånd","image":["https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629313991-27jr717sja4.jpeg","https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629312232-qhloyjiskhb.jpeg","https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629313512-kdmab5pmel.jpeg","https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/189aab16-d60c-4698-82ad-acd6032470fa/1778629312984-5lm7ujm5u9g.jpeg"],"brand":{"@type":"Brand","name":"MBK"},"category":"Mountainbike","url":"https://cykelbørsen.dk/bike/189aab16-d60c-4698-82ad-acd6032470fa","offers":{"@type":"Offer","price":400,"priceCurrency":"DKK","priceValidUntil":"2026-11-12","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/UsedCondition","url":"https://cykelbørsen.dk/bike/189aab16-d60c-4698-82ad-acd6032470fa","seller":{"@type":"Person","name":"Pedalplace"}}}</script>
->>>>>>> origin/main
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"MBK der har brug for kærlig hånd","item":"https://cykelbørsen.dk/bike/189aab16-d60c-4698-82ad-acd6032470fa"}]}</script>
 </head>
 <body>
@@ -1089,7 +1085,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723y';
+    const V = '20260723z';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

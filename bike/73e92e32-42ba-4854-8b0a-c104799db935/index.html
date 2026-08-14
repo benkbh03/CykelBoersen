@@ -73,7 +73,7 @@
   <link rel="stylesheet" href="/css/07-map.css?v=20260722m">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260722c">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260811c">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
   <link rel="stylesheet" href="/css/12-rental.css?v=20260701r">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
@@ -126,11 +126,7 @@
     }
   }
   </script>
-<<<<<<< HEAD
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Falcon Herre Sort 3G","sku":"73e92e32-42ba-4854-8b0a-c104799db935","productID":"73e92e32-42ba-4854-8b0a-c104799db935","description":"Falcon Herre Sort 3G — ny cykel fra forhandleren. Kontakt forhandleren for nærmere info om udstyr og specifikationer.","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/6648BA72-431E-4B46-8127-20E4FA10D790.jpg?v=1780432290"],"brand":{"@type":"Brand","name":"Falcon"},"category":"Citybike","url":"https://cykelbørsen.dk/bike/73e92e32-42ba-4854-8b0a-c104799db935","offers":{"@type":"Offer","price":3199,"priceCurrency":"DKK","priceValidUntil":"2026-10-19","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/73e92e32-42ba-4854-8b0a-c104799db935","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
-=======
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Falcon Herre Sort 3G","sku":"73e92e32-42ba-4854-8b0a-c104799db935","productID":"73e92e32-42ba-4854-8b0a-c104799db935","description":"Falcon Herre Sort 3G — ny cykel fra forhandleren. Kontakt forhandleren for nærmere info om udstyr og specifikationer.","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/6648BA72-431E-4B46-8127-20E4FA10D790.jpg?v=1780432290"],"brand":{"@type":"Brand","name":"Falcon"},"category":"Citybike","url":"https://cykelbørsen.dk/bike/73e92e32-42ba-4854-8b0a-c104799db935","offers":{"@type":"Offer","price":3199,"priceCurrency":"DKK","priceValidUntil":"2026-11-12","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/73e92e32-42ba-4854-8b0a-c104799db935","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
->>>>>>> origin/main
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Falcon Herre Sort 3G","item":"https://cykelbørsen.dk/bike/73e92e32-42ba-4854-8b0a-c104799db935"}]}</script>
 </head>
 <body>
@@ -1089,7 +1085,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723y';
+    const V = '20260723z';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
