@@ -123,6 +123,23 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
     html = html.replace(/\s*<meta property="og:image:height"[^>]*>/, '');
   }
 
+  /* FJERN forsidens FAQ-schema fra alle andre sider.
+     TEMPLATE er index.html, og dens <head> indeholder et FAQPage-schema med
+     spørgsmål der KUN vises på forsiden. Uden det her blev den blok kopieret
+     ned på alle 100+ prerendrede sider — annoncer, mærker, kategorier — hvor
+     de spørgsmål ikke findes nogen steder i indholdet.
+
+     Googles krav til strukturerede data er at de skal beskrive indhold der er
+     synligt på netop den side. FAQ-markup på sider uden FAQ er en af de
+     hyppigste årsager til manuelle handlinger for spam med strukturerede data,
+     og risikoen rammer hele domænet, ikke kun de enkelte sider.
+
+     Forsiden bygges ikke af dette script og beholder derfor sin FAQ. */
+  html = html.replace(
+    /\s*<script type="application\/ld\+json">(?:(?!<\/script>)[\s\S])*?"FAQPage"[\s\S]*?<\/script>/,
+    '',
+  );
+
   // Rute-JSON-LD før </head>
   const ldScripts = jsonldBlocks
     .map(b => `<script type="application/ld+json" class="prerender-jsonld">${jsonLd(b)}</script>`)
