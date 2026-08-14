@@ -138,12 +138,36 @@ export function createBikeDetailLightbox({ galleryGoto }) {
       setTimeout(() => img.classList.remove('dragging'), 200);
     });
 
-    // Mus-hjul til zoom mod cursor-position
+    /* Mus-hjul til zoom mod cursor-position.
+
+       To ting gjorde zoomen langsom:
+
+       1. CSS'en har transition: transform 0.18s på billedet. Den er god ved
+          dobbeltklik, men under hjulzoom starter hvert eneste hjul-tik en ny
+          180 ms-animation, så billedet altid haler efter fingeren. Derfor
+          slås den fra mens hjulet drejer og sættes til igen bagefter.
+
+       2. deltaY blev brugt råt. Chrome rapporterer i PIXELS (ca. 100 pr. tik),
+          Firefox i LINJER (ca. 3 pr. tik). Den gamle udregning gav derfor
+          omkring 20 % zoom pr. tik i Chrome og under 1 % i Firefox — samme
+          kode, helt forskellig oplevelse. deltaMode omregnes nu til pixels.
+
+       Zoomen er også gjort multiplikativ (exp) frem for additiv. Additiv
+       zoom føles langsom når man er zoomet ind, fordi det samme tillæg fylder
+       relativt mindre jo større billedet er. */
+    let wheelIdle = null;
     stage.addEventListener('wheel', (e) => {
       e.preventDefault();
+
+      img.classList.add('dragging');            // slå transition fra
+      clearTimeout(wheelIdle);
+      wheelIdle = setTimeout(() => img.classList.remove('dragging'), 140);
+
+      const unit = e.deltaMode === 1 ? 16            // linjer -> px
+                 : e.deltaMode === 2 ? stage.clientHeight   // sider -> px
+                 : 1;                                       // allerede px
       const oldScale = _lb.scale;
-      const delta = -e.deltaY * 0.002;
-      const newScale = Math.max(1, Math.min(5, oldScale + delta * oldScale));
+      const newScale = Math.max(1, Math.min(5, oldScale * Math.exp(-e.deltaY * unit * 0.002)));
       if (newScale === oldScale) return;
       const rect = stage.getBoundingClientRect();
       const cursorX = e.clientX - rect.left - rect.width / 2;
