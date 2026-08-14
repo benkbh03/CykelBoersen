@@ -79,6 +79,40 @@ function jsonLd(obj) {
   return JSON.stringify(obj).replace(/</g, '\\u003c');
 }
 
+/* ---------- Annonce-index til interne links ----------
+   Mærke- og kategorisiderne fyldte deres gitter med JavaScript, så den rå HTML
+   indeholdt kun teksten "Henter Trek-cykler…". En crawler så altså en side der
+   lover Trek-cykler og viser nul.
+
+   To konsekvenser: siderne var tynde (33-122 ord), og annoncerne kunne kun
+   findes via sitemappet — der gik ikke ét internt link fra en mærkeside til en
+   annonce. Intern linkning er både en opdagelsesvej og et rangeringssignal, og
+   80 tynde sider uden udgående links ligner mest af alt doorway-sider.
+
+   Indekserne fyldes i main() FØR siderne bygges. Fejler Supabase-kaldet, falder
+   siderne tilbage på den gamle "Henter …"-tekst, og alt virker som før. */
+const BIKES_BY_BRAND = new Map();   // brand-slug -> [bike]
+const BIKES_BY_TYPE  = new Map();   // bikes.type -> [bike]
+
+const LINKED_BIKES_PER_PAGE = 40;
+
+/* Liste over annonce-links i rå HTML. Ankerteksten er mærke + model + pris,
+   altså præcis de ord siden skal findes på. Appen overskriver containeren når
+   den booter (se noten øverst i filen), så det her er for crawlere og for det
+   første paint før JS er kørt. */
+function bikeLinkList(bikes) {
+  if (!bikes || !bikes.length) return '';
+  const items = bikes.slice(0, LINKED_BIKES_PER_PAGE).map((b) => {
+    const label = [b.brand, b.model].filter(Boolean).join(' ').trim() || 'Cykel';
+    const price = Number.isFinite(Number(b.price))
+      ? ` – ${Number(b.price).toLocaleString('da-DK')} kr.`
+      : '';
+    const where = b.city ? ` i ${b.city}` : '';
+    return `<li><a href="/bike/${escHtml(b.id)}">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
+  }).join('');
+  return `<ul class="prerender-bike-links">${items}</ul>`;
+}
+
 /* ---------- Template-transformation ---------- */
 function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt }) {
   const url = BASE_URL + canonicalPath;
@@ -122,6 +156,23 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
     html = html.replace(/\s*<meta property="og:image:width"[^>]*>/, '');
     html = html.replace(/\s*<meta property="og:image:height"[^>]*>/, '');
   }
+
+  /* FJERN forsidens FAQ-schema fra alle andre sider.
+     TEMPLATE er index.html, og dens <head> indeholder et FAQPage-schema med
+     spørgsmål der KUN vises på forsiden. Uden det her blev den blok kopieret
+     ned på alle 100+ prerendrede sider — annoncer, mærker, kategorier — hvor
+     de spørgsmål ikke findes nogen steder i indholdet.
+
+     Googles krav til strukturerede data er at de skal beskrive indhold der er
+     synligt på netop den side. FAQ-markup på sider uden FAQ er en af de
+     hyppigste årsager til manuelle handlinger for spam med strukturerede data,
+     og risikoen rammer hele domænet, ikke kun de enkelte sider.
+
+     Forsiden bygges ikke af dette script og beholder derfor sin FAQ. */
+  html = html.replace(
+    /\s*<script type="application\/ld\+json">(?:(?!<\/script>)[\s\S])*?"FAQPage"[\s\S]*?<\/script>/,
+    '',
+  );
 
   // Rute-JSON-LD før </head>
   const ldScripts = jsonldBlocks
@@ -210,7 +261,8 @@ function brandPage(slug, meta) {
         <div id="brand-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Cykler til salg</h2>
           <div id="brand-bikes-grid" class="brand-bikes-grid">
-            <p style="color:var(--muted);padding:20px;">Henter ${escHtml(name)}-cykler…</p>
+            ${bikeLinkList(BIKES_BY_BRAND.get(slug))
+              || `<p style="color:var(--muted);padding:20px;">Henter ${escHtml(name)}-cykler…</p>`}
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
@@ -427,7 +479,8 @@ function categoryPage(slug, meta) {
         <div id="category-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">${escHtml(meta.name)} til salg</h2>
           <div id="category-bikes-grid" class="brand-bikes-grid">
-            <p style="color:var(--muted);padding:20px;">Henter ${escHtml(meta.name.toLowerCase())}…</p>
+            ${bikeLinkList(BIKES_BY_TYPE.get(meta.type))
+              || `<p style="color:var(--muted);padding:20px;">Henter ${escHtml(meta.name.toLowerCase())}…</p>`}
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
@@ -695,6 +748,34 @@ function staticAppPage({ path, h1, title, description }) {
 async function main() {
   let count = 0;
 
+  /* Annoncerne hentes FØRST, fordi mærke- og kategorisiderne nu linker til dem
+     i deres rå HTML. Fejler kaldet, forbliver indekserne tomme, og siderne
+     falder tilbage på den gamle "Henter …"-tekst — alt bygges stadig. */
+  let bikes = null;
+  try {
+    bikes = await fetchSupabase(
+      'bikes?is_active=eq.true&select=id,brand,model,price,type,city,condition,year,size,size_cm,description,' +
+      'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
+    );
+  } catch (err) {
+    console.warn('Kunne ikke hente annoncer:', err.message);
+  }
+
+  if (bikes) {
+    for (const b of bikes) {
+      const slug = brandToSlug((b.brand || '').trim());
+      if (slug && /^[a-z0-9-]+$/.test(slug)) {
+        if (!BIKES_BY_BRAND.has(slug)) BIKES_BY_BRAND.set(slug, []);
+        BIKES_BY_BRAND.get(slug).push(b);
+      }
+      if (b.type) {
+        if (!BIKES_BY_TYPE.has(b.type)) BIKES_BY_TYPE.set(b.type, []);
+        BIKES_BY_TYPE.get(b.type).push(b);
+      }
+    }
+    console.log(`Indekserede ${bikes.length} annoncer til interne links (${BIKES_BY_BRAND.size} mærker, ${BIKES_BY_TYPE.size} typer).`);
+  }
+
   // Mærke-sider — kun ASCII-slugs (accenttegn undgås pga. URL-encoding i filstier;
   // de virker stadig via 404.html-fallback + JS-render).
   for (const [slug, meta] of Object.entries(BRANDS_META)) {
@@ -733,19 +814,10 @@ async function main() {
 
   console.log(`Prerendered ${count} statiske sider (mærker + blog + kategorier + oversigter + app-ruter).`);
 
-  // Annonce-sider (/bike/:id) — hentes live fra Supabase. Dynamiske OG-billeder
-  // (annoncens primærbillede) + Product-schema i rå-HTML → delinger på
-  // Facebook/Messenger viser cyklen, og Bing/scrapers indekserer uden JS.
-  let bikes = null;
-  try {
-    bikes = await fetchSupabase(
-      'bikes?is_active=eq.true&select=id,brand,model,price,type,city,condition,year,size,size_cm,description,' +
-      'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
-    );
-  } catch (err) {
-    console.warn('Kunne ikke hente annoncer:', err.message);
-  }
-
+  // Annonce-sider (/bike/:id) — bruger `bikes` hentet øverst i main().
+  // Dynamiske OG-billeder (annoncens primærbillede) + Product-schema i rå-HTML
+  // → delinger på Facebook/Messenger viser cyklen, og Bing/scrapers indekserer
+  // uden JS.
   if (bikes) {
     // Ryd gamle annonce-sider, så solgte/inaktive annoncer forsvinder (deres
     // /bike/:id falder tilbage på 404.html + JS). Regenerér kun aktive.

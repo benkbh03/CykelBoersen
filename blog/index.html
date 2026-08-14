@@ -75,7 +75,7 @@
   <link rel="stylesheet" href="/css/07-map.css?v=20260722m">
   <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260526ng">
   <link rel="stylesheet" href="/css/09-compare.css?v=20260526ng">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260722c">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260811c">
   <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260526ng">
   <link rel="stylesheet" href="/css/12-rental.css?v=20260701r">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
@@ -126,38 +126,6 @@
       "contactType": "customer service",
       "availableLanguage": "da"
     }
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Hvordan sælger jeg min cykel på Cykelbørsen?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Opret en gratis konto, klik på 'Sæt til salg', udfyld oplysninger om din cykel med billeder, og din annonce er live med det samme. Det er helt gratis for private sælgere."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Er det gratis at oprette en annonce?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Ja, det er helt gratis at oprette annoncer som privat sælger. Forhandlere kan også oprette sig gratis i lanceringsfasen — ingen abonnement, ingen prøveperiode, bare ind og sælg."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Hvilke typer cykler kan jeg finde på Cykelbørsen?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Du kan finde alle typer brugte cykler: racercykler, mountainbikes, el-cykler, bycykler, børnecykler, ladcykler og meget mere. Både fra private sælgere og autoriserede forhandlere i hele Danmark."
-        }
-      }
-    ]
   }
   </script>
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Blog","name":"Cykelbørsen Blog","description":"Guides, tests og tips om cykler.","url":"https://cykelbørsen.dk/blog","publisher":{"@type":"Organization","name":"Cykelbørsen","url":"https://cykelbørsen.dk"},"blogPost":[{"@type":"BlogPosting","headline":"Sådan undgår du at købe en stjålet cykel","description":"Forestil dig at du lige har købt en velholdt brugt cykel, og en uge senere ringer politiet. Sådan undgår du den situation.","datePublished":"2026-11-08","url":"https://cykelbørsen.dk/blog/undgaa-stjaalet-cykel"},{"@type":"BlogPosting","headline":"Hvilken cykelstørrelse passer mig?","description":"Højde er kun udgangspunktet. Sådan finder du den rigtige stelstørrelse uanset cykeltype.","datePublished":"2026-11-05","url":"https://cykelbørsen.dk/blog/cykelstoerrelse-guide"},{"@type":"BlogPosting","headline":"Køb brugt el-cykel: 7 ting du skal tjekke","description":"Brugte e-cykler kan være en god handel. Sådan undgår du at købe en med udslidt batteri eller knækkende motor.","datePublished":"2026-11-02","url":"https://cykelbørsen.dk/blog/koeb-brugt-el-cykel"},{"@type":"BlogPosting","headline":"Tag bedre cykel-billeder med din mobil","description":"Forskellen mellem en cykel der sælges på to dage og en der ligger i tre måneder ligger ofte i billederne.","datePublished":"2026-10-28","url":"https://cykelbørsen.dk/blog/bedre-cykel-billeder"},{"@type":"BlogPosting","headline":"Sælg din cykel hurtigt: sådan får du den bedste pris","description":"En god annonce kan sælge en cykel på 24 timer. En dårlig kan tage tre måneder. Her er forskellen.","datePublished":"2026-10-25","url":"https://cykelbørsen.dk/blog/saelg-cykel-tips"},{"@type":"BlogPosting","headline":"Bedste racercykler under 15.000 kr","description":"15.000 kr er en god prisklasse at komme ind i racercykling. Hvad får du for pengene ny — og hvad får du brugt?","datePublished":"2026-10-20","url":"https://cykelbørsen.dk/blog/racercykler-under-15000"},{"@type":"BlogPosting","headline":"Hardtail eller fully? Vælg den rigtige affjedring til din mountainbike","description":"Den vigtigste beslutning når du køber en MTB er ikke mærket, men affjedringen. Sådan vælger du mellem hardtail og fuld affjedring.","datePublished":"2026-05-24","url":"https://cykelbørsen.dk/blog/mtb-affjedring-guide"}]}</script>
@@ -1187,7 +1155,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260723y';
+    const V = '20260723z';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
