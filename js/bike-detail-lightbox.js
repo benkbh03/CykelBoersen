@@ -71,15 +71,35 @@ export function createBikeDetailLightbox({ galleryGoto }) {
     img.style.transform = `translate(${_lb.tx}px, ${_lb.ty}px) scale(${_lb.scale})`;
   }
 
+  /* Begræns panorering til billedets FAKTISKE kanter.
+
+     Fejlen var at der blev målt på <img>-elementet i stedet for på billedet i
+     det. CSS'en giver elementet width/height 100% af scenen plus
+     object-fit: contain, så elementet fylder hele skærmen mens selve fotoet
+     ligger letterboxet inde i det med sorte bjælker om.
+
+     img.clientWidth var derfor scenens bredde, ikke fotoets. På et
+     portrætbillede i et landskabsvindue troede grænsen at billedet var dobbelt
+     så bredt som det er, og man kunne trække fotoet helt ud af syne og sidde
+     tilbage med sort. Det var derfor zoom føltes i stykker.
+
+     Her regnes den viste størrelse ud efter samme regel som object-fit:
+     contain bruger — mindste skaleringsfaktor der får billedet til at passe —
+     og grænsen sættes efter den. */
   function lightboxClampPan() {
     const img = document.getElementById('lightbox-img');
     const stage = document.getElementById('lightbox-stage');
     if (!img || !stage) return;
     const rect = stage.getBoundingClientRect();
-    const scaledW = img.clientWidth * _lb.scale;
-    const scaledH = img.clientHeight * _lb.scale;
-    const maxX = Math.max(0, (scaledW - rect.width) / 2);
-    const maxY = Math.max(0, (scaledH - rect.height) / 2);
+
+    const nw = img.naturalWidth, nh = img.naturalHeight;
+    // Falder tilbage til elementmålene hvis billedet ikke er indlæst endnu.
+    const fit = (nw && nh) ? Math.min(rect.width / nw, rect.height / nh) : 0;
+    const baseW = fit ? nw * fit : img.clientWidth;
+    const baseH = fit ? nh * fit : img.clientHeight;
+
+    const maxX = Math.max(0, (baseW * _lb.scale - rect.width) / 2);
+    const maxY = Math.max(0, (baseH * _lb.scale - rect.height) / 2);
     _lb.tx = Math.max(-maxX, Math.min(maxX, _lb.tx));
     _lb.ty = Math.max(-maxY, Math.min(maxY, _lb.ty));
   }
