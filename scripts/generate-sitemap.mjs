@@ -108,8 +108,21 @@ function escXml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+/* Afsluttende skråstreg — SAMME regel som canonicalUrl() i js/utils.js og
+   scripts/prerender.mjs. Prerenderede sider ligger som <rute>/index.html og
+   serveres på /rute/; sitemappet listede /rute, som svarer 301 videre.
+   213 af 214 URL'er sendte altså Google en omvej, og den kravlede side pegede
+   så på en canonical der ikke var den kravlede — Search Console viste det som
+   175 "Alternate page with proper canonical tag" og 25 "Page with redirect". */
+function withTrailingSlash(loc) {
+  const p = String(loc || '/');
+  if (p === '/' || p === '') return '/';
+  if (p.includes('?') || p.includes('#')) return p;
+  return p.endsWith('/') ? p : `${p}/`;
+}
+
 function urlNode({ loc, changefreq, priority }) {
-  return `  <url><loc>${BASE}${escXml(loc)}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`;
+  return `  <url><loc>${BASE}${escXml(withTrailingSlash(loc))}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`;
 }
 
 /* ---------- Main ---------- */

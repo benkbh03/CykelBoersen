@@ -4,6 +4,32 @@
    ============================================================ */
 
 export const BASE_URL = 'https://cykelbørsen.dk';
+
+/* Canonical-URL med afsluttende skråstreg.
+
+   Prerenderede sider ligger som <rute>/index.html, og GitHub Pages serverer
+   dem derfor på /rute/ MED skråstreg — et kald til /rute svarer 301 videre.
+   Canonical pegede på formen UDEN skråstreg, altså på en adresse der
+   omdirigerer, og sitemappet gjorde det samme for 213 af 214 URL'er.
+
+   Resultatet var tre forskellige adresser for hver side: den Google kravlede,
+   den canonical udpegede, og den sitemappet listede. Search Console viste det
+   som 175 "Alternate page with proper canonical tag" og 25 "Page with
+   redirect" — hver side blev hentet to gange for at ende samme sted.
+
+   Dyrt netop her: 112 annoncesider står som "Discovered - currently not
+   indexed", altså sider Google kender men ikke gider bruge kravlebudget på.
+   Halvdelen af det budget gik til at gå i ring.
+
+   Samme regel er replikeret i scripts/prerender.mjs og
+   scripts/generate-sitemap.mjs. Ændres den ene, skal de to andre følge med. */
+export function canonicalUrl(path) {
+  const p = String(path || '/');
+  if (p === '/' || p === '') return `${BASE_URL}/`;
+  // Rør ikke ved noget med query eller fragment — de er ikke mappe-ruter.
+  if (p.includes('?') || p.includes('#')) return BASE_URL + p;
+  return BASE_URL + (p.endsWith('/') ? p : `${p}/`);
+}
 const DEFAULT_DESC = 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
 
 // Hjælper: deaktiver knap og vis spinner, returnerer gendan-funktion
@@ -178,7 +204,9 @@ export function removeBikeJsonLd() {
 
 export function updateSEOMeta(description, canonicalPath, opts) {
   const desc = description || DEFAULT_DESC;
-  const url = canonicalPath ? BASE_URL + canonicalPath : BASE_URL + '/';
+  // Skal give SAMME adresse som prerenderingen skrev, ellers modsiger den
+  // rå HTML og den JS-rendrede DOM hinanden om hvad canonical er.
+  const url = canonicalUrl(canonicalPath);
   const metaDesc = document.getElementById('meta-description');
   if (metaDesc) metaDesc.setAttribute('content', desc);
   const canonical = document.getElementById('canonical-link');
