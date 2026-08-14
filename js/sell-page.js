@@ -7,6 +7,7 @@ import { BIKE_COLORS } from './config.js';
 import { bikeTitle, iconShield } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
 import { parseImportedListing } from './import-parse.js';
+import { startSellFlow, trackSellStep } from './sell-funnel.js';
 
 /**
  * @param {object} deps
@@ -537,6 +538,13 @@ export function createSellPage({
       notifySavedSearches(newBike);
       notifyDealerFollowers(newBike);
 
+      // Tragtens slutpunkt. Ligger efter at annoncen er gemt, så 'complete'
+      // kun tælles når der faktisk kom en annonce ud af det.
+      trackSellStep(supabase, 'complete', {
+        category: _sellCategory,
+        prefilled: _importApplied ? 'import' : (_aiApplied ? 'ai' : null),
+      });
+
       clearSellDraft();
       showListingSuccessModal(newBike);
     } finally {
@@ -654,6 +662,12 @@ export function createSellPage({
     _importApplied = false;
     _importHost = null;
     _sellFormCache = {};
+
+    /* Nyt tragt-forsøg. Placeret her, hvor al anden flow-state nulstilles, så
+       en bruger der opretter to annoncer i træk tæller som to forsøg og ikke
+       som ét langt. */
+    startSellFlow();
+    trackSellStep(supabase, 'start', { category: _sellCategory });
 
     // Banner når admin opretter på vegne af forhandler (acting-as-mode)
     let actingAs = null;
@@ -1421,6 +1435,19 @@ export function createSellPage({
 
   function setSellStep(n) {
     captureSellFormCache();
+
+    /* Tragt-trin. Kun fremad — sendes fra setSellStep, som også kaldes når
+       brugeren går TILBAGE, men trackSellStep logger hvert trin én gang pr.
+       forsøg, så en tur frem og tilbage ikke ligner to personer.
+       prefilled fortæller om felterne kom fra AI-analysen eller en
+       link-import, så frafald kan sammenlignes mellem dem der fik hjælp og
+       dem der tastede alt selv. */
+    if (n === 2 || n === 3) {
+      trackSellStep(supabase, `step_${n}`, {
+        category: _sellCategory,
+        prefilled: _importApplied ? 'import' : (_aiApplied ? 'ai' : null),
+      });
+    }
 
     _sellStep = n;
 

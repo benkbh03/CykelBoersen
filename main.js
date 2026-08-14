@@ -3478,13 +3478,14 @@ async function loadAdminStats() {
     const since = new Date(Date.now() - (DAYS - 1) * 86400000);
     since.setHours(0, 0, 0, 0);
     const sinceIso = since.toISOString();
-    const [profRes, bikeRes, revRes, searchRes, trafSearchRes, trafViewRes] = await Promise.all([
+    const [profRes, bikeRes, revRes, searchRes, trafSearchRes, trafViewRes, funnelRes] = await Promise.all([
       supabase.from('profiles').select('seller_type, verified, created_at'),
       supabase.from('bikes').select('type, price, is_active, sold_via, views, created_at'),
       supabase.from('reviews').select('rating'),
       supabase.from('search_logs').select('query, result_count').order('created_at', { ascending: false }).limit(2000),
       supabase.from('search_logs').select('created_at').gte('created_at', sinceIso),
       supabase.from('bike_views').select('viewed_at').gte('viewed_at', sinceIso),
+      supabase.from('sell_funnel_events').select('flow_id, step, prefilled').gte('created_at', sinceIso),
     ]);
     const profiles = profRes.data || [];
     const bikes    = bikeRes.data || [];
@@ -3547,6 +3548,45 @@ async function loadAdminStats() {
     });
     const topSearches = Object.entries(allCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const topZero     = Object.entries(zeroCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+    /* ── Sælg-tragt ─────────────────────────────────────────────
+       Databasen ved hvor mange annoncer der BLEV oprettet, men intet om dem
+       der åbnede flowet og gav op undervejs. Uden det tal kan man ikke se om
+       AI-udfyldningen og DBA-importen rent faktisk holder folk i flowet.
+
+       Tælles pr. flow_id, ikke pr. hændelse: én person der klikker frem og
+       tilbage mellem trin 2 og 3 skal tælle som ét forsøg. */
+    const funnelRows = funnelRes.data || [];
+    const flows = new Map();               // flow_id -> { steps:Set, prefilled }
+    funnelRows.forEach(r => {
+      if (!flows.has(r.flow_id)) flows.set(r.flow_id, { steps: new Set(), prefilled: null });
+      const f = flows.get(r.flow_id);
+      f.steps.add(r.step);
+      if (r.prefilled) f.prefilled = r.prefilled;
+    });
+    const reached = step => [...flows.values()].filter(f => f.steps.has(step)).length;
+    const fStart = reached('start'), fStep2 = reached('step_2'),
+          fStep3 = reached('step_3'), fDone = reached('complete');
+    const pct = (n, of) => of > 0 ? Math.round((n / of) * 100) : 0;
+
+    // Hjalp den automatiske udfyldning? Sammenlign gennemførsel med og uden.
+    const withHelp = [...flows.values()].filter(f => f.prefilled);
+    const noHelp   = [...flows.values()].filter(f => !f.prefilled && f.steps.has('step_2'));
+    const helpDone = withHelp.filter(f => f.steps.has('complete')).length;
+    const plainDone = noHelp.filter(f => f.steps.has('complete')).length;
+
+    const funnelRow = (label, n, of, hint) => `
+      <div style="padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;font-size:0.88rem;">
+          <span style="color:var(--charcoal);font-weight:600;">${label}</span>
+          <span style="color:var(--muted);">${n}${of !== null ? ` · ${pct(n, of)}%` : ''}</span>
+        </div>
+        <div style="height:6px;background:var(--border);border-radius:99px;margin-top:5px;overflow:hidden;">
+          <div style="height:100%;width:${of !== null ? pct(n, of) : 100}%;background:var(--forest);"></div>
+        </div>
+        ${hint ? `<div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">${hint}</div>` : ''}
+      </div>`;
+
     const searchRow = ([q, n], accent) => `
       <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.86rem;">
         <span style="color:${accent || 'var(--charcoal)'};">${esc(q)}</span>
@@ -3639,7 +3679,19 @@ async function loadAdminStats() {
           ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
         </div>
       </div>
-      <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger logges anonymt (uden bruger-id).</p>
+      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:22px 0 4px;color:var(--charcoal);">Sælg-tragt (${DAYS} dage)</h3>
+      <p style="font-size:0.76rem;color:var(--muted);margin:0 0 8px;">Hvor langt folk når, når de begynder at oprette en annonce.</p>
+      ${fStart === 0 ? '<p style="color:var(--muted);font-size:0.86rem;">Ingen forsøg logget endnu.</p>' : `
+        ${funnelRow('1. Åbnede sælg-flowet', fStart, null, '')}
+        ${funnelRow('2. Nåede "Om cyklen"',  fStep2, fStart, 'Falder de her, er billed-uploaden barrieren.')}
+        ${funnelRow('3. Nåede "Publicer"',   fStep3, fStart, 'Falder de her, er der for mange felter.')}
+        ${funnelRow('4. Oprettede annoncen', fDone,  fStart, 'Falder de her, mangler de hjælp til pris og beskrivelse.')}
+        <div style="margin-top:10px;font-size:0.8rem;color:var(--muted);">
+          Automatisk udfyldt (AI eller import): <strong style="color:var(--charcoal);">${withHelp.length ? pct(helpDone, withHelp.length) : 0}%</strong> gennemført
+          &nbsp;·&nbsp; udfyldt manuelt: <strong style="color:var(--charcoal);">${noHelp.length ? pct(plainDone, noHelp.length) : 0}%</strong>
+        </div>`}
+
+      <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger og sælg-trin logges anonymt (uden bruger-id).</p>
     `;
   } catch (e) {
     console.error('loadAdminStats fejl:', e);

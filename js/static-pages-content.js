@@ -178,7 +178,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 10. august 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. august 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -195,6 +195,7 @@ export const footerContent = {
         <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
         <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
         <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>
+        <li><strong>Anonym brugsstatistik:</strong> Vi logger hvad der søges efter i søgefeltet, og hvor langt folk når i flowet for at oprette en annonce (åbnet, udfyldt, oprettet). Begge dele bruges udelukkende til at forbedre siden — fx til at se hvilke cykler folk leder efter uden at finde, og hvor et oprettelsesforløb bliver for besværligt. Der gemmes <strong>intet bruger-ID og ingen IP-adresse</strong>, og der lægges intet i din browser. Registreringerne kan ikke føres tilbage til dig.</li>
         <li><strong>Sidst sete annoncer:</strong> Vi gemmer lokalt i din browser (localStorage) de seneste 8 annoncer du har klikket på, så vi kan vise dem i "Sidst set"-rækken på forsiden. Data forlader aldrig din browser og slettes når du rydder browserdata.</li>
         <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
@@ -252,6 +253,10 @@ export const footerContent = {
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
+          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Anonym brugsstatistik (søgninger og oprettelsesforløb) til forbedring af siden</td>
           <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
