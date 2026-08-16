@@ -68,6 +68,7 @@ export function createMyProfile({
           const priceStr = (b.price || 0).toLocaleString('da-DK') + ' kr.';
           const svgEye    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
           const svgEditSm = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+          const svgStar   = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
           return `
             <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
               <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
@@ -87,23 +88,31 @@ export function createMyProfile({
               <div class="mp-listing-aside">
                 <div class="mp-listing-price">${priceStr}</div>
                 <div class="mp-listing-actions">
-                  <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
                   ${!isSold
-                    ? `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">⭐ ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>
-                       <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
-                       <button class="mp-btn-sold"   onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`
+                    ? `<button class="mp-btn-edit"  onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                       <button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">${svgStar} ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>`
                     : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
-                  <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
+                </div>
+                <div class="mp-listing-links">
+                  <button class="mp-link" onclick="navigateTo('/bike/${b.id}')">Se annonce</button>
+                  ${!isSold ? `<span class="mp-link-sep">·</span>
+                  <button class="mp-link" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : ''}
+                  <span class="mp-link-sep">·</span>
+                  <button class="mp-link mp-link--danger" onclick="deleteListing('${b.id}')">Slet</button>
                 </div>
               </div>
               <div class="mp-listing-actions-mobile">
-                <button class="mp-btn-view"   onclick="navigateTo('/bike/${b.id}')">${svgEye} Se</button>
                 ${!isSold
-                  ? `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">⭐ ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>
-                     <button class="mp-btn-edit"   onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
-                     <button class="mp-btn-sold" onclick="toggleSold('${b.id}', false)">Solgt</button>`
+                  ? `<button class="mp-btn-edit"  onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
+                     <button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">${svgStar} ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
-                <button class="mp-btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
+              </div>
+              <div class="mp-listing-links mp-listing-links--mobile">
+                <button class="mp-link" onclick="navigateTo('/bike/${b.id}')">Se annonce</button>
+                ${!isSold ? `<span class="mp-link-sep">·</span>
+                <button class="mp-link" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : ''}
+                <span class="mp-link-sep">·</span>
+                <button class="mp-link mp-link--danger" onclick="deleteListing('${b.id}')">Slet</button>
               </div>
             </div>`;
         }
