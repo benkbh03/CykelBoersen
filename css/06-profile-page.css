@@ -486,7 +486,8 @@
   align-items: stretch;
   width: 100%;
 }
-.mp-listing-actions-mobile { display: none; }
+.mp-listing-actions-mobile,
+.mp-listing-links--mobile { display: none; }
 .mp-btn-view {
   background: var(--cream);
   border: 1px solid var(--border);
@@ -521,15 +522,35 @@
   transition: background 0.15s;
 }
 .mp-btn-edit:hover { background: var(--forest-light); }
+/* Fremhæv er et TILVALG, ikke kortets hovedhandling. Som fyldt guld-gradient
+   råbte den højere end både prisen og sælgerens egen cykel — dit mersalg må
+   ikke være det mest iøjnefaldende på sælgerens egen side. Nu er den en
+   kontur med guld-accent: tydeligt til stede, men underordnet Redigér. */
 .mp-btn-boost {
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
-  color: #fff; border: none; border-radius: 8px;
-  padding: 7px 12px; font-size: 0.78rem; font-weight: 700;
+  background: var(--cream);
+  color: #8a6817; border: 1px solid rgba(212,160,23,0.55); border-radius: 8px;
+  padding: 7px 12px; font-size: 0.78rem; font-weight: 600;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-  transition: filter 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
-.mp-btn-boost:hover { filter: brightness(1.05); }
+.mp-btn-boost:hover { background: rgba(212,160,23,0.10); border-color: rgba(212,160,23,0.85); }
+
+/* Sjældne og uoprettelige handlinger hører ikke til som fyldte knapper.
+   "Se annonce" er oveni redundant — hele kortet er klikbart — men beholdes
+   som link for dem der ikke opdager det. */
+.mp-listing-links {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.mp-link {
+  background: none; border: none; padding: 2px 0;
+  font-family: 'DM Sans', sans-serif; font-size: 0.76rem;
+  color: var(--muted); cursor: pointer; transition: color 0.15s;
+}
+.mp-link:hover { color: var(--charcoal); text-decoration: underline; }
+.mp-link--danger:hover { color: #c8302a; }
+.mp-link-sep { color: var(--border); font-size: 0.76rem; }
 .mp-btn-boost--active {
   background: #fff; color: #8a6817;
   border: 1px solid rgba(212,160,23,0.6);
@@ -754,6 +775,7 @@
     line-height: 1;
     margin-top: 6px;
   }
+  .mp-listing-links--mobile { display: flex; }
   .mp-listing-actions-mobile {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -993,6 +1015,7 @@ body.is-mp-mobile .mp-price-mobile {
   line-height: 1;
   margin-top: 6px;
 }
+body.is-mp-mobile .mp-listing-links--mobile { display: flex; }
 body.is-mp-mobile .mp-listing-actions-mobile {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
