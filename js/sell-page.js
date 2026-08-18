@@ -789,11 +789,11 @@ export function createSellPage({
 
       ${_isAcc() ? '' : `
       <div class="sell-import-link" style="margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--surface-2,rgba(0,0,0,.02))">
-        <div style="font-weight:600;font-size:.95rem;margin-bottom:2px">Har du allerede annoncen online?</div>
+        <div style="font-weight:600;font-size:.95rem;margin-bottom:2px">Har du din annonce på DBA?</div>
         <div style="font-size:.82rem;color:var(--text-muted,#666);margin-bottom:10px">Indsæt linket, så henter vi billede, tekst og pris automatisk.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <input type="url" id="sell-import-url" inputmode="url" autocomplete="off"
-            placeholder="Indsæt link fra DBA, Gul&amp;Gratis m.fl."
+            placeholder="Indsæt link til din DBA-annonce"
             style="flex:1;min-width:180px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:.9rem"
             onkeydown="if(event.key==='Enter'){event.preventDefault();importSellFromLink()}">
           <button type="button" id="sell-import-btn" class="btn-secondary" onclick="importSellFromLink()"
@@ -2045,7 +2045,14 @@ export function createSellPage({
     if (msg) box.textContent = `${msg} Nummeret står typisk under kranken eller på stellet.`;
   }
 
-  /* ------ Import fra eksternt link (DBA, Gul&Gratis m.fl.) ----- */
+  /* ------ Import fra DBA-link -----
+     Kun DBA loves i UI'et, fordi det er det eneste der er testet. Funktionen
+     læser Open Graph-tags og virker teknisk på ethvert site der udstiller dem,
+     men et løfte om noget utestet bliver til en fejlmelding hos brugeren.
+
+     Facebook Marketplace kan IKKE lade sig gøre: siderne er login-spærrede, så
+     et serverside-kald rammer en loginvæg, og med login ville det være
+     scraping i strid med Metas vilkår. */
 
   // Konverterer base64 (uden data:-prefix) til en File, så billedet kan køre
   // gennem den samme upload-pipeline som manuelt valgte billeder.
