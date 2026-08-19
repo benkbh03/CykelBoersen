@@ -61,6 +61,13 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <!-- To skrifttyper, ikke tre. Playfair Display er fjernet; Fraunces dækker
+       alle overskrifter. Begge indlæses som variable fonts over hele det
+       vægtinterval CSS'en faktisk bruger (400-700 for DM Sans, 400-900 for
+       Fraunces). Før blev DM Sans kun hentet i 300/400/500, mens CSS'en satte
+       font-weight 600 og 700 over 400 steder — browseren lavede så syntetisk
+       fed, som er udtværet og er et af de tydeligste tegn på en side der ikke
+       er sat op af nogen der kiggede efter. -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Fraunces:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Fraunces:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"></noscript>
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
@@ -146,11 +153,11 @@
       <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')" aria-label="Se forhandlere">Forhandlere</a>
       <a class="btn-sell" href="/sell" onclick="event.preventDefault(); openModal()" aria-label="Opret annonce og sæt din cykel til salg"><span class="sell-label-full">+ Sæt til salg</span><span class="sell-label-short">+ Sælg</span></a>
       <div class="nav-admin" id="nav-admin" style="display:none;">
-        <button class="nav-admin-btn" onclick="openAdminPanel()" aria-label="Åbn admin panel">⚙️</button>
+        <button class="nav-admin-btn" onclick="openAdminPanel()" aria-label="Åbn admin panel"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       </div>
       <div class="nav-profile" id="nav-profile" style="display:none;">
         <button class="nav-inbox-btn" id="nav-inbox-btn" onclick="openInboxModal()" aria-label="Åbn indbakke">
-          <span class="nav-inbox-icon" aria-hidden="true">✉️</span>
+          <span class="nav-inbox-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span>
           <span class="nav-inbox-badge" id="nav-inbox-badge" style="display:none;" aria-live="polite" aria-label="Ulæste beskeder">0</span>
         </button>
         <button class="profile-avatar-btn" id="profile-avatar-btn" onclick="navigateToMyProfile()" aria-label="Åbn din profil">
@@ -250,7 +257,7 @@
   <div class="filters-row" role="group" aria-label="Hurtigfiltre">
     <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
     <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
-    <span class="pill pill--nearme" id="pill-nearme" onclick="toggleNearMe(this)" role="button" tabindex="0" aria-pressed="false">📍 Nær mig</span>
+    <span class="pill pill--nearme" id="pill-nearme" onclick="toggleNearMe(this)" role="button" tabindex="0" aria-pressed="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Nær mig</span>
     <select id="nearme-radius" onchange="updateNearMeRadius(this.value)" style="display:none;font-size:0.8rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--sand);cursor:pointer;font-family:'DM Sans',sans-serif;">
       <option value="2">2 km</option>
       <option value="5">5 km</option>
@@ -267,7 +274,10 @@
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">El-cykler</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun forhandlere</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Kun private</span>
-    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">✨ Ny annonce</span>
+    <!-- Havde et ✨ foran. togglePill matcher på el.textContent.trim(), så
+         emojiet gjorde at teksten aldrig kunne blive lig 'Ny annonce' og
+         filteret derfor ikke gjorde noget når man klikkede på det. -->
+    <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Ny annonce</span>
     <span class="pill" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="false">Med garanti</span>
   </div>
 
@@ -282,7 +292,7 @@
       </div>
       <div class="bike-quiz-box" id="bike-quiz-box">
         <div class="bike-quiz-intro" id="bike-quiz-intro">
-          <div class="bike-quiz-icon">🚲</div>
+          <div class="bike-quiz-icon"><svg class="ui-icon ui-icon--lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="M12 17.5V14l-3-3 4-3 2 3h3"/></svg></div>
           <div class="bike-quiz-title">Hvad passer til dig?</div>
           <div class="bike-quiz-sub">Få en anbefaling på 2 spørgsmål</div>
           <button class="bike-quiz-start-btn" onclick="startBikeQuiz()">Start</button>
@@ -291,19 +301,19 @@
           <div class="bike-quiz-step" id="quiz-step-1">
             <div class="bike-quiz-q">Hvad skal du bruge cyklen til?</div>
             <div class="bike-quiz-opts">
-              <button class="bike-quiz-opt" onclick="quizPick(1,'pendler')">🏙️ Pendler til arbejde</button>
-              <button class="bike-quiz-opt" onclick="quizPick(1,'motion')">💪 Motion og træning</button>
-              <button class="bike-quiz-opt" onclick="quizPick(1,'tur')">🌿 Ture i naturen</button>
-              <button class="bike-quiz-opt" onclick="quizPick(1,'born')">👶 Til mit barn</button>
-              <button class="bike-quiz-opt" onclick="quizPick(1,'shopping')">🛒 Indkøb og hverdag</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'pendler')">Pendler til arbejde</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'motion')">Motion og træning</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'tur')">Ture i naturen</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'born')">Til mit barn</button>
+              <button class="bike-quiz-opt" onclick="quizPick(1,'shopping')">Indkøb og hverdag</button>
             </div>
           </div>
           <div class="bike-quiz-step" id="quiz-step-2" style="display:none">
             <div class="bike-quiz-q">Hvad er vigtigst for dig?</div>
             <div class="bike-quiz-opts">
-              <button class="bike-quiz-opt" onclick="quizPick(2,'pris')">💰 Lav pris</button>
-              <button class="bike-quiz-opt" onclick="quizPick(2,'komfort')">😌 Komfort</button>
-              <button class="bike-quiz-opt" onclick="quizPick(2,'fart')">⚡ Fart</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'pris')">Lav pris</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'komfort')">Komfort</button>
+              <button class="bike-quiz-opt" onclick="quizPick(2,'fart')">Fart</button>
             </div>
             <button class="bike-quiz-back" onclick="quizBack()">← Tilbage</button>
           </div>
@@ -803,7 +813,7 @@
            Dashboard nu, automatisk via Stripe-webhook senere. -->
       <section id="promoted-dealers" class="promoted-dealers" style="display:none;" aria-label="Fremhævede forhandlere">
         <div class="promoted-dealers-header">
-          <h2 class="promoted-dealers-title">⭐ Fremhævede forhandlere</h2>
+          <h2 class="promoted-dealers-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8L3.5 9.2l5.9-.9z"/></svg>Fremhævede forhandlere</h2>
           <span class="promoted-dealers-sub">Premium-partnere</span>
         </div>
         <div id="promoted-dealers-grid" class="promoted-dealers-grid"></div>
@@ -1045,7 +1055,7 @@
 
 
   <!-- ── TOAST BESKED ── -->
-  <div class="toast" id="toast">✅ Din annonce er oprettet!</div>
+  <div class="toast" id="toast">Din annonce er oprettet!</div>
 
 
   <!-- ── AI SUPPORT CHAT ── -->
@@ -1056,12 +1066,12 @@
     </button>
     <div id="chat-window">
       <div id="chat-header">
-        <span>🚲 Support</span>
+        <span><svg class="ui-icon ui-icon--lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="M12 17.5V14l-3-3 4-3 2 3h3"/></svg>Support</span>
         <span id="chat-subtitle">Spørg mig om alt</span>
       </div>
       <div id="chat-messages">
         <div class="chat-msg chat-msg--bot">
-          <div class="chat-bubble">Hej! Jeg er Cykelbørsens AI-assistent. Hvad kan jeg hjælpe dig med? 😊</div>
+          <div class="chat-bubble">Hej! Jeg er Cykelbørsens AI-assistent. Hvad kan jeg hjælpe dig med?</div>
         </div>
       </div>
       <div id="chat-input-area">
