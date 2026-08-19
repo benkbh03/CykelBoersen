@@ -26,7 +26,7 @@
  * Kører i CI via .github/workflows/sitemap.yml (samme daglige job).
  */
 
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -877,6 +877,36 @@ async function main() {
       writePage(`/cykler/${slug}`, buildPage(brandPage(slug, getBrandMeta(brand))));
     }
     if (uncurated.size) console.log(`Prerendered ${uncurated.size} ukuraterede mærkesider (${[...uncurated.values()].join(', ')}).`);
+
+    /* Ryd forældreløse mærkesider.
+
+       En ukurateret mærkeside oprettes fordi et mærke har mindst én aktiv
+       annonce. Sælges den sidste, holder scriptet op med at generere siden —
+       men filen blev liggende for evigt. Den beholdt sit gamle indhold, kom
+       aldrig i sitemappet, og fik hverken annonce-links eller noindex.
+       cykler/helium/ var et eksempel: genereret dengang en Helium-cykel var
+       til salg, og efterladt med forsidens overskrift som indhold.
+
+       Uden det her samler der sig en ny hver gang et mærkes sidste cykel
+       bliver solgt.
+
+       Kun ukuraterede fjernes. Kuraterede mærker (BRANDS_META) genereres
+       ubetinget hver kørsel og skal blive stående uanset lagerstatus — det er
+       netop dem der venter på at et mærke dukker op igen. Og hele blokken
+       ligger inde i `if (bikes)`, så en fejlet Supabase-hentning aldrig kan
+       slette noget. */
+    const keep = new Set([...Object.keys(BRANDS_META), ...uncurated.keys()]);
+    const brandRoot = join(ROOT, 'cykler');
+    if (existsSync(brandRoot)) {
+      let removed = 0;
+      for (const entry of readdirSync(brandRoot, { withFileTypes: true })) {
+        if (!entry.isDirectory() || keep.has(entry.name)) continue;
+        rmSync(join(brandRoot, entry.name), { recursive: true, force: true });
+        removed++;
+        console.log(`Fjernede forældreløs mærkeside: /cykler/${entry.name}`);
+      }
+      if (removed) console.log(`Ryddede ${removed} mærkeside(r) uden aktive annoncer og uden kurateret indhold.`);
+    }
   } else {
     console.warn('Springer annonce-prerender over (ingen data) — beholder eksisterende /bike-sider.');
   }

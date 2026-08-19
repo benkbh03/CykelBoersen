@@ -14,7 +14,7 @@
   padding: 8px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
 }
 .oh-row {
   display: grid;
@@ -41,7 +41,7 @@
 .oh-time {
   padding: 4px 6px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   font-size: 0.85rem;
   background: #fff;
   color: var(--charcoal);
@@ -64,7 +64,7 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   font-size: 0.85rem;
   font-weight: 600;
 }
@@ -94,7 +94,7 @@
   padding: 10px 12px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   max-width: 280px;
 }
 .oh-list-row {
@@ -125,7 +125,7 @@
   padding: 6px 12px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   color: var(--charcoal);
   font-size: 0.82rem;
   font-weight: 500;
@@ -150,7 +150,7 @@
   padding: 6px 12px;
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 500;
@@ -182,7 +182,7 @@
   padding: 5px 11px;
   background: rgba(42,61,46,0.08);
   border: 1px solid rgba(42,61,46,0.2);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--forest);
@@ -199,7 +199,7 @@
 .dealer-service-filter {
   background: #fff;
   border: 1.5px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   padding: 6px 12px;
   font-size: 0.82rem;
   font-weight: 500;
@@ -222,7 +222,7 @@
   gap: 6px;
   margin: 4px 0 6px;
   padding: 3px 10px;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   font-size: 0.75rem;
   font-weight: 600;
   width: fit-content;
@@ -271,7 +271,7 @@
   padding: 10px 18px;
   background: #fff;
   border: 1.5px solid var(--rust);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   color: var(--rust);
   font-size: 0.9rem;
   font-weight: 600;
@@ -282,7 +282,6 @@
 .pp-follow-btn:hover {
   background: var(--rust);
   color: #fff;
-  transform: translateY(-1px);
 }
 .pp-follow-btn.following {
   background: var(--forest);
@@ -302,5 +301,5 @@
   background: var(--sand);
   border: 1px solid var(--border);
   padding: 3px 9px;
-  border-radius: 12px;
+  border-radius: var(--r-md);
 }

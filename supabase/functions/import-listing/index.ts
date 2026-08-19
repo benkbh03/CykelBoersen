@@ -1,7 +1,21 @@
 // Supabase Edge Function: import-listing
-// Henter en annonce fra et eksternt link (DBA, Gul&Gratis, Facebook Marketplace
-// m.fl.) server-side og trækker Open Graph-metadata + hovedbillede ud, så sælgeren
-// kan genbruge sin EGEN annonce uden at taste alt forfra.
+// Henter sælgerens EGEN annonce fra et link server-side og trækker Open
+// Graph-metadata + hovedbillede ud, så den kan genbruges uden at taste alt
+// forfra.
+//
+// UI'et lover kun DBA, fordi det er det eneste der er afprøvet. Teknisk virker
+// funktionen på ethvert site der udstiller OG-tags, men et løfte om noget
+// utestet ender som en fejlmelding hos brugeren.
+//
+// Facebook Marketplace kan IKKE lade sig gøre, uanset hvad man måtte ønske:
+// siderne er login-spærrede, så dette kald rammer en loginvæg i stedet for
+// annoncen. Med login ville det være scraping i strid med Metas vilkår.
+//
+// Lovligt fordi det er BRUGERENS EGEN annonce, hentet én ad gangen på eget
+// initiativ. Teksten og billederne tilhører sælgeren, ikke platformen den
+// ligger på, og ét opslag er ikke systematisk udtræk af en database
+// (ophavsretsloven § 71). Bekræftelsen i formularen er det der holder det
+// sådan — den må ikke fjernes.
 //
 // Kald:  POST { url: "https://www.dba.dk/..." }   Authorization: Bearer <bruger-JWT>
 // Svar:  {

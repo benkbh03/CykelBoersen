@@ -1,19 +1,19 @@
 /* ── BADGES ── */
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border-radius: 100px;
-  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px;
+  padding: 3px 10px; border-radius: var(--r-pill);
+  font-size: var(--t-xs); font-weight: 500; letter-spacing: 0.3px;
 }
 .badge-dealer  { background: #E8F0E8; color: var(--forest); }
 .badge-private { background: #FBF0E8; color: #8A4A20; }
 
 /* ── LISTINGS HEADER ── */
 .listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-.listings-header h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; }
+.listings-header h2 { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 600; }
 .listings-header span { color: var(--muted); font-size: 0.88rem; }
 .sort-select {
   padding: 7px 12px; border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 0.85rem;
+  border-radius: var(--r-md); font-size: 0.85rem;
   background: var(--cream); font-family: 'DM Sans', sans-serif;
   cursor: pointer; color: var(--charcoal); outline: none;
   transition: border-color 0.15s;
@@ -28,7 +28,7 @@
   gap: 12px;
   flex-wrap: wrap;
   background: #2A3D2E;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 12px 16px;
   margin-bottom: 10px;
 }
@@ -43,7 +43,7 @@
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 8px 16px;
   font-size: 0.85rem;
   font-weight: 700;
@@ -63,8 +63,8 @@
 .cta-strip-dismiss:hover { background: rgba(255,255,255,0.22); color: #fff; }
 /* Stærkere visuel når resultater er få (≤5) */
 .cykelagent-cta-strip--accent {
-  background: linear-gradient(135deg, var(--rust) 0%, #B04524 100%);
-  box-shadow: 0 4px 14px rgba(200,80,42,0.25);
+  background: var(--rust);
+  box-shadow: var(--sh-pop);
 }
 .cykelagent-cta-strip--accent .cta-strip-text { color: #fff; }
 .cykelagent-cta-strip--accent .cta-strip-text strong { color: #fff; }
@@ -82,7 +82,7 @@
   flex-wrap: wrap;
   background: var(--sand-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 8px 12px;
   margin-bottom: 16px;
 }
@@ -90,7 +90,7 @@
 .afb-pill {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--cream); border: 1px solid var(--border);
-  border-radius: 999px; padding: 4px 10px 4px 12px;
+  border-radius: var(--r-pill); padding: 4px 10px 4px 12px;
   font-size: 0.78rem; font-weight: 500; color: var(--charcoal);
   white-space: nowrap;
 }
@@ -104,7 +104,7 @@
 .afb-pill-remove:hover { background: var(--border); color: var(--charcoal); }
 .afb-clear-all {
   flex-shrink: 0; background: none; border: 1.5px solid var(--border);
-  border-radius: 8px; padding: 5px 12px;
+  border-radius: var(--r-md); padding: 5px 12px;
   font-size: 0.78rem; font-weight: 600; color: var(--muted);
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   white-space: nowrap; transition: border-color 0.15s, color 0.15s;
@@ -113,7 +113,7 @@
 .afb-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
 .afb-save-agent {
   flex-shrink: 0; background: var(--rust); border: 1.5px solid var(--rust);
-  border-radius: 8px; padding: 6px 14px;
+  border-radius: var(--r-md); padding: 6px 14px;
   font-size: 0.78rem; font-weight: 700; color: #fff;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   white-space: nowrap; transition: background 0.15s, border-color 0.15s;
@@ -127,7 +127,7 @@
   padding: 0 24px;
 }
 .popular-searches-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--charcoal);
@@ -141,21 +141,20 @@
 .popular-chip {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--r-pill);
   padding: 8px 14px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
+  font-size: var(--t-sm);
   font-weight: 500;
   color: var(--charcoal);
   text-decoration: none;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  transition: background 0.15s, border-color 0.15s;
   white-space: nowrap;
   cursor: pointer;
 }
 .popular-chip:hover {
   background: var(--sand);
   border-color: var(--rust);
-  transform: translateY(-1px);
 }
 @media (max-width: 600px) {
   .popular-searches { padding: 0 16px; }
@@ -177,18 +176,20 @@
      indtil content-visibility re-render'er ved scroll. */
   contain-intrinsic-block-size: 1200px;
 }
+/* Kortet svæver ikke, så det har ingen skygge. Adskillelsen er en 1px linje,
+   præcis som hos buycycle, Vinted og Bilbasen. Det løft-ved-hover der lå her
+   før (translateY + stor skygge) er den enkeltdetalje der mest af alt får et
+   grid til at føles som en skabelon: 24 kort der hopper når musen strejfer
+   dem. Hover markeres nu ved at rammen bliver mørkere, hvilket er nok til at
+   vise at kortet kan klikkes. */
 .bike-card {
-  background: var(--cream); border-radius: 14px;
-  border: 1px solid var(--border); overflow: hidden;
-  cursor: pointer; transition: transform 0.2s, box-shadow 0.22s, border-color 0.2s;
-  animation: fadeUp 0.5s ease both;
+  background: var(--cream); border-radius: var(--r-md);
+  border: 1px solid var(--line); overflow: hidden;
+  cursor: pointer; transition: border-color 0.15s;
   display: flex; flex-direction: column; height: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .bike-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.13);
-  border-color: rgba(42,61,46,0.18);
+  border-color: var(--forest);
 }
 .bike-card-img {
   aspect-ratio: 3/2; width: 100%; background: var(--sand);
@@ -203,11 +204,6 @@
   transition: opacity 0.4s ease;
 }
 .bike-card-img .bcimg--back { opacity: 0; }
-.bike-card-img::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.10));
-  pointer-events: none;
-}
 .bike-card-badges {
   position: absolute; top: 10px; left: 10px;
   display: flex; flex-wrap: wrap; gap: 6px;
@@ -217,72 +213,84 @@
 /* ── Fremhævet (boost) annonce — diskret badge, blender ind (DBA-stil) ── */
 .featured-card-badge {
   display: inline-flex; align-items: center;
-  background: linear-gradient(135deg, #f7e4a1, #e6c25c);
+  background: #EFD9A0;
   color: #6e4e00;
-  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.1px;
-  padding: 2px 5px; border-radius: 4px;
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.1px;
+  padding: 3px 7px; border-radius: var(--r-sm);
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
-  box-shadow: 0 1px 3px rgba(184,134,11,0.3);
 }
 .featured-card-img-placeholder { font-size: 4rem; }
 
+/* Stand vises på hvert eneste kort. Da den lå i fire mættede farver (grøn,
+   blå, orange, grå) var det fire farvepletter i hvert grid oven i pris,
+   garanti- og boost-badges, og så kan øjet ikke længere se hvad der er
+   vigtigt. Nu ét neutralt chip til alle stande, og kun "Ny" får en anelse
+   vægt, fordi det er den ene oplysning der reelt ændrer en købsbeslutning.
+   Farvekodningen kan trivielt sættes tilbage her hvis den savnes. */
 .condition-tag {
-  border-radius: 6px;
-  padding: 3px 8px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2px;
-  background: rgba(255,255,255,0.92); color: var(--charcoal);
+  border-radius: var(--r-sm);
+  padding: 3px 7px; font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.2px;
+  background: rgba(254,250,243,0.94); color: var(--ink-2);
+  border: 1px solid rgba(26,26,24,0.10);
   white-space: nowrap;
 }
-.condition-tag--ny      { background: #e8f5e9; color: #2e7d32; }
-.condition-tag--som-ny  { background: #e3f2fd; color: #1565c0; }
-.condition-tag--god     { background: #fff3e0; color: #bf360c; }
-.condition-tag--brugt   { background: #efeae0; color: #5a544a; }
+.condition-tag--ny { color: var(--forest); border-color: rgba(42,61,46,0.30); font-weight: 700; }
+/* Badges bruger husets grønne og rust i stedet for Materials grøn og orange,
+   som var fremmedlegemer i paletten. Ingen af dem svæver, så ingen af dem
+   har skygge. */
 .warranty-card-badge {
-  background: #e8f5e9; color: #2e7d32;
-  border-radius: 6px; padding: 3px 7px;
-  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.3px;
-  text-transform: uppercase;
+  background: rgba(42,61,46,0.08); color: var(--forest);
+  border-radius: var(--r-sm); padding: 3px 7px;
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.2px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
 }
 .demo-badge {
-  background: #fff3e0; color: #bf360c;
-  border: 1px solid #ff8b60;
-  border-radius: 6px; padding: 3px 7px;
-  font-size: 0.58rem; font-weight: 800; letter-spacing: 0.4px;
+  background: rgba(254,250,243,0.94); color: var(--forest);
+  border: 1px solid rgba(42,61,46,0.30);
+  border-radius: var(--r-sm); padding: 3px 7px;
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.2px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
-  box-shadow: 0 2px 6px rgba(191,54,12,0.18);
 }
+/* Prisfald er den ene oplysning på et kort der reelt flytter en beslutning,
+   så den beholder accentfarven. Den var #c8302a, altså en anden rød end
+   husets rust — to røde der ligner hinanden nok til at ligne et uheld. */
 .price-reduced-card-badge {
-  background: #c8302a; color: #fff;
-  border-radius: 4px; padding: 2px 5px;
-  font-size: 0.5rem; font-weight: 800; letter-spacing: 0.3px;
+  background: var(--accent); color: #fff;
+  border-radius: var(--r-sm); padding: 3px 7px;
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.2px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 2px;
-  box-shadow: 0 2px 6px rgba(200,48,42,0.25);
 }
 @media (max-width: 560px) {
   /* Kompakte badges på mobil — de må ikke dække cyklen. Mindre tekst/padding,
      tættere i hjørnet, ingen skygge, og kun ÉT ord-mellemrum så de wrapper mindre. */
   .bike-card-badges { gap: 3px; top: 6px; left: 6px; max-width: calc(100% - 38px); }
-  .featured-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
-  .price-reduced-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
-  .warranty-card-badge { font-size: 0.48rem; padding: 2px 5px; letter-spacing: 0; }
-  .demo-badge { font-size: 0.48rem; padding: 2px 5px; box-shadow: none; }
-  .condition-tag { font-size: 0.52rem; padding: 2px 6px; }
+  .featured-card-badge,
+  .price-reduced-card-badge,
+  .warranty-card-badge,
+  .demo-badge,
+  .condition-tag { font-size: 0.62rem; padding: 2px 6px; letter-spacing: 0; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
-  background: rgba(254,250,243,0.92);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  border: none;
+  background: rgba(254,250,243,0.94);
+  border: 1px solid rgba(26,26,24,0.10);
   border-radius: 50%; width: 34px; height: 34px;
   cursor: pointer; font-size: 1rem;
   display: flex; align-items: center; justify-content: center;
-  z-index: 1; transition: background 0.15s, transform 0.15s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  z-index: 1; transition: background 0.15s, border-color 0.15s;
 }
-.save-btn:hover { background: #fff; transform: scale(1.08); }
+.save-btn:hover { background: #fff; border-color: rgba(26,26,24,0.28); }
+/* Hjertet var to emoji (🤍 tom, ❤️ gemt), og tilstanden blev aflæst på
+   knappens tekst. Nu ét SVG hvor tilstanden er en klasse: tom kontur når den
+   ikke er gemt, udfyldt i accentfarven når den er. Samme streg som resten af
+   ikonsættet, og ens på Windows, iOS og Android. */
+.save-btn { color: var(--ink-2); }
+.save-btn svg { fill: none; stroke: currentColor; display: block; }
+.save-btn.is-saved { color: var(--accent); border-color: rgba(200,80,42,0.35); }
+.save-btn.is-saved svg { fill: currentColor; }
 .save-btn:focus-visible { outline-color: var(--rust-light); }
 /* Mobil-overrides for save-btn — placeret EFTER base-reglen så cascade-orden
    gør at de faktisk vinder over de generelle størrelser ovenfor. */
@@ -292,13 +300,16 @@
 .bike-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
 .bike-title {
-  font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; line-height: 1.35;
+  font-family: 'Fraunces', Georgia, serif; font-size: var(--t-lg); font-weight: 600; line-height: 1.35;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   overflow-wrap: break-word; /* lange ord ombrydes i stedet for at klippes af overflow:hidden */
-  min-height: calc(2 * 1.35 * 1.05rem); /* altid 2 linjer høj → sælger-navn altid alignet */
+  min-height: calc(2 * 1.35 * var(--t-lg)); /* altid 2 linjer høj → sælger-navn altid alignet */
 }
-.bike-price { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 900; color: var(--rust); white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
-.bike-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+/* Prisen var rust. Den er allerede det største og fedeste på kortet, så den
+   behøver ikke også farve — og så længe den brugte accentfarven kunne "Sæt
+   til salg" ikke skille sig ud nogen steder. Rust er nu forbeholdt handlinger. */
+.bike-price { font-family: 'Fraunces', Georgia, serif; font-size: 1.3rem; font-weight: 900; color: var(--ink); white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
+.bike-meta { font-size: var(--t-sm); color: var(--ink-2); margin-bottom: 12px; }
 .bike-meta span::after { content: ' · '; }
 .bike-meta span:last-child::after { content: ''; }
 .card-footer {
@@ -334,11 +345,11 @@
   align-items: flex-start; margin-bottom: 28px;
   gap: 20px; flex-wrap: wrap;
 }
-.dealer-strip h2 { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--sand); font-weight: 700; margin-bottom: 8px; }
+.dealer-strip h2 { font-family: 'Fraunces', Georgia, serif; font-size: 2rem; color: var(--sand); font-weight: 700; margin-bottom: 8px; }
 .dealer-strip p { color: var(--sand); opacity: 0.65; max-width: 540px; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; }
 .btn-become-dealer {
   background: var(--rust); color: #fff;
-  border: none; padding: 13px 24px; border-radius: 8px;
+  border: none; padding: 13px 24px; border-radius: var(--r-md);
   font-size: 0.9rem; font-weight: 600; cursor: pointer;
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
   transition: background 0.2s; flex-shrink: 0;
@@ -348,7 +359,7 @@
 .dealer-card {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   /* Top-padding 38px (ikke 22) reserverer en vertikal "lane" øverst hvor
      fremhævet-badgen (absolut placeret) bor uden at skubbe logo/navn/adresse
      nedad. Konsekvensen: logo + navn + adresse starter på samme y-position
@@ -356,7 +367,6 @@
   padding: 38px 20px 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(42,61,46,0.06);
   transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
 }
 .dealer-card::before {
@@ -364,11 +374,10 @@
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--forest) 0%, var(--rust) 100%);
+  background: var(--forest);
 }
 .dealer-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(42,61,46,0.12);
+  box-shadow: var(--sh-pop);
   border-color: var(--forest);
 }
 .dealer-logo { font-size: 2rem; margin-bottom: 10px; }
@@ -376,14 +385,14 @@
   width: 52px; height: 52px; border-radius: 50%;
   background: var(--rust); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;
+  font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; font-weight: 700;
   margin-bottom: 12px;
   overflow: hidden;
   flex-shrink: 0;
 }
 .dealer-logo-circle--img { background: var(--sand-2); }
 .dealer-logo-circle img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
-.dealer-name { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--charcoal); font-weight: 600; margin-bottom: 4px; }
+.dealer-name { font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; color: var(--charcoal); font-weight: 600; margin-bottom: 4px; }
 .dealer-verified-tick {
   display: inline-flex; align-items: center; justify-content: center;
   width: 16px; height: 16px; border-radius: 50%;
@@ -403,7 +412,7 @@
 .sell-cta-inner {
   max-width: 1300px; margin: 0 auto;
   background: var(--forest-light); color: var(--sand);
-  border-radius: 18px; padding: 36px 44px;
+  border-radius: var(--r-lg); padding: 36px 44px;
   display: grid; grid-template-columns: 1fr auto;
   gap: 32px; align-items: center;
   position: relative;
@@ -413,7 +422,7 @@
   letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
 }
 .sell-cta-headline {
-  font-family: 'Fraunces', serif; font-weight: 400; font-size: 1.75rem;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 400; font-size: 1.75rem;
   letter-spacing: -0.04em; margin: 0 0 8px; line-height: 1.15; color: var(--sand);
 }
 .sell-cta-headline em { font-style: italic; font-weight: 500; color: var(--rust-light); }
@@ -422,14 +431,14 @@
 }
 .sell-cta-btn {
   background: var(--rust); color: #fff; border: none;
-  padding: 14px 24px; border-radius: 10px; font-size: 0.9rem;
+  padding: 14px 24px; border-radius: var(--r-md); font-size: 0.9rem;
   font-weight: 600; font-family: 'DM Sans', sans-serif;
   display: inline-flex; align-items: center; gap: 8px;
-  box-shadow: 0 6px 18px -4px rgba(200,80,42,0.55);
+  box-shadow: var(--sh-pop);
   cursor: pointer; transition: background 0.2s, transform 0.15s;
   white-space: nowrap; position: relative;
 }
-.sell-cta-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
+.sell-cta-btn:hover { background: var(--rust-light);}
 @media (max-width: 768px) {
   .sell-cta-section { padding: 16px 16px 48px; }
   .sell-cta-inner { grid-template-columns: 1fr; padding: 28px 24px; gap: 20px; }
@@ -444,14 +453,14 @@
 }
 .skeleton-card { pointer-events: none; }
 .skeleton-img {
-  width: 100%; aspect-ratio: 4/3; border-radius: 10px;
+  width: 100%; aspect-ratio: 4/3; border-radius: var(--r-md);
   background: linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%);
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.4s infinite linear;
 }
 .skeleton-body { padding: 12px 4px 4px; display: flex; flex-direction: column; gap: 8px; }
 .skeleton-line {
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%);
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.4s infinite linear;
@@ -467,7 +476,7 @@
   margin-bottom: 8px;
 }
 .rv-heading {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.05rem; font-weight: 700; color: var(--charcoal);
   margin: 0;
 }
@@ -475,7 +484,7 @@
   border: none; background: none; color: var(--muted);
   font-family: 'DM Sans', sans-serif; font-size: 0.76rem;
   font-weight: 500; cursor: pointer; padding: 3px 8px;
-  border-radius: 6px; transition: color 0.15s, background 0.15s;
+  border-radius: var(--r-sm); transition: color 0.15s, background 0.15s;
 }
 .rv-clear:hover { color: var(--charcoal); background: var(--sand-2); }
 .rv-scroll {
@@ -484,26 +493,26 @@
   scroll-snap-type: x proximity; scroll-behavior: smooth;
 }
 .rv-scroll::-webkit-scrollbar { height: 7px; }
-.rv-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: 4px; }
-.rv-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.rv-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: var(--r-sm); }
+.rv-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--r-sm); }
 .rv-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 .rv-card {
   flex: 0 0 auto;
   scroll-snap-align: start;
   display: flex; flex-direction: row; align-items: center; gap: 9px;
   background: var(--cream); border: 1px solid var(--border);
-  border-radius: 9px; padding: 5px 13px 5px 5px; cursor: pointer;
+  border-radius: var(--r-md); padding: 5px 13px 5px 5px; cursor: pointer;
   text-align: left; font-family: inherit;
   transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s;
   overflow: hidden;
 }
 .rv-card:hover {
-  transform: translateY(-1px); border-color: rgba(42,61,46,0.18);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+border-color: rgba(42,61,46,0.18);
+  box-shadow: var(--sh-pop);
 }
 .rv-card-img {
   width: 46px; height: 46px; flex-shrink: 0;
-  background: var(--sand-2); border-radius: 6px;
+  background: var(--sand-2); border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.3rem; overflow: hidden;
 }
@@ -515,7 +524,7 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .rv-card-price {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 0.9rem; font-weight: 700; color: var(--rust);
 }
 @media (max-width: 768px) {
@@ -538,11 +547,10 @@
 }
 .boost-benefits li span { flex-shrink: 0; }
 .boost-cta-btn {
-  width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+  width: 100%; border: none; border-radius: var(--r-md); padding: 13px 16px;
   font-size: 0.95rem; font-weight: 700; cursor: pointer;
   font-family: 'DM Sans', sans-serif; color: #fff;
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
-  box-shadow: 0 3px 10px rgba(212,160,23,0.32);
+  background: #d4a017;
   transition: filter 0.15s, transform 0.1s;
 }
 .boost-cta-btn:hover { filter: brightness(1.05); }
@@ -558,9 +566,9 @@
 .boost-state-active .boost-benefits { text-align: left; }
 .boost-badge-big {
   display: inline-flex; align-items: center; gap: 6px;
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%); color: #fff;
+  background: #d4a017; color: #fff;
   font-weight: 800; font-size: 0.8rem; letter-spacing: 0.4px; text-transform: uppercase;
-  padding: 6px 16px; border-radius: 999px; box-shadow: 0 2px 8px rgba(212,160,23,0.4);
+  padding: 6px 16px; border-radius: var(--r-pill);
   margin-bottom: 10px;
 }
 .boost-active-text { font-size: 0.95rem; color: var(--charcoal); margin: 0 0 14px; line-height: 1.5; }
@@ -569,12 +577,12 @@
 .success-boost-cta {
   display: flex; align-items: center; gap: 12px; width: 100%;
   margin: 4px 0 14px; padding: 12px 14px;
-  background: linear-gradient(135deg, rgba(212,160,23,0.12), rgba(232,185,51,0.08));
-  border: 1px solid rgba(212,160,23,0.4); border-radius: 12px;
+  background: rgba(212,160,23,0.12);
+  border: 1px solid rgba(212,160,23,0.4); border-radius: var(--r-md);
   cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.success-boost-cta:hover { border-color: #d4a017; box-shadow: 0 4px 14px rgba(212,160,23,0.18); }
+.success-boost-cta:hover { border-color: #d4a017;}
 .success-boost-cta-star { font-size: 1.5rem; flex-shrink: 0; }
 .success-boost-cta-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .success-boost-cta-text strong { font-size: 0.92rem; color: #6e4e00; }

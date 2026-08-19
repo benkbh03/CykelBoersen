@@ -16,7 +16,7 @@
 }
 .mp-back-btn:hover { opacity: 0.7; }
 .mp-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.2rem;
   font-weight: 900;
   color: var(--charcoal);
@@ -53,7 +53,7 @@
   padding: 24px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   position: relative;
   overflow: hidden;
 }
@@ -64,16 +64,11 @@
   row-gap: 8px;
   align-items: start;
 }
-.mp-avatar-decor {
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(200,80,42,0.08), transparent 70%);
-  pointer-events: none;
-}
+/* Rust-farvet cirkel der stak ud af hjørnet bag avataren. Ren pynt uden
+   funktion, og den slags svævende farveklat er et af de tydeligste tegn på
+   en side der er dekoreret frem for designet. Skjult i stedet for slettet,
+   fordi elementet stadig udskrives fra JS. */
+.mp-avatar-decor { display: none; }
 .mp-avatar {
   width: 88px;
   height: 88px;
@@ -83,7 +78,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -101,7 +96,7 @@
   margin-bottom: 6px;
 }
 .mp-name {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--charcoal);
@@ -122,7 +117,7 @@
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: rgba(42,61,46,0.08);
   color: var(--forest);
   font-size: 0.72rem;
@@ -156,7 +151,7 @@
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 12px 18px;
   font-size: 0.87rem;
   font-weight: 600;
@@ -166,7 +161,7 @@
   justify-content: center;
   gap: 6px;
   font-family: 'DM Sans', sans-serif;
-  box-shadow: 0 4px 12px -4px rgba(200,80,42,0.45);
+  box-shadow: var(--sh-pop);
   transition: background 0.15s, box-shadow 0.15s;
 }
 .mp-action-primary:hover { background: var(--rust-light); }
@@ -179,7 +174,7 @@
   background: var(--cream);
   color: var(--charcoal);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 10px 12px;
   font-size: 0.82rem;
   font-weight: 600;
@@ -204,7 +199,7 @@
 .mp-stat-card {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
@@ -218,7 +213,7 @@
 .mp-stat-icon {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: var(--sand);
   display: flex;
   align-items: center;
@@ -226,7 +221,7 @@
   flex-shrink: 0;
 }
 .mp-stat-num {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2rem;
   font-weight: 900;
   color: var(--charcoal);
@@ -248,8 +243,8 @@
 
 /* ── Insight-banner ── */
 .mp-insight {
-  background: linear-gradient(135deg, var(--forest), var(--forest-light));
-  border-radius: 14px;
+  background: var(--forest);
+  border-radius: var(--r-lg);
   padding: 18px 20px;
   display: grid;
   grid-template-columns: 44px 1fr auto;
@@ -260,7 +255,7 @@
 .mp-insight-icon {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: rgba(245,240,232,0.14);
   display: flex;
   align-items: center;
@@ -270,7 +265,7 @@
 }
 .mp-insight-body { min-width: 0; }
 .mp-insight-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: -0.02em;
@@ -288,7 +283,7 @@
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 10px 16px;
   font-size: 0.82rem;
   font-weight: 600;
@@ -307,7 +302,7 @@
 .mp-tabs-panel {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   padding: 4px 20px 22px;
 }
 .mp-tabs {
@@ -347,13 +342,13 @@
   bottom: -1px;
   height: 3px;
   background: var(--rust);
-  border-radius: 3px 3px 0 0;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
 }
 .mp-tab-count {
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: rgba(138,133,120,0.18);
   color: var(--muted);
   font-size: 0.67rem;
@@ -382,20 +377,19 @@
   align-items: start;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .mp-listing-card:hover {
   border-color: #b8b2a8;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
 .mp-listing-card--sold { opacity: 0.7; }
 .mp-listing-img-wrap {
   position: relative;
   width: 100%;
   aspect-ratio: 4/3;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   overflow: hidden;
   background: var(--sand);
   cursor: pointer;
@@ -420,7 +414,7 @@
   top: 8px;
   left: 8px;
   padding: 3px 10px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -439,7 +433,7 @@
   cursor: pointer;
 }
 .mp-listing-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -470,7 +464,7 @@
   gap: 8px;
 }
 .mp-listing-price {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 900;
   font-size: 1.3rem;
   color: var(--rust);
@@ -491,7 +485,7 @@
 .mp-btn-view {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 7px 12px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -509,7 +503,7 @@
   background: var(--forest);
   color: var(--sand);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 7px 12px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -528,7 +522,7 @@
    kontur med guld-accent: tydeligt til stede, men underordnet Redigér. */
 .mp-btn-boost {
   background: var(--cream);
-  color: #8a6817; border: 1px solid rgba(212,160,23,0.55); border-radius: 8px;
+  color: #8a6817; border: 1px solid rgba(212,160,23,0.55); border-radius: var(--r-md);
   padding: 7px 12px; font-size: 0.78rem; font-weight: 600;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   display: inline-flex; align-items: center; justify-content: center; gap: 5px;
@@ -558,7 +552,7 @@
 .mp-btn-sold, .mp-btn-unsold {
   background: none;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 6px 12px;
   font-size: 0.76rem;
   font-weight: 500;
@@ -586,11 +580,11 @@
 .mp-completion-card {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 18px;
 }
 .mp-completion-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: -0.02em;
@@ -606,14 +600,14 @@
 .mp-completion-bar {
   height: 6px;
   background: var(--sand);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   overflow: hidden;
   margin-bottom: 12px;
 }
 .mp-completion-fill {
   height: 100%;
   background: var(--rust);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   transition: width 0.5s ease;
 }
 .mp-completion-item {
@@ -647,7 +641,7 @@
   background: var(--forest);
   color: var(--sand);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 9px 14px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -738,7 +732,7 @@
     gap: 8px;
     flex-wrap: nowrap;
   }
-  .mp-action-primary { width: 100%; padding: 12px 14px; font-size: 0.87rem; box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5); }
+  .mp-action-primary { width: 100%; padding: 12px 14px; font-size: 0.87rem; box-shadow: var(--sh-pop); }
   .mp-action-secondary-row { gap: 8px; justify-content: flex-start; }
   .mp-action-secondary { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; }
   .mp-action-secondary .mp-action-label { display: none !important; }
@@ -748,7 +742,7 @@
   .mp-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .mp-stat-card { padding: 14px; min-height: 110px; gap: 6px; }
   .mp-stat-num { font-size: 1.62rem; }
-  .mp-stat-icon { width: 32px; height: 32px; border-radius: 9px; }
+  .mp-stat-icon { width: 32px; height: 32px; border-radius: var(--r-md); }
 
   /* Insight banner */
   .mp-insight { grid-template-columns: 36px 1fr; padding: 14px; gap: 12px; }
@@ -767,7 +761,7 @@
   .mp-listing-aside { display: none; }
   .mp-price-mobile {
     display: block;
-    font-family: 'Fraunces', serif;
+    font-family: 'Fraunces', Georgia, serif;
     font-weight: 900;
     font-size: 1.25rem;
     color: var(--rust);
@@ -820,7 +814,7 @@ body.is-mp-mobile .mp-account-card {
   align-items: stretch;
   gap: 14px;
   padding: 18px;
-  border-radius: 16px;
+  border-radius: var(--r-lg);
 }
 body.is-mp-mobile .mp-identity {
   display: flex !important;
@@ -909,8 +903,8 @@ body.is-mp-mobile .mp-action-primary {
   width: 100%;
   padding: 12px 14px;
   font-size: 0.87rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-pop);
 }
 body.is-mp-mobile .mp-action-secondary-row { gap: 8px; }
 body.is-mp-mobile .mp-action-secondary {
@@ -918,7 +912,7 @@ body.is-mp-mobile .mp-action-secondary {
   width: auto;
   height: auto;
   padding: 11px 12px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   font-size: 0.78rem;
   font-weight: 600;
   position: relative;
@@ -942,10 +936,10 @@ body.is-mp-mobile .mp-stat-card {
   gap: 6px;
   min-width: 0;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
 }
 body.is-mp-mobile .mp-stat-num { font-size: 1.5rem; letter-spacing: -0.05em; }
-body.is-mp-mobile .mp-stat-icon { width: 32px; height: 32px; border-radius: 9px; }
+body.is-mp-mobile .mp-stat-icon { width: 32px; height: 32px; border-radius: var(--r-md); }
 body.is-mp-mobile .mp-stat-label {
   font-size: 0.72rem; line-height: 1.3;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -960,9 +954,9 @@ body.is-mp-mobile .mp-insight {
   grid-template-columns: 36px 1fr !important;
   padding: 14px;
   gap: 12px;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
 }
-body.is-mp-mobile .mp-insight-icon { width: 36px; height: 36px; border-radius: 10px; }
+body.is-mp-mobile .mp-insight-icon { width: 36px; height: 36px; border-radius: var(--r-md); }
 body.is-mp-mobile .mp-insight-title { font-size: 0.9rem; line-height: 1.2; }
 body.is-mp-mobile .mp-insight-sub { font-size: 0.72rem; }
 body.is-mp-mobile .mp-insight-cta { display: none; }
@@ -971,7 +965,7 @@ body.is-mp-mobile .mp-insight-cta { display: none; }
 body.is-mp-mobile .mp-tabs-panel {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 12px;
 }
 body.is-mp-mobile .mp-tabs {
@@ -1001,13 +995,13 @@ body.is-mp-mobile .mp-listing-card {
   grid-template-columns: 108px minmax(0, 1fr) !important;
   padding: 12px;
   gap: 12px;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
 }
 body.is-mp-mobile .mp-listing-title { font-size: 1.05rem; }
 body.is-mp-mobile .mp-listing-aside { display: none; }
 body.is-mp-mobile .mp-price-mobile {
   display: block;
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 900;
   font-size: 1.25rem;
   color: var(--rust);
@@ -1079,11 +1073,11 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 28px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   margin-bottom: 0;
 }
 .pp-header-dealer {
-  background: linear-gradient(135deg, var(--cream), #f7f4ec);
+  background: var(--cream);
   border: 1.5px solid var(--forest);
 }
 .pp-header-skeleton {
@@ -1093,7 +1087,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 28px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
 }
 
 /* Avatar */
@@ -1106,7 +1100,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.6rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -1124,7 +1118,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   min-width: 0;
 }
 .pp-name {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -1161,12 +1155,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--sand);
   color: var(--forest);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   padding: 4px 10px;
   font-size: 0.78rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 .pp-maps-link:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
 .pp-maps-link svg { flex-shrink: 0; }
@@ -1188,7 +1182,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex;
   border: 1px solid var(--border);
   border-top: none;
-  border-radius: 0 0 16px 16px;
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
   overflow: hidden;
   margin-bottom: 24px;
   background: #fff;
@@ -1204,7 +1198,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .pp-trust-item:last-child { border-right: none; }
 .pp-trust-item:hover { background: var(--sand); }
 .pp-trust-val {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -1226,14 +1220,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 10px 22px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
-.pp-cta-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
+.pp-cta-btn:hover { background: var(--rust-light);}
 
 /* Tabs (re-uses existing up-tab styling) */
 .pp-tabs {
@@ -1245,7 +1239,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 32px;
 }
 .pp-section-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -1337,7 +1331,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 14px 16px 0;
 }
 .sell-wizard-back-btn {
-  width: 40px; height: 40px; border-radius: 12px;
+  width: 40px; height: 40px; border-radius: var(--r-md);
   background: transparent; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   color: var(--charcoal); transition: background 0.15s;
@@ -1345,7 +1339,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-wizard-back-btn:hover { background: var(--sand); }
 .sell-wizard-logo {
   display: flex; align-items: center; gap: 6px;
-  font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 17px;
   letter-spacing: -0.3px; color: var(--forest);
 }
 .sell-wizard-progress { padding: 16px 16px 4px; }
@@ -1367,10 +1361,10 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-progress-label { font-size: 13px; font-weight: 500; color: var(--charcoal); }
 .sell-progress-label.active { font-weight: 600; }
 .sell-progress-label.pending { color: var(--muted); }
-.sell-progress-line { flex: 1; height: 1.5px; border-radius: 1px; margin: 0 2px; }
+.sell-progress-line { flex: 1; height: 1.5px; border-radius: var(--r-sm); margin: 0 2px; }
 .sell-wizard-body { padding: 4px 16px 0; }
 .sell-step-heading {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 28px;
   line-height: 1.1; letter-spacing: -0.7px; margin: 14px 0 6px; color: var(--charcoal);
 }
 .sell-step-heading em { font-style: italic; color: var(--forest); }
@@ -1381,53 +1375,52 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* Drop zone */
 .sell-drop-zone {
   border: 1.5px dashed var(--border); background: var(--sand);
-  border-radius: 18px; padding: 32px 20px;
+  border-radius: var(--r-lg); padding: 32px 20px;
   text-align: center; cursor: pointer; transition: all 180ms ease;
 }
 .sell-drop-zone:hover, .sell-drop-zone.dragover {
   border-color: var(--forest); background: rgba(42,61,46,0.04);
 }
 .sell-drop-icon {
-  width: 52px; height: 52px; border-radius: 14px; background: var(--cream);
+  width: 52px; height: 52px; border-radius: var(--r-lg); background: var(--cream);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 12px; color: var(--forest);
-  box-shadow: 0 1px 3px rgba(42,61,46,0.1);
 }
 .sell-drop-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 17px;
   color: var(--charcoal); margin-bottom: 4px; letter-spacing: -0.2px;
 }
 .sell-drop-sub { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
 .sell-drop-badge {
-  display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px;
+  display: inline-flex; align-items: center; padding: 5px 11px; border-radius: var(--r-pill);
   background: var(--cream); font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif;
 }
 /* AI button */
 .sell-ai-btn {
   width: 100%; margin-top: 12px; padding: 13px 14px;
-  background: var(--forest); border: none; border-radius: 14px; color: var(--cream);
+  background: var(--forest); border: none; border-radius: var(--r-lg); color: var(--cream);
   display: flex; align-items: center; gap: 11px; cursor: pointer; text-align: left;
   transition: background 0.2s; font-family: 'DM Sans', sans-serif;
 }
 .sell-ai-btn:hover { background: var(--forest-light); }
 .sell-ai-btn-icon {
-  width: 34px; height: 34px; border-radius: 9px;
+  width: 34px; height: 34px; border-radius: var(--r-md);
   background: rgba(245,240,232,0.12);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;
 }
 .sell-ai-btn-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 15px;
   letter-spacing: -0.2px; color: var(--cream); margin-bottom: 2px;
 }
 .sell-ai-btn-sub { font-size: 12px; opacity: 0.75; line-height: 1.3; color: var(--cream); }
 .sell-ai-applied {
   margin-top: 12px; padding: 11px 13px;
-  background: rgba(42,61,46,0.07); border-radius: 12px; border: 1px solid rgba(42,61,46,0.14);
+  background: rgba(42,61,46,0.07); border-radius: var(--r-md); border: 1px solid rgba(42,61,46,0.14);
   display: flex; align-items: center; gap: 10px;
   font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal);
 }
 .sell-ai-applied-icon {
-  width: 26px; height: 26px; border-radius: 8px;
+  width: 26px; height: 26px; border-radius: var(--r-md);
   background: var(--forest); color: var(--cream);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;
 }
@@ -1441,18 +1434,18 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .sell-ai-auto {
   margin-top: 12px; padding: 12px 14px;
-  background: rgba(42,61,46,0.07); border: 1px solid rgba(42,61,46,0.14); border-radius: 12px;
+  background: rgba(42,61,46,0.07); border: 1px solid rgba(42,61,46,0.14); border-radius: var(--r-md);
   display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
   font-family: 'DM Sans', sans-serif; color: var(--charcoal);
 }
 .sell-ai-auto-text { flex: 1 1 190px; min-width: 0; }
 .sell-ai-auto-text b {
-  display: block; font-family: 'Fraunces', serif; font-weight: 500;
+  display: block; font-family: 'Fraunces', Georgia, serif; font-weight: 500;
   font-size: 14px; letter-spacing: -0.2px; margin-bottom: 2px;
 }
 .sell-ai-auto-text span { display: block; font-size: 12px; line-height: 1.4; color: var(--muted); }
 .sell-ai-auto-check {
-  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: var(--r-md); flex-shrink: 0;
   background: var(--forest); color: var(--cream);
   display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
 }
@@ -1465,7 +1458,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-ai-auto.is-failed { background: var(--cream); border-color: var(--border); }
 .sell-ai-retry {
   flex-shrink: 0; min-height: 44px; padding: 10px 14px;
-  background: none; border: 1px solid rgba(42,61,46,0.28); border-radius: 10px;
+  background: none; border: 1px solid rgba(42,61,46,0.28); border-radius: var(--r-md);
   color: var(--forest); font-family: 'DM Sans', sans-serif; font-size: 13px;
   cursor: pointer; transition: background 0.15s, border-color 0.15s;
 }
@@ -1485,7 +1478,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 8px;
 }
 .sell-photo-grid-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 15px;
   color: var(--charcoal); letter-spacing: -0.2px;
 }
 .sell-photo-count { color: var(--muted); font-weight: 400; }
@@ -1493,7 +1486,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* New preview grid style */
 .sell-preview-grid-new { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
 .sell-preview-grid-new .img-preview-item {
-  border-radius: 12px !important; aspect-ratio: 1/1;
+  border-radius: var(--r-md) !important; aspect-ratio: 1/1;
 }
 .sell-preview-grid-new .img-preview-item.primary {
   outline: 2.5px solid var(--rust); outline-offset: 1px;
@@ -1507,7 +1500,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   width: 100%; margin: 12px 0 8px;
   padding: 12px 14px;
   background: var(--sand);
-  border: 1px solid var(--border); border-radius: 10px;
+  border: 1px solid var(--border); border-radius: var(--r-md);
   font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
   color: var(--charcoal); cursor: pointer;
   text-align: left; transition: background 0.15s, border-color 0.15s;
@@ -1551,13 +1544,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    et tillidssignal skal være roligt, ikke råbende. */
 .sell-field--frame {
   border: 1px solid rgba(42,61,46,0.2);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 12px 14px;
   background: rgba(42,61,46,0.035);
 }
 .sell-recommended {
   display: inline-block; margin-left: 6px; padding: 2px 8px;
-  border-radius: 100px; background: var(--forest); color: var(--sand);
+  border-radius: var(--r-pill); background: var(--forest); color: var(--sand);
   font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
   font-family: 'DM Sans', sans-serif; vertical-align: 1px;
 }
@@ -1580,7 +1573,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   width: 100%; padding: 11px 14px;
   font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--charcoal);
   background: var(--cream); border: 1.5px solid var(--border);
-  border-radius: 12px; outline: none; box-sizing: border-box; transition: border-color 0.2s;
+  border-radius: var(--r-md); outline: none; box-sizing: border-box; transition: border-color 0.2s;
 }
 .sell-field input:focus,
 .sell-field select:focus,
@@ -1606,8 +1599,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* Summary card */
 .sell-summary-card {
   margin-top: 16px; background: var(--forest);
-  border-radius: 18px; padding: 16px; color: var(--cream);
-  box-shadow: 0 8px 24px -8px rgba(42,61,46,0.3);
+  border-radius: var(--r-lg); padding: 16px; color: var(--cream);
+  box-shadow: var(--sh-pop);
 }
 .sell-summary-label {
   font-family: 'DM Sans', sans-serif; font-size: 10.5px; font-weight: 600;
@@ -1615,16 +1608,16 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .sell-summary-top { display: flex; gap: 12px; margin-bottom: 12px; }
 .sell-summary-thumb {
-  width: 68px; height: 68px; border-radius: 11px; overflow: hidden;
+  width: 68px; height: 68px; border-radius: var(--r-md); overflow: hidden;
   flex-shrink: 0; background: rgba(245,240,232,0.1);
 }
 .sell-summary-thumb-img { width: 100%; height: 100%; object-fit: cover; }
 .sell-summary-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 17px;
   letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 3px;
 }
 .sell-summary-sub { font-family: 'DM Sans', sans-serif; font-size: 12px; opacity: 0.65; line-height: 1.4; }
-.sell-summary-price { font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; color: #f5d5a8; margin-top: 5px; letter-spacing: -0.3px; }
+.sell-summary-price { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 19px; color: #f5d5a8; margin-top: 5px; letter-spacing: -0.3px; }
 .sell-summary-rows { border-top: 1px solid rgba(245,240,232,0.1); padding-top: 10px; display: grid; gap: 6px; }
 .sell-summary-row { display: flex; justify-content: space-between; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; }
 .sell-summary-row-key { opacity: 0.55; }
@@ -1638,11 +1631,11 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-wizard-cta {
   display: flex; align-items: center; justify-content: center; gap: 7px;
   width: 100%; max-width: 520px; height: 52px; margin: 0 auto;
-  border-radius: 14px; border: none;
+  border-radius: var(--r-lg); border: none;
   font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: -0.1px;
   transition: all 180ms ease; cursor: pointer;
 }
-.sell-wizard-cta.enabled { background: var(--rust); color: var(--cream); box-shadow: 0 4px 14px -4px rgba(200,80,42,0.5); }
+.sell-wizard-cta.enabled { background: var(--rust); color: var(--cream); box-shadow: var(--sh-pop); }
 .sell-wizard-cta.disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
 /* Default: desktop-only elements are hidden on mobile */
@@ -1671,7 +1664,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     letter-spacing: 0.3px; margin-bottom: 6px;
   }
   .sell-wizard-page-title {
-    font-family: 'Fraunces', serif; font-weight: 700; font-size: 2.4rem;
+    font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 2.4rem;
     letter-spacing: -1px; margin: 0; color: var(--charcoal); line-height: 1.15;
   }
   .sell-wizard-page-title em { font-style: italic; color: var(--forest); }
@@ -1689,18 +1682,18 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     display: block;
     background: var(--sand);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--r-lg);
     padding: 20px;
     position: sticky;
     top: 88px;
   }
   .sell-desktop-stepper-title {
-    font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem;
+    font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 1rem;
     color: var(--forest); margin-bottom: 14px;
   }
   .sell-desktop-step-row {
     display: flex; gap: 12px; width: 100%;
-    padding: 10px; border-radius: 10px;
+    padding: 10px; border-radius: var(--r-md);
     background: transparent; border: 1px solid transparent;
     text-align: left; margin-bottom: 4px;
     align-items: center; font-family: 'DM Sans', sans-serif;
@@ -1725,7 +1718,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .sell-wizard-main {
     background: var(--cream);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--r-lg);
     padding: 28px;
   }
   .sell-wizard-body { padding: 0; }
@@ -1741,7 +1734,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     border-top: 1px solid var(--border);
   }
   .sell-desktop-back {
-    padding: 12px 22px; border-radius: 8px;
+    padding: 12px 22px; border-radius: var(--r-md);
     background: transparent; border: 1.5px solid var(--border);
     color: var(--charcoal);
     font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
@@ -1751,14 +1744,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .sell-desktop-back.disabled { color: var(--muted); border-color: var(--border); cursor: not-allowed; opacity: 0.6; }
   .sell-desktop-cta {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 14px 28px; border-radius: 8px;
+    padding: 14px 28px; border-radius: var(--r-md);
     border: none; cursor: pointer;
     font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
-    transition: all 0.18s ease;
+    transition: background 0.18s, border-color 0.18s, color 0.18s ease;
   }
   .sell-desktop-cta.enabled {
     background: var(--rust); color: #fff;
-    box-shadow: 0 4px 14px -4px rgba(200,80,42,0.55);
+    box-shadow: var(--sh-pop);
   }
   .sell-desktop-cta.enabled:hover { background: var(--rust-light, #E8694A); }
   .sell-desktop-cta.disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
@@ -1772,8 +1765,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
   .sell-desktop-preview-card {
     background: var(--cream); border: 1px solid var(--border);
-    border-radius: 14px; overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border-radius: var(--r-lg); overflow: hidden;
+    box-shadow: var(--sh-pop);
   }
   .sell-desktop-preview-hero {
     aspect-ratio: 3/2; width: 100%; background: var(--sand); position: relative;
@@ -1787,7 +1780,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .sell-desktop-preview-badge {
     position: absolute; top: 12px; left: 12px;
     background: rgba(255,255,255,0.92); color: var(--charcoal);
-    border-radius: 5px; padding: 3px 9px;
+    border-radius: var(--r-sm); padding: 3px 9px;
     font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
   }
   .sell-desktop-preview-body { padding: 14px 16px 16px; }
@@ -1796,11 +1789,11 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     margin-bottom: 6px; align-items: flex-start;
   }
   .sell-desktop-preview-title {
-    font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600;
+    font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; font-weight: 600;
     line-height: 1.35; color: var(--charcoal);
   }
   .sell-desktop-preview-price {
-    font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 900;
+    font-family: 'Fraunces', Georgia, serif; font-size: 1.15rem; font-weight: 900;
     color: var(--rust); white-space: nowrap;
   }
   .sell-desktop-preview-meta {
@@ -1819,7 +1812,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px;
   }
   .sell-desktop-preview-thumb {
-    aspect-ratio: 1 / 1; border-radius: 6px; overflow: hidden;
+    aspect-ratio: 1 / 1; border-radius: var(--r-sm); overflow: hidden;
     border: 1px solid var(--border);
   }
   .sell-desktop-preview-thumb.primary { border: 2px solid var(--rust); }
@@ -1883,7 +1876,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-section {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 28px;
   margin-bottom: 16px;
 }
@@ -1924,7 +1917,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-draft-banner {
   background: #fff7e6;
   border: 1.5px solid #f4c77a;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 12px 16px;
   margin-bottom: 20px;
   display: flex;
@@ -1940,7 +1933,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-draft-restore,
 .sell-draft-discard {
   padding: 7px 14px;
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   border: 1.5px solid transparent;
   font-size: 0.85rem;
   font-weight: 600;
@@ -1986,7 +1979,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   width: 100%;
   text-align: center;
   padding: 52px 40px 44px;
-  border-radius: 20px;
+  border-radius: var(--r-lg);
 }
 
 .success-icon-wrap {
@@ -2029,7 +2022,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 
 .success-bike-card {
   background: var(--sand);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 16px 20px;
   margin-bottom: 28px;
 }
@@ -2056,14 +2049,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .success-btn-view {
   padding: 14px 28px;
   font-size: 1rem;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   width: 100%;
 }
 
 .success-btn-new {
   padding: 12px 28px;
   font-size: 0.9rem;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   background: transparent;
   color: var(--charcoal);
   border: 1px solid var(--border);
@@ -2090,7 +2083,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
   .listing-success-inner {
     padding: 40px 24px 36px;
-    border-radius: 16px;
+    border-radius: var(--r-lg);
   }
   .success-title {
     font-size: 1.6rem;
@@ -2118,7 +2111,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 16px 0 32px;
 }
 .size-finder-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.4rem; font-weight: 700;
   color: var(--charcoal);
   margin: 12px 0;
@@ -2132,9 +2125,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .size-finder-form {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 28px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  box-shadow: var(--sh-pop);
 }
 .size-finder-field {
   margin-bottom: 18px;
@@ -2157,7 +2150,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   height: 8px;
   -webkit-appearance: none;
   background: var(--sand);
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   outline: none;
 }
 .size-finder-slider-wrap input[type="range"]::-webkit-slider-thumb {
@@ -2167,7 +2160,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 .size-finder-slider-wrap input[type="range"]::-moz-range-thumb {
   width: 24px; height: 24px;
@@ -2177,7 +2169,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: 3px solid #fff;
 }
 .size-finder-slider-value {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--rust);
@@ -2189,7 +2181,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   width: 100%;
   padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem;
   background: #fff;
@@ -2204,7 +2196,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 16px 0;
   padding: 14px 16px;
   background: rgba(42,61,46,0.04);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border-left: 3px solid var(--forest);
 }
 .size-finder-advanced summary {
@@ -2235,7 +2227,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 20px;
   font-family: 'DM Sans', sans-serif;
   font-size: 1.05rem;
@@ -2246,7 +2238,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .size-finder-submit:hover {
   background: var(--rust-light);
-  transform: translateY(-1px);
 }
 .size-finder-result {
   margin-top: 32px;
@@ -2254,9 +2245,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .size-finder-result-card {
   background: #fff;
   border: 2px solid var(--forest);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   padding: 32px 28px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  box-shadow: var(--sh-modal);
   text-align: center;
 }
 .size-finder-result-emoji {
@@ -2272,7 +2263,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 0 0 6px;
 }
 .size-finder-result-size {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 4rem;
   font-weight: 700;
   color: var(--rust);
@@ -2288,7 +2279,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .size-finder-result-precise {
   background: var(--sand);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 18px;
   margin: 16px 0;
   display: flex;
@@ -2302,7 +2293,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   color: var(--muted);
 }
 .size-finder-result-precise-value {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--forest);
@@ -2320,7 +2311,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 13px 24px;
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
@@ -2333,7 +2324,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: rgba(42,61,46,0.04);
   border-left: 3px solid var(--forest);
   padding: 14px 18px;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
   margin-top: 20px;
   text-align: left;
 }
@@ -2356,7 +2347,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 48px 0;
 }
 .size-finder-info-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -2371,7 +2362,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .size-finder-info-card {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 20px 18px;
   text-align: center;
 }
@@ -2398,7 +2389,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .size-finder-faq-item {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 18px;
   margin-bottom: 10px;
 }
@@ -2444,7 +2435,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-bottom: 1px solid var(--border);
 }
 .blog-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.4rem; font-weight: 700;
   color: var(--charcoal);
   margin: 12px 0;
@@ -2463,7 +2454,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .blog-cat-btn {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   padding: 8px 18px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.85rem; font-weight: 500;
@@ -2485,21 +2476,20 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .blog-card {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: transform 0.15s, box-shadow 0.15s;
 }
 .blog-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: var(--sh-pop);
 }
 .blog-card-emoji {
   font-size: 3.5rem;
   text-align: center;
   padding: 32px 0 16px;
-  background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 100%);
+  background: var(--sand);
 }
 .blog-card-body {
   padding: 18px 22px 22px;
@@ -2514,7 +2504,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 8px;
 }
 .blog-card-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.2rem; font-weight: 700;
   margin: 0 0 10px;
   line-height: 1.3;
@@ -2559,7 +2549,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 12px;
 }
 .blog-article-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2rem; font-weight: 700;
   margin: 0 0 16px;
   line-height: 1.2;
@@ -2580,7 +2570,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .blog-article-body p { margin: 0 0 18px; }
 .blog-article-body h2 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.55rem;
   font-weight: 700;
   margin: 36px 0 14px;
@@ -2632,13 +2622,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .blog-article-cta {
   background: var(--forest);
   color: var(--sand);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 28px;
   text-align: center;
   margin: 40px 0;
 }
 .blog-article-cta h3 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.4rem;
   margin: 0 0 16px;
   color: var(--sand);
@@ -2652,7 +2642,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: rgba(245,240,232,0.15);
   color: var(--sand);
   border: 1px solid rgba(245,240,232,0.3);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 12px 24px;
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
@@ -2672,7 +2662,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-top: 48px;
 }
 .blog-related h2 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem;
   margin: 0 0 20px;
   color: var(--charcoal);
@@ -2686,15 +2676,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; gap: 12px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px;
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s, box-shadow 0.1s;
 }
 .blog-related-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--sh-pop);
 }
 .blog-related-emoji {
   font-size: 2rem;
@@ -2712,7 +2701,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-family: 'DM Sans', sans-serif;
 }
 .blog-related-info h3 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 0.98rem;
   margin: 4px 0;
   color: var(--charcoal);
@@ -2739,7 +2728,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 16px 0 32px;
 }
 .valuation-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.4rem; font-weight: 700;
   color: var(--charcoal);
   margin: 12px 0 12px;
@@ -2753,9 +2742,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .valuation-form {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 28px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  box-shadow: var(--sh-pop);
 }
 .valuation-form-row {
   display: grid;
@@ -2783,7 +2772,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem;
   background: #fff;
@@ -2800,7 +2789,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 20px;
   font-family: 'DM Sans', sans-serif;
   font-size: 1.05rem; font-weight: 700;
@@ -2810,7 +2799,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-submit:hover {
   background: var(--rust-light);
-  transform: translateY(-1px);
 }
 .valuation-submit:disabled {
   opacity: 0.6;
@@ -2822,9 +2810,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .valuation-result-card {
   background: #fff;
   border: 2px solid var(--forest);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   padding: 32px 28px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  box-shadow: var(--sh-modal);
 }
 .valuation-result-empty {
   border-color: var(--border);
@@ -2836,7 +2824,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 12px;
 }
 .valuation-result-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem; font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 4px;
@@ -2851,7 +2839,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .valuation-result-median {
   text-align: center;
   background: var(--sand);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 20px 16px;
   margin: 0 0 24px;
 }
@@ -2864,7 +2852,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 6px;
 }
 .valuation-result-median-value {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.5rem; font-weight: 700;
   color: var(--rust);
 }
@@ -2875,13 +2863,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   position: relative;
   height: 8px;
   background: var(--sand);
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   margin-bottom: 12px;
 }
 .valuation-range-fill {
   position: absolute; inset: 0;
-  background: linear-gradient(to right, #DDD8CE, var(--rust), #DDD8CE);
-  border-radius: 4px;
+  background: #DDD8CE;
+  border-radius: var(--r-sm);
 }
 .valuation-range-marker {
   position: absolute;
@@ -2889,7 +2877,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   width: 4px; height: 20px;
   background: var(--forest);
   transform: translateX(-50%);
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 .valuation-range-labels {
   display: flex;
@@ -2924,7 +2912,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: rgba(42,61,46,0.04);
   border-left: 3px solid var(--forest);
   padding: 14px 18px;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
   margin: 24px 0;
 }
 .valuation-result-tips h3 {
@@ -2950,7 +2938,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   flex: 1;
   min-width: 200px;
   padding: 13px 18px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem; font-weight: 600;
   cursor: pointer;
@@ -2963,7 +2951,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-cta-primary:hover {
   background: var(--rust-light);
-  transform: translateY(-1px);
 }
 .valuation-cta-secondary {
   background: transparent;
@@ -2977,7 +2964,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 48px 0;
 }
 .valuation-info-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem; font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 18px;
@@ -2991,7 +2978,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .valuation-info-card {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 22px 18px;
   text-align: center;
 }
@@ -3017,7 +3004,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .valuation-faq-item {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 18px;
   margin-bottom: 10px;
 }
@@ -3078,7 +3065,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 0 0 4px;
   line-height: 1.2;
   text-align: center;
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
 }
 
 .bd-page-subtitle {
@@ -3089,9 +3076,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 
 .bd-trial-banner {
-  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  background: #e8f5e9;
   border: 1.5px solid #a5d6a7;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 14px 18px;
   font-size: 0.88rem;
   color: #2e7d32;
@@ -3109,7 +3096,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .bd-social-stat {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 16px 8px;
   text-align: center;
   display: flex;
@@ -3119,7 +3106,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   justify-content: center;
 }
 .bd-social-num {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -3143,7 +3130,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   flex-direction: column;
   gap: 10px;
   background: var(--sand);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 20px 24px;
   border: 1px solid var(--border);
   margin-bottom: 24px;
@@ -3160,7 +3147,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    Testet: ≤480, ≤768, 769-1024, ≥1025 */
 .bd-why { margin-bottom: 24px; }
 .bd-why-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 600;
   font-size: 1.25rem;
   color: var(--charcoal);
@@ -3178,7 +3165,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   align-items: flex-start;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: 16px 18px;
 }
 .bd-why-icon {
@@ -3233,7 +3220,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 28px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   text-decoration: none;
   color: var(--charcoal);
   font-family: 'DM Sans', sans-serif;
@@ -3245,7 +3232,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .bd-scope-mini:hover {
   background: #fff;
   border-color: var(--charcoal);
-  transform: translateY(-1px);
 }
 .bd-scope-mini-icon { font-size: 1rem; line-height: 1; }
 .bd-scope-mini-text { color: var(--charcoal); }
@@ -3261,12 +3247,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .bd-form {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   padding: 24px;
 }
 
 .bd-form-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -3324,7 +3310,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   top: 6px;
 }
 .dealers-page-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -3354,17 +3340,15 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--forest);
   color: #fff;
   border: none;
-  border-radius: 9px;
+  border-radius: var(--r-md);
   font-size: 0.95rem; font-weight: 600;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-  box-shadow: 0 2px 10px rgba(42,61,46,0.15);
 }
 .see-all-dealers-cta:hover {
   background: var(--forest-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(42,61,46,0.25);
+  box-shadow: var(--sh-pop);
 }
 .dealers-toolbar {
   display: flex;
@@ -3376,14 +3360,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .dealers-gps-btn {
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 9px 16px;
   font-size: 0.88rem;
   font-weight: 600;
   font-family: 'DM Sans', sans-serif;
   color: var(--charcoal);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
   white-space: nowrap;
 }
 .dealers-gps-btn:hover { border-color: var(--forest); }
@@ -3391,7 +3375,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .dealers-sort-sel {
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 9px 12px;
   font-size: 0.88rem;
   font-family: 'DM Sans', sans-serif;
@@ -3409,7 +3393,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .dealer-dist-badge {
   background: var(--forest);
   color: #fff;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   padding: 3px 10px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -3435,12 +3419,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--sand);
   color: var(--forest);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   padding: 5px 10px;
   font-size: 0.74rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 .dealer-maps-link:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
 @media (max-width: 600px) {
@@ -3467,15 +3451,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .saved-card {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .saved-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  box-shadow: var(--sh-pop);
 }
 
 .saved-card--sold {
@@ -3520,7 +3503,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-size: 0.7rem;
   font-weight: 700;
   padding: 3px 8px;
-  border-radius: 20px;
+  border-radius: var(--r-lg);
   letter-spacing: 0.04em;
 }
 
@@ -3585,7 +3568,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
 }
 .static-page-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -3599,7 +3582,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 
 .static-page-body h3 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.05rem;
   font-weight: 700;
   margin-top: 28px;
@@ -3632,9 +3615,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 #onboarding-banner.onboarding-visible { opacity: 1; }
 .onboarding-content {
-  background: var(--cream); border-radius: 20px; padding: 40px 32px;
+  background: var(--cream); border-radius: var(--r-lg); padding: 40px 32px;
   max-width: 380px; width: 90%; text-align: center; position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: var(--sh-modal);
 }
 .onboarding-close {
   position: absolute; top: 14px; right: 16px;
@@ -3642,12 +3625,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   color: var(--muted); cursor: pointer; padding: 4px;
 }
 .onboarding-icon { font-size: 3rem; margin-bottom: 12px; }
-.onboarding-title { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 8px; color: var(--charcoal); }
+.onboarding-title { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; margin: 0 0 8px; color: var(--charcoal); }
 .onboarding-sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 24px; }
 .onboarding-actions { display: flex; flex-direction: column; gap: 10px; }
 .onboarding-btn {
-  padding: 13px 20px; border-radius: 10px; font-size: 0.92rem; font-weight: 600;
-  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  padding: 13px 20px; border-radius: var(--r-md); font-size: 0.92rem; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s, border-color 0.2s, color 0.2s;
   border: 1.5px solid var(--border); background: var(--sand); color: var(--charcoal);
 }
 .onboarding-btn--primary { background: var(--forest); color: var(--sand); border-color: var(--forest); }
@@ -3662,11 +3645,11 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   grid-column: 1 / -1;
 }
 .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
-.empty-state-title { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--charcoal); margin: 0 0 8px; }
+.empty-state-title { font-family: 'Fraunces', Georgia, serif; font-size: 1.1rem; color: var(--charcoal); margin: 0 0 8px; }
 .empty-state-sub { color: var(--muted); font-size: 0.88rem; margin: 0 0 20px; line-height: 1.5; }
 .empty-state-cta {
   background: var(--forest); color: var(--sand); border: none;
-  padding: 11px 24px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+  padding: 11px 24px; border-radius: var(--r-md); font-size: 0.88rem; font-weight: 600;
   cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
 }
 .empty-state-cta:hover { background: var(--forest-light); }
@@ -3688,7 +3671,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   background: none; border: none; cursor: pointer;
   font-family: 'DM Sans', sans-serif; color: var(--muted);
-  padding: 4px 12px; border-radius: 10px; transition: color 0.15s;
+  padding: 4px 12px; border-radius: var(--r-md); transition: color 0.15s;
   position: relative; min-width: 52px;
 }
 .mbn-btn:hover { color: var(--charcoal); }
@@ -3698,7 +3681,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--forest); color: var(--sand) !important;
   border-radius: 50%; width: 52px; height: 52px;
   padding: 0; margin-top: -16px;
-  box-shadow: 0 4px 14px rgba(42,61,46,0.35);
+  box-shadow: var(--sh-pop);
   justify-content: center;
 }
 .mbn-btn--sell .mbn-icon { font-size: 1.6rem; }
@@ -3714,7 +3697,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* ── BUDFLOW BEKRÆFTELSE ── */
 .bid-sent-confirm {
   text-align: center; padding: 20px 16px;
-  background: var(--sand); border-radius: 12px;
+  background: var(--sand); border-radius: var(--r-md);
   border: 1.5px solid var(--border);
 }
 .bid-sent-icon { font-size: 2rem; margin-bottom: 8px; }
@@ -3731,9 +3714,9 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .ai-suggest-wrap {
   margin-top: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, #f5efe4 0%, #fef7ec 100%);
+  background: #f5efe4;
   border: 1.5px solid #e8dcc5;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   text-align: center;
 }
 .ai-suggest-btn {
@@ -3741,21 +3724,19 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #5a7a5f 0%, #7a9e7f 100%);
+  background: #5a7a5f;
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 12px 22px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
-  box-shadow: 0 2px 8px rgba(90, 122, 95, 0.25);
 }
 .ai-suggest-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(90, 122, 95, 0.32);
+  box-shadow: var(--sh-pop);
 }
 .ai-suggest-btn:disabled {
   opacity: 0.7;
@@ -3790,19 +3771,19 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .photo-tip {
   font-size: 0.76rem; color: var(--muted);
   background: var(--sand); border: 1px solid var(--border);
-  border-radius: 20px; padding: 4px 10px;
+  border-radius: var(--r-lg); padding: 4px 10px;
   white-space: nowrap;
 }
 
 /* ── MØD I MIDTEN ── */
 .meet-middle {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  background: #f0f4f0; border: 1px solid #c8d8c8; border-radius: 8px;
+  background: #f0f4f0; border: 1px solid #c8d8c8; border-radius: var(--r-md);
   padding: 8px 12px; margin-top: 8px; font-size: 0.85rem; color: var(--charcoal);
 }
 .meet-middle-btn {
   background: var(--forest); color: var(--sand); border: none;
-  border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600;
+  border-radius: var(--r-sm); padding: 5px 12px; font-size: 0.8rem; font-weight: 600;
   cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
   white-space: nowrap;
 }
@@ -3811,7 +3792,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* ── GAMMEL ANNONCE TAG ── */
 .mp-old-tag {
   display: inline-block; background: #FFF3CD; color: #856404;
-  border: 1px solid #FFECB5; border-radius: 4px;
+  border: 1px solid #FFECB5; border-radius: var(--r-sm);
   font-size: 0.68rem; font-weight: 600; padding: 1px 5px;
   vertical-align: middle; margin-left: 4px; cursor: help;
 }
@@ -3825,7 +3806,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
   width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
   font-size: 0.95rem; cursor: pointer; opacity: 0;
-  transition: opacity 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: opacity 0.2s;
 }
 .bike-card:hover .ask-available-btn { opacity: 1; }
 .ask-available-btn.asked { opacity: 1; background: #e8f5e9; }
@@ -3839,7 +3820,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    IKKE absolut placeret; det lå oveni badges i samme hjørne. */
 .nearme-dist {
   display: inline-flex; align-items: center;
-  background: rgba(42,61,46,0.88); color: #fff; border-radius: 6px;
+  background: rgba(42,61,46,0.88); color: #fff; border-radius: var(--r-sm);
   padding: 2px 8px; font-size: 0.72rem; font-weight: 600;
   white-space: nowrap;
 }
@@ -3854,8 +3835,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .ss-notif-content {
   display: flex; align-items: center; gap: 10px;
   background: var(--cream); border: 1.5px solid var(--border);
-  border-radius: 12px; padding: 12px 18px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border-radius: var(--r-md); padding: 12px 18px;
+  box-shadow: var(--sh-pop);
   font-size: 0.88rem; color: var(--charcoal);
   white-space: nowrap;
 }
@@ -3891,7 +3872,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .quick-replies::-webkit-scrollbar { display: none; }
 .qr-btn {
   background: var(--sand); border: 1px solid var(--border);
-  border-radius: 14px; padding: 3px 10px;
+  border-radius: var(--r-lg); padding: 3px 10px;
   font-size: 0.72rem; font-weight: 500; color: var(--charcoal);
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: border-color 0.15s, background 0.15s;
@@ -3923,7 +3904,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    fejl: ægte serienumre er uforudsigelige, og at afvise et rigtigt nummer er
    værre end at lade et dårligt slippe igennem. */
 .sell-frame-warn {
-  margin-top: 8px; padding: 8px 10px; border-radius: 8px;
+  margin-top: 8px; padding: 8px 10px; border-radius: var(--r-md);
   background: rgba(200,80,42,0.07); border: 1px solid rgba(200,80,42,0.25);
   font-size: 11.5px; line-height: 1.5; color: var(--charcoal);
 }
@@ -3932,7 +3913,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    det via en irrelevant match-mail. Edge function'en sender ikke for sådan en
    agent (hasEffectiveCriteria), så uden denne besked ville den bare virke død. */
 .cykelagent-card-warn {
-  margin-top: 8px; padding: 8px 10px; border-radius: 8px;
+  margin-top: 8px; padding: 8px 10px; border-radius: var(--r-md);
   background: rgba(200,80,42,0.07); border: 1px solid rgba(200,80,42,0.25);
   font-size: 12px; line-height: 1.5; color: var(--charcoal);
 }
