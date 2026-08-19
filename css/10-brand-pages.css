@@ -19,7 +19,7 @@
   margin: 16px 0 32px;
 }
 .brands-overview-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.4rem; font-weight: 700;
   color: var(--charcoal);
   margin: 12px 0 12px;
@@ -33,7 +33,7 @@
   margin: 32px 0;
 }
 .brands-overview-section-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.4rem; font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 16px;
@@ -47,15 +47,14 @@
   display: flex; flex-direction: column;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 16px;
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
 }
 .brand-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--sh-pop);
   border-color: var(--rust);
 }
 .brand-tile-name {
@@ -115,7 +114,7 @@
 }
 .prerender-bike-links a {
   display: inline-block;
-  padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--r-md);
   background: var(--sand); color: var(--charcoal);
   font-size: 0.85rem; text-decoration: none;
 }
@@ -133,7 +132,7 @@
 .brand-show-more-btn {
   background: var(--cream); color: var(--charcoal);
   border: 1.5px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 10px 22px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem; font-weight: 600;
@@ -153,7 +152,7 @@
   margin-bottom: 28px;
 }
 .brand-page-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 2.4rem; font-weight: 700;
   color: var(--charcoal);
   margin: 16px 0 6px;
@@ -173,7 +172,7 @@
   color: var(--charcoal);
   font-size: 0.85rem; font-weight: 500;
   padding: 5px 12px;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   font-family: 'DM Sans', sans-serif;
 }
 .brand-page-body {
@@ -187,7 +186,7 @@
   margin: 36px 0;
 }
 .brand-page-section-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.5rem; font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 16px;
@@ -200,7 +199,7 @@
 .brand-models-group {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 14px 18px;
 }
 .brand-models-group-title {
@@ -229,22 +228,21 @@
   display: flex; align-items: center; gap: 12px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   padding: 12px 14px;
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s, box-shadow 0.1s;
 }
 .brand-dealer-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--sh-pop);
 }
 .brand-dealer-logo {
   width: 44px; height: 44px;
   border-radius: 50%;
   background: var(--rust); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-weight: 700;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700;
   flex-shrink: 0; overflow: hidden;
 }
 .brand-dealer-logo img {
@@ -266,7 +264,7 @@
   background: var(--sand);
   color: var(--charcoal);
   padding: 8px 16px;
-  border-radius: 18px;
+  border-radius: var(--r-lg);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem; font-weight: 500;
   text-decoration: none;
@@ -283,7 +281,7 @@
 }
 .brand-cta-btn {
   background: var(--rust); color: #fff;
-  border: none; border-radius: 8px;
+  border: none; border-radius: var(--r-md);
   padding: 12px 24px;
   font-family: 'DM Sans', sans-serif;
   font-weight: 600; cursor: pointer;
@@ -299,7 +297,7 @@
 }
 .category-faq-item {
   border: 1px solid var(--border, #e2ded5);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: var(--card, #fff);
   overflow: hidden;
 }
@@ -348,13 +346,13 @@
   width: 100%;
   max-width: 600px;
   height: auto;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   object-fit: cover;
   display: block;
   margin: 12px 0;
 }
 .bike-prerender-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 1.6rem;
   color: var(--forest, #2a3d2e);
   margin: 8px 0 4px;

@@ -1,4 +1,4 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, iconHeart, iconPin } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -306,7 +306,6 @@ export function createBikesList({
 
     if (!bikes || bikes.length === 0) return;
 
-    const startIndex = append ? grid.querySelectorAll('.bike-card').length : 0;
     const conditionClass = c => {
       if (c === 'Ny')        return 'condition-tag--ny';
       if (c === 'Som ny')    return 'condition-tag--som-ny';
@@ -360,20 +359,20 @@ export function createBikesList({
       // linjen flugter ens og ikke ser ujævnt ud.
       const lastSeenCard = sellerType === 'dealer' ? null : formatLastSeen(profile.last_seen, 72);
       return `
-        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
+        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr}${isSold ? ' style="opacity:0.7"' : ''} onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
           <div class="bike-card-img"${dataImgs}>
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
               ${isFeatured ? '<span class="featured-card-badge">Betalt promovering</span>' : ''}
-              ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
+              ${isDemo ? '<span class="demo-badge">EKSEMPEL</span>' : ''}
               ${!isSold && !isDemo && saving > 0
                 ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${saving.toLocaleString('da-DK')} kr.</span>`
                 : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
               ${b.warranty && !isSold && !isDemo ? `<span class="warranty-card-badge">${iconShield()}Garanti</span>` : ''}
             </div>
-            ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
-            ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
+            ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">${iconHeart(11)} ${saveCount}</span>` : ''}
+            ${!isSold && !isDemo ? `<button class="save-btn${localUserSavedSet.has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce">${iconHeart(16)}</button>` : ''}
             ${!isSold && !isDemo ? `<label class="compare-checkbox-wrap" onclick="event.stopPropagation()" title="Vælg til sammenligning"><input type="checkbox" class="compare-checkbox" data-bike-id="${b.id}" onchange="toggleCompareBike(this,'${b.id}')"><span class="compare-checkbox-label">Sammenlign</span></label>` : ''}
           </div>
           <div class="bike-card-body">
@@ -395,7 +394,7 @@ export function createBikesList({
                   <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}</span>
                 </div>
                 <div class="card-seller-bottom">
-                  <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
+                  <span class="card-location">${iconPin(12)} <span class="bike-city">${esc(b.city)}</span></span>
                   <span class="card-last-seen">${lastSeenCard || '&nbsp;'}</span>
                 </div>
               </div>
