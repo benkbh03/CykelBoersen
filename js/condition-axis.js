@@ -50,7 +50,7 @@ export function currentConditionAxis() {
 /** Opdatér knappernes udseende + aria ud fra sidebarens faktiske tilstand. */
 export function syncConditionAxis() {
   const mode = currentConditionAxis();
-  document.querySelectorAll('.cond-axis-btn').forEach(btn => {
+  document.querySelectorAll('.cond-seg-btn').forEach(btn => {
     const active = btn.dataset.cond === mode;
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');

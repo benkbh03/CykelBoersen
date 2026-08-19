@@ -241,9 +241,9 @@ function setBrowseCategory(cat) {
   // Swap hero-dropdown, hero-chips og sidebar-type-liste til den valgte kategori
   const sel = document.getElementById('search-type');
   if (sel) sel.innerHTML = '<option value="">Alle typer</option>' + types.map(t => `<option>${esc(t)}</option>`).join('');
-  const chips = document.querySelector('.hero-cat-chips');
-  if (chips) chips.innerHTML = '<button class="hero-cat-chip active" onclick="selectHeroCatChip(this,\'\')" aria-pressed="true">Alle</button>' +
-    types.map(t => `<button class="hero-cat-chip" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(chipLabel(t))}</button>`).join('');
+  const chips = document.querySelector('.cat-tabs-inner');
+  if (chips) chips.innerHTML = '<button class="cat-tab active" data-type="" onclick="selectCatTab(this,\'\')" aria-pressed="true">Alle</button>' +
+    types.map(t => `<button class="cat-tab" data-type="${esc(t)}" onclick="selectCatTab(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(chipLabel(t))}</button>`).join('');
   const stg = document.getElementById('sidebar-type-group');
   if (stg) stg.innerHTML = types.map(t => `<label class="filter-option"><input type="checkbox" data-filter="type" data-value="${esc(t)}" onchange="applyFilters()"> ${esc(t)} <span class="filter-count">–</span></label>`).join('');
   const sth = document.getElementById('sidebar-type-heading');
@@ -1932,7 +1932,7 @@ const { useQuickReply, getQuickReplies, renderQuickRepliesHTML } = createQuickRe
    kun checkboxene. Klikkede man en chip og krydsede derefter en type af i
    sidebaren, blev chippens valg lydløst droppet — mens chippen blev stående
    fremhævet. Nu går begge veje gennem checkboxene. */
-function selectHeroCatChip(el, type) {
+function selectCatTab(el, type) {
   setHeroType(type || null, applyFilters);
 }
 
@@ -1965,9 +1965,11 @@ function applyPopularSearch({ type, size, maxPrice, minPrice, city, suspension, 
       // Sæt også hero-dropdown og chip så UI'et matcher
       const sel = document.getElementById('search-type');
       if (sel) sel.value = type;
-      const chip = document.querySelector(`.hero-cat-chip[onclick*="'${type}'"]`);
+      // Matchede før på onclick-strengen. Det brød sammen for typer med
+      // apostrof og var afhængigt af præcis formatering af attributten.
+      const chip = document.querySelector(`.cat-tab[data-type="${type}"]`);
       if (chip) {
-        document.querySelectorAll('.hero-cat-chip').forEach(c => {
+        document.querySelectorAll('.cat-tab').forEach(c => {
           c.classList.remove('active');
           c.setAttribute('aria-pressed', 'false');
         });
@@ -2977,7 +2979,7 @@ window.saveCurrentSearch  = saveCurrentSearch;
 window.applySavedSearch   = applySavedSearch;
 window.deleteSavedSearch  = deleteSavedSearch;
 window.loadTradeHistory   = loadTradeHistory;
-window.selectHeroCatChip  = selectHeroCatChip;
+window.selectCatTab       = selectCatTab;
 window.filterByTag = filterByTag;
 window.applyPopularSearch = applyPopularSearch;
 window.logout                  = logout;
