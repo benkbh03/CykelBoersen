@@ -112,7 +112,11 @@ export function createSellPage({
      el.value på hvert felt i SELL_DRAFT_FIELDS — og en checkbox har altid
      value "on", uanset om den er krydset af. Det skjulte felt gør at kladden
      virker uændret, og at gaven overlever at man forlader fanen midt i. */
-  function giveawayToggleHtml(c) {
+  function giveawayToggleHtml(c, isDealer) {
+    // Kun private. En forhandler forærer ikke sit varelager væk, og feltet
+    // ville bare være endnu en linje at scrolle forbi i et flow hvor de
+    // allerede har flere felter end privatpersoner.
+    if (isDealer) return '';
     const on = c['sell-giveaway'] === '1';
     return `
       <label class="sell-giveaway">
@@ -354,7 +358,8 @@ export function createSellPage({
     const brand = getVal('sell-brand');
     const type  = getVal('sell-type');
     const cond  = getVal('sell-condition');
-    const giveaway = getVal('sell-giveaway') === '1';
+    const _accIsDealer = getCurrentProfile()?.seller_type === 'dealer';
+    const giveaway = !_accIsDealer && getVal('sell-giveaway') === '1';
     const price = giveaway ? 0 : parseInt(getVal('sell-price'));
     const desc  = getVal('sell-desc');
     const city  = getVal('sell-city');
@@ -429,7 +434,10 @@ export function createSellPage({
       };
       const brand     = getVal('sell-brand');
       const model     = getVal('sell-model');
-      const giveaway  = getVal('sell-giveaway') === '1';
+      let _giveActingAs = null;
+      try { _giveActingAs = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
+      const giveaway  = !(getCurrentProfile()?.seller_type === 'dealer' || _giveActingAs)
+                        && getVal('sell-giveaway') === '1';
       const price     = giveaway ? 0 : parseInt(getVal('sell-price'));
       const year      = parseInt(getVal('sell-year')) || null;
       const city      = getVal('sell-city');
@@ -937,7 +945,7 @@ export function createSellPage({
             <input type="number" id="sell-price" placeholder="0" min="1" max="9999999" step="1" value="${c['sell-giveaway'] === '1' ? '' : (c['sell-price'] || '')}" onwheel="this.blur()"${c['sell-giveaway'] === '1' ? ' disabled' : ''}>
             <span class="suffix">DKK</span>
           </div>
-          ${giveawayToggleHtml(c)}
+          ${giveawayToggleHtml(c, isDealer)}
         </div>
       </div>
       `;
@@ -1039,7 +1047,7 @@ export function createSellPage({
           <input type="number" id="sell-price" placeholder="4.500" min="1" max="9999999" step="1" value="${c['sell-giveaway'] === '1' ? '' : (c['sell-price'] || '')}" onwheel="this.blur()"${c['sell-giveaway'] === '1' ? ' disabled' : ''}>
           <span class="suffix">DKK</span>
         </div>
-        ${giveawayToggleHtml(c)}
+        ${giveawayToggleHtml(c, isDealer)}
         <a href="/vurder-min-cykel" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
       </div>
 

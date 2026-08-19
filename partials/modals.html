@@ -623,7 +623,8 @@
             </div>
           </div>
           <div class="form-group"><label>Pris (kr.) *</label><input type="number" id="edit-price" placeholder="f.eks. 4500" min="1" max="9999999" step="1" onwheel="this.blur()">
-            <label class="sell-giveaway"><input type="checkbox" id="edit-giveaway" onchange="toggleEditGiveaway(this)"><span>Gives væk gratis</span></label>
+            <!-- Kun private. Skjules for forhandlerannoncer i openEditModal. -->
+            <label class="sell-giveaway" id="edit-giveaway-row"><input type="checkbox" id="edit-giveaway" onchange="toggleEditGiveaway(this)"><span>Gives væk gratis</span></label>
           </div>
           <div class="form-group"><label>Årstal</label><input type="number" id="edit-year" placeholder="f.eks. 2021"></div>
           <div class="form-group">

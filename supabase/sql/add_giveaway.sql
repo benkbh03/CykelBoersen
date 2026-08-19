@@ -12,7 +12,11 @@
 --   3. Prisforslag (js/sell-page.js) og prisvurdering udelader dem, så et
 --      gratis cykelstel ikke trækker gennemsnittet for en model ned
 --
--- Gælder BÅDE category='cykel' og category='tilbehoer'.
+-- Gælder BÅDE category='cykel' og category='tilbehoer', men kun for PRIVATE
+-- sælgere: en forhandler forærer ikke sit varelager væk, så feltet vises
+-- slet ikke i deres sælg- og redigér-flow. Begrænsningen ligger i
+-- frontenden, ikke i en constraint — et CHECK kan ikke slå seller_type op
+-- i profiles, og admin skal fortsat kunne oprette en gave via import.
 --
 -- Kør i Supabase Dashboard → SQL Editor → Run. Idempotent.
 -- ============================================================
@@ -60,4 +64,5 @@ CREATE INDEX IF NOT EXISTS idx_bikes_giveaway
 
 COMMENT ON COLUMN bikes.is_giveaway IS
   'True = annoncen foræres væk. price og original_price er da altid 0, '
-  'håndhævet af constraint bikes_giveaway_price_zero. Vises som "Gives væk".';
+  'håndhævet af constraint bikes_giveaway_price_zero. Vises som "Gives væk". '
+  'Tilbydes kun private sælgere i brugerfladen.';

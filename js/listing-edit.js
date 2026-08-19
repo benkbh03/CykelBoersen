@@ -206,7 +206,14 @@ export function createListingEdit({
     document.getElementById('edit-brand').value         = b.brand || '';
     document.getElementById('edit-model').value         = b.model || '';
     document.getElementById('edit-price').value         = b.is_giveaway ? '' : (b.price || '');
-    const _giveCb = document.getElementById('edit-giveaway');
+    /* "Gives væk" er kun for private. editIsAdminOther betyder at admin
+       redigerer en forhandlers annonce, så den tæller også som forhandler.
+       Undtagelse: er annoncen ALLEREDE en gave (fx oprettet via admin-import),
+       vises feltet alligevel — ellers kunne man ikke fjerne flaget igen. */
+    const _giveCb  = document.getElementById('edit-giveaway');
+    const _giveRow = document.getElementById('edit-giveaway-row');
+    const _isDealerListing = editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer';
+    if (_giveRow) _giveRow.style.display = (!_isDealerListing || b.is_giveaway) ? '' : 'none';
     if (_giveCb) { _giveCb.checked = !!b.is_giveaway; toggleEditGiveaway(_giveCb); }
     document.getElementById('edit-year').value          = b.year || '';
     document.getElementById('edit-bike-city').value          = b.city || '';
