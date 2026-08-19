@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, iconHeart } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
@@ -160,7 +160,7 @@ export function createProfilePages({
             <div class="bike-card-badges">
               <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
             </div>
-            <button class="save-btn${getUserSavedSet().has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce">${iconHeart(16)}</button>
+            <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${getUserSavedSet().has(b.id) ? '❤️' : '🤍'}</button>
           </div>
           <div class="bike-card-body">
             <div class="card-top">

@@ -1802,26 +1802,22 @@ async function askIfAvailable(bikeId, sellerId, _btn) {
    ============================================================ */
 
 async function toggleSave(btn, bikeId) {
-  if (!currentUser) { showToast('Log ind for at gemme annoncer'); return; }
-  /* Gemt/ikke-gemt aflæstes tidligere på knappens tekstindhold (❤️ mod 🤍).
-     Det bandt tilstanden til to emoji der renderes forskelligt pr.
-     styresystem, og gjorde det umuligt at skifte til et rigtigt ikon.
-     Tilstanden ligger nu i en klasse; hjertet er ét SVG der fyldes via CSS. */
-  const isSaved = btn.classList.contains('is-saved');
+  if (!currentUser) { showToast('⚠️ Log ind for at gemme annoncer'); return; }
+  const isSaved = btn.textContent === '❤️';
   if (isSaved) {
     const { error } = await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
-    if (error) { showToast('Kunne ikke fjerne fra gemte'); return; }
-    btn.classList.remove('is-saved');
+    if (error) { showToast('❌ Kunne ikke fjerne fra gemte'); return; }
+    btn.textContent = '🤍';
     _userSavedSet.delete(bikeId);
     showToast('Fjernet fra gemte');
   } else {
     const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
-    if (bike && bike.user_id === currentUser.id) { showToast('Du kan ikke gemme din egen annonce'); return; }
+    if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
     const { error } = await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
-    if (error) { showToast('Kunne ikke gemme annonce'); return; }
-    btn.classList.add('is-saved');
+    if (error) { showToast('❌ Kunne ikke gemme annonce'); return; }
+    btn.textContent = '❤️';
     _userSavedSet.add(bikeId);
-    showToast('Gemt! Find den under Gemte i din profil.');
+    showToast('❤️ Gemt! Find den under Gemte i din profil.');
 
     // Send email notification to bike owner (fire-and-forget)
     if (bike) {

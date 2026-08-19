@@ -19,63 +19,6 @@
   --charcoal:     #1A1A18;
   --muted:        #6B6557; /* WCAG AA på hvid baggrund (≥4.5:1) — tidligere #8A8578 fejlede */
   --border:       #DDD8CE;
-
-  /* ══════════════════════════════════════════════════════════════
-     DESIGNSYSTEM
-     ══════════════════════════════════════════════════════════════
-     Baggrund: kodebasen havde 18 forskellige border-radius-værdier,
-     78 forskellige font-størrelser, 168 box-shadows og 44 gradienter.
-     Ingen af delene er grimme hver for sig. Problemet er at der ikke var
-     et system bag, og det er præcis dét folk genkender når de siger at
-     en side "ser genereret ud" — intet er rykket i forhold til noget
-     andet, fordi hver fil traf sin egen beslutning.
-
-     Brug ALTID variablerne herunder i nyt arbejde. Skriv aldrig et rå
-     px-tal til radius eller en ny box-shadow uden at kunne begrunde
-     hvorfor ingen af de eksisterende passer. */
-
-  /* Radius — fire trin, ikke atten.
-     sm = alt man klikker på (knapper, felter, små kontroller)
-     md = flader der indeholder indhold (kort, paneler)
-     lg = store overflader der lægger sig over siden (modaler, sheets)
-     pill = badges og filter-chips */
-  --r-sm:   6px;
-  --r-md:   10px;
-  --r-lg:   16px;
-  --r-pill: 999px;
-
-  /* Skygge — to trin, og KUN til ting der reelt svæver over siden.
-     Et kort i et grid svæver ikke. Det får en 1px ramme (--line).
-     Referencerne (buycycle, Vinted, Bilbasen) bruger nul skygger i
-     deres produktgrids, og det er en stor del af hvorfor de virker
-     rolige. */
-  --sh-pop:   0 4px 16px rgba(26,26,24,0.10);   /* dropdowns, popovers, sticky-barer */
-  --sh-modal: 0 18px 48px rgba(26,26,24,0.22);  /* modaler, mobil-sheets */
-
-  /* Typeskala — syv trin. Der var 78.
-     Mellemrummene er bevidst store nok til at to nabotrin kan skelnes;
-     ligger to størrelser tættere på hinanden end det, læses de som
-     samme niveau og hierarkiet forsvinder. */
-  --t-xs:  0.75rem;   /* labels, meta, badges */
-  --t-sm:  0.85rem;   /* sekundær tekst */
-  --t-md:  0.95rem;   /* brødtekst, knapper */
-  --t-lg:  1.15rem;   /* korttitler, sektionsunderoverskrifter */
-  --t-xl:  1.5rem;    /* sektionsoverskrifter */
-  --t-2xl: 2.2rem;    /* sideoverskrifter */
-  --t-3xl: 3.4rem;    /* hero */
-
-  /* Farveroller — brug DISSE i ny kode, ikke råfarverne.
-     Pointen er at rust er sidens ENE accent og kun må sidde på den
-     primære handling på en given skærm. Da rust samtidig lå på
-     filter-pills, hjerter, priser, badges og dekorative striber,
-     betød den ingenting længere. */
-  --surface:    var(--cream);     /* sidens bund */
-  --surface-2:  var(--sand);      /* nedtonet sektion */
-  --ink:        var(--charcoal);  /* primær tekst */
-  --ink-2:      var(--muted);     /* sekundær tekst */
-  --line:       var(--border);    /* al adskillelse: rammer og skillelinjer */
-  --accent:     var(--rust);      /* KUN primær handling */
-  --accent-hi:  var(--rust-light);/* accent hover */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -102,31 +45,6 @@ html {
   outline: 2px solid var(--rust-light);
   outline-offset: 2px;
 }
-
-/* ── IKONER ──
-   Brugerfladen brugte emoji som ikoner (📍 ⭐ 🚲 ⚙️ ✉️ ✨ …). Emoji tegnes af
-   styresystemet, ikke af siden, så de har hver sin stregtykkelse, sin egen
-   farve og sit eget udseende på Windows, iOS og Android. Man kan ikke gøre
-   dem ens, og et sæt ikoner der ikke er ens er præcis det man ser når en
-   side "ser genereret ud". Hverken buycycle, Vinted eller Bilbasen bruger
-   én eneste emoji i deres brugerflade.
-
-   Brug .ui-icon til ALLE nye ikoner: inline SVG, 24-koordinatsystem,
-   stroke: currentColor så ikonet automatisk arver tekstfarven. Emoji bliver
-   udelukkende i selve BESKEDERNE (💰 bud, ✅ accepteret, ✉️ besked), hvor de
-   er indhold og hvor koden læser på dem. */
-.ui-icon {
-  width: 16px; height: 16px;
-  flex-shrink: 0;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.75;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vertical-align: -0.16em;
-}
-.ui-icon:not(:only-child) { margin-right: 6px; }
-.ui-icon--lg { width: 30px; height: 30px; stroke-width: 1.4; }
 
 /* Skjult tekst kun for skærmlæsere */
 .sr-only {
@@ -168,11 +86,10 @@ nav {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid rgba(0,0,0,0.18);
-  /* backdrop-filter fjernet: nav'en har en helt uigennemsigtig baggrund, så
-     der var intet at sløre. Den kostede kun et compositing-lag på hver scroll. */
+  backdrop-filter: blur(4px);
 }
 .logo {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.7rem;
   font-weight: 900;
   color: var(--sand);
@@ -195,16 +112,17 @@ nav {
   color: #fff !important;
   opacity: 1 !important;
   padding: 9px 18px;
-  border-radius: var(--r-md);
+  border-radius: 9px;
   font-weight: 600 !important;
   font-size: 0.88rem !important;
   letter-spacing: 0.01em;
-  /* Ingen farvet glød under knappen. En rust-skygge under en rust-knap er
-     dekoration, ikke information — knappen ligger ikke over noget. */
-  transition: background 0.15s !important;
+  transition: background 0.2s, transform 0.18s, box-shadow 0.18s !important;
+  box-shadow: 0 3px 12px -2px rgba(200,80,42,0.45);
 }
 .btn-sell:hover {
   background: var(--rust-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55) !important;
 }
 .btn-sell:focus-visible {
   outline: 2px solid rgba(232,105,74,0.7);
@@ -222,7 +140,7 @@ nav {
   background: none; border: none; cursor: pointer;
   color: var(--sand); padding: 6px; margin-left: -2px;
   align-items: center; justify-content: center;
-  border-radius: var(--r-md);
+  border-radius: 8px;
   -webkit-tap-highlight-color: transparent;
 }
 /* Kompakt sælg-label på mobil ("+ Sælg") for at give den tætte indloggede
@@ -240,7 +158,7 @@ nav {
   border-bottom: 1px solid rgba(0,0,0,0.18);
   display: flex; flex-direction: column;
   padding: 6px 0 10px;
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
   z-index: 99;
 }
 .mobile-menu-panel[hidden] { display: none; }
@@ -285,11 +203,11 @@ nav {
   opacity: 0.75;
 }
 .nav-inbox-btn:hover { opacity: 1; }
-.nav-inbox-btn:focus-visible { outline-color: rgba(245,240,232,0.7); border-radius: var(--r-md); }
+.nav-inbox-btn:focus-visible { outline-color: rgba(245,240,232,0.7); border-radius: 8px; }
 .nav-inbox-badge {
   position: absolute; top: -2px; right: -2px;
   background: var(--rust); color: #fff;
-  border-radius: var(--r-pill);
+  border-radius: 100px;
   font-size: 0.6rem; font-weight: 700;
   min-width: 16px; height: 16px;
   display: flex; align-items: center; justify-content: center;
@@ -369,7 +287,7 @@ nav {
   margin-bottom: 20px;
 }
 .hero-text h1 {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Playfair Display', serif;
   font-size: 4.2rem; font-weight: 900;
   color: var(--sand); line-height: 1.05;
   margin-bottom: 20px;
@@ -408,7 +326,7 @@ nav {
 .stat-bar-item:first-child { padding-left: 0; }
 .stat-bar-icon { font-size: 1.4rem; }
 .stat-bar-num {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Playfair Display', serif;
   font-size: 1.3rem;
   font-weight: 900;
   color: var(--sand);
@@ -425,14 +343,14 @@ nav {
 }
 .btn-primary {
   background: var(--rust); color: #fff;
-  padding: 14px 28px; border-radius: var(--r-sm);
+  padding: 14px 28px; border-radius: 4px;
   font-weight: 500; border: none; cursor: pointer;
   font-size: 0.95rem; transition: background 0.2s, transform 0.15s;
 }
-.btn-primary:hover { background: var(--rust-light);}
+.btn-primary:hover { background: var(--rust-light); transform: translateY(-1px); }
 .btn-outline {
   background: transparent; color: var(--sand);
-  padding: 14px 28px; border-radius: var(--r-sm);
+  padding: 14px 28px; border-radius: 4px;
   font-weight: 500; border: 1.5px solid rgba(245,240,232,0.35);
   cursor: pointer; font-size: 0.95rem;
   transition: border-color 0.2s, background 0.2s;
@@ -454,7 +372,7 @@ nav {
   margin: 0 auto;
 }
 .cta-headline {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Playfair Display', serif;
   font-size: 3.2rem;
   font-weight: 700;
   line-height: 1.15;
@@ -480,32 +398,31 @@ nav {
   font-weight: 600;
   padding: 16px 40px;
   border: none;
-  border-radius: var(--r-sm);
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
   letter-spacing: 0.01em;
 }
 .cta-button:hover {
   background: var(--rust-light);
+  transform: translateY(-2px);
 }
 
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
-  /* Der lå fire gradientlag her. To af dem var rene farvestænk (rust nede til
-     højre, guld oppe til venstre) som ikke gjorde andet end at farve
-     fotografiet. Tilbage er ét lag, og det har en opgave: at gøre den hvide
-     overskrift læsbar oven på billedet. Reglen fremover er at en gradient skal
-     kunne begrundes med læsbarhed, ellers ryger den. */
   background-image:
+    radial-gradient(circle at 80% 90%, rgba(200,80,42,0.13) 0, transparent 48%),
+    radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.09) 0, transparent 45%),
+    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.28) 0%, transparent 100%),
     linear-gradient(180deg,
-      rgba(14,22,15,0.34) 0%,
-      rgba(14,22,15,0.20) 50%,
-      rgba(14,22,15,0.40) 100%
+      rgba(14,22,15,0.16) 0%,
+      rgba(14,22,15,0.01) 50%,
+      rgba(14,22,15,0.20) 100%
     ),
     url('/hero.jpg?v=hero1');
-  background-size: auto, cover;
-  background-position: center, center 40%;
+  background-size: auto, auto, auto, auto, cover;
+  background-position: center, center, center, center, center 40%;
   background-repeat: no-repeat;
   padding: 16px 48px 14px;
   height: clamp(240px, 17vw, 280px) !important;
@@ -527,17 +444,17 @@ nav {
   display: inline-flex; align-items: center; gap: 7px;
   background: rgba(245,240,232,0.08);
   border: 1px solid rgba(245,240,232,0.16);
-  padding: 5px 14px; border-radius: var(--r-pill);
+  padding: 5px 14px; border-radius: 999px;
   color: rgba(245,240,232,0.88);
   font-size: 0.75rem; font-weight: 500; letter-spacing: 0.2px;
   margin-bottom: 16px;
 }
 .search-hero-dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: #7ac97a;
+  background: #7ac97a; box-shadow: 0 0 8px #7ac97a;
 }
 .search-hero-title {
-  font-family: 'Fraunces', Georgia, serif; font-size: 2rem; font-weight: 600;
+  font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600;
   color: #fff; line-height: 1.05; letter-spacing: -0.035em;
   margin: 0 0 6px; text-wrap: balance;
   text-shadow: 0 2px 36px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.5);
@@ -611,7 +528,7 @@ nav {
      :focus-visible kan stadig tegne en synlig kant. */
   border: 1px solid transparent;
   color: var(--sand);
-  padding: 7px 14px; border-radius: var(--r-pill);
+  padding: 7px 14px; border-radius: 999px;
   font-size: 0.8rem; font-weight: 500; letter-spacing: 0.01em; cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
   transition: all 160ms; flex-shrink: 0;
@@ -634,12 +551,12 @@ nav {
   display: flex; gap: 0; flex: 1; align-items: stretch;
   background: var(--cream); border-radius: 0;
   padding: 5px;
-  box-shadow: var(--sh-modal), 0 0 0 1px rgba(26,26,24,0.06);
+  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(26,26,24,0.06);
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
 .search-bar:focus-within {
-  box-shadow: var(--sh-modal), 0 0 0 2px var(--forest);
+  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 2px rgba(42,61,46,0.35);
 }
 .search-bar-field {
   position: relative; display: flex; align-items: center;
@@ -684,7 +601,7 @@ nav {
 .search-city-clear:hover { background: var(--sand-2); color: var(--charcoal); }
 .search-city-radius {
   flex-shrink: 0; border: none; background: var(--sand-2);
-  padding: 6px 24px 6px 10px; border-radius: var(--r-lg);
+  padding: 6px 24px 6px 10px; border-radius: 14px;
   font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 500;
   color: var(--forest); cursor: pointer; outline: none;
   appearance: none; -webkit-appearance: none;
@@ -704,10 +621,10 @@ nav {
   font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
   white-space: nowrap; transition: background 0.2s, transform 0.18s, box-shadow 0.18s;
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px;
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 4px 14px -2px rgba(200,80,42,0.5);
 }
 .search-pill-btn svg { width: 15px; height: 15px; }
-.search-pill-btn:hover { background: var(--rust-light);}
+.search-pill-btn:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55); }
 .search-pill-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
 /* Cykelagent-pill: synlig peer til Søg-knappen, ikke konkurrent.
    Cream-baggrund + charcoal-tekst gør den læselig over hero-billedet
@@ -716,7 +633,7 @@ nav {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--cream) !important;
   border: 1px solid rgba(26,26,24,0.08) !important;
-  border-radius: var(--r-pill) !important;
+  border-radius: 999px !important;
   height: 46px;
   padding: 0 18px !important;
   cursor: pointer;
@@ -724,14 +641,15 @@ nav {
   font-size: 0.92rem; font-weight: 600;
   color: var(--charcoal) !important;
   white-space: nowrap; flex-shrink: 0;
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 10px 28px -10px rgba(0,0,0,0.45);
   transition: transform 0.15s, box-shadow 0.2s, background 0.15s;
 }
 #save-search-btn .save-search-icon { font-size: 1.05rem; line-height: 1; }
 #save-search-btn .save-search-text { letter-spacing: -0.005em; }
 #save-search-btn:hover {
   background: #fff !important;
-  box-shadow: var(--sh-modal);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px -10px rgba(0,0,0,0.5);
 }
 #save-search-btn:focus-visible { outline: 2px solid rgba(232,105,74,0.7); outline-offset: 3px; }
 
@@ -741,12 +659,11 @@ nav {
 }
 .filters-label { font-size: 0.8rem; color: rgba(245,240,232,0.55); font-weight: 500; margin-right: 4px; }
 .pill {
-  display: inline-flex; align-items: center;
-  padding: 7px 14px; border-radius: var(--r-pill);
+  padding: 7px 14px; border-radius: 100px;
   border: 1.5px solid rgba(245,240,232,0.18);
   font-size: 0.8rem; cursor: pointer;
   background: rgba(245,240,232,0.06); color: var(--sand);
-  font-weight: 500; transition: background 0.15s, border-color 0.15s, color 0.15s; user-select: none;
+  font-weight: 500; transition: all 0.15s; user-select: none;
 }
 .pill:hover { background: rgba(245,240,232,0.14); border-color: rgba(245,240,232,0.28); }
 .pill.active { background: var(--cream); color: var(--charcoal); border-color: var(--cream); }
@@ -767,7 +684,7 @@ nav {
 /* ── SIDEBAR ── */
 .sidebar { display: flex; flex-direction: column; gap: 10px; }
 .sidebar-box {
-  background: var(--sand); border-radius: var(--r-md);
+  background: var(--sand); border-radius: 12px;
   padding: 0; border: 1px solid var(--border); overflow: hidden;
 }
 /* Filtrenes rækkefølge styres med flex-order frem for at flytte markup.
@@ -813,7 +730,7 @@ nav {
 }
 .sidebar-box-header:hover { background: #ebe6da; }
 .sidebar-box-header h3 {
-  font-family: 'Fraunces', Georgia, serif; font-size: 0.95rem;
+  font-family: 'Fraunces', serif; font-size: 0.95rem;
   font-weight: 600; color: var(--forest); margin: 0;
 }
 .sidebar-chevron {
@@ -835,11 +752,11 @@ nav {
 }
 /* "Gem din søgning" card */
 .sidebar-save-card {
-  background: var(--forest); border-radius: var(--r-md);
+  background: var(--forest); border-radius: 12px;
   padding: 20px; text-align: center; margin-top: 4px;
 }
 .sidebar-save-card h4 {
-  font-family: 'Fraunces', Georgia, serif; font-size: 0.95rem;
+  font-family: 'Fraunces', serif; font-size: 0.95rem;
   color: var(--cream); font-weight: 600; margin-bottom: 6px;
 }
 .sidebar-save-card p {
@@ -848,7 +765,7 @@ nav {
 }
 .sidebar-save-card button {
   background: var(--rust); color: #fff;
-  border: none; padding: 9px 18px; border-radius: var(--r-pill);
+  border: none; padding: 9px 18px; border-radius: 999px;
   font-size: 0.82rem; font-weight: 600; cursor: pointer;
   font-family: 'DM Sans', sans-serif; transition: background 0.2s;
   width: 100%;
@@ -860,7 +777,7 @@ nav {
   display: inline-flex; align-items: center; gap: 6px;
   cursor: pointer; font-size: 0.85rem; color: var(--charcoal);
   background: var(--sand); border: 1.5px solid var(--border);
-  border-radius: var(--r-pill); padding: 7px 13px; user-select: none;
+  border-radius: 999px; padding: 7px 13px; user-select: none;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 .filter-option:hover { border-color: var(--rust); }
@@ -875,7 +792,7 @@ nav {
 .brand-search-input {
   width: 100%; box-sizing: border-box;
   padding: 7px 10px; border: 1px solid var(--border);
-  border-radius: var(--r-md); font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
+  border-radius: 8px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
   background: #fff; color: var(--charcoal); margin-bottom: 8px;
   outline: none;
 }
@@ -885,8 +802,8 @@ nav {
 .brand-autocomplete-wrap { position: relative; }
 .brand-autocomplete-list {
   position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
-  background: #fff; border: 1px solid var(--border); border-radius: var(--r-md);
-  box-shadow: var(--sh-pop); overflow: hidden; margin-top: 2px;
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; margin-top: 2px;
 }
 .brand-autocomplete-item {
   padding: 10px 14px; font-size: 0.88rem; cursor: pointer;
@@ -905,7 +822,7 @@ nav {
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: var(--r-md);
+  border-radius: 8px;
   border: 1.5px solid var(--border);
   background: #fff;
   cursor: pointer;
@@ -947,7 +864,7 @@ nav {
   justify-content: center;
   gap: 4px;
   padding: 12px 6px 10px;
-  border-radius: var(--r-md);
+  border-radius: 10px;
   border: 2.5px solid transparent;
   cursor: pointer;
   transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
@@ -955,7 +872,7 @@ nav {
   position: relative;
   overflow: hidden;
 }
-.color-tile:hover {; }
+.color-tile:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
 .color-tile[data-dark="true"]  { color: #fff; }
 .color-tile[data-dark="false"] { color: #1a1a18; }
 .color-tile input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
@@ -990,7 +907,7 @@ nav {
   width: 80px;
   padding: 7px 10px;
   border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 8px;
   font-size: 0.88rem;
   font-family: inherit;
   background: #fff;
@@ -1077,7 +994,7 @@ nav {
 }
 .condition-guide--form {
   margin: 10px 0 0;
-  border-radius: var(--r-md);
+  border-radius: 10px;
   border: 1.5px solid var(--border);
   padding: 6px 14px 10px;
 }
@@ -1097,7 +1014,7 @@ nav {
   font-weight: 700;
   min-width: 68px;
   padding: 3px 8px;
-  border-radius: var(--r-lg);
+  border-radius: 20px;
   text-align: center;
   flex-shrink: 0;
   margin-top: 1px;
@@ -1118,7 +1035,7 @@ nav {
 .height-finder { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 .height-finder-label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
 .height-finder-row { display: flex; align-items: center; gap: 8px; }
-.height-finder-row input { flex: 1; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: var(--r-md); font-size: 0.84rem; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); outline: none; }
+.height-finder-row input { flex: 1; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.84rem; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); outline: none; }
 .height-finder-row input:focus { border-color: var(--forest); }
 .height-finder-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
 #height-result { font-size: 0.88rem; font-weight: 700; color: var(--forest); white-space: nowrap; min-width: 32px; }
@@ -1131,7 +1048,7 @@ nav {
   align-items: center;
   background: var(--cream);
   border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 8px;
   padding: 4px 10px;
   transition: border-color 0.2s;
 }
@@ -1146,7 +1063,7 @@ nav {
 .price-inputs span { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 0 4px; }
 .btn-apply {
   background: var(--forest); color: var(--sand);
-  border: none; padding: 10px; border-radius: var(--r-md);
+  border: none; padding: 10px; border-radius: 8px;
   cursor: pointer; font-size: 0.85rem; font-weight: 600;
   font-family: 'DM Sans', sans-serif;
   transition: background 0.2s; width: 100%;
@@ -1155,7 +1072,7 @@ nav {
 
 .weight-preset {
   background: var(--cream); color: var(--charcoal);
-  border: 1px solid var(--border); border-radius: var(--r-pill);
+  border: 1px solid var(--border); border-radius: 999px;
   padding: 4px 10px; font-size: 0.8rem; font-weight: 500;
   font-family: 'DM Sans', sans-serif; cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
@@ -1166,7 +1083,7 @@ nav {
 .bike-quiz-box {
   background: var(--cream);
   border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: 14px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -1177,7 +1094,7 @@ nav {
   gap: 6px;
   text-align: center;
 }
-.bike-quiz-icon { line-height: 0; color: var(--forest); }
+.bike-quiz-icon { font-size: 1.6rem; }
 .bike-quiz-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -1192,7 +1109,7 @@ nav {
   background: var(--forest);
   color: var(--sand);
   border: none;
-  border-radius: var(--r-md);
+  border-radius: 9px;
   padding: 9px 20px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -1217,7 +1134,7 @@ nav {
 .bike-quiz-opt {
   background: #fff;
   border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 9px;
   padding: 9px 12px;
   font-size: 0.83rem;
   font-family: 'DM Sans', sans-serif;
@@ -1265,7 +1182,7 @@ nav {
   margin-top: 20px;
 }
 .fit-section-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1rem;
   font-weight: 600;
   margin: 0 0 10px;
@@ -1279,7 +1196,7 @@ nav {
 .fit-card {
   background: var(--cream);
   border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -1337,7 +1254,7 @@ nav {
   padding: 14px 16px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   font-size: 0.85rem;
   line-height: 1.55;
   color: var(--charcoal);
@@ -1364,7 +1281,7 @@ nav {
   gap: 12px;
   background: #fff8e6;
   border: 1.5px solid #f5c842;
-  border-radius: var(--r-md);
+  border-radius: 12px;
   padding: 12px 14px;
   text-decoration: none;
   color: var(--charcoal);

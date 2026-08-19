@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, iconHeart } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -126,7 +126,7 @@ export function createProfileModals({
             <div class="bike-card-badges">
               <span class="condition-tag">${esc(b.condition)}</span>
             </div>
-            <button class="save-btn${userSavedSet.has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce">${iconHeart(16)}</button>
+            <button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${userSavedSet.has(b.id) ? '❤️' : '🤍'}</button>
           </div>
           <div class="bike-card-body">
             <div class="card-top">

@@ -17,7 +17,7 @@
   margin-bottom: 16px;
 }
 .cykelagent-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 2.1rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -40,15 +40,15 @@
 .cykelagent-new-btn {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--rust); color: #fff;
-  border: none; border-radius: var(--r-pill);
+  border: none; border-radius: 999px;
   padding: 12px 22px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem; font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 4px 14px -4px rgba(200,80,42,0.45);
 }
-.cykelagent-new-btn:hover { background: var(--rust-light);}
+.cykelagent-new-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
 .cykelagent-new-btn:active { transform: translateY(0); }
 .cykelagent-new-icon {
   display: inline-flex; align-items: center; justify-content: center;
@@ -65,9 +65,10 @@
 .cykelagent-matches {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: 14px;
   padding: 18px 20px 16px;
   margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(42,61,46,0.04);
 }
 .cykelagent-matches-loading {
   color: var(--muted);
@@ -80,7 +81,7 @@
   gap: 12px; margin-bottom: 14px;
 }
 .cykelagent-matches-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.1rem; font-weight: 700;
   color: var(--charcoal);
   margin: 0;
@@ -90,7 +91,7 @@
   background: var(--rust); color: #fff;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem; font-weight: 700;
-  padding: 2px 10px; border-radius: var(--r-pill);
+  padding: 2px 10px; border-radius: 999px;
   letter-spacing: 0.3px;
 }
 .cykelagent-matches-mark-read {
@@ -98,7 +99,7 @@
   color: var(--muted);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem; font-weight: 500;
-  padding: 6px 12px; border-radius: var(--r-pill);
+  padding: 6px 12px; border-radius: 999px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
@@ -115,14 +116,15 @@
   display: flex; flex-direction: column;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   overflow: hidden;
   text-decoration: none; color: inherit;
   transition: transform 0.15s, box-shadow 0.18s, border-color 0.15s;
 }
 .cykelagent-match-card:hover {
+  transform: translateY(-2px);
   border-color: var(--forest);
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 6px 18px rgba(42,61,46,0.10);
 }
 .cykelagent-match-img {
   width: 100%; aspect-ratio: 4/3;
@@ -139,7 +141,8 @@
   font-family: 'DM Sans', sans-serif;
   font-size: 0.62rem; font-weight: 800;
   letter-spacing: 0.5px;
-  padding: 3px 8px; border-radius: var(--r-sm);
+  padding: 3px 8px; border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
 }
 .cykelagent-match-info {
   padding: 8px 10px 10px;
@@ -156,7 +159,7 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cykelagent-match-price {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Playfair Display', serif;
   font-size: 0.95rem; font-weight: 700;
   color: var(--rust); margin-top: 2px;
 }
@@ -179,14 +182,16 @@
 .cykelagent-card {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: 14px;
   padding: 18px 20px;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.18s, border-color 0.15s;
+  box-shadow: 0 2px 10px rgba(42,61,46,0.04);
 }
 .cykelagent-card:hover {
   border-color: var(--forest);
-  box-shadow: var(--sh-pop);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(42,61,46,0.1);
 }
 .cykelagent-card-top {
   display: flex; justify-content: space-between; align-items: center;
@@ -197,13 +202,13 @@
   color: #2e7d32;
   background: #e8f5e9;
   padding: 3px 10px;
-  border-radius: var(--r-lg);
+  border-radius: 20px;
   font-weight: 700;
   letter-spacing: 0.3px;
 }
 .cykelagent-card-date { color: var(--muted); }
 .cykelagent-card-name {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.18rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -218,7 +223,7 @@
   display: inline-flex; align-items: center;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: var(--r-pill);
+  border-radius: 999px;
   padding: 4px 12px;
   font-size: 0.78rem;
   color: var(--charcoal);
@@ -236,7 +241,7 @@
   text-align: center;
   padding: 60px 20px;
   background: var(--sand);
-  border-radius: var(--r-lg);
+  border-radius: 16px;
   border: 1.5px dashed var(--border);
 }
 .cykelagent-empty-icon {
@@ -244,7 +249,7 @@
   margin-bottom: 14px;
 }
 .cykelagent-empty-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -262,10 +267,10 @@
 .cykelagent-editor {
   background: #fff;
   border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: 16px;
   padding: 26px 26px 22px;
   margin-bottom: 24px;
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 6px 28px -8px rgba(42,61,46,0.16);
 }
 .cykelagent-editor-header {
   display: flex; justify-content: space-between; align-items: center;
@@ -274,7 +279,7 @@
   border-bottom: 1px solid var(--border);
 }
 .cykelagent-editor-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.45rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -320,7 +325,7 @@
   width: 100%;
   padding: 11px 14px;
   border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   font-size: 0.92rem;
   font-family: 'DM Sans', sans-serif;
   background: #fff;
@@ -340,13 +345,13 @@
 .cykelagent-chip-btn {
   background: #fff;
   border: 1.5px solid var(--border);
-  border-radius: var(--r-pill);
+  border-radius: 999px;
   padding: 8px 16px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.86rem;
   color: var(--charcoal);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: all 0.15s;
   display: inline-flex; align-items: center; gap: 6px;
 }
 .cykelagent-chip-btn:hover {
@@ -367,7 +372,7 @@
 /* ── ADVANCED-FOLDOUT (tekniske specs) ── */
 .cykelagent-advanced {
   background: var(--sand);
-  border-radius: var(--r-md);
+  border-radius: 12px;
   padding: 14px 18px 6px;
   margin: 18px 0;
 }
@@ -422,7 +427,7 @@
   display: flex; gap: 12px; align-items: flex-start;
   background: #f0f7e8;
   border: 1px solid rgba(46,125,50,0.2);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   padding: 12px 14px;
   margin: 18px 0;
   font-size: 0.82rem;
@@ -457,7 +462,7 @@
 }
 .cykelagent-save-btn {
   background: var(--forest); color: var(--cream);
-  border: none; border-radius: var(--r-md);
+  border: none; border-radius: 10px;
   padding: 12px 24px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.95rem; font-weight: 600;
@@ -471,25 +476,25 @@
   background: none;
   border: 1.5px solid var(--border);
   color: var(--muted);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   padding: 12px 20px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem; font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: all 0.15s;
 }
 .cykelagent-cancel-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
 .cykelagent-delete-btn {
   background: none;
   border: 1.5px solid #d44a35;
   color: #d44a35;
-  border-radius: var(--r-md);
+  border-radius: 10px;
   padding: 12px 20px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem; font-weight: 600;
   cursor: pointer;
   margin-left: auto;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: all 0.15s;
 }
 .cykelagent-delete-btn:hover { background: #d44a35; color: #fff; }
 
