@@ -66,18 +66,18 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260819d">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260819d">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819d">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260819d">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260819d">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819d">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260819d">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819d">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260819d">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819d">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819d">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260819d">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260819f">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260819f">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819f">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260819f">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260819f">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819f">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260819f">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819f">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260819f">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819f">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819f">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260819f">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -198,7 +198,7 @@
         <div class="search-bar-sep"></div>
         <div class="search-bar-field">
           <label for="search-type" class="sr-only">Vælg cykeltype</label>
-          <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="selectCatTab(this, this.value)">
+          <select id="search-type" aria-label="Filtrer efter cykeltype" onchange="selectHeroCatChip(this, this.value)">
             <option value="">Alle typer</option>
             <option>Racercykel</option>
             <option>Mountainbike</option>
@@ -232,40 +232,21 @@
         </button>
       </div>
     </div>
-  </div>
-
-  <!-- ── CYKELTYPE-FANEBLADE ──
-       Lå før som glasagtige pillekapsler oven på hero-fotoet. To problemer med
-       det: hver chip havde sin egen baggrund fordi fotoet slog igennem, hvilket
-       krævede et mørkt bånd bag hele rækken for at kontrasten ikke skiftede fra
-       chip til chip. Og rækken var skjult helt under 768px, fordi den ikke
-       kunne være der oven på billedet — så mobilbrugere havde ingen
-       kategorinavigation overhovedet.
-
-       Nu faneblade på den lyse flade lige under hero'en. Ingen tekst oven på
-       foto, ingen glaseffekt, og den kan vises på mobil med vandret scroll.
-       Rækken er sidens PRIMÆRE valg; Alle/Nye/Brugte er flyttet ned til
-       sorteringen som et lille segmenteret kontrolelement, så to ens
-       fanebladsrækker ikke kan forveksles. -->
-  <!-- BEVIDST en div og ikke <nav>: der findes en global element-regel
-       nav { position: sticky; top: 0; background: var(--forest-light) }
-       til sidens hovedmenu, og et <nav> her ville arve den og klistre sig
-       fast øverst oven på hero'en. -->
-  <div class="cat-tabs" role="group" aria-label="Filtrer efter cykeltype">
-    <div class="cat-tabs-inner">
-    <button class="cat-tab active" data-type="" onclick="selectCatTab(this,'')" aria-pressed="true">Alle</button>
-    <button class="cat-tab" data-type="Racercykel" onclick="selectCatTab(this,'Racercykel')" aria-pressed="false">Racer</button>
-    <button class="cat-tab" data-type="Mountainbike" onclick="selectCatTab(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
-    <button class="cat-tab" data-type="El-cykel" onclick="selectCatTab(this,'El-cykel')" aria-pressed="false">El-cykel</button>
-    <button class="cat-tab" data-type="Citybike" onclick="selectCatTab(this,'Citybike')" aria-pressed="false">Citybike</button>
-    <button class="cat-tab" data-type="Gravel" onclick="selectCatTab(this,'Gravel')" aria-pressed="false">Gravel</button>
-    <button class="cat-tab" data-type="Ladcykel" onclick="selectCatTab(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
-    <button class="cat-tab" data-type="Børnecykel" onclick="selectCatTab(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
-    <button class="cat-tab" data-type="Senior cykel" onclick="selectCatTab(this,'Senior cykel')" aria-pressed="false">Senior</button>
+    <!-- ── KATEGORI CHIPS ── -->
+    <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
+      <button class="hero-cat-chip active" data-type="" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
+      <button class="hero-cat-chip" data-type="Racercykel" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
+      <button class="hero-cat-chip" data-type="Mountainbike" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
+      <button class="hero-cat-chip" data-type="El-cykel" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
+      <button class="hero-cat-chip" data-type="Citybike" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
+      <button class="hero-cat-chip" data-type="Gravel" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
+      <button class="hero-cat-chip" data-type="Ladcykel" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
+      <button class="hero-cat-chip" data-type="Børnecykel" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
+      <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
     </div>
   </div>
 
-  <!-- ── HURTIGFILTER PILLS (skjult — erstattet af .cat-tabs) ── -->
+  <!-- ── HURTIGFILTER PILLS (skjult — erstattet af hero-cat-chips) ── -->
   <div class="filters-row" role="group" aria-label="Hurtigfiltre">
     <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
     <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
@@ -839,28 +820,31 @@
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
-        /* Ny/brugt som lille SEGMENTERET kontrol i kontrolrækken. Den var før
-           faneblade på egen linje, men cykeltyperne er nu faneblade øverst på
-           siden, og to ens fanebladsrækker gør det umuligt at se hvilken akse
-           man har valgt på. Formsproget skiller dem nu ad: faneblade = hvad ser
-           jeg på, segmenteret kontrol = hvordan afgrænses det. */
-        .cond-seg{display:inline-flex;background:var(--sand-2);border-radius:8px;
-          padding:2px;gap:2px;flex-shrink:0;}
-        .cond-seg-btn{border:none;background:transparent;color:var(--muted);
-          font:600 0.8rem/1 'DM Sans',sans-serif;padding:7px 13px;border-radius:6px;
-          cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;}
-        .cond-seg-btn:hover{color:var(--charcoal);}
-        .cond-seg-btn.active{background:var(--cream);color:var(--forest);
-          box-shadow:0 1px 2px rgba(26,26,24,0.10);}
-        /* På mobil: kategori-toggle'en fylder hele bredden, og ny/brugt lægger
-           sig i kontrolrækken sammen med filter- og visningsknapperne.
-           Placeret EFTER base-reglerne så den vinder på source-order. */
+        /* Ny/brugt som FANEBLADE på sin egen linje over annoncerne. Som knapboks
+           ved siden af kategori-toggle'en havde de to kontroller samme ramme,
+           samme størrelse og samme form — øjet kunne ikke se hvad der var
+           hovedvalg og hvad der var filter. Faneblade har et andet formsprog og
+           en anden opgave: de siger "hvilket udsnit ser jeg". Understregningen
+           går helt ud i bredden og binder valget til listen nedenunder. */
+        .cond-tabs{display:flex;align-items:flex-end;gap:4px;
+          border-bottom:1.5px solid var(--border);margin:0 0 18px;}
+        .cond-axis-btn{border:none;background:transparent;color:var(--muted);
+          font:600 0.92rem/1 'DM Sans',sans-serif;padding:11px 4px;margin-right:22px;
+          border-bottom:2px solid transparent;margin-bottom:-1.5px;
+          cursor:pointer;transition:color .15s,border-color .15s;}
+        .cond-axis-btn:hover{color:var(--charcoal);}
+        .cond-axis-btn.active{color:var(--forest);border-bottom-color:var(--forest);}
+        /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
+           deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
+           vinder på source-order. */
         @media(max-width:768px){
           .browse-cat-wrap{width:100%;display:block;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
-          .cond-seg{order:-1;}
-          .cond-seg-btn{padding:9px 12px;font-size:0.82rem;}
+          /* Fanebladene deler bredden ligeligt, så de tre rammer hele skærmen
+             i stedet for at klumpe til venstre med tom plads til højre. */
+          .cond-tabs{margin-bottom:14px;}
+          .cond-axis-btn{flex:1;min-width:0;margin-right:0;padding:11px 4px;text-align:center;}
         }
       </style>
       <div class="listings-header">
@@ -887,18 +871,6 @@
           <button class="view-toggle" id="btn-compare-mode" onclick="toggleCompareMode()" aria-label="Slå sammenligning til" aria-pressed="false" title="Vælg cykler at sammenligne">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="6" height="12" rx="1"/><rect x="12" y="4" width="6" height="12" rx="1"/><path d="M9 10h2"/></svg>
           </button>
-          <!-- Ny/brugt er en FORFINELSE, ikke hovedvalget. Den lå før som en
-               fanebladsrække magen til cykeltyperne, og to ens rækker på samme
-               side gør det umuligt at se hvilken akse man har valgt på. Som et
-               lille segmenteret element ved siden af sorteringen er forskellen
-               tydelig: faneblade øverst = hvad ser jeg på, kontroller hernede =
-               hvordan vises det. Knapperne sætter sidebarens condition-
-               checkboxes; det er ikke et selvstændigt filter. -->
-          <div class="cond-seg" role="group" aria-label="Ny eller brugt">
-            <button class="cond-seg-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
-            <button class="cond-seg-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
-            <button class="cond-seg-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
-          </div>
           <label for="sort-select" class="sr-only">Sorter annoncer</label>
           <select class="sort-select" id="sort-select" onchange="sortBikes(this.value)" aria-label="Sorter annoncer">
             <option value="newest">Nyeste først</option>
@@ -907,6 +879,21 @@
             <option value="biggest_saving">Største besparelse</option>
           </select>
         </div>
+      </div>
+      <!-- Ny/brugt er den første beslutning en køber tager. Den lå før kun i
+           sidebarens Stand-boks, som er foldet sammen som standard.
+           FANEBLADE, ikke en knapboks: ved siden af kategori-toggle'en havde de
+           to kontroller samme ramme, samme størrelse og samme form, og læste
+           derfor som én lang række hvor man ikke kunne se hvad der var
+           hovedvalget. Faneblade siger noget andet — "hvilket udsnit af
+           resultaterne ser jeg" — og stregen binder dem til listen nedenunder
+           i stedet for at konkurrere med headeren ovenfor.
+           Knapperne sætter sidebarens condition-checkboxes; det er ikke et
+           selvstændigt filter. -->
+      <div class="cond-tabs" role="group" aria-label="Ny eller brugt">
+        <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
+        <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
+        <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
@@ -1102,7 +1089,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260819d';
+    const V = '20260819f';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
