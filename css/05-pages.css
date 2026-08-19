@@ -612,7 +612,8 @@
   #save-search-btn .save-search-icon { font-size: 1rem; }
   /* Behold den lodrette padding: den er båndets højde. Uden den klemmer
      gradienten sig ned om chippene og bliver en synlig stribe. */
-
+  .hero-cat-chips { padding: 8px 4px; gap: 6px; }
+  .hero-cat-chip { font-size: 0.75rem; padding: 6px 12px; }
   .pill { flex-shrink: 0; font-size: 0.8rem; padding: 7px 14px; }
   .main { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
   /* Sidebar er KUN synlig som drawer når explicit åbnet — defensiv guard */
