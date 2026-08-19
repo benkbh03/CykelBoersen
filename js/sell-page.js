@@ -106,11 +106,57 @@ export function createSellPage({
     }).catch(() => {});
   }
 
+  /* ── GIVES VÆK ──────────────────────────────────────────────
+     Selve tilstanden ligger i et skjult tekstfelt ('1' eller ''), ikke i
+     checkbox'en. Grunden er saveSellDraft(), som gemmer kladden ved at læse
+     el.value på hvert felt i SELL_DRAFT_FIELDS — og en checkbox har altid
+     value "on", uanset om den er krydset af. Det skjulte felt gør at kladden
+     virker uændret, og at gaven overlever at man forlader fanen midt i. */
+  function giveawayToggleHtml(c) {
+    const on = c['sell-giveaway'] === '1';
+    return `
+      <label class="sell-giveaway">
+        <input type="checkbox" id="sell-giveaway-cb"${on ? ' checked' : ''} onchange="toggleSellGiveaway(this)">
+        <span>Jeg giver den væk gratis</span>
+      </label>
+      <input type="hidden" id="sell-giveaway" value="${on ? '1' : ''}">`;
+  }
+
+  function toggleSellGiveaway(cb) {
+    const on = !!cb?.checked;
+    const hidden = document.getElementById('sell-giveaway');
+    if (hidden) hidden.value = on ? '1' : '';
+    _sellFormCache['sell-giveaway'] = on ? '1' : '';
+
+    // Prisen ryddes OG deaktiveres. Ryddes, fordi et tal der stadig står i
+    // feltet ville blive gemt i kladden og dukke op igen hvis man fjerner
+    // fluebenet på et senere trin. Deaktiveres, så det er tydeligt at feltet
+    // ikke skal udfyldes frem for at man tror man har glemt noget.
+    const price = document.getElementById('sell-price');
+    if (price) {
+      price.disabled = on;
+      if (on) { price.value = ''; _sellFormCache['sell-price'] = ''; }
+    }
+    // Førpris er forhandlerens vejledende udsalgspris. Den giver ingen mening
+    // på noget der foræres væk, og ville vise en falsk "Spar 5.999 kr."
+    const orig = document.getElementById('sell-original-price');
+    if (orig) {
+      orig.disabled = on;
+      if (on) { orig.value = ''; _sellFormCache['sell-original-price'] = ''; }
+    }
+    // Prisforslaget ("andre Trek Domane ligger på 12-18.000") er irrelevant
+    // og virker nærmest bebrejdende når man forærer noget væk.
+    const sugg = document.getElementById('price-suggestion');
+    if (sugg) sugg.style.display = on ? 'none' : '';
+
+    saveSellDraft();
+  }
+
   const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
-    'sell-price', 'sell-original-price', 'sell-warranty', 'sell-external-url', 'sell-frame-number',
+    'sell-price', 'sell-giveaway', 'sell-original-price', 'sell-warranty', 'sell-external-url', 'sell-frame-number',
     // Cykel-specifikke strukturerede felter (kan auto-udfyldes af AI fra billeder)
     'sell-groupset', 'sell-frame-material', 'sell-brake-type',
     'sell-electronic-shifting', 'sell-weight-kg',
@@ -204,6 +250,7 @@ export function createSellPage({
       .select('price')
       .eq('type', bikeType)
       .eq('is_active', true)
+      .eq('is_giveaway', false)
       .limit(50);
 
     if (!data || data.length < 3) { wrap.style.display = 'none'; return; }
@@ -307,12 +354,15 @@ export function createSellPage({
     const brand = getVal('sell-brand');
     const type  = getVal('sell-type');
     const cond  = getVal('sell-condition');
-    const price = parseInt(getVal('sell-price'));
+    const giveaway = getVal('sell-giveaway') === '1';
+    const price = giveaway ? 0 : parseInt(getVal('sell-price'));
     const desc  = getVal('sell-desc');
     const city  = getVal('sell-city');
 
     if (!title || !type || !cond || !city) { showToast('⚠️ Udfyld alle påkrævede felter (*)'); return; }
-    if (!Number.isFinite(price) || price < 1 || price > 9999999) { showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return; }
+    // Prisen valideres kun når der ER en pris. En gave har prisen 0, hvilket
+    // reglen "mindst 1 kr." ellers ville afvise.
+    if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) { showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return; }
     if (getSelectedFiles().length === 0) { showToast('⚠️ Tilføj mindst ét billede'); return; }
 
     const visibleCtas = document.querySelectorAll('.sell-wizard-cta, .sell-desktop-cta');
@@ -328,6 +378,7 @@ export function createSellPage({
         title: fullTitle,
         price,
         original_price: price,      // ingen falsk rabat for private
+        is_giveaway: giveaway,
         condition: cond,
         city,
         description: desc || null,
@@ -378,7 +429,8 @@ export function createSellPage({
       };
       const brand     = getVal('sell-brand');
       const model     = getVal('sell-model');
-      const price     = parseInt(getVal('sell-price'));
+      const giveaway  = getVal('sell-giveaway') === '1';
+      const price     = giveaway ? 0 : parseInt(getVal('sell-price'));
       const year      = parseInt(getVal('sell-year')) || null;
       const city      = getVal('sell-city');
       const desc      = getVal('sell-desc');
@@ -426,10 +478,12 @@ export function createSellPage({
       // Stel-type: lav/høj indstigning — alle typer
       const stepType       = getVal('sell-step-type') || null;
 
-      if (!brand || !price || !city || !type || !condition) {
+      // !price ville også afvise en gave, fordi 0 er falsy. Derfor tjekkes
+      // prisen kun når annoncen ikke er en gave.
+      if (!brand || !city || !type || !condition || (!giveaway && !price)) {
         showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
       }
-      if (!Number.isFinite(price) || price < 1 || price > 9999999) {
+      if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
         showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); restore(); return;
       }
       if (!model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
@@ -452,7 +506,10 @@ export function createSellPage({
       const bikeData = {
         user_id: actingAs ? actingAs.id : currentUser.id,
         brand, model, price, year, city,
-        original_price: (origPriceNum && origPriceNum > price) ? origPriceNum : price,  // forhandler-før-pris hvis sat, ellers pris-snapshot — driver "Reduceret fra X → Y"-badge
+        is_giveaway: giveaway,
+        // En gave har hverken pris eller førpris, ellers ville kortet vise et
+        // falsk prisfald ("Spar 5.999 kr.") på noget der er gratis.
+        original_price: giveaway ? 0 : ((origPriceNum && origPriceNum > price) ? origPriceNum : price),  // forhandler-før-pris hvis sat, ellers pris-snapshot — driver "Reduceret fra X → Y"-badge
         description: desc || null,
         type, size: size || null, size_cm: sizeCm, condition,
         wheel_size: wheelSize || null,
@@ -877,9 +934,10 @@ export function createSellPage({
         <div class="sell-field">
           <label>Pris <span class="req">*</span> <span class="hint">inkl. moms</span></label>
           <div class="suffix-wrap">
-            <input type="number" id="sell-price" placeholder="0" min="1" max="9999999" step="1" value="${c['sell-price'] || ''}" onwheel="this.blur()">
+            <input type="number" id="sell-price" placeholder="0" min="1" max="9999999" step="1" value="${c['sell-giveaway'] === '1' ? '' : (c['sell-price'] || '')}" onwheel="this.blur()"${c['sell-giveaway'] === '1' ? ' disabled' : ''}>
             <span class="suffix">DKK</span>
           </div>
+          ${giveawayToggleHtml(c)}
         </div>
       </div>
       `;
@@ -978,9 +1036,10 @@ export function createSellPage({
       <div class="sell-field">
         <label>Pris <span class="req">*</span> <span class="hint">inkl. moms</span></label>
         <div class="suffix-wrap">
-          <input type="number" id="sell-price" placeholder="4.500" min="1" max="9999999" step="1" value="${c['sell-price'] || ''}" onwheel="this.blur()">
+          <input type="number" id="sell-price" placeholder="4.500" min="1" max="9999999" step="1" value="${c['sell-giveaway'] === '1' ? '' : (c['sell-price'] || '')}" onwheel="this.blur()"${c['sell-giveaway'] === '1' ? ' disabled' : ''}>
           <span class="suffix">DKK</span>
         </div>
+        ${giveawayToggleHtml(c)}
         <a href="/vurder-min-cykel" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
       </div>
 
@@ -1112,6 +1171,7 @@ export function createSellPage({
     const cond  = c['sell-condition'] || '';
     const colors = Array.isArray(c['sell-colors']) ? c['sell-colors'] : [];
     const price = c['sell-price'] || '';
+    const giveaway = c['sell-giveaway'] === '1';
 
     // ── TILBEHØR: samme trin-3-layout, men tilbehørs-oversigt (ingen cykel-rows) ──
     if (_isAcc()) {
@@ -1126,7 +1186,7 @@ export function createSellPage({
         ['Kategori', type || '—'],
         ['Mærke', brand || '—'],
         ['Stand', cond || '—'],
-        ['Pris', price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—'],
+        ['Pris', giveaway ? 'Gives væk' : (price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—')],
         ['Billeder', `${_sfA.length} uploadet`],
       ];
       return `
@@ -1155,7 +1215,7 @@ export function createSellPage({
           <div>
             <div class="sell-summary-title">${esc(accTitle)}</div>
             <div class="sell-summary-sub">${esc(type || 'Kategori')} · ${esc(c['sell-city'] || 'By')}</div>
-            <div class="sell-summary-price">${price ? Number(price).toLocaleString('da-DK') + ' DKK' : '— DKK'}</div>
+            <div class="sell-summary-price">${giveaway ? 'Gives væk' : (price ? Number(price).toLocaleString('da-DK') + ' DKK' : '— DKK')}</div>
           </div>
         </div>
         <div class="sell-summary-rows">
@@ -1188,7 +1248,7 @@ export function createSellPage({
       ['Størrelse', [size, wheel].filter(Boolean).join(' · ') || '—'],
       ['Årgang · Stand', [year, cond].filter(Boolean).join(' · ') || '—'],
       ['Farve', colors.length ? colors.join(', ') : '—'],
-      ['Pris', price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—'],
+      ['Pris', giveaway ? 'Gives væk' : (price ? `${Number(price).toLocaleString('da-DK')} DKK` : '—')],
       ['Billeder', `${_sf.length} uploadet`],
     ];
 
@@ -1218,7 +1278,7 @@ export function createSellPage({
           <div>
             <div class="sell-summary-title">${esc([brand, model].filter(Boolean).join(' ') || 'Din cykel')}</div>
             <div class="sell-summary-sub">${esc(type || 'Type')} · ${esc(c['sell-city'] || 'By')}</div>
-            <div class="sell-summary-price">${price ? Number(price).toLocaleString('da-DK') + ' DKK' : '— DKK'}</div>
+            <div class="sell-summary-price">${giveaway ? 'Gives væk' : (price ? Number(price).toLocaleString('da-DK') + ' DKK' : '— DKK')}</div>
           </div>
         </div>
         <div class="sell-summary-rows">
@@ -1293,6 +1353,7 @@ export function createSellPage({
     const year  = c['sell-year'] || '';
     const cond  = c['sell-condition'] || '';
     const price = c['sell-price'] || '';
+    const giveaway = c['sell-giveaway'] === '1';
     const city  = c['sell-city'] || '';
 
     const _sf2 = getSelectedFiles();
@@ -2458,6 +2519,7 @@ export function createSellPage({
     advanceSell,
     backSell,
     toggleAdvancedSpecs,
+    toggleSellGiveaway,
     saveSellDraft,
     clearSellDraft,
     initSellDraft,

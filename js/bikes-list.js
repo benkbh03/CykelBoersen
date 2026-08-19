@@ -1,4 +1,4 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -139,7 +139,7 @@ export function createBikesList({
     // sælger). !inner gør filteret til et rigtigt WHERE på forælder-rækkerne,
     // og .range()-pagineringen tæller så også korrekt server-side.
     const profilesJoin = filters.sellerType ? 'profiles!user_id!inner' : 'profiles!user_id';
-    const SELECT_FIELDS = `id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${profilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`;
+    const SELECT_FIELDS = `id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${profilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`;
 
     // Fælles filtre — anvendes på BÅDE hoved-listen og fremhævede-query, så et
     // boost kun løftes op når annoncen rent faktisk matcher det aktuelle filter.
@@ -379,7 +379,7 @@ export function createBikesList({
           <div class="bike-card-body">
             <div class="card-top">
               <div class="bike-title">${esc(bikeTitle(b.brand, b.model))}</div>
-              <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
+              <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
               const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
@@ -433,7 +433,7 @@ export function createBikesList({
     frameMaterials = [], brakeTypes = [], groupsets = [], electronicShifting = null,
     motors = [], motorPositions = [], batteryMin, batteryMax,
     suspensions = [], geartypes = [], stepTypes = [],
-    maxWeight = null, city = null, search = null,
+    maxWeight = null, city = null, search = null, giveaway = null,
     category = (getBrowseCategory ? getBrowseCategory() : 'cykel'),
   } = {}, append = false) {
     const grid = document.getElementById('listings-grid');
@@ -455,7 +455,7 @@ export function createBikesList({
         frameMaterials, brakeTypes, groupsets, electronicShifting,
         motors, motorPositions, batteryMin, batteryMax,
         suspensions, geartypes, stepTypes,
-        maxWeight, city, search, category,
+        maxWeight, city, search, giveaway, category,
       });
       grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
@@ -471,7 +471,7 @@ export function createBikesList({
     const fProfilesJoin = (sellerType && !dealerId) ? 'profiles!user_id!inner' : 'profiles!user_id';
     let query = supabase
       .from('bikes')
-      .select(`id, category, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${fProfilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`)
+      .select(`id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${fProfilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`)
       .eq('is_active', true)
       .eq('category', category)
       .order('created_at', { ascending: false })
@@ -495,6 +495,9 @@ export function createBikesList({
       const s = String(search).replace(/[%_\\,.()"']/g, '');
       if (s) query = query.or(`brand.ilike.%${s}%,model.ilike.%${s}%`);
     }
+    // Gaver har prisen 0, så et min-beløb udelukker dem automatisk. Det er
+    // korrekt: den der søger fra 2.000 kr. leder ikke efter noget gratis.
+    if (giveaway === true)     query = query.eq('is_giveaway', true);
     if (minPrice)              query = query.gte('price', minPrice);
     if (maxPrice)              query = query.lte('price', maxPrice);
     if (dealerId)              query = query.eq('user_id', dealerId);

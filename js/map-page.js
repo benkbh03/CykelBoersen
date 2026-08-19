@@ -2,7 +2,7 @@
    KORTVISNING MED LEAFLET — factory module
    ============================================================ */
 
-import { bikeTitle, iconDealer, iconPrivate, iconBike } from './utils.js';
+import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel } from './utils.js';
 import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
@@ -80,6 +80,7 @@ export function createMapPage({
     groupset: new Set(), weight_max: null,
     motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
     suspension: new Set(), geartype: new Set(), step_type: new Set(),
+    giveaway: false,
   };
 
   /* ── setView ────────────────────────────────────────────── */
@@ -332,7 +333,7 @@ export function createMapPage({
   async function loadMapPageBikes() {
     const { data, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
+      .select('id, brand, model, price, is_giveaway, type, condition, city, year, size, size_cm, wheel_size, color, colors, frame_material, brake_type, electronic_shifting, groupset, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, address, avatar_url, lat, lng, location_precision, postcode), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .eq('category', 'cykel')  // kortet er cykel-only i v1
       .order('created_at', { ascending: false })
@@ -380,6 +381,7 @@ export function createMapPage({
 
       // Avancerede multi-select filtre
       const adv = f.adv;
+      if (adv.giveaway && !b.is_giveaway) return false;
       if (adv.brand.size && !adv.brand.has(b.brand)) return false;
       if (adv.size.size && !adv.size.has(b.size)) return false;
       if (adv.wheel_size.size && !adv.wheel_size.has(b.wheel_size)) return false;
@@ -436,7 +438,8 @@ export function createMapPage({
        + adv.frame_material.size + adv.brake_type.size + adv.electronic_shifting.size
        + adv.groupset.size + (adv.weight_max != null ? 1 : 0)
        + adv.motor.size + adv.motor_position.size + adv.suspension.size + adv.geartype.size + adv.step_type.size
-       + (adv.battery_min != null ? 1 : 0) + (adv.battery_max != null ? 1 : 0);
+       + (adv.battery_min != null ? 1 : 0) + (adv.battery_max != null ? 1 : 0)
+       + (adv.giveaway ? 1 : 0);
 
     // Opdater alle badge-elementer (mobil-chip + desktop "Flere filtre"-knap)
     ['map-filter-badge', 'map-filter-badge-desktop'].forEach(id => {
@@ -530,6 +533,7 @@ export function createMapPage({
       groupset: new Set(), weight_max: null,
       motor: new Set(), motor_position: new Set(), battery_min: null, battery_max: null,
     suspension: new Set(), geartype: new Set(), step_type: new Set(),
+      giveaway: false,
     };
     resetMapDd('dd-seller-type', 'all', 'Alle sælgere');
     resetMapDd('dd-bike-type',   '',    'Alle typer');
@@ -840,7 +844,7 @@ export function createMapPage({
             + '<div class="split-popup-list-info">'
             + '<div class="split-popup-list-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
             + '<div class="split-popup-list-meta">' + esc(b.type || '') + (b.year ? ' · ' + b.year : '') + '</div>'
-            + '<div class="split-popup-list-price">' + b.price.toLocaleString('da-DK') + ' kr.</div>'
+            + '<div class="split-popup-list-price">' + priceLabel(b) + '</div>'
             + '</div>'
             + '</button>';
         }).join('');
@@ -890,7 +894,7 @@ export function createMapPage({
           + '</div>'
           + '<div class="split-popup-body">'
           + '<div class="split-popup-top">'
-          + '<span class="split-popup-price">' + b.price.toLocaleString('da-DK') + ' kr.</span>'
+          + '<span class="split-popup-price">' + priceLabel(b) + '</span>'
           + dealerBadge
           + '</div>'
           + '<div class="split-popup-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
@@ -1134,7 +1138,10 @@ export function createMapPage({
       + '<span class="msf-price-sep">—</span>'
       + '<input type="number" id="msf-price-max" placeholder="Max kr" value="' + esc(cur.priceMax) + '">'
       + '<span class="msf-price-unit">kr.</span>'
-      + '</div></div>';
+      + '</div>'
+      + '<label class="msf-check"><input type="checkbox" id="msf-giveaway"'
+      + (_mapAdvFilters.giveaway ? ' checked' : '') + '><span>Kun ting der gives væk</span></label>'
+      + '</div>';
 
     // ── Avancerede filtre i kollapsible sektioner ──
     // Mindre visuel støj: hver gruppe er foldet sammen som standard og åbner
@@ -1254,6 +1261,12 @@ export function createMapPage({
     const msfMax = document.getElementById('msf-price-max');
     if (msfMin) msfMin.addEventListener('input', () => syncPrice(msfMin, document.getElementById('map-price-min')));
     if (msfMax) msfMax.addEventListener('input', () => syncPrice(msfMax, document.getElementById('map-price-max')));
+
+    const msfGive = document.getElementById('msf-giveaway');
+    if (msfGive) msfGive.addEventListener('change', () => {
+      _mapAdvFilters.giveaway = !!msfGive.checked;
+      applyMapFilters(); updateMapFilterBadge();
+    });
 
     const msfWeight = document.getElementById('msf-weight-max');
     if (msfWeight) msfWeight.addEventListener('input', () => {

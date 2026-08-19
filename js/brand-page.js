@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
@@ -127,7 +127,7 @@ export function createBrandPage({
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, avatar_url), bike_images(url, thumb_url, is_primary)')
+      .select('id, brand, model, price, is_giveaway, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, profiles!user_id(name, seller_type, shop_name, verified, avatar_url), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .eq('category', 'cykel')  // mærke-sider er cykel-sider
       .ilike('brand', brandName)
@@ -195,7 +195,7 @@ export function createBrandPage({
         <div class="bike-card-body">
           <div class="card-top">
             <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-            <div class="bike-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
+            <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {
             const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);

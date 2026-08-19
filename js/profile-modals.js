@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -131,7 +131,7 @@ export function createProfileModals({
           <div class="bike-card-body">
             <div class="card-top">
               <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-              <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
+              <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
               const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
@@ -191,8 +191,8 @@ export function createProfileModals({
 
       const dataPromise = Promise.all([
         safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio').eq('id', userId).single()),
-        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
-        safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
+        safe(supabase.from('bikes').select('id, brand, model, price, is_giveaway, type, city, condition, year, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+        safe(supabase.from('bikes').select('brand, model, price, is_giveaway, type, condition, year, city').eq('user_id', userId).eq('is_active', false).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
       ]);
       const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout: profilforespørgsel tog for lang tid')), 15000));
@@ -274,7 +274,7 @@ export function createProfileModals({
           <div class="up-bike-img">${imgContent}</div>
           <div class="up-bike-info">
             <div class="up-bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-            <div class="up-bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
+            <div class="up-bike-price">${priceLabel(b)}</div>
             <div class="up-bike-meta">${esc(b.type)} · ${esc(b.condition)} · ${esc(b.city || '–')}</div>
           </div>
         </div>`;
@@ -286,7 +286,7 @@ export function createProfileModals({
           <span class="up-sold-title">${esc(b.brand)} ${esc(b.model)}</span>
           <span class="up-sold-meta">${esc(b.type)} · ${esc(b.condition)}${b.year ? ' · ' + b.year : ''}</span>
         </div>
-        <div class="up-sold-price">${b.price.toLocaleString('da-DK')} kr. <span class="sold-chip">Solgt</span></div>
+        <div class="up-sold-price">${priceLabel(b)} <span class="sold-chip">Solgt</span></div>
       </div>`).join('') || `<p class="up-empty">Ingen solgte cykler endnu.</p>`;
 
     const reviewCards = reviewList.map(r => {
@@ -327,7 +327,7 @@ export function createProfileModals({
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${numActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
-            ${(activeBikes || []).map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${b.price.toLocaleString('da-DK')} kr.</option>`).join('')}
+            ${(activeBikes || []).map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${priceText(b)}</option>`).join('')}
           </select>` : `<input type="hidden" id="up-contact-bike-select" value="${activeBikes[0].id}">`}
           <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
           <button class="up-contact-send-btn" onclick="sendProfileMessage('${userId}')">Send besked</button>

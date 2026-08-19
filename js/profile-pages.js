@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText } from './utils.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
@@ -58,11 +58,11 @@ export function createProfilePages({
     const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
     const dataPromise = Promise.all([
       safe(supabase.from('profiles').select('id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, created_at, avatar_url, last_seen, bio, opening_hours, website, facebook, instagram, services').eq('id', userId).single()),
-      safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
+      safe(supabase.from('bikes').select('id, brand, model, price, is_giveaway, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', userId).eq('is_active', true).order('created_at', { ascending: false })),
       // "Solgt" = RIGTIGT solgt (sold_via sat af "Sæt solgt") — ikke bare inaktiv.
       // Skjulte/deaktiverede cykler (sold_via=NULL, fx feed-backup) skal IKKE vises
       // som solgt; de er bare ude af visning.
-      safe(supabase.from('bikes').select('brand, model, price, type, condition, year, city').eq('user_id', userId).eq('is_active', false).not('sold_via', 'is', null).order('created_at', { ascending: false })),
+      safe(supabase.from('bikes').select('brand, model, price, is_giveaway, type, condition, year, city').eq('user_id', userId).eq('is_active', false).not('sold_via', 'is', null).order('created_at', { ascending: false })),
       safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', userId).order('created_at', { ascending: false })),
     ]);
     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000));
@@ -103,7 +103,7 @@ export function createProfilePages({
     const [r1, r2, r3] = await Promise.race([
       Promise.all([
         safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, email_verified, avatar_url, created_at, bio, last_seen, opening_hours, website, facebook, instagram, services').eq('id', dealerId).single()),
-        safe(supabase.from('bikes').select('id, brand, model, price, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
+        safe(supabase.from('bikes').select('id, brand, model, price, is_giveaway, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', dealerId).order('created_at', { ascending: false })),
       ]),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000)),
@@ -165,7 +165,7 @@ export function createProfilePages({
           <div class="bike-card-body">
             <div class="card-top">
               <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-              <div class="bike-price">${b.price.toLocaleString('da-DK')} kr.</div>
+              <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
               const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
@@ -215,7 +215,7 @@ export function createProfilePages({
           <span class="up-sold-title">${esc(b.brand)} ${esc(b.model)}</span>
           <span class="up-sold-meta">${esc(b.type)} · ${esc(b.condition)}${b.year ? ' · ' + b.year : ''}</span>
         </div>
-        <div class="up-sold-price">${b.price.toLocaleString('da-DK')} kr. <span class="sold-chip">Solgt</span></div>
+        <div class="up-sold-price">${priceLabel(b)} <span class="sold-chip">Solgt</span></div>
       </div>`).join('') || `<div class="pp-empty-state"><p>Ingen solgte cykler endnu.</p></div>`;
 
     const reviewCards = reviewList.map(r => {
@@ -252,7 +252,7 @@ export function createProfilePages({
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${nActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
-            ${(activeBikes || []).map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${b.price.toLocaleString('da-DK')} kr.</option>`).join('')}
+            ${(activeBikes || []).map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${priceText(b)}</option>`).join('')}
           </select>` : `<input type="hidden" id="up-contact-bike-select" value="${activeBikes[0].id}">`}
           <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
           <button class="up-contact-send-btn" onclick="sendProfileMessage('${profile.id}')">Send besked</button>
@@ -391,7 +391,7 @@ export function createProfilePages({
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${nActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
-            ${bikes.map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${b.price.toLocaleString('da-DK')} kr.</option>`).join('')}
+            ${bikes.map(b => `<option value="${b.id}">${esc(b.brand)} ${esc(b.model)} – ${priceText(b)}</option>`).join('')}
           </select>` : `<input type="hidden" id="up-contact-bike-select" value="${bikes[0].id}">`}
           <textarea id="up-contact-message" class="up-review-textarea" placeholder="Skriv en besked til ${esc(displayName)}..." rows="3"></textarea>
           <button class="up-contact-send-btn" onclick="sendProfileMessage('${dealer.id}')">Send besked</button>

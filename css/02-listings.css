@@ -580,3 +580,38 @@
 .success-boost-cta-text strong { font-size: 0.92rem; color: #6e4e00; }
 .success-boost-cta-text span { font-size: 0.8rem; color: #8a6817; }
 .success-boost-cta-arrow { font-size: 1.1rem; color: #b8860b; flex-shrink: 0; }
+
+/* ── GIVES VÆK ──────────────────────────────────────────────
+   Annoncer der foræres væk har prisen 0 og vises som "Gives væk" i stedet
+   for "0 kr." Etiketten står hvor prisen ellers stod, i skovgrøn frem for
+   rust: rust er forbeholdt handlinger, og en gave er en oplysning. Den
+   arver størrelse og skrifttype fra sin forælder (.bike-price, .cmp-price,
+   .bike-detail-price m.fl.), så den ikke skal styles ét sted per visning. */
+.price-giveaway {
+  color: var(--forest);
+  white-space: nowrap;
+}
+
+/* Afkrydsning i sælg- og redigér-flowet. Skal have plads nok til at rammes
+   med en tommel, derfor 44px højde på små skærme (WCAG 2.5.8). */
+.sell-giveaway {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--charcoal);
+  user-select: none;
+}
+.sell-giveaway input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--forest);
+}
+@media (max-width: 768px) {
+  .sell-giveaway { min-height: 44px; font-size: 0.95rem; }
+  .sell-giveaway input[type="checkbox"] { width: 20px; height: 20px; }
+}

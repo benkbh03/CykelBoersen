@@ -7,7 +7,7 @@
    - State i sessionStorage (slettes når browseren lukkes)
    ============================================================ */
 
-import { esc, bikeTitle, iconDealer, iconPrivate, iconShield } from './utils.js';
+import { esc, bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, isGiveaway } from './utils.js';
 
 const STORAGE_KEY = 'cb_compare_ids';
 const MAX_COMPARE = 3;
@@ -153,7 +153,7 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, original_price, type, city, condition, year, size, size_cm, color, warranty, frame_material, brake_type, groupset, electronic_shifting, weight_kg, wheel_size, motor, motor_position, battery_wh, suspension, geartype, step_type, is_active, profiles!user_id(name, shop_name, seller_type, verified, avatar_url, city), bike_images(url, is_primary)')
+      .select('id, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, warranty, frame_material, brake_type, groupset, electronic_shifting, weight_kg, wheel_size, motor, motor_position, battery_wh, suspension, geartype, step_type, is_active, profiles!user_id(name, shop_name, seller_type, verified, avatar_url, city), bike_images(url, is_primary)')
       .in('id', ids);
 
     if (error || !bikes || bikes.length === 0) {
@@ -175,7 +175,10 @@ function renderCompareTable(bikes, _navigateTo) {
 
   // Hjælpere
   const emptyVal = '<span class="cmp-empty">Ikke angivet</span>';
-  const priceFn = b => `<div class="cmp-price">${b.price.toLocaleString('da-DK')} kr.</div>${b.original_price && b.original_price > b.price ? `<div class="cmp-price-orig">var ${b.original_price.toLocaleString('da-DK')} kr.<span class="cmp-price-save">Spar ${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span></div>` : ''}`;
+  // Gaver har ingen førpris og ingen besparelse — kun etiketten.
+  const priceFn = b => isGiveaway(b)
+    ? `<div class="cmp-price">${priceLabel(b)}</div>`
+    : `<div class="cmp-price">${priceLabel(b)}</div>${b.original_price && b.original_price > b.price ? `<div class="cmp-price-orig">var ${b.original_price.toLocaleString('da-DK')} kr.<span class="cmp-price-save">Spar ${(b.original_price - b.price).toLocaleString('da-DK')} kr.</span></div>` : ''}`;
   const sellerFn = b => {
     const p = b.profiles || {};
     const name = p.seller_type === 'dealer' ? p.shop_name : p.name;

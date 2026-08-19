@@ -1556,3 +1556,24 @@ body.map-page-view { padding-bottom: 0 !important; }
   overflow-y: auto;
   padding: 2px;
 }
+
+/* Afkrydsning i kortets filter-sheet ("Kun ting der gives væk"). Følger
+   samme mål som .sell-giveaway, så de to flader ikke divergerer. */
+.msf-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--charcoal);
+  user-select: none;
+}
+.msf-check input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--forest);
+}

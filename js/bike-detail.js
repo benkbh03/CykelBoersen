@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr } from './utils.js';
+import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -226,7 +226,7 @@ export function createBikeDetail({
           </a>` : ''}
         </div>
         <div class="${colInfoCls}">
-          <div class="bike-detail-price">${b.price.toLocaleString('da-DK')} kr.${renderPriceDrop(b)}</div>
+          <div class="bike-detail-price">${priceLabel(b)}${isGiveaway(b) ? '' : renderPriceDrop(b)}</div>
           <div class="bike-detail-tags">
             ${/* Tags der svarer til et RIGTIGT sidebar-filter gøres klikbare og
                  fører til en ren søgning på netop den egenskab. Årstal har intet
@@ -312,6 +312,7 @@ export function createBikeDetail({
               ${iconCart(16)} Se hos ${esc(profile.shop_name || profile.name || 'forhandler')}
               <span class="btn-external-cta-sub">Bestil direkte hos forhandleren</span>
             </a>` : `
+            ${isGiveaway(b) ? '' : `
             <button class="btn-bid" onclick="toggleBidBox()">${iconTag(16)} Giv et bud</button>
             <div class="bid-box" id="bid-box">
               <div class="bid-box-inner">
@@ -322,7 +323,7 @@ export function createBikeDetail({
                 Mød i midten: <strong id="meet-middle-price"></strong>
                 <button class="meet-middle-btn" onclick="useMeetMiddle('${b.id}', '${profile.id}')">Send dette bud</button>
               </div>
-            </div>`}
+            </div>`}`}
             <button class="btn-contact" onclick="toggleMessageBox()">${iconMail(16)} Kontakt sælger</button>
             <div class="message-box" id="message-box">
               <div class="msg-presets">
@@ -343,7 +344,7 @@ export function createBikeDetail({
                   man forventes at overveje. */''}
             <div class="bike-util-row">
               <button class="btn-util" data-saved="0" onclick="toggleSaveFromModal(this, '${b.id}')" title="Gem annonce">${iconHeart(15)}<span class="btn-icon-label">Gem</span></button>
-              <button class="btn-util" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})" title="Få besked ved prisfald">${iconBell(15)}<span class="btn-icon-label">Prisfald</span></button>
+              ${isGiveaway(b) ? '' : `<button class="btn-util" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})" title="Få besked ved prisfald">${iconBell(15)}<span class="btn-icon-label">Prisfald</span></button>`}
               <button class="btn-util" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')" title="Del annonce">${iconShare(15)}<span class="btn-icon-label">Del</span></button>
             </div>
             <button class="btn-report-link" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">Rapporter annonce</button>
@@ -491,7 +492,7 @@ export function createBikeDetail({
       </div>
       ${!isOwner ? `
       <div class="bike-sticky-bar" id="bike-sticky-bar">
-        <div class="bike-sticky-price">${b.price.toLocaleString('da-DK')} kr.</div>
+        <div class="bike-sticky-price">${priceLabel(b)}</div>
         <div class="bike-sticky-actions">
           <button class="bike-sticky-contact" onclick="stickyBarAction('msg')" aria-label="Kontakt sælger">${iconMail(15)} Kontakt</button>
           ${b.external_url
@@ -551,13 +552,13 @@ export function createBikeDetail({
 
       // Dynamisk SEO: opdater document.title og OG-tags
       const _origTitle = document.title;
-      document.title = `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
+      document.title = `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`;
       const _setMeta = (prop, val) => {
         let el = document.querySelector(`meta[property="${prop}"]`);
         if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
         el.setAttribute('content', val);
       };
-      _setMeta('og:title', `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr.`);
+      _setMeta('og:title', `${bikeTitle(b.brand, b.model)} – ${priceText(b)}`);
       _setMeta('og:description', b.description || `${b.type} · ${b.condition}${b.city ? ' · ' + b.city : ''} – til salg på Cykelbørsen`);
       if (allImages[0]?.url) _setMeta('og:image', allImages[0].url);
       document.getElementById('bike-modal')._restoreTitle = () => {
@@ -780,12 +781,12 @@ export function createBikeDetail({
     const allImages = (b.bike_images || []).map(i => i.url).filter(Boolean);
     const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
 
-    document.title = `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`;
+    document.title = `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`;
     updateSEOMeta(
-      `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${b.price.toLocaleString('da-DK')} kr. Køb på Cykelbørsen.`,
+      `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${priceText(b)} Køb på Cykelbørsen.`,
       `/bike/${bikeId}`,
       {
-        title: `${bikeTitle(b.brand, b.model)} – ${b.price.toLocaleString('da-DK')} kr. | Cykelbørsen`,
+        title: `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`,
         image: primaryImg || undefined,
         imageAlt: `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}`,
       }
@@ -1086,7 +1087,7 @@ export function createBikeDetail({
     try {
       const { data, error: queryErr } = await supabase
         .from('bikes')
-        .select('id, brand, model, price, type, condition, bike_images(url, thumb_url, is_primary)')
+        .select('id, brand, model, price, is_giveaway, type, condition, bike_images(url, thumb_url, is_primary)')
         .eq('user_id', sellerId)
         .eq('is_active', true)
         .neq('id', currentBikeId)
@@ -1109,7 +1110,7 @@ export function createBikeDetail({
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
-              <div class="related-card-price">${bike.price.toLocaleString('da-DK')} kr.</div>
+              <div class="related-card-price">${priceLabel(bike)}</div>
               <div class="related-card-meta">${esc(bike.condition || '')}</div>
             </div>
           </div>`;
@@ -1135,7 +1136,7 @@ export function createBikeDetail({
     try {
       const { data, error: queryErr } = await supabase
         .from('bikes')
-        .select('id, brand, model, price, type, condition, bike_images(url, thumb_url, is_primary)')
+        .select('id, brand, model, price, is_giveaway, type, condition, bike_images(url, thumb_url, is_primary)')
         .eq('type', bikeType)
         .eq('is_active', true)
         .neq('id', currentBikeId)
@@ -1158,7 +1159,7 @@ export function createBikeDetail({
             </div>
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
-              <div class="related-card-price">${bike.price.toLocaleString('da-DK')} kr.</div>
+              <div class="related-card-price">${priceLabel(bike)}</div>
               <div class="related-card-meta">${esc(bike.condition || '')}</div>
             </div>
           </div>`;
