@@ -486,8 +486,11 @@ nav {
     margin: 0 0 4px;
     padding: 0 8px;
   }
-  .search-hero-sub,
-  .hero-cat-chips {
+  /* .hero-cat-chips lå her med display:none, fordi rækken ikke kunne være
+     oven på hero-fotoet på små skærme. Den er nu flyttet ned som .cat-tabs og
+     VISES på mobil med vandret scroll — det var netop den navigation
+     mobilbrugere manglede helt. */
+  .search-hero-sub {
     display: none !important;
   }
   .search-hero-text { margin-bottom: 10px; }
@@ -498,54 +501,75 @@ nav {
     letter-spacing: -0.02em;
   }
 }
-/* ── HERO KATEGORI-CHIPS ──
-   Chippene ligger oven på hero-fotoet, og hver enkelt havde derfor sin egen
-   baggrund: "Racer" over et mørkt cykelhjul, "Citybike" over lys asfalt,
-   "Ladcykel" over en person. Med et fyld på 8% og 4px blur slog fotoet
-   igennem, så kontrasten skiftede fra chip til chip — rækken så beskidt ud
-   frem for glasagtig, og teksten var ulige læsbar.
+/* ── CYKELTYPE-FANEBLADE ──
+   Rækken lå før oven på hero-fotoet som gennemsigtige pillekapsler med
+   backdrop-filter. Det gav to problemer. Fotoet slog igennem hver enkelt chip,
+   så "Racer" over et mørkt cykelhjul og "Citybike" over lys asfalt havde
+   forskellig kontrast, hvilket krævede et mørkt bånd bag hele rækken som
+   lappeløsning. Og rækken måtte skjules helt under 768px, så mobilbrugere
+   ingen kategorinavigation havde.
 
-   Løsningen er et blødt mørkt bånd bag HELE rækken. Når alle chips står på
-   samme tone, behøver de ikke hver sin ramme for at skille sig fra fotoet,
-   og rækken læses som én gruppe i stedet for ni løse elementer.
-   Båndet toner ud i begge ender, så det ikke bliver en synlig kasse. */
-.hero-cat-chips {
-  display: flex; justify-content: safe center; gap: 7px;
-  flex-wrap: nowrap; white-space: nowrap;
-  max-width: 960px; margin: 10px auto 0;
-  overflow-x: auto; scrollbar-width: none;
-  padding: 10px 16px;
-  background: linear-gradient(180deg,
-    rgba(26,26,24,0)    0%,
-    rgba(26,26,24,0.28) 35%,
-    rgba(26,26,24,0.28) 65%,
-    rgba(26,26,24,0)  100%);
+   Faneblade på den lyse flade løser begge dele: ingen tekst oven på foto,
+   ingen glaseffekt, og rækken kan scrolle vandret på mobil. Den nederste
+   streg går fra kant til kant og binder rækken til indholdet nedenunder. */
+.cat-tabs {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
 }
-.hero-cat-chips::-webkit-scrollbar { display: none; }
-.hero-cat-chip {
-  background: rgba(245,240,232,0.14);
-  /* Gennemsigtig frem for fjernet: så beholder chippen sin bredde, og
-     :focus-visible kan stadig tegne en synlig kant. */
-  border: 1px solid transparent;
-  color: var(--sand);
-  padding: 7px 14px; border-radius: 999px;
-  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.01em; cursor: pointer;
-  display: inline-flex; align-items: center; gap: 6px;
-  transition: all 160ms; flex-shrink: 0;
-  backdrop-filter: blur(10px);
+.cat-tabs-inner {
+  display: flex;
+  justify-content: safe center;
+  gap: 0;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+.cat-tabs-inner::-webkit-scrollbar { display: none; }
+.cat-tab {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted);
   font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 16px 0;
+  margin-right: 30px;
+  cursor: pointer;
+  /* Understregningen tegnes på selve knappen og trækkes 1px ned, så den
+     lægger sig oven i containerens streg i stedet for under den. */
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
 }
-.hero-cat-chip:hover { background: rgba(245,240,232,0.24); }
-.hero-cat-chip:focus-visible { outline-color: rgba(245,240,232,0.8); }
-.hero-cat-chip.active {
-  background: var(--sand); border-color: transparent;
-  color: var(--forest); font-weight: 600;
-  backdrop-filter: none;
-  /* Ingen slagskygge: den lagde en grå kant på fotoet omkring chippen og
-     var netop en del af det mudrede indtryk. Kontrasten mellem fyldt sand
-     og det mørke bånd er rigelig til at markere den aktive. */
-  box-shadow: none;
+.cat-tab:last-child { margin-right: 0; }
+.cat-tab:hover { color: var(--charcoal); }
+.cat-tab:focus-visible { outline-offset: -4px; }
+.cat-tab.active {
+  color: var(--charcoal);
+  font-weight: 700;
+  border-bottom-color: var(--rust);
 }
+
+/* Mobil: ingen centrering. En centreret række der samtidig scroller starter
+   et vilkårligt sted, så man ikke kan se at "Alle" er valgt. Venstrestillet
+   med lidt luft i højre kant, så det er synligt at der er mere at scrolle. */
+@media (max-width: 768px) {
+  .cat-tabs-inner {
+    justify-content: flex-start;
+    padding: 0 16px;
+  }
+  .cat-tab {
+    font-size: 0.88rem;
+    padding: 14px 0;
+    margin-right: 22px;
+  }
+}
+
 .search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
