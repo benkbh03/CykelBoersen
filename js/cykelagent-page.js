@@ -8,7 +8,7 @@
 
 import { BIKE_COLORS } from './config.js';
 import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
-import { iconDealer, iconPrivate, iconShield } from './utils.js';
+import { iconDealer, iconPrivate, iconShield, priceText } from './utils.js';
 
 const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
@@ -56,6 +56,7 @@ export function createCykelagentPage({
       minPrice: null,
       maxPrice: null,
       warranty: false,
+      giveaway: false,
       // Tekniske specs
       frameMaterials: [],
       brakeTypes: [],
@@ -217,7 +218,7 @@ export function createCykelagentPage({
     const img = _imgRec?.thumb_url || _imgRec?.url || '';
     const title = `${bike.brand || ''} ${bike.model || ''}`.trim() || 'Cykel';
     const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
-    const price = bike.price != null ? `${Number(bike.price).toLocaleString('da-DK')} kr.` : '';
+    const price = priceText(bike);
     return `
       <a class="cykelagent-match-card" href="/bike/${bike.id}" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
         ${img
@@ -249,6 +250,7 @@ export function createCykelagentPage({
     if (f.minPrice)                   chips.push(`Fra ${Number(f.minPrice).toLocaleString('da-DK')} kr.`);
     if (f.maxPrice)                   chips.push(`Op til ${Number(f.maxPrice).toLocaleString('da-DK')} kr.`);
     if (f.warranty)                   chips.push(iconShield() + ' Med garanti');
+    if (f.giveaway)                   chips.push('Gives væk');
     if (f.city)                       chips.push('📍 ' + esc(f.city));
     if (Array.isArray(f.frameMaterials)) f.frameMaterials.forEach(m => chips.push('🔩 ' + esc(m)));
     if (Array.isArray(f.brakeTypes))     f.brakeTypes.forEach(b => chips.push('🛑 ' + esc(b)));
@@ -314,6 +316,7 @@ export function createCykelagentPage({
           minPrice:   f.minPrice || null,
           maxPrice:   f.maxPrice || null,
           warranty:   !!f.warranty,
+          giveaway:   !!f.giveaway,
           frameMaterials:     Array.isArray(f.frameMaterials) ? f.frameMaterials : [],
           brakeTypes:         Array.isArray(f.brakeTypes)     ? f.brakeTypes     : [],
           groupsets:          Array.isArray(f.groupsets)      ? f.groupsets      : [],
@@ -428,6 +431,10 @@ export function createCykelagentPage({
           <label class="cykelagent-toggle">
             <input type="checkbox" ${_form.warranty ? 'checked' : ''} onchange="updateCykelagentField('warranty', this.checked)">
             <span>${iconShield()} Kun cykler med garanti</span>
+          </label>
+          <label class="cykelagent-toggle">
+            <input type="checkbox" ${_form.giveaway ? 'checked' : ''} onchange="updateCykelagentField('giveaway', this.checked)">
+            <span>Kun ting der gives væk</span>
           </label>
         </div>
 
@@ -592,7 +599,7 @@ export function createCykelagentPage({
     // Validering: mindst ét meningsfuldt filter
     const hasFilter = _form.brand || _form.types.length || _form.conditions.length
       || _form.sizes.length || _form.wheelSizes.length || _form.colors.length
-      || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty
+      || _form.sellerType || _form.minPrice || _form.maxPrice || _form.warranty || _form.giveaway
       || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length
       || _form.electronicShifting || _form.maxWeightKg
       || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax
@@ -615,6 +622,7 @@ export function createCykelagentPage({
       minPrice: _form.minPrice,
       maxPrice: _form.maxPrice,
       warranty: _form.warranty,
+      giveaway: _form.giveaway,
       // Tekniske specs (strict-match i edge function)
       frameMaterials:     _form.frameMaterials,
       brakeTypes:         _form.brakeTypes,
@@ -710,6 +718,7 @@ export function createCykelagentPage({
     if (_form.types.length) parts.push(_form.types.join('+'));
     if (_form.sellerType === 'dealer') parts.push('Forhandlere');
     if (_form.sellerType === 'private') parts.push('Private');
+    if (_form.giveaway) parts.push('gives væk');
     if (_form.maxPrice) parts.push(`under ${Number(_form.maxPrice).toLocaleString('da-DK')} kr.`);
     return parts.join(' · ') || 'Min Cykelagent';
   }

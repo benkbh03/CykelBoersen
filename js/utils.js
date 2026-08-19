@@ -177,6 +177,31 @@ export const iconWrench  = (s) => _svgIcon('<path d="M14.7 6.3a4 4 0 1 0 5 5L21 
 export const iconPencil  = (s) => _svgIcon('<path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>', s);
 export const iconBike    = (s) => _svgIcon('<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/>', s);
 
+/* ── PRIS ──────────────────────────────────────────────────────
+   "Gives væk"-annoncer har price = 0. De må ALDRIG vises som "0 kr.", så al
+   prisvisning går gennem priceLabel(). Der findes over tyve steder i
+   kodebasen der formaterer en pris; hvis hvert af dem selv skulle huske
+   at tjekke is_giveaway, ville nogle af dem lade være. Ét sted i stedet.
+
+   priceLabel(bike)  → "Gives væk" | "4.500 kr."
+   priceText(bike)   → samme, men uden markup — til <title>, meta-tags og
+                       alt hvor strengen ikke lander i HTML.
+   GIVEAWAY_LABEL    → den kanoniske tekst, så den kan ændres ét sted. */
+export const GIVEAWAY_LABEL = 'Gives væk';
+export const isGiveaway = (b) => !!(b && (b.is_giveaway || (b.price === 0 && b.price != null)));
+export function priceText(b) {
+  if (isGiveaway(b)) return GIVEAWAY_LABEL;
+  const n = Number(b?.price);
+  return Number.isFinite(n) ? `${n.toLocaleString('da-DK')} kr.` : '';
+}
+// Til HTML: gaven får en klasse så den kan sættes i en anden farve end en
+// rigtig pris, uden at kaldsstedet skal vide noget om det.
+export function priceLabel(b) {
+  return isGiveaway(b)
+    ? `<span class="price-giveaway">${GIVEAWAY_LABEL}</span>`
+    : priceText(b);
+}
+
 // Escape en værdi til brug som JS-streng inde i et inline on*-attribut (dobbelt-quoted),
 // fx onclick="fn('HER')". Forhindrer BÅDE attribut-breakout (") og JS-string-breakout
 // (' og \). Brug esc() til almindeligt tekst-indhold; escAttr() KUN til on*-handler-args.

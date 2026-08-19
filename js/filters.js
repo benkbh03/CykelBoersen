@@ -58,6 +58,7 @@ export function createFilters({
       args.minPrice ||
       args.maxPrice ||
       args.maxWeight ||
+      args.giveaway === true ||
       args.sellerType
     );
     return !!(filtersSet || filterArgsSet);
@@ -94,6 +95,7 @@ export function createFilters({
     } else if (args?.maxPrice) {
       parts.push(`under ${args.maxPrice.toLocaleString('da-DK')} kr.`);
     }
+    if (args?.giveaway === true) parts.push('gives væk');
     if (args?.maxWeight) parts.push(`under ${String(args.maxWeight).replace('.', ',')} kg`);
     if (args?.motors?.length)         parts.push(args.motors.map(m => `motor: ${m}`).join(', '));
     if (args?.motorPositions?.length) parts.push(args.motorPositions.join(', '));
@@ -184,6 +186,7 @@ export function createFilters({
     } else if (args?.maxPrice) {
       pills.push({ label: `Under ${args.maxPrice.toLocaleString('da-DK')} kr.`, type: 'price' });
     }
+    if (args?.giveaway === true) pills.push({ label: 'Gives væk', type: 'giveaway' });
     if (args?.maxWeight) pills.push({ label: `Under ${String(args.maxWeight).replace('.', ',')} kg`, type: 'weight' });
     for (const m of (args?.motors || []))         pills.push({ label: `Motor: ${m}`, type: 'motor', value: m });
     for (const p of (args?.motorPositions || [])) pills.push({ label: p, type: 'motor_position', value: p });
@@ -294,6 +297,10 @@ export function createFilters({
         break;
       case 'weight':
         { const el = document.getElementById('sidebar-max-weight'); if (el) el.value = ''; }
+        applyFilters();
+        break;
+      case 'giveaway':
+        document.querySelectorAll('[data-filter="giveaway"]').forEach(cb => cb.checked = false);
         applyFilters();
         break;
       case 'seller':

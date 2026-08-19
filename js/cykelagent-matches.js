@@ -146,7 +146,7 @@ export async function fetchAgentMatches(supabase, agents) {
   const { data, error } = await supabase
     .from('bikes')
     .select(`
-      id, brand, model, price, type, city, condition, year, size, wheel_size, color, colors,
+      id, brand, model, price, is_giveaway, type, city, condition, year, size, wheel_size, color, colors,
       warranty, created_at, user_id, frame_material, brake_type, groupset, motor, motor_position,
       battery_wh, suspension, geartype, step_type,
       profiles!user_id(seller_type, shop_name, verified),

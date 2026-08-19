@@ -24,6 +24,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
     'frame_material', 'brake_type', 'groupset', 'electronic_shifting',
     'weight_kg', 'motor', 'motor_position', 'battery_wh', 'suspension', 'geartype', 'step_type',
     'warranty', 'external_url', 'description', 'original_price', 'external_id',
+    'is_giveaway',
   ];
   const VALID_TYPES = ['Racercykel', 'Mountainbike', 'Citybike', 'El-cykel', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
   const VALID_CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];

@@ -417,7 +417,7 @@ const listingEdit = createListingEdit({
 const {
   openEditModal, closeEditModal, renderEditNewImages,
   editSetExistingPrimary, editRemoveExisting, editPreviewImages,
-  editSetNewPrimary, editRemoveNew, saveEditedListing,
+  editSetNewPrimary, editRemoveNew, saveEditedListing, toggleEditGiveaway,
 } = listingEdit;
 
 // Map page — lazy-loaded (kun /kort route). Loader også Leaflet samtidig.
@@ -515,6 +515,7 @@ const setSellStep                = lazyMethod(_ensureSellPage, 'setSellStep');
 const advanceSell                = lazyMethod(_ensureSellPage, 'advanceSell');
 const backSell                   = lazyMethod(_ensureSellPage, 'backSell');
 const toggleAdvancedSpecs        = lazyMethod(_ensureSellPage, 'toggleAdvancedSpecs');
+const toggleSellGiveaway         = lazyMethod(_ensureSellPage, 'toggleSellGiveaway');
 const saveSellDraft              = lazyMethod(_ensureSellPage, 'saveSellDraft');
 const clearSellDraft             = lazyMethod(_ensureSellPage, 'clearSellDraft');
 const initSellDraft              = lazyMethod(_ensureSellPage, 'initSellDraft');
@@ -2505,6 +2506,10 @@ function applyFilters() {
   const minPrice = parseInt(document.querySelector('.price-range input:first-of-type')?.value) || null;
   const maxPrice = parseInt(document.querySelector('.price-range input:last-of-type')?.value) || null;
 
+  // Gives væk — prisen 0. Kun true eller null; "vis kun IKKE-gaver" er ikke
+  // en efterspørgsel nogen har, og et tredje tilvalg ville bare støje.
+  const giveaway = document.querySelector('[data-filter="giveaway"]')?.checked ? true : null;
+
   // Vægt (max kg)
   const maxWeightRaw = document.getElementById('sidebar-max-weight')?.value;
   const maxWeight = maxWeightRaw ? parseFloat(maxWeightRaw) : null;
@@ -2532,7 +2537,7 @@ function applyFilters() {
     frameMaterials, brakeTypes, groupsets, electronicShifting,
     motors, motorPositions, batteryMin, batteryMax,
     suspensions, geartypes, stepTypes,
-    maxWeight, city, search,
+    maxWeight, city, search, giveaway,
   });
 }
 
@@ -3062,6 +3067,7 @@ window.handleResetPassword = handleResetPassword;
 window.openEditModal          = openEditModal;
 window.closeEditModal         = closeEditModal;
 window.saveEditedListing      = saveEditedListing;
+window.toggleEditGiveaway     = toggleEditGiveaway;
 window.editPreviewImages      = editPreviewImages;
 window.editSetExistingPrimary = editSetExistingPrimary;
 window.editRemoveExisting     = editRemoveExisting;
@@ -3087,6 +3093,7 @@ window.setSellStep               = setSellStep;
 window.advanceSell               = advanceSell;
 window.backSell                  = backSell;
 window.toggleAdvancedSpecs       = toggleAdvancedSpecs;
+window.toggleSellGiveaway        = toggleSellGiveaway;
 window.closeListingSuccessModal  = closeListingSuccessModal;
 window.showSellTermsModal        = showSellTermsModal;
 window.openBikeModal      = openBikeModal;

@@ -157,7 +157,7 @@ export function createMyProfile({
     try {
       ({ data, error } = await supabase
         .from('saved_bikes')
-        .select('bike_id, bikes(brand, model, price, type, city, condition, is_active, bike_images(url, is_primary))')
+        .select('bike_id, bikes(brand, model, price, is_giveaway, type, city, condition, is_active, bike_images(url, is_primary))')
         .eq('user_id', currentUser.id));
     } catch (e) {
       grid.innerHTML = retryHTML('Kunne ikke hente gemte annoncer.', 'loadSavedListings');
@@ -217,7 +217,7 @@ export function createMyProfile({
     try {
       const { data: full } = await supabase
         .from('bikes')
-        .select('id, category, brand, model, type, city, price, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(seller_type), bike_images(url, is_primary)')
+        .select('id, category, brand, model, type, city, price, is_giveaway, condition, wheel_size, warranty, year, size, colors, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, profiles!user_id(seller_type), bike_images(url, is_primary)')
         .eq('id', newBike.id)
         .single();
       if (!full) return;
@@ -233,6 +233,7 @@ export function createMyProfile({
             type:                full.type,
             city:                full.city,
             price:               full.price,
+            is_giveaway:         !!full.is_giveaway,
             condition:           full.condition,
             wheel_size:          full.wheel_size,
             warranty:            full.warranty,
@@ -284,6 +285,7 @@ export function createMyProfile({
       || (fa.suspensions?.length > 0)
       || (fa.geartypes?.length > 0)
       || (fa.stepTypes?.length > 0)
+      || fa.giveaway === true
       || warranty;
 
     if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
@@ -308,6 +310,7 @@ export function createMyProfile({
     if (fa.geartypes?.length)      parts.push(...fa.geartypes.map(g => g + ' gear'));
     if (fa.stepTypes?.length)      parts.push(...fa.stepTypes);
     if (warranty)                  parts.push('Med garanti');
+    if (fa.giveaway === true)      parts.push('Gives væk');
     if (fa.minPrice)               parts.push(`over ${fa.minPrice.toLocaleString('da-DK')} kr.`);
     if (fa.maxPrice)               parts.push(`under ${fa.maxPrice.toLocaleString('da-DK')} kr.`);
     if (city)                      parts.push(city);
@@ -448,7 +451,7 @@ export function createMyProfile({
       const otherIds = uniqueTrades.map(m => m.sender_id === currentUser.id ? m.receiver_id : m.sender_id);
 
       const [bikesRes, profilesRes] = await Promise.all([
-        supabase.from('bikes').select('id, brand, model, price, type, bike_images(url, is_primary)').in('id', bikeIds),
+        supabase.from('bikes').select('id, brand, model, price, is_giveaway, type, bike_images(url, is_primary)').in('id', bikeIds),
         supabase.from('profiles').select('id, name, shop_name, seller_type').in('id', [...new Set(otherIds)]),
       ]);
 

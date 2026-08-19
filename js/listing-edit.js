@@ -205,7 +205,16 @@ export function createListingEdit({
     document.getElementById('edit-bike-id').value       = b.id;
     document.getElementById('edit-brand').value         = b.brand || '';
     document.getElementById('edit-model').value         = b.model || '';
-    document.getElementById('edit-price').value         = b.price || '';
+    document.getElementById('edit-price').value         = b.is_giveaway ? '' : (b.price || '');
+    /* "Gives væk" er kun for private. editIsAdminOther betyder at admin
+       redigerer en forhandlers annonce, så den tæller også som forhandler.
+       Undtagelse: er annoncen ALLEREDE en gave (fx oprettet via admin-import),
+       vises feltet alligevel — ellers kunne man ikke fjerne flaget igen. */
+    const _giveCb  = document.getElementById('edit-giveaway');
+    const _giveRow = document.getElementById('edit-giveaway-row');
+    const _isDealerListing = editIsAdminOther || getCurrentProfile()?.seller_type === 'dealer';
+    if (_giveRow) _giveRow.style.display = (!_isDealerListing || b.is_giveaway) ? '' : 'none';
+    if (_giveCb) { _giveCb.checked = !!b.is_giveaway; toggleEditGiveaway(_giveCb); }
     document.getElementById('edit-year').value          = b.year || '';
     document.getElementById('edit-bike-city').value          = b.city || '';
     const editColorGrid = document.getElementById('edit-color-grid');
@@ -358,11 +367,12 @@ export function createListingEdit({
       const brand = document.getElementById('edit-brand').value.trim();
       const type  = document.getElementById('edit-type').value;
       const cond  = document.getElementById('edit-condition').value;
-      const price = parseInt(document.getElementById('edit-price').value);
+      const giveaway = !!document.getElementById('edit-giveaway')?.checked;
+      const price = giveaway ? 0 : parseInt(document.getElementById('edit-price').value);
       const desc  = document.getElementById('edit-description').value;
       const city  = document.getElementById('edit-bike-city').value.trim();
       if (!title || !type || !cond || !city) { showToast('⚠️ Udfyld alle påkrævede felter'); return; }
-      if (!Number.isFinite(price) || price < 1 || price > 9999999) {
+      if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
         showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
       }
       const accUpdates = {
@@ -373,6 +383,8 @@ export function createListingEdit({
         title:       bikeTitle(brand, title),
         type,
         price,
+        is_giveaway: giveaway,
+        original_price: giveaway ? 0 : undefined,
         condition:   cond,
         city,
         description: desc || null,
@@ -395,7 +407,8 @@ export function createListingEdit({
       brand:       document.getElementById('edit-brand').value,
       model:       document.getElementById('edit-model').value,
       title:       bikeTitle(document.getElementById('edit-brand').value, document.getElementById('edit-model').value),
-      price:       parseInt(document.getElementById('edit-price').value),
+      price:       document.getElementById('edit-giveaway')?.checked ? 0 : parseInt(document.getElementById('edit-price').value),
+      is_giveaway: !!document.getElementById('edit-giveaway')?.checked,
       year:        parseInt(document.getElementById('edit-year').value) || null,
       city:        document.getElementById('edit-bike-city').value,
       color:       (() => { const cs = getSelectedColors(document.getElementById('edit-color-grid')); return cs.length ? cs.join(', ') : null; })(),
@@ -438,6 +451,17 @@ export function createListingEdit({
   // Fælles gem-logik (både cykel og tilbehør): btnLoading, opdater bikes-rækken
   // (RPC ved admin-på-anden), stelnr-tjek, prisfald-notifikation, billed-
   // mutationer, cache-clear og genrender af relevante views.
+  /* Samme regel som i sælg-flowet: prisen ryddes og deaktiveres, og en gave
+     kan ikke have en førpris. Kaldes også ved åbning af modalen, så en annonce
+     der allerede ER en gave viser feltet deaktiveret fra start. */
+  function toggleEditGiveaway(cb) {
+    const on = !!cb?.checked;
+    const price = document.getElementById('edit-price');
+    if (price) { price.disabled = on; if (on) price.value = ''; }
+    const orig = document.getElementById('edit-original-price');
+    if (orig) { orig.disabled = on; if (on) orig.value = ''; }
+  }
+
   async function _persistEditedListing(id, updates) {
     const restore = btnLoading('edit-save-btn', 'Gemmer annonce...');
     try {
@@ -580,5 +604,6 @@ export function createListingEdit({
     editSetNewPrimary,
     editRemoveNew,
     saveEditedListing,
+    toggleEditGiveaway,
   };
 }

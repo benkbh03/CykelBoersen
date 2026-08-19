@@ -72,6 +72,7 @@ function hasEffectiveCriteria(f) {
   if (numbers.some((k) => f[k] != null && f[k] !== "" && !isNaN(Number(f[k])))) return true;
 
   if (f.warranty) return true;
+  if (f.giveaway) return true;
   if (f.electronicShifting === "true" || f.electronicShifting === "false") return true;
 
   return false;
@@ -201,6 +202,12 @@ function bikeMatchesSearch(bike, filters) {
 
   // Garanti (Hurtigfilter-pill)
   if (filters.warranty && !bike.warranty) return false;
+
+  // Gives væk. Kun ét-vejs: en agent kan bede om KUN gaver, men der findes
+  // ikke et "skjul gaver". Bemærk at en agent med minPrice automatisk aldrig
+  // matcher en gave, fordi gavens pris er 0 — samme semantik som i
+  // loadBikesWithFilters på forsiden.
+  if (filters.giveaway && !bike.is_giveaway) return false;
 
   // By-match
   if (filters.city) {

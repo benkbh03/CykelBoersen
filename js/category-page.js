@@ -8,7 +8,7 @@
    ============================================================ */
 
 import { CATEGORY_META } from './category-data.js';
-import { iconDealer, iconPrivate, bikeMetaFacts } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
@@ -101,7 +101,7 @@ export function createCategoryPage({
 
     const { data: bikes, error } = await supabase
       .from('bikes')
-      .select('id, brand, model, price, type, city, condition, year, size, size_cm, is_active, created_at, profiles!user_id(name, seller_type, shop_name, verified), bike_images(url, thumb_url, is_primary)')
+      .select('id, brand, model, price, is_giveaway, type, city, condition, year, size, size_cm, is_active, created_at, profiles!user_id(name, seller_type, shop_name, verified), bike_images(url, thumb_url, is_primary)')
       .eq('is_active', true)
       .eq('category', 'cykel')
       .eq('type', meta.type)
@@ -166,7 +166,7 @@ export function createCategoryPage({
         <div class="bike-card-body">
           <div class="card-top">
             <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
-            <div class="bike-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
+            <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {
             const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
