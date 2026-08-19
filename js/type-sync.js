@@ -4,12 +4,12 @@
    Cykeltype kan sættes tre steder på forsiden:
 
      1. dropdown'en "Alle typer" i søgefeltet   (#search-type)
-     2. fanebladsrækken under hero'en          (.cat-tab)
+     2. chip-rækken under søgefeltet            (.hero-cat-chip)
      3. sidebarens Cykeltype-boks               ([data-filter="type"])
 
    De to første og den sidste var to helt adskilte veje:
 
-     fane       -> #search-type -> searchBikes() -> rørte IKKE checkboxene
+     hero-chip  -> #search-type -> searchBikes() -> rørte IKKE checkboxene
      sidebar    -> applyFilters()               -> læste IKKE #search-type
 
    Så klikkede man "Citybike" i chip-rækken og krydsede derefter
@@ -42,7 +42,7 @@ export function syncTypeControls() {
   const sel = selectedTypes();
   const one = sel.length === 1 ? sel[0] : null;
 
-  document.querySelectorAll('.cat-tab').forEach(chip => {
+  document.querySelectorAll('.hero-cat-chip').forEach(chip => {
     // "Alle"-chippen har data-type="" — normalisér til null, så tom streng og
     // manglende attribut behandles ens. Den er aktiv når intet er valgt.
     const chipType = chip.dataset.type || null;
