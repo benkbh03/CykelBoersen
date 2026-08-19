@@ -10,13 +10,14 @@
   position: absolute; bottom: 8px; right: 8px;
   z-index: 3;
   background: rgba(255,255,255,0.94);
-  border-radius: var(--r-sm);
+  border-radius: 6px;
   padding: 3px 7px 3px 5px;
   align-items: center; gap: 4px;
   font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
   transition: background 0.15s;
   color: var(--charcoal);
 }
@@ -51,9 +52,9 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   transform: translateX(-50%) translateY(120%);
   background: var(--forest);
   color: #fff;
-  border-radius: var(--r-lg);
+  border-radius: 14px;
   padding: 12px 18px;
-  box-shadow: var(--sh-modal);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.32);
   z-index: 9000;
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: calc(100vw - 32px);
@@ -69,7 +70,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .compare-bar-clear {
   background: transparent; color: rgba(255,255,255,0.78);
   border: 1px solid rgba(255,255,255,0.25);
-  padding: 8px 14px; border-radius: var(--r-md);
+  padding: 8px 14px; border-radius: 8px;
   font-size: 0.85rem; font-weight: 500;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: background 0.15s;
@@ -77,12 +78,12 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .compare-bar-clear:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .compare-bar-go {
   background: var(--rust); color: #fff;
-  border: none; padding: 9px 18px; border-radius: var(--r-md);
+  border: none; padding: 9px 18px; border-radius: 8px;
   font-size: 0.9rem; font-weight: 700;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s;
 }
-.compare-bar-go:hover:not(:disabled) { background: var(--rust-light);}
+.compare-bar-go:hover:not(:disabled) { background: var(--rust-light); transform: translateY(-1px); }
 .compare-bar-go:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (max-width: 560px) {
@@ -111,7 +112,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 
 .cmp-back-btn {
   background: none; border: 1px solid var(--border);
-  padding: 8px 18px; border-radius: var(--r-md);
+  padding: 8px 18px; border-radius: 8px;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   font-size: 0.88rem; color: var(--charcoal);
   margin-bottom: 22px;
@@ -121,7 +122,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 
 .cmp-hero { margin-bottom: 28px; }
 .cmp-hero-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 2rem; font-weight: 700;
   margin: 0 0 6px;
   color: var(--charcoal);
@@ -138,7 +139,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   display: inline-block;
   width: 16px; height: 3px;
   background: #ff8b60;
-  border-radius: var(--r-sm);
+  border-radius: 2px;
   vertical-align: middle;
 }
 
@@ -146,15 +147,15 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-shell {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--sh-pop);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
 
 .cmp-header-row {
   display: grid;
   grid-template-columns: 180px repeat(var(--cmp-cols), 1fr);
-  background: var(--sand);
+  background: linear-gradient(180deg, var(--sand) 0%, rgba(239,234,224,0.6) 100%);
   border-bottom: 1px solid var(--border);
 }
 .cmp-header-spacer { padding: 24px; }
@@ -176,7 +177,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   width: 100%;
   aspect-ratio: 4/3;
   object-fit: cover;
-  border-radius: var(--r-md);
+  border-radius: 12px;
   background: var(--sand);
   display: block;
 }
@@ -199,7 +200,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-bike-remove:hover { background: var(--rust); transform: scale(1.06); }
 .cmp-bike-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.1rem; font-weight: 700;
   margin: 0;
   color: var(--charcoal);
@@ -216,19 +217,19 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   color: #fff;
   border: none;
   padding: 8px 16px;
-  border-radius: var(--r-md);
+  border-radius: 8px;
   font-size: 0.82rem; font-weight: 600;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s;
 }
-.cmp-bike-cta:hover { background: var(--forest-light);}
+.cmp-bike-cta:hover { background: var(--forest-light); transform: translateY(-1px); }
 
 /* Section */
 .cmp-section { border-bottom: 1px solid var(--border); }
 .cmp-section:last-child { border-bottom: none; }
 .cmp-section-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -287,7 +288,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-size: 0.88rem;
 }
 .cmp-price {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Fraunces', serif;
   font-size: 1.2rem;
   font-weight: 800;
   color: var(--rust);
@@ -308,7 +309,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   background: var(--sand);
   color: var(--charcoal);
   padding: 1px 7px;
-  border-radius: var(--r-sm);
+  border-radius: 4px;
   font-size: 0.72rem;
   font-weight: 600;
   margin-left: 6px;
@@ -343,24 +344,25 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-footer-secondary, .cmp-footer-primary {
   padding: 12px 24px;
-  border-radius: var(--r-md);
+  border-radius: 9px;
   font-size: 0.92rem; font-weight: 600;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s, border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 .cmp-footer-secondary {
   background: #fff;
   color: var(--charcoal);
   border: 1px solid var(--border);
 }
-.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal);}
+.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal); transform: translateY(-1px); }
 .cmp-footer-primary {
   background: var(--rust);
   color: #fff;
   border: none;
 }
-.cmp-footer-primary:hover { background: var(--rust-light);}
+.cmp-footer-primary:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,80,42,0.35); }
 
 /* Responsivt: under 768px omdannes header til vandret-scrollbar layout */
 @media (max-width: 768px) {
