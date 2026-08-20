@@ -66,18 +66,18 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260819f">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260819f">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819f">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260819f">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260819f">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819f">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260819f">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819f">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260819f">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819f">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819f">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260819f">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260819g">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260819g">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819g">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260819g">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260819g">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819g">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260819g">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819g">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260819g">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819g">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819g">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260819g">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -989,7 +989,7 @@
         <div id="category-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Børnecykler til salg</h2>
           <div id="category-bikes-grid" class="brand-bikes-grid">
-            <ul class="prerender-bike-links"><li><a href="/bike/e407a432-45d9-4b02-8eaf-bddfac7b8a3c">Norden Clara 26″ 7G Café latte – 5.299 kr. i Frederiksberg C</a></li><li><a href="/bike/0051b502-8088-400d-8579-c8f7365152d5">Winther 250 GRANNY 7G 24in – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/c81d416c-2d16-42ef-a454-e1336b23557c">Centurion 26&quot; Basic Free. – 5.699 kr. i Frederiksberg C</a></li><li><a href="/bike/7c629fb3-f054-42d6-9c12-de84bd660680">Norden Clara 24&quot; 3 gear Mango – 5.299 kr. i Frederiksberg C</a></li><li><a href="/bike/430cb897-284b-409b-817a-fc7465aa762f">RETRO PIGECYKEL 26 – 5.299 kr. i Frederiksberg C</a></li><li><a href="/bike/0fe990b7-52a8-4614-bac0-dbff7ddc9f5c">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/e52f28a0-def2-4811-b7c9-c527734b9988">MBK Mud DNA Dreng Mountain 24in – 4.999 kr. i Frederiksberg C</a></li></ul>
+            <ul class="prerender-bike-links"><li><a href="/bike/e407a432-45d9-4b02-8eaf-bddfac7b8a3c">Norden Clara 26″ 7G Café latte – 5.299 kr. i Frederiksberg C</a></li><li><a href="/bike/0051b502-8088-400d-8579-c8f7365152d5">Winther 250 GRANNY 7G 24in – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/c81d416c-2d16-42ef-a454-e1336b23557c">Centurion 26&quot; Basic Free. – 5.699 kr. i Frederiksberg C</a></li><li><a href="/bike/430cb897-284b-409b-817a-fc7465aa762f">RETRO PIGECYKEL 26 – 5.299 kr. i Frederiksberg C</a></li><li><a href="/bike/7c629fb3-f054-42d6-9c12-de84bd660680">Norden Clara 24&quot; 3 gear Mango – 5.299 kr. i Frederiksberg C</a></li><li><a href="/bike/0fe990b7-52a8-4614-bac0-dbff7ddc9f5c">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/e52f28a0-def2-4811-b7c9-c527734b9988">MBK Mud DNA Dreng Mountain 24in – 4.999 kr. i Frederiksberg C</a></li></ul>
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
@@ -1121,7 +1121,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260819f';
+    const V = '20260819g';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
