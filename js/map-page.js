@@ -2,7 +2,7 @@
    KORTVISNING MED LEAFLET — factory module
    ============================================================ */
 
-import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel } from './utils.js';
+import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel, iconHeart } from './utils.js';
 import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
@@ -983,8 +983,8 @@ export function createMapPage({
         + '<div class="split-card-img">'
         + (primaryImg ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + ' i ' + esc(b.city || 'Danmark') + '" loading="lazy">' : '<div class="split-card-img-placeholder">🚲</div>')
         + sellerBadge
-        + '<button class="split-card-heart" onclick="event.stopPropagation();toggleSave(this,\'' + b.id + '\')" aria-label="Gem annonce">'
-        + (_userSavedSet && _userSavedSet.has(b.id) ? '❤️' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20.8s-7.5-4.6-7.5-11A4.5 4.5 0 0112 6a4.5 4.5 0 017.5 3.8c0 6.4-7.5 11-7.5 11z"/></svg>')
+        + '<button class="split-card-heart' + (_userSavedSet && _userSavedSet.has(b.id) ? ' is-saved' : '') + '" onclick="event.stopPropagation();toggleSave(this,\'' + b.id + '\')" aria-label="Gem annonce">'
+        + iconHeart(14)
         + '</button>'
         + '</div>'
         + '<div class="split-card-body">'

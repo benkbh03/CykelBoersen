@@ -1804,11 +1804,21 @@ async function askIfAvailable(bikeId, sellerId, _btn) {
 
 async function toggleSave(btn, bikeId) {
   if (!currentUser) { showToast('⚠️ Log ind for at gemme annoncer'); return; }
-  const isSaved = btn.textContent === '❤️';
+  /* Gemt/ikke-gemt blev aflæst på knappens TEKST (❤️ mod 🤍). Det bandt
+     tilstanden til to emoji, og emoji tegnes af styresystemet: 🤍 kommer ud
+     lilla på Windows, som en tom kontur på iPhone og forskelligt igen på
+     Android. Ikonet er nu ét SVG der arver knappens farve, og tilstanden
+     ligger i en klasse — så CSS kan farve det, og /kort kan bruge samme
+     funktion uden at have sit eget halvt-emoji-halvt-SVG-hjerte. */
+  const isSaved = btn.classList.contains('is-saved');
+  const setSaved = (on) => {
+    btn.classList.toggle('is-saved', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  };
   if (isSaved) {
     const { error } = await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
     if (error) { showToast('❌ Kunne ikke fjerne fra gemte'); return; }
-    btn.textContent = '🤍';
+    setSaved(false);
     _userSavedSet.delete(bikeId);
     showToast('Fjernet fra gemte');
   } else {
@@ -1816,9 +1826,9 @@ async function toggleSave(btn, bikeId) {
     if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
     const { error } = await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
     if (error) { showToast('❌ Kunne ikke gemme annonce'); return; }
-    btn.textContent = '❤️';
+    setSaved(true);
     _userSavedSet.add(bikeId);
-    showToast('❤️ Gemt! Find den under Gemte i din profil.');
+    showToast('Gemt! Find den under Gemte i din profil.');
 
     // Send email notification to bike owner (fire-and-forget)
     if (bike) {

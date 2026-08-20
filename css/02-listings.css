@@ -284,6 +284,16 @@
 }
 .save-btn:hover { background: #fff; transform: scale(1.08); }
 .save-btn:focus-visible { outline-color: var(--rust-light); }
+/* Hjertet var to emoji: 🤍 når annoncen ikke var gemt, ❤️ når den var.
+   Emoji tegnes af styresystemet, ikke af siden, så 🤍 kom ud lilla på
+   Windows, som en tom kontur på iPhone og forskelligt igen på Android — og
+   der var ingen måde at gøre dem ens på. Nu ét SVG i to tilstande: tom
+   kontur i dæmpet grå, udfyldt i rust når den er gemt. Samme streg som
+   resten af ikonsættet. */
+.save-btn { color: var(--muted); }
+.save-btn svg { display: block; fill: none; stroke: currentColor; }
+.save-btn.is-saved { color: var(--rust); }
+.save-btn.is-saved svg { fill: currentColor; }
 /* Mobil-overrides for save-btn — placeret EFTER base-reglen så cascade-orden
    gør at de faktisk vinder over de generelle størrelser ovenfor. */
 @media (max-width: 560px) {

@@ -400,6 +400,12 @@
   padding: 0;
 }
 .split-card-heart:hover { background: #fff; }
+/* Samme to tilstande som .save-btn på forsiden. Kortet havde før et SVG når
+   annoncen ikke var gemt og emojien ❤️ når den var — to forskellige former
+   for samme knap. */
+.split-card-heart svg { display: block; fill: none; stroke: currentColor; }
+.split-card-heart.is-saved { color: var(--rust); }
+.split-card-heart.is-saved svg { fill: currentColor; }
 
 .split-card-body {
   display: flex;

@@ -35,7 +35,10 @@
   font-size: 0.72rem; font-weight: 600;
   padding: 2px 8px; border-radius: 12px;
   pointer-events: none;
+  /* Tælleren bruger nu samme SVG-hjerte som knappen ovenover, ikke ❤. */
+  display: inline-flex; align-items: center; gap: 4px;
 }
+.fav-count-badge svg { fill: currentColor; stroke: none; }
 
 /* Prisforslag */
 .price-suggestion {
