@@ -1,4 +1,4 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -372,8 +372,8 @@ export function createBikesList({
                 : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
               ${b.warranty && !isSold && !isDemo ? `<span class="warranty-card-badge">${iconShield()}Garanti</span>` : ''}
             </div>
-            ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">❤ ${saveCount}</span>` : ''}
-            ${!isSold && !isDemo ? `<button class="save-btn" onclick="event.stopPropagation();toggleSave(this,'${b.id}')">${localUserSavedSet.has(b.id) ? '❤️' : '🤍'}</button>` : ''}
+            ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">${iconHeart(11)} ${saveCount}</span>` : ''}
+            ${!isSold && !isDemo ? `<button class="save-btn${localUserSavedSet.has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${localUserSavedSet.has(b.id)}">${iconHeart(16)}</button>` : ''}
             ${!isSold && !isDemo ? `<label class="compare-checkbox-wrap" onclick="event.stopPropagation()" title="Vælg til sammenligning"><input type="checkbox" class="compare-checkbox" data-bike-id="${b.id}" onchange="toggleCompareBike(this,'${b.id}')"><span class="compare-checkbox-label">Sammenlign</span></label>` : ''}
           </div>
           <div class="bike-card-body">
