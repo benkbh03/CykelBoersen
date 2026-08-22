@@ -549,20 +549,27 @@ nav {
 .search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
-  background: var(--cream); border-radius: 0;
-  padding: 5px;
-  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(26,26,24,0.06);
+  background: var(--cream); border-radius: 12px;
+  padding: 4px 4px 4px 6px;
+  /* Skyggen var 50 % sort med 48 px blur, altså en stor mørk sky under baren.
+     Halveret og trukket tættere på, så baren stadig løfter sig fra fotoet
+     uden at male det mørkt. */
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.35), 0 0 0 1px rgba(26,26,24,0.08);
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
 .search-bar:focus-within {
-  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 2px rgba(42,61,46,0.35);
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.35), 0 0 0 2px var(--forest);
 }
 .search-bar-field {
   position: relative; display: flex; align-items: center;
   min-width: 0;
 }
-.search-bar-query { flex: 2; padding-left: 18px; gap: 10px; }
+/* Søgefeltet var det SMALLESTE af de tre (210 px mod by-feltets 270), men
+   har den længste pladsholder. Under ca. 800 px barbredde blev
+   "Søg efter mærke, model…" klippet midt i ordet. Nu flex:3, og de to
+   sekundære felter er smallere. */
+.search-bar-query { flex: 3; padding-left: 18px; gap: 10px; }
 .search-bar-query > .search-bar-icon { color: var(--muted); flex-shrink: 0; width: 18px; height: 18px; }
 .search-bar input {
   flex: 1; border: none; background: transparent;
@@ -574,14 +581,14 @@ nav {
   padding: 9px 32px 9px 16px;
   font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
   color: var(--charcoal); font-weight: 500;
-  outline: none; cursor: pointer; min-width: 140px;
+  outline: none; cursor: pointer; min-width: 118px;
   appearance: none; -webkit-appearance: none;
 }
 .search-bar-chev {
   position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
   width: 12px; height: 12px; color: var(--muted); pointer-events: none; flex-shrink: 0;
 }
-.search-bar-city { gap: 8px; padding-left: 14px; min-width: 200px; }
+.search-bar-city { gap: 8px; padding-left: 14px; min-width: 168px; }
 .search-bar-city .search-bar-icon { color: var(--muted); flex-shrink: 0; width: 16px; height: 16px; }
 .search-bar-city input {
   flex: 1; border: none; background: transparent;
@@ -598,6 +605,10 @@ nav {
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
+/* display:flex ovenfor slår browserens [hidden]{display:none}, så krydset
+   stod der ALTID — også når by-feltet var tomt og der intet var at rydde.
+   JS'en satte .hidden korrekt hele tiden; den havde bare ingen virkning. */
+.search-city-clear[hidden] { display: none; }
 .search-city-clear:hover { background: var(--sand-2); color: var(--charcoal); }
 .search-city-radius {
   flex-shrink: 0; border: none; background: var(--sand-2);
@@ -612,19 +623,21 @@ nav {
 .search-city-radius:hover { background: var(--border); }
 .search-city-radius:focus-visible { box-shadow: 0 0 0 2px var(--rust-light); }
 .search-bar-sep {
-  width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0;
+  width: 1px; background: rgba(26,26,24,0.10); flex-shrink: 0; margin: 12px 0;
 }
 .search-pill-btn {
   background: var(--rust); color: #fff;
-  border: none; padding: 10px 24px; border-radius: 0;
+  border: none; padding: 11px 26px; border-radius: 9px;
   cursor: pointer; font-size: 0.93rem; font-weight: 600;
   font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
-  white-space: nowrap; transition: background 0.2s, transform 0.18s, box-shadow 0.18s;
+  white-space: nowrap; transition: background 0.15s;
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px;
-  box-shadow: 0 4px 14px -2px rgba(200,80,42,0.5);
+  /* Ingen rust-glød under en rust-knap. Knappen sidder inde i baren og
+     ligger ikke over noget, så skyggen var ren dekoration — og den lagde
+     samtidig en farvet dis på det lyse felt ved siden af. */
 }
 .search-pill-btn svg { width: 15px; height: 15px; }
-.search-pill-btn:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55); }
+.search-pill-btn:hover { background: var(--rust-light); }
 .search-pill-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
 /* Cykelagent-pill: synlig peer til Søg-knappen, ikke konkurrent.
    Cream-baggrund + charcoal-tekst gør den læselig over hero-billedet
