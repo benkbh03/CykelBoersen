@@ -129,6 +129,113 @@ nav {
   outline-offset: 3px;
 }
 
+/* ── SØGEFELT I TOPBAREN ──
+   Skjult som udgangspunkt. body.nav-search-on tændes af js/nav-search.js:
+   altid uden for forsiden, og på forsiden først når hero-baren er scrollet
+   forbi. Uden det ville der stå to søgefelter oven på hinanden i toppen af
+   forsiden, og så er man i tvivl om hvilket der gælder. */
+.nav-search {
+  display: none;
+  flex: 1;
+  max-width: 380px;
+  margin: 0 24px;
+  align-items: center;
+  gap: 8px;
+  /* Lys flade på den mørke topbar, ikke en ramme: en ramme ville konkurrere
+     med "+ Sæt til salg" om at være det tydeligste element i rækken. */
+  background: rgba(245,240,232,0.12);
+  border: 1px solid rgba(245,240,232,0.16);
+  border-radius: 9px;
+  padding: 0 4px 0 11px;
+  transition: background 0.15s, border-color 0.15s;
+}
+body.nav-search-on .nav-search { display: flex; }
+.nav-search:focus-within {
+  background: rgba(245,240,232,0.18);
+  border-color: rgba(245,240,232,0.42);
+}
+.nav-search-icon { width: 16px; height: 16px; color: var(--sand); opacity: 0.65; flex-shrink: 0; }
+.nav-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--sand);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 2px;
+  outline: none;
+}
+.nav-search input::placeholder { color: var(--sand); opacity: 0.55; }
+/* Browserens indbyggede kryds på type=search har sin egen farve og størrelse
+   pr. platform, altså samme problem som emoji-ikoner. Slået fra. */
+.nav-search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.nav-search-go {
+  flex-shrink: 0;
+  border: none;
+  background: var(--rust);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.nav-search-go:hover { background: var(--rust-light); }
+
+/* Mobil-knappen der folder feltet ud. Skjult på desktop, hvor feltet står
+   inline i rækken. */
+.nav-search-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--sand);
+  opacity: 0.8;
+  padding: 6px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-search-toggle:hover { opacity: 1; }
+
+@media (max-width: 768px) {
+  /* Der er ikke plads til et input i rækken ved siden af hamburger, logo,
+     Sælg, indbakke og avatar. Knappen folder det derfor ud på sin egen linje
+     under topbaren, samme mønster som .mobile-menu-panel. */
+  body.nav-search-on .nav-search-toggle { display: inline-flex; }
+  .nav-search {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    margin: 0;
+    max-width: none;
+    border-radius: 0;
+    border-left: none; border-right: none;
+    border-top: none;
+    padding: 8px 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+    z-index: 99;
+  }
+  /* :focus-within har to klasser og slår derfor en enkelt .nav-search inde i
+     en media query — media queries tilføjer ingen specificitet. Feltet fik
+     fokus i samme øjeblik det blev foldet ud, så den gennemsigtige
+     fokus-baggrund vandt og siden bagved skinnede igennem panelet.
+     Begge tilstande sættes derfor eksplicit her. */
+  .nav-search,
+  .nav-search:focus-within {
+    background: var(--forest-light);
+    border-color: rgba(0,0,0,0.20);
+  }
+  /* Vises kun når knappen er trykket — ellers ville den ligge og dække
+     indholdet under topbaren på hver eneste side. */
+  body.nav-search-on .nav-search { display: none; }
+  body.nav-search-on.nav-search-open .nav-search { display: flex; }
+  .nav-search input { font-size: 16px; }  /* iOS zoomer ved < 16px */
+  .nav-search-go { padding: 9px 16px; }
+}
+
 /* ── HAMBURGER + MOBIL-MENU (kun ≤768px) ──
    På mobil skjules tekst-nav-linksene; hamburgeren genskaber adgang til
    Mærker/Forhandlere/Cykelagenter for udlogget førstegangs-besøgende.
