@@ -129,6 +129,138 @@ nav {
   outline-offset: 3px;
 }
 
+/* ── SØGEFELT I TOPBAREN ──
+   Skjult som udgangspunkt. body.nav-search-on tændes af js/nav-search.js:
+   altid uden for forsiden, og på forsiden først når hero-baren er scrollet
+   forbi. Uden det ville der stå to søgefelter oven på hinanden i toppen af
+   forsiden, og så er man i tvivl om hvilket der gælder. */
+.nav-search {
+  display: none;
+  flex: 1;
+  max-width: 380px;
+  margin: 0 24px;
+  align-items: center;
+  gap: 8px;
+  /* Lys flade på den mørke topbar, ikke en ramme: en ramme ville konkurrere
+     med "+ Sæt til salg" om at være det tydeligste element i rækken. */
+  background: rgba(245,240,232,0.12);
+  border: 1px solid rgba(245,240,232,0.16);
+  border-radius: 9px;
+  padding: 0 4px 0 11px;
+  transition: background 0.15s, border-color 0.15s;
+}
+body.nav-search-on .nav-search { display: flex; }
+.nav-search:focus-within {
+  background: rgba(245,240,232,0.18);
+  border-color: rgba(245,240,232,0.42);
+}
+.nav-search-icon { width: 16px; height: 16px; color: var(--sand); opacity: 0.65; flex-shrink: 0; }
+.nav-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--sand);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 2px;
+  outline: none;
+}
+.nav-search input::placeholder { color: var(--sand); opacity: 0.55; }
+/* Browserens indbyggede kryds på type=search har sin egen farve og størrelse
+   pr. platform, altså samme problem som emoji-ikoner. Slået fra. */
+.nav-search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.nav-search-go {
+  flex-shrink: 0;
+  border: none;
+  background: var(--rust);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.nav-search-go:hover { background: var(--rust-light); }
+.nav-search-go-icon { width: 18px; height: 18px; display: none; }
+
+/* Mobil-knappen der folder feltet ud. Skjult på desktop, hvor feltet står
+   inline i rækken. */
+.nav-search-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--sand);
+  opacity: 0.8;
+  padding: 6px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-search-toggle:hover { opacity: 1; }
+
+@media (max-width: 768px) {
+  /* Der er ikke plads til et input i rækken ved siden af hamburger, logo,
+     Sælg, indbakke og avatar. Knappen folder det derfor ud på sin egen linje
+     under topbaren, samme mønster som .mobile-menu-panel. */
+  body.nav-search-on .nav-search-toggle { display: inline-flex; }
+  .nav-search {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    margin: 0;
+    max-width: none;
+    border-radius: 0;
+    border-left: none; border-right: none;
+    border-top: none;
+    padding: 8px 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+    z-index: 99;
+  }
+  /* :focus-within har to klasser og slår derfor en enkelt .nav-search inde i
+     en media query — media queries tilføjer ingen specificitet. Feltet fik
+     fokus i samme øjeblik det blev foldet ud, så den gennemsigtige
+     fokus-baggrund vandt og siden bagved skinnede igennem panelet.
+     Begge tilstande sættes derfor eksplicit her. */
+  .nav-search,
+  .nav-search:focus-within {
+    background: var(--forest-light);
+    border-color: rgba(0,0,0,0.20);
+  }
+  /* Vises kun når knappen er trykket — ellers ville den ligge og dække
+     indholdet under topbaren på hver eneste side. */
+  body.nav-search-on .nav-search { display: none; }
+  body.nav-search-on.nav-search-open .nav-search { display: flex; }
+  .nav-search input { font-size: 16px; }  /* iOS zoomer ved < 16px */
+  /* På mobil stod en rust "Søg"-knap direkte under den rust "+ Sælg" i
+     topbaren. To orange knapper lige over hinanden læses som to lige vigtige
+     handlinger, og "+ Sæt til salg" er den ene der skal skille sig ud.
+     Søgeknappen bliver derfor et lup-ikon inde i selve feltet: stadig et
+     rigtigt submit-mål på 44 px, men uden at konkurrere om opmærksomheden.
+     Den dekorative lup i venstre side ryger samtidig, så der kun er ét
+     forstørrelsesglas — og det er det man kan trykke på. */
+  .nav-search-icon { display: none; }
+  .nav-search { padding: 8px 8px 8px 14px; }
+  .nav-search-go {
+    background: transparent;
+    color: var(--sand);
+    opacity: 0.75;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  .nav-search-go:hover,
+  .nav-search-go:active { background: rgba(245,240,232,0.12); opacity: 1; }
+  .nav-search-go-icon  { display: block; }
+  .nav-search-go-label { display: none; }
+}
+
 /* ── HAMBURGER + MOBIL-MENU (kun ≤768px) ──
    På mobil skjules tekst-nav-linksene; hamburgeren genskaber adgang til
    Mærker/Forhandlere/Cykelagenter for udlogget førstegangs-besøgende.
@@ -549,20 +681,27 @@ nav {
 .search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
-  background: var(--cream); border-radius: 0;
-  padding: 5px;
-  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(26,26,24,0.06);
+  background: var(--cream); border-radius: 12px;
+  padding: 4px 4px 4px 6px;
+  /* Skyggen var 50 % sort med 48 px blur, altså en stor mørk sky under baren.
+     Halveret og trukket tættere på, så baren stadig løfter sig fra fotoet
+     uden at male det mørkt. */
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.35), 0 0 0 1px rgba(26,26,24,0.08);
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
 .search-bar:focus-within {
-  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 2px rgba(42,61,46,0.35);
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.35), 0 0 0 2px var(--forest);
 }
 .search-bar-field {
   position: relative; display: flex; align-items: center;
   min-width: 0;
 }
-.search-bar-query { flex: 2; padding-left: 18px; gap: 10px; }
+/* Søgefeltet var det SMALLESTE af de tre (210 px mod by-feltets 270), men
+   har den længste pladsholder. Under ca. 800 px barbredde blev
+   "Søg efter mærke, model…" klippet midt i ordet. Nu flex:3, og de to
+   sekundære felter er smallere. */
+.search-bar-query { flex: 3; padding-left: 18px; gap: 10px; }
 .search-bar-query > .search-bar-icon { color: var(--muted); flex-shrink: 0; width: 18px; height: 18px; }
 .search-bar input {
   flex: 1; border: none; background: transparent;
@@ -574,14 +713,14 @@ nav {
   padding: 9px 32px 9px 16px;
   font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
   color: var(--charcoal); font-weight: 500;
-  outline: none; cursor: pointer; min-width: 140px;
+  outline: none; cursor: pointer; min-width: 118px;
   appearance: none; -webkit-appearance: none;
 }
 .search-bar-chev {
   position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
   width: 12px; height: 12px; color: var(--muted); pointer-events: none; flex-shrink: 0;
 }
-.search-bar-city { gap: 8px; padding-left: 14px; min-width: 200px; }
+.search-bar-city { gap: 8px; padding-left: 14px; min-width: 168px; }
 .search-bar-city .search-bar-icon { color: var(--muted); flex-shrink: 0; width: 16px; height: 16px; }
 .search-bar-city input {
   flex: 1; border: none; background: transparent;
@@ -598,6 +737,10 @@ nav {
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
+/* display:flex ovenfor slår browserens [hidden]{display:none}, så krydset
+   stod der ALTID — også når by-feltet var tomt og der intet var at rydde.
+   JS'en satte .hidden korrekt hele tiden; den havde bare ingen virkning. */
+.search-city-clear[hidden] { display: none; }
 .search-city-clear:hover { background: var(--sand-2); color: var(--charcoal); }
 .search-city-radius {
   flex-shrink: 0; border: none; background: var(--sand-2);
@@ -612,19 +755,21 @@ nav {
 .search-city-radius:hover { background: var(--border); }
 .search-city-radius:focus-visible { box-shadow: 0 0 0 2px var(--rust-light); }
 .search-bar-sep {
-  width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0;
+  width: 1px; background: rgba(26,26,24,0.10); flex-shrink: 0; margin: 12px 0;
 }
 .search-pill-btn {
   background: var(--rust); color: #fff;
-  border: none; padding: 10px 24px; border-radius: 0;
+  border: none; padding: 11px 26px; border-radius: 9px;
   cursor: pointer; font-size: 0.93rem; font-weight: 600;
   font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
-  white-space: nowrap; transition: background 0.2s, transform 0.18s, box-shadow 0.18s;
+  white-space: nowrap; transition: background 0.15s;
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px;
-  box-shadow: 0 4px 14px -2px rgba(200,80,42,0.5);
+  /* Ingen rust-glød under en rust-knap. Knappen sidder inde i baren og
+     ligger ikke over noget, så skyggen var ren dekoration — og den lagde
+     samtidig en farvet dis på det lyse felt ved siden af. */
 }
 .search-pill-btn svg { width: 15px; height: 15px; }
-.search-pill-btn:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 6px 18px -3px rgba(200,80,42,0.55); }
+.search-pill-btn:hover { background: var(--rust-light); }
 .search-pill-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
 /* Cykelagent-pill: synlig peer til Søg-knappen, ikke konkurrent.
    Cream-baggrund + charcoal-tekst gør den læselig over hero-billedet

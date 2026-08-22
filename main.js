@@ -16,6 +16,7 @@ setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { setConditionAxis as _setConditionAxis, syncConditionAxis, sortTypeFilterByCount } from './js/condition-axis.js';
 import { setHeroType, syncTypeControls } from './js/type-sync.js';
+import { initNavSearch, toggleNavSearch, submitNavSearch as _submitNavSearch } from './js/nav-search.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
@@ -973,6 +974,7 @@ async function init() {
   // Hover-galleri: krydsfader gennem annonce-billeder på desktop
   import(`./js/card-hover-gallery.js?v=${ASSET_VERSION}`).then(({ initCardHoverGallery }) => {
     initCardHoverGallery();
+    initNavSearch();
   });
 
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
@@ -2998,6 +3000,9 @@ window.closeDeleteAccountModal = closeDeleteAccountModal;
 window.onDeleteConfirmInput   = onDeleteConfirmInput;
 window.confirmDeleteAccount   = confirmDeleteAccount;
 window.searchBikes       = searchBikes;
+function submitNavSearch(ev) { _submitNavSearch(ev, { navigateTo, searchBikes }); }
+window.submitNavSearch   = submitNavSearch;
+window.toggleNavSearch   = toggleNavSearch;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
 window.sellerToggle           = sellerToggle;
