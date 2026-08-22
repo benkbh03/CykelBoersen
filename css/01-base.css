@@ -184,6 +184,7 @@ body.nav-search-on .nav-search { display: flex; }
   transition: background 0.15s;
 }
 .nav-search-go:hover { background: var(--rust-light); }
+.nav-search-go-icon { width: 18px; height: 18px; display: none; }
 
 /* Mobil-knappen der folder feltet ud. Skjult på desktop, hvor feltet står
    inline i rækken. */
@@ -233,7 +234,31 @@ body.nav-search-on .nav-search { display: flex; }
   body.nav-search-on .nav-search { display: none; }
   body.nav-search-on.nav-search-open .nav-search { display: flex; }
   .nav-search input { font-size: 16px; }  /* iOS zoomer ved < 16px */
-  .nav-search-go { padding: 9px 16px; }
+  /* På mobil stod en rust "Søg"-knap direkte under den rust "+ Sælg" i
+     topbaren. To orange knapper lige over hinanden læses som to lige vigtige
+     handlinger, og "+ Sæt til salg" er den ene der skal skille sig ud.
+     Søgeknappen bliver derfor et lup-ikon inde i selve feltet: stadig et
+     rigtigt submit-mål på 44 px, men uden at konkurrere om opmærksomheden.
+     Den dekorative lup i venstre side ryger samtidig, så der kun er ét
+     forstørrelsesglas — og det er det man kan trykke på. */
+  .nav-search-icon { display: none; }
+  .nav-search { padding: 8px 8px 8px 14px; }
+  .nav-search-go {
+    background: transparent;
+    color: var(--sand);
+    opacity: 0.75;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  .nav-search-go:hover,
+  .nav-search-go:active { background: rgba(245,240,232,0.12); opacity: 1; }
+  .nav-search-go-icon  { display: block; }
+  .nav-search-go-label { display: none; }
 }
 
 /* ── HAMBURGER + MOBIL-MENU (kun ≤768px) ──

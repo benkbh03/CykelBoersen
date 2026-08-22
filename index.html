@@ -66,18 +66,18 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260819i">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260819i">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819i">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260819i">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260819i">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819i">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260819i">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819i">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260819i">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819i">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819i">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260819i">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260819j">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260819j">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819j">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260819j">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260819j">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819j">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260819j">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819j">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260819j">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819j">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819j">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260819j">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -182,7 +182,10 @@
       <svg class="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <label for="nav-search-input" class="sr-only">Søg efter mærke eller model</label>
       <input type="search" id="nav-search-input" placeholder="Søg efter cykler…" autocomplete="off">
-      <button type="submit" class="nav-search-go" aria-label="Søg">Søg</button>
+      <button type="submit" class="nav-search-go" aria-label="Søg">
+        <svg class="nav-search-go-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="nav-search-go-label">Søg</span>
+      </button>
     </form>
 
     <div class="nav-links">
@@ -1130,7 +1133,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260819i';
+    const V = '20260819j';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
