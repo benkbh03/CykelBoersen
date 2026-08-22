@@ -32,6 +32,12 @@ function applyVisibility() {
     // Vis den først når hero-baren reelt er ude af syne bag topbaren.
     show = hero ? hero.getBoundingClientRect().bottom <= 8 : true;
   }
+  /* Riv aldrig feltet væk mens nogen skriver i det. Scroller man op igen
+     midt i en søgning, ville display:none fjerne fokus og æde resten af det
+     man tastede. */
+  const input = document.getElementById('nav-search-input');
+  if (!show && input && document.activeElement === input) show = true;
+
   document.body.classList.toggle('nav-search-on', show);
   if (!show) document.body.classList.remove('nav-search-open');
 }
@@ -61,6 +67,42 @@ export function initNavSearch() {
     });
   }
 
+  /* ── Siden må ikke kravle opad mens man skriver ──
+     html har scroll-padding-top: 80px, så anker-hop ikke lander bag topbaren.
+     Feltet her ligger SELV i den fastgjorte topbar, altså inde i den
+     polstring. Chrome scroller markøren "ind i syne" ved fokus og ved hvert
+     tastetryk, forsøger derfor at skubbe feltet ned under de 80 px — men
+     baren følger med opad, så forsøget gentages ved næste bogstav. Målt
+     resultat før rettelsen: siden hoppede 58 px, altså cirka én navhøjde,
+     pr. tast.
+
+     Hverken scroll-margin på feltet eller overflow-anchor stopper det; det
+     er testet. Positionen gemmes derfor lige før browseren får lov at
+     scrolle og sættes tilbage i samme frame. Kun ved fokus og tastetryk, så
+     brugerens egen scrolling er urørt. */
+  const input = document.getElementById('nav-search-input');
+  if (input) {
+    const restoreTo = (y) => requestAnimationFrame(() => {
+      if (window.scrollY !== y) window.scrollTo(0, y);
+    });
+    const holdScroll = () => restoreTo(window.scrollY);
+
+    /* Ved fokus rækker det ikke at måle inde i focus-handleren: browseren har
+       allerede scrollet, når focus-hændelsen udsendes, så man ville låse den
+       forkerte position fast. pointerdown sker FØR fokus, så positionen
+       hentes derfra når feltet klikkes. Tastatur-fokus (Tab) falder tilbage
+       på den aktuelle position. */
+    let beforeFocus = null;
+    form.addEventListener('pointerdown', () => { beforeFocus = window.scrollY; });
+    input.addEventListener('focus', () => {
+      const y = beforeFocus != null ? beforeFocus : window.scrollY;
+      beforeFocus = null;
+      restoreTo(y);
+    });
+    input.addEventListener('keydown', holdScroll);
+    input.addEventListener('input', holdScroll);
+  }
+
   // Escape lukker det udvidede felt på mobil.
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.body.classList.contains('nav-search-open')) {
@@ -78,7 +120,7 @@ export function toggleNavSearch() {
   if (open) {
     const input = document.getElementById('nav-search-input');
     // Fokus efter reflow, ellers når feltet ikke at være synligt.
-    requestAnimationFrame(() => input?.focus());
+    requestAnimationFrame(() => input?.focus({ preventScroll: true }));
   }
 }
 
