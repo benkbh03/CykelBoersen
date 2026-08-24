@@ -427,10 +427,13 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
 
   // Bremsetype — sæt KUN når der er ÉN entydig type i teksten. Klassiske
   // bycykler har ofte BÅDE en fodbremse (coaster) og en fælgbremse, så vi
-  // gætter IKKE ud fra "fodbremse" alene (det gav forkert "Tromlebremser").
+  // gætter IKKE ud fra "fodbremse" alene (det gav forkert "Rullebremser").
   {
     const hasDisc = /skivebrems|disc\s*brake/i.test(spec);
     const hasRim  = /f(æ|ae)lgbrems|v-?brems|rim\s*brake|caliper|stempelbrems/i.test(spec);
+    // Regexen genkender BÅDE tromle- og rullebremse i sælgerens tekst: mange
+    // forhandlere skriver stadig "tromlebremse". Kun vores egen værdi er
+    // omdøbt, ikke det vi leder efter.
     const hasDrum = /tromlebrems|rullebrems|roller\s*brake|drum\s*brake/i.test(spec);
     if ((hasDisc ? 1 : 0) + (hasRim ? 1 : 0) + (hasDrum ? 1 : 0) === 1) {
       if (hasDisc) {
@@ -440,7 +443,7 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
       } else if (hasRim) {
         out.brake_type = "Fælgbremser";
       } else {
-        out.brake_type = "Tromlebremser";
+        out.brake_type = "Rullebremser";
       }
     }
   }

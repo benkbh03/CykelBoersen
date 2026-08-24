@@ -251,11 +251,14 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
 
   /* Bremsetype — kun når teksten nævner ÉN type. Klassiske bycykler har
      ofte både fod- og fælgbremse, og et gæt gav tidligere forkert
-     "Tromlebremser". Generisk "skivebremser" uden hydraulisk/mekanisk
+     "Rullebremser". Generisk "skivebremser" uden hydraulisk/mekanisk
      efterlades tomt frem for at vælge en af dem. */
   {
     const disc = /skivebrems|disc\s*brake/i.test(spec);
     const rim  = /f(æ|ae)lgbrems|v-?brems|rim\s*brake|caliper|stempelbrems/i.test(spec);
+    // Regexen genkender BÅDE tromle- og rullebremse i sælgerens tekst: mange
+    // forhandlere skriver stadig "tromlebremse". Kun vores egen værdi er
+    // omdøbt, ikke det vi leder efter.
     const drum = /tromlebrems|rullebrems|roller\s*brake|drum\s*brake/i.test(spec);
     if (Number(disc) + Number(rim) + Number(drum) === 1) {
       if (disc) {
@@ -264,7 +267,7 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
       } else if (rim) {
         out.brake_type = 'Fælgbremser';
       } else {
-        out.brake_type = 'Tromlebremser';
+        out.brake_type = 'Rullebremser';
       }
     }
   }
