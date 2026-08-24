@@ -605,6 +605,8 @@ function bikePage(b) {
 
   return {
     title, description, canonicalPath, jsonldBlocks, contentHtml,
+    // Skjult under test, se js/feature-flags.js. Fjern når udlejning åbnes.
+    noindex: true,
     ogImage: primary || undefined,
     ogImageAlt: primary ? `${name} – ${b.type || 'cykel'} i ${city}` : undefined,
   };
@@ -625,6 +627,8 @@ function rentalBrowsePage() {
     canonicalPath: '/udlejning',
     jsonldBlocks: [breadcrumb([['Forside', '/'], ['Udlejning', '/udlejning']])],
     contentHtml,
+    // Skjult under test, se js/feature-flags.js. Fjern når udlejning åbnes.
+    noindex: true,
   };
 }
 
@@ -729,10 +733,13 @@ const STATIC_APP_PAGES = [
   { path: '/guide/tjek-brugt-cykel', h1: 'Sådan tjekker du en brugt cykel inden køb',
     title: 'Sådan tjekker du en brugt cykel inden køb | Cykelbørsen',
     description: 'Tjekliste til køb af brugt cykel: stel, gear, bremser, stelnummer og prisforhandling — alt du skal se efter inden du køber.' },
-  { path: '/bliv-udlejer',           h1: 'Bliv udlejer på Cykelbørsen',
+  /* Udlejning er skjult under test (RENTAL_ADMIN_ONLY i js/feature-flags.js).
+     Siderne bygges stadig, så adressen svarer 200 i stedet for 404, men de er
+     noindex og ude af sitemappet. Fjern noindex her når funktionen åbnes. */
+  { path: '/bliv-udlejer',           h1: 'Bliv udlejer på Cykelbørsen', noindex: true,
     title: 'Bliv udlejer — lej din cykel ud | Cykelbørsen',
     description: 'Tjen penge på cykler du ikke bruger. Opret udlejningsannoncer gratis på Cykelbørsen.' },
-  { path: '/udlejningsvilkaar',      h1: 'Udlejningsvilkår',
+  { path: '/udlejningsvilkaar',      h1: 'Udlejningsvilkår', noindex: true,
     title: 'Udlejningsvilkår | Cykelbørsen',
     description: 'Vilkår for leje og udlejning af cykler gennem Cykelbørsen.' },
   { path: '/om-os',                  h1: 'Om Cykelbørsen',
@@ -772,7 +779,7 @@ function staticAppPage({ path, h1, title, description }) {
     url: canonicalUrl(path),
     isPartOf: { '@type': 'WebSite', name: 'Cykelbørsen', url: BASE_URL },
   }];
-  return { title, description, canonicalPath: path, jsonldBlocks, contentHtml };
+  return { title, description, canonicalPath: path, jsonldBlocks, contentHtml, noindex };
 }
 
 /* ---------- Main ---------- */

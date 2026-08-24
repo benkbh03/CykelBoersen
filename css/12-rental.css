@@ -210,3 +210,16 @@
 @media (max-width: 480px) {
   .rental-booking-right { flex-direction: row; flex-wrap: wrap; width: 100%; align-items: center; margin-top: 4px; }
 }
+
+/* ── SKJULT UNDER TEST ──
+   Udlejning er færdigkodet, men flowet er ikke gennemtestet med rigtige
+   betalinger. Indtil da må kun admin se det. Klassen .rental-hidden står på
+   <body> i index.html FRA START og fjernes af js/feature-flags.js hvis den
+   indloggede er admin — den vej rundt, så linkene ikke når at blive tegnet
+   i det sekund der går før auth er afklaret.
+
+   Bemærk at dette kun skjuler links. Selve ruterne bevogtes i handleRoute,
+   og siderne er taget ud af sitemap.xml og markeret noindex. Alle tre dele
+   er nødvendige: de prerenderede sider er offentlige statiske filer, uanset
+   hvad CSS og JS gør. */
+body.rental-hidden [data-feature="rental"] { display: none !important; }

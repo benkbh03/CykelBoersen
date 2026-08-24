@@ -16,6 +16,7 @@ setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { setConditionAxis as _setConditionAxis, syncConditionAxis, sortTypeFilterByCount } from './js/condition-axis.js';
 import { setHeroType, syncTypeControls } from './js/type-sync.js';
+import { rentalAllowed, applyFeatureFlags } from './js/feature-flags.js';
 import { initNavSearch, toggleNavSearch, submitNavSearch as _submitNavSearch } from './js/nav-search.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -517,6 +518,9 @@ const advanceSell                = lazyMethod(_ensureSellPage, 'advanceSell');
 const backSell                   = lazyMethod(_ensureSellPage, 'backSell');
 const toggleAdvancedSpecs        = lazyMethod(_ensureSellPage, 'toggleAdvancedSpecs');
 const toggleSellGiveaway         = lazyMethod(_ensureSellPage, 'toggleSellGiveaway');
+
+// Antal gange rutebeskyttelsen for udlejning har ventet på at profilen blev hentet.
+let _rentalGuardWaits = 0;
 const saveSellDraft              = lazyMethod(_ensureSellPage, 'saveSellDraft');
 const clearSellDraft             = lazyMethod(_ensureSellPage, 'clearSellDraft');
 const initSellDraft              = lazyMethod(_ensureSellPage, 'initSellDraft');
@@ -1127,6 +1131,7 @@ async function init() {
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = 'flex';
     }
+    applyFeatureFlags(currentProfile);
     checkEmailConfirmed();
     // Ventende Cykelagent fra "udfyld før login"-flow. Signup-bekræftelse håndteres
     // i _initialAuthType-blokken nedenfor (kombineret toast); øvrige session-restores her.
@@ -1221,6 +1226,7 @@ async function init() {
       updateNav(true, profile?.name, profile?.avatar_thumb_url || profile?.avatar_url);
       var adminBtn = document.getElementById('nav-admin');
       if (adminBtn) adminBtn.style.display = profile?.is_admin ? 'flex' : 'none';
+      applyFeatureFlags(profile);
       checkEmailConfirmed();
       if (_event === 'SIGNED_IN' && isNewLogin) {
         loadBikes();
@@ -2168,6 +2174,27 @@ function handleRoute() {
     sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch ||
     rentalBrowse || rentalCreate || rentalMine || rentalMyBookings || rentalDealerBookings ||
     rentalEditMatch || rentalItemMatch;
+  /* Udlejning er skjult under test. At fjerne links er ikke nok — adressen
+     kan gættes eller ligge i en gammel bogmærke. Ikke-admins sendes hjem.
+
+     Er man logget ind men profilen endnu ikke hentet, ved vi ikke om det er
+     en admin. Så venter vi ét kort forsøg i stedet for at smide admin selv
+     ud på grund af et kapløb ved sideindlæsning. Er man IKKE logget ind, er
+     man med sikkerhed ikke admin, og så er der intet at vente på. */
+  const _isRentalRoute = becomeRenter || rentalBrowse || rentalCreate || rentalMine ||
+    rentalMyBookings || rentalDealerBookings || rentalEditMatch || rentalItemMatch;
+  if (_isRentalRoute && !rentalAllowed(currentProfile)) {
+    if (currentUser && !currentProfile && _rentalGuardWaits < 6) {
+      _rentalGuardWaits++;
+      setTimeout(() => { if (location.pathname === path) handleRoute(); }, 250);
+      return;
+    }
+    _rentalGuardWaits = 0;
+    navigateTo('/');
+    return;
+  }
+  _rentalGuardWaits = 0;
+
   if (_isPageRoute) {
     const _pv = document.getElementById('detail-view');
     if (_pv) _pv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:0.9rem;">Indlæser…</div>';

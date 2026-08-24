@@ -27,9 +27,10 @@ const STATIC_URLS = [
   { loc: '/maerker',                   changefreq: 'weekly',  priority: '0.8' },
   { loc: '/cykelagenter',              changefreq: 'weekly',  priority: '0.7' },
   { loc: '/bliv-forhandler',           changefreq: 'monthly', priority: '0.6' },
-  { loc: '/udlejning',                 changefreq: 'daily',   priority: '0.8' },
-  { loc: '/bliv-udlejer',              changefreq: 'monthly', priority: '0.6' },
-  { loc: '/udlejningsvilkaar',         changefreq: 'monthly', priority: '0.3' },
+  /* Udlejnings-siderne er ude af sitemappet så længe funktionen er skjult
+     under test (RENTAL_ADMIN_ONLY i js/feature-flags.js). Google skal ikke
+     sende folk ind i et flow der ikke er gennemtestet. Sæt dem tilbage her
+     og fjern noindex i scripts/prerender.mjs når det åbnes. */
   { loc: '/vurder-min-cykel',          changefreq: 'weekly',  priority: '0.9' },
   { loc: '/sikkerhedsguide',           changefreq: 'monthly', priority: '0.7' },
   { loc: '/stelstoerrelse-guide',      changefreq: 'monthly', priority: '0.8' },
@@ -185,7 +186,7 @@ async function main() {
     ...brandSlugsWithBikes.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
     ...bikes.map(b => ({ loc: `/bike/${b.id}`, changefreq: 'weekly', priority: '0.6' })),
     ...dealers.map(d => ({ loc: `/dealer/${d.id}`, changefreq: 'weekly', priority: '0.6' })),
-    ...rentals.map(r => ({ loc: `/udlejning/${r.id}`, changefreq: 'weekly', priority: '0.6' })),
+    // Udlejnings-items udelades ligeledes mens funktionen er skjult.
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
