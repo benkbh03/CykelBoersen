@@ -794,7 +794,9 @@
   .form-grid { grid-template-columns: 1fr !important; }
   .form-group.full { grid-column: 1; }
   .dealer-strip-header { flex-direction: column; }
-  #chat-widget { bottom: 20px; right: 16px; }
+  /* Chat-widgetens placering styres ét sted, i 04-modals.css hvor den er
+     defineret. Den her regel lå og overtrumfede den, fordi 05-pages
+     indlæses senere — to filer om samme egenskab er kun forvirring. */
 }
 
 @media (max-width: 420px) {
