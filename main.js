@@ -299,6 +299,8 @@ const {
   reloadMyListings,
   loadMyListings,
   deleteListing,
+  confirmRemoveListing,
+  closeRemoveListingModal,
   loadSavedListings,
   removeSaved,
   notifySavedSearches,
@@ -3009,6 +3011,8 @@ window.grantAdminOnboarding = grantAdminOnboarding;
 window.revokeAdminOnboarding = revokeAdminOnboarding;
 window.uploadAvatar      = uploadAvatar;
 window.deleteListing     = deleteListing;
+window.confirmRemoveListing   = confirmRemoveListing;
+window.closeRemoveListingModal = closeRemoveListingModal;
 window.togglePill        = togglePill;
 window.toggleSave        = toggleSave;
 window.removeSaved       = removeSaved;
@@ -3246,10 +3250,17 @@ const _ensureDealerTraction = lazyCtrl(
 );
 const loadDealerTraction = lazyMethod(_ensureDealerTraction, 'loadDealerTraction');
 
+const _ensureListingOutcomes = lazyCtrl(
+  () => import(`./js/listing-outcomes.js?v=${ASSET_VERSION}`),
+  'createListingOutcomes',
+  () => ({ supabase, esc, retryHTML }),
+);
+const loadListingOutcomes = lazyMethod(_ensureListingOutcomes, 'loadListingOutcomes');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -3808,6 +3819,7 @@ async function submitDealerInvite() {
 window.submitDealerInvite   = submitDealerInvite;
 window.loadAdminStats       = loadAdminStats;
 window.loadDealerTraction   = loadDealerTraction;
+window.loadListingOutcomes  = loadListingOutcomes;
 window.updateVerifyUI       = updateVerifyUI;
 window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;

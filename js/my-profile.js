@@ -30,6 +30,9 @@ export function createMyProfile({
         .from('bikes')
         .select('*, bike_images(url, is_primary)')
         .eq('user_id', currentUser.id)
+        // Fjernede annoncer bliver i databasen for at kunne opgøres, men de
+        // skal være væk for brugeren — ellers ligner en blød sletning en fejl.
+        .is('deleted_at', null)
         .order('created_at', { ascending: false }));
     } catch (e) {
       grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'loadMyListings');
@@ -139,11 +142,66 @@ export function createMyProfile({
     }
   }
 
-  async function deleteListing(id) {
-    if (!confirm('Er du sikker på at du vil slette denne annonce?')) return;
-    const { error } = await supabase.from('bikes').delete().eq('id', id);
-    if (error) { showToast('❌ Kunne ikke slette annonce'); return; }
-    showToast('🗑️ Annonce slettet');
+  /* ── FJERN ANNONCE ────────────────────────────────────────────
+     Kørte før en rigtig DELETE. Rækken forsvandt, og med den det eneste
+     signal der afgør om markedspladsen virker: blev cyklen solgt, eller gav
+     sælgeren op? De to kræver stik modsatte handlinger, og de kunne ikke
+     skelnes fra hinanden bagefter. Sletningen tog desuden prishistorik,
+     visninger og prisfaldsvagter med sig, fordi fremmednøglerne på bike_id
+     står som ON DELETE CASCADE.
+
+     Nu spørges der først, og rækken bliver stående med deleted_at sat.
+     Annoncen forsvinder øjeblikkeligt fra siden OG fra brugerens egen liste,
+     så forskellen er ét ekstra klik og intet andet.
+
+     Rigtig sletning af brugerens data findes stadig — den ligger i
+     delete-account-edge-functionen, hvor den hører hjemme. */
+  function deleteListing(id) {
+    closeRemoveListingModal();
+    const el = document.createElement('div');
+    el.id = 'remove-listing-modal';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:center;justify-content:center;padding:16px;';
+    el.onclick = (ev) => { if (ev.target === el) closeRemoveListingModal(); };
+    el.innerHTML = `
+      <div style="position:relative;background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+        <button aria-label="Luk" onclick="closeRemoveListingModal()" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:var(--sand);color:var(--charcoal);font-size:1.1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+        <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:1.2rem;padding-right:32px;">Fjern annoncen</h3>
+        <p style="color:var(--muted);font-size:0.86rem;line-height:1.5;margin:0 0 18px;">Har du solgt cyklen? Svaret hjælper os med at se hvad der virker på siden. Annoncen fjernes uanset hvad du vælger.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="buyer-pick-btn" onclick="confirmRemoveListing('${id}', true)">
+            <span style="font-weight:600;">Ja, den er solgt</span>
+            <span style="display:block;font-size:0.74rem;color:var(--muted);font-weight:400;margin-top:2px;">Uanset om det var her eller et andet sted</span>
+          </button>
+          <button class="buyer-pick-btn" style="color:var(--charcoal);border:1px solid var(--border);background:#fff;" onclick="confirmRemoveListing('${id}', false)">
+            <span style="font-weight:600;">Nej, jeg fjerner den bare</span>
+            <span style="display:block;font-size:0.74rem;color:var(--muted);font-weight:400;margin-top:2px;">Fortrudt, beholder den selv, eller andet</span>
+          </button>
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeRemoveListingModal() {
+    const el = document.getElementById('remove-listing-modal');
+    if (el) el.remove();
+    document.body.style.overflow = '';
+  }
+
+  /**
+   * @param {string} id
+   * @param {boolean} sold - true når brugeren svarer at cyklen er solgt.
+   *   Sætter sold_via='external', samme værdi som "Sæt solgt" bruger til et
+   *   salg uden for platformen. Vi ved ikke hvem køberen var, og må derfor
+   *   ikke påstå at handlen skete her.
+   */
+  async function confirmRemoveListing(id, sold) {
+    closeRemoveListingModal();
+    const patch = { is_active: false, deleted_at: new Date().toISOString() };
+    if (sold) patch.sold_via = 'external';
+    const { error } = await supabase.from('bikes').update(patch).eq('id', id);
+    if (error) { showToast('❌ Kunne ikke fjerne annonce'); console.error(error); return; }
+    showToast(sold ? 'Annonce fjernet — tillykke med salget' : 'Annonce fjernet');
     reloadMyListings();
     loadBikes();
     updateFilterCounts();
@@ -493,6 +551,8 @@ export function createMyProfile({
     reloadMyListings,
     loadMyListings,
     deleteListing,
+    confirmRemoveListing,
+    closeRemoveListingModal,
     loadSavedListings,
     removeSaved,
     notifySavedSearches,

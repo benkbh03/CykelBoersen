@@ -293,7 +293,7 @@ Bemærk: edge functions (#7) deployes MANUELT i Supabase Dashboard — git push 
 ## Database-tabeller (Supabase)
 
 - `profiles` — brugere/forhandlere (id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified, is_admin, avatar_url, bio, last_seen, created_at)
-- `bikes` — annoncer (brand, model, type, price, city, condition, year, size, color, warranty, is_active, user_id); slettes ikke, deaktiveres via `is_active=false`
+- `bikes` — annoncer (brand, model, type, price, city, condition, year, size, color, warranty, is_active, user_id); slettes ikke, deaktiveres via `is_active=false`. Brugerens egen "Slet"-knap satte tidligere en rigtig `DELETE`; den sætter nu `deleted_at` + `sold_via` (se `add_deleted_at.sql`), så udfaldet kan opgøres. Kun `delete-account` sletter fysisk
 - `bike_images` — billeder med `is_primary` flag (præcis ét primary pr. bike)
 - `messages` — beskeder (sender_id, receiver_id, bike_id, content, read, created_at)
 - `reviews` — anmeldelser (reviewer_id, reviewed_user_id, rating, comment, bike_id)
