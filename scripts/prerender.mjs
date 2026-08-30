@@ -765,7 +765,10 @@ const STATIC_APP_PAGES = [
     description: 'Databehandleraftale for Cykelbørsens onboarding-service til forhandlere.' },
 ];
 
-function staticAppPage({ path, h1, title, description }) {
+// noindex tages med fra STATIC_APP_PAGES og gives videre til buildPage. Uden
+// den i destrukturering-listen kastede retursætningen nedenfor
+// "ReferenceError: noindex is not defined" og væltede hele prerender-jobbet.
+function staticAppPage({ path, h1, title, description, noindex }) {
   const contentHtml = `
       <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
         <h1 style="font-family:'Fraunces',serif;">${escHtml(h1)}</h1>

@@ -650,8 +650,29 @@ body:has(.inbox-page) #chat-widget { display: none; }
 #chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 #chat-send-btn svg { width: 16px; height: 16px; }
 
+@media (max-width: 768px) {
+  /* Helt ned i hjørnet på mobil. Den lå 20 px fra kanten og oven på et
+     annoncekort, hvilket fik den til at se ud som om den svævede midt i
+     indholdet frem for at høre til i hjørnet — især i Safari, hvor browserens
+     egen bundbjælke skubber det synlige område op.
+
+     max() med env(safe-area-inset-bottom): i Safari er insetten 0 og der
+     bruges 10 px, men lægger man siden til hjemmeskærmen kører den uden
+     browserbjælke, og så ville 10 px lægge knappen oven i iPhonens
+     home-indikator. */
+  #chat-widget {
+    bottom: max(10px, env(safe-area-inset-bottom));
+    right: 10px;
+  }
+  /* 56 px er meget på en telefonskærm, hvor knappen altid ligger oven på et
+     annoncekort. 48 px er stadig langt over de 44 px der skal til for at
+     kunne rammes med en tommel. */
+  #chat-toggle { width: 48px; height: 48px; border-width: 2px; }
+  #chat-toggle svg { width: 21px; height: 21px; }
+  #chat-window { bottom: 58px; }
+}
+
 @media (max-width: 480px) {
-  #chat-widget { bottom: 16px; right: 16px; }
   #chat-window { width: calc(100vw - 32px); }
 }
 
