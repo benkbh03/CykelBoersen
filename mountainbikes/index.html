@@ -66,18 +66,18 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260819k">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260819k">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819k">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260819k">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260819k">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819k">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260819k">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819k">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260819k">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819k">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819k">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260819k">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260819n">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260819n">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819n">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260819n">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260819n">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819n">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260819n">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819n">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260819n">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819n">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819n">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260819n">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -132,6 +132,10 @@
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Mountainbikes","item":"https://cykelbørsen.dk/mountainbikes/"}]}</script>
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Hardtail eller fully — hvad skal jeg vælge?","acceptedAnswer":{"@type":"Answer","text":"Hardtail (kun forgaffel) er lettere, billigere og kræver mindre vedligehold — godt til lettere spor og skovveje. Fully (fuld affjedring) giver mere kontrol og komfort i teknisk terræn, men koster mere. Se vores MTB-affjedringsguide i bloggen for hjælp."}},{"@type":"Question","name":"Hvad koster en god brugt mountainbike?","acceptedAnswer":{"@type":"Answer","text":"En brugbar brugt hardtail starter omkring 3.000–6.000 kr, mens en god fully med luftaffjedring og hydrauliske bremser typisk ligger fra 8.000 kr og op. Full-carbon race-MTB'er kan koste betydeligt mere."}},{"@type":"Question","name":"Hvilken hjulstørrelse er bedst?","acceptedAnswer":{"@type":"Answer","text":"29\" ruller hurtigere og glider bedre hen over forhindringer, mens 27,5\" er mere adræt og legende. De fleste moderne trail- og cross-country-cykler bruger 29\"."}}]}</script>
 </head>
+<!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
+     kun kunne ses af admin. js/feature-flags.js fjerner klassen igen hvis
+     den indloggede er admin. Sættes her og ikke af JS, så linkene ikke når
+     at blive tegnet før auth er afklaret. -->
 <body class="rental-hidden">
 
   <!-- ── NAVIGATION ── -->
@@ -1009,7 +1013,7 @@
         <div id="category-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Mountainbikes til salg</h2>
           <div id="category-bikes-grid" class="brand-bikes-grid">
-            <ul class="prerender-bike-links"><li><a href="/bike/ad894225-a75d-409c-92ee-da2f901cc5ca">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/d67e24b1-10d4-4b92-b3dd-98e453902fc0">MBK Mud XP 7g Junior 26in – 5.799 kr. i Frederiksberg C</a></li><li><a href="/bike/e5eb1326-c4b2-4886-910d-3e832f315d7b">Centurion Basic Outback Dreng 7g – 4.399 kr. i Frederiksberg C</a></li><li><a href="/bike/189aab16-d60c-4698-82ad-acd6032470fa">MBK der har brug for kærlig hånd – 400 kr. i Hvidovre</a></li><li><a href="/bike/273d35c9-f56f-4c0f-a08b-e790a40189c6">Centurion Violator 29 tommer Mountainbike - Str 17 tommer - Mat gul - 8 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/69f89f94-dca5-40aa-8129-a064635d476f">MBK Mud XP 7g Junior 26in – 5.799 kr. i Frederiksberg C</a></li></ul>
+            <ul class="prerender-bike-links"><li><a href="/bike/e5eb1326-c4b2-4886-910d-3e832f315d7b">Centurion Basic Outback Dreng 7g – 4.399 kr. i Frederiksberg C</a></li><li><a href="/bike/ad894225-a75d-409c-92ee-da2f901cc5ca">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/189aab16-d60c-4698-82ad-acd6032470fa">MBK der har brug for kærlig hånd – 400 kr. i Hvidovre</a></li><li><a href="/bike/d67e24b1-10d4-4b92-b3dd-98e453902fc0">MBK Mud XP 7g Junior 26in – 5.799 kr. i Frederiksberg C</a></li><li><a href="/bike/273d35c9-f56f-4c0f-a08b-e790a40189c6">Centurion Violator 29 tommer Mountainbike - Str 17 tommer - Mat gul - 8 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/69f89f94-dca5-40aa-8129-a064635d476f">MBK Mud XP 7g Junior 26in – 5.799 kr. i Frederiksberg C</a></li></ul>
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
@@ -1075,9 +1079,9 @@
         <h3 class="footer-col-title">Forhandlere</h3>
         <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')">Find forhandler</a>
         <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
-        <a href="/bliv-udlejer" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Bliv udlejer</a>
+        <a href="/bliv-udlejer" data-feature="rental" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Bliv udlejer</a>
       </div>
-      <div class="footer-col">
+      <div class="footer-col" data-feature="rental">
         <h3 class="footer-col-title">Udlejning</h3>
         <a href="/udlejning" onclick="event.preventDefault();navigateTo('/udlejning')">Lej en cykel</a>
         <a href="/udlejning/lejeaftaler" onclick="event.preventDefault();navigateTo('/udlejning/lejeaftaler')">Mine lejeaftaler</a>
@@ -1092,7 +1096,7 @@
       <div class="footer-col">
         <h3 class="footer-col-title">Juridisk</h3>
         <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>
-        <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">Udlejningsvilkår</a>
+        <a href="/udlejningsvilkaar" data-feature="rental" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">Udlejningsvilkår</a>
         <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')">Privatlivspolitik</a>
         <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')">Cookiepolitik</a>
       </div>
@@ -1145,7 +1149,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260819k';
+    const V = '20260819n';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);

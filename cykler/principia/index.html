@@ -66,18 +66,18 @@
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260819k">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260819k">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819k">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260819k">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260819k">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819k">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260819k">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819k">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260819k">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819k">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819k">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260819k">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260819n">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260819n">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260819n">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260819n">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260819n">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260819n">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260819n">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260819n">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260819n">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260819n">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260819n">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260819n">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -131,6 +131,10 @@
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"CollectionPage","name":"Brugte og nye Principia cykler","description":"Principia er et dansk cykelmærke der specialiserer sig i racercykler, gravel, mountainbikes og e-cykler. Det er et af de få danske mærker med en klar sports-orientering.","url":"https://cykelbørsen.dk/cykler/principia/","about":{"@type":"Brand","name":"Principia","foundingLocation":"Danmark"}}</script>
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Cykelmærker","item":"https://cykelbørsen.dk/maerker/"},{"@type":"ListItem","position":3,"name":"Principia","item":"https://cykelbørsen.dk/cykler/principia/"}]}</script>
 </head>
+<!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
+     kun kunne ses af admin. js/feature-flags.js fjerner klassen igen hvis
+     den indloggede er admin. Sættes her og ikke af JS, så linkene ikke når
+     at blive tegnet før auth er afklaret. -->
 <body class="rental-hidden">
 
   <!-- ── NAVIGATION ── -->
@@ -1076,9 +1080,9 @@
         <h3 class="footer-col-title">Forhandlere</h3>
         <a href="/forhandlere" onclick="event.preventDefault();navigateTo('/forhandlere')">Find forhandler</a>
         <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
-        <a href="/bliv-udlejer" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Bliv udlejer</a>
+        <a href="/bliv-udlejer" data-feature="rental" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Bliv udlejer</a>
       </div>
-      <div class="footer-col">
+      <div class="footer-col" data-feature="rental">
         <h3 class="footer-col-title">Udlejning</h3>
         <a href="/udlejning" onclick="event.preventDefault();navigateTo('/udlejning')">Lej en cykel</a>
         <a href="/udlejning/lejeaftaler" onclick="event.preventDefault();navigateTo('/udlejning/lejeaftaler')">Mine lejeaftaler</a>
@@ -1093,7 +1097,7 @@
       <div class="footer-col">
         <h3 class="footer-col-title">Juridisk</h3>
         <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Vilkår</a>
-        <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">Udlejningsvilkår</a>
+        <a href="/udlejningsvilkaar" data-feature="rental" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">Udlejningsvilkår</a>
         <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')">Privatlivspolitik</a>
         <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')">Cookiepolitik</a>
       </div>
@@ -1146,7 +1150,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260819k';
+    const V = '20260819n';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
