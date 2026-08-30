@@ -17,6 +17,7 @@ import { CATEGORY_META } from './js/category-data.js';
 import { setConditionAxis as _setConditionAxis, syncConditionAxis, sortTypeFilterByCount } from './js/condition-axis.js';
 import { setHeroType, syncTypeControls } from './js/type-sync.js';
 import { rentalAllowed, applyFeatureFlags } from './js/feature-flags.js';
+import { initErrorLog } from './js/error-log.js';
 import { initNavSearch, toggleNavSearch, submitNavSearch as _submitNavSearch } from './js/nav-search.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
@@ -3189,10 +3190,11 @@ window.startConversationWithLiker   = startConversationWithLiker;
    START
    ============================================================ */
 
-// Fang uventede promise-fejl globalt så siden ikke sidder fast
-window.addEventListener('unhandledrejection', event => {
-  console.error('[Uhandteret fejl]', event.reason);
-});
+/* Fejl-opsamling. Erstatter en handler der kun skrev til console.error, som
+   ingen andre end udvikleren ser — og aldrig på en fremmed telefon. Modulet
+   lytter selv på både 'error' og 'unhandledrejection', gemmer anonymt, og
+   holder igen med dubletter og et loft pr. sidevisning. */
+initErrorLog({ supabase });
 
 init();
 
@@ -3257,10 +3259,17 @@ const _ensureListingOutcomes = lazyCtrl(
 );
 const loadListingOutcomes = lazyMethod(_ensureListingOutcomes, 'loadListingOutcomes');
 
+const _ensureErrorLog = lazyCtrl(
+  () => import(`./js/error-log.js?v=${ASSET_VERSION}`),
+  'createErrorLog',
+  () => ({ supabase, esc, retryHTML }),
+);
+const loadErrorLog = lazyMethod(_ensureErrorLog, 'loadErrorLog');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes, loadErrorLog }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -3820,6 +3829,7 @@ window.submitDealerInvite   = submitDealerInvite;
 window.loadAdminStats       = loadAdminStats;
 window.loadDealerTraction   = loadDealerTraction;
 window.loadListingOutcomes  = loadListingOutcomes;
+window.loadErrorLog         = loadErrorLog;
 window.updateVerifyUI       = updateVerifyUI;
 window.openUserProfile       = openUserProfile;
 window.closeUserProfileModal = closeUserProfileModal;
