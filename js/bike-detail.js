@@ -87,7 +87,10 @@ export function createBikeDetail({
     } else {
       const fetchPromise = supabase
         .from('bikes')
-        .select('*, profiles!user_id(id, name, seller_type, shop_name, phone, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at, admin_can_create_listings, admin_authorized_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
+        // phone hentes IKKE. Feltet blev aldrig vist nogen steder på siden, men
+        // fulgte med ned i hver besøgendes browser hver gang en annonce blev
+        // åbnet — altså sælgerens mobilnummer udleveret til enhver der klikkede.
+        .select('*, profiles!user_id(id, name, seller_type, shop_name, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at, admin_can_create_listings, admin_authorized_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
         .eq('id', bikeId)
         .single();
       const timeoutPromise = new Promise((_, reject) =>
