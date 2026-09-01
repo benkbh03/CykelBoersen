@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr } from './utils.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
@@ -102,7 +102,10 @@ export function createProfilePages({
     const safe = p => Promise.resolve(p).catch(e => ({ data: null, error: e }));
     const [r1, r2, r3] = await Promise.race([
       Promise.all([
-        safe(supabase.from('profiles').select('id, shop_name, name, city, address, verified, id_verified, email_verified, avatar_url, created_at, bio, last_seen, opening_hours, website, facebook, instagram, services').eq('id', dealerId).single()),
+        // phone hentes KUN her, på forhandlerprofilen. En butiks telefonnummer er
+        // offentlig virksomhedsinformation på linje med adressen. Private
+        // profiler har ikke et nummer at hente (se remove_private_phone.sql).
+        safe(supabase.from('profiles').select('id, shop_name, name, city, address, phone, verified, id_verified, email_verified, avatar_url, created_at, bio, last_seen, opening_hours, website, facebook, instagram, services').eq('id', dealerId).single()),
         safe(supabase.from('bikes').select('id, brand, model, price, is_giveaway, type, city, condition, year, size, color, warranty, is_active, created_at, bike_images(url, thumb_url, is_primary)').eq('user_id', dealerId).eq('is_active', true).order('created_at', { ascending: false })),
         safe(supabase.from('reviews').select('*, reviewer:profiles(name, shop_name, seller_type)').eq('reviewed_user_id', dealerId).order('created_at', { ascending: false })),
       ]),
@@ -434,6 +437,13 @@ export function createProfilePages({
                 <a class="pp-maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((dealer.address ? dealer.address + ', ' : '') + dealer.city)}" target="_blank" rel="noopener noreferrer" title="Åbn i Google Maps">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   Åbn i Google Maps
+                </a>
+              </div>` : ''}
+            ${dealer.phone ? `
+              <div class="pp-location">
+                <a class="pp-maps-link" href="tel:${escAttr(dealer.phone.replace(/\s+/g, ''))}" title="Ring til ${escAttr(displayName)}">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+                  ${esc(dealer.phone)}
                 </a>
               </div>` : ''}
             ${openingHtml}

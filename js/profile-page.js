@@ -115,11 +115,13 @@ export function createProfilePage({
 
     const shopGroup    = document.getElementById('edit-shop-group');
     const addressGroup = document.getElementById('edit-address-group');
+    const phoneGroup   = document.getElementById('edit-phone-group');
     const offersGroup  = document.getElementById('edit-dealer-offers-group');
     const onboardingBox = document.getElementById('admin-onboarding-box');
     const isDealer = profile.seller_type === 'dealer';
     shopGroup.style.display    = isDealer ? 'flex' : 'none';
     addressGroup.style.display = isDealer ? 'flex' : 'none';
+    if (phoneGroup) phoneGroup.style.display = isDealer ? 'flex' : 'none';
     if (offersGroup) offersGroup.style.display = isDealer ? 'flex' : 'none';
     if (onboardingBox) {
       onboardingBox.style.display = isDealer ? '' : 'none';
@@ -236,7 +238,11 @@ export function createProfilePage({
 
     const updates = {
       name:        document.getElementById('edit-name').value,
-      phone:       document.getElementById('edit-phone').value,
+      // phone kun for forhandlere. Feltet er skjult for private, men payloaden
+      // sættes eksplicit til null i stedet for bare at udelade den: en bruger
+      // der skifter fra dealer til privat skal have nummeret fjernet, ikke
+      // efterladt. Databasen håndhæver det samme (remove_private_phone.sql).
+      phone:       isDealer ? document.getElementById('edit-phone').value : null,
       city:        cityInput.value,
       seller_type: currentProfile?.seller_type || 'private',
       shop_name:   document.getElementById('edit-shop-name').value,
