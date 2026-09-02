@@ -40,16 +40,24 @@ ORDER BY c.relname, p.cmd, p.policyname;
 ### Kolonne-rettigheder
 
 ```sql
-SELECT table_name, grantee, privilege_type, string_agg(column_name, ', ' ORDER BY column_name) AS kolonner
+SELECT table_name, grantee, column_name
 FROM information_schema.column_privileges
-WHERE table_schema = 'public' AND grantee IN ('anon', 'authenticated')
-GROUP BY 1, 2, 3
-HAVING count(*) < (SELECT count(*) FROM information_schema.columns c
-                   WHERE c.table_schema = 'public' AND c.table_name = table_name)
-ORDER BY table_name, grantee;
+WHERE table_schema  = 'public'
+  AND table_name    IN ('messages', 'reviews')
+  AND grantee       IN ('anon', 'authenticated')
+  AND privilege_type = 'UPDATE'
+ORDER BY table_name, grantee, column_name;
 ```
 
-Rækker her betyder at rollen kun har adgang til **nogle** kolonner. Er resultatet tomt, er begge kolonne-GRANTs enten ikke kørt eller rullet tilbage, og så er `messages` og `reviews` reelt åbne for kolonneændring.
+Forventet resultat, og intet andet:
+
+| table_name | grantee | column_name |
+|---|---|---|
+| messages | authenticated | read |
+| reviews | authenticated | comment |
+| reviews | authenticated | rating |
+
+Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `harden_messages_and_reviews.sql` ikke i kraft, og så **er** de to UPDATE-politikker reelt huller.
 
 ---
 
