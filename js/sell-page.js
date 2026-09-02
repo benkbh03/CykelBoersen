@@ -8,6 +8,7 @@ import { bikeTitle, iconShield } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
 import { parseImportedListing } from './import-parse.js';
 import { startSellFlow, trackSellStep } from './sell-funnel.js';
+import { enableDragReorder } from './drag-reorder.js';
 
 /**
  * @param {object} deps
@@ -1856,17 +1857,27 @@ export function createSellPage({
     const grid = document.getElementById('sell-preview-grid');
     if (!grid) return;
     const sf = getSelectedFiles();
+    // data-idx er nøglen til omarrangeringen: drag-reorder aflæser DOM'ens
+    // rækkefølge til sidst og melder de gamle indekser tilbage i ny orden.
     grid.innerHTML = sf.map((item, i) => `
-      <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
-        <img src="${item.url}" alt="Billede ${i + 1}">
-        ${item.isPrimary
+      <div class="img-preview-item ${i === 0 ? 'primary' : ''}" data-idx="${i}">
+        <img src="${item.url}" alt="Billede ${i + 1}" draggable="false">
+        ${i === 0
           ? '<span class="primary-badge">⭐ Forsidebillede</span>'
-          : `<button class="set-primary" title="Sæt som forsidebillede" onclick="setSellPrimary(${i})">★</button>`}
+          : `<button class="set-primary" title="Gør til forsidebillede" onclick="setSellPrimary(${i})">★</button>`}
         <button class="crop-img" title="Beskær billede" onclick="openCropModal('sell', ${i})">✂️</button>
         <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
       </div>`).join('');
+
     const hint = document.getElementById('sell-img-hint');
-    if (hint) hint.style.display = sf.length > 1 ? 'block' : 'none';
+    if (hint) {
+      // Elementet var tomt før, så der dukkede en tom boks op så snart der lå
+      // mere end ét billede. Nu står der hvad man kan gøre.
+      hint.textContent = 'Træk billederne for at ændre rækkefølgen. Det første er forsidebilledet.';
+      hint.style.display = sf.length > 1 ? 'block' : 'none';
+    }
+
+    ensureSellDragReorder(grid);
     updateSellDesktopPreview();
     updateSellFooter();
   }
@@ -1955,8 +1966,38 @@ export function createSellPage({
     updateAiSuggestVisibility();
   }
 
+  /* Rækkefølgen ER valget af forsidebillede: nummer ét er forsiden. Det er
+     den model DBA, Vinted og buycycle bruger, og den fjerner spørgsmålet om
+     hvad der sker hvis man både trækker og trykker på stjernen. Galleriet på
+     annoncesiden viser i forvejen forsidebilledet først og resten i den
+     rækkefølge de blev uploadet, så trækket ændrer også visningen dér. */
+  function applySellImageOrder(sf) {
+    sf.forEach((item, i) => { item.isPrimary = i === 0; });
+  }
+
+  // Lytteren er delegeret til selve grid'et og overlever derfor at
+  // renderSellImagePreviews sætter innerHTML igen. Derfor kun én gang.
+  function ensureSellDragReorder(grid) {
+    enableDragReorder(grid, {
+      itemSelector: '.img-preview-item',
+      onReorder: (order) => {
+        const sf = getSelectedFiles();
+        const next = order.map(i => sf[i]).filter(Boolean);
+        sf.length = 0;                          // samme array-reference, ikke en kopi
+        sf.push(...next);
+        applySellImageOrder(sf);
+        renderSellImagePreviews();
+      },
+    });
+  }
+
+  // Stjerneknappen flytter nu billedet forrest i stedet for kun at vippe et
+  // flag. Den er både genvejen og den tilgængelige vej for dem der ikke kan
+  // trække — tastatur, skærmlæser, rystende hænder.
   function setSellPrimary(index) {
-    getSelectedFiles().forEach((item, i) => { item.isPrimary = i === index; });
+    const sf = getSelectedFiles();
+    if (index > 0 && index < sf.length) sf.unshift(sf.splice(index, 1)[0]);
+    applySellImageOrder(sf);
     renderSellImagePreviews();
   }
 
@@ -1964,7 +2005,7 @@ export function createSellPage({
     const sf = getSelectedFiles();
     URL.revokeObjectURL(sf[index].url);
     sf.splice(index, 1);
-    if (sf.length > 0 && !sf.some(f => f.isPrimary)) sf[0].isPrimary = true;
+    applySellImageOrder(sf);
     renderSellImagePreviews();
     updateAiSuggestVisibility();
     const label = document.getElementById('sell-upload-label');
