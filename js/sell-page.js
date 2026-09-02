@@ -203,7 +203,11 @@ export function createSellPage({
     'Campagnolo Ekar', 'Campagnolo Ekar GT',
     'Campagnolo Centaur', 'Campagnolo Chorus', 'Campagnolo Record', 'Campagnolo Super Record',
     'Shimano Altus', 'Shimano Acera', 'Shimano Alivio', 'Shimano Deore',
-    'Shimano SLX', 'Shimano Deore XT', 'Shimano XTR',
+    // 'Shimano XT' SKAL stå her. Sidebar-filteret matcher som prefix
+    // (ilike 'Shimano XT*'), og "Shimano Deore XT" starter ikke med
+    // "Shimano XT". Uden denne værdi gav filtervalget "Shimano XT (MTB)"
+    // nul resultater for alt oprettet gennem sælg-flowet.
+    'Shimano SLX', 'Shimano XT', 'Shimano Deore XT', 'Shimano XTR',
     'SRAM SX Eagle', 'SRAM NX Eagle', 'SRAM GX Eagle', 'SRAM X01 Eagle', 'SRAM XX1 Eagle',
   ];
 

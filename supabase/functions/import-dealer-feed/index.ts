@@ -356,7 +356,10 @@ const _GROUPSETS = [
   "SRAM Rival XPLR", "SRAM Red", "SRAM Force", "SRAM Apex", "SRAM Rival",
   "Campagnolo Ekar",
 ];
-const _MOTOR_BRANDS = ["Bosch", "Yamaha", "Bafang", "Mahle", "Promovec", "Shimano"];
+// Skal være den kanoniske 8-liste fra CLAUDE.md. Brose og Fazua manglede, så
+// feed-importerede cykler med de motorer fik aldrig `motor` sat og var dermed
+// usynlige for både sidebar-, kort- og Cykelagent-filteret.
+const _MOTOR_BRANDS = ["Bosch", "Shimano", "Promovec", "Yamaha", "Bafang", "Mahle", "Brose", "Fazua"];
 
 function extractColors(text: string): string[] {
   let work = text;
