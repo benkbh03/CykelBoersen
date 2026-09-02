@@ -54,28 +54,68 @@
   <meta name="twitter:description" content="Cannondale Navaro – El-cykel i Charlottelund. Som ny. 9 kr. Køb på Cykelbørsen.">
   <meta name="twitter:image" content="https://ktufgncydxhkhfttojkh.supabase.co/storage/v1/object/public/bike-images/93ccb306-3b9d-4a8c-86c2-390876b13092/1785481593700-iytq8do76nj.jpeg">
 
+  <!-- ── Content Security Policy ──────────────────────────────────
+       Vær klar over hvad den GØR her, så den ikke giver falsk tryghed.
+
+       Den kan IKKE blokere indsprøjtet script. 'unsafe-inline' er
+       nødvendig, fordi hele kodebasen bruger onclick-attributter i HTML
+       (se window-eksporterne i main.js), og de er inline-script. Uden
+       'unsafe-inline' ville hver eneste knap på siden holde op med at virke.
+
+       Det den KAN, og det er stadig meget værd: begrænse hvor data må
+       sendes hen. connect-src låser fetch, XHR og WebSocket til Supabase og
+       DAWA. Et XSS kan altså stadig læse sessionen fra localStorage, men
+       ikke sende den videre til en angribers server ad den vej. Det er
+       forskellen på et tyveri og et tyveri der lykkes.
+
+       img-src må være åben for https: fordi forhandler-feeds gemmer billed-
+       URL'er der peger direkte på forhandlerens eget domæne i stedet for at
+       kopiere billedet ind i Storage (se import-dealer-feed). Strammes det,
+       forsvinder billederne på flere hundrede annoncer. Hentes feed-billeder
+       en dag ind i vores egen bucket, kan img-src låses til Supabase.
+
+       frame-ancestors mangler med vilje: direktivet ignoreres i en
+       meta-tag og kræver en HTTP-header, som GitHub Pages ikke kan sætte.
+  ─────────────────────────────────────────────────────────────── -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+    font-src 'self';
+    img-src 'self' data: blob: https:;
+    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://api.dataforsyningen.dk;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
+
   <link rel="preload" href="/hero.jpg?v=hero1" as="image" type="image/jpeg" fetchpriority="high">
   <link rel="preconnect" href="https://ktufgncydxhkhfttojkh.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+  <!-- Fontene er selvhostede (css/00-fonts.css + /fonts). De blev tidligere
+       hentet fra fonts.googleapis.com, hvilket sendte den besøgendes IP til
+       Google FØR cookie-banneret havde fået svar. Nu forlader der ingenting
+       sitet for at vise tekst, og de to fremmede domæner er ude af den
+       kritiske sti. Preload på de to fonte der rammer først: brødteksten og
+       overskrifterne på forsiden. -->
+  <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830g">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260830f">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260830f">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830f">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260830f">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260830f">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830f">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260830f">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830f">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260830f">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830f">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830f">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260830f">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260830g">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260830g">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830g">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260830g">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260830g">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830g">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260830g">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830g">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260830g">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830g">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830g">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260830g">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
