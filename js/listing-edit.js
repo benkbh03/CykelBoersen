@@ -159,7 +159,17 @@ export function createListingEdit({
     const label = document.getElementById('edit-upload-label');
     if (label && toAdd.length > 0) label.textContent = 'Optimerer billeder...';
 
-    const compressed = await Promise.all(toAdd.map(compressImage));
+    // compressImage kaster hvis billedet ikke kan afkodes og dermed ikke kan
+    // få EXIF fjernet. Så springes det over frem for at blive uploadet råt.
+    const compressed = (await Promise.all(toAdd.map(async f => {
+      try {
+        return await compressImage(f);
+      } catch (e) {
+        console.warn('Kunne ikke behandle billede, springes over:', f.name, e);
+        showToast(`⚠️ "${f.name}" kunne ikke behandles og blev ikke tilføjet`);
+        return null;
+      }
+    }))).filter(Boolean);
 
     compressed.forEach((file, i) => {
       const hasPrimary = editExistingImgs.some(img => !img.toDelete && img.is_primary) || editNewFiles.some(f => f.isPrimary);
