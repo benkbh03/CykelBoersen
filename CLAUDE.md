@@ -281,7 +281,8 @@ spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs 
 4. **Sælg-flow** (`js/sell-page.js`): form-felt (+ datalist/select), `updatePerfFieldsVisibility` (type-tilpasning), submit-payload
 5. **Rediger-annonce** (`js/listing-edit.js` + `partials/modals.html`): populér felt, `updateEditFieldsVisibility`, datalist (samme værdier som sælg), save-payload
 6. **Cykelagent** (`js/cykelagent-page.js`): `_form` default, editor-UI (chips/inputs), migration ved load (`openCykelagentEditor`), `hasFilter`-validering, gemt `filters`-objekt, kort-chip-summary
-7. **Cykelagent-match** (`supabase/functions/notify-saved-searches/index.ts`): `bikeMatchesSearch()` (samme semantik: prefix/eksakt/range) — **manuel deploy**
+7. **Cykelagent-match, e-mail** (`supabase/functions/notify-saved-searches/index.ts`): `bikeMatchesSearch()` (samme semantik: prefix/eksakt/range) + `hasEffectiveCriteria()` — **manuel deploy**
+7b. **Cykelagent-match, skærm** (`js/cykelagent-matches.js`): `bikeMatchesAgent()` OG dens `.select()`. Det er en anden matcher end punkt 7, og den driver "Nye match siden sidst" på `/cykelagenter`. **Et felt der mangler i dens `.select()` giver nul match uden fejlbesked**, fordi matcheren afviser hårdt på `null`. Begge matchere deler `normalizeFilters()`-logikken; ændres den ene, skal den anden med
 8. **Match-payload** (`js/my-profile.js notifySavedSearches`): `.select()` + bike-payload-felter (ellers ser matchen feltet som null)
 9. **Gem-søgning** (`js/my-profile.js saveCurrentSearch`): `hasFilters`-guard + navn-`parts` (persistering sker via `...fa`-spread)
 10. **Visning**: `js/bike-detail.js` (techRows), `js/compare.js` (`.select()` + rows + `rawValue`)

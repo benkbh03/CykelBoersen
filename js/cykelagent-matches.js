@@ -28,8 +28,33 @@ export function markMatchesSeen() {
   try { localStorage.setItem(LAST_SEEN_KEY, String(Date.now())); } catch {}
 }
 
-function bikeMatchesAgent(bike, f) {
-  if (!f) return false;
+/* Sidebaren og Cykelagent-editoren gemmer de SAMME filtre under forskellige
+   navne og typer, fordi de er bygget hver for sig. Uden en normalisering
+   fejler de tavst hver sin vej:
+
+   - Sidebaren gemmer `maxWeight`, matcheren læste `maxWeightKg`. Filteret
+     blev ignoreret, og brugeren fik mails om 22-kg ladcykler.
+   - Sidebaren gemmer `electronicShifting` som boolean, matcheren
+     sammenlignede med strengene 'true'/'false'. Filteret faldt bort.
+
+   Normalisér ét sted, så resten af funktionen kun kender én form. */
+function normalizeAgentFilters(f) {
+  const es = f.electronicShifting;
+  return {
+    ...f,
+    maxWeightKg: f.maxWeightKg ?? f.maxWeight ?? null,
+    electronicShifting: es === true ? 'true' : es === false ? 'false' : es,
+  };
+}
+
+function bikeMatchesAgent(bike, rawFilters) {
+  if (!rawFilters) return false;
+  const f = normalizeAgentFilters(rawFilters);
+
+  /* Hård kategori-akse, magen til edge-funktionens: en cykel-agent må aldrig
+     matche tilbehør. Manglede her, så "Nye match" viste tilbehør mens mailen
+     ikke gjorde — samme agent, to forskellige svar. */
+  if ((bike.category || 'cykel') !== (f.category || 'cykel')) return false;
 
   // Type (singular fra forside-flow eller liste fra cykelagent-form)
   if (f.type && bike.type !== f.type) return false;
@@ -135,6 +160,13 @@ function bikeMatchesAgent(bike, f) {
     if (q && !String(bike.brand || '').toLowerCase().includes(q)) return false;
   }
 
+  /* Sidebarens mærkefilter er en LISTE med eksakt match, modsat
+     cykelagent-formens enkelte `brand` med substring. Listen blev slet ikke
+     læst, så en søgning gemt med "Trek + Specialized" matchede alle mærker. */
+  if (Array.isArray(f.brands) && f.brands.length) {
+    if (!f.brands.includes(bike.brand)) return false;
+  }
+
   return true;
 }
 
@@ -145,10 +177,14 @@ export async function fetchAgentMatches(supabase, agents) {
   const sinceIso = new Date(Date.now() - LOOKBACK_DAYS * 24 * 3600 * 1000).toISOString();
   const { data, error } = await supabase
     .from('bikes')
+    /* category, electronic_shifting og weight_kg SKAL med. Matcheren afviser
+       hårdt på null for de to sidste, så uden dem gav enhver agent med
+       "Elektronisk gear" eller "Maks. vægt" altid nul match — uden fejlbesked.
+       Feltet blev bare aldrig hentet. */
     .select(`
-      id, brand, model, price, is_giveaway, type, city, condition, year, size, wheel_size, color, colors,
-      warranty, created_at, user_id, frame_material, brake_type, groupset, motor, motor_position,
-      battery_wh, suspension, geartype, step_type,
+      id, brand, model, price, is_giveaway, category, type, city, condition, year, size, wheel_size, color, colors,
+      warranty, created_at, user_id, frame_material, brake_type, groupset, electronic_shifting, weight_kg,
+      motor, motor_position, battery_wh, suspension, geartype, step_type,
       profiles!user_id(seller_type, shop_name, verified),
       bike_images(url, thumb_url, is_primary)
     `)

@@ -40,6 +40,9 @@ export function createCykelagentPage({
 
   // State: hvilken agent er aktivt i edit-mode (id eller 'new' eller null)
   let _editingId = null;
+  // Filtre der IKKE har et felt i editoren (city, category, brands, dealerId).
+  // Bæres uændret med over ved gem, så redigering ikke sletter dem.
+  let _originalFilters = {};
   // Form-state: bygges op i editor og persisteres ved Gem
   let _form = _emptyForm();
 
@@ -266,7 +269,6 @@ export function createCykelagentPage({
     if (Array.isArray(f.suspensions)) f.suspensions.forEach(s => chips.push('🚵 ' + esc(s)));
     if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('⚙️ ' + esc(g) + ' gear'));
     if (Array.isArray(f.stepTypes))   f.stepTypes.forEach(s => chips.push('🚲 ' + esc(s)));
-    if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('⚙️ ' + esc(g) + ' gear'));
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -298,12 +300,20 @@ export function createCykelagentPage({
 
     _editingId = idOrNew;
     _form = _emptyForm();
+    _originalFilters = {};
 
     if (idOrNew !== 'new') {
       const { data } = await supabase
         .from('saved_searches').select('id, name, filters').eq('id', idOrNew).single();
       if (data) {
         const f = data.filters || {};
+        /* Behold hele det oprindelige filter-objekt. Editoren kender kun de
+           felter der findes i _form, og gemte tidligere et objekt bygget fra
+           bunden — så city, category, brands og dealerId, som kun sidebaren
+           sætter, blev slettet lydløst ved redigering. Værst for category: en
+           tilbehørs-agent blev konverteret til en cykel-agent, fordi
+           matcheren defaulter til 'cykel' når feltet mangler. */
+        _originalFilters = { ...f };
         _form = {
           name:       data.name || '',
           types:      Array.isArray(f.types)      ? f.types      : (f.type ? [f.type] : []),
@@ -611,6 +621,7 @@ export function createCykelagentPage({
 
     const name = _form.name?.trim() || _autoName();
     const filters = {
+      ..._originalFilters,          // felter editoren ikke kender, bevares
       search: _form.brand || '',
       brand:  _form.brand || '',
       types:  _form.types,

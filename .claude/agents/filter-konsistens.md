@@ -17,7 +17,11 @@ Filtrene er produktets kerne-differentiering mod DBA og Facebook Marketplace. Og
 
 ## Sådan arbejder du
 
-Byg først en liste over **alle eksisterende filtre**, ikke kun det senest ændrede. Et filter der har været halvt implementeret i tre måneder er lige så meget værd at finde som et nyt. Start i `index.html` med `data-filter="…"` (der er i dag: `brand`, `condition`, `geartype`, `giveaway`, `groupset`, `motor`, `seller`, `size`, `suspension`, `type`, `wheel`) og suppler med input-baserede filtre som pris, by og radius, som ikke bruger `data-filter`.
+Byg først en liste over **alle eksisterende filtre**, ikke kun det senest ændrede. Et filter der har været halvt implementeret i tre måneder er lige så meget værd at finde som et nyt.
+
+Start i `index.html` med `data-filter="…"`. Der er i dag 16: `brake_type`, `brand`, `condition`, `electronic_shifting`, `frame_material`, `geartype`, `giveaway`, `groupset`, `motor`, `motor_position`, `seller`, `size`, `step_type`, `suspension`, `type`, `wheel`. Suppler med de input-baserede, som ikke bruger `data-filter`: pris (min/max), batteri-Wh, maks. vægt, by og radius, samt fritekstsøgningen.
+
+**Tæl selv efter i `index.html` frem for at stole på listen ovenfor.** Er der flere eller færre end 16, er denne fil forældet, og det er i sig selv et fund.
 
 Gå derefter **hvert filter** gennem alle tolv punkter. Rapportér pr. filter, ikke pr. fil.
 
