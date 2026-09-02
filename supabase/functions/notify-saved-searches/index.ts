@@ -62,10 +62,12 @@ function hasEffectiveCriteria(f) {
     "types", "conditions", "sizes", "wheelSizes", "colors",
     "frameMaterials", "brakeTypes", "groupsets",
     "motors", "motorPositions", "suspensions", "geartypes", "stepTypes",
+    "brands",   // sidebarens mærkefilter — manglede, så en agent med KUN
+                // mærker talte som "uden kriterier" og notificerede aldrig
   ];
   if (arrays.some((k) => Array.isArray(f[k]) && f[k].length > 0)) return true;
 
-  const texts = ["type", "search", "city", "sellerType", "dealerId"];
+  const texts = ["type", "search", "city", "sellerType", "dealerId", "brand"];
   if (texts.some((k) => f[k] != null && String(f[k]).trim() !== "")) return true;
 
   const numbers = ["minPrice", "maxPrice", "batteryMin", "batteryMax", "maxWeightKg"];
@@ -78,8 +80,29 @@ function hasEffectiveCriteria(f) {
   return false;
 }
 
-function bikeMatchesSearch(bike, filters) {
-  if (!filters) return false;
+/* Sidebaren og Cykelagent-editoren gemmer de SAMME filtre under forskellige
+   navne og typer, fordi de er bygget hver for sig. Uden en normalisering
+   fejler de tavst hver sin vej:
+
+   - Sidebaren gemmer `maxWeight`, denne funktion læste `maxWeightKg`.
+     Filteret blev ignoreret, og brugeren fik mails om 22-kg ladcykler.
+   - Sidebaren gemmer `electronicShifting` som boolean, denne funktion
+     sammenlignede med strengene "true"/"false". Filteret faldt bort.
+
+   Normalisér ét sted. Samme funktion findes i js/cykelagent-matches.js;
+   ændres den ene, skal den anden med. */
+function normalizeFilters(f) {
+  const es = f.electronicShifting;
+  return {
+    ...f,
+    maxWeightKg: f.maxWeightKg ?? f.maxWeight ?? null,
+    electronicShifting: es === true ? "true" : es === false ? "false" : es,
+  };
+}
+
+function bikeMatchesSearch(bike, rawFilters) {
+  if (!rawFilters) return false;
+  const filters = normalizeFilters(rawFilters);
   // En agent uden kriterier må ALDRIG notificere. Frontendens hasFilters-guard
   // dækker kun nye agenter — rækker gemt før den fandtes, eller via
   // _pendingCykelagent-stien, kan stadig ligge med tomme filtre.
@@ -221,6 +244,20 @@ function bikeMatchesSearch(bike, filters) {
     const haystack = `${bike.brand} ${bike.model}`.toLowerCase();
     const needle = filters.search.toLowerCase();
     if (!haystack.includes(needle)) return false;
+  }
+
+  /* Sidebarens mærkefilter. Blev slet ikke læst her, selvom saveCurrentSearch
+     gemmer feltet via sin ...fa-spread. Konsekvensen var ikke manglende mails
+     men FALSKE: en søgning gemt med "Trek + Specialized" sendte mail om hver
+     eneste ny cykel uanset mærke. Eksakt match, som sidebarens .in()-query. */
+  if (Array.isArray(filters.brands) && filters.brands.length > 0) {
+    if (!filters.brands.includes(bike.brand)) return false;
+  }
+
+  // Cykelagent-formens enkelte mærke: substring, ikke eksakt.
+  if (filters.brand && String(filters.brand).trim() !== "") {
+    const q = String(filters.brand).toLowerCase().trim();
+    if (!String(bike.brand || "").toLowerCase().includes(q)) return false;
   }
 
   return true;
