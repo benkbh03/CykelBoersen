@@ -343,6 +343,14 @@ export function createMyProfile({
       || (fa.suspensions?.length > 0)
       || (fa.geartypes?.length > 0)
       || (fa.stepTypes?.length > 0)
+      // De fem herunder manglede. Havde brugeren KUN valgt fx tre mærker
+      // eller "Carbon", svarede knappen "Ingen aktive filtre at gemme" oven
+      // på et fuldt filtreret resultat.
+      || (fa.brands?.length > 0)
+      || (fa.frameMaterials?.length > 0)
+      || (fa.brakeTypes?.length > 0)
+      || (fa.electronicShifting != null && fa.electronicShifting !== '')
+      || fa.maxWeight
       || fa.giveaway === true
       || warranty;
 
@@ -358,6 +366,12 @@ export function createMyProfile({
     if (fa.wheelSizes?.length)     parts.push(...fa.wheelSizes.map(w => 'Hjul ' + w));
     if (fa.sizes?.length)          parts.push(...fa.sizes.map(s => 'Str. ' + s.split(' ')[0]));
     if (fa.colors?.length)         parts.push(...fa.colors);
+    if (fa.brands?.length)         parts.push(...fa.brands);
+    if (fa.frameMaterials?.length) parts.push(...fa.frameMaterials);
+    if (fa.brakeTypes?.length)     parts.push(...fa.brakeTypes);
+    if (fa.electronicShifting === true  || fa.electronicShifting === 'true')  parts.push('Elektronisk gear');
+    if (fa.electronicShifting === false || fa.electronicShifting === 'false') parts.push('Mekanisk gear');
+    if (fa.maxWeight)              parts.push(`under ${fa.maxWeight} kg`);
     if (fa.groupsets?.length)      parts.push(...fa.groupsets);
     if (fa.motors?.length)         parts.push(...fa.motors);
     if (fa.motorPositions?.length) parts.push(...fa.motorPositions);

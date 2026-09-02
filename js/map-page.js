@@ -395,7 +395,12 @@ export function createMapPage({
         const v = b.electronic_shifting === true ? 'true' : (b.electronic_shifting === false ? 'false' : '');
         if (!adv.electronic_shifting.has(v)) return false;
       }
-      if (adv.groupset.size && !adv.groupset.has(b.groupset)) return false;
+      /* Prefix, ikke eksakt. Sidebaren, begge Cykelagent-matchere og
+         edge-funktionen matcher alle groupset som prefix, fordi en cykel
+         gemmes som fx "Shimano 105 R7000" mens filterværdien er "Shimano 105".
+         Kortet matchede eksakt og fandt derfor ingenting — samme filter, to
+         resultater alt efter hvilken side man stod på. */
+      if (adv.groupset.size && !(b.groupset && [...adv.groupset].some(g => b.groupset.toLowerCase().startsWith(g.toLowerCase())))) return false;
       if (adv.weight_max != null && (b.weight_kg == null || b.weight_kg > adv.weight_max)) return false;
       // El-cykel: motor-mærke som prefix (fx "Bosch" matcher "Bosch Performance Line CX")
       if (adv.motor.size && !(b.motor && [...adv.motor].some(m => b.motor.toLowerCase().startsWith(m.toLowerCase())))) return false;
