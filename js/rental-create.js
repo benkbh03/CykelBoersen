@@ -200,8 +200,18 @@ export function createRentalManage({
     for (const file of files) {
       const err = validateImageFile ? validateImageFile(file) : null;
       if (err) { showToast(err); continue; }
-      let f = file;
-      try { f = await compressImage(file); } catch { /* brug original hvis komprimering fejler */ }
+      // Faldt tidligere tilbage til originalfilen hvis komprimeringen
+      // fejlede. Det er netop det gennemløb der fjerner EXIF, så en
+      // fallback til originalen uploadede GPS-koordinaterne. Nu springes
+      // billedet over i stedet.
+      let f;
+      try {
+        f = await compressImage(file);
+      } catch (e) {
+        console.warn('Kunne ikke behandle billede, springes over:', file.name, e);
+        showToast(`⚠️ "${file.name}" kunne ikke behandles og blev ikke tilføjet`);
+        continue;
+      }
       const url = URL.createObjectURL(f);
       _files.push({ file: f, url, isPrimary: false });
     }

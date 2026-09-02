@@ -2,6 +2,8 @@
    BILLEDE UPLOAD + BESKÆRING (Cropper.js)
    ============================================================ */
 
+import { toStrippedBlob, isGif } from './image-strip.js';
+
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_IMAGE_SIZE_MB   = 10;
 
@@ -133,162 +135,46 @@ export function createImageUpload({
     return true;
   }
 
-  // Komprimerer billede til WebP (max 1600px bred, kvalitet ~82%) med Canvas API
-  // Komprimering specifikt til AI-vision: højere opløsning og bedre JPEG-kvalitet
-  // så små detaljer som logoer bevares. Returnerer original hvis <4MB.
+  /* Højere opløsning og kvalitet end display-versionen, så små detaljer
+     som et CUBE-logo overlever til AI'en kan læse dem.
+
+     Havde tidligere en "returnér original hvis under 4 MB"-genvej, hvilket
+     dækkede stort set alle telefonbilleder. Resultatet var at originalen
+     med GPS intakt blev base64-kodet og sendt til Anthropic ved hvert
+     forslag. Genvejen er væk. */
   async function compressForAI(file) {
     if (!file) return file;
-    if (file.size < 4 * 1024 * 1024) return file;
-    if (file.type === 'image/gif') return file;
-    let objectUrl = null;
-    try {
-      let source;
-      if (typeof createImageBitmap === 'function') {
-        try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
-        catch { source = null; }
-      }
-      if (!source) {
-        objectUrl = URL.createObjectURL(file);
-        source = await new Promise((resolve, reject) => {
-          const img = new Image();
-          const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
-          img.onload  = () => { clearTimeout(timeout); resolve(img); };
-          img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
-          img.src = objectUrl;
-        });
-      }
-      const MAX = 2000;
-      let width  = source.width  || source.naturalWidth;
-      let height = source.height || source.naturalHeight;
-      if (!width || !height) return file;
-      if (width > MAX || height > MAX) {
-        const ratio = Math.min(MAX / width, MAX / height);
-        width  = Math.round(width * ratio);
-        height = Math.round(height * ratio);
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width; canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return file;
-      ctx.drawImage(source, 0, 0, width, height);
-      if (source.close) source.close();
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
-      if (!blob || blob.size === 0) return file;
-      return new File([blob], (file.name || 'image') + '.jpg', { type: 'image/jpeg' });
-    } catch (e) {
-      console.warn('AI-komprimering fejlede, bruger original:', e);
-      return file;
-    } finally {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    }
+    if (isGif(file)) return file;
+    const blob = await toStrippedBlob(file, 2000, 'image/jpeg', 0.92);
+    return new File([blob], (file.name || 'image') + '.jpg', { type: 'image/jpeg' });
   }
 
+  /* Display-versionen der uploades til Storage.
+
+     Havde tidligere to genveje der returnerede originalfilen med EXIF
+     intakt: WebP under 500 KB, og "hvis den komprimerede blev større end
+     originalen". Sidstnævnte rammer netop de allerede-optimerede billeder,
+     så en lille WebP fra en telefon slap uændret igennem. Vi accepterer nu
+     hellere en fil der er nogle kB større end en fil med GPS i. */
   async function compressImage(file) {
-    if (file.type === 'image/gif') return file;
-    if (file.type === 'image/webp' && file.size < 500 * 1024) return file;
-
-    let objectUrl = null;
-    try {
-      // createImageBitmap respekterer EXIF-orientering (iPhone portræt-billeder)
-      let source;
-      if (typeof createImageBitmap === 'function') {
-        try {
-          source = await createImageBitmap(file, { imageOrientation: 'from-image' });
-        } catch (e) {
-          source = null;
-        }
-      }
-
-      if (!source) {
-        objectUrl = URL.createObjectURL(file);
-        source = await new Promise((resolve, reject) => {
-          const img = new Image();
-          const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
-          img.onload  = () => { clearTimeout(timeout); resolve(img); };
-          img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
-          img.src = objectUrl;
-        });
-      }
-
-      // Max-dimensioner: bike-modal viser billeder ved op til ~800px på desktop,
-      // 1200px giver retina-kvalitet uden unødigt store filer.
-      const MAX_W = 1200;
-      const MAX_H = 1200;
-      let width  = source.width  || source.naturalWidth;
-      let height = source.height || source.naturalHeight;
-      if (!width || !height) throw new Error('Billede har ingen dimensioner');
-
-      if (width > MAX_W || height > MAX_H) {
-        const ratio = Math.min(MAX_W / width, MAX_H / height);
-        width  = Math.round(width * ratio);
-        height = Math.round(height * ratio);
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width  = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error('Canvas ikke tilgængelig');
-      ctx.drawImage(source, 0, 0, width, height);
-      if (source.close) source.close();
-
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.78));
-      if (!blob || blob.size === 0) return file;
-      if (blob.size >= file.size) return file;
-
-      const baseName = (file.name || 'image').replace(/\.[^.]+$/, '');
-      return new File([blob], `${baseName}.webp`, { type: 'image/webp' });
-    } catch (e) {
-      console.warn('Billedkomprimering fejlede, bruger original:', e);
-      return file;
-    } finally {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    }
+    if (isGif(file)) return file;
+    const blob = await toStrippedBlob(file, 1200, 'image/webp', 0.78);
+    const baseName = (file.name || 'image').replace(/\.[^.]+$/, '');
+    return new File([blob], `${baseName}.webp`, { type: 'image/webp' });
   }
 
   // Generér en mindre thumbnail (max 800px, WebP ~0.78) til kort-visninger.
   // Returnerer en Blob, eller null hvis det fejler (kalder falder pænt tilbage
   // til fuld-størrelse-billedet). Egress-besparelse: ~3× mindre end fuld.
   async function makeThumbnail(file) {
-    if (!file || file.type === 'image/gif') return null;
-    let objectUrl = null;
+    if (!file || isGif(file)) return null;
     try {
-      let source;
-      if (typeof createImageBitmap === 'function') {
-        try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
-        catch { source = null; }
-      }
-      if (!source) {
-        objectUrl = URL.createObjectURL(file);
-        source = await new Promise((resolve, reject) => {
-          const img = new Image();
-          const timeout = setTimeout(() => reject(new Error('Billede timeout')), 15000);
-          img.onload  = () => { clearTimeout(timeout); resolve(img); };
-          img.onerror = () => { clearTimeout(timeout); reject(new Error('Kunne ikke læse billede')); };
-          img.src = objectUrl;
-        });
-      }
-      const MAX = 800;
-      let width  = source.width  || source.naturalWidth;
-      let height = source.height || source.naturalHeight;
-      if (!width || !height) return null;
-      if (width > MAX || height > MAX) {
-        const ratio = Math.min(MAX / width, MAX / height);
-        width  = Math.round(width * ratio);
-        height = Math.round(height * ratio);
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width; canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
-      ctx.drawImage(source, 0, 0, width, height);
-      if (source.close) source.close();
-      return await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.78));
+      return await toStrippedBlob(file, 800, 'image/webp', 0.78);
     } catch (e) {
+      // Null er sikkert her: kalderen falder tilbage til fuld-størrelses-
+      // billedet, som selv er gået gennem toStrippedBlob.
       console.warn('Thumbnail-generering fejlede, bruger fuld størrelse:', e);
       return null;
-    } finally {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
     }
   }
 
@@ -306,12 +192,22 @@ export function createImageUpload({
     let done = 0;
     if (label && total > 0) label.textContent = `Optimerer 0 af ${total}…`;
 
-    const processed = await Promise.all(toAdd.map(async f => {
-      const compressed = await compressImage(f);
-      done++;
-      if (label) label.textContent = `Optimerer ${done} af ${total}…`;
-      return { compressed, original: f };
-    }));
+    // Et billede der ikke kan afkodes, kan ikke få EXIF fjernet, og så
+    // springes det over i stedet for at blive uploadet råt. Resten af
+    // udvalget går uhindret igennem.
+    const processed = (await Promise.all(toAdd.map(async f => {
+      try {
+        const compressed = await compressImage(f);
+        return { compressed, original: f };
+      } catch (e) {
+        console.warn('Kunne ikke behandle billede, springes over:', f.name, e);
+        showToast(`⚠️ "${f.name}" kunne ikke behandles og blev ikke tilføjet`);
+        return null;
+      } finally {
+        done++;
+        if (label) label.textContent = `Optimerer ${done} af ${total}…`;
+      }
+    }))).filter(Boolean);
 
     processed.forEach(({ compressed, original }, i) => {
       const url = URL.createObjectURL(compressed);

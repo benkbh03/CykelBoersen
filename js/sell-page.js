@@ -2049,7 +2049,15 @@ export function createSellPage({
       // ikke smudses ud før AI'en analyserer dem.
       const images = await Promise.all(picks.map(async (item) => {
         const source = item.originalFile || item.file;
-        const forAI = compressForAI ? await compressForAI(source) : source;
+        // originalFile er filen som brugeren valgte den, altså med EXIF og
+        // dermed GPS intakt. Den må kun forlade enheden efter et
+        // canvas-gennemløb. compressForAI kaster hvis det ikke lykkes, og
+        // så bruger vi item.file, som allerede ER strippet.
+        let forAI = item.file;
+        if (compressForAI) {
+          try { forAI = await compressForAI(source); }
+          catch (e) { console.warn('AI-komprimering fejlede, bruger display-versionen:', e); }
+        }
         const { mediaType, base64 } = await fileToBase64(forAI);
         return { media_type: mediaType, data: base64 };
       }));
