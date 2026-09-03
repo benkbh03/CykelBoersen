@@ -31,6 +31,25 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+/**
+ * Tømmer én "mappe" i en bucket. Samme funktion som i delete-account; havde
+ * den ligget ét sted, var dette hul ikke opstået. Fejl kastes ikke videre —
+ * en fil der ikke kan fjernes må ikke forhindre at kontoen bliver slettet.
+ */
+async function emptyPrefix(supa, bucket: string, prefix: string, problems: string[]) {
+  try {
+    const { data, error } = await supa.storage.from(bucket).list(prefix, { limit: 1000 });
+    if (error) { problems.push(`${bucket}/${prefix}: ${error.message}`); return; }
+    if (!data || data.length === 0) return;
+    const paths = data.filter((o: { id: string | null }) => o.id).map((o: { name: string }) => `${prefix}/${o.name}`);
+    if (paths.length === 0) return;
+    const { error: rmErr } = await supa.storage.from(bucket).remove(paths);
+    if (rmErr) problems.push(`${bucket}/${prefix}: ${rmErr.message}`);
+  } catch (e) {
+    problems.push(`${bucket}/${prefix}: ${String(e)}`);
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST")    return jsonResponse({ error: "Method not allowed" }, 405);
@@ -94,6 +113,22 @@ serve(async (req) => {
         const { data: bikes } = await supa
           .from("bikes").select("id").eq("user_id", target_user_id);
         const bikeIds = (bikes || []).map((b: { id: string }) => b.id);
+
+        /* Storage FØR rækkerne, mens bikeIds stadig kendes. Denne funktion
+           slettede tidligere kun databaserækker, i modsætning til
+           delete-account: en admin-slettet brugers billeder blev liggende i
+           en offentligt læsbar bucket og kunne hentes på deres URL for altid.
+           Best effort — en enkelt fil må ikke blokere sletningen. */
+        const storageProblems: string[] = [];
+        await emptyPrefix(supa, "avatars", target_user_id, storageProblems);
+        for (const bikeId of bikeIds) {
+          await emptyPrefix(supa, "bike-images", bikeId, storageProblems);
+        }
+        await emptyPrefix(supa, "bike-images", `rental/${target_user_id}`, storageProblems);
+        await emptyPrefix(supa, "id-documents", target_user_id, storageProblems);
+        if (storageProblems.length > 0) {
+          console.error("Bruger slettet, men disse filer blev liggende:", storageProblems);
+        }
 
         if (bikeIds.length > 0) {
           await supa.from("saved_bikes").delete().in("bike_id", bikeIds);

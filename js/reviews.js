@@ -32,7 +32,7 @@ export function createReviews({
     // og "Sæt solgt") indsætter en besked der STARTER med ✅ og indeholder "accepteret".
     // En almindelig besked hvor nogen blot skriver "accepteret" kvalificerer IKKE.
     const { data: tradeMsg } = await supabase.from('messages')
-      .select('id')
+      .select('id, bike_id')
       .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${reviewedUserId}),and(sender_id.eq.${reviewedUserId},receiver_id.eq.${currentUser.id})`)
       .ilike('content', '✅%accepteret%')
       .limit(1);
@@ -42,6 +42,12 @@ export function createReviews({
     const { error } = await supabase.from('reviews').insert({
       reviewer_id:      currentUser.id,
       reviewed_user_id: reviewedUserId,
+      // bike_id SKAL med. Uden den blev det unikke indeks
+      // reviews_unique_per_trade virkningsløst: NULL'er tælles som
+      // indbyrdes forskellige, så den samme bruger kunne anmelde den samme
+      // person ubegrænset mange gange. Handelsbeskeden ved hvilken cykel
+      // handlen gjaldt, så værdien ligger lige ved hånden.
+      bike_id:          tradeMsg?.[0]?.bike_id ?? null,
       rating,
       comment: comment || null,
     });
@@ -105,7 +111,7 @@ export function createReviews({
 
     // Kun system-genererede handelsbeskeder tæller (starter med ✅ + "accepteret").
     const { data: tradeMsg } = await supabase.from('messages')
-      .select('id')
+      .select('id, bike_id')
       .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${ratingModalUserId}),and(sender_id.eq.${ratingModalUserId},receiver_id.eq.${currentUser.id})`)
       .ilike('content', '✅%accepteret%')
       .limit(1);
@@ -115,6 +121,7 @@ export function createReviews({
     const { error } = await supabase.from('reviews').insert({
       reviewer_id:      currentUser.id,
       reviewed_user_id: ratingModalUserId,
+      bike_id:          tradeMsg?.[0]?.bike_id ?? null,   // se kommentar i submitReview
       rating,
       comment: comment || null,
     });

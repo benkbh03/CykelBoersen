@@ -115,6 +115,12 @@ serve(async (req) => {
     // præfiks end annoncebilleder (se js/rental-create.js).
     await emptyPrefix(adminClient, "bike-images", `rental/${userId}`, storageProblems);
 
+    // id-documents/<userId>/ — ID-verifikationsdokumenter. Den mest følsomme
+    // bucket vi har, og den blev overset da denne oprydning blev skrevet:
+    // dokumenterne overlevede kontosletningen. Bucket'en refereres ikke fra
+    // frontenden længere, men gamle filer kan stadig ligge der.
+    await emptyPrefix(adminClient, "id-documents", userId, storageProblems);
+
     // 3. Slet FK-afhængigheder til cykler
     if (bikeIds.length > 0) {
       await adminClient.from("saved_bikes").delete().in("bike_id", bikeIds);
