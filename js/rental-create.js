@@ -268,7 +268,10 @@ export function createRentalManage({
     const urls = [];
     for (const item of _files) {
       const ext = (item.file.name.split('.').pop() || 'jpg').toLowerCase();
-      const filename = `rental/${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      // Bruger-id'et skal ligge FØRST i stien, ellers er første mappeled
+      // strengen "rental" og storage-politikken kan ikke se hvem der ejer
+      // filen. Se harden_bike_images_bucket.sql.
+      const filename = `${userId}/rental/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error } = await supabase.storage
         .from('bike-images')
         .upload(filename, item.file, { contentType: item.file.type, upsert: false, cacheControl: '2592000' });
