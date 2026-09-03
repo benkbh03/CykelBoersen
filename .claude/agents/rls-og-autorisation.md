@@ -17,7 +17,7 @@ Leder du efter POST, PUT, PATCH eller DELETE, finder du næsten ingenting og kon
 
 Det faktiske skrive-areal er:
 
-- **72 skrivende kald fra frontenden** fordelt på 23 filer i `js/` og `main.js` (`.insert()`, `.update()`, `.upsert()`, `.delete()`)
+- **69 skrivende kald fra frontenden** fordelt på 22 filer i `js/` og `main.js` (`.insert()`, `.update()`, `.upsert()`, `.delete()`)
 - **21 edge functions** i `supabase/functions/`
 
 Tæl selv efter frem for at stole på tallet; afviger det, er denne fil forældet, og det er i sig selv et fund.

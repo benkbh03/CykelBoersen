@@ -198,8 +198,11 @@ export function createRentalManage({
     const files = Array.from(input.files || []);
     input.value = '';
     for (const file of files) {
-      const err = validateImageFile ? validateImageFile(file) : null;
-      if (err) { showToast(err); continue; }
+      /* validateImageFile returnerer en BOOLEAN (true = gyldig) og viser selv
+         sin egen toast ved afvisning. Koden her læste returværdien som en
+         fejlbesked og sprang derfor over netop de gyldige billeder, mens de
+         ugyldige gik videre — MIME- og størrelsestjekket var reelt vendt om. */
+      if (validateImageFile && !validateImageFile(file)) continue;
       // Faldt tidligere tilbage til originalfilen hvis komprimeringen
       // fejlede. Det er netop det gennemløb der fjerner EXIF, så en
       // fallback til originalen uploadede GPS-koordinaterne. Nu springes
