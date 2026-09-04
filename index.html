@@ -102,22 +102,22 @@
        overskrifterne på forsiden. -->
   <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830r">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830s">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260830r">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260830r">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830r">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260830r">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260830r">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830r">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260830r">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830r">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260830r">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830r">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830r">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260830r">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260830s">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260830s">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830s">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260830s">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260830s">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830s">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260830s">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830s">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260830s">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830s">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830s">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260830s">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -888,20 +888,25 @@
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
-        /* Ny/brugt som FANEBLADE på sin egen linje over annoncerne. Som knapboks
-           ved siden af kategori-toggle'en havde de to kontroller samme ramme,
-           samme størrelse og samme form — øjet kunne ikke se hvad der var
-           hovedvalg og hvad der var filter. Faneblade har et andet formsprog og
-           en anden opgave: de siger "hvilket udsnit ser jeg". Understregningen
-           går helt ud i bredden og binder valget til listen nedenunder. */
-        .cond-tabs{display:flex;align-items:flex-end;gap:4px;
-          border-bottom:1.5px solid var(--border);margin:0 0 18px;}
+        /* Ny/brugt og cykeltype i ÉT bånd. Stand er en sammenhængende kontakt
+           (tre knapper i én ramme), typerne er løse pinde — to formsprog, så
+           øjet ser to forskellige valg uden at der bruges to rækker. Stand
+           står først, fordi ny-eller-brugt er den første beslutning en køber
+           tager. Kontakten er pind-høj, altså mindre end Cykler/Tilbehør
+           ovenfor, så de to segmenterede kontroller ikke læses som søskende. */
+        .filter-band{display:flex;align-items:center;gap:12px;margin:0 0 18px;
+          overflow-x:auto;scrollbar-width:none;}
+        .filter-band::-webkit-scrollbar{display:none;}
+        .filter-band .hero-cat-chips{margin:0;}
+        .filter-band-sep{flex-shrink:0;width:1px;height:26px;background:var(--border);}
+        .cond-seg{display:inline-flex;flex-shrink:0;border:1.5px solid var(--border);
+          border-radius:999px;overflow:hidden;background:var(--sand);}
         .cond-axis-btn{border:none;background:transparent;color:var(--muted);
-          font:600 0.92rem/1 'DM Sans',sans-serif;padding:11px 4px;margin-right:22px;
-          border-bottom:2px solid transparent;margin-bottom:-1.5px;
-          cursor:pointer;transition:color .15s,border-color .15s;}
-        .cond-axis-btn:hover{color:var(--charcoal);}
-        .cond-axis-btn.active{color:var(--forest);border-bottom-color:var(--forest);}
+          font:500 0.85rem/1 'DM Sans',sans-serif;padding:9px 15px;cursor:pointer;
+          transition:color .12s,background .12s;}
+        .cond-axis-btn + .cond-axis-btn{border-left:1.5px solid var(--border);}
+        .cond-axis-btn:hover{color:var(--charcoal);background:var(--sand-2);}
+        .cond-axis-btn.active{background:var(--forest);color:var(--sand);font-weight:600;}
         /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
@@ -909,10 +914,9 @@
           .browse-cat-wrap{width:100%;display:block;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
-          /* Fanebladene deler bredden ligeligt, så de tre rammer hele skærmen
-             i stedet for at klumpe til venstre med tom plads til højre. */
-          .cond-tabs{margin-bottom:14px;}
-          .cond-axis-btn{flex:1;min-width:0;margin-right:0;padding:11px 4px;text-align:center;}
+          /* Båndet scroller vandret og bløder ud til skærmkanten, så den
+             første pind ikke får en tilfældig margen til venstre. */
+          .filter-band{margin:0 -16px 14px;padding:0 16px;}
         }
       </style>
       <div class="listings-header">
@@ -963,16 +967,24 @@
            steder. Rækken her erstattede "Alle | Nye | Brugte", som kun var en
            genvej til sidebarens Stand-felter og dermed selv en dublet.
            js/type-sync.js holder disse chips og sidebarens checkboxes ens. -->
-      <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
-        <button class="hero-cat-chip active" data-type="" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle</button>
-        <button class="hero-cat-chip" data-type="Racercykel" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
-        <button class="hero-cat-chip" data-type="Mountainbike" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
-        <button class="hero-cat-chip" data-type="El-cykel" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
-        <button class="hero-cat-chip" data-type="Citybike" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
-        <button class="hero-cat-chip" data-type="Gravel" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
-        <button class="hero-cat-chip" data-type="Ladcykel" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
-        <button class="hero-cat-chip" data-type="Børnecykel" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
-        <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
+      <div class="filter-band">
+        <div class="cond-seg" role="group" aria-label="Ny eller brugt">
+          <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
+          <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
+          <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
+        </div>
+        <span class="filter-band-sep" aria-hidden="true"></span>
+        <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
+          <button class="hero-cat-chip active" data-type="" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle typer</button>
+          <button class="hero-cat-chip" data-type="Racercykel" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
+          <button class="hero-cat-chip" data-type="Mountainbike" onclick="selectHeroCatChip(this,'Mountainbike')" aria-pressed="false">Mountainbike</button>
+          <button class="hero-cat-chip" data-type="El-cykel" onclick="selectHeroCatChip(this,'El-cykel')" aria-pressed="false">El-cykel</button>
+          <button class="hero-cat-chip" data-type="Citybike" onclick="selectHeroCatChip(this,'Citybike')" aria-pressed="false">Citybike</button>
+          <button class="hero-cat-chip" data-type="Gravel" onclick="selectHeroCatChip(this,'Gravel')" aria-pressed="false">Gravel</button>
+          <button class="hero-cat-chip" data-type="Ladcykel" onclick="selectHeroCatChip(this,'Ladcykel')" aria-pressed="false">Ladcykel</button>
+          <button class="hero-cat-chip" data-type="Børnecykel" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
+          <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
+        </div>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>

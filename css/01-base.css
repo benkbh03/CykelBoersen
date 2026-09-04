@@ -631,7 +631,7 @@ body.nav-search-on .nav-search { display: flex; }
      var plads. På den cremede flade kan rækken scrolle vandret, og efter at
      både søgebarens typevalg og Nye/Brugte er væk, er de mobilbrugerens
      eneste synlige filter uden at åbne skuffen. */
-  .hero-cat-chips { margin-left: -16px; margin-right: -16px; padding: 2px 16px; }
+  /* Bleed til skærmkanten sker på .filter-band (index.html), som nu ejer rækken. */
   .search-hero-text { margin-bottom: 10px; }
 }
 @media (max-width: 480px) {
@@ -658,7 +658,7 @@ body.nav-search-on .nav-search { display: flex; }
   display: flex; justify-content: flex-start; gap: 8px;
   flex-wrap: nowrap; white-space: nowrap;
   overflow-x: auto; scrollbar-width: none;
-  margin: 0 0 18px;
+  margin: 0;
   padding: 2px 0;
 }
 .hero-cat-chips::-webkit-scrollbar { display: none; }
