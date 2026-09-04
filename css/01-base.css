@@ -553,7 +553,7 @@ body.nav-search-on .nav-search { display: flex; }
        mørkt, så det er ikke nok at fjerne de mørke lag — der skal lys på.
        Titlen bærer det, fordi den har sin egen text-shadow: den mørkner
        bag bogstaverne i stedet for bag hele billedet. */
-    linear-gradient(rgba(255,255,255,0.19), rgba(255,255,255,0.19)),
+    linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
     radial-gradient(circle at 80% 90%, rgba(200,80,42,0.10) 0, transparent 48%),
     radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.07) 0, transparent 45%),
     /* Svag ellipse midt i, som holder overskriften læsbar mod himlen. */
