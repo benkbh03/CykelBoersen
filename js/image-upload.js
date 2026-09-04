@@ -326,7 +326,9 @@ export function createImageUpload({
       if (typeof onProgress === 'function') onProgress(i + 1, total);
 
       const ext      = item.file.name.split('.').pop();
-      const filename = `admin-onbehalf/${adminUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      // Admin-id'et først, af samme grund som i rental-create: politikken
+      // læser første mappeled som ejeren. Se harden_bike_images_bucket.sql.
+      const filename = `${adminUserId}/admin-onbehalf/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error } = await supabase.storage
         .from('bike-images')

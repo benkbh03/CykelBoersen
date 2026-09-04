@@ -143,10 +143,19 @@ serve(async (req) => {
     if (payload.type === "rental_booked") {
       const { data: b } = await supabase
         .from("rental_bookings")
-        .select("dealer_id, start_date, end_date, days, rental_amount, platform_fee, rental_items!item_id(title), profiles!renter_id(name)")
+        .select("dealer_id, renter_id, start_date, end_date, days, rental_amount, platform_fee, rental_items!item_id(title), profiles!renter_id(name)")
         .eq("id", payload.booking_id)
         .single();
       if (!b) return new Response("Booking not found", { status: 400, headers: corsHeaders });
+
+      /* Kalderen skal være part i bookingen. Uden dette kunne enhver anonym
+         kalder der gættede et booking-id udløse en "ny booking"-mail til
+         forhandleren. Ingen data lækkede, men mailen kunne sendes i det
+         uendelige på vores Resend-kvote og omdømme. */
+      const rbCaller = await getCaller(req, supabase);
+      if (!rbCaller || (rbCaller.id !== b.dealer_id && rbCaller.id !== (b as any).renter_id)) {
+        return new Response("Forbidden", { status: 403, headers: corsHeaders });
+      }
 
       const { data: { user: dealer } } = await supabase.auth.admin.getUserById(b.dealer_id);
       if (!dealer?.email) {

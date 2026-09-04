@@ -1010,6 +1010,11 @@ body:has(.inbox-page) #chat-widget { display: none; }
 }
 .bike-detail-seller { display: flex; align-items: center; gap: 12px; background: var(--sand); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
 
+/* Oplysning efter forbrugeraftaleloven § 8a. Diskret, men læsbar — den skal
+   kunne ses før handlen, ikke gemmes væk. */
+.bike-seller-legal { margin: 8px 2px 0; font-size: 0.76rem; line-height: 1.5; color: var(--muted); }
+.bike-seller-legal a { color: var(--forest); text-decoration: underline; }
+
 /* ── TRUST CARD: Trygt køb-badge + sælger-historik ─────────── */
 .seller-trust-card-wrap { margin-top: 10px; }
 /* Wrapper når trust-card lever på profilsidens Vurderinger-tab */

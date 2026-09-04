@@ -532,9 +532,18 @@ export function createListingEdit({
     for (const img of toDelete) {
       const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id).eq('bike_id', id);
       if (delErr) { showToast('❌ Kunne ikke slette et eksisterende billede'); console.error(delErr); return; }
+      /* Dette kald har hele tiden været her, men fejlede tavst: DELETE-
+         politikken krævede at første mappeled var brugerens id, mens det for
+         annoncebilleder er annonce-id'et, så den kunne aldrig matche. Hvert
+         fjernet billede blev liggende i bucket'en for altid.
+         harden_bike_images_bucket.sql retter politikken; her holder vi op med
+         at kaste returværdien væk, så det ikke kan ske i stilhed igen. */
       if (!delErr && img.url) {
         const match = img.url.match(/bike-images\/(.+)$/);
-        if (match) await supabase.storage.from('bike-images').remove([match[1]]);
+        if (match) {
+          const { error: rmErr } = await supabase.storage.from('bike-images').remove([match[1]]);
+          if (rmErr) console.error('Billedet blev fjernet fra annoncen, men ikke fra Storage:', match[1], rmErr);
+        }
       }
     }
 

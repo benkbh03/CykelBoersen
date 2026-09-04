@@ -36,9 +36,38 @@ function isObviousFake(cvr: string): boolean {
   return /^(\d)\1{7}$/.test(cvr);
 }
 
+/* Funktionen kan ikke kræve JWT: lookupDealerCvr() kaldes mens
+   forhandler-formularen udfyldes, altså FØR brugeren har oprettet sig.
+   Den var dermed en gratis proxy til cvrapi.dk på vores User-Agent.
+
+   Begrænsningen ligger i hukommelsen frem for i rate_limits-tabellen, fordi
+   den tabel har user_id NOT NULL og der ikke er nogen bruger her. Den
+   overlever ikke en kold start, så den stopper et simpelt script — ikke en
+   målrettet angriber. Det er stadig forskellen på tusindvis af opslag og
+   en håndfuld. */
+const IP_WINDOW_MS = 60_000;
+const IP_MAX       = 15;          // rigeligt til at udfylde en formular
+const IP_MAX_KEYS  = 5000;        // loft, så selve Map'et ikke bliver lækagen
+const _ipHits = new Map<string, { count: number; start: number }>();
+
+function ipAllowed(req: Request): boolean {
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "ukendt";
+  const now = Date.now();
+  const row = _ipHits.get(ip);
+
+  if (!row || now - row.start > IP_WINDOW_MS) {
+    if (_ipHits.size > IP_MAX_KEYS) _ipHits.clear();
+    _ipHits.set(ip, { count: 1, start: now });
+    return true;
+  }
+  row.count++;
+  return row.count <= IP_MAX;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST")    return json({ valid: false, reason: "method" }, 405);
+  if (!ipAllowed(req))          return json({ valid: false, reason: "rate" }, 429);
 
   let cvr = "";
   try {

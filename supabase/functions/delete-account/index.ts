@@ -41,19 +41,25 @@ type Supa = ReturnType<typeof createClient>;
  * Fejl kastes ikke videre: en enkelt fil der ikke kan fjernes, må ikke
  * forhindre at kontoen bliver slettet. Den rapporteres i stedet tilbage.
  */
-async function emptyPrefix(supa: Supa, bucket: string, prefix: string, problems: string[]) {
+async function emptyPrefix(supa: Supa, bucket: string, prefix: string, problems: string[], depth = 0) {
+  if (depth > 3) return;                       // værn mod uventet dyb struktur
   try {
     const { data, error } = await supa.storage.from(bucket).list(prefix, { limit: 1000 });
     if (error) { problems.push(`${bucket}/${prefix}: ${error.message}`); return; }
     if (!data || data.length === 0) return;
 
-    // list() returnerer også "mapper" som poster uden id. Dem springer vi over;
-    // de eneste præfikser vi bruger er ét niveau dybe.
-    const paths = data.filter((o) => o.id).map((o) => `${prefix}/${o.name}`);
-    if (paths.length === 0) return;
-
-    const { error: rmErr } = await supa.storage.from(bucket).remove(paths);
-    if (rmErr) problems.push(`${bucket}/${prefix}: ${rmErr.message}`);
+    /* list() er IKKE rekursiv. Poster uden id er "mapper", og efter at
+       udlejnings- og admin-billeder flyttede til <bruger-id>/rental/… og
+       <bruger-id>/admin-onbehalf/… ligger filerne et niveau nede. Uden
+       dette gennemløb ville de blive liggende efter en kontosletning. */
+    const files = data.filter((o: { id: string | null }) => o.id).map((o: { name: string }) => `${prefix}/${o.name}`);
+    if (files.length > 0) {
+      const { error: rmErr } = await supa.storage.from(bucket).remove(files);
+      if (rmErr) problems.push(`${bucket}/${prefix}: ${rmErr.message}`);
+    }
+    for (const folder of data.filter((o: { id: string | null }) => !o.id)) {
+      await emptyPrefix(supa, bucket, `${prefix}/${folder.name}`, problems, depth + 1);
+    }
   } catch (e) {
     problems.push(`${bucket}/${prefix}: ${String(e)}`);
   }
@@ -111,8 +117,10 @@ serve(async (req) => {
       await emptyPrefix(adminClient, "bike-images", bikeId, storageProblems);
     }
 
-    // bike-images/rental/<userId>/ — udlejningsbilleder ligger under et andet
-    // præfiks end annoncebilleder (se js/rental-create.js).
+    // bike-images/<userId>/ — udlejnings- og admin-billeder, som nu ligger
+    // under brugerens eget præfiks så storage-politikken kan se ejeren.
+    // rental/<userId>/ beholdes for filer uploadet før den flytning.
+    await emptyPrefix(adminClient, "bike-images", userId, storageProblems);
     await emptyPrefix(adminClient, "bike-images", `rental/${userId}`, storageProblems);
 
     // id-documents/<userId>/ — ID-verifikationsdokumenter. Den mest følsomme
