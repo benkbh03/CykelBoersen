@@ -543,15 +543,21 @@ body.nav-search-on .nav-search { display: flex; }
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
+  /* Lagene ovenpå fotoet er skruet markant ned, så billedet er lyst.
+     Overskriften kan bære det, fordi den har sin egen text-shadow — den
+     mørkner kun bag bogstaverne i stedet for bag hele billedet.
+     Tilbage er en svag ellipse midt i, som holder titlen læsbar mod
+     himlen, og de to farvetoner der binder fotoet til paletten. */
   background-image:
-    radial-gradient(circle at 80% 90%, rgba(200,80,42,0.13) 0, transparent 48%),
-    radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.09) 0, transparent 45%),
-    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.28) 0%, transparent 100%),
-    linear-gradient(180deg,
-      rgba(14,22,15,0.16) 0%,
-      rgba(14,22,15,0.01) 50%,
-      rgba(14,22,15,0.20) 100%
-    ),
+    /* Lyst slør ØVERST i stakken (første lag = forrest). Selve fotoet er
+       mørkt, så det er ikke nok at fjerne de mørke lag — der skal lys på.
+       Titlen bærer det, fordi den har sin egen text-shadow: den mørkner
+       bag bogstaverne i stedet for bag hele billedet. */
+    linear-gradient(rgba(255,255,255,0.19), rgba(255,255,255,0.19)),
+    radial-gradient(circle at 80% 90%, rgba(200,80,42,0.10) 0, transparent 48%),
+    radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.07) 0, transparent 45%),
+    /* Svag ellipse midt i, som holder overskriften læsbar mod himlen. */
+    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
     url('/hero.jpg?v=hero1');
   background-size: auto, auto, auto, auto, cover;
   background-position: center, center, center, center, center 40%;
@@ -604,9 +610,11 @@ body.nav-search-on .nav-search { display: flex; }
   color: #FF8B60;
 }
 .search-hero-sub {
-  color: rgba(245,240,232,0.96); font-size: 0.95rem; font-weight: 400;
+  color: #fff; font-size: 0.95rem; font-weight: 400;
   line-height: 1.5; max-width: 480px; margin: 0 auto;
-  text-shadow: 0 1px 14px rgba(0,0,0,0.55);
+  /* Kraftigere end titlens behøver at være: den er mindre og tyndere, og
+     står direkte mod himlen, som er den lyseste del af fotoet. */
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(0,0,0,0.75);
 }
 
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
@@ -655,7 +663,9 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .hero-cat-chips::-webkit-scrollbar { display: none; }
 .hero-cat-chip {
-  background: rgba(245,240,232,0.14);
+  /* Mørk frem for lys. En lys, gennemsigtig chip med lys tekst virkede kun
+     så længe fotoet bag den var mørkt; efter opblødningen forsvandt den. */
+  background: rgba(20,26,20,0.42);
   /* Gennemsigtig frem for fjernet: så beholder chippen sin bredde, og
      :focus-visible kan stadig tegne en synlig kant. */
   border: 1px solid transparent;
@@ -667,7 +677,7 @@ body.nav-search-on .nav-search { display: flex; }
   backdrop-filter: blur(10px);
   font-family: 'DM Sans', sans-serif;
 }
-.hero-cat-chip:hover { background: rgba(245,240,232,0.24); }
+.hero-cat-chip:hover { background: rgba(20,26,20,0.60); }
 .hero-cat-chip:focus-visible { outline-color: rgba(245,240,232,0.8); }
 .hero-cat-chip.active {
   background: var(--sand); border-color: transparent;
