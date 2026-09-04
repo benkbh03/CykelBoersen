@@ -1,5 +1,10 @@
 # CykelBørsen
 
+> **Læs [`STRATEGI.md`](STRATEGI.md) først.** Én side om retningen. Før du bygger
+> noget nyt: kan ændringen svare ja til prøven dér? Kan den ikke, så sig det
+> frem for at bygge den. Filen indeholder også et `Hvad vi ikke laver`-afsnit,
+> og det er den halvdel der gør den brugbar.
+
 Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Single-page vanilla JS app hostet via GitHub Pages, med Supabase som backend, Resend til e-mail og Anthropic Claude Haiku som support-bot.
 
 > **Bemærk om forhandler-betaling**: Forhandlerregistrering er **gratis lige nu** (lancering / ramp-up-fase) — målet er at få et kritisk antal forhandlere ind først. Stripe-edge-functions (`create-checkout-session`, `create-portal-session`, `stripe-webhook`) ligger klar i `supabase/functions/` til når betalt model genaktiveres, men kaldes ikke fra `/bliv-forhandler`-flowet pt. Formularen opretter direkte en `seller_type='dealer'`-profil der venter på admin-godkendelse (manuel `verified=true`).
@@ -80,6 +85,76 @@ Deploy-tjeklisten skal altid have tre dele (udelad dem der ikke er relevante):
 
 **SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
 (fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
+
+## Før-deploy-tjekliste (manuel — de spørgsmål kode ikke kan svare på)
+
+Der er bevidst **ingen agent** til denne liste. Backup, genoprettelse og
+rollback står ikke i repoet, så en agent ville svare "kunne ikke afgøres" på
+halvdelen hver gang, og så holder man op med at læse den.
+
+Gå den igennem selv før en større ændring:
+
+- [ ] **Består ændringen prøven i `STRATEGI.md`?** Gør den det hurtigere at få en cykel op, lettere at bedømme en cykel eller sælger på afstand, eller dyrere at snyde? Hvis ingen af delene: hvorfor bygger vi den?
+- [ ] **Kritiske flows afprøvet på mobil:** opret bruger → opret annonce → bliv kontaktet → markér som solgt. Hele vejen, uden at springe over.
+- [ ] Er der en **migration** i denne ændring? Kan den rulles tilbage, og hvordan?
+- [ ] **Hvornår blev der sidst taget backup**, og er en genoprettelse nogensinde gennemført? En backup der aldrig er testet, er ikke en backup.
+- [ ] Kan denne **deployment rulles tilbage** på under fem minutter?
+- [ ] Nye **tredjepartskald der koster penge pr. kald**? Er der rate limiting OG budgetalarm på dem?
+- [ ] Nye **miljøvariabler** som produktionen ikke kender endnu? (Edge functions fejler tavst uden dem.)
+- [ ] Nye **persondata eller ny underleverandør**? Hvis ja: kør `gdpr-update`-skillen.
+- [ ] `console.log` med persondata, efterladte `TODO`'er eller **udkommenteret sikkerhedskode** i diffen?
+- [ ] Er `supabase/sql/CURRENT_POLICIES.md` stadig aktuel? Har ændringen rørt en RLS-politik, er facitlisten forældet, og `rls-og-autorisation` arbejder i blinde næste gang.
+
+## Agenter og skills (`.claude/`)
+
+| Navn | Type | Hvornår |
+|---|---|---|
+| `rls-og-autorisation` | agent | Når et skrivende Supabase-kald, en RLS-politik eller en edge function ændres |
+| `filter-konsistens` | agent | Når et filter tilføjes eller ændres, eller mistænkes for kun at virke nogle steder |
+| `trust-safety` | skill | Bevidst og sjældent: gennemgang af misbrugsmønstre |
+| `gdpr-update` | skill | Når en ændring rører persondata |
+| `sql-migration`, `cache-bump`, `mobile-audit`, `responsive-first` m.fl. | skills | Se `.claude/skills/` |
+
+Agenterne er **læse-only med vilje**. En reviewagent der kan redigere, risikerer
+at "løse" et manglende `WITH CHECK` ved at fjerne politikken.
+
+### Foreslå en ny agent når et mønster gentager sig
+
+**Stående opgave: bemærker du at den samme fejltype er dukket op igen, så sig
+det og foreslå hvad vi gør ved den.** Vent ikke på at blive spurgt.
+
+Men hold baren, ellers bliver det støj. Alle tre skal være opfyldt:
+
+1. **Fejlen er tavs.** Den melder sig ikke selv. Et crash eller en hvid skærm
+   bliver rapporteret samme dag og har ikke brug for en vagthund.
+2. **Den er set mindst to gange.** Én forekomst er et uheld.
+3. **Den kan afgøres fra repoet.** Kræver svaret adgang til noget uden for
+   koden — backup, en konto, en faktura — så er det en tjeklistelinje, ikke en
+   agent.
+
+**En agent er sidste udvej, ikke første.** Spørg i denne rækkefølge:
+
+- Kan fejlen gøres **umulig**? Én delt funktion frem for fire kopier. Det var
+  svaret på EXIF-stripningen: `js/image-strip.js` findes, fordi fire kopier af
+  samme afkodning havde drevet fra hinanden. Nu kan de ikke.
+- Kan den fanges af en **constraint eller en trigger**? Databasen glemmer ikke.
+- Kan den fanges af **én linje i en tjekliste**? Billigst af alt.
+- Først derefter: en agent.
+
+Foreslå aldrig en agent uden at nævne hvad den koster at holde ved lige. Vi har
+lige set hvad der sker når `CURRENT_POLICIES.md` forældes: agenten peger den
+forkerte vej, og ingen opdager det.
+
+### Mønstre set mere end én gang
+
+Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
+
+| Mønster | Set | Status |
+|---|---|---|
+| Kontrol kun i frontenden, ikke i databasen | Mange (`hasTraded`, filter-guards, `validateImageFile`) | Delvist lukket med triggere; tjek altid om en ny regel også findes server-side |
+| Sletning der kun rammer rækker, ikke Storage | 3 (`delete-account`, `admin-actions`, `listing-edit`) | Lukket. Samme `emptyPrefix`-mønster begge steder |
+| Samme felt under to navne eller typer i to filer | 2 (`maxWeight`/`maxWeightKg`, `electronicShifting` bool/streng) | Lukket med `normalizeFilters()` i begge matchere |
+| Migration skrevet, committet — og aldrig kørt | 1 (`harden_bike_images_bucket.sql`, åben i to døgn) | Bekræft ALTID med en forespørgsel, ikke med et "det er deployet" |
 
 ## Kodestil og filstruktur
 
