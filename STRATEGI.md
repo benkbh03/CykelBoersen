@@ -4,9 +4,13 @@
 
 ## Hvad vi laver
 
-**En markedsplads hvor man kan vurdere en cykel og en sælger, før man mødes.**
+**Det sted man går hen, når man skal købe eller sælge en cykel i Danmark.**
+
+Som Bilbasen er det for biler: ikke en rubrikannonce blandt alt muligt andet, men en dedikeret markedsplads hvor køretøjet er beskrevet ordentligt nok til at man kan træffe en beslutning uden at have set det.
 
 Både forhandlere og private, samme sted, samme krav. Ikke to systemer i ét.
+
+**Forhandlerne er motoren.** Bilbasen virker fordi bilforhandlerne er der i fuldt omfang, og de private følger med. Sådan er det også her. En markedsplads der kun er private sælgere, er en DBA-kategori. En hvor landets cykelhandlere har hele deres lager liggende, er noget andet — og det er den der får en køber til at gå direkte hertil frem for at søge på Google.
 
 ## Hvad vi vinder på
 
@@ -53,6 +57,12 @@ Er den ikke det, siger vi nej til idéen. Ikke til de sidste to steder.
 **Det er én person.** Alt hvad der bygges, skal vedligeholdes af den samme person om to år. Det er ikke en note i margenen, det er den hårdeste begrænsning der findes her. Et halvfærdigt system er dyrere end ingenting, fordi det skal huskes.
 
 Derfor: hellere fem funktioner der virker overalt end femten der virker nogle steder.
+
+**Hvor Bilbasen-analogien holder op.** En brugt bil koster over hundrede tusind, har nummerplade, synsrapport og et statsligt register bag sig. Det bærer en hel industri af data- og finansieringstjenester ovenpå. En brugt privat cykel koster nogle få tusind og har ingen af delene.
+
+Strukturen og kategoriejerskabet kan kopieres fra Bilbasen. Forretningsmodellen kan ikke skaleres ned proportionalt. Pengene ligger hos **forhandlerne og deres nye cykler**, hvor beløbene er store nok til at ligne et bilsalg. Det private brugtsalg tjener ikke penge og skal ikke forventes at gøre det — det er der for likviditeten og for vanen. Det er dét der får folk til at komme igen, og uden dem har forhandlerne ingen at sælge til.
+
+Bygger vi noget der kun giver mening ved en bilpris, har vi taget analogien for langt.
 
 ## Hvornår denne fil skal ændres
 
