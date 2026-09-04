@@ -668,11 +668,16 @@ body.nav-search-on .nav-search { display: flex; }
      teksten mudret. --charcoal frem for #000: ren sort er hårdt ved siden
      af en varm sandfarvet tekst, og det er den samme sorte som resten af
      sitet bruger. */
-  background: rgba(26,26,24,0.88);
-  /* Gennemsigtig frem for fjernet: så beholder chippen sin bredde, og
-     :focus-visible kan stadig tegne en synlig kant. */
-  border: 1px solid rgba(245,240,232,0.10);
-  color: var(--sand);
+  /* Lys pind med mørk tekst, samme flade som søgebaren lige ovenover. De to
+     læses derved som ét værktøj frem for to lag der konkurrerer.
+     0.93 og ikke helt massiv: en anelse foto igennem holder dem fast på
+     billedet i stedet for at ligne noget pålimet. */
+  background: rgba(253,250,243,0.93);
+  border: 1px solid rgba(26,26,24,0.10);
+  color: var(--charcoal);
+  /* Skyggen er det der adskiller en lys pind fra en lys himmel. Uden den
+     flyder de sammen præcis dér hvor rækken er mest synlig. */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
   padding: 8px 16px; border-radius: 999px;
   /* Fraunces, samme skrift som overskriften lige ovenfor. Chipsene sidder
      direkte under den, og det binder heroen sammen i én stemme i stedet for
@@ -686,16 +691,17 @@ body.nav-search-on .nav-search { display: flex; }
   flex-shrink: 0;
   backdrop-filter: blur(10px);
 }
-.hero-cat-chip:hover { background: #1A1A18; border-color: rgba(245,240,232,0.22); transform: translateY(-1px); }
-.hero-cat-chip:focus-visible { outline-color: rgba(245,240,232,0.8); }
+.hero-cat-chip:hover { background: var(--cream); border-color: rgba(26,26,24,0.22); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.24); }
+.hero-cat-chip:focus-visible { outline-color: var(--forest); }
 .hero-cat-chip.active {
-  background: var(--sand); border-color: transparent;
-  color: var(--forest); font-weight: 600;
+  /* Vendt om i forhold til de øvrige. Da alle pinde blev lyse, kunne den
+     aktive ikke længere markeres med lys fyld — den ville forsvinde i
+     rækken. Fyldt forest er det eneste der skiller sig ud uden at indføre
+     en femte farve. */
+  background: var(--forest); border-color: transparent;
+  color: var(--sand); font-weight: 600;
   backdrop-filter: none;
-  /* Ingen slagskygge: den lagde en grå kant på fotoet omkring chippen og
-     var netop en del af det mudrede indtryk. Kontrasten mellem fyldt sand
-     og det mørke bånd er rigelig til at markere den aktive. */
-  box-shadow: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.22);
 }
 .search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
