@@ -96,7 +96,7 @@ Forventet resultat, og intet andet:
 
 Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `harden_messages_and_reviews.sql` ikke i kraft, og så **er** de to UPDATE-politikker reelt huller.
 
-**Kørt og bekræftet 2. september 2026:** resultatet var nøjagtig de tre rækker ovenfor. Kolonne-begrænsningen er altså i kraft, ikke bare skrevet.
+**Kørt og bekræftet 2. og igen 4. september 2026:** resultatet var begge gange nøjagtig de tre rækker ovenfor. Kolonne-begrænsningen er altså i kraft, ikke bare skrevet.
 
 ---
 
