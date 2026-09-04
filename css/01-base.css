@@ -626,10 +626,12 @@ body.nav-search-on .nav-search { display: flex; }
     margin: 0 0 4px;
     padding: 0 8px;
   }
-  .search-hero-sub,
-  .hero-cat-chips {
-    display: none !important;
-  }
+  .search-hero-sub { display: none !important; }
+  /* Chipsene vises nu OGSÅ på mobil. De lå før ovenpå fotoet, hvor der ikke
+     var plads. På den cremede flade kan rækken scrolle vandret, og efter at
+     både søgebarens typevalg og Nye/Brugte er væk, er de mobilbrugerens
+     eneste synlige filter uden at åbne skuffen. */
+  .hero-cat-chips { margin-left: -16px; margin-right: -16px; padding: 2px 16px; }
   .search-hero-text { margin-bottom: 10px; }
 }
 @media (max-width: 480px) {
@@ -650,58 +652,37 @@ body.nav-search-on .nav-search { display: flex; }
    og rækken læses som én gruppe i stedet for ni løse elementer.
    Båndet toner ud i begge ender, så det ikke bliver en synlig kasse. */
 .hero-cat-chips {
-  display: flex; justify-content: safe center; gap: 7px;
+  /* Ligger nu på den cremede flade over annoncerne, ikke ovenpå hero-fotoet.
+     Derfor ingen mørk gradient-stribe bag rækken: den var kun til for at løfte
+     lys tekst fra et billede. */
+  display: flex; justify-content: flex-start; gap: 8px;
   flex-wrap: nowrap; white-space: nowrap;
-  max-width: 960px; margin: 10px auto 0;
   overflow-x: auto; scrollbar-width: none;
-  padding: 10px 16px;
-  background: linear-gradient(180deg,
-    rgba(26,26,24,0)    0%,
-    rgba(26,26,24,0.28) 35%,
-    rgba(26,26,24,0.28) 65%,
-    rgba(26,26,24,0)  100%);
+  margin: 0 0 18px;
+  padding: 2px 0;
 }
 .hero-cat-chips::-webkit-scrollbar { display: none; }
 .hero-cat-chip {
-  /* Kontur frem for flade: et tyndt mørkt slør plus en lys kant, så fotoet
-     fortsætter igennem pindene. Den letteste af de former vi prøvede, og den
-     der lægger mindst nyt oveni et i forvejen lyst hero.
-
-     Prisen er at teksten står på fotoet i stedet for på en flade. Den bæres
-     af TRE ting i samspil — sløret, kanten og text-shadow. Fjernes én af dem,
-     falder læsbarheden, og mest hvis hero-billedet en dag bliver mere uroligt
-     end det nuværende, hvor rækken ligger på en rolig del af broen. */
-  background: rgba(20,26,20,0.30);
-  border: 1.5px solid rgba(245,240,232,0.55);
-  color: #fff;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
-  box-shadow: none;
-  padding: 8px 16px; border-radius: 999px;
-  /* Fraunces, samme skrift som overskriften lige ovenfor. Chipsene sidder
-     direkte under den, og det binder heroen sammen i én stemme i stedet for
-     to. 600 og en anelse luft mellem bogstaverne, så en serif i lille grad
-     ikke bliver grødet. */
-  font-family: 'Fraunces', serif;
-  font-size: 0.84rem; font-weight: 600; letter-spacing: 0.012em;
+  /* Samme pind som sidebarens .filter-option. Det er den knap sitet allerede
+     bruger til præcis dette valg, så den skal ikke opfindes igen her. */
+  background: var(--sand);
+  border: 1.5px solid var(--border);
+  color: var(--charcoal);
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem; font-weight: 500;
   cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
-  transition: background 160ms, border-color 160ms, transform 160ms;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
   flex-shrink: 0;
-  /* Sløringen er ikke pynt her. Den er det der gør en travl baggrund rolig
-     nok til at en kontur-pind overhovedet kan læses. */
-  backdrop-filter: blur(10px);
 }
-.hero-cat-chip:hover { background: rgba(20,26,20,0.48); border-color: rgba(245,240,232,0.82); transform: translateY(-1px); }
-.hero-cat-chip:focus-visible { outline-color: rgba(245,240,232,0.9); }
+.hero-cat-chip:hover { background: var(--sand-2); border-color: var(--muted); }
+.hero-cat-chip:focus-visible { outline-color: var(--rust); }
 .hero-cat-chip.active {
-  /* Den eneste fyldte pind i rækken. Når de øvrige kun er kontur, er en
-     massiv flade den tydeligste markering der findes — og den kræver ingen
-     ekstra farve. */
-  background: var(--sand); border-color: transparent;
-  color: var(--forest); font-weight: 600;
-  text-shadow: none;
-  backdrop-filter: none;
-  box-shadow: none;
+  /* Fyldt forest, som .pill--nearme.active allerede gør det andre steder. */
+  background: var(--forest); border-color: var(--forest);
+  color: var(--sand); font-weight: 600;
 }
 .search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {

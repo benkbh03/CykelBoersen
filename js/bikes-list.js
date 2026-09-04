@@ -417,7 +417,11 @@ export function createBikesList({
 
   function searchBikes() {
     const search = document.getElementById('search-input').value;
-    const type   = document.getElementById('search-type').value;
+    // Dropdown'en er fjernet fra søgebaren; typen vælges nu med chip-rækken
+    // over annoncerne. Opslaget beholdes med ?. frem for at blive slettet:
+    // type-sync.js sætter stadig feltet hvis det findes, og en fremtidig
+    // flade kan genindføre det uden at denne linje skal røres.
+    const type   = document.getElementById('search-type')?.value || '';
     const city   = document.getElementById('search-city').value;
     const radius = document.getElementById('search-city-radius')?.value;
     // Hvis brugeren har valgt en radius, springer vi DB'ens city-filter over.
