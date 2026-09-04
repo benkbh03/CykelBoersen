@@ -1,5 +1,10 @@
 # CykelBørsen
 
+> **Læs [`STRATEGI.md`](STRATEGI.md) først.** Én side om retningen. Før du bygger
+> noget nyt: kan ændringen svare ja til prøven dér? Kan den ikke, så sig det
+> frem for at bygge den. Filen indeholder også et `Hvad vi ikke laver`-afsnit,
+> og det er den halvdel der gør den brugbar.
+
 Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Single-page vanilla JS app hostet via GitHub Pages, med Supabase som backend, Resend til e-mail og Anthropic Claude Haiku som support-bot.
 
 > **Bemærk om forhandler-betaling**: Forhandlerregistrering er **gratis lige nu** (lancering / ramp-up-fase) — målet er at få et kritisk antal forhandlere ind først. Stripe-edge-functions (`create-checkout-session`, `create-portal-session`, `stripe-webhook`) ligger klar i `supabase/functions/` til når betalt model genaktiveres, men kaldes ikke fra `/bliv-forhandler`-flowet pt. Formularen opretter direkte en `seller_type='dealer'`-profil der venter på admin-godkendelse (manuel `verified=true`).
@@ -89,6 +94,7 @@ halvdelen hver gang, og så holder man op med at læse den.
 
 Gå den igennem selv før en større ændring:
 
+- [ ] **Består ændringen prøven i `STRATEGI.md`?** Gør den det hurtigere at få en cykel op, lettere at bedømme en cykel eller sælger på afstand, eller dyrere at snyde? Hvis ingen af delene: hvorfor bygger vi den?
 - [ ] **Kritiske flows afprøvet på mobil:** opret bruger → opret annonce → bliv kontaktet → markér som solgt. Hele vejen, uden at springe over.
 - [ ] Er der en **migration** i denne ændring? Kan den rulles tilbage, og hvordan?
 - [ ] **Hvornår blev der sidst taget backup**, og er en genoprettelse nogensinde gennemført? En backup der aldrig er testet, er ikke en backup.
