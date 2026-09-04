@@ -287,6 +287,20 @@ export function createBikeDetail({
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
+          ${isDemo ? '' : `
+          <!-- Forbrugeraftaleloven § 8a: en online markedsplads skal oplyse
+               forbrugeren om sælger er erhvervsdrivende eller privat, OG at
+               forbrugerbeskyttelsen ikke gælder når sælger er privat. Badget
+               ovenfor viser den første halvdel; oplysningspligten hænger på
+               købsflowet, ikke på vilkårssiden, så den anden halvdel skal stå
+               her ved siden af sælgeren. Ligger uden for det klikbare
+               seller-kort, så teksten ikke navigerer væk. -->
+          <p class="bike-seller-legal">
+            ${sellerType === 'dealer'
+              ? 'Sælger er erhvervsdrivende. Forbrugerreglerne gælder for handlen, herunder reklamationsret.'
+              : 'Sælger er privatperson. Forbrugerbeskyttelsen gælder ikke: du har hverken reklamationsret eller fortrydelsesret, når du køber af en privat.'}
+            <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Læs mere</a>
+          </p>`}
           ${adminCanEdit ? `
           <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
             <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">${iconWrench(14)} Admin · forhandler-annonce</div>
