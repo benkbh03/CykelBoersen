@@ -663,21 +663,30 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .hero-cat-chips::-webkit-scrollbar { display: none; }
 .hero-cat-chip {
-  /* Mørk frem for lys. En lys, gennemsigtig chip med lys tekst virkede kun
-     så længe fotoet bag den var mørkt; efter opblødningen forsvandt den. */
-  background: rgba(20,26,20,0.42);
+  /* Næsten massiv charcoal frem for et tyndt, grønligt slør. Den gamle
+     42 %-fyldning lod fotoet skinne igennem, og cyklisterne bag gjorde
+     teksten mudret. --charcoal frem for #000: ren sort er hårdt ved siden
+     af en varm sandfarvet tekst, og det er den samme sorte som resten af
+     sitet bruger. */
+  background: rgba(26,26,24,0.88);
   /* Gennemsigtig frem for fjernet: så beholder chippen sin bredde, og
      :focus-visible kan stadig tegne en synlig kant. */
-  border: 1px solid transparent;
+  border: 1px solid rgba(245,240,232,0.10);
   color: var(--sand);
-  padding: 7px 14px; border-radius: 999px;
-  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.01em; cursor: pointer;
+  padding: 8px 16px; border-radius: 999px;
+  /* Fraunces, samme skrift som overskriften lige ovenfor. Chipsene sidder
+     direkte under den, og det binder heroen sammen i én stemme i stedet for
+     to. 600 og en anelse luft mellem bogstaverne, så en serif i lille grad
+     ikke bliver grødet. */
+  font-family: 'Fraunces', serif;
+  font-size: 0.84rem; font-weight: 600; letter-spacing: 0.012em;
+  cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
-  transition: all 160ms; flex-shrink: 0;
+  transition: background 160ms, border-color 160ms, transform 160ms;
+  flex-shrink: 0;
   backdrop-filter: blur(10px);
-  font-family: 'DM Sans', sans-serif;
 }
-.hero-cat-chip:hover { background: rgba(20,26,20,0.60); }
+.hero-cat-chip:hover { background: #1A1A18; border-color: rgba(245,240,232,0.22); transform: translateY(-1px); }
 .hero-cat-chip:focus-visible { outline-color: rgba(245,240,232,0.8); }
 .hero-cat-chip.active {
   background: var(--sand); border-color: transparent;
