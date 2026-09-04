@@ -1,28 +1,6 @@
 # Aktuelle RLS-politikker — facitliste
 
-**Øjebliksbillede: 2. september 2026.**
-
-> ## ⚠️ FORÆLDET pr. 4. september 2026
->
-> Tabellen nedenfor er taget 2. september. Siden er politikker ændret to
-> gange, og filen er **ikke** genopfrisket. Læser du den som facit, tager du
-> fejl på disse punkter:
->
-> - **`rental_items` INSERT** kræver nu også `p.verified = true`, ikke kun
->   `seller_type = 'dealer'` (`harden_profile_insert_and_reviews.sql`)
-> - **`storage.objects` er slet ikke med i tabellen.** Politikkerne på
->   `bike-images` er skiftet ud: `"Authenticated upload"` og `"Owner delete"`
->   er droppet til fordel for `bike_images_insert_own` og
->   `bike_images_delete_own`, som begge accepterer at første mappeled enten
->   er kalderens bruger-id eller et annonce-id kalderen ejer
->   (`harden_bike_images_bucket.sql`). `avatars` og `id-documents` er uændret
-> - **To nye triggere:** `require_trade_before_review` på `reviews`, og
->   `protect_profile_columns` er udvidet fra `BEFORE UPDATE` til
->   `BEFORE INSERT OR UPDATE`
->
-> Kør de tre forespørgsler under "Sådan opdateres filen" og erstat både
-> tabellen og denne advarsel. Tilføj samtidig et `storage`-afsnit — det
-> manglede fra begyndelsen, og det var netop dér det største ukendte lå.
+**Øjebliksbillede: 4. september 2026.** Verificeret mod databasen, ikke udledt af migrationerne.
 
 ## Hvorfor denne fil findes
 
@@ -41,7 +19,27 @@ Denne fil er øjebliksbilledet af hvad databasen faktisk håndhæver.
 
 **Uden den viden vil enhver gennemgang rapportere de to som huller.** De er det ikke. Kør forespørgslen under "Kolonne-rettigheder" nedenfor for at se det aktuelle billede.
 
-**2. Triggere.** `profiles` UPDATE ser løs ud (`USING` uden `WITH CHECK`, admin kan alt), men triggeren `protect_privileged_profile_columns` i `harden_security.sql` blokerer ændringer af `is_admin`, `verified`, `id_verified`, `email_verified` og Stripe-kolonnerne. Triggeren `strip_private_phone` i `remove_private_phone.sql` nulstiller `phone` på ikke-forhandlere.
+**2. Triggere.** Tre politikker ser løsere ud end de er:
+
+- `profiles` INSERT tjekker kun `auth.uid() = id` og siger intet om kolonnerne. `protect_privileged_profile_columns` (nu `BEFORE INSERT OR UPDATE`) tvinger `is_admin`, `verified`, `id_verified` og Stripe-kolonnerne ned ved INSERT, og blokerer ændring af dem ved UPDATE. **Var `BEFORE UPDATE` alene indtil 3. september, hvor en ny konto kunne indsætte sin egen række med `is_admin = true`.**
+- `profiles` UPDATE ser løs ud af samme grund; samme trigger dækker den.
+- `reviews` INSERT tjekker kun `reviewer_id`. `require_trade_before_review` kræver at der findes en accepteret-besked mellem parterne. Forbeholdet står i `harden_profile_insert_and_reviews.sql`: en angriber kan selv sende sådan en besked, så det hæver barren uden at lukke den.
+- `strip_private_phone` nulstiller `phone` på ikke-forhandlere.
+
+Bekræft dem med:
+
+```sql
+SELECT tgname, tgrelid::regclass AS tabel,
+       CASE WHEN (tgtype & 2) > 0 THEN 'BEFORE' ELSE 'AFTER' END AS timing,
+       concat_ws(' OR ',
+         CASE WHEN (tgtype & 4)  > 0 THEN 'INSERT' END,
+         CASE WHEN (tgtype & 8)  > 0 THEN 'DELETE' END,
+         CASE WHEN (tgtype & 16) > 0 THEN 'UPDATE' END) AS haendelser
+FROM pg_trigger WHERE NOT tgisinternal
+  AND tgrelid IN ('public.profiles'::regclass, 'public.reviews'::regclass);
+```
+
+Bekræftet 3. september: `protect_profile_columns` og `strip_private_phone` står som `BEFORE INSERT OR UPDATE`, `require_trade_before_review` som `BEFORE INSERT`.
 
 ## Sådan opdateres filen
 
@@ -153,7 +151,7 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | rental_item_images | INSERT | rental_item_images_insert | public | – | `EXISTS (rental_items WHERE id = item_id AND dealer_id = auth.uid())` |
 | rental_item_images | SELECT | rental_item_images_select | public | `true` | – |
 | rental_items | DELETE | rental_items_delete | public | `dealer_id = auth.uid()` | – |
-| rental_items | INSERT | rental_items_insert | public | – | `dealer_id = auth.uid() AND seller_type = 'dealer'` |
+| rental_items | INSERT | rental_items_insert | public | – | `dealer_id = auth.uid() AND seller_type = 'dealer' AND verified = true` |
 | rental_items | SELECT | rental_items_select | public | `is_active OR dealer_id = auth.uid()` | – |
 | rental_items | UPDATE | rental_items_update | public | `dealer_id = auth.uid()` | `dealer_id = auth.uid()` |
 | reviews | INSERT | Indlogget bruger kan indsætte | public | – | `auth.uid() = reviewer_id` ⁴ |
@@ -182,3 +180,47 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 4. Ingen kontrol af at en handel har fundet sted. Begrænset af unik-indekset `reviews_unique_per_trade` og CHECK-constrainten `reviews_no_self_review`.
 5. Dublet af den foregående politik. Politikker OR'es sammen, så det er harmløst, men to migrationer har lavet den samme regel under forskellige navne.
 6. `FOR ALL` uden `WITH CHECK` er i orden: `USING` bruges også som check.
+
+---
+
+## Storage-politikker
+
+Ligger i `storage`-skemaet, ikke i `public`, og kommer derfor ikke med i
+forespørgslen ovenfor. Det var her det største ukendte lå indtil 3. september.
+
+Forkortelse: `MAPPE1` = `(storage.foldername(name))[1]`, altså første led i
+objektets sti.
+
+| Bucket | Cmd | Politik | Roller | Udtryk |
+|---|---|---|---|---|
+| bike-images | SELECT | Public read | public | `bucket_id = 'bike-images'` |
+| bike-images | INSERT | bike_images_insert_own | authenticated | `MAPPE1 = auth.uid()` **eller** `MAPPE1` er et annonce-id kalderen ejer |
+| bike-images | DELETE | bike_images_delete_own | authenticated | samme betingelse |
+| avatars | SELECT | Public can view avatars | public | `bucket_id = 'avatars'` |
+| avatars | INSERT | Authenticated users can upload avatars | authenticated | `MAPPE1 = auth.uid()` |
+| avatars | UPDATE | Users can update their own avatar | authenticated | `MAPPE1 = auth.uid()` |
+| avatars | DELETE | Users can delete their own avatar | authenticated | `MAPPE1 = auth.uid()` |
+| id-documents | SELECT | Users can view their own id-documents | authenticated | `MAPPE1 = auth.uid()` |
+| id-documents | SELECT | Admins can view all id-documents | authenticated | `ER_ADMIN` |
+| id-documents | INSERT | Authenticated users can upload id-documents | authenticated | `MAPPE1 = auth.uid()` |
+| id-documents | DELETE | Users can delete their own id-documents | authenticated | `MAPPE1 = auth.uid()` |
+
+### Tre ting værd at vide om bike-images
+
+**Der er INGEN UPDATE-politik, og det er med vilje.** Alle fire upload-steder
+bruger `upsert: false`, så ingen har brug for at overskrive en fil. Uden UPDATE
+kan en angriber heller ikke overskrive en andens billede. Tilføjes en
+UPDATE-politik senere, åbnes den dør.
+
+**Den dobbelte betingelse er ikke slendrian.** Annoncebilleder ligger under
+`<annonce-id>/…`, mens udlejnings- og admin-billeder ligger under
+`<bruger-id>/rental/…` og `<bruger-id>/admin-onbehalf/…`. Havde politikken kun
+accepteret bruger-id, ville alle eksisterende annoncebilleder være blevet
+uslettelige; havde den kun accepteret annonce-id, ville de to andre stier være
+faldet ud.
+
+**Den tidligere tilstand var to fejl med samme rod:** `"Authenticated upload"`
+tillod enhver indlogget at skrive hvor som helst i bucket'en, og
+`"Owner delete"` krævede at første mappeled var brugerens id — hvad det aldrig
+er for et annoncebillede, så DELETE virkede for ingen. Rettet i
+`harden_bike_images_bucket.sql`, kørt og verificeret 4. september 2026.
