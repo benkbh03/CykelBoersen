@@ -2,6 +2,28 @@
 
 **Øjebliksbillede: 2. september 2026.**
 
+> ## ⚠️ FORÆLDET pr. 4. september 2026
+>
+> Tabellen nedenfor er taget 2. september. Siden er politikker ændret to
+> gange, og filen er **ikke** genopfrisket. Læser du den som facit, tager du
+> fejl på disse punkter:
+>
+> - **`rental_items` INSERT** kræver nu også `p.verified = true`, ikke kun
+>   `seller_type = 'dealer'` (`harden_profile_insert_and_reviews.sql`)
+> - **`storage.objects` er slet ikke med i tabellen.** Politikkerne på
+>   `bike-images` er skiftet ud: `"Authenticated upload"` og `"Owner delete"`
+>   er droppet til fordel for `bike_images_insert_own` og
+>   `bike_images_delete_own`, som begge accepterer at første mappeled enten
+>   er kalderens bruger-id eller et annonce-id kalderen ejer
+>   (`harden_bike_images_bucket.sql`). `avatars` og `id-documents` er uændret
+> - **To nye triggere:** `require_trade_before_review` på `reviews`, og
+>   `protect_profile_columns` er udvidet fra `BEFORE UPDATE` til
+>   `BEFORE INSERT OR UPDATE`
+>
+> Kør de tre forespørgsler under "Sådan opdateres filen" og erstat både
+> tabellen og denne advarsel. Tilføj samtidig et `storage`-afsnit — det
+> manglede fra begyndelsen, og det var netop dér det største ukendte lå.
+
 ## Hvorfor denne fil findes
 
 Migrationerne i `supabase/sql/` er **ikke** kilden til sandhed om adgangskontrol. En stor del af politikkerne blev oprettet direkte i Supabase Dashboard før denne mappe eksisterede, og de findes derfor ikke i nogen fil. Stikprøve 2. september: seks ud af syv politikker fandtes kun i databasen.
@@ -36,6 +58,23 @@ LEFT JOIN pg_policies p ON p.schemaname = 'public' AND p.tablename = c.relname
 WHERE n.nspname = 'public' AND c.relkind = 'r'
 ORDER BY c.relname, p.cmd, p.policyname;
 ```
+
+### Storage-politikker
+
+`pg_policies` med `schemaname = 'public'` viser IKKE buckets. De ligger i
+`storage`-skemaet og skal hentes for sig:
+
+```sql
+SELECT policyname, cmd, roles::text,
+       replace(COALESCE(qual, '-'), E'\n', ' ')       AS using_udtryk,
+       replace(COALESCE(with_check, '-'), E'\n', ' ') AS with_check_udtryk
+FROM pg_policies WHERE schemaname = 'storage'
+ORDER BY policyname;
+```
+
+Tre buckets i drift: `bike-images` (offentlig læsning), `avatars` (offentlig
+læsning, skrivning låst til `<bruger-id>/`) og `id-documents` (kun ejer og
+admin).
 
 ### Kolonne-rettigheder
 
