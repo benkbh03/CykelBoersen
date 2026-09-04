@@ -40,7 +40,11 @@ Det her er den halvdel der gør en strategi til en strategi.
 
 **Ikke betalingsformidler, før der er en grund.** I det sekund penge går gennem os, udløser det regulering (betalingstjenester, hvidvask, DAC7-indberetning) og ansvar for handler vi ikke er part i. Escrow er en stærk funktion og en meget dyr beslutning. Den træffes bevidst eller slet ikke.
 
-**Ikke funktioner der kun virker ét sted.** Et filter, en visning eller en datatype skal kunne bæres gennem hele tjeklisten i `CLAUDE.md`. Kan den ikke det, bygger vi et hul der fejler tavst. Vi har fundet fire af dem, og alle fire var usynlige indtil nogen kiggede.
+**Ikke funktioner vi ikke har råd til at gøre færdige.** Det her er ikke en påmindelse om at være grundig — alle er enige i at en funktion skal virke alle steder, og de fire huller vi har fundet blev bygget af nogen der også mente det. Elleve af tretten steder føles som færdigt.
+
+Reglen er en **pris der betales inden vi siger ja**: rører idéen cyklens datamodel, koster den tretten steder (tjeklisten i `CLAUDE.md`). Er en selvstændig side med egne data, koster den ét eller to. Første spørgsmål til en ny idé er derfor ikke "er den god", men **"hvor mange steder skal den leve"** — svaret afgør som regel om den er god nok til prisen.
+
+Er den ikke det, siger vi nej til idéen. Ikke til de sidste to steder.
 
 **Ikke noget der kun tjener forhandlere på privates bekostning, eller omvendt.** Køberen skal kunne stole på begge. Ryger den ene side, ryger markedspladsen.
 
