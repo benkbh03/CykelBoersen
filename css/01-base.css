@@ -684,7 +684,9 @@ body.nav-search-on .nav-search { display: flex; }
   background: var(--forest); border-color: var(--forest);
   color: var(--sand); font-weight: 600;
 }
-.search-bar-wrap { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+/* 860 → 640: baren mistede typevalget og skal ikke længere fylde så bredt.
+   Smallere og midt i, så den læses som ét kompakt værktøj under overskriften. */
+.search-bar-wrap { max-width: 640px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
   background: var(--cream); border-radius: 12px;
@@ -764,17 +766,16 @@ body.nav-search-on .nav-search { display: flex; }
   width: 1px; background: rgba(26,26,24,0.10); flex-shrink: 0; margin: 12px 0;
 }
 .search-pill-btn {
+  /* Kun ikon, kvadratisk. Teksten "Søg" gjorde knappen til det bredeste
+     element i baren og trak øjet væk fra felterne. Et ikon i rust siger det
+     samme og fylder det halve. */
   background: var(--rust); color: #fff;
-  border: none; padding: 11px 26px; border-radius: 9px;
-  cursor: pointer; font-size: 0.93rem; font-weight: 600;
-  font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em;
-  white-space: nowrap; transition: background 0.15s;
-  flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px;
-  /* Ingen rust-glød under en rust-knap. Knappen sidder inde i baren og
-     ligger ikke over noget, så skyggen var ren dekoration — og den lagde
-     samtidig en farvet dis på det lyse felt ved siden af. */
+  border: none; border-radius: 9px;
+  width: 44px; height: 44px; padding: 0;
+  cursor: pointer; transition: background 0.15s;
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
 }
-.search-pill-btn svg { width: 15px; height: 15px; }
+.search-pill-btn svg { width: 19px; height: 19px; }
 .search-pill-btn:hover { background: var(--rust-light); }
 .search-pill-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
 /* Cykelagent-pill: synlig peer til Søg-knappen, ikke konkurrent.
