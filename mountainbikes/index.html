@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260830z">
+<html lang="da" data-asset-v="20260831b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,22 +111,22 @@
        overskrifterne på forsiden. -->
   <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830z">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260831b">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260830z">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260830z">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830z">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260830z">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260830z">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830z">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260830z">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830z">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260830z">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830z">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830z">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260830z">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260831b">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260831b">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260831b">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260831b">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260831b">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260831b">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260831b">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260831b">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260831b">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260831b">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260831b">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260831b">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -364,6 +364,34 @@
           </div>
         </div>
       </div>
+      <!-- STAND OEVERST. Ny-eller-brugt er den foerste beslutning en cykelkoeber
+           tager, og boksen laa som nummer seks, foldet sammen. Genvejen
+           "Alle | Nye | Brugte" over listen var et forsoeg paa at raade bod
+           paa det, men den var en KOPI af de her afkrydsninger — samme
+           filter to steder. Den er fjernet, og filteret staar i stedet hvor
+           man leder efter det. Udfoldet som standard: et filter man skal
+           klikke op for at se, er ikke oeverst i praksis. -->
+      <div data-fsec="stand" class="sidebar-box">
+        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
+          <h3>Stand</h3>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleConditionInfo()" aria-label="Hvad betyder stand?" type="button">?</button>
+            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+          </div>
+        </div>
+        <div class="condition-guide" id="condition-info-popup" style="display:none">
+          <div class="cg-row"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
+          <div class="cg-row"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
+        </div>
+        <div class="filter-group sidebar-section-body">
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Som ny" onchange="applyFilters()"> Som ny <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="God stand" onchange="applyFilters()"> God stand <span class="filter-count">–</span></label>
+          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Brugt" onchange="applyFilters()"> Brugt <span class="filter-count">–</span></label>
+        </div>
+      </div>
       <div class="sidebar-box" data-fsec="pris">
         <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="true">
           <h3>Pris</h3>
@@ -578,27 +606,6 @@
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Børnecykel" onchange="applyFilters()"> Børnecykel <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Gravel" onchange="applyFilters()"> Gravel <span class="filter-count">–</span></label>
           <label class="filter-option"><input type="checkbox" data-filter="type" data-value="Senior cykel" onchange="applyFilters()"> Senior cykel <span class="filter-count">–</span></label>
-        </div>
-      </div>
-      <div data-fsec="stand" class="sidebar-box collapsed">
-        <div class="sidebar-box-header" onclick="toggleSidebarSection(this)" role="button" tabindex="0" aria-expanded="false">
-          <h3>Stand</h3>
-          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-            <button class="wheel-info-btn" onclick="event.stopPropagation();toggleConditionInfo()" aria-label="Hvad betyder stand?" type="button">?</button>
-            <svg class="sidebar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
-          </div>
-        </div>
-        <div class="condition-guide" id="condition-info-popup" style="display:none">
-          <div class="cg-row"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
-          <div class="cg-row"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
-          <div class="cg-row"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
-          <div class="cg-row"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
-        </div>
-        <div class="filter-group sidebar-section-body">
-          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Ny" onchange="applyFilters()"> Ny <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Som ny" onchange="applyFilters()"> Som ny <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="God stand" onchange="applyFilters()"> God stand <span class="filter-count">–</span></label>
-          <label class="filter-option"><input type="checkbox" data-filter="condition" data-value="Brugt" onchange="applyFilters()"> Brugt <span class="filter-count">–</span></label>
         </div>
       </div>
       <div data-fsec="farve" class="sidebar-box collapsed">
@@ -917,22 +924,6 @@
         .hero-cat-chips .hero-cat-chip.active{background:transparent;color:var(--forest);
           border-bottom-color:var(--forest);font-weight:700;}
         .hero-cat-chips .hero-cat-chip:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
-        /* Dæmpet med vilje. Fyldte vi den aktive knap med forest, ville der
-           igen stå to kraftigt markerede kontroller side om side, og det var
-           præcis den fejl fanerne blev indført for at rette. Her er den
-           aktive tilstand en lys flade plus mørk, fed tekst — tydelig nok
-           til at man kan se hvad der er valgt, roligt nok til at fanerne
-           bliver ved med at være hovedvalget. */
-        .cond-seg{display:inline-flex;flex-shrink:0;margin:0 0 8px;
-          border:1.5px solid var(--border);border-radius:8px;overflow:hidden;
-          background:var(--cream);}
-        .cond-axis-btn{border:none;background:transparent;color:var(--muted);
-          font:600 0.82rem/1 'DM Sans',sans-serif;padding:8px 11px;cursor:pointer;
-          transition:color .12s,background .12s;}
-        .cond-axis-btn + .cond-axis-btn{border-left:1.5px solid var(--border);}
-        .cond-axis-btn:hover{color:var(--charcoal);background:var(--sand);}
-        .cond-axis-btn.active{background:var(--sand-2);color:var(--forest);font-weight:700;}
-        .cond-axis-btn:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
         /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
@@ -947,12 +938,6 @@
              linje med fanerne, åd den halvdelen af bredden, og der var
              kun plads til to typer ad gangen. */
           .filter-band{margin:0 -16px 14px;padding:0 16px;flex-wrap:wrap;gap:0;}
-          /* Fuld bredde. Højrestillet og 157px bred stod den som en løs
-             klump med et stort tomrum til venstre — den lignede noget der
-             var faldet ned fra rækken ovenover. Fuld bredde med lige store
-             knapper er samme greb som Cykler|Tilbehør bruger lige over. */
-          .cond-seg{order:-1;margin:0 0 10px;width:100%;box-sizing:border-box;}
-          .cond-axis-btn{flex:1;min-width:0;}
           .fb-tabs{flex:1 0 100%;}
           /* Pilene er til mus og tastatur. På touch ruller man med fingeren,
              og der ville de kun dække to faner. */
@@ -1024,16 +1009,10 @@
           <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
         </div>
         </div>
-        <!-- Udfoldet, ikke en dropdown. Tre korte ord fylder ikke mere end
-             "Alle stande ▾" gjorde, og man kan se sine valg uden at åbne
-             noget. Dæmpet med vilje: fanerne ovenfor er hovedvalget, og to
-             kraftigt markerede kontroller ved siden af hinanden var netop
-             det problem der startede hele ombygningen. -->
-        <div class="cond-seg" role="group" aria-label="Filtrer efter stand">
-          <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
-          <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
-          <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
-        </div>
+        <!-- Stand ligger nu i sidebaren, øverst. Genvejen her var en KOPI af
+             Stand-boksens afkrydsninger, og to visninger af samme filter to
+             steder på skærmen er præcis det tjeklisten i CLAUDE.md advarer
+             imod. Nu er der ét sted. -->
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
