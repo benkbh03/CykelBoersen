@@ -593,6 +593,14 @@
   .search-hero-pill { display: none; }
   .search-bar-wrap { flex-direction: column; gap: 6px; }
   .search-bar {
+    /* width:100% er ikke pynt. .search-bar-wrap har align-items:center fra
+       basis-reglen, og i en kolonne betyder det at barnet bliver
+       shrink-to-fit. Baren stod derfor fast på 260px uanset skærmbredde —
+       60% af en 430px-telefon — og lignede en lille ø midt i heroen frem
+       for en søgebar. Vi sætter den på .search-bar og ikke på wrappens
+       align-items, fordi #save-search-btn under baren MED vilje er en
+       kompakt centreret pille og ikke skal strækkes med. */
+    width: 100%;
     border-radius: 14px; padding: 8px; gap: 6px;
     flex-direction: column; align-items: stretch;
     box-shadow: 0 10px 28px -8px rgba(0,0,0,0.3);

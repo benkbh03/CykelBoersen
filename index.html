@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260830w">
+<html lang="da" data-asset-v="20260830x">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,22 +111,22 @@
        overskrifterne på forsiden. -->
   <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830w">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830x">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260830w">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260830w">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830w">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260830w">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260830w">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830w">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260830w">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830w">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260830w">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830w">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830w">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260830w">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260830x">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260830x">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830x">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260830x">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260830x">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830x">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260830x">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830x">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260830x">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830x">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830x">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260830x">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -915,7 +915,7 @@
            Båndet må IKKE selv scrolle vandret: så ville dropdown'en trille ud
            af skærmen sammen med fanerne. Scrollen ligger på .hero-cat-chips,
            der har den i forvejen. */
-        .filter-band{display:flex;align-items:flex-end;gap:14px;margin:0 0 18px;
+        .filter-band{display:flex;align-items:flex-end;gap:12px;margin:0 0 18px;
           border-bottom:1.5px solid var(--border);}
         /* -1.5px: fanens understregning lægger sig OVENPÅ båndets streg i
            stedet for at stable sig på den, så den aktive fane hænger sammen
@@ -940,17 +940,28 @@
         .fb-arrow:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
         .hero-cat-chips .hero-cat-chip{background:transparent;border:none;border-radius:0;
           border-bottom:2.5px solid transparent;color:var(--muted);
-          font:600 0.88rem/1 'DM Sans',sans-serif;padding:11px 12px 12px;
+          font:600 0.88rem/1 'DM Sans',sans-serif;padding:11px 10px 12px;
           transition:color .12s,border-color .12s;}
         .hero-cat-chips .hero-cat-chip:hover{background:transparent;border-bottom-color:var(--border);color:var(--charcoal);}
         .hero-cat-chips .hero-cat-chip.active{background:transparent;color:var(--forest);
           border-bottom-color:var(--forest);font-weight:700;}
         .hero-cat-chips .hero-cat-chip:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
-        .cond-drop{flex-shrink:0;margin:0 0 8px;padding:7px 11px;
-          border:1.5px solid var(--border);border-radius:8px;background:var(--cream);
-          font:600 0.82rem 'DM Sans',sans-serif;color:var(--charcoal);cursor:pointer;
-          outline:none;transition:border-color .15s;}
-        .cond-drop:focus-visible{border-color:var(--forest);}
+        /* Dæmpet med vilje. Fyldte vi den aktive knap med forest, ville der
+           igen stå to kraftigt markerede kontroller side om side, og det var
+           præcis den fejl fanerne blev indført for at rette. Her er den
+           aktive tilstand en lys flade plus mørk, fed tekst — tydelig nok
+           til at man kan se hvad der er valgt, roligt nok til at fanerne
+           bliver ved med at være hovedvalget. */
+        .cond-seg{display:inline-flex;flex-shrink:0;margin:0 0 8px;
+          border:1.5px solid var(--border);border-radius:8px;overflow:hidden;
+          background:var(--cream);}
+        .cond-axis-btn{border:none;background:transparent;color:var(--muted);
+          font:600 0.82rem/1 'DM Sans',sans-serif;padding:8px 11px;cursor:pointer;
+          transition:color .12s,background .12s;}
+        .cond-axis-btn + .cond-axis-btn{border-left:1.5px solid var(--border);}
+        .cond-axis-btn:hover{color:var(--charcoal);background:var(--sand);}
+        .cond-axis-btn.active{background:var(--sand-2);color:var(--forest);font-weight:700;}
+        .cond-axis-btn:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
         /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
@@ -965,7 +976,7 @@
              linje med fanerne, åd den halvdelen af bredden, og der var
              kun plads til to typer ad gangen. */
           .filter-band{margin:0 -16px 14px;padding:0 16px;flex-wrap:wrap;gap:0;}
-          .cond-drop{order:-1;margin:0 0 10px auto;}
+          .cond-seg{order:-1;margin:0 0 10px auto;}
           .fb-tabs{flex:1 0 100%;}
           /* Pilene er til mus og tastatur. På touch ruller man med fingeren,
              og der ville de kun dække to faner. */
@@ -1037,17 +1048,16 @@
           <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
         </div>
         </div>
-        <label for="cond-select" class="sr-only">Filtrer efter stand</label>
-        <select class="cond-drop" id="cond-select" onchange="setConditionAxis(this.value)">
-          <option value="all">Alle stande</option>
-          <option value="new">Kun nye</option>
-          <option value="used">Kun brugte</option>
-          <!-- Vælges aldrig af brugeren. Sidebaren tillader kombinationer som
-               "kun Som ny", og så passer ingen af de tre. Så viser vi
-               "Tilpasset" i stedet for at lade dropdown'en påstå noget
-               forkert eller stå tom. Se currentConditionAxis(). -->
-          <option value="custom" hidden>Tilpasset stand</option>
-        </select>
+        <!-- Udfoldet, ikke en dropdown. Tre korte ord fylder ikke mere end
+             "Alle stande ▾" gjorde, og man kan se sine valg uden at åbne
+             noget. Dæmpet med vilje: fanerne ovenfor er hovedvalget, og to
+             kraftigt markerede kontroller ved siden af hinanden var netop
+             det problem der startede hele ombygningen. -->
+        <div class="cond-seg" role="group" aria-label="Filtrer efter stand">
+          <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
+          <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
+          <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
+        </div>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
