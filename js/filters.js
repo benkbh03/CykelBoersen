@@ -458,6 +458,13 @@ export function createFilters({
         data = bikesRes.data;
       }
       dealerCount = dealerRes?.count ?? null;
+    } else {
+      /* Medsendte data (fra loadInitialData) dækker BEGGE kategorier, mens
+         grenen ovenfor henter scopet til én. Uden denne linje talte den
+         første indlæsning tilbehør med under cykler, og hver senere
+         opdatering gjorde ikke — samme tæller, to svar. */
+      const _cat = (getBrowseCategory ? getBrowseCategory() : 'cykel') || 'cykel';
+      data = data.filter(b => (b.category || 'cykel') === _cat);
     }
 
     const total    = data.length;
