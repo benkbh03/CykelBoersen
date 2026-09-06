@@ -845,10 +845,15 @@ body:has(.inbox-page) #chat-widget { display: none; }
   grid-column: 2;
   grid-row: 1 / span 2;
   position: sticky;
+  /* SKAL rydde nav'en. `top` maales fra viewportens top, og nav'en er
+     position:sticky;top:0 — saa et mindre offset ville pinne kolonnen BAG
+     headeren, hvor prisen er usynlig. 12px frem for 20px: hver pixel her er
+     en pixel mindre plads til kolonnens underkant, og den skal kunne rummes
+     paa en 637px hoej flade (1080p med 150% Windows-skalering). */
+  top: calc(var(--nav-h) + 12px);
   /* SKAL rydde nav'en. `top` måles fra viewportens top, og nav'en er
      position:sticky;top:0 — så top:20px pinnede kolonnen fast BAG headeren,
      hvor prisen var usynlig. Sticky virkede; offsettet var forkert. */
-  top: calc(var(--nav-h) + 20px);
   min-width: 0;
   /* BEVIDST INGEN max-height/overflow-y her.
      Det gav kolonnen sin EGEN scrollbar ved siden af sidens — to scrollbars
@@ -858,26 +863,6 @@ body:has(.inbox-page) #chat-widget { display: none; }
      slanket (anti-svindel-tip og forhandler-fordele er fjernet), og de
      primære handlinger — pris, Kontakt, Giv bud — findes under alle
      omstændigheder i .bike-sticky-bar-pillen i bunden. */
-}
-
-/* LAV SKÆRM: fastgør ikke kolonnen.
-   En sticky kolonne der er højere end pladsen under nav'en er værre end ingen
-   sticky: den er pinnet, altså flytter den sig ikke, og dens underkant kan
-   derfor ALDRIG komme i syne. Gem, Prisfald og Del lå permanent under folden.
-
-   Målt på 1266x637 — hvilket er 1080p med 150% Windows-skalering, en meget
-   almindelig opsætning: 573px plads, 564px kolonne, 84px offset. Den kunne
-   ikke nå.
-
-   Under 700px højde løber kolonnen derfor med siden som almindeligt indhold.
-   Man scroller lidt og ser resten. De primære handlinger — pris og Kontakt —
-   findes stadig i .bike-sticky-bar-pillen i bunden, så der mistes ingenting.
-
-   Grænsen er sat med luft: 700 = 64 nav + 564 kolonne + 72 til en længere
-   beskrivelse eller en vurderingslinje. Vokser kolonnen forbi det, falder
-   den blot tilbage til at scrolle, i stedet for at skjule sin egen underkant. */
-@media (max-height: 700px) {
-  .bike-detail-grid--sticky .bd-col-info { position: static; }
 }
 
 /* Mobil: én kolonne, og rækkefølgen skal være PRÆCIS som før ændringen —
@@ -1572,7 +1557,11 @@ body:has(.inbox-page) #chat-widget { display: none; }
 .btn-util {
   flex: 1; min-width: 0;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  min-height: 44px; padding: 10px 6px;
+  /* 38px paa desktop, hvor der peges med en mus. Mobil-reglen laengere nede
+     holder de 44px, som er minimum for en finger. De 6px er ikke pynt: hele
+     kolonnen er sticky, og den skal kunne rummes under nav'en paa en 637px
+     hoej flade — hver pixel taeller. */
+  min-height: 38px; padding: 8px 6px;
   background: transparent; color: var(--charcoal);
   border: 1.5px solid var(--border); border-radius: 8px;
   font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
@@ -1595,6 +1584,12 @@ body:has(.inbox-page) #chat-widget { display: none; }
 }
 .btn-report-link:hover { color: #c0392b; }
 
+/* Touch: tilbage til 44px. Desktop-vaerdien ovenfor er sat lavere for at faa
+   den sticky kolonne til at passe paa lave skaerme, men en finger har brug for
+   mere end en musemarkoer. Skal staa EFTER basis-reglen for at vinde. */
+@media (max-width: 768px) {
+  .btn-util { min-height: 44px; padding: 10px 6px; }
+}
 @media (max-width: 380px) {
   .btn-icon-label { display: none; }   /* kun ikoner når pladsen er trang */
   .btn-util { gap: 0; }
@@ -2005,3 +2000,4 @@ body:has(.inbox-page) #chat-widget { display: none; }
 @keyframes btnSpin {
   to { transform: rotate(360deg); }
 }
+
