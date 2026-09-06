@@ -858,11 +858,42 @@ body.nav-search-on .nav-search { display: flex; }
 .main > * { min-width: 0; }
 
 /* ── SIDEBAR ── */
-.sidebar { display: flex; flex-direction: column; gap: 10px; }
-.sidebar-box {
-  background: var(--sand); border-radius: 12px;
-  padding: 0; border: 1px solid var(--border); overflow: hidden;
+/* ── FILTER-SIDEBAR ──
+   Ét panel, ikke en stak bakker. Før var hvert filter et sandfarvet kort med
+   egen kant, og indeni lå valgene som afrundede piller med endnu en kant:
+   tre lag ramme om ét ord. Det læste som pynt frem for værktøj.
+
+   Tre ting ændret, og den midterste gør det meste:
+
+   1. Ét panel med hårfine skillelinjer mellem afsnittene, så sidebaren er
+      ét objekt frem for otte.
+   2. Valgene er RÆKKER med rigtige afkrydsningsfelter, ét pr. linje. En
+      pille betyder "vælg én"; de her felter tillader flere, og formen løj
+      derfor om hvad kontrollen kunne. To kolonner brækkede desuden lange
+      navne ("Butchers & Bicycles" over to linjer i sin egen boble).
+   3. Tallet står i sin egen højrestillede kolonne. Det er sidebarens mest
+      værdifulde information — det svarer på "er der overhovedet noget" —
+      og det lå klemt inde i pillen.
+
+   Overskrifterne er små versaler i dæmpet grå frem for grøn serif, så det
+   er cyklernes tal der fylder i synsfeltet, ikke etiketterne. */
+.sidebar {
+  display: flex; flex-direction: column; gap: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2px 16px;
 }
+.sidebar-box {
+  background: transparent; border: none; border-radius: 0;
+  padding: 0; overflow: visible;
+}
+/* Skillelinje mellem afsnit. Bemærk at rækkefølgen på skærmen styres af
+   flex-order nedenfor, mens den her vælger går på DOM-naboer. Det passer,
+   fordi alle .sidebar-box ligger samlet i markuppen. Quiz-boksen er ikke en
+   .sidebar-box og beholder sin egen kortramme — den er et tilbud, ikke et
+   filter, og må gerne skille sig ud. */
+.sidebar-box + .sidebar-box { border-top: 1px solid #efebe2; }
 /* Filtrenes rækkefølge styres med flex-order frem for at flytte markup.
    .sidebar er display:flex;flex-direction:column, så order virker direkte —
    og en omrokering er dermed ren CSS og triviel at rulle tilbage.
@@ -909,31 +940,25 @@ body.nav-search-on .nav-search { display: flex; }
 
 .sidebar-box-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 18px; cursor: pointer; user-select: none;
-  background: var(--sand); transition: background 0.15s;
+  padding: 16px 0 9px; cursor: pointer; user-select: none;
+  background: transparent;
 }
-.sidebar-box-header:hover { background: #ebe6da; }
+.sidebar-box-header:hover h3 { color: var(--charcoal); }
 .sidebar-box-header h3 {
-  font-family: 'Fraunces', serif; font-size: 0.95rem;
-  font-weight: 600; color: var(--forest); margin: 0;
+  font-family: 'DM Sans', sans-serif; font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--muted); margin: 0; transition: color 0.12s;
 }
 .sidebar-chevron {
   width: 16px; height: 16px; flex-shrink: 0;
   color: var(--muted); transition: transform 0.22s;
 }
 .sidebar-box.collapsed .sidebar-chevron { transform: rotate(-90deg); }
-.sidebar-section-body { padding: 0 18px 16px; }
+.sidebar-section-body { padding: 0 0 14px; }
 .sidebar-box.collapsed .sidebar-section-body { display: none; }
-.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
-.filter-group .filter-option {
-  flex: 1 1 calc(50% - 4px);
-  min-width: 0;
-  justify-content: center;
-  text-align: center;
-}
-.filter-group .filter-option--full {
-  flex: 1 1 100%;
-}
+/* Ét valg pr. linje. Var før to kolonner af piller, hvilket brækkede lange
+   navne midt over og gjorde listen umulig at skimme lodret. */
+.filter-group { display: block; }
 /* "Gem din søgning" card */
 .sidebar-save-card {
   background: var(--forest); border-radius: 12px;
@@ -955,24 +980,43 @@ body.nav-search-on .nav-search { display: flex; }
   width: 100%;
 }
 .sidebar-save-card button:hover { background: var(--rust-light); }
-/* Filter-chips: checkbox skjult, label styles som pille — konsistent med
-   kort-sheet og Cykelagent. Logikken læser stadig input:checked. */
+/* Filter-række: det rigtige input er stadig skjult (logikken læser
+   input:checked uændret), men etiketten tegner nu et afkrydsningsfelt via
+   ::before i stedet for at være en pille. Pilleformen betyder "vælg én", og
+   de her felter tillader flere — formen løj om hvad kontrollen kunne. */
 .filter-option {
-  display: inline-flex; align-items: center; gap: 6px;
-  cursor: pointer; font-size: 0.85rem; color: var(--charcoal);
-  background: var(--sand); border: 1.5px solid var(--border);
-  border-radius: 999px; padding: 7px 13px; user-select: none;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  cursor: pointer; font-size: 0.87rem; color: var(--charcoal);
+  background: transparent; border: none; border-radius: 0;
+  padding: 8px 2px; user-select: none;
+  transition: color 0.12s;
 }
-.filter-option:hover { border-color: var(--rust); }
+.filter-option::before {
+  content: ''; flex-shrink: 0; box-sizing: border-box;
+  width: 17px; height: 17px;
+  border: 1.5px solid #c9c2b4; border-radius: 4px; background: #fff;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.filter-option:hover::before { border-color: var(--forest); }
 .filter-option input[type="checkbox"] {
   position: absolute; opacity: 0; width: 0; height: 0; margin: 0; pointer-events: none;
 }
-.filter-option:has(input:checked) {
-  background: var(--rust); border-color: var(--rust); color: #fff;
+/* Fokus lever på det skjulte input, så rammen skal tegnes på etiketten.
+   Uden dette kan man ikke se hvor man er, når man tabber gennem filtrene. */
+.filter-option:has(input:focus-visible)::before {
+  outline: 2px solid var(--rust); outline-offset: 2px;
 }
-.filter-count { color: var(--muted); font-size: 0.74rem; }
-.filter-option:has(input:checked) .filter-count { color: rgba(255,255,255,0.82); }
+.filter-option:has(input:checked) { font-weight: 600; }
+.filter-option:has(input:checked)::before {
+  background: var(--forest) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.4l3 3 6-6'/></svg>") center / 12px no-repeat;
+  border-color: var(--forest);
+}
+/* Højrestillet i egen kolonne, med tabular-nums så cifrene flugter lodret
+   ned gennem listen i stedet for at danse. */
+.filter-count {
+  margin-left: auto; color: var(--muted); font-size: 0.78rem;
+  font-weight: 400; font-variant-numeric: tabular-nums;
+}
 .brand-search-input {
   width: 100%; box-sizing: border-box;
   padding: 7px 10px; border: 1px solid var(--border);
@@ -981,8 +1025,7 @@ body.nav-search-on .nav-search { display: flex; }
   outline: none;
 }
 .brand-search-input:focus { border-color: var(--forest); }
-.brand-filter-list { display: flex; flex-wrap: wrap; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
-.brand-filter-list .filter-option { flex: 1 1 calc(50% - 4px); min-width: 0; justify-content: center; text-align: center; }
+.brand-filter-list { display: block; max-height: 320px; overflow-y: auto; padding-right: 4px; }
 .brand-autocomplete-wrap { position: relative; }
 .brand-autocomplete-list {
   position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
@@ -1269,7 +1312,9 @@ body.nav-search-on .nav-search { display: flex; }
   border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 16px;
-  margin-bottom: 16px;
+  /* Luft i begge ender: boksen ligger nu inde i filter-panelet, mellem to
+     afsnit, og skal ikke klistre op ad skillelinjen ovenover. */
+  margin: 14px 0 16px;
 }
 .bike-quiz-intro {
   display: flex;
