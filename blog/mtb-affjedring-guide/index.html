@@ -1,5 +1,14 @@
 <!DOCTYPE html>
-<html lang="da">
+<!-- data-asset-v er DEN ENESTE kilde til cache-versionen for JavaScript.
+     Den stod før som fire literaler der skulle holdes i sync i hånden: her,
+     i bootstrap-scriptet nederst, i ASSET_VERSION i js/config.js og i
+     main.js' import af config.js. De drev fra hinanden — bootstrap'en stod
+     på 20260830b og config-importen på 20260701t, mens CSS var nået til w —
+     så den nye HTML blev serveret sammen med en cached main.js.
+     Nu læser de andre tre den her attribut. Bump ét sted.
+     (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
+     har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
+<html lang="da" data-asset-v="20260830w">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1276,10 +1285,11 @@
        elementerne skal findes i DOM før importen. Derfor: hent partials, injicér,
        og importér FØRST derefter main.js (sekventielt via await). -->
   <script type="module">
-    // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
-    // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
-    // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260830w';
+    // Læses fra <html data-asset-v> øverst i filen. Bootstrap'en må ikke
+    // importere config.js for at få versionen — en cached config.js kunne så
+    // udpege en gammel main.js — men den kan trygt læse et attribut der kom
+    // med den HTML browseren lige har hentet. Ét tal, ét sted.
+    const V = document.documentElement.dataset.assetV || '';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
