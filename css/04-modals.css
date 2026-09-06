@@ -786,7 +786,13 @@ body:has(.inbox-page) #chat-widget { display: none; }
    elementets, og der er nul plads at glide i. Reglen efterlades urørt, så
    modalen ser ud præcis som før. Annoncesiden bruger i stedet
    .bike-detail-grid--sticky nedenfor, som løser det med et 3-kolonne-grid. */
-.bike-detail-info { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
+/* gap 14 -> 10: kolonnen er sticky paa annoncesiden, og naar den er hoejere
+   end pladsen under nav'en, kan dens underkant ALDRIG komme i syne — den er
+   pinnet, saa den flytter sig ikke. Maalt paa en 1266x637-flade (1080p med
+   150% Windows-skalering, en meget almindelig opsaetning): kolonnen 611px,
+   pladsen 573px, altsaa Gem/Prisfald/Del permanent under folden.
+   De seks mellemrum her er den billigste plads at hente. */
+.bike-detail-info { display: flex; flex-direction: column; gap: 10px; position: sticky; top: 20px; }
 .bike-detail-price {
   font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; color: var(--rust);
   /* Førpris og rabat står PÅ prislinjen — baseline-justeret, så de læses som
@@ -852,6 +858,26 @@ body:has(.inbox-page) #chat-widget { display: none; }
      slanket (anti-svindel-tip og forhandler-fordele er fjernet), og de
      primære handlinger — pris, Kontakt, Giv bud — findes under alle
      omstændigheder i .bike-sticky-bar-pillen i bunden. */
+}
+
+/* LAV SKÆRM: fastgør ikke kolonnen.
+   En sticky kolonne der er højere end pladsen under nav'en er værre end ingen
+   sticky: den er pinnet, altså flytter den sig ikke, og dens underkant kan
+   derfor ALDRIG komme i syne. Gem, Prisfald og Del lå permanent under folden.
+
+   Målt på 1266x637 — hvilket er 1080p med 150% Windows-skalering, en meget
+   almindelig opsætning: 573px plads, 564px kolonne, 84px offset. Den kunne
+   ikke nå.
+
+   Under 700px højde løber kolonnen derfor med siden som almindeligt indhold.
+   Man scroller lidt og ser resten. De primære handlinger — pris og Kontakt —
+   findes stadig i .bike-sticky-bar-pillen i bunden, så der mistes ingenting.
+
+   Grænsen er sat med luft: 700 = 64 nav + 564 kolonne + 72 til en længere
+   beskrivelse eller en vurderingslinje. Vokser kolonnen forbi det, falder
+   den blot tilbage til at scrolle, i stedet for at skjule sin egen underkant. */
+@media (max-height: 700px) {
+  .bike-detail-grid--sticky .bd-col-info { position: static; }
 }
 
 /* Mobil: én kolonne, og rækkefølgen skal være PRÆCIS som før ændringen —
@@ -1012,7 +1038,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
 
 /* Oplysning efter forbrugeraftaleloven § 8a. Diskret, men læsbar — den skal
    kunne ses før handlen, ikke gemmes væk. */
-.bike-seller-legal { margin: 8px 2px 0; font-size: 0.76rem; line-height: 1.5; color: var(--muted); }
+.bike-seller-legal { margin: 2px 2px 0; font-size: 0.76rem; line-height: 1.45; color: var(--muted); }
 .bike-seller-legal a { color: var(--forest); text-decoration: underline; }
 
 /* ── TRUST CARD: Trygt køb-badge + sælger-historik ─────────── */
@@ -1504,15 +1530,15 @@ body:has(.inbox-page) #chat-widget { display: none; }
   .lightbox-next { right: 8px; }
   .lightbox-close { top: 10px; right: 10px; width: 40px; height: 40px; }
 }
-.action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-.btn-contact { background: var(--forest); color: var(--sand); border: none; padding: 13px; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-align: center; }
+.action-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 0; }
+.btn-contact { background: var(--forest); color: var(--sand); border: none; padding: 12px; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-align: center; }
 .btn-contact:hover { background: var(--forest-light); }
 .btn-bid { background: var(--rust); color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-align: center; }
 .btn-bid:hover { background: var(--rust-light); }
 .btn-external-cta {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   background: var(--rust); color: #fff; border: none;
-  padding: 14px 16px; border-radius: 8px;
+  padding: 12px 16px; border-radius: 8px;
   font-size: 1rem; font-weight: 700;
   font-family: 'DM Sans', sans-serif;
   text-align: center; text-decoration: none;
