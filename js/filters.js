@@ -1,4 +1,4 @@
-import { sortTypeFilterByCount, syncConditionAxis } from './condition-axis.js';
+import { sortTypeFilterByCount } from './type-sort.js';
 import { syncTypeControls } from './type-sync.js';
 
 export function createFilters({
@@ -138,10 +138,8 @@ export function createFilters({
     { const el = document.getElementById('sidebar-max-weight'); if (el) el.value = ''; }
 
     /* Ryd-knappen kalder ikke applyFilters (den loader direkte via loadBikes),
-       så "Alle | Nye | Brugte" ville blive stående på fx Brugte, og
-       hero-chippen på fx Citybike, selvom afkrydsningerne lige er ryddet.
-       Sync begge eksplicit her. */
-    syncConditionAxis();
+       så type-fanen ville blive stående på fx Citybike selvom afkrydsningerne
+       lige er ryddet. Sync eksplicit her. */
     syncTypeControls();
 
     setCurrentFilters({});
