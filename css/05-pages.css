@@ -588,7 +588,16 @@
      det første element på siden. Uden en top-padding der rydder den, lå
      overskriftens første linje BAG nav-baren — man så kun "på Cykelbørsen".
      56px = nav'ens højde (12px padding + indhold), plus 16px luft. */
-  .search-section { padding: calc(56px + 16px) 16px 16px; }
+  /* Bund-polstringen er STØRRE end top-polstringen med vilje. Blokken var
+     matematisk centreret — målt 39px luft over og 38px under på en 375px
+     telefon — men den så stadig for lav ud. To grunde: nav'en er et massivt
+     mørkt bånd, så himlen lige under den læses som tomrum, mens vejen under
+     kortet er travl og læses som indhold. Øjet opfatter derfor midten som
+     liggende højere end den geometriske midte.
+     40px i bunden mod 16px før flytter blokken op over midten uden at
+     top-aligne den. Resten af højden fordeler justify-content:center
+     ligeligt, så forspringet holder på alle skærmstørrelser. */
+  .search-section { padding: calc(56px + 16px) 16px 40px; }
   .search-hero-text { margin-bottom: 12px; }
   .search-hero-pill { display: none; }
   .search-bar-wrap { flex-direction: column; gap: 6px; }
