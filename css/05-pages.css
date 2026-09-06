@@ -563,6 +563,13 @@
     position: fixed; left: 0; right: 0;
     transition: transform 0.28s ease;
   }
+  /* Pladsen under den fastlåste nav. js/mobile-menu.js sætter den samme
+     værdi som inline-style ud fra nav.offsetHeight, og det er stadig den
+     der gælder til sidst. Men det sker først når main.js er hentet og kørt,
+     og indtil da lå sidens første element bag nav-baren. Den her linje
+     lukker det vindue, så der ikke er et hop ved indlæsning på en langsom
+     forbindelse. 55px = 12px polstring + 31px indhold + 12px polstring. */
+  body { padding-top: 55px; }
   nav.nav--hidden { transform: translateY(-100%); }
   .nav-links { gap: 6px; }
   .nav-links a:not(.btn-sell) { display: none; }
@@ -588,16 +595,17 @@
      det første element på siden. Uden en top-padding der rydder den, lå
      overskriftens første linje BAG nav-baren — man så kun "på Cykelbørsen".
      56px = nav'ens højde (12px padding + indhold), plus 16px luft. */
-  /* Bund-polstringen er STØRRE end top-polstringen med vilje. Blokken var
-     matematisk centreret — målt 39px luft over og 38px under på en 375px
-     telefon — men den så stadig for lav ud. To grunde: nav'en er et massivt
-     mørkt bånd, så himlen lige under den læses som tomrum, mens vejen under
-     kortet er travl og læses som indhold. Øjet opfatter derfor midten som
-     liggende højere end den geometriske midte.
-     40px i bunden mod 16px før flytter blokken op over midten uden at
-     top-aligne den. Resten af højden fordeler justify-content:center
-     ligeligt, så forspringet holder på alle skærmstørrelser. */
-  .search-section { padding: calc(56px + 16px) 16px 40px; }
+  /* INGEN ekstra top-polstring til nav'en. Den er `position: fixed`, men
+     js/mobile-menu.js sætter `body { padding-top: <nav-højde> }`, så heroen
+     begynder allerede UNDER nav'en. En tidligere version lagde 56px oveni
+     for at "rydde" en nav der ikke var i vejen, og det var de 56px der gjorde
+     at blokken sad for lavt med et tomt himmelbånd over sig.
+
+     Bund-polstringen er stadig større end toppen med vilje. Nav'en er et
+     massivt mørkt bånd, så himlen lige under den læses som tomrum, mens
+     vejen under kortet er travl og læses som indhold. Den optiske midte
+     ligger derfor højere end den geometriske. */
+  .search-section { padding: 16px 16px 40px; }
   .search-hero-text { margin-bottom: 12px; }
   .search-hero-pill { display: none; }
   .search-bar-wrap { flex-direction: column; gap: 6px; }
