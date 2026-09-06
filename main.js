@@ -246,8 +246,14 @@ function setBrowseCategory(cat) {
   const sel = document.getElementById('search-type');
   if (sel) sel.innerHTML = '<option value="">Alle typer</option>' + types.map(t => `<option>${esc(t)}</option>`).join('');
   const chips = document.querySelector('.hero-cat-chips');
-  if (chips) chips.innerHTML = '<button class="hero-cat-chip active" onclick="selectHeroCatChip(this,\'\')" aria-pressed="true">Alle</button>' +
-    types.map(t => `<button class="hero-cat-chip" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(chipLabel(t))}</button>`).join('');
+  /* data-type SKAL med. syncTypeControls() i js/type-sync.js læser
+     chip.dataset.type for at afgøre hvilken fane der er aktiv. Uden den var
+     hver eneste genopbygget fane "null", så ingen blev markeret når en type
+     var valgt — og ALLE blev markeret når ingen var. Markuppen i index.html
+     havde attributten; denne kopi havde den ikke. Samme felt under to former
+     i to filer, jf. mønstertabellen i CLAUDE.md. */
+  if (chips) chips.innerHTML = '<button class="hero-cat-chip active" data-type="" onclick="selectHeroCatChip(this,\'\')" aria-pressed="true">Alle typer</button>' +
+    types.map(t => `<button class="hero-cat-chip" data-type="${esc(t)}" onclick="selectHeroCatChip(this,'${t.replace(/'/g, "\\'")}')" aria-pressed="false">${esc(chipLabel(t))}</button>`).join('');
   const stg = document.getElementById('sidebar-type-group');
   if (stg) stg.innerHTML = types.map(t => `<label class="filter-option"><input type="checkbox" data-filter="type" data-value="${esc(t)}" onchange="applyFilters()"> ${esc(t)} <span class="filter-count">–</span></label>`).join('');
   const sth = document.getElementById('sidebar-type-heading');
@@ -963,6 +969,11 @@ async function init() {
     window.handleCookieChoice = handleCookieChoice;
     window.showCookieBannerAgain = showCookieBannerAgain;
     initCookieBanner();
+  });
+
+  // Rullepile på cykeltype-fanerne når rækken er bredere end feltet
+  import(`./js/tab-scroll.js?v=${ASSET_VERSION}`).then(({ initTabScroll }) => {
+    initTabScroll();
   });
 
   // Render sidebar farve-swatches
