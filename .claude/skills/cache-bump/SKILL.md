@@ -1,70 +1,91 @@
 ---
 name: cache-bump
-description: Bumper ASSET_VERSION i js/config.js og opdaterer alle ?v=... query-strings i index.html samt eventuelle inline JS-imports. Brug AUTOMATISK når der er ændringer i CSS-filer, lazy-loaded JS-moduler, eller hero.jpg, og brugeren beder om at committe/pushe. Brug også når brugeren eksplicit nævner "bump cache", "cache version", "ASSET_VERSION", eller "cache-bust".
+description: Bumper cache-versionen på CykelBørsen. Versionen står ÉT sted, på <html data-asset-v> i index.html, og CSS-linkene i samme fil bruger samme streng. Brug AUTOMATISK når der er ændringer i CSS-filer, js/-moduler, main.js, partials/modals.html eller hero.jpg, og brugeren beder om at committe/pushe. Brug også når brugeren nævner "bump cache", "cache version", "ASSET_VERSION" eller "cache-bust".
 ---
 
 # Cache-bump (CykelBørsen)
 
 ## Formål
-Sikre at browsere ALTID henter den nyeste CSS/JS efter en deploy. CykelBørsen bruger version-suffix-pattern (`?v=20261113ay` → `?v=20261113az`) på alle aggressivt-cachede assets.
+Sikre at browsere altid henter den nyeste CSS og JS efter en deploy.
 
-## Hvornår skal det køres
-Bump cache HVER GANG nogen af disse filer er ændret:
-- Alle filer i `css/` (8 CSS-filer)
-- Alle filer i `js/` (lazy-loaded moduler)
-- `main.js` (auto-genindlæses, men bump tjener som signal)
-- `hero.jpg` (separate preload-tag i index.html)
-- Filer der dynamisk-importes med `?v=${ASSET_VERSION}` i main.js
+## Vigtigst at vide først
+
+**Versionen står ét sted: `<html data-asset-v="...">` øverst i `index.html`.**
+
+Sådan har det ikke altid været. Den stod som fem literaler der skulle holdes
+i sync i hånden, og tre af dem drev fra hinanden — bootstrap-`V` stod på
+`20260830b` og `main.js`' config-import på `20260701t`, mens CSS var nået til
+`w`. Resultatet var ikke et nedbrud, men skævhed: ny HTML og ny CSS serveret
+sammen med en `main.js` browseren hentede fra sit eget cache.
+
+Disse tre læser nu attributten og må **ikke** redigeres ved en bump:
+
+| Fil | Hvad den gør |
+|---|---|
+| `index.html`, bootstrap-scriptet nederst | `const V = document.documentElement.dataset.assetV` |
+| `js/config.js` | `export const ASSET_VERSION = document.documentElement.dataset.assetV` |
+| `main.js` (øverst) | `await import(\`./js/config.js?v=${ASSET_VERSION}\`)` — dynamisk, fordi en statisk import-sti er en literal der ikke kan læse DOM'en |
+
+**Rører du ASSET_VERSION i `config.js` for at sætte et tal, laver du fejlen om
+igen.** Den skal blive ved med at læse fra DOM'en.
+
+CSS-linkene i `<head>` er stadig literaler. De er statiske `href`s der skal
+blokere gengivelsen, og lod man JavaScript skrive dem om, ville siden blinke
+ustylet først. De bruger med vilje samme streng som attributten, så én
+søg-og-erstat rammer det hele.
+
+## Hvornår
+
+Bump når noget af dette er ændret: `css/*`, `js/*`, `main.js`,
+`partials/modals.html`, `hero.jpg`.
 
 ## Procedure
 
 ### 1. Aflæs nuværende version
 ```bash
-grep ASSET_VERSION js/config.js
+grep -o 'data-asset-v="[^"]*"' index.html
 ```
-Format: `'20261113<suffix>'` hvor suffix er `a-z`, `aa-zz` osv.
+Format: `20260830<suffix>`, suffix `a-z`, derefter `aa-zz`.
 
 ### 2. Bestem næste suffix
-- `a` → `b`
-- `z` → `aa`
-- `az` → `ba`
-- `bz` → `ca`
-- Kun lowercase. Tabel:
+`a` → `b`, `z` → `aa`, `az` → `ba`, `bz` → `ca`. Kun små bogstaver.
 
-| Nuværende | Næste |
-|---|---|
-| `at` | `au` |
-| `az` | `ba` |
-| `bz` | `ca` |
-| `zz` | `aaa` (ekstremt sjældent — efter ~700 bumps) |
-
-### 3. Opdater config.js
-Brug Edit-værktøjet med `replace_all: false` for at sikre præcis ét hit:
-```js
-export const ASSET_VERSION = '20261113<NY_SUFFIX>';
-```
-
-### 4. Opdater index.html via sed
+### 3. Erstat i index.html — og KUN der
 ```bash
-sed -i 's/v=20261113<GAMMEL>/v=20261113<NY>/g' index.html
+sed -i 's/20260830<GAMMEL>/20260830<NY>/g' index.html
+```
+Uden `v=`-præfiks i mønstret, så attributten rammes sammen med CSS-linkene.
+
+### 4. Verificér — spring ALDRIG dette over
+```bash
+grep -c '20260830<NY>'     index.html   # forventet: 14 (1 attribut + 12 CSS + 1 hero)
+grep -c '20260830<GAMMEL>' index.html   # skal være 0
 ```
 
-Bekræft med grep at præcis 9 hits ændredes (8 CSS-links + 1 hero-preload — flere hvis nye links er tilføjet).
+Bumpen er fejlet tavst tre gange: to gange matchede `sed` ikke det man troede
+(én gang fordi skallen døde før kommandoen kørte, én gang fordi mønstret
+allerede var forældet), og der blev committet uden at nogen så efter.
+**Læs tallene. Antag aldrig at `sed` ramte.**
 
-### 5. Verifikation
-- `grep "v=20261113" index.html | wc -l` → forventet antal (typisk 9-10)
-- `grep "ASSET_VERSION" js/config.js` → ny version
+Ændrer tallet i trin 4 sig ikke som forventet, så find ud af hvorfor før du
+committer. Et nyt CSS-link hæver tallet med ét; det er den normale forklaring.
+
+### 5. Ved en ny CSS-fil
+Tilføj `<link>` i `index.html` med samme versionsstreng som resten.
 
 ## VIGTIGT
-- **Aldrig** spring trin 4 over — index.html'ens CSS-links er separate fra config.js-versionen
-- **Aldrig** brug `--no-verify` eller skip hooks i commit
-- Hvis brugeren laver en NY CSS-fil (fx `css/10-foo.css`), tilføj den til index.html med samme version-suffix
-- Hvis `hero.jpg` ER ændret men ingen CSS/JS-filer er det, skal `?v=...` på preload-tagget stadig bumpes
+- Rør **ikke** `ASSET_VERSION` i `js/config.js`. Den læser fra DOM'en.
+- Rør **ikke** `const V` i bootstrap-scriptet. Samme grund.
+- De præ-renderede sider (`/om-os/`, `/vilkaar/` osv.) har deres egne gamle
+  kopier af bootstrap'en. De genskrives af `sitemap.yml`-actionen ud fra
+  `index.html` — redigér dem ikke i hånden. Uden attributten falder de
+  tilbage til `?v=` uden værdi, hvilket virker uden fejl.
+- Brug **aldrig** `--no-verify`.
 
-## Eksempel-output (efter bump)
-
+## Eksempel-output
 ```
-Bumpet 20261113ax → 20261113ay:
-  ✓ js/config.js
-  ✓ index.html (8 CSS-links + 1 hero-preload)
+Bumpet 20260830w → 20260830x:
+  ✓ index.html — 14 forekomster (1 data-asset-v + 12 CSS + 1 hero)
+  ✓ 0 forekomster af den gamle streng tilbage
+  · js/config.js og bootstrap-V rørt ikke — de læser attributten
 ```

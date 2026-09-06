@@ -156,7 +156,7 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | Samme felt under to navne eller typer i to filer | 2 (`maxWeight`/`maxWeightKg`, `electronicShifting` bool/streng) | Lukket med `normalizeFilters()` i begge matchere |
 | Migration skrevet, committet — og aldrig kørt | 1 (`harden_bike_images_bucket.sql`, åben i to døgn) | Bekræft ALTID med en forespørgsel, ikke med et "det er deployet" |
 | `el.hidden = true` gør intet, fordi en forfatter-`display` slår browserens `[hidden]`-regel | 2 (`.browse-cat-wrap`, `.fb-arrow`) | Har en klasse en `display`-erklæring OG bliver skjult via `.hidden`, SKAL der være en `[hidden]{display:none !important}` ved siden af. Test på `getComputedStyle(el).display`, ikke på `el.hidden` — egenskaben er sand, mens elementet stadig står på skærmen |
-| Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-literalen `V` i `index.html` var drevet fra `20260830b` mens `ASSET_VERSION` var nået til `w`) | Tæl forekomsterne EFTER en bump (`grep -c`), og husk at `V` i bootstrap-scriptet nederst i `index.html` er en fjerde kopi der styrer `main.js` og `partials/modals.html`. Kan gøres umulig: lad `config.js` læse versionen fra DOM'en i stedet for at gentage den |
+| Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-`V` stod på `20260830b` og `main.js`' config-import på `20260701t` mens CSS var nået til `w`) | **Lukket.** Versionen står nu KUN på `<html data-asset-v>` i `index.html`; bootstrap'en, `ASSET_VERSION` og `main.js`' config-import læser den derfra. CSS-linkene er stadig literaler (statiske `href`s skal blokere gengivelsen), men bruger samme streng, så én søg-og-erstat i `index.html` rammer alt. Tæl stadig med `grep -c` efter en bump |
 
 ## Kodestil og filstruktur
 
@@ -364,7 +364,7 @@ spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs 
 9. **Gem-søgning** (`js/my-profile.js saveCurrentSearch`): `hasFilters`-guard + navn-`parts` (persistering sker via `...fa`-spread)
 10. **Visning**: `js/bike-detail.js` (techRows), `js/compare.js` (`.select()` + rows + `rawValue`)
 11. **Admin-oprettelse**: `js/admin-bulk-import.js OPTIONAL_FIELDS`, `supabase/functions/admin-create-bike ALLOWED_BIKE_FIELDS`
-12. Bump `ASSET_VERSION` (config.js) + CSS-`?v=` i `index.html` hvis CSS rørt
+12. Bump versionen i `index.html`: én søg-og-erstat af den gamle streng rammer både `<html data-asset-v>` (kilden til alle JS-imports) og CSS-`?v=`-linkene. `ASSET_VERSION` i `config.js` læser attributten og skal IKKE ændres. Tæl bagefter med `grep -c '<ny streng>' index.html` — bumpen er fejlet tavst før
 
 Bemærk: edge functions (#7) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
 

@@ -7,11 +7,22 @@ import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckb
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
 import { supabase, PROFILE_SESSION_FIELDS } from './js/supabase-client.js';
-// config.js cache-bustes via ?v= (skal holdes i sync med ASSET_VERSION i config.js
-// + bootstrap-V i index.html). Uden query'en serverer browseren/GitHub Pages en
-// cached config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
-// igennem før HTTP-cachen udløber. Bump literalen sammen med ASSET_VERSION.
-import { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ASSET_VERSION, ACCESSORY_TYPES } from './js/config.js?v=20260701t';
+/* config.js cache-bustes via ?v=, ellers serverer browseren en cached
+   config.js efter en deploy, så ændringer i fx BIKES_PAGE_SIZE ikke slår
+   igennem før HTTP-cachen udløber.
+
+   DYNAMISK import, ikke statisk: en statisk import-sti er en literal, og
+   den literal kan ikke læse <html data-asset-v>. Det var netop derfor den
+   her linje kunne stå frosset på 20260701t mens resten af siden var nået
+   til 20260830. Med en dynamisk import kommer versionen fra samme sted som
+   alle de andre, og der er ikke noget tilbage at glemme at bumpe.
+
+   Top-level await er i orden her: main.js indlæses selv med `await import`
+   fra bootstrap'en i index.html, og de øvrige statiske imports ovenfor er
+   allerede kørt færdig på dette tidspunkt. */
+const ASSET_VERSION = document.documentElement.dataset.assetV || '';
+const { BIKES_PAGE_SIZE, BIKES_LOAD_MORE_SIZE, MAP_PAGE_LIMIT, STATIC_PAGE_ROUTES, IMAGE_TRANSFORMS_ENABLED, ACCESSORY_TYPES } =
+  await import(`./js/config.js?v=${ASSET_VERSION}`);
 setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { setConditionAxis as _setConditionAxis, syncConditionAxis, sortTypeFilterByCount } from './js/condition-axis.js';
@@ -1614,6 +1625,13 @@ async function loadDealers(dealers, bikeRows) {
   }
 
   if (error || !dealers || dealers.length === 0) {
+    /* `if (container)` — vagten øverst returnerer kun når BEGGE mangler, og
+       #dealer-cards-container findes ikke i index.html. På forsiden er
+       container derfor altid null, mens #promoted-dealers altid findes, så
+       den her gren kastede en TypeError ved hver indlæsning hvor der var
+       nul verificerede forhandlere. Resten af funktionen tjekker allerede
+       `if (container)`; det var kun tom-tilstanden der ikke gjorde. */
+    if (!container) return;
     container.className = 'dealer-cards dealer-empty-state';
     container.innerHTML = `
       <div class="dealer-empty-card">
