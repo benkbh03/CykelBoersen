@@ -409,7 +409,10 @@ export function createCykelagentPage({
 
         <div class="cykelagent-field">
           <label class="cykelagent-label">Farve</label>
-          <div class="cykelagent-chips-row">
+          <!-- --colors: beholder pilleformen. Farveprikken ER informationen,
+               og en prik ved siden af et afkrydsningsfelt bliver to symboler
+               om det samme. Samme valg som i sidebarens Farve-boks. -->
+          <div class="cykelagent-chips-row cykelagent-chips-row--colors">
             ${BIKE_COLORS.map(c => `
               <button type="button" class="cykelagent-chip-btn cykelagent-color-chip${_form.colors.includes(c.name) ? ' active' : ''}" onclick="toggleCykelagentArray('colors', '${esc(c.name)}')">
                 <span class="cykelagent-color-swatch" style="background:${c.hex};${c.dark ? '' : 'border:1px solid var(--border);'}"></span>
@@ -430,7 +433,10 @@ export function createCykelagentPage({
 
         <div class="cykelagent-field">
           <label class="cykelagent-label">Sælgertype</label>
-          <div class="cykelagent-chips-row">
+          <!-- --single: ét valg, ikke flere. Afkrydsningsfelter ville love
+               at man kunne vælge både Forhandlere og Private hver for sig,
+               og det kan man ikke — det er dét "Alle" er til. -->
+          <div class="cykelagent-chips-row cykelagent-chips-row--single">
             <button type="button" class="cykelagent-chip-btn${_form.sellerType === '' || _form.sellerType === 'all' ? ' active' : ''}" onclick="setCykelagentSellerType('')">Alle</button>
             <button type="button" class="cykelagent-chip-btn${_form.sellerType === 'dealer' ? ' active' : ''}" onclick="setCykelagentSellerType('dealer')">${iconDealer()} Forhandlere</button>
             <button type="button" class="cykelagent-chip-btn${_form.sellerType === 'private' ? ' active' : ''}" onclick="setCykelagentSellerType('private')">${iconPrivate()} Private</button>
@@ -471,7 +477,8 @@ export function createCykelagentPage({
 
           <div class="cykelagent-field">
             <label class="cykelagent-label">Gear-skifte</label>
-            <div class="cykelagent-chips-row">
+            <!-- --single: Alle / Elektronisk / Mekanisk udelukker hinanden. -->
+            <div class="cykelagent-chips-row cykelagent-chips-row--single">
               <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === '' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', '')">Alle</button>
               <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'true' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'true')">⚡ Elektronisk (Di2/eTap/AXS)</button>
               <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'false' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'false')">🔧 Mekanisk</button>
