@@ -122,7 +122,10 @@ export function createDealersPage({
         <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">${iconDealer()} Bliv forhandler</button>
       </div>
       <div class="dealers-toolbar">
-        <button class="dealers-gps-btn" id="dealers-gps-btn" onclick="toggleDealerGPS()">📍 Brug min position</button>
+        <!-- Teksten skiftes fire steder i koden. Laa ikonet i knappens
+             textContent, ville det blive slettet foerste gang. Derfor et
+             selvstaendigt span til teksten. -->
+        <button class="dealers-gps-btn" id="dealers-gps-btn" onclick="toggleDealerGPS()"><svg class="pin-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg><span id="dealers-gps-label">Brug min position</span></button>
         <select class="dealers-sort-sel" id="dealers-sort" onchange="sortAndRenderDealers()">
           <option value="bikes">Flest cykler</option>
           <option value="nearest">Tættest</option>
@@ -197,17 +200,17 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       _dealerGPSActive = false;
       _dealerGPSCoords = null;
       _dealersPageData.forEach(d => d.distKm = null);
-      if (btn) { btn.classList.remove('active'); btn.textContent = '📍 Brug min position'; }
+      if (btn) { btn.classList.remove('active'); setGpsLabel('Brug min position'); }
       sortAndRenderDealers();
       return;
     }
     if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt'); return; }
-    if (btn) { btn.textContent = '📍 Henter position...'; btn.disabled = true; }
+    if (btn) { setGpsLabel('Henter position...'); btn.disabled = true; }
     navigator.geolocation.getCurrentPosition(async pos => {
       _dealerGPSCoords = [pos.coords.latitude, pos.coords.longitude];
       _dealerGPSActive = true;
-      if (btn) { btn.classList.add('active'); btn.textContent = '📍 Position aktiv'; btn.disabled = false; }
-      showToast('📍 Beregner afstande...');
+      if (btn) { btn.classList.add('active'); setGpsLabel('Position aktiv'); btn.disabled = false; }
+      showToast('Beregner afstande...');
       await Promise.all(_dealersPageData.map(async d => {
         const { dealer } = d;
         let coords = null;
@@ -223,7 +226,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       sortAndRenderDealers();
     }, () => {
       showToast('❌ Kunne ikke hente position — tjek tilladelser');
-      if (btn) { btn.textContent = '📍 Brug min position'; btn.disabled = false; }
+      if (btn) { setGpsLabel('Brug min position'); btn.disabled = false; }
     });
   }
 
@@ -316,6 +319,12 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     sortAndRenderDealers();
   }
 
+  /* Skriver KUN i etiket-spannet, saa pin-ikonet i knappen overlever. */
+  function setGpsLabel(tekst) {
+    const el = document.getElementById('dealers-gps-label');
+    if (el) el.textContent = tekst;
+  }
+
   function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) {
     const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
     const initials     = getInitials(displayName);
@@ -354,10 +363,13 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       : '';
 
     const servicesHtml = (Array.isArray(dealer.services) && dealer.services.length)
-      ? `<div class="dealer-card-services">${dealer.services.slice(0, 3).map(key => {
+      /* To ikoner, ikke tre. Kortet er 220px bredt, og med tre ikoner plus
+         "+N" blev der ikke plads til Google Maps-knappen ved siden af — den
+         braekkede i to linjer. To ikoner og et tal siger det samme. */
+      ? `<div class="dealer-card-services">${dealer.services.slice(0, 2).map(key => {
           const s = SERVICES.find(x => x.key === key);
           return s ? `<span class="dealer-card-service" title="${esc(s.label)}">${s.icon}</span>` : '';
-        }).join('')}${dealer.services.length > 3 ? `<span class="dealer-card-service-more">+${dealer.services.length - 3}</span>` : ''}</div>`
+        }).join('')}${dealer.services.length > 2 ? `<span class="dealer-card-service-more">+${dealer.services.length - 2}</span>` : ''}</div>`
       : '';
 
     const isPromoted = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
@@ -372,12 +384,18 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         ${distHtml}
       </div>
       <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
-      ${locationText ? `<div class="dealer-city">📍 ${esc(locationText)}</div>` : ''}
+      ${locationText ? `<div class="dealer-city"><svg class="pin-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg><span>${esc(locationText)}</span></div>` : ''}
       ${openHtml}
       ${starsHtml}
-      <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
-      ${servicesHtml}
-      ${mapsHtml}
+      <div class="dealer-count${bikeCount === 0 ? ' dealer-count--tom' : ''}">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      <!-- Foden skubbes ned med margin-top:auto, saa Google Maps-knappen staar
+           i samme hoejde paa alle kort i raekken. Kortene har forskelligt
+           indhold — nogle har aabningstider, nogle har vurderinger — og uden
+           det her hang knapperne i hver sin hoejde. -->
+      <div class="dealer-card-foot">
+        ${servicesHtml}
+        ${mapsHtml}
+      </div>
     </div>`;
   }
 
@@ -414,11 +432,11 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         </div>
 
         <div class="bd-perks">
-          <div class="bd-perk">✅ <span>Ubegrænset antal annoncer</span></div>
-          <div class="bd-perk">✅ <span>Verificeret forhandler-badge</span></div>
-          <div class="bd-perk">✅ <span>Direkte beskeder fra købere</span></div>
-          <div class="bd-perk">✅ <span>Prioriteret placering i søgning</span></div>
-          <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Ubegrænset antal annoncer</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Prioriteret placering i søgning</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis — ingen kreditkort</span></div>
         </div>
 
         <div class="bd-form" style="text-align:center;">
@@ -489,11 +507,11 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       </p>
 
       <div class="bd-perks">
-        <div class="bd-perk">✅ <span>Ubegrænset antal annoncer</span></div>
-        <div class="bd-perk">✅ <span>Verificeret forhandler-badge</span></div>
-        <div class="bd-perk">✅ <span>Direkte beskeder fra købere</span></div>
-        <div class="bd-perk">✅ <span>Prioriteret placering i søgning</span></div>
-        <div class="bd-perk">✅ <span>100% gratis — ingen kreditkort</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Ubegrænset antal annoncer</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Prioriteret placering i søgning</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis — ingen kreditkort</span></div>
       </div>
 
       <div class="bd-why">
@@ -546,7 +564,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <div class="form-group"><label>Adresse *</label><input type="text" id="dealer-address" placeholder="Start med at skrive gadenavn…" autocomplete="off"></div>
           <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="Udfyldes automatisk" autocomplete="off"></div>
         </div>
-        <p class="bd-auth-note" style="margin:-4px 0 0;">📍 Vælg din præcise butiks-adresse fra listen — så vises butikken korrekt på kortet.</p>
+        <p class="bd-auth-note" style="margin:-4px 0 0;">Vælg din præcise butiks-adresse fra listen — så vises butikken korrekt på kortet.</p>
 
         ${!isLoggedIn ? `
         <div class="bd-form-divider">
@@ -835,7 +853,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       });
     } catch {}
 
-    showToast('✅ Ansøgning modtaget – vi vender tilbage hurtigst muligt!');
+    showToast('Ansøgning modtaget – vi vender tilbage hurtigst muligt!');
     navigateTo('/min-profil');
   }
 

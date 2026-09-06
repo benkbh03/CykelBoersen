@@ -6,7 +6,7 @@
    - Følg forhandler (dealer_followers)
    ============================================================ */
 
-import { esc } from './utils.js';
+import { esc, iconBell } from './utils.js';
 
 export const DAYS = [
   { key: 'mon', label: 'Man' },
@@ -18,13 +18,40 @@ export const DAYS = [
   { key: 'sun', label: 'Søn' },
 ];
 
+/* Ikonerne var emoji. Det er ét sted i koden, men tre steder på skærmen —
+   filter-pindene på /forhandlere, ikonrækken på forhandlerkortene og
+   badges på forhandlerprofilen — så det slog igennem overalt.
+
+   Emoji tegnes af styresystemet, ikke af os. Samme kode blev til Apples
+   farvede tegninger på iPhone, Microsofts på Windows og noget tredje på
+   Android, i en anden stregtykkelse og et andet farverum end resten af
+   sitet. Nogle af dem betød desuden ikke det de skulle: 🏪 for "Afhentning"
+   og ⚙️ for "Custom-byg" er gæt, ikke ikoner.
+
+   Nu er de tegnet i samme sprog som resten: 24x24, currentColor, stregtykkelse
+   1.8. De arver tekstfarven, så de virker i både en lys pind og en mørk. */
+const ikon = (d) =>
+  `<svg class="svc-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+
 export const SERVICES = [
-  { key: 'reparation', label: 'Reparation',         icon: '🔧' },
-  { key: 'custombyg',  label: 'Custom-byg',         icon: '⚙️' },
-  { key: 'leasing',    label: 'Leasing/abonnement', icon: '📋' },
-  { key: 'afhentning', label: 'Afhentning',         icon: '🏪' },
-  { key: 'levering',   label: 'Levering',           icon: '🚚' },
-  { key: 'tradein',    label: 'Trade-in',           icon: '↻'  },
+  // Skruenøgle
+  { key: 'reparation', label: 'Reparation',
+    icon: ikon('<path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.1 2.1 0 0 1-3-3l8.4-8.4a4 4 0 0 0-2-2Z"/><path d="M14.7 6.3 18 3"/>') },
+  // Skydere — indstillinger man selv saetter
+  { key: 'custombyg',  label: 'Custom-byg',
+    icon: ikon('<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h8M16 18h4"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="14" cy="18" r="2"/>') },
+  // Dokument med linjer — en aftale
+  { key: 'leasing',    label: 'Leasing/abonnement',
+    icon: ikon('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h4"/>') },
+  // Butiksfacade med markise
+  { key: 'afhentning', label: 'Afhentning',
+    icon: ikon('<path d="M4 9h16v11H4z"/><path d="M3 9l1.6-4h14.8L21 9"/><path d="M9 20v-6h6v6"/>') },
+  // Varevogn
+  { key: 'levering',   label: 'Levering',
+    icon: ikon('<path d="M3 7h10v9H3z"/><path d="M13 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>') },
+  // To pile i ring — bytte
+  { key: 'tradein',    label: 'Trade-in',
+    icon: ikon('<path d="M3 10a7 7 0 0 1 12-4.9L18 8"/><path d="M18 4v4h-4"/><path d="M21 14a7 7 0 0 1-12 4.9L6 16"/><path d="M6 20v-4h4"/>') },
 ];
 
 export function defaultOpeningHours() {
@@ -301,7 +328,7 @@ export function createFollowDealer({ supabase, showToast, getCurrentUser, openLo
         .from('dealer_followers')
         .insert({ user_id: u.id, dealer_id: dealerId });
       if (error) { showToast?.('❌ Kunne ikke følge forhandler'); return; }
-      showToast?.('🔔 Du følger nu forhandleren');
+      showToast?.('Du følger nu forhandleren');
     }
     if (btnEl) updateFollowButton(btnEl, !wasFollowing);
     return !wasFollowing;
@@ -311,14 +338,14 @@ export function createFollowDealer({ supabase, showToast, getCurrentUser, openLo
     btnEl.classList.toggle('following', following);
     btnEl.innerHTML = following
       ? '<span class="follow-icon">✓</span> Følger'
-      : '<span class="follow-icon">🔔</span> Følg';
+      : `<span class="follow-icon">${iconBell(15)}</span> Følg`;
   }
 
   function buildFollowButton(dealerId, following) {
     const cls = following ? 'pp-follow-btn following' : 'pp-follow-btn';
     const txt = following
       ? '<span class="follow-icon">✓</span> Følger'
-      : '<span class="follow-icon">🔔</span> Følg';
+      : `<span class="follow-icon">${iconBell(15)}</span> Følg`;
     return `<button class="${cls}" onclick="toggleFollowDealer('${dealerId}', this)" data-dealer-id="${dealerId}">${txt}</button>`;
   }
 

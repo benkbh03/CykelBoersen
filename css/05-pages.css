@@ -993,10 +993,13 @@
   border: 2px solid var(--cream);
   flex-shrink: 0;
 }
+/* #2A7D4F var en tredje groen paa siden, ved siden af forest og
+   forhandler-badgens. Verificering er sitets vigtigste tillidssignal, og saa
+   skal det ikke ligne en farve vi har laant et andet sted fra. */
 .verified-badge-large {
   display: inline-flex; align-items: center; justify-content: center;
   width: 22px; height: 22px;
-  background: #2A7D4F; border-radius: 50%;
+  background: var(--forest); border-radius: 50%;
   color: #fff; font-size: 0.75rem; font-weight: 700;
   margin-left: 6px; vertical-align: middle;
   border: 2px solid var(--cream);
@@ -1308,11 +1311,15 @@
 }
 .verify-action-btn:hover { background: var(--forest-light); }
 
-/* Email badge (inline) */
+/* Email badge (inline).
+   Var en konvolut-emoji, som paa Windows tegnes som et lille lilla-blaat
+   rektangel — det saa ud som et billede der ikke var indlaest, lige ved siden
+   af forhandlerens navn. Nu det samme stregikon som resten af sitet. */
 .email-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 0.7rem;
-  margin-left: 4px; vertical-align: middle;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--sand); color: var(--muted);
+  margin-left: 5px; vertical-align: middle;
 }
 
 /* Min profil — verificeringskort */
