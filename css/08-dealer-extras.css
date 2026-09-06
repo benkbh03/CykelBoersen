@@ -207,7 +207,7 @@
   background: #fff;
   border: 1.5px solid var(--border);
   border-radius: 18px;
-  padding: 7px 14px;
+  padding: 6px 12px;
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--charcoal);
@@ -250,19 +250,20 @@
 .dealer-card-services {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 0;
+  gap: 4px;
+  margin-top: 6px;
 }
-/* Ikonerne stod i hver sin cirkel med kant. Tre cirkler plus "+3" i bunden af
-   et kort der i forvejen har en cirkel til logoet blev til fire cirkler, og
-   de betød ikke det samme. Nu bare stregikonerne — i forest, ikke i gråt. */
 .dealer-card-service {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 22px; height: 22px;
+  background: var(--sand);
+  border: 1px solid var(--border);
+  border-radius: 50%;
   color: var(--forest);
 }
-.dealer-card-service .svc-ikon { width: 17px; height: 17px; }
+.dealer-card-service .svc-ikon { width: 13px; height: 13px; }
 .dealer-card-service-more {
   font-size: 0.7rem;
   color: var(--muted);
