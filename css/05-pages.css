@@ -710,6 +710,12 @@
     font-family: 'Fraunces', Georgia, serif !important;
     font-size: 1.05rem !important;
     font-weight: 700 !important;
+    /* Nulstil desktoppens versal-mikroetiket. Den er rigtig i et smalt
+       sidepanel hvor overskriften skal træde tilbage, men her er den
+       selve knappen man trykker på for at folde afsnittet ud, og
+       "M Æ R K E" i serif-versaler er hverken læsbart eller pænt. */
+    text-transform: none !important;
+    letter-spacing: normal !important;
     color: #2A3D2E !important;
     margin: 0 !important;
     flex: 1 1 auto !important;
