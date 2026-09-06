@@ -3381,6 +3381,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   flex-wrap: wrap;
 }
 .dealers-gps-btn {
+  /* inline-flex + gap: knappen har et SVG-ikon nu, ikke en emoji. Uden de her
+     linjer havde ikonet ingen stoerrelse — et SVG uden width/height falder
+     tilbage til 300x150px — og knappen blev en kaempe firkant med teksten
+     gemt under ikonet. */
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   background: var(--sand);
   border: 1.5px solid var(--border);
   border-radius: 8px;
@@ -3393,6 +3400,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   transition: all 0.2s;
   white-space: nowrap;
 }
+.dealers-gps-btn .pin-ikon { width: 16px; height: 16px; flex-shrink: 0; }
 .dealers-gps-btn:hover { border-color: var(--forest); }
 .dealers-gps-btn.active { background: var(--forest); color: #fff; border-color: var(--forest); }
 .dealers-sort-sel {

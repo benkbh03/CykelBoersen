@@ -877,6 +877,13 @@ body.nav-search-on .nav-search { display: flex; }
 
    Overskrifterne er små versaler i dæmpet grå frem for grøn serif, så det
    er cyklernes tal der fylder i synsfeltet, ikke etiketterne. */
+/* Sikkerhedsnet for indlejrede ikoner. Et SVG uden width/height falder tilbage
+   til 300x150px, og saa lander der en plakat midt i en knap. Det skete for
+   pin-ikonet i "Brug min position". 1em betyder "paa stoerrelse med teksten
+   omkring", hvilket naesten altid er det rigtige; steder der vil have en
+   anden stoerrelse, saetter den selv og vinder paa specificitet. */
+.pin-ikon, .svc-ikon { width: 1em; height: 1em; flex-shrink: 0; }
+
 .sidebar {
   display: flex; flex-direction: column; gap: 0;
   background: #fff;
