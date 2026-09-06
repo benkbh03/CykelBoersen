@@ -307,8 +307,8 @@
   margin-bottom: 18px;
 }
 .cykelagent-field-row .cykelagent-field { margin-bottom: 0; }
-/* Samme mikroetiket som filter-sidebaren: små versaler i dæmpet grå.
-   Overskriften skal træde tilbage, så det er valgene man ser. */
+/* Samme mikroetiket som filter-sidebaren: små versaler, men i forest og ikke
+   i gråt. Den skal træde tilbage, ikke slukkes. */
 .cykelagent-label {
   display: block;
   font-family: 'DM Sans', sans-serif;
@@ -316,7 +316,7 @@
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--forest);
   margin-bottom: 10px;
 }
 .cykelagent-hint {
@@ -372,7 +372,7 @@
 .cykelagent-chip-btn::before {
   content: ''; flex-shrink: 0; box-sizing: border-box;
   width: 17px; height: 17px;
-  border: 1.5px solid #c9c2b4; border-radius: 4px; background: #fff;
+  border: 1.5px solid #C6BFAF; border-radius: 4px; background: #fff;
   transition: background-color 0.12s, border-color 0.12s;
 }
 .cykelagent-chip-btn:hover::before { border-color: var(--forest); }
@@ -436,7 +436,7 @@
 .cykelagent-toggle input[type="checkbox"] {
   appearance: none; -webkit-appearance: none;
   width: 17px; height: 17px; flex-shrink: 0; margin: 0;
-  border: 1.5px solid #c9c2b4; border-radius: 4px; background: #fff;
+  border: 1.5px solid #C6BFAF; border-radius: 4px; background: #fff;
   transition: background-color 0.12s, border-color 0.12s;
 }
 .cykelagent-toggle:hover input[type="checkbox"] { border-color: var(--forest); }

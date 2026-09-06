@@ -877,6 +877,13 @@ body.nav-search-on .nav-search { display: flex; }
 
    Overskrifterne er små versaler i dæmpet grå frem for grøn serif, så det
    er cyklernes tal der fylder i synsfeltet, ikke etiketterne. */
+/* Sikkerhedsnet for indlejrede ikoner. Et SVG uden width/height falder tilbage
+   til 300x150px, og saa lander der en plakat midt i en knap. Det skete for
+   pin-ikonet i "Brug min position". 1em betyder "paa stoerrelse med teksten
+   omkring", hvilket naesten altid er det rigtige; steder der vil have en
+   anden stoerrelse, saetter den selv og vinder paa specificitet. */
+.pin-ikon, .svc-ikon { width: 1em; height: 1em; flex-shrink: 0; }
+
 .sidebar {
   display: flex; flex-direction: column; gap: 0;
   background: #fff;
@@ -950,11 +957,15 @@ body.nav-search-on .nav-search { display: flex; }
   padding: 16px 0 9px; cursor: pointer; user-select: none;
   background: transparent;
 }
+/* Etiketten var var(--muted), altsaa graa. Den skal traede tilbage, men graa
+   goer den slukket frem for rolig — og med graa etiketter, graa tal og graa
+   afkrydsningsfelter blev hele panelet farveloest. Forest paa 0.72rem
+   versaler er lige saa diskret og hoerer til sitet. */
 .sidebar-box-header:hover h3 { color: var(--charcoal); }
 .sidebar-box-header h3 {
   font-family: 'DM Sans', sans-serif; font-size: 0.72rem;
   font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
-  color: var(--muted); margin: 0; transition: color 0.12s;
+  color: var(--forest); margin: 0; transition: color 0.12s;
 }
 .sidebar-chevron {
   width: 16px; height: 16px; flex-shrink: 0;
@@ -1001,7 +1012,7 @@ body.nav-search-on .nav-search { display: flex; }
 .filter-option::before {
   content: ''; flex-shrink: 0; box-sizing: border-box;
   width: 17px; height: 17px;
-  border: 1.5px solid #c9c2b4; border-radius: 4px; background: #fff;
+  border: 1.5px solid #C6BFAF; border-radius: 4px; background: #fff;
   transition: background-color 0.12s, border-color 0.12s;
 }
 .filter-option:hover::before { border-color: var(--forest); }

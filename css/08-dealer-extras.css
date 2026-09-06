@@ -215,7 +215,11 @@
   font-family: inherit;
   transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
-.dealer-service-filter .svc-ikon { width: 16px; height: 16px; color: var(--muted); }
+/* Ikonerne var var(--muted), altsaa graa. Graa er fravalg af farve, ikke et
+   valg — og seks graa ikoner ved siden af hinanden faar raekken til at se
+   slukket ud. Forest er sitets egen, den er lige saa rolig, og den siger at
+   nogen har bestemt sig. I den fyldte pind arver de teksten (hvid). */
+.dealer-service-filter .svc-ikon { width: 16px; height: 16px; color: var(--forest); }
 .dealer-service-filter.on .svc-ikon { color: currentColor; }
 .dealer-service-filter:hover { border-color: var(--forest); }
 .dealer-service-filter.on {
@@ -251,12 +255,12 @@
 }
 /* Ikonerne stod i hver sin cirkel med kant. Tre cirkler plus "+3" i bunden af
    et kort der i forvejen har en cirkel til logoet blev til fire cirkler, og
-   de betød ikke det samme. Nu bare stregikonerne i dæmpet grå. */
+   de betød ikke det samme. Nu bare stregikonerne — i forest, ikke i gråt. */
 .dealer-card-service {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--muted);
+  color: var(--forest);
 }
 .dealer-card-service .svc-ikon { width: 17px; height: 17px; }
 .dealer-card-service-more {

@@ -402,15 +402,17 @@
   border-color: var(--forest);
 }
 .dealer-logo { font-size: 2rem; margin-bottom: 10px; }
-/* Initial-cirklen var fyldt rust. Med seks forhandlere ved siden af hinanden
-   blev siden til seks orange klatter, og en initial er en pladsholder for et
-   logo — den skal ikke være det kraftigste element på kortet. Nu en lys
-   forest-tone med mørke bogstaver: stadig i paletten, men den træder tilbage
-   så navnet og antallet af cykler er det man ser. */
+/* Initial-cirklen var fyldt rust: seks forhandlere blev til seks orange
+   klatter, og en initial er en pladsholder for et logo — den skal ikke være
+   kortets kraftigste element. Første forsøg gjorde den lysegrøn (#EAEFE8),
+   men den tone er kold og gråligt, og sammen med grå ikoner og grå tal så
+   hele kortet slukket ud.
+   Nu sand med rust-bogstaver: brandfarven er der stadig, men som streg i
+   stedet for som fyld — en brøkdel af vægten, hele varmen. */
 .dealer-logo-circle {
   width: 52px; height: 52px; border-radius: 50%;
-  background: #EAEFE8; color: var(--forest);
-  border: 1px solid rgba(42,61,46,0.10);
+  background: var(--sand); color: var(--rust);
+  border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
   font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
   margin-bottom: 12px;
