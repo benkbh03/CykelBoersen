@@ -102,22 +102,22 @@
        overskrifterne på forsiden. -->
   <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830u">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260830w">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260830u">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260830u">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830u">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260830u">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260830u">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830u">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260830u">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830u">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260830u">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830u">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830u">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260830u">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260830w">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260830w">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260830w">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260830w">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260830w">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260830w">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260830w">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260830w">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260830w">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260830w">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260830w">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260830w">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -863,25 +863,55 @@
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
-        /* Ny/brugt og cykeltype i ÉT bånd. Stand er en sammenhængende kontakt
-           (tre knapper i én ramme), typerne er løse pinde — to formsprog, så
-           øjet ser to forskellige valg uden at der bruges to rækker. Stand
-           står først, fordi ny-eller-brugt er den første beslutning en køber
-           tager. Kontakten er pind-høj, altså mindre end Cykler/Tilbehør
-           ovenfor, så de to segmenterede kontroller ikke læses som søskende. */
-        .filter-band{display:flex;align-items:center;gap:12px;margin:0 0 18px;
-          overflow-x:auto;scrollbar-width:none;}
-        .filter-band::-webkit-scrollbar{display:none;}
-        .filter-band .hero-cat-chips{margin:0;}
-        .filter-band-sep{flex-shrink:0;width:1px;height:26px;background:var(--border);}
-        .cond-seg{display:inline-flex;flex-shrink:0;border:1.5px solid var(--border);
-          border-radius:999px;overflow:hidden;background:var(--sand);}
-        .cond-axis-btn{border:none;background:transparent;color:var(--muted);
-          font:500 0.85rem/1 'DM Sans',sans-serif;padding:9px 15px;cursor:pointer;
-          transition:color .12s,background .12s;}
-        .cond-axis-btn + .cond-axis-btn{border-left:1.5px solid var(--border);}
-        .cond-axis-btn:hover{color:var(--charcoal);background:var(--sand-2);}
-        .cond-axis-btn.active{background:var(--forest);color:var(--sand);font-weight:600;}
+        /* Cykeltype som FANEBLADE, stand som dropdown.
+           Før var begge dele piller med grønt fyld, så "Alle" og "Alle typer"
+           stod som to fyldte knapper ved siden af hinanden og lignede ét valg
+           med to markeringer. To akser skal have to formsprog.
+
+           Fanebladene deler streg med gitteret nedenunder ("det her er et
+           udsnit af listen"), mens stand er en indstilling ved siden af, som
+           sortering er det. Typen er den man klikker mest, så den får bredden;
+           stand fylder én dropdown i stedet for tre knapper.
+
+           Båndet må IKKE selv scrolle vandret: så ville dropdown'en trille ud
+           af skærmen sammen med fanerne. Scrollen ligger på .hero-cat-chips,
+           der har den i forvejen. */
+        .filter-band{display:flex;align-items:flex-end;gap:14px;margin:0 0 18px;
+          border-bottom:1.5px solid var(--border);}
+        /* -1.5px: fanens understregning lægger sig OVENPÅ båndets streg i
+           stedet for at stable sig på den, så den aktive fane hænger sammen
+           med listen nedenunder i stedet for at få en dobbeltstreg. */
+        .fb-tabs{position:relative;flex:1;min-width:0;}
+        .filter-band .hero-cat-chips{margin:0 0 -1.5px;gap:0;width:100%;padding:0;}
+        /* Pilene ligger OVENPÅ rækkens kanter med en udtoning bagved, så
+           fanerne glider ind under dem i stedet for at blive klippet af.
+           js/tab-scroll.js skjuler dem når der ikke er noget at rulle til. */
+        .fb-arrow{position:absolute;top:0;bottom:2px;width:38px;border:none;cursor:pointer;
+          display:flex;align-items:center;color:var(--charcoal);padding:0;z-index:1;}
+        /* ANDEN gang denne fælde bider (første gang: .browse-cat-wrap ovenfor).
+           display:flex er en forfatter-regel og slår browserens egen
+           [hidden]{display:none}, så el.hidden = true gjorde INGENTING —
+           venstrepilen stod og dækkede "Alle typer" ved scrollLeft = 0. */
+        .fb-arrow[hidden]{display:none !important;}
+        .fb-arrow--left{left:0;justify-content:flex-start;
+          background:linear-gradient(to right,var(--cream) 55%,transparent);}
+        .fb-arrow--right{right:0;justify-content:flex-end;
+          background:linear-gradient(to left,var(--cream) 55%,transparent);}
+        .fb-arrow:hover{color:var(--forest);}
+        .fb-arrow:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
+        .hero-cat-chips .hero-cat-chip{background:transparent;border:none;border-radius:0;
+          border-bottom:2.5px solid transparent;color:var(--muted);
+          font:600 0.88rem/1 'DM Sans',sans-serif;padding:11px 12px 12px;
+          transition:color .12s,border-color .12s;}
+        .hero-cat-chips .hero-cat-chip:hover{background:transparent;border-bottom-color:var(--border);color:var(--charcoal);}
+        .hero-cat-chips .hero-cat-chip.active{background:transparent;color:var(--forest);
+          border-bottom-color:var(--forest);font-weight:700;}
+        .hero-cat-chips .hero-cat-chip:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
+        .cond-drop{flex-shrink:0;margin:0 0 8px;padding:7px 11px;
+          border:1.5px solid var(--border);border-radius:8px;background:var(--cream);
+          font:600 0.82rem 'DM Sans',sans-serif;color:var(--charcoal);cursor:pointer;
+          outline:none;transition:border-color .15s;}
+        .cond-drop:focus-visible{border-color:var(--forest);}
         /* På mobil: begge toggles fylder hele bredden hver for sig, og knapperne
            deles ligeligt ud til kanterne. Placeret EFTER base-reglerne så den
            vinder på source-order. */
@@ -889,9 +919,18 @@
           .browse-cat-wrap{width:100%;display:block;}
           .browse-cat-toggle{width:100%;display:flex;box-sizing:border-box;}
           .browse-cat-btn{flex:1;min-width:0;padding:9px 8px;line-height:1.2;}
-          /* Båndet scroller vandret og bløder ud til skærmkanten, så den
-             første pind ikke får en tilfældig margen til venstre. */
-          .filter-band{margin:0 -16px 14px;padding:0 16px;}
+          /* Fanerne scroller vandret og bløder ud til skærmkanten, så den
+             første fane ikke får en tilfældig margen til venstre.
+             Dropdown'en får sin EGEN linje øverst, højrestillet, så den
+             står lige under sorteringen den hører sammen med. Delte den
+             linje med fanerne, åd den halvdelen af bredden, og der var
+             kun plads til to typer ad gangen. */
+          .filter-band{margin:0 -16px 14px;padding:0 16px;flex-wrap:wrap;gap:0;}
+          .cond-drop{order:-1;margin:0 0 10px auto;}
+          .fb-tabs{flex:1 0 100%;}
+          /* Pilene er til mus og tastatur. På touch ruller man med fingeren,
+             og der ville de kun dække to faner. */
+          .fb-arrow{display:none;}
         }
       </style>
       <div class="listings-header">
@@ -943,12 +982,10 @@
            genvej til sidebarens Stand-felter og dermed selv en dublet.
            js/type-sync.js holder disse chips og sidebarens checkboxes ens. -->
       <div class="filter-band">
-        <div class="cond-seg" role="group" aria-label="Ny eller brugt">
-          <button class="cond-axis-btn active" data-cond="all"  aria-pressed="true"  onclick="setConditionAxis('all')">Alle</button>
-          <button class="cond-axis-btn" data-cond="new"  aria-pressed="false" onclick="setConditionAxis('new')">Nye</button>
-          <button class="cond-axis-btn" data-cond="used" aria-pressed="false" onclick="setConditionAxis('used')">Brugte</button>
-        </div>
-        <span class="filter-band-sep" aria-hidden="true"></span>
+        <!-- .fb-tabs er den positionerede ramme rullepilene lægger sig oven på.
+             Uden den ville pilene skubbe fanerne sidelæns hver gang de dukkede
+             op og forsvandt. Se js/tab-scroll.js. -->
+        <div class="fb-tabs">
         <div class="hero-cat-chips" role="group" aria-label="Filtrer efter cykeltype">
           <button class="hero-cat-chip active" data-type="" onclick="selectHeroCatChip(this,'')" aria-pressed="true">Alle typer</button>
           <button class="hero-cat-chip" data-type="Racercykel" onclick="selectHeroCatChip(this,'Racercykel')" aria-pressed="false">Racer</button>
@@ -960,6 +997,18 @@
           <button class="hero-cat-chip" data-type="Børnecykel" onclick="selectHeroCatChip(this,'Børnecykel')" aria-pressed="false">Børnecykel</button>
           <button class="hero-cat-chip" data-type="Senior cykel" onclick="selectHeroCatChip(this,'Senior cykel')" aria-pressed="false">Senior</button>
         </div>
+        </div>
+        <label for="cond-select" class="sr-only">Filtrer efter stand</label>
+        <select class="cond-drop" id="cond-select" onchange="setConditionAxis(this.value)">
+          <option value="all">Alle stande</option>
+          <option value="new">Kun nye</option>
+          <option value="used">Kun brugte</option>
+          <!-- Vælges aldrig af brugeren. Sidebaren tillader kombinationer som
+               "kun Som ny", og så passer ingen af de tre. Så viser vi
+               "Tilpasset" i stedet for at lade dropdown'en påstå noget
+               forkert eller stå tom. Se currentConditionAxis(). -->
+          <option value="custom" hidden>Tilpasset stand</option>
+        </select>
       </div>
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
@@ -1195,7 +1244,7 @@
     // ASSET_VERSION som literal her (ikke importeret fra config.js): bootstrap'en
     // må ikke afhænge af en evt. cached config.js, da det kunne genindlæse en gammel
     // main.js. Hold denne i sync med ASSET_VERSION i js/config.js.
-    const V = '20260830b';
+    const V = '20260830w';
     const root = document.getElementById('modals-root');
     try {
       const res = await fetch(`/partials/modals.html?v=${V}`);
