@@ -577,7 +577,11 @@ body.nav-search-on .nav-search { display: flex; }
 @media (max-width: 480px) {
   .search-section { min-height: 200px; padding: 14px 16px 12px; }
 }
-.search-hero-text { text-align: center; margin-bottom: 12px; max-width: 700px; margin-left: auto; margin-right: auto; }
+/* width:100% er ikke pynt. .search-section er en flex-kolonne, og et barn med
+   `margin-left/right:auto` mister sin stretch og bliver shrink-to-fit. Uden
+   width:100% blev max-width'en derfor aldrig nået: blokken var præcis så bred
+   som den længste tekstlinje, og den bredde skiftede med indholdet. */
+.search-hero-text { text-align: center; margin-bottom: 12px; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
   display: inline-flex; align-items: center; gap: 7px;
   background: rgba(245,240,232,0.08);
@@ -611,7 +615,11 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .search-hero-sub {
   color: #fff; font-size: 0.95rem; font-weight: 400;
-  line-height: 1.5; max-width: 480px; margin: 0 auto;
+  /* 480 → 620: underteksten brækkede midt i en sætning og efterlod
+     "tættest på dig." alene på linje to. Tre forskellige bredder oven på
+     hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
+     centreret. Den skal kunne stå på én linje på desktop. */
+  line-height: 1.5; max-width: 620px; margin: 0 auto;
   /* Kraftigere end titlens behøver at være: den er mindre og tyndere, og
      står direkte mod himlen, som er den lyseste del af fotoet. */
   text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(0,0,0,0.75);
@@ -686,7 +694,7 @@ body.nav-search-on .nav-search { display: flex; }
 }
 /* 860 → 640: baren mistede typevalget og skal ikke længere fylde så bredt.
    Smallere og midt i, så den læses som ét kompakt værktøj under overskriften. */
-.search-bar-wrap { max-width: 640px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+.search-bar-wrap { width: 100%; max-width: 640px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
 .search-bar {
   display: flex; gap: 0; flex: 1; align-items: stretch;
   background: var(--cream); border-radius: 12px;

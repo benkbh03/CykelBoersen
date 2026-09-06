@@ -47,9 +47,20 @@ export function currentConditionAxis() {
   return 'custom';
 }
 
-/** Opdatér knappernes udseende + aria ud fra sidebarens faktiske tilstand. */
+/** Opdatér kontrollens udseende + aria ud fra sidebarens faktiske tilstand. */
 export function syncConditionAxis() {
   const mode = currentConditionAxis();
+
+  /* Dropdown'en er den nuværende kontrol. 'custom' findes som en skjult
+     option, så feltet kan vise "Tilpasset stand" i stedet for at stå tomt
+     når sidebaren har en kombination ingen af de tre dækker. */
+  const sel = document.getElementById('cond-select');
+  if (sel) sel.value = mode;
+
+  /* De tre knapper er afløst af dropdown'en i index.html, men lever videre i
+     de præ-renderede statiske sider indtil sitemap-actionen har skrevet dem
+     om. De koster ingenting at blive ved med at synkronisere, og uden dette
+     ville de stå med en forkert markering imens. */
   document.querySelectorAll('.cond-axis-btn').forEach(btn => {
     const active = btn.dataset.cond === mode;
     btn.classList.toggle('active', active);

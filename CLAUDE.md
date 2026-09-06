@@ -155,6 +155,8 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | Sletning der kun rammer rækker, ikke Storage | 3 (`delete-account`, `admin-actions`, `listing-edit`) | Lukket. Samme `emptyPrefix`-mønster begge steder |
 | Samme felt under to navne eller typer i to filer | 2 (`maxWeight`/`maxWeightKg`, `electronicShifting` bool/streng) | Lukket med `normalizeFilters()` i begge matchere |
 | Migration skrevet, committet — og aldrig kørt | 1 (`harden_bike_images_bucket.sql`, åben i to døgn) | Bekræft ALTID med en forespørgsel, ikke med et "det er deployet" |
+| `el.hidden = true` gør intet, fordi en forfatter-`display` slår browserens `[hidden]`-regel | 2 (`.browse-cat-wrap`, `.fb-arrow`) | Har en klasse en `display`-erklæring OG bliver skjult via `.hidden`, SKAL der være en `[hidden]{display:none !important}` ved siden af. Test på `getComputedStyle(el).display`, ikke på `el.hidden` — egenskaben er sand, mens elementet stadig står på skærmen |
+| Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-literalen `V` i `index.html` var drevet fra `20260830b` mens `ASSET_VERSION` var nået til `w`) | Tæl forekomsterne EFTER en bump (`grep -c`), og husk at `V` i bootstrap-scriptet nederst i `index.html` er en fjerde kopi der styrer `main.js` og `partials/modals.html`. Kan gøres umulig: lad `config.js` læse versionen fra DOM'en i stedet for at gentage den |
 
 ## Kodestil og filstruktur
 
