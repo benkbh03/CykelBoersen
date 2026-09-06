@@ -7,11 +7,20 @@ export const BIKES_PAGE_SIZE = 51;
 export const BIKES_LOAD_MORE_SIZE = 51;
 export const MAP_PAGE_LIMIT = 500;
 
-/* Cache-busting version til dynamiske imports.
-   BUMP når lazy-loaded moduler ændres, så browseren henter ny version
-   i stedet for cached. ES-moduler cacher aggressivt, og Ctrl+Shift+R
-   rydder ikke altid module-cachen. */
-export const ASSET_VERSION = '20260830w';
+/* Cache-busting version til dynamiske imports. ES-moduler cacher aggressivt,
+   og Ctrl+Shift+R rydder ikke altid module-cachen.
+
+   Læses fra <html data-asset-v> i index.html — den ENESTE kilde. Stod tallet
+   også her, ville en cached config.js kunne udlevere en gammel version til
+   alle de dynamiske imports, netop i det øjeblik man bumpede for at undgå
+   det. Attributten kommer med den HTML browseren lige har hentet, så den er
+   altid frisk uanset hvad der ligger i module-cachen.
+
+   Tom streng som fallback: de præ-renderede statiske sider har ikke
+   attributten før sitemap-actionen har skrevet dem om, og der er `?v=` uden
+   værdi bedre end `?v=undefined`. */
+export const ASSET_VERSION =
+  (typeof document !== 'undefined' && document.documentElement.dataset.assetV) || '';
 /* Supabase image transformations kræver Pro-plan.
    Vi bruger den IKKE — originale billeder serves direkte (loading="lazy"
    + browser-side decoding holder dem ude af first-paint kritisk sti). */
