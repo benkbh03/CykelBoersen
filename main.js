@@ -44,6 +44,7 @@ import { createImageUpload } from './js/image-upload.js';
 import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
+import { applyAccessoryVisibility } from './js/accessory-visibility.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
 // supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
@@ -1702,9 +1703,15 @@ async function loadInitialData() {
       .eq('seller_type', 'dealer').eq('verified', true)
       .order('created_at', { ascending: true }),
     supabase.from('bikes')
-      .select('type, condition, size, wheel_size, colors, user_id, profiles!user_id(seller_type)')
+      // `category` skal med: den bruges både til at skjule Cykler|Tilbehør-
+      // kontakten når der ikke er tilbehør, og til at scope tællerne. Uden
+      // den talte initial-load på tværs af begge kategorier, mens hver
+      // senere opdatering scopede til én — en forskel der er usynlig med
+      // nul tilbehør og bliver til forkerte tal den dag der er noget.
+      .select('category, type, condition, size, wheel_size, colors, user_id, profiles!user_id(seller_type)')
       .eq('is_active', true)
   ]);
+  applyAccessoryVisibility(bikesData);
   updateFilterCounts(bikesData, dealerCount);
   loadDealers(dealers, bikesData);
 }

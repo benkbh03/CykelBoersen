@@ -885,6 +885,10 @@
       <!-- ── KATEGORI-SKIFT: Cykler | Tilbehør (hård top-level separation) ── -->
       <style>
         .browse-cat-wrap{display:flex;}
+        /* En forfatter-display slår browserens egen [hidden]-regel, så uden
+           denne linje ville wrap.hidden = true ikke gøre noget som helst.
+           Se js/accessory-visibility.js. */
+        .browse-cat-wrap[hidden]{display:none !important;}
         .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
         .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
