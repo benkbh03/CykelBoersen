@@ -883,6 +883,13 @@ body.nav-search-on .nav-search { display: flex; }
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 2px 16px;
+  /* align-self:start er ikke pynt. .main er et grid, og grid-celler stræk-
+     kes som standard til rækkens højde — altså hele annoncelistens højde.
+     Så længe sidebaren var gennemsigtig, kunne man ikke se det. Med et hvidt
+     panel blev strækket til en tom hvid søjle der løb hundredvis af pixels
+     ned langs annoncerne, længe efter at filtrene var slut.
+     start = boksen er præcis så høj som sit indhold. */
+  align-self: start;
 }
 .sidebar-box {
   background: transparent; border: none; border-radius: 0;
