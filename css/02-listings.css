@@ -376,60 +376,39 @@
   /* Kolonne + fuld hoejde, saa .dealer-card-foot kan skubbes til bunden. */
   display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
 }
-/* Stribens gradient gik fra forest til rust. To brandfarver i en 4px stribe
-   paa hvert eneste kort blev til en regnbue naar seks kort staar ved siden af
-   hinanden, og den konkurrerede med gulden paa de fremhaevede. Nu en rolig
-   forest-linje; gulden er dermed det eneste sted farven betyder noget. */
 .dealer-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--forest);
+  height: 4px;
+  background: linear-gradient(90deg, var(--forest) 0%, var(--rust) 100%);
 }
-.dealer-card-foot {
-  margin-top: auto;
-  padding-top: 12px;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-/* Maps-knappen maa ikke braekke i to linjer naar der ogsaa er service-ikoner.
-   Den er den faste stoerrelse; ikonraekken giver plads. */
-.dealer-card-foot .dealer-maps-link { flex-shrink: 0; white-space: nowrap; }
-.dealer-card-foot .dealer-card-services { min-width: 0; }
+/* Kun margin-top:auto — indholdet staar som foer, men foden skubbes til
+   bunden saa Google Maps-knapperne staar paa linje paa tvaers af kort med
+   forskelligt indhold. Ingen omrokering, kun justering. */
+.dealer-card-foot { margin-top: auto; }
 .dealer-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(42,61,46,0.12);
   border-color: var(--forest);
 }
 .dealer-logo { font-size: 2rem; margin-bottom: 10px; }
-/* Initial-cirklen var fyldt rust: seks forhandlere blev til seks orange
-   klatter, og en initial er en pladsholder for et logo — den skal ikke være
-   kortets kraftigste element. Første forsøg gjorde den lysegrøn (#EAEFE8),
-   men den tone er kold og gråligt, og sammen med grå ikoner og grå tal så
-   hele kortet slukket ud.
-   Nu sand med rust-bogstaver: brandfarven er der stadig, men som streg i
-   stedet for som fyld — en brøkdel af vægten, hele varmen. */
 .dealer-logo-circle {
   width: 52px; height: 52px; border-radius: 50%;
-  background: var(--sand); color: var(--rust);
-  border: 1px solid var(--border);
+  background: var(--rust); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
+  font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;
   margin-bottom: 12px;
   overflow: hidden;
   flex-shrink: 0;
-  box-sizing: border-box;
 }
 .dealer-logo-circle--img { background: var(--sand-2); }
 .dealer-logo-circle img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 .dealer-name { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--charcoal); font-weight: 600; margin-bottom: 4px; }
-/* #4caf50 var Material Designs grønne — en farve der ikke findes andre steder
-   på sitet, og den lyste kraftigere end alt omkring den. Forest er vores egen,
-   og fluebenet betyder det samme. */
 .dealer-verified-tick {
   display: inline-flex; align-items: center; justify-content: center;
   width: 16px; height: 16px; border-radius: 50%;
-  background: var(--forest); color: #fff;
+  background: #4caf50; color: #fff;
   font-size: 0.6rem; font-weight: 700; font-style: normal;
   vertical-align: middle; margin-left: 5px;
 }
@@ -438,10 +417,7 @@
   display: flex; align-items: flex-start; gap: 5px;
 }
 .dealer-city .pin-ikon { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; }
-.dealer-count { font-size: 0.78rem; color: var(--rust); margin-top: 8px; font-weight: 600; }
-/* Nul er ikke en nyhed. "0 cykler til salg" stod i samme rust som "94 cykler
-   til salg", så det mest tomme kort råbte lige så højt som det fyldigste. */
-.dealer-count--tom { color: var(--muted); font-weight: 400; }
+.dealer-count { font-size: 0.78rem; color: var(--rust); margin-top: 8px; font-weight: 500; }
 
 
 /* ── SÆLG CTA BANNER ── */

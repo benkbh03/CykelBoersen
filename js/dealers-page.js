@@ -363,13 +363,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       : '';
 
     const servicesHtml = (Array.isArray(dealer.services) && dealer.services.length)
-      /* To ikoner, ikke tre. Kortet er 220px bredt, og med tre ikoner plus
-         "+N" blev der ikke plads til Google Maps-knappen ved siden af — den
-         braekkede i to linjer. To ikoner og et tal siger det samme. */
-      ? `<div class="dealer-card-services">${dealer.services.slice(0, 2).map(key => {
+      ? `<div class="dealer-card-services">${dealer.services.slice(0, 3).map(key => {
           const s = SERVICES.find(x => x.key === key);
           return s ? `<span class="dealer-card-service" title="${esc(s.label)}">${s.icon}</span>` : '';
-        }).join('')}${dealer.services.length > 2 ? `<span class="dealer-card-service-more">+${dealer.services.length - 2}</span>` : ''}</div>`
+        }).join('')}${dealer.services.length > 3 ? `<span class="dealer-card-service-more">+${dealer.services.length - 3}</span>` : ''}</div>`
       : '';
 
     const isPromoted = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
@@ -387,11 +384,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       ${locationText ? `<div class="dealer-city"><svg class="pin-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg><span>${esc(locationText)}</span></div>` : ''}
       ${openHtml}
       ${starsHtml}
-      <div class="dealer-count${bikeCount === 0 ? ' dealer-count--tom' : ''}">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
       <!-- Foden skubbes ned med margin-top:auto, saa Google Maps-knappen staar
-           i samme hoejde paa alle kort i raekken. Kortene har forskelligt
-           indhold — nogle har aabningstider, nogle har vurderinger — og uden
-           det her hang knapperne i hver sin hoejde. -->
+           i samme hoejde paa alle kort i raekken. Indholdet staar som foer;
+           det er kun justeringen der er tilfoejet. -->
       <div class="dealer-card-foot">
         ${servicesHtml}
         ${mapsHtml}
