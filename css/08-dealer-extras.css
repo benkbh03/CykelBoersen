@@ -176,10 +176,12 @@
   gap: 6px;
   margin: 12px 0;
 }
+.dealer-service-badge .svc-ikon { width: 16px; height: 16px; }
 .dealer-service-badge {
   display: inline-flex;
   align-items: center;
-  padding: 5px 11px;
+  gap: 6px;
+  padding: 6px 12px;
   background: rgba(42,61,46,0.08);
   border: 1px solid rgba(42,61,46,0.2);
   border-radius: 16px;
@@ -196,11 +198,16 @@
   margin: 0 0 16px;
   padding: 0 4px;
 }
+/* Pindene har SVG-ikoner nu, ikke emoji, saa de skal justeres lodret med
+   teksten og arve dens farve. */
 .dealer-service-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   background: #fff;
   border: 1.5px solid var(--border);
   border-radius: 18px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--charcoal);
@@ -208,6 +215,8 @@
   font-family: inherit;
   transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
+.dealer-service-filter .svc-ikon { width: 16px; height: 16px; color: var(--muted); }
+.dealer-service-filter.on .svc-ikon { color: currentColor; }
 .dealer-service-filter:hover { border-color: var(--forest); }
 .dealer-service-filter.on {
   background: var(--forest);
@@ -237,19 +246,19 @@
 .dealer-card-services {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 8px;
+  margin-top: 0;
 }
+/* Ikonerne stod i hver sin cirkel med kant. Tre cirkler plus "+3" i bunden af
+   et kort der i forvejen har en cirkel til logoet blev til fire cirkler, og
+   de betød ikke det samme. Nu bare stregikonerne i dæmpet grå. */
 .dealer-card-service {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px; height: 22px;
-  background: var(--sand);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  font-size: 0.8rem;
+  color: var(--muted);
 }
+.dealer-card-service .svc-ikon { width: 17px; height: 17px; }
 .dealer-card-service-more {
   font-size: 0.7rem;
   color: var(--muted);

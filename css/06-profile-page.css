@@ -3155,6 +3155,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-size: 0.9rem;
   font-weight: 500;
 }
+/* Fluebenene var ✅-emoji, altså styresystemets grønne firkant med hvidt
+   flueben — en anden grøn og en anden form end alt andet på siden, gentaget
+   fem gange lige under hinanden. Nu vores egen streg i forest. */
+.bd-perk-ikon {
+  width: 17px; height: 17px; flex-shrink: 0;
+  color: var(--forest);
+}
 
 /* "Derfor vælger forhandlere Cykelbørsen" — differentierings-sektion.
    Testet: ≤480, ≤768, 769-1024, ≥1025 */

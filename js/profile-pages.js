@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail } from './utils.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
@@ -177,7 +177,7 @@ export function createProfilePages({
                 : '';
             })()}
             <div class="card-footer">
-              <div class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></div>
+              <div class="card-location">${iconPin(13)}<span class="bike-city">${esc(b.city)}</span></div>
             </div>
           </div>
         </div>`;
@@ -274,14 +274,14 @@ export function createProfilePages({
             <h1 class="pp-name">
               ${esc(displayName)}
               ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-              ${profile.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
+              ${profile.email_verified ? `<span class="email-badge" title="E-mail verificeret" aria-label="E-mail verificeret">${iconMail(13)}</span>` : ''}
             </h1>
             <div class="pp-badges">
               <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat sælger'}</span>
               ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
               ${followerCount > 0 ? `<span class="pp-member-since">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>` : ''}
             </div>
-            ${isDealer && profile.address ? `<div class="pp-location">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="pp-location">📍 ${esc(profile.city)}</div>` : ''}
+            ${isDealer && profile.address ? `<div class="pp-location">${iconPin(14)}<span>${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</span></div>` : profile.city ? `<div class="pp-location">${iconPin(14)}<span>${esc(profile.city)}</span></div>` : ''}
             ${lastSeenText ? `<div class="pp-last-seen">Sidst aktiv ${lastSeenText}</div>` : ''}
             ${profile.bio ? `<p class="pp-bio">${esc(profile.bio)}</p>` : ''}
             ${(!isOwnProfile && followDealer) ? `<div class="up-follow-row">${followDealer.buildFollowButton(profile.id, isFollowing)}</div>` : ''}
@@ -424,7 +424,7 @@ export function createProfilePages({
             <h1 class="pp-name">
               ${esc(displayName)}
               ${dealer.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-              ${dealer.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
+              ${dealer.email_verified ? `<span class="email-badge" title="E-mail verificeret" aria-label="E-mail verificeret">${iconMail(13)}</span>` : ''}
             </h1>
             <div class="pp-badges">
               <span class="badge badge-dealer">${iconDealer()} Forhandler</span>
@@ -433,7 +433,7 @@ export function createProfilePages({
             </div>
             ${dealer.city ? `
               <div class="pp-location">
-                📍 ${esc(dealer.address ? dealer.address + ', ' : '')}${esc(dealer.city)}
+                ${iconPin(14)}<span>${esc(dealer.address ? dealer.address + ', ' : '')}${esc(dealer.city)}</span>
                 <a class="pp-maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((dealer.address ? dealer.address + ', ' : '') + dealer.city)}" target="_blank" rel="noopener noreferrer" title="Åbn i Google Maps">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   Åbn i Google Maps

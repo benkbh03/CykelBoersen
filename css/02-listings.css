@@ -334,7 +334,10 @@
   font-size: 0.78rem; color: var(--charcoal); font-weight: 600;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
 }
-.card-location { font-size: 0.74rem; color: var(--muted); white-space: nowrap; }
+.card-location {
+  font-size: 0.74rem; color: var(--muted); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 4px;
+}
 .card-last-seen { font-size: 0.67rem; color: var(--muted); white-space: normal; line-height: 1.3; }
 
 /* ── FORHANDLER SEKTION ── */
@@ -354,6 +357,8 @@
   transition: background 0.2s; flex-shrink: 0;
 }
 .btn-become-dealer:hover { background: var(--rust-light); }
+/* align-items:stretch (standard) + height:100% paa kortet giver ens hoejde i
+   hver raekke, saa Google Maps-knapperne staar paa linje. */
 .dealer-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 .dealer-card {
   background: #fff;
@@ -368,41 +373,73 @@
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(42,61,46,0.06);
   transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  /* Kolonne + fuld hoejde, saa .dealer-card-foot kan skubbes til bunden. */
+  display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
 }
+/* Stribens gradient gik fra forest til rust. To brandfarver i en 4px stribe
+   paa hvert eneste kort blev til en regnbue naar seks kort staar ved siden af
+   hinanden, og den konkurrerede med gulden paa de fremhaevede. Nu en rolig
+   forest-linje; gulden er dermed det eneste sted farven betyder noget. */
 .dealer-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--forest) 0%, var(--rust) 100%);
+  height: 3px;
+  background: var(--forest);
 }
+.dealer-card-foot {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+/* Maps-knappen maa ikke braekke i to linjer naar der ogsaa er service-ikoner.
+   Den er den faste stoerrelse; ikonraekken giver plads. */
+.dealer-card-foot .dealer-maps-link { flex-shrink: 0; white-space: nowrap; }
+.dealer-card-foot .dealer-card-services { min-width: 0; }
 .dealer-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(42,61,46,0.12);
   border-color: var(--forest);
 }
 .dealer-logo { font-size: 2rem; margin-bottom: 10px; }
+/* Initial-cirklen var fyldt rust. Med seks forhandlere ved siden af hinanden
+   blev siden til seks orange klatter, og en initial er en pladsholder for et
+   logo — den skal ikke være det kraftigste element på kortet. Nu en lys
+   forest-tone med mørke bogstaver: stadig i paletten, men den træder tilbage
+   så navnet og antallet af cykler er det man ser. */
 .dealer-logo-circle {
   width: 52px; height: 52px; border-radius: 50%;
-  background: var(--rust); color: #fff;
+  background: #EAEFE8; color: var(--forest);
+  border: 1px solid rgba(42,61,46,0.10);
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;
+  font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
   margin-bottom: 12px;
   overflow: hidden;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 .dealer-logo-circle--img { background: var(--sand-2); }
 .dealer-logo-circle img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 .dealer-name { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--charcoal); font-weight: 600; margin-bottom: 4px; }
+/* #4caf50 var Material Designs grønne — en farve der ikke findes andre steder
+   på sitet, og den lyste kraftigere end alt omkring den. Forest er vores egen,
+   og fluebenet betyder det samme. */
 .dealer-verified-tick {
   display: inline-flex; align-items: center; justify-content: center;
   width: 16px; height: 16px; border-radius: 50%;
-  background: #4caf50; color: #fff;
+  background: var(--forest); color: #fff;
   font-size: 0.6rem; font-weight: 700; font-style: normal;
-  vertical-align: middle; margin-left: 4px;
+  vertical-align: middle; margin-left: 5px;
 }
-.dealer-city { font-size: 0.8rem; color: var(--muted); }
-.dealer-count { font-size: 0.78rem; color: var(--rust); margin-top: 8px; font-weight: 500; }
+.dealer-city {
+  font-size: 0.8rem; color: var(--muted);
+  display: flex; align-items: flex-start; gap: 5px;
+}
+.dealer-city .pin-ikon { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; }
+.dealer-count { font-size: 0.78rem; color: var(--rust); margin-top: 8px; font-weight: 600; }
+/* Nul er ikke en nyhed. "0 cykler til salg" stod i samme rust som "94 cykler
+   til salg", så det mest tomme kort råbte lige så højt som det fyldigste. */
+.dealer-count--tom { color: var(--muted); font-weight: 400; }
 
 
 /* ── SÆLG CTA BANNER ── */
