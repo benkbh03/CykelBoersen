@@ -571,11 +571,22 @@ body.nav-search-on .nav-search { display: flex; }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
 }
+/* min-height'en var 220px og 200px, altså LAVERE end indholdet. Titel plus
+   søgekort fylder 225px, og med top-polstringen der rydder nav'en blev
+   sektionen 313px høj uanset hvad der stod her. Der var dermed nul slack,
+   og "centrér lodret" var en instruktion uden noget at fordele: blokken lå
+   klods op ad begge kanter, og fotoet var reduceret til en tynd ramme
+   udenom. Det er dét der så forkert ud, ikke selve centreringen.
+
+   clamp: mindst 320px så der altid er lidt luft, højst 400px så heroen
+   ikke æder en lille telefons skærm, og 44vh derimellem så den vokser med
+   skærmen. Padding-top rydder nav'en (se 05-pages.css), og resten af
+   luften fordeler justify-content:center ligeligt over og under. */
 @media (max-width: 768px) {
-  .search-section { min-height: 220px; padding: 16px 20px 14px; }
+  .search-section { min-height: clamp(320px, 44vh, 400px); padding: 16px 20px 14px; }
 }
 @media (max-width: 480px) {
-  .search-section { min-height: 200px; padding: 14px 16px 12px; }
+  .search-section { min-height: clamp(320px, 44vh, 400px); padding: 14px 16px 12px; }
 }
 /* width:100% er ikke pynt. .search-section er en flex-kolonne, og et barn med
    `margin-left/right:auto` mister sin stretch og bliver shrink-to-fit. Uden
