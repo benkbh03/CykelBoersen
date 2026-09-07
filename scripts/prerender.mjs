@@ -93,6 +93,9 @@ function jsonLd(obj) {
    siderne tilbage på den gamle "Henter …"-tekst, og alt virker som før. */
 const BIKES_BY_BRAND = new Map();   // brand-slug -> [bike]
 const BIKES_BY_TYPE  = new Map();   // bikes.type -> [bike]
+/* user_id -> annoncer. Bruges af forhandlersiderne, saa hver forhandler faar
+   rigtige links til sit eget lager i den raa HTML. */
+const BIKES_BY_DEALER = new Map();  // profiles.id -> [bike]
 
 const LINKED_BIKES_PER_PAGE = 40;
 
@@ -681,6 +684,114 @@ function rentalItemPage(it) {
   };
 }
 
+/* ---------- Forhandlere ----------
+   generate-sitemap.mjs har hele tiden lagt /dealer/<id> i sitemap.xml, men
+   ingen byggede siderne. GitHub Pages svarede derfor 404 paa adresser vi selv
+   pegede Google hen paa — det vaerste sted at have doede links.
+
+   Siden er ikke en skal: forhandlerens navn, by, adresse og hele dens lager
+   staar i den raa HTML, saa den kan indekseres uden JavaScript. */
+function dealerName(d) {
+  return (d.shop_name || d.name || 'Forhandler').trim();
+}
+
+function dealerPage(d) {
+  const navn  = dealerName(d);
+  const bikes = BIKES_BY_DEALER.get(d.id) || [];
+  const sted  = [d.address, d.city].filter(Boolean).join(', ');
+  /* Titlen maa ikke love cykler naar der ingen er. Siden er ganske vist
+     noindex uden lager, men titlen bruges ogsaa som og:title naar nogen
+     deler linket. */
+  const title = bikes.length
+    ? `${navn}${d.city ? ' i ' + d.city : ''} — cykler til salg | Cykelbørsen`
+    : `${navn}${d.city ? ' i ' + d.city : ''} — forhandler | Cykelbørsen`;
+  const description = bikes.length
+    ? `${navn}${d.city ? ' i ' + d.city : ''} har ${bikes.length} ${bikes.length === 1 ? 'cykel' : 'cykler'} til salg på Cykelbørsen. Verificeret forhandler.`
+    : `${navn}${d.city ? ' i ' + d.city : ''} er verificeret forhandler på Cykelbørsen.`;
+
+  const jsonldBlocks = [{
+    '@context': 'https://schema.org',
+    '@type': 'BikeStore',
+    name: navn,
+    url: canonicalUrl(`/dealer/${d.id}`),
+    ...(d.bio ? { description: d.bio } : {}),
+    ...(d.avatar_url ? { image: d.avatar_url } : {}),
+    ...(d.city ? {
+      address: {
+        '@type': 'PostalAddress',
+        ...(d.address ? { streetAddress: d.address } : {}),
+        addressLocality: d.city,
+        addressCountry: 'DK',
+      },
+    } : {}),
+  }, breadcrumb([
+    ['Forhandlere', '/forhandlere'],
+    [navn, `/dealer/${d.id}`],
+  ])];
+
+  const contentHtml = `
+      <div class="dealer-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
+          <a href="/forhandlere">Forhandlere</a></p>
+        <h1 style="font-family:'Fraunces',serif;margin-bottom:6px;">${escHtml(navn)}</h1>
+        ${sted ? `<p style="color:var(--muted);margin-bottom:4px;">${escHtml(sted)}</p>` : ''}
+        <p style="color:var(--muted);margin-bottom:18px;">Verificeret forhandler på Cykelbørsen</p>
+        ${d.bio ? `<p style="margin-bottom:18px;">${escHtml(d.bio)}</p>` : ''}
+        <h2 style="font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:10px;">
+          ${bikes.length ? `${bikes.length} ${bikes.length === 1 ? 'cykel' : 'cykler'} til salg` : 'Ingen annoncer lige nu'}</h2>
+        ${bikeLinkList(bikes)}
+      </div>`;
+
+  /* noindex naar forhandleren ikke har en eneste annonce. Samme begrundelse
+     som paa tomme maerkesider: en side der lover cykler og viser ingen faar
+     elendige adfaerdssignaler. follow, saa linket til /forhandlere stadig
+     taeller. */
+  return { title, description, canonicalPath: `/dealer/${d.id}`, jsonldBlocks,
+           contentHtml, ogImage: d.avatar_url || undefined, ogImageAlt: navn,
+           noindex: !bikes.length };
+}
+
+/* Oversigten laa som en ren skal: een overskrift og een saetning, ingen
+   forhandlernavne. En forhandleroversigt er praecis den side der skal rangere
+   paa "cykelforhandler <by>", og den er samtidig indgangen til alle
+   forhandlersiderne — uden links her er de foraeldreloese. */
+function dealersOverviewPage(dealers) {
+  const title = 'Cykelforhandlere i hele Danmark | Cykelbørsen';
+  const description = dealers.length
+    ? `${dealers.length} verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider.`
+    : 'Alle verificerede cykelforhandlere på Cykelbørsen.';
+
+  const sorteret = dealers.slice().sort((a, b) =>
+    (BIKES_BY_DEALER.get(b.id)?.length || 0) - (BIKES_BY_DEALER.get(a.id)?.length || 0));
+
+  const items = sorteret.map(d => {
+    const n = (BIKES_BY_DEALER.get(d.id) || []).length;
+    return `<li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/${escHtml(d.id)}">${escHtml(dealerName(d))}</a>
+            ${d.city ? `<span style="color:var(--muted);"> · ${escHtml(d.city)}</span>` : ''}
+            ${n ? `<span style="color:var(--muted);"> · ${n} ${n === 1 ? 'cykel' : 'cykler'}</span>` : ''}
+          </li>`;
+  }).join('');
+
+  const jsonldBlocks = [{
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url: canonicalUrl('/forhandlere'),
+    isPartOf: { '@type': 'WebSite', name: 'Cykelbørsen', url: BASE_URL },
+  }];
+
+  const contentHtml = `
+      <div class="dealers-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
+        <h1 style="font-family:'Fraunces',serif;margin-bottom:8px;">Cykelforhandlere i hele Danmark</h1>
+        <p style="color:var(--muted);margin-bottom:20px;">${escHtml(description)}</p>
+        ${items ? `<ul style="list-style:none;padding:0;margin:0;">${items}</ul>` : ''}
+      </div>`;
+
+  return { title, description, canonicalPath: '/forhandlere', jsonldBlocks, contentHtml };
+}
+
 function breadcrumb(items) {
   return {
     '@context': 'https://schema.org',
@@ -795,11 +906,23 @@ async function main() {
   let bikes = null;
   try {
     bikes = await fetchSupabase(
-      'bikes?is_active=eq.true&select=id,brand,model,price,type,city,condition,year,size,size_cm,description,' +
+      'bikes?is_active=eq.true&select=id,user_id,brand,model,price,type,city,condition,year,size,size_cm,description,' +
       'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
     );
   } catch (err) {
     console.warn('Kunne ikke hente annoncer:', err.message);
+  }
+
+  /* Samme filter som generate-sitemap.mjs bruger, saa de to filer ikke kan
+     komme til at pege paa hver sin liste. Fejler kaldet, springes
+     forhandlersiderne over — resten bygges stadig. */
+  let dealers = null;
+  try {
+    dealers = await fetchSupabase(
+      'profiles?seller_type=eq.dealer&verified=eq.true&select=id,shop_name,name,city,address,bio,avatar_url'
+    );
+  } catch (err) {
+    console.warn('Kunne ikke hente forhandlere:', err.message);
   }
 
   if (bikes) {
@@ -812,6 +935,10 @@ async function main() {
       if (b.type) {
         if (!BIKES_BY_TYPE.has(b.type)) BIKES_BY_TYPE.set(b.type, []);
         BIKES_BY_TYPE.get(b.type).push(b);
+      }
+      if (b.user_id) {
+        if (!BIKES_BY_DEALER.has(b.user_id)) BIKES_BY_DEALER.set(b.user_id, []);
+        BIKES_BY_DEALER.get(b.user_id).push(b);
       }
     }
     console.log(`Indekserede ${bikes.length} annoncer til interne links (${BIKES_BY_BRAND.size} mærker, ${BIKES_BY_TYPE.size} typer).`);
@@ -848,7 +975,31 @@ async function main() {
 
   // Statiske app-ruter (kontakt, sell, bliv-forhandler, guides, juridiske sider…)
   // — de stod i sitemap.xml men blev aldrig prerendret → HTTP 404 for crawlere.
+  /* Forhandlersider + oversigt med rigtigt indhold.
+     dealer/ ryddes foerst, praecis som bike/: mister en forhandler sin
+     verifikation, skal siden vaek frem for at blive staaende for evigt.
+     Kun naar kaldet lykkedes — ellers ville et netvaerksglitch slette
+     alle forhandlersider og lade sitemappet pege paa 404'ere. */
+  if (dealers) {
+    const dealerRoot = join(ROOT, 'dealer');
+    if (existsSync(dealerRoot)) rmSync(dealerRoot, { recursive: true, force: true });
+  }
+  if (dealers && dealers.length) {
+    for (const d of dealers) {
+      const page = dealerPage(d);
+      writePage(page.canonicalPath, buildPage(page));
+      count++;
+    }
+    const oversigt = dealersOverviewPage(dealers);
+    writePage(oversigt.canonicalPath, buildPage(oversigt));
+    count++;
+    console.log(`Prerendered ${dealers.length} forhandlersider + oversigt.`);
+  }
+
   for (const def of STATIC_APP_PAGES) {
+    /* Skalversionen af /forhandlere maa ikke overskrive den rigtige liste
+       vi lige har skrevet. Fejlede forhandler-kaldet, bygges skallen som foer. */
+    if (def.path === '/forhandlere' && dealers && dealers.length) continue;
     writePage(def.path, buildPage(staticAppPage(def)));
     count++;
   }
