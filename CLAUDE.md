@@ -5,6 +5,30 @@
 > frem for at bygge den. Filen indeholder også et `Hvad vi ikke laver`-afsnit,
 > og det er den halvdel der gør den brugbar.
 
+## Stående opgave: vurdér om opgaven er pengene værd, uopfordret
+
+**Brugeren skal ikke selv spørge "er det værd at bruge tid på".** Hver gang en
+opgave er større end en enkelt rettelse, skal svaret indeholde en vurdering
+FØR arbejdet går i gang. Kort, ikke en rapport.
+
+Vurderingen skal svare på tre ting:
+
+1. **Hvad koster det?** Antal filer, om det rører data eller kun udseende, og
+   om det kræver manuel deploy i Supabase Dashboard. Store opgaver koster også
+   flere credits i chatten — det er en reel udgift for en enkeltmandsvirksomhed.
+2. **Hvad er gevinsten?** Målt eller skønnet. "Sparer et sekund på forsiden" er
+   et svar; "det bliver pænere" er ikke.
+3. **Består den prøven i `STRATEGI.md`?** Hurtigere at få en cykel op, lettere
+   at bedømme på afstand, eller dyrere at snyde. Ellers: sig nej.
+
+**Sig nej når svaret er nej.** Det gælder også opgaver brugeren selv har
+foreslået. Et ærligt "det her flytter ingenting, brug tiden på X i stedet" er
+mere værd end at bygge noget der ser flittigt ud. Byg det alligevel hvis
+brugeren fastholder ønsket efter at have hørt indvendingen.
+
+**Ranger altid.** Kommer der flere fund på én gang, så list dem efter værdi
+per krone og sig hvad du selv ville starte med — ikke bare hvad der findes.
+
 Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Single-page vanilla JS app hostet via GitHub Pages, med Supabase som backend, Resend til e-mail og Anthropic Claude Haiku som support-bot.
 
 > **Bemærk om forhandler-betaling**: Forhandlerregistrering er **gratis lige nu** (lancering / ramp-up-fase) — målet er at få et kritisk antal forhandlere ind først. Stripe-edge-functions (`create-checkout-session`, `create-portal-session`, `stripe-webhook`) ligger klar i `supabase/functions/` til når betalt model genaktiveres, men kaldes ikke fra `/bliv-forhandler`-flowet pt. Formularen opretter direkte en `seller_type='dealer'`-profil der venter på admin-godkendelse (manuel `verified=true`).

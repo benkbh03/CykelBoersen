@@ -20,6 +20,75 @@ const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const EMAIL_FROM           = Deno.env.get("EMAIL_FROM") ?? "Cykelbørsen <onboarding@resend.dev>";
 const ADMIN_EMAIL          = Deno.env.get("ADMIN_EMAIL") ?? EMAIL_FROM;
 
+/* ── Rate-limit for ANONYME kald ────────────────────────────────────────
+   Denne function har med vilje "Verify JWT" slaaet fra, saa en besoegende
+   kan bruge kontaktformularen uden konto. Uden en graense kan hvem som helst
+   kalde endpointet i en loekke og sende ubegraenset mange mails til admin
+   gennem Resend: fyldt indbakke, betaling pr. mail, og risiko for at Resend
+   lukker kontoen for misbrug.
+
+   Den eksisterende rate_limits-tabel kraever et user_id med fremmednoegle til
+   auth.users og kan derfor ikke bruges her. rate_limits_anon noegles paa fri
+   tekst — klientens IP. Se supabase/sql/add_anon_rate_limits.sql.
+
+   Fejler tabelopslaget (tabellen ikke oprettet endnu, database nede), lader
+   vi kaldet gaa igennem. En kontaktformular der afviser alle fordi en
+   taeller ikke kunne laeses, er en vaerre fejl end en der slipper et par
+   ekstra mails igennem. */
+const ANON_RATE_MAX       = 5;                 // pr. IP pr. vindue
+const ANON_RATE_WINDOW_MS = 60 * 60 * 1000;    // 1 time
+
+function clientIp(req: Request): string {
+  /* Supabase' edge-proxy saetter x-forwarded-for. Foerste element er
+     klienten; resten er proxier. Findes headeren ikke, bruger vi en fast
+     noegle — saa deles graensen af alle ukendte, hvilket er strengere og
+     dermed den sikre vej at fejle. */
+  const xff = req.headers.get("x-forwarded-for") ?? "";
+  const first = xff.split(",")[0].trim();
+  return first || req.headers.get("cf-connecting-ip") || "ukendt";
+}
+
+async function anonRateLimit(
+  supa: ReturnType<typeof createClient>,
+  key: string,
+  scope: string,
+): Promise<boolean> {
+  try {
+    const now = new Date();
+    const { data: row, error } = await supa
+      .from("rate_limits_anon")
+      .select("count, window_start")
+      .eq("key", key).eq("scope", scope)
+      .maybeSingle();
+    if (error) throw error;
+
+    if (!row) {
+      await supa.from("rate_limits_anon").insert({
+        key, scope, count: 1, window_start: now.toISOString(),
+      });
+      return true;
+    }
+
+    const alder = now.getTime() - new Date(row.window_start).getTime();
+    if (alder > ANON_RATE_WINDOW_MS) {
+      await supa.from("rate_limits_anon")
+        .update({ count: 1, window_start: now.toISOString() })
+        .eq("key", key).eq("scope", scope);
+      return true;
+    }
+
+    if (row.count >= ANON_RATE_MAX) return false;
+
+    await supa.from("rate_limits_anon")
+      .update({ count: row.count + 1 })
+      .eq("key", key).eq("scope", scope);
+    return true;
+  } catch (err) {
+    console.warn("anonRateLimit kunne ikke slaa op — lader kaldet passere:", err);
+    return true;
+  }
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -271,6 +340,18 @@ serve(async (req) => {
         return new Response("Manglende felter", { status: 400, headers: corsHeaders });
       }
 
+      /* Graensen ligger EFTER feltvalideringen, saa et tomt kald ikke bruger
+         en af de fem forsoeg, men FOER mailen sendes. 429 er den korrekte
+         status: klienten maa proeve igen senere. */
+      const ip = clientIp(req);
+      if (!(await anonRateLimit(supabase, ip, "contact_form"))) {
+        console.warn("Kontaktformular rate-limited for IP:", ip);
+        return new Response(
+          JSON.stringify({ ok: false, error: "For mange henvendelser. Prøv igen om en time." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "3600" } },
+        );
+      }
+
       const html = emailWrapper(`
         <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Ny henvendelse via kontaktformularen</h2>
         <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;"><strong style="color:#1A1A18;">Fra:</strong> ${esc(name)} (${esc(email)})</p>
@@ -291,6 +372,18 @@ serve(async (req) => {
     // ── FORHANDLER ANSØGNING → ADMIN ─────────────────────────
     if (payload.type === "dealer_application") {
       const { shop_name, cvr, contact, city, phone, address, email, user_id, source } = payload;
+
+      /* Samme aabne doer som kontaktformularen: ingen admin-gate, ingen JWT,
+         og mailen gaar til admin. Egen scope-noegle, saa en forhandler der
+         ogsaa har skrevet via kontaktformularen ikke bliver blokeret. */
+      const ipDealer = clientIp(req);
+      if (!(await anonRateLimit(supabase, ipDealer, "dealer_application"))) {
+        console.warn("Forhandleransoegning rate-limited for IP:", ipDealer);
+        return new Response(
+          JSON.stringify({ ok: false, error: "For mange ansøgninger. Prøv igen om en time." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "3600" } },
+        );
+      }
 
       const sourceRows = source && (source.utm_source || source.utm_campaign || source.referrer)
         ? `
