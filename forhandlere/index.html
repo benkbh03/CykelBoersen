@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260831p">
+<html lang="da" data-asset-v="20260831t">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +38,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <title>Cykelforhandlere i hele Danmark | Cykelbørsen</title>
-  <meta name="description" content="Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning." id="meta-description">
+  <meta name="description" content="6 verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider." id="meta-description">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#2A3D2E">
   <meta name="keywords" content="nye cykler, brugte cykler, køb cykel, sælg cykel, racercykel, mountainbike, el-cykel, citybike, cykeltilbehør, cykeludstyr, cykelhjelm, cykellygter, cykellås, Danmark, København, cykelmarkedsplads">
@@ -51,19 +51,19 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cykelbørsen.dk/forhandlere/">
   <meta property="og:title" content="Cykelforhandlere i hele Danmark | Cykelbørsen">
-  <meta property="og:description" content="Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.">
+  <meta property="og:description" content="6 verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider.">
   <meta property="og:locale" content="da_DK">
   <meta property="og:site_name" content="Cykelbørsen">
-  <meta property="og:image" content="https://cykelbørsen.dk/hero.jpg.png">
-  <meta property="og:image:width" content="1920">
-  <meta property="og:image:height" content="1080">
+  <meta property="og:image" content="https://cykelbørsen.dk/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Cyklister i København – Cykelbørsen">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cykelforhandlere i hele Danmark | Cykelbørsen">
-  <meta name="twitter:description" content="Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.">
-  <meta name="twitter:image" content="https://cykelbørsen.dk/hero.jpg.png">
+  <meta name="twitter:description" content="6 verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider.">
+  <meta name="twitter:image" content="https://cykelbørsen.dk/og-image.jpg">
 
   <!-- ── Content Security Policy ──────────────────────────────────
        Vær klar over hvad den GØR her, så den ikke giver falsk tryghed.
@@ -111,22 +111,22 @@
        overskrifterne på forsiden. -->
   <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260831p">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260831t">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/01-base.css?v=20260831p">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260831p">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260831p">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260831p">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260831p">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260831p">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260831p">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260831p">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260831p">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260831p">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260831p">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260831p">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260831t">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260831t">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260831t">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260831t">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260831t">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260831t">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260831t">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260831t">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260831t">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260831t">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260831t">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260831t">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -160,7 +160,7 @@
     "@type": "Organization",
     "name": "Cykelbørsen",
     "url": "https://cykelbørsen.dk/",
-    "logo": "https://cykelbørsen.dk/hero.jpg.png",
+    "logo": "https://cykelbørsen.dk/android-chrome-512x512.png",
     "description": "Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Racercykler, mountainbikes, el-cykler og cykeltilbehør.",
     "foundingLocation": {
       "@type": "Place",
@@ -177,7 +177,7 @@
     }
   }
   </script>
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"WebPage","name":"Cykelforhandlere i hele Danmark | Cykelbørsen","description":"Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.","url":"https://cykelbørsen.dk/forhandlere/","isPartOf":{"@type":"WebSite","name":"Cykelbørsen","url":"https://cykelbørsen.dk"}}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"CollectionPage","name":"Cykelforhandlere i hele Danmark | Cykelbørsen","description":"6 verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider.","url":"https://cykelbørsen.dk/forhandlere/","isPartOf":{"@type":"WebSite","name":"Cykelbørsen","url":"https://cykelbørsen.dk"}}</script>
 </head>
 <!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
      kun kunne ses af admin. js/feature-flags.js fjerner klassen igen hvis
@@ -1093,9 +1093,34 @@
   <div id="page-layout" style="display:block;">
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
-      <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
-        <h1 style="font-family:'Fraunces',serif;">Cykelforhandlere i hele Danmark</h1>
-        <p>Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.</p>
+      <div class="dealers-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
+        <h1 style="font-family:'Fraunces',serif;margin-bottom:8px;">Cykelforhandlere i hele Danmark</h1>
+        <p style="color:var(--muted);margin-bottom:20px;">6 verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider.</p>
+        <ul style="list-style:none;padding:0;margin:0;"><li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/81ccb89f-56e6-43b2-ab8b-a9a8f5681a33">Forum cykler</a>
+            <span style="color:var(--muted);"> · Frederiksberg C</span>
+            <span style="color:var(--muted);"> · 93 cykler</span>
+          </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/04a85d44-4286-4af4-9535-e6bd38138a48">Re-Cycle</a>
+            <span style="color:var(--muted);"> · Vordingborg</span>
+            
+          </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/d09d75d0-be87-474f-9d6d-d2fe246bf204">Lindebjerg A/S</a>
+            <span style="color:var(--muted);"> · Middelfart</span>
+            
+          </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/afc48c21-f3fd-45e3-ab6f-afff22ba9cf9">Cykelbørsen Demo</a>
+            <span style="color:var(--muted);"> · København V</span>
+            
+          </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/93c7ea4f-c952-413d-aea0-49761ea27a56">Hundested cykler</a>
+            <span style="color:var(--muted);"> · Hundested</span>
+            
+          </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <a href="/dealer/585ffe02-7136-475c-861e-8f45d470f77c">Aakirkeby Cykler</a>
+            <span style="color:var(--muted);"> · Aakirkeby</span>
+            
+          </li></ul>
       </div></section>
   </div><!-- #page-layout -->
 
