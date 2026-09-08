@@ -139,7 +139,7 @@ export function createBikesList({
     // sælger). !inner gør filteret til et rigtigt WHERE på forælder-rækkerne,
     // og .range()-pagineringen tæller så også korrekt server-side.
     const profilesJoin = filters.sellerType ? 'profiles!user_id!inner' : 'profiles!user_id';
-    const SELECT_FIELDS = `id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${profilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`;
+    const SELECT_FIELDS = `id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, frame_last4, ${profilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`;
 
     // Fælles filtre — anvendes på BÅDE hoved-listen og fremhævede-query, så et
     // boost kun løftes op når annoncen rent faktisk matcher det aktuelle filter.
@@ -393,6 +393,13 @@ export function createBikesList({
                 <div class="card-seller-top">
                   <span class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</span>
                   <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}</span>
+                  ${/* Kun naar saelgeren FAKTISK har oplyst et nummer. Vises som
+                        rent ikon med title, saa det ikke stjaeler plads fra
+                        saelgerens navn — teksten staar i fuld laengde paa
+                        annoncesiden. frame_last4 skal med i BEGGE select-strenge
+                        ovenfor, ellers forsvinder skjoldet saa snart brugeren
+                        filtrerer, uden nogen fejlbesked. */''}
+                  ${b.frame_last4 ? `<span class="card-frame-badge" title="Stelnummer oplyst af sælger" aria-label="Stelnummer oplyst af sælger">${iconShield(13)}</span>` : ''}
                 </div>
                 <div class="card-seller-bottom">
                   <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
@@ -475,7 +482,7 @@ export function createBikesList({
     const fProfilesJoin = (sellerType && !dealerId) ? 'profiles!user_id!inner' : 'profiles!user_id';
     let query = supabase
       .from('bikes')
-      .select(`id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, ${fProfilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`)
+      .select(`id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, frame_last4, ${fProfilesJoin}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`)
       .eq('is_active', true)
       .eq('category', category)
       .order('created_at', { ascending: false })
