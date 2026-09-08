@@ -684,7 +684,9 @@ body.map-page-view { padding-bottom: 0 !important; }
 .msf-group { margin-bottom: 18px; }
 .msf-group-title {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
-  color: var(--muted); margin-bottom: 8px;
+  /* forest, ikke graa — samme mikroetiket som filter-sidebaren. Graa er
+     fravalg af farve; etiketten skal traede tilbage, ikke slukkes. */
+  color: var(--forest); margin-bottom: 8px;
 }
 .msf-opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .msf-opt {
@@ -694,7 +696,56 @@ body.map-page-view { padding-bottom: 0 !important; }
 }
 .msf-opt:hover { border-color: var(--rust); }
 .msf-opt.active { background: var(--forest); color: #fff; border-color: var(--forest); }
-.msf-opt--multi.active { background: var(--rust); border-color: var(--rust); }
+
+/* ── Multivalg: afkrydsningsrækker, ikke piller ──
+   Samme sprog som filter-sidebaren og Cykelagent-editoren. En pille betyder
+   "vælg én", og de her grupper tillader flere — formen løj om hvad kontrollen
+   kunne. Aktiv tilstand var desuden fyldt RUST, en tredje markeringsfarve der
+   ikke bruges nogen andre steder på sitet.
+
+   Enkeltvalg (cykeltype, sælger, stand, afstand) beholder pilleformen med
+   fyldt forest: der KAN kun vælges én, og så er pillen den rigtige form.
+
+   Farve-chippene er undtaget: farveprikken ER informationen, og en prik ved
+   siden af et afkrydsningsfelt bliver to symboler om det samme. Samme
+   undtagelse som i sidebaren og i Cykelagent-editoren.
+
+   To kolonner — arket er bredt nok, og med fjorten komponentgrupper ville
+   én kolonne give en meget lang rulle. */
+.msf-opts:has(.msf-opt--multi:not(.msf-opt--color)) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.msf-opt--multi:not(.msf-opt--color) {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  text-align: left;
+  background: transparent; border: none; border-radius: 0;
+  padding: 8px 2px;
+  font-size: 0.87rem; color: var(--charcoal);
+  transition: color 0.12s;
+}
+.msf-opt--multi:not(.msf-opt--color)::before {
+  content: ''; flex-shrink: 0; box-sizing: border-box;
+  width: 17px; height: 17px;
+  border: 1.5px solid #C6BFAF; border-radius: 4px; background: #fff;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.msf-opt--multi:not(.msf-opt--color):hover { border-color: transparent; }
+.msf-opt--multi:not(.msf-opt--color):hover::before { border-color: var(--forest); }
+.msf-opt--multi:not(.msf-opt--color).active {
+  background: transparent; color: var(--charcoal); font-weight: 600;
+}
+.msf-opt--multi:not(.msf-opt--color).active::before {
+  background: var(--forest) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.4l3 3 6-6'/></svg>") center / 12px no-repeat;
+  border-color: var(--forest);
+}
+/* Farve beholder pilleformen, men den aktive tilstand dæmpes så den ikke
+   er sitets eneste rust-fyldte markering. */
+.msf-opt--color.active {
+  background: var(--sand-2); border-color: var(--forest);
+  color: var(--forest); font-weight: 600;
+}
 
 /* Farve-chip med swatch */
 .msf-opt--color { display: inline-flex; align-items: center; gap: 7px; }
@@ -709,7 +760,7 @@ body.map-page-view { padding-bottom: 0 !important; }
 .msf-acc-head {
   display: flex; align-items: center; gap: 8px; cursor: pointer;
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
-  text-transform: uppercase; color: var(--muted);
+  text-transform: uppercase; color: var(--forest);
   list-style: none; user-select: none;
 }
 .msf-acc-head::-webkit-details-marker { display: none; }
@@ -1449,8 +1500,10 @@ body.map-page-view { padding-bottom: 0 !important; }
   .msf-group { margin-bottom: 16px; }
   .msf-group-title {
     font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--muted);
+    font-weight: 700;
+    /* forest, ikke graa. Denne regel overstyrede desktop-vaerdien, saa
+       etiketterne var groenne paa desktop og graa paa mobil. */
+    color: var(--forest);
     margin-bottom: 8px;
     letter-spacing: 0.5px;
   }
@@ -1458,6 +1511,13 @@ body.map-page-view { padding-bottom: 0 !important; }
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+  }
+  /* Multivalg: EEN kolonne paa mobil. To kolonner braekkede lange navne som
+     "Skivebremser hydrauliske" midt over. Samme greb som i
+     Cykelagent-editoren. */
+  .msf-opts:has(.msf-opt--multi:not(.msf-opt--color)) {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
   .msf-opt {
     padding: 9px 14px;
@@ -1475,6 +1535,29 @@ body.map-page-view { padding-bottom: 0 !important; }
     border-color: var(--forest);
     background: var(--forest);
     color: var(--sand);
+  }
+  /* Afkrydsningsraekkerne maa ikke arve pille-reglerne ovenfor. De to
+     regelsaet staar i samme media query, saa uden det her ville rammer og
+     fyld fra .msf-opt vinde paa source-order. */
+  .msf-opt--multi:not(.msf-opt--color) {
+    padding: 9px 2px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    font-size: 0.87rem;
+    min-height: 44px;   /* beroeringsmaal */
+  }
+  .msf-opt--multi:not(.msf-opt--color).active {
+    background: transparent;
+    color: var(--charcoal);
+    border-color: transparent;
+  }
+  /* Farve-chippen beholder pilleformen, men ikke den fyldte forest — prikken
+     forsvinder naesten mod en moerk baggrund. */
+  .msf-opt--color.active {
+    background: var(--sand-2);
+    border-color: var(--forest);
+    color: var(--forest);
   }
   .msf-price {
     display: grid;

@@ -1,4 +1,4 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -402,7 +402,7 @@ export function createBikesList({
                   ${b.frame_last4 ? `<span class="card-frame-badge" title="Stelnummer oplyst af sælger" aria-label="Stelnummer oplyst af sælger">${iconShield(13)}</span>` : ''}
                 </div>
                 <div class="card-seller-bottom">
-                  <span class="card-location">📍 <span class="bike-city">${esc(b.city)}</span></span>
+                  <span class="card-location">${iconPin(12)}<span class="bike-city">${esc(b.city)}</span></span>
                   <span class="card-last-seen">${lastSeenCard || '&nbsp;'}</span>
                 </div>
               </div>
