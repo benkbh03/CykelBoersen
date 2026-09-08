@@ -327,6 +327,17 @@
 .card-seller-top {
   display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
 }
+/* Stelnummer-skjold paa annoncekortet. Vises kun naar saelgeren har oplyst et
+   nummer, og kun som ikon — teksten staar i fuld laengde paa annoncesiden.
+   Forest, ikke graat: det er et tillidssignal og skal kunne ses, men det maa
+   ikke konkurrere med saelgerens navn. */
+.card-frame-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; flex-shrink: 0;
+  border-radius: 50%;
+  background: #E8F0E8; color: var(--forest);
+  cursor: help;
+}
 .card-seller-bottom {
   display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
 }
