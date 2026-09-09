@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
+import { bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -569,7 +569,7 @@ export function createBikeDetail({
 
       // Dynamisk SEO: opdater document.title og OG-tags
       const _origTitle = document.title;
-      document.title = `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`;
+      document.title = bikePageTitle(bikeTitle(b.brand, b.model), priceText(b));
       const _setMeta = (prop, val) => {
         let el = document.querySelector(`meta[property="${prop}"]`);
         if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
@@ -798,7 +798,7 @@ export function createBikeDetail({
     const allImages = (b.bike_images || []).map(i => i.url).filter(Boolean);
     const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
 
-    document.title = `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`;
+    document.title = bikePageTitle(bikeTitle(b.brand, b.model), priceText(b));
     updateSEOMeta(
       `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${priceText(b)} Køb på Cykelbørsen.`,
       `/bike/${bikeId}`,

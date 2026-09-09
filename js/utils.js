@@ -230,6 +230,39 @@ export function bikeTitle(brand, model) {
   return `${b} ${m}`.trim();
 }
 
+/* <title> til en annonceside. Bruges BEGGE steder: her klientside og fra
+   scripts/prerender.mjs. Én funktion, saa den raa HTML og den JS-rendrede DOM
+   ikke kan sige to forskellige ting om samme side.
+
+   Forhandler-feeds propper hele specifikationen i model-feltet, adskilt med
+   bindestreger. Det gav titler paa op til 107 tegn, hvor Google klipper ved
+   cirka 60, saa halvdelen af annoncen aldrig blev vist.
+
+   Tre trin, i den raekkefoelge:
+     1. Passer den i 60 tegn med sitenavn, saa roer den ikke. 82 af 98 gjorde.
+     2. Ellers droppes " | Cykelbørsen". Google viser ofte sitenavnet selv.
+     3. Ellers afkortes navnet paa naermeste ordgraense.
+
+   BUDGETTET ER 66, IKKE 60, OG DET ER MED VILJE. Korpusset indeholder par der
+   kun adskiller sig paa stoerrelse eller farve ("Str. 15" mod "Str 17",
+   "56 cm" mod "60 cm"). Ved 60 tegn faldt den forskel bort, og to annoncer fik
+   SAMME titel. Maalt paa alle 98: budget 60 gav 2 nye dubletter, budget 66 gav
+   nul. Prisen er at 6 titler lander paa 61-64 tegn, hvor Google klipper et par
+   tegn af halen. En for lang titel er bedre end to ens. */
+export function bikePageTitle(navn, prisTekst) {
+  const SITE = ' | Cykelbørsen';
+  const BUDGET = 66;
+  const p = ` – ${prisTekst}`;
+  if ((navn + p + SITE).length <= 60) return navn + p + SITE;
+  if ((navn + p).length <= 60) return navn + p;
+  const plads = BUDGET - p.length;
+  let k = navn.slice(0, plads - 1);
+  const mellemrum = k.lastIndexOf(' ');
+  // Kun tilbage til ordgraensen hvis det ikke barberer over halvdelen vaek.
+  if (mellemrum > plads * 0.55) k = k.slice(0, mellemrum);
+  return `${k.replace(/[\s\-–—,/|.]+$/, '')}…${p}`;
+}
+
 export function removeBikeJsonLd() {
   const old = document.getElementById('bike-jsonld');
   if (old) old.remove();

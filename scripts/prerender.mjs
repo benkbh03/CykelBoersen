@@ -40,6 +40,10 @@ import {
   getAllArticlesSorted,
 } from '../js/blog-data-v2.js';
 import { CATEGORY_META } from '../js/category-data.js';
+/* Delt med klienten. bikeTitle laa som en kopi her og drev derfor risiko
+   for at sige noget andet end appen; bikePageTitle SKAL vaere den samme
+   funktion begge steder, ellers modsiger raa HTML og DOM hinanden. */
+import { bikeTitle, bikePageTitle } from '../js/utils.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE_URL = 'https://cykelbørsen.dk'; // matcher BASE_URL i js/utils.js (canonical)
@@ -55,14 +59,6 @@ async function fetchSupabase(path) {
   });
   if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
   return res.json();
-}
-
-// Replikerer bikeTitle() i js/utils.js
-function bikeTitle(brand, model) {
-  const b = (brand == null ? '' : String(brand)).trim();
-  const m = (model == null ? '' : String(model)).trim();
-  if (!m || /^[-.?_/\\]+$/.test(m)) return b;
-  return `${b} ${m}`.trim();
 }
 
 /* ---------- Escape-hjælpere ---------- */
@@ -553,7 +549,7 @@ function bikePage(b) {
   const city = b.city || 'Danmark';
   const canonicalPath = `/bike/${b.id}`;
 
-  const title = `${name} – ${priceStr} kr. | Cykelbørsen`;
+  const title = bikePageTitle(name, `${priceStr} kr.`);
   const description = `${name} – ${b.type || 'Cykel'} i ${city}. ${b.condition || ''}. ${priceStr} kr. Køb på Cykelbørsen.`;
 
   const images = (b.bike_images || []).map(i => i.url).filter(Boolean);
