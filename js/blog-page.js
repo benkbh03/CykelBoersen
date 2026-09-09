@@ -52,7 +52,7 @@ export function createBlogPage({
 
         <div class="blog-articles-grid" id="blog-articles-grid">
           ${articles.map(a => `
-            <a class="blog-card" href="/blog/${a.slug}" onclick="event.preventDefault();navigateTo('/blog/${a.slug}')" data-cat="${esc(a.category)}">
+            <a class="blog-card" href="/blog/${a.slug}/" onclick="event.preventDefault();navigateTo('/blog/${a.slug}')" data-cat="${esc(a.category)}">
               <div class="blog-card-emoji">${a.heroEmoji}</div>
               <div class="blog-card-body">
                 <span class="blog-card-category">${esc(a.category)}</span>
@@ -140,7 +140,7 @@ export function createBlogPage({
           <h2>Læs også</h2>
           <div class="blog-related-grid">
             ${relatedFinal.map(a => `
-              <a class="blog-related-card" href="/blog/${a.slug}" onclick="event.preventDefault();navigateTo('/blog/${a.slug}')">
+              <a class="blog-related-card" href="/blog/${a.slug}/" onclick="event.preventDefault();navigateTo('/blog/${a.slug}')">
                 <div class="blog-related-emoji">${a.heroEmoji}</div>
                 <div class="blog-related-info">
                   <span class="blog-related-cat">${esc(a.category)}</span>

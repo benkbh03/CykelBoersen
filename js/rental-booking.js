@@ -116,7 +116,7 @@ export function createRentalBooking({
         <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button>
         <h1 class="rental-form-title">Mine lejeaftaler</h1>
         <div class="rental-booking-list">
-          ${rows || '<p style="color:var(--muted);padding:24px;text-align:center;">Du har ingen lejeaftaler endnu. <a href="/udlejning" onclick="event.preventDefault();navigateTo(\'/udlejning\')" style="color:var(--rust);">Find en cykel at leje →</a></p>'}
+          ${rows || '<p style="color:var(--muted);padding:24px;text-align:center;">Du har ingen lejeaftaler endnu. <a href="/udlejning/" onclick="event.preventDefault();navigateTo(\'/udlejning\')" style="color:var(--rust);">Find en cykel at leje →</a></p>'}
         </div>
       </div>`;
   }

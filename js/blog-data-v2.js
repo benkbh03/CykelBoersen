@@ -42,10 +42,10 @@ export const BLOG_ARTICLES = {
       <p>Kører du mest by, grus og skovveje, eller har du et stramt budget og vil have mest muligt for pengene, så peger alt mod en <strong>hardtail</strong>. Kører du teknisk singletrack, stejle nedkørsler, enduro eller downhill, og vil du have maksimal kontrol, så er en <strong>fully</strong> pengene værd. Er du i tvivl og kører blandet, er en god hardtail næsten altid det mere fornuftige førstevalg, og du kan altid rykke op i en fully senere når du ved hvad du har brug for.</p>
 
       <h2>Ekstra tjek når du køber brugt</h2>
-      <p>På en brugt fully skal du være ekstra grundig. Tag fat i baghjulet og vrik fra side til side for at mærke efter slør i pivotlejerne. Tryk dæmperen sammen og lyt efter raslen eller utætheder, og kig efter olie omkring dæmperen og forgaflen, da det kan betyde at en service er på vej. På en hardtail er der færre bevægelige dele at bekymre sig om, hvilket er endnu en grund til at den ofte er et trygt brugtkøb. Læs vores generelle <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);text-decoration:underline;">guide til at tjekke en brugt cykel</a> inden du handler.</p>
+      <p>På en brugt fully skal du være ekstra grundig. Tag fat i baghjulet og vrik fra side til side for at mærke efter slør i pivotlejerne. Tryk dæmperen sammen og lyt efter raslen eller utætheder, og kig efter olie omkring dæmperen og forgaflen, da det kan betyde at en service er på vej. På en hardtail er der færre bevægelige dele at bekymre sig om, hvilket er endnu en grund til at den ofte er et trygt brugtkøb. Læs vores generelle <a href="/guide/tjek-brugt-cykel/" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);text-decoration:underline;">guide til at tjekke en brugt cykel</a> inden du handler.</p>
 
       <h2>Find din næste MTB</h2>
-      <p>Når du har besluttet dig for affjedringstype, kan du filtrere direkte på den her på Cykelbørsen sammen med gear, bremser, stelstørrelse og pris. Og dukker den rigtige cykel ikke op endnu, så <a href="/cykelagenter" onclick="event.preventDefault();navigateTo('/cykelagenter')" style="color:var(--rust);text-decoration:underline;">opret en Cykelagent</a>, så får du en mail så snart en MTB der matcher netop dine kriterier bliver sat til salg.</p>
+      <p>Når du har besluttet dig for affjedringstype, kan du filtrere direkte på den her på Cykelbørsen sammen med gear, bremser, stelstørrelse og pris. Og dukker den rigtige cykel ikke op endnu, så <a href="/cykelagenter/" onclick="event.preventDefault();navigateTo('/cykelagenter')" style="color:var(--rust);text-decoration:underline;">opret en Cykelagent</a>, så får du en mail så snart en MTB der matcher netop dine kriterier bliver sat til salg.</p>
     `,
   },
 
@@ -70,7 +70,7 @@ export const BLOG_ARTICLES = {
       <p>Hvis cyklen står som efterlyst, dukker den op her. Et blankt resultat betyder ikke automatisk at cyklen er ren, fordi registret kun indeholder de cykler ejerne selv har meldt stjålet. Men det er det første og vigtigste tjek man kan lave inden man betaler.</p>
 
       <h2>Prisen siger ofte en hel del</h2>
-      <p>Slå normalprisen for modellen op, gerne i Cykelbørsens <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a>. Ligger prisen 30 procent under markedet, så stil dig selv spørgsmålet hvorfor.</p>
+      <p>Slå normalprisen for modellen op, gerne i Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a>. Ligger prisen 30 procent under markedet, så stil dig selv spørgsmålet hvorfor.</p>
       <p>Sælger har måske en troværdig forklaring. Familien flytter, der er pludseligt brug for kontanter, eller cyklen skal bare væk hurtigt. Det er klart situationer der findes i virkeligheden. Men det er også de klassiske svindelhistorier, så vær særligt på vagt hvis cyklen samtidig fremstår uden et eneste brugsspor selvom prisen er meget lav.</p>
 
       <h2>Spørg til historikken</h2>
@@ -85,7 +85,7 @@ export const BLOG_ARTICLES = {
       <p>I praksis er det dog ofte svært at få pengene tilbage hvis sælger forsvinder eller har brugt falsk identitet. Derfor er forebyggelsen langt vigtigere end alt det man kan gøre bagefter.</p>
 
       <h2>Det tager ti minutter</h2>
-      <p>De fem tjek tager samlet omkring ti minutter at gennemføre, og de fjerner langt størstedelen af risikoen. Det er en lille investering i en handel der typisk koster mellem 5.000 og 20.000 kr. Vil du gå dybere i sikker handel, finder du vores fulde <a href="/sikkerhedsguide" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">sikkerhedsguide</a> her på sitet.</p>
+      <p>De fem tjek tager samlet omkring ti minutter at gennemføre, og de fjerner langt størstedelen af risikoen. Det er en lille investering i en handel der typisk koster mellem 5.000 og 20.000 kr. Vil du gå dybere i sikker handel, finder du vores fulde <a href="/sikkerhedsguide/" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">sikkerhedsguide</a> her på sitet.</p>
     `,
   },
 
@@ -165,7 +165,7 @@ export const BLOG_ARTICLES = {
       <p>Nogle ting bør stoppe en handel uanset hvor god prisen er. Batteriet er låst eller mangler oplader. Motoren laver underlige lyde. Sælger nægter at lade dig tage en prøvetur. Prisen ligger 30 procent under markedet (mistanke om tyveri eller skjulte fejl). Eller cyklen har et tredjeparts-batteri i stedet for et originalt, hvilket kan være en reel sikkerhedsrisiko.</p>
 
       <h2>Hvad betyder en realistisk pris</h2>
-      <p>Brug Cykelbørsens <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a> for at se hvad lignende e-cykler sælges for lige nu. Som tommelfingerregel taber en e-cykel 20-30 procent af nyprisen det første år. Efter to år ligger den typisk på 55-65 procent af nyprisen, efter tre-fire år på 40-50 procent, og er den fem år eller mere bør prisen ligge mellem 30 og 40 procent af original. På det tidspunkt nærmer batteriet sig udskiftning, og det skal afspejles i prisen.</p>
+      <p>Brug Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a> for at se hvad lignende e-cykler sælges for lige nu. Som tommelfingerregel taber en e-cykel 20-30 procent af nyprisen det første år. Efter to år ligger den typisk på 55-65 procent af nyprisen, efter tre-fire år på 40-50 procent, og er den fem år eller mere bør prisen ligge mellem 30 og 40 procent af original. På det tidspunkt nærmer batteriet sig udskiftning, og det skal afspejles i prisen.</p>
       <p>På Cykelbørsen kan du filtrere på "El-cykel" som type. Mange forhandlere tilbyder også garanti på brugte e-cykler, og det vises tydeligt med et garanti-mærke på annoncen.</p>
     `,
   },
@@ -226,7 +226,7 @@ export const BLOG_ARTICLES = {
 
       <h2>Begynd med en realistisk pris</h2>
       <p>Den klassiske fejl er at sætte prisen højere end markedet og håbe på det bedste. Resultatet er som regel det modsatte. Annoncen får ikke henvendelser, prisen sættes ned efter et par uger, og slutprisen ender ofte lavere end hvis man var startet realistisk fra begyndelsen.</p>
-      <p>Tjek Cykelbørsens <a href="/vurder-min-cykel" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">gratis vurderingsværktøj</a> for at se hvad lignende cykler faktisk er solgt for. Rammer du medianen, sælger du typisk inden for en uge eller to. Vil du sælge ekstra hurtigt, så sæt prisen fem procent under median. Det giver dig forrang i søgninger og bud kommer hurtigere ind.</p>
+      <p>Tjek Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">gratis vurderingsværktøj</a> for at se hvad lignende cykler faktisk er solgt for. Rammer du medianen, sælger du typisk inden for en uge eller to. Vil du sælge ekstra hurtigt, så sæt prisen fem procent under median. Det giver dig forrang i søgninger og bud kommer hurtigere ind.</p>
 
       <h2>Beskrivelsen skal sælge, ikke bare beskrive</h2>
       <p>Skriv den i en bestemt rækkefølge, så bliver det aldrig forkert. Start med mærke, model, årgang og tilstand i én sætning. Forklar derefter kort hvorfor du sælger. Det er fint at være ærlig, og "jeg cykler ikke nok længere" lyder bedre end generiske floskler om at cyklen er fantastisk.</p>
@@ -234,7 +234,7 @@ export const BLOG_ARTICLES = {
       <p>Generelle floskler som "fantastisk cykel, må sælges" virker desperat. Vær konkret. Det skaber tillid og giver køberen følelsen af at du ved hvad du taler om.</p>
 
       <h2>Tag rigtig gode billeder</h2>
-      <p>Annoncer med fem til otte skarpe billeder sælger tre gange så hurtigt som dem med et eller to slørede. Vi har en separat <a href="/blog/bedre-cykel-billeder" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
+      <p>Annoncer med fem til otte skarpe billeder sælger tre gange så hurtigt som dem med et eller to slørede. Vi har en separat <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
 
       <h2>Sælg i sæsonen</h2>
       <p>Cykelmarkedet er sæsonbestemt. Foråret og forsommeren (marts til juni) er peak-perioden hvor flest købere er aktive og priserne er højest. Juli og august er stadig gode, men det er ferieperiode. Fra september begynder markedet at falde, og december til februar er bunden hvor kun deal-jægere bevæger sig.</p>

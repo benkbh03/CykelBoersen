@@ -111,7 +111,7 @@ function bikeLinkList(bikes) {
       ? ` – ${Number(b.price).toLocaleString('da-DK')} kr.`
       : '';
     const where = b.city ? ` i ${b.city}` : '';
-    return `<li><a href="/bike/${escHtml(b.id)}">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
+    return `<li><a href="/bike/${escHtml(b.id)}/">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
   }).join('');
   return `<ul class="prerender-bike-links">${items}</ul>`;
 }
@@ -274,7 +274,7 @@ function brandPage(slug, meta) {
         <div class="brand-page-section">
           <h2 class="brand-page-section-title">Relaterede mærker</h2>
           <div class="brand-related-grid">
-            ${related.map(b => `<a class="brand-related-chip" href="/cykler/${brandToSlug(b)}">${escHtml(b)}</a>`).join('')}
+            ${related.map(b => `<a class="brand-related-chip" href="/cykler/${brandToSlug(b)}/">${escHtml(b)}</a>`).join('')}
           </div>
         </div>` : '';
 
@@ -363,7 +363,7 @@ function blogArticlePage(article) {
           <h2>Læs også</h2>
           <div class="blog-related-grid">
             ${relatedFinal.map(a => `
-              <a class="blog-related-card" href="/blog/${a.slug}">
+              <a class="blog-related-card" href="/blog/${a.slug}/">
                 <div class="blog-related-emoji">${a.heroEmoji}</div>
                 <div class="blog-related-info">
                   <span class="blog-related-cat">${escHtml(a.category)}</span>
@@ -412,7 +412,7 @@ function blogOverviewPage() {
         </div>
         <div class="blog-articles-grid" id="blog-articles-grid">
           ${articles.map(a => `
-            <a class="blog-card" href="/blog/${a.slug}" data-cat="${escHtml(a.category)}">
+            <a class="blog-card" href="/blog/${a.slug}/" data-cat="${escHtml(a.category)}">
               <div class="blog-card-emoji">${a.heroEmoji}</div>
               <div class="blog-card-body">
                 <span class="blog-card-category">${escHtml(a.category)}</span>
@@ -464,7 +464,7 @@ function brandsOverviewPage() {
           <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
           <div class="brands-overview-grid">
             ${brands.map(({ slug, name }) => `
-              <a class="brand-tile" href="/cykler/${slug}"><div class="brand-tile-name">${escHtml(name)}</div></a>`).join('')}
+              <a class="brand-tile" href="/cykler/${slug}/"><div class="brand-tile-name">${escHtml(name)}</div></a>`).join('')}
           </div>
         </section>
       </div>`;
@@ -496,7 +496,7 @@ function categoryPage(slug, meta) {
           <h2 class="brand-page-section-title">Andre kategorier</h2>
           <div class="brand-related-grid">
             ${meta.related.map(rs => CATEGORY_META[rs]
-              ? `<a class="brand-related-chip" href="/${rs}">${escHtml(CATEGORY_META[rs].name)}</a>`
+              ? `<a class="brand-related-chip" href="/${rs}/">${escHtml(CATEGORY_META[rs].name)}</a>`
               : '').join('')}
           </div>
         </div>`;
@@ -746,7 +746,7 @@ function dealerPage(d) {
   const contentHtml = `
       <div class="dealer-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
         <p style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
-          <a href="/forhandlere">Forhandlere</a></p>
+          <a href="/forhandlere/">Forhandlere</a></p>
         <h1 style="font-family:'Fraunces',serif;margin-bottom:6px;">${escHtml(navn)}</h1>
         ${sted ? `<p style="color:var(--muted);margin-bottom:4px;">${escHtml(sted)}</p>` : ''}
         <p style="color:var(--muted);margin-bottom:18px;">Verificeret forhandler på Cykelbørsen</p>
@@ -781,7 +781,7 @@ function dealersOverviewPage(dealers) {
   const items = sorteret.map(d => {
     const n = (BIKES_BY_DEALER.get(d.id) || []).length;
     return `<li style="padding:10px 0;border-bottom:1px solid var(--border);">
-            <a href="/dealer/${escHtml(d.id)}">${escHtml(dealerName(d))}</a>
+            <a href="/dealer/${escHtml(d.id)}/">${escHtml(dealerName(d))}</a>
             ${d.city ? `<span style="color:var(--muted);"> · ${escHtml(d.city)}</span>` : ''}
             ${n ? `<span style="color:var(--muted);"> · ${n} ${n === 1 ? 'cykel' : 'cykler'}</span>` : ''}
           </li>`;
@@ -1115,6 +1115,20 @@ async function main() {
   if (rentals) {
     for (const it of rentals) writePage(`/udlejning/${it.id}`, buildPage(rentalItemPage(it)));
     console.log(`Prerendered ${rentals.length} udlejnings-sider + /udlejning.`);
+  }
+
+  /* Genskriv de STATIC_APP_PAGES der ligger UNDER /udlejning/.
+     De skrives i loopet laengere oppe, men rydningen ovenfor sletter hele
+     mappen bagefter — saa /udlejning/lejeaftaler blev bygget og slettet i
+     samme koersel og svarede 404, mens der stod et internt link til den.
+     Skjult bag noindex i dag, saa det kostede ikke placeringer; men den
+     ville stadig vaere vaek den dag udlejning aabnes. */
+  const underUdlejning = STATIC_APP_PAGES.filter(def => def.path.startsWith('/udlejning/'));
+  for (const def of underUdlejning) {
+    writePage(def.path, buildPage(staticAppPage(def)));
+  }
+  if (underUdlejning.length) {
+    console.log(`Genskrev ${underUdlejning.length} statisk(e) side(r) under /udlejning/ efter oprydningen.`);
   }
 }
 

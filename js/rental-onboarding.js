@@ -46,7 +46,7 @@ export function createRentalOnboarding({
         <button class="rental-onb-btn" onclick="openLoginModal()">Log ind som forhandler</button>
         <p class="rental-onb-fineprint" style="margin-top:14px;">
           Er du ikke forhandler endnu?
-          <a href="/bliv-forhandler" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler gratis →</a>
+          <a href="/bliv-forhandler/" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler gratis →</a>
         </p>
       `);
       return;
@@ -85,7 +85,7 @@ export function createRentalOnboarding({
         <h1 class="rental-onb-title">Du er klar til at udleje${shopName ? `, ${esc(shopName)}` : ''}!</h1>
         <p class="rental-onb-lead">Din Stripe-konto er sat op og klar til at modtage betalinger. Opret nu dine udlejningscykler med priser og tilgængelighed.</p>
         <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">Opret udlejningscykel</button>
-        <p class="rental-onb-fineprint">Se og administrer dine udlejningscykler under <a href="/udlejning/mine" onclick="event.preventDefault();navigateTo('/udlejning/mine')">Mine udlejningscykler</a>.</p>
+        <p class="rental-onb-fineprint">Se og administrer dine udlejningscykler under <a href="/udlejning/mine/" onclick="event.preventDefault();navigateTo('/udlejning/mine')">Mine udlejningscykler</a>.</p>
       `;
     }
 
@@ -101,7 +101,7 @@ export function createRentalOnboarding({
       <button class="rental-onb-btn" id="connect-onboard-btn" onclick="startConnectOnboarding()">
         ${started ? 'Fortsæt opsætning' : 'Kom i gang med udlejning'}
       </button>
-      <p class="rental-onb-fineprint">Opsætningen sker sikkert hos Stripe, som håndterer verifikation og udbetalinger. Du accepterer <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">udlejningsvilkårene</a> undervejs.</p>
+      <p class="rental-onb-fineprint">Opsætningen sker sikkert hos Stripe, som håndterer verifikation og udbetalinger. Du accepterer <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')">udlejningsvilkårene</a> undervejs.</p>
     `;
   }
 
