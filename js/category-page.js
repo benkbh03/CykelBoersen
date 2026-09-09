@@ -84,7 +84,7 @@ export function createCategoryPage({
           <h2 class="brand-page-section-title">Andre kategorier</h2>
           <div class="brand-related-grid">
             ${meta.related.map(rs => CATEGORY_META[rs]
-              ? `<a class="brand-related-chip" href="/${rs}" onclick="event.preventDefault();navigateTo('/${rs}')">${esc(CATEGORY_META[rs].name)}</a>`
+              ? `<a class="brand-related-chip" href="/${rs}/" onclick="event.preventDefault();navigateTo('/${rs}')">${esc(CATEGORY_META[rs].name)}</a>`
               : '').join('')}
           </div>
         </div>

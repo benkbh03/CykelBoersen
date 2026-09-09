@@ -544,7 +544,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         </div>
       </div>
 
-      <a href="/tilladt-sortiment" onclick="event.preventDefault();navigateTo('/tilladt-sortiment')" class="bd-scope-mini">
+      <a href="/tilladt-sortiment/" onclick="event.preventDefault();navigateTo('/tilladt-sortiment')" class="bd-scope-mini">
         <span class="bd-scope-mini-icon" aria-hidden="true">🚴</span>
         <span class="bd-scope-mini-text">Hvad må jeg sælge på Cykelbørsen?</span>
         <span class="bd-scope-mini-arrow" aria-hidden="true">→</span>

@@ -34,7 +34,7 @@ function showBanner() {
         </div>
       </div>
       <div class="cookie-banner-actions">
-        <a href="/cookiepolitik" onclick="event.preventDefault();window.navigateTo('/cookiepolitik')" class="cookie-banner-link">Læs cookiepolitik</a>
+        <a href="/cookiepolitik/" onclick="event.preventDefault();window.navigateTo('/cookiepolitik')" class="cookie-banner-link">Læs cookiepolitik</a>
         <button class="cookie-banner-btn cookie-banner-btn-minimal" onclick="window.handleCookieChoice('minimal')">Kun nødvendige</button>
         <button class="cookie-banner-btn cookie-banner-btn-accept" onclick="window.handleCookieChoice('accepted')">Accepter alle</button>
       </div>

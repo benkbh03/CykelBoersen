@@ -77,7 +77,7 @@ export function createRentalBrowse({
       grid.innerHTML = `
         <div class="rental-empty">
           <p>Der er ingen udlejningscykler${_typeFilter ? ` i kategorien "${esc(_typeFilter)}"` : ''} lige nu.</p>
-          <p style="margin-top:6px;font-size:0.9rem;color:var(--muted);">Er du forhandler? <a href="/bliv-udlejer" onclick="event.preventDefault();navigateTo('/bliv-udlejer')" style="color:var(--rust);">Tilbyd dine cykler til udlejning →</a></p>
+          <p style="margin-top:6px;font-size:0.9rem;color:var(--muted);">Er du forhandler? <a href="/bliv-udlejer/" onclick="event.preventDefault();navigateTo('/bliv-udlejer')" style="color:var(--rust);">Tilbyd dine cykler til udlejning →</a></p>
         </div>`;
       return;
     }

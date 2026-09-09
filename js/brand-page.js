@@ -108,7 +108,7 @@ export function createBrandPage({
           <h2 class="brand-page-section-title">Relaterede mærker</h2>
           <div class="brand-related-grid">
             ${getRelatedBrands(brandName).map(b => `
-              <a class="brand-related-chip" href="/cykler/${brandToSlug(b)}" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b)}')">${esc(b)}</a>
+              <a class="brand-related-chip" href="/cykler/${brandToSlug(b)}/" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b)}')">${esc(b)}</a>
             `).join('')}
           </div>
         </div>
@@ -244,7 +244,7 @@ export function createBrandPage({
       const name = d.shop_name || d.name || 'Forhandler';
       const avatar = safeAvatarUrl(d.avatar_url);
       return `
-        <a class="brand-dealer-card" href="/dealer/${d.id}" onclick="event.preventDefault();navigateToDealer('${d.id}')">
+        <a class="brand-dealer-card" href="/dealer/${d.id}/" onclick="event.preventDefault();navigateToDealer('${d.id}')">
           <div class="brand-dealer-logo">
             ${avatar ? `<img src="${avatar}" alt="${esc(name)}">` : `<span>${esc(getInitials(name))}</span>`}
           </div>
@@ -380,7 +380,7 @@ export function createBrandPage({
           <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
           <div class="brands-overview-grid">
             ${curated.map(({ brand, slug, count }) => `
-              <a class="brand-tile" href="/cykler/${slug}" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
+              <a class="brand-tile" href="/cykler/${slug}/" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
                 <div class="brand-tile-name">${esc(brand)}</div>
                 ${count > 0
                   ? `<div class="brand-tile-count">${count} ${count === 1 ? 'cykel' : 'cykler'}</div>`
@@ -395,7 +395,7 @@ export function createBrandPage({
           <h2 class="brands-overview-section-title">Øvrige mærker</h2>
           <div class="brands-overview-grid">
             ${others.map(({ brand, slug, count }) => `
-              <a class="brand-tile brand-tile-compact" href="/cykler/${slug}" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
+              <a class="brand-tile brand-tile-compact" href="/cykler/${slug}/" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
                 <div class="brand-tile-name">${esc(brand)}</div>
                 ${count > 0
                   ? `<div class="brand-tile-count">${count} ${count === 1 ? 'cykel' : 'cykler'}</div>`

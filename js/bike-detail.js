@@ -299,7 +299,7 @@ export function createBikeDetail({
             ${sellerType === 'dealer'
               ? 'Sælger er erhvervsdrivende. Forbrugerreglerne gælder for handlen, herunder reklamationsret.'
               : 'Sælger er privatperson. Forbrugerbeskyttelsen gælder ikke: du har hverken reklamationsret eller fortrydelsesret, når du køber af en privat.'}
-            <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')">Læs mere</a>
+            <a href="/vilkaar/" onclick="event.preventDefault();navigateTo('/vilkaar')">Læs mere</a>
           </p>`}
           ${adminCanEdit ? `
           <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
@@ -879,7 +879,7 @@ export function createBikeDetail({
       <div style="max-width:1200px;margin:0 auto;padding:20px 16px;">
         <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
         <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;color:var(--charcoal);">${esc(bikeTitle(b.brand, b.model))}</h1>
-        ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler →</a>` : ''}
+        ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}/" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler →</a>` : ''}
         ${html}
       </div>`;
 

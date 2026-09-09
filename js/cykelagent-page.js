@@ -223,7 +223,7 @@ export function createCykelagentPage({
     const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
     const price = priceText(bike);
     return `
-      <a class="cykelagent-match-card" href="/bike/${bike.id}" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
+      <a class="cykelagent-match-card" href="/bike/${bike.id}/" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
         ${img
           ? `<img class="cykelagent-match-img" src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">`
           : '<div class="cykelagent-match-img cykelagent-match-img--empty">🚲</div>'}

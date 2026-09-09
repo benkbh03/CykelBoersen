@@ -56,7 +56,7 @@ export function createRentalManage({
 
   function connectBanner(status) {
     if (status === 'enabled') return '';
-    return `<div class="rental-connect-warn">⚠️ Færdiggør din udlejnings-opsætning hos Stripe for at kunne modtage bookinger. <a href="/bliv-udlejer" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Færdiggør nu →</a></div>`;
+    return `<div class="rental-connect-warn">⚠️ Færdiggør din udlejnings-opsætning hos Stripe for at kunne modtage bookinger. <a href="/bliv-udlejer/" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Færdiggør nu →</a></div>`;
   }
 
   /* ---------- "Mine udlejningscykler" ---------- */

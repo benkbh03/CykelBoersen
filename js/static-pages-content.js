@@ -96,7 +96,7 @@ export const footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Platformens rolle</h3>
       <p style="margin-bottom:8px;">Ved <strong>køb og salg</strong> af cykler er Cykelbørsen udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
-      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
+      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
@@ -305,7 +305,7 @@ export const footerContent = {
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
-      <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
+      <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik/" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Dine rettigheder</h3>
       <p style="margin-bottom:8px;">I henhold til GDPR har du følgende rettigheder:</p>
@@ -470,7 +470,7 @@ export const footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Tvivlstilfælde</h3>
       <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs, så svarer vi indenfor et par timer.</p>
-      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Du kan altid læse den fulde paragraf i <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')" style="color:var(--rust);text-decoration:underline;">vilkår § 4a</a>.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Du kan altid læse den fulde paragraf i <a href="/vilkaar/" onclick="event.preventDefault();navigateTo('/vilkaar')" style="color:var(--rust);text-decoration:underline;">vilkår § 4a</a>.</p>
     `
   },
   contact: {
@@ -540,7 +540,7 @@ export const footerContent = {
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tag en prøvetur før du betaler</h2>
       <p style="margin-bottom:16px;">Det er din mulighed for at tjekke at cyklen rent faktisk fungerer som den skal. Skift gennem alle gear. Det skal være jævnt og uden støj. Bremserne skal kunne stoppe cyklen helt med fast greb. Snurr hjulene og se efter at de er snorlige uden wobble. Tjek kæden og kranken for knirken eller synlige skader. Kig rammen efter for revner, buler og rust ved svejsningerne. Og tjek dækmønstret for slid.</p>
-      <p style="margin-bottom:24px;">For en grundigere gennemgang, find vores fulde <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a>.</p>
+      <p style="margin-bottom:24px;">For en grundigere gennemgang, find vores fulde <a href="/guide/tjek-brugt-cykel/" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a>.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentér handlen</h2>
       <p style="margin-bottom:16px;">Ved køb over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være komplet juridisk korrekt for at være nyttigt. Sælgers navn og adresse (gerne med de første seks cifre af CPR), cyklens mærke, model, årgang og stelnummer, aftalt pris og dato, og begge parters underskrift. Det er nok.</p>
@@ -553,7 +553,7 @@ export const footerContent = {
       <p style="margin-bottom:24px;"><strong>Falske MobilePay-skærmbilleder.</strong> En sælger eller køber viser et skærmbillede der ligner en gennemført overførsel. Tjek altid din egen konto i banken, ikke et skærmbillede den anden viser dig. Rigtige MobilePay-overførsler vises straks.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
-      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via 🚩-knappen på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
+      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via 🚩-knappen på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt/" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
 
       <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
         <h3 style="font-family:'Fraunces',serif;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
@@ -584,7 +584,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Kunden er ansvarlig for cyklen i lejeperioden og skal behandle den forsvarligt og følge færdselsloven. Forhandleren er ansvarlig for at cyklen er i lovlig og sikker stand ved udlevering. Cykelbørsen er alene betalingsformidler og platform og er ikke ansvarlig for skader, tyveri, personskade eller tab i forbindelse med udlejningen. Kunde og forhandler opfordres til at aftale forsikringsforhold indbyrdes.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Persondata</h3>
-      <p style="margin-bottom:16px;">Ved en booking behandles nødvendige oplysninger (navn, kontakt, datoer, beløb) for at gennemføre lejeaftalen. Se <a href="/privatlivspolitik" onclick="event.preventDefault();navigateTo('/privatlivspolitik')" style="color:var(--rust);">privatlivspolitikken</a> for detaljer.</p>
+      <p style="margin-bottom:16px;">Ved en booking behandles nødvendige oplysninger (navn, kontakt, datoer, beløb) for at gennemføre lejeaftalen. Se <a href="/privatlivspolitik/" onclick="event.preventDefault();navigateTo('/privatlivspolitik')" style="color:var(--rust);">privatlivspolitikken</a> for detaljer.</p>
     `
   },
   databehandleraftale: {
