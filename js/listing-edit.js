@@ -271,7 +271,7 @@ export function createListingEdit({
       if (fn) {
         fn.value = '';
         fn.placeholder = b.frame_last4
-          ? `Oplyst · slutter på ••${b.frame_last4} — indtast igen for at rette`
+          ? `Oplyst · slutter på ••${b.frame_last4} · indtast igen for at rette`
           : 'Indtast stelnummer';
       } }
 
@@ -331,7 +331,7 @@ export function createListingEdit({
       ? 'Mærke <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(valgfrit)</span>'
       : 'Mærke *';
     const descEl = document.getElementById('edit-description');
-    if (descEl) descEl.placeholder = isAcc ? 'Beskriv tilbehøret — stand, størrelse, alder, evt. fejl…' : 'Beskriv din cykel...';
+    if (descEl) descEl.placeholder = isAcc ? 'Beskriv tilbehøret: stand, størrelse, alder, evt. fejl…' : 'Beskriv din cykel...';
   }
 
   // Vis kun de tekniske felter der giver mening for cykeltypen (spejler salg-formen).

@@ -48,7 +48,7 @@ export function maybeShowScamWarning() {
       <div class="scam-card" role="document">
         <div class="scam-icon">${iconShield(30)}</div>
         <h2 id="scam-title" class="scam-title">Inden du tager kontakt</h2>
-        <p class="scam-lede">Vi vil hjælpe dig med at handle trygt. Husk disse tre regler — særligt ved køb af brugte cykler:</p>
+        <p class="scam-lede">Vi vil hjælpe dig med at handle trygt. Husk disse tre regler, særligt ved køb af brugte cykler:</p>
         <ol class="scam-rules">
           <li>
             <strong>Mød offentligt.</strong>
@@ -61,7 +61,7 @@ export function maybeShowScamWarning() {
           </li>
           <li>
             <strong>Betal aldrig forud.</strong>
-            <span>Betal kun ved levering — kontant eller MobilePay i hånden. Aldrig bankoverførsel uden at have set cyklen.</span>
+            <span>Betal kun ved levering, kontant eller MobilePay i hånden. Aldrig bankoverførsel uden at have set cyklen.</span>
           </li>
         </ol>
         <div class="scam-actions">

@@ -10,11 +10,11 @@ export function createQuickReplies({ esc, getCurrentProfile }) {
     const isDealer = getCurrentProfile()?.seller_type === 'dealer';
     if (isDealer) {
       return [
-        'Tak for din interesse — cyklen er stadig til salg.',
+        'Tak for din interesse. Cyklen er stadig til salg.',
         'Du er velkommen til at komme forbi og prøve den.',
         'Vi har åbent man-fre 10-17, lør 10-14.',
         'Vi tilbyder finansiering og byttetilbud.',
-        'Tak for handlen — god tur!',
+        'Tak for handlen. God tur!',
       ];
     }
     return [

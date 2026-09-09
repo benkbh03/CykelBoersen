@@ -17,7 +17,7 @@ export function createBlogPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    document.title = 'Cykelbørsen Blog — Guides, tests og tips';
+    document.title = 'Cykelbørsen Blog: guides, tests og tips';
     updateSEOMeta(
       'Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster.',
       '/blog'
@@ -38,7 +38,7 @@ export function createBlogPage({
         <header class="blog-hero">
           <h1 class="blog-title">Cykelbørsen Blog</h1>
           <p class="blog-subtitle">
-            Guides, tests og tips fra cykel-entusiaster — for cykel-entusiaster.
+            Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.
             Skrevet af os, brugt af dig.
           </p>
         </header>
@@ -90,7 +90,7 @@ export function createBlogPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    document.title = `${article.title} — Cykelbørsen Blog`;
+    document.title = `${article.title} | Cykelbørsen Blog`;
     updateSEOMeta(article.metaDesc, `/blog/${slug}`);
 
     addBlogArticleJsonLd(article);

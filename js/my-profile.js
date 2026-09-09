@@ -48,7 +48,7 @@ export function createMyProfile({
       grid.innerHTML = `<div class="empty-state-box">
         <div class="empty-state-icon">🚲</div>
         <h3 class="empty-state-title">Ingen annoncer endnu</h3>
-        <p class="empty-state-sub">Sæt din første cykel til salg — det tager under 2 minutter.</p>
+        <p class="empty-state-sub">Sæt din første cykel til salg. Det tager under 2 minutter.</p>
         <button class="empty-state-cta" onclick="openModal()">+ Sæt til salg</button>
       </div>`;
       return;
@@ -201,7 +201,7 @@ export function createMyProfile({
     if (sold) patch.sold_via = 'external';
     const { error } = await supabase.from('bikes').update(patch).eq('id', id);
     if (error) { showToast('❌ Kunne ikke fjerne annonce'); console.error(error); return; }
-    showToast(sold ? 'Annonce fjernet — tillykke med salget' : 'Annonce fjernet');
+    showToast(sold ? 'Annonce fjernet. Tillykke med salget' : 'Annonce fjernet');
     reloadMyListings();
     loadBikes();
     updateFilterCounts();
@@ -399,7 +399,7 @@ export function createMyProfile({
       try {
         localStorage.setItem('_pendingCykelagent', JSON.stringify({ name, filters, savedAt: Date.now() }));
       } catch {}
-      showToast('Næsten færdig — opret en gratis konto for at aktivere din Cykelagent');
+      showToast('Næsten færdig. Opret en gratis konto for at aktivere din Cykelagent');
       openLoginModal();
       return;
     }

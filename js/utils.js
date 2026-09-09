@@ -64,10 +64,10 @@ export function validatePassword(pw, ctx = {}) {
     'adgangskode', 'kodeord12', 'sommer2024', 'sommer2025', 'danmark12',
     'cykelborsen', 'cykelboersen', 'christiania',
   ]);
-  if (COMMON.has(lower)) return { ok: false, message: 'Den adgangskode er for nem at gætte — vælg en anden.' };
-  if (/^(.)\1+$/.test(v)) return { ok: false, message: 'Undgå at gentage det samme tegn — vælg en mere unik kode.' };
+  if (COMMON.has(lower)) return { ok: false, message: 'Den adgangskode er for nem at gætte. Vælg en anden.' };
+  if (/^(.)\1+$/.test(v)) return { ok: false, message: 'Undgå at gentage det samme tegn. Vælg en mere unik kode.' };
   if (/^(01234567|12345678|23456789|34567890|abcdefgh|87654321|98765432)/.test(lower)) {
-    return { ok: false, message: 'Undgå simple talrækker som 12345678 — vælg en mere unik kode.' };
+    return { ok: false, message: 'Undgå simple talrækker som 12345678. Vælg en mere unik kode.' };
   }
   const emailLocal = String(ctx.email || '').toLowerCase().split('@')[0];
   if (emailLocal.length >= 4 && lower.includes(emailLocal)) {

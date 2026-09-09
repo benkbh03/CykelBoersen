@@ -56,7 +56,7 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
       strip.style.display = 'flex';
       strip.classList.remove('cykelagent-cta-strip--accent');
       strip.innerHTML = `
-        <span class="cta-strip-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når din næste cykel dukker op — opret en gratis <strong>Cykelagent</strong></span>
+        <span class="cta-strip-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når din næste cykel dukker op. Opret en gratis <strong>Cykelagent</strong></span>
         <div class="cta-strip-actions">
           <button class="cta-strip-btn" onclick="navigateTo('/cykelagenter')">Opret Cykelagent →</button>
         </div>
@@ -76,9 +76,9 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
 
     let leadText;
     if (isZero) {
-      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Ingen cykler matcher <strong>${label}</strong> lige nu — gem søgningen og få besked når en dukker op`;
+      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Ingen cykler matcher <strong>${label}</strong> lige nu. Gem søgningen og få besked når en dukker op`;
     } else if (isFew) {
-      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Kun ${resultCount} ${resultCount === 1 ? 'cykel' : 'cykler'} matcher <strong>${label}</strong> — få besked når der kommer flere`;
+      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Kun ${resultCount} ${resultCount === 1 ? 'cykel' : 'cykler'} matcher <strong>${label}</strong>. Få besked når der kommer flere`;
     } else {
       leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når der dukker op: <strong>${label}</strong>`;
     }

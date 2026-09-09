@@ -196,7 +196,7 @@ export function createMapPage({
           </div>
           <div class="map-pill map-pill--price">
             <input type="number" id="map-price-min" placeholder="Min." min="0" aria-label="Min pris">
-            <span class="map-pill-sep">—</span>
+            <span class="map-pill-sep">–</span>
             <input type="number" id="map-price-max" placeholder="Max." min="0" aria-label="Max pris">
             <span class="map-pill-unit">kr.</span>
           </div>
@@ -1140,7 +1140,7 @@ export function createMapPage({
     // Pris (altid synlig — primært filter)
     html += '<div class="msf-group"><div class="msf-group-title">PRIS</div><div class="msf-price">'
       + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
-      + '<span class="msf-price-sep">—</span>'
+      + '<span class="msf-price-sep">–</span>'
       + '<input type="number" id="msf-price-max" placeholder="Max kr" value="' + esc(cur.priceMax) + '">'
       + '<span class="msf-price-unit">kr.</span>'
       + '</div>'
@@ -1213,7 +1213,7 @@ export function createMapPage({
     // Batteri (Wh, el-cykel)
     const batteryInner = '<div class="msf-price">'
       + '<input type="number" id="msf-battery-min" placeholder="Min Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_min != null ? _mapAdvFilters.battery_min : '') + '">'
-      + '<span class="msf-price-sep">—</span>'
+      + '<span class="msf-price-sep">–</span>'
       + '<input type="number" id="msf-battery-max" placeholder="Max Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_max != null ? _mapAdvFilters.battery_max : '') + '">'
       + '<span class="msf-price-unit">Wh</span></div>';
     html += acc('Batteri (Wh)', batteryInner, (_mapAdvFilters.battery_min != null || _mapAdvFilters.battery_max != null) ? 1 : 0);

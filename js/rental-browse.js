@@ -23,10 +23,10 @@ export function createRentalBrowse({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    const title = 'Lej en cykel — udlejning hos forhandlere | Cykelbørsen';
+    const title = 'Lej en cykel: udlejning hos forhandlere | Cykelbørsen';
     document.title = title;
     updateSEOMeta(
-      'Lej cykler direkte hos danske cykelforhandlere. Racercykler, mountainbikes, el-cykler, ladcykler og mere — book og betal sikkert online.',
+      'Lej cykler direkte hos danske cykelforhandlere. Racercykler, mountainbikes, el-cykler, ladcykler og mere. Book og betal sikkert online.',
       '/udlejning',
       { title }
     );
@@ -38,7 +38,7 @@ export function createRentalBrowse({
       <div class="rental-browse">
         <div class="rental-browse-hero">
           <h1 class="rental-browse-title">Lej en cykel</h1>
-          <p class="rental-browse-sub">Book cykler direkte hos forhandlere — betal sikkert online, hent og kør.</p>
+          <p class="rental-browse-sub">Book cykler direkte hos forhandlere. Betal sikkert online, hent og kør.</p>
         </div>
         <div class="rental-type-chips" id="rental-type-chips">
           <button class="rental-type-chip active" onclick="filterRentalType(null, this)">Alle</button>
