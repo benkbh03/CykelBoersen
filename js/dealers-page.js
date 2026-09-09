@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
-import { validatePassword, iconDealer } from './utils.js';
+import { validatePassword, iconDealer, iconStar } from './utils.js';
 
 export function createDealersPage({
   supabase,
@@ -370,7 +370,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       : '';
 
     const isPromoted = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
-    const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Fremhævet forhandler">⭐ Fremhævet</span>' : '';
+    const promotedBadge = isPromoted ? `<span class="dealer-promoted-badge" title="Fremhævet forhandler">${iconStar(11)} Fremhævet</span>` : '';
     const promotedClass = isPromoted ? ' dealer-card--promoted' : '';
 
     return `

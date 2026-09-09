@@ -2,6 +2,8 @@
    MIN PROFIL SIDE (#/me)
    ============================================================ */
 
+import { iconEye, iconHeart, iconAlert, iconCamera } from './utils.js';
+
 export function createMyProfilePage({
   supabase,
   esc,
@@ -577,22 +579,22 @@ export function createMyProfilePage({
       el.innerHTML = `
         <div class="insights-grid">
           <div class="insight-card insight-card--accent">
-            <div class="insight-card-label">🔥 Top cykel (visninger)</div>
+            <div class="insight-card-label">${iconEye(14)} Top cykel (visninger)</div>
             <div class="insight-card-value">${topByViews ? esc(topByViews.brand + ' ' + (topByViews.model || '')) : '—'}</div>
             <div class="insight-card-sub">${topByViews ? (topByViews.views || 0).toLocaleString('da-DK') + ' visninger' : 'Ingen data endnu'}</div>
           </div>
           <div class="insight-card">
-            <div class="insight-card-label">❤️ Mest gemt</div>
+            <div class="insight-card-label">${iconHeart(14)} Mest gemt</div>
             <div class="insight-card-value">${topBySaves && savedByBike[topBySaves.id] ? esc(topBySaves.brand + ' ' + (topBySaves.model || '')) : '—'}</div>
             <div class="insight-card-sub">${topBySaves && savedByBike[topBySaves.id] ? savedByBike[topBySaves.id] + ' personer' : 'Ingen gemte endnu'}</div>
           </div>
           <div class="insight-card ${stale.length > 0 ? 'insight-card--warn' : ''}">
-            <div class="insight-card-label">⚠️ Stille cykler</div>
+            <div class="insight-card-label">${iconAlert(14)} Stille cykler</div>
             <div class="insight-card-value">${stale.length}</div>
             <div class="insight-card-sub">${stale.length > 0 ? 'Under 5 visninger på 14+ dage' : 'Ingen — flot!'}</div>
           </div>
           <div class="insight-card ${noPics.length > 0 ? 'insight-card--warn' : ''}">
-            <div class="insight-card-label">📷 Mangler billeder</div>
+            <div class="insight-card-label">${iconCamera(14)} Mangler billeder</div>
             <div class="insight-card-value">${noPics.length + fewPics.length}</div>
             <div class="insight-card-sub">${(noPics.length + fewPics.length) > 0 ? 'Cykler med under 3 billeder' : 'Alle har gode billeder'}</div>
           </div>

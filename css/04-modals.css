@@ -748,9 +748,9 @@ body:has(.inbox-page) #chat-widget { display: none; }
 /* ── ANNONCE DETALJE ── */
 .demo-banner {
   display: flex; align-items: flex-start; gap: 12px;
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  border: 1.5px solid #ff8b60;
-  border-radius: 12px;
+  background: #FBF3E6;
+  border: 1px solid #DCC9A6;
+  border-radius: 10px;
   padding: 14px 18px;
   margin-bottom: 18px;
   color: #6e2410;
@@ -989,7 +989,17 @@ body:has(.inbox-page) #chat-widget { display: none; }
   .price-history-item { grid-template-columns: 54px 1fr auto; gap: 6px; font-size: 0.77rem; }
 }
 .bike-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
+.detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
+/* Garanti stod tidligere med style="background:#e8f5e9;color:#2e7d32" direkte i
+   js/bike-detail.js — samme Material-groenne familie som resten er ryddet for.
+   Nu en klasse med samme daempede sprog som .detail-tag--frame ved siden af, saa
+   de to tillidssignaler ligner hinanden. */
+.detail-tag--garanti {
+  background: rgba(42,61,46,0.06);
+  border-color: rgba(42,61,46,0.22);
+  color: var(--forest);
+  display: inline-flex; align-items: center; gap: 5px;
+}
 /* Klikbare tags → ren søgning på netop den egenskab. De skal se trykbare ud
    uden at skrige: samme form som de statiske tags, men med pointer, hover og
    en synlig fokus-ring for tastaturbrug. <button> frem for <a> fordi det ikke
@@ -1050,36 +1060,40 @@ body:has(.inbox-page) #chat-widget { display: none; }
   display: flex; flex-direction: column; gap: 12px;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 14px 16px;
   font-family: 'DM Sans', sans-serif;
 }
+/* Stod tidligere i Material Green (#2e7d32 / #1a5722) paa en 135°-gradient med
+   groen gloed-skygge. Det er sidens vigtigste tillidselement, og det baerede
+   altsaa en anden groen end brandet (#2A3D2E). Nu husets groen, flad flade, og
+   vaegten kommer fra en fastere ramme frem for en farvet baggrund. */
 .trust-card--trusted {
-  background: linear-gradient(135deg, #f1f7ed 0%, #e8f5e9 100%);
-  border: 1.5px solid #2e7d32;
-  box-shadow: 0 2px 12px rgba(46,125,50,0.08);
+  background: #F3F6F1;
+  border: 1px solid rgba(42,61,46,0.45);
+  box-shadow: none;
 }
 .trust-card-badge {
   display: flex; align-items: center; gap: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(46,125,50,0.18);
+  border-bottom: 1px solid rgba(42,61,46,0.16);
 }
 .trust-card-badge-icon {
   font-size: 1.6rem;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(46,125,50,0.25));
+  color: var(--forest);
 }
 .trust-card-badge-text { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
 .trust-card-badge-text strong {
   font-family: 'Fraunces', serif;
   font-size: 1.05rem;
   font-weight: 800;
-  color: #1a5722;
+  color: var(--forest);
   letter-spacing: -0.01em;
 }
 .trust-card-badge-text span {
   font-size: 0.78rem;
-  color: #2e7d32;
+  color: #55604F;
   line-height: 1.3;
 }
 .trust-card-stats {
@@ -1104,7 +1118,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
   color: var(--charcoal);
   line-height: 1.25;
 }
-.trust-card--trusted .trust-stat-value { color: #1a5722; }
+.trust-card--trusted .trust-stat-value { color: #223226; }
 .trust-stat-sub {
   font-size: 0.78rem;
   color: var(--muted);
@@ -1927,15 +1941,25 @@ body:has(.inbox-page) #chat-widget { display: none; }
   gap: 12px;
   margin: 0 0 24px;
 }
+/* Etiketterne var fire emoji (🔥 ❤️ ⚠️ 📷) — det sidste sted paa siden hvor
+   emoji blev brugt som ikoner, og de renderede forskelligt pr. styresystem.
+   Nu samme streg-SVG som resten og samme versal-etiket som filtrene.
+   Baggrundene var 135°-gradienter i Material Orange; nu flade, i husets okker. */
 .insight-card {
-  background: var(--sand);
+  background: #FDFBF6;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 14px 16px;
 }
-.insight-card--accent { background: linear-gradient(135deg, #fff3e0 0%, #ffe4cc 100%); border-color: #ff8b60; }
-.insight-card--warn   { background: linear-gradient(135deg, #fff5f0 0%, #ffe0d4 100%); border-color: #ffa080; }
-.insight-card-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.insight-card--accent { background: #F3F6F1; border-color: rgba(42,61,46,0.28); }
+.insight-card--warn   { background: #FBF3E6; border-color: #DCC9A6; }
+.insight-card-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; color: var(--forest); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  margin-bottom: 6px;
+}
+.insight-card--warn .insight-card-label { color: #8A4A22; }
 .insight-card-value { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700; color: var(--charcoal); margin-bottom: 4px; }
 .insight-card-sub   { font-size: 0.78rem; color: var(--muted); }
 
