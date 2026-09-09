@@ -329,7 +329,7 @@ function brandPage(slug, meta) {
 
 function blogArticlePage(article) {
   const slug = article.slug;
-  const title = `${article.title} — Cykelbørsen Blog`;
+  const title = `${article.title} | Cykelbørsen Blog`;
   const description = article.metaDesc;
   const canonicalPath = `/blog/${slug}`;
 
@@ -404,7 +404,7 @@ function blogOverviewPage() {
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="blog-hero">
           <h1 class="blog-title">Cykelbørsen Blog</h1>
-          <p class="blog-subtitle">Guides, tests og tips fra cykel-entusiaster — for cykel-entusiaster.</p>
+          <p class="blog-subtitle">Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.</p>
         </header>
         <div class="blog-categories">
           <button class="blog-cat-btn active" data-cat="all">Alle</button>
@@ -441,7 +441,7 @@ function blogOverviewPage() {
   }];
 
   return {
-    title: 'Cykelbørsen Blog — Guides, tests og tips',
+    title: 'Cykelbørsen Blog: guides, tests og tips',
     description: 'Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster.',
     canonicalPath: '/blog',
     jsonldBlocks,
@@ -469,8 +469,8 @@ function brandsOverviewPage() {
         </section>
       </div>`;
   return {
-    title: 'Alle cykelmærker — Brugte og nye cykler | Cykelbørsen',
-    description: 'Browse alle cykelmærker på Cykelbørsen — fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
+    title: 'Alle cykelmærker: brugte og nye cykler | Cykelbørsen',
+    description: 'Browse alle cykelmærker på Cykelbørsen, fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
     canonicalPath: '/maerker',
     jsonldBlocks: [breadcrumb([['Forside', '/'], ['Cykelmærker', '/maerker']])],
     contentHtml,
@@ -631,13 +631,13 @@ function rentalBrowsePage() {
       <div class="rental-browse">
         <div class="rental-browse-hero">
           <h1 class="rental-browse-title">Lej en cykel</h1>
-          <p class="rental-browse-sub">Book cykler direkte hos forhandlere — betal sikkert online, hent og kør.</p>
+          <p class="rental-browse-sub">Book cykler direkte hos forhandlere. Betal sikkert online, hent og kør.</p>
         </div>
         <div class="rental-grid"><p style="color:var(--muted);padding:24px;text-align:center;">Henter udlejningscykler…</p></div>
       </div>`;
   return {
-    title: 'Lej en cykel — udlejning hos forhandlere | Cykelbørsen',
-    description: 'Lej cykler direkte hos danske cykelforhandlere. Racercykler, mountainbikes, el-cykler, ladcykler og mere — book og betal sikkert online.',
+    title: 'Lej en cykel: udlejning hos forhandlere | Cykelbørsen',
+    description: 'Lej cykler direkte hos danske cykelforhandlere. Racercykler, mountainbikes, el-cykler, ladcykler og mere. Book og betal sikkert online.',
     canonicalPath: '/udlejning',
     jsonldBlocks: [breadcrumb([['Forside', '/'], ['Udlejning', '/udlejning']])],
     contentHtml,
@@ -654,7 +654,7 @@ function rentalItemPage(it) {
   const images  = (it.rental_item_images || []).map(i => i.url).filter(Boolean);
   const primary = (it.rental_item_images || []).find(i => i.is_primary)?.url || images[0] || '';
 
-  const title = `Lej ${name} — ${daily.toLocaleString('da-DK')} kr./dag | Cykelbørsen`;
+  const title = `Lej ${name}, ${daily.toLocaleString('da-DK')} kr./dag | Cykelbørsen`;
   const description = `Lej ${name}${city ? ` i ${city}` : ''} for ${daily.toLocaleString('da-DK')} kr./dag. Book direkte hos forhandleren på Cykelbørsen.`;
   const descHtml = it.description ? `<div class="rental-item-desc">${escHtml(it.description).replace(/\n/g, '<br>')}</div>` : '';
 
@@ -717,8 +717,8 @@ function dealerPage(d) {
      noindex uden lager, men titlen bruges ogsaa som og:title naar nogen
      deler linket. */
   const title = bikes.length
-    ? `${navn}${d.city ? ' i ' + d.city : ''} — cykler til salg | Cykelbørsen`
-    : `${navn}${d.city ? ' i ' + d.city : ''} — forhandler | Cykelbørsen`;
+    ? `${navn}${d.city ? ' i ' + d.city : ''} : cykler til salg | Cykelbørsen`
+    : `${navn}${d.city ? ' i ' + d.city : ''} : forhandler | Cykelbørsen`;
   const description = bikes.length
     ? `${navn}${d.city ? ' i ' + d.city : ''} har ${bikes.length} ${bikes.length === 1 ? 'cykel' : 'cykler'} til salg på Cykelbørsen. Verificeret forhandler.`
     : `${navn}${d.city ? ' i ' + d.city : ''} er verificeret forhandler på Cykelbørsen.`;
@@ -836,38 +836,38 @@ function formatDate(iso) {
 const STATIC_APP_PAGES = [
   { path: '/forhandlere',            h1: 'Cykelforhandlere i hele Danmark',
     title: 'Cykelforhandlere i hele Danmark | Cykelbørsen',
-    description: 'Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.' },
+    description: 'Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed: garanti, servicehistorik og professionel rådgivning.' },
   { path: '/kort',                   h1: 'Cykler på kort',
-    title: 'Cykler på kort — find cykler nær dig | Cykelbørsen',
+    title: 'Cykler på kort: find cykler nær dig | Cykelbørsen',
     description: 'Se alle cykler til salg på et kort. Find cykler i nærheden af dig og filtrér på type, pris og stand.' },
   { path: '/cykelagenter',           h1: 'Cykelagenter',
-    title: 'Cykelagenter — få besked når din næste cykel dukker op | Cykelbørsen',
+    title: 'Cykelagenter: få besked når din næste cykel dukker op | Cykelbørsen',
     description: 'Opret en Cykelagent og få besked når den perfekte cykel dukker op. Du behøver ikke have en konto for at komme i gang.' },
   { path: '/bliv-forhandler',        h1: 'Bliv forhandler på Cykelbørsen',
-    title: 'Bliv forhandler på Cykelbørsen — gratis i lanceringsfasen',
-    description: 'Bliv forhandler på Cykelbørsen. Nå cykelkøbere i hele Danmark. Helt gratis — ingen binding.' },
+    title: 'Bliv forhandler på Cykelbørsen, gratis i lanceringsfasen',
+    description: 'Bliv forhandler på Cykelbørsen. Nå cykelkøbere i hele Danmark. Helt gratis, ingen binding.' },
   /* Formular bag login, intet indhold at indeksere. Den laa som index,follow
      og konkurrerede med /vurder-min-cykel og forsiden om de samme ord. */
   { path: '/sell',                   h1: 'Sæt din cykel til salg', noindex: true,
-    title: 'Sæt din cykel til salg — gratis annonce | Cykelbørsen',
+    title: 'Sæt din cykel til salg: gratis annonce | Cykelbørsen',
     description: 'Sælg din cykel eller cykeltilbehør gratis på Cykelbørsen. Opret en annonce på under 2 minutter.' },
   { path: '/vurder-min-cykel',       h1: 'Hvad er min cykel værd?',
     title: 'Hvad er min cykel værd? Gratis vurdering | Cykelbørsen',
     description: 'Få en gratis og øjeblikkelig vurdering af din cykels værdi baseret på mærke, model, alder og stand.' },
   { path: '/stelstoerrelse-guide',   h1: 'Stelstørrelse-finder',
-    title: 'Stelstørrelse-finder — Hvilken cykelstørrelse passer mig? | Cykelbørsen',
-    description: 'Find din rigtige stelstørrelse ud fra højde og skridtlængde — for racercykler, mountainbikes, citybikes og børnecykler.' },
+    title: 'Stelstørrelse-finder: hvilken cykelstørrelse passer mig? | Cykelbørsen',
+    description: 'Find din rigtige stelstørrelse ud fra højde og skridtlængde, for racercykler, mountainbikes, citybikes og børnecykler.' },
   { path: '/sikkerhedsguide',        h1: 'Sikkerhedsguide',
-    title: 'Sikkerhedsguide — handl trygt på Cykelbørsen',
+    title: 'Sikkerhedsguide: handl trygt på Cykelbørsen',
     description: 'Sådan handler du trygt: undgå snyd, tjek stelnummer, mød sælger sikkert og betal fornuftigt.' },
   { path: '/guide/tjek-brugt-cykel', h1: 'Sådan tjekker du en brugt cykel inden køb',
     title: 'Sådan tjekker du en brugt cykel inden køb | Cykelbørsen',
-    description: 'Tjekliste til køb af brugt cykel: stel, gear, bremser, stelnummer og prisforhandling — alt du skal se efter inden du køber.' },
+    description: 'Tjekliste til køb af brugt cykel: stel, gear, bremser, stelnummer og prisforhandling. Alt du skal se efter inden du køber.' },
   /* Udlejning er skjult under test (RENTAL_ADMIN_ONLY i js/feature-flags.js).
      Siderne bygges stadig, så adressen svarer 200 i stedet for 404, men de er
      noindex og ude af sitemappet. Fjern noindex her når funktionen åbnes. */
   { path: '/bliv-udlejer',           h1: 'Bliv udlejer på Cykelbørsen', noindex: true,
-    title: 'Bliv udlejer — lej din cykel ud | Cykelbørsen',
+    title: 'Bliv udlejer: lej din cykel ud | Cykelbørsen',
     description: 'Tjen penge på cykler du ikke bruger. Opret udlejningsannoncer gratis på Cykelbørsen.' },
   { path: '/udlejning/lejeaftaler',  h1: 'Lejeaftaler', noindex: true,
     title: 'Mine lejeaftaler | Cykelbørsen',
@@ -876,11 +876,11 @@ const STATIC_APP_PAGES = [
     title: 'Udlejningsvilkår | Cykelbørsen',
     description: 'Vilkår for leje og udlejning af cykler gennem Cykelbørsen.' },
   { path: '/om-os',                  h1: 'Om Cykelbørsen',
-    title: 'Om Cykelbørsen — Danmarks cykelmarkedsplads',
-    description: 'Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler — fra private sælgere og forhandlere.' },
+    title: 'Om Cykelbørsen: Danmarks cykelmarkedsplads',
+    description: 'Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler, fra private sælgere og forhandlere.' },
   { path: '/kontakt',                h1: 'Kontakt os',
     title: 'Kontakt Cykelbørsen',
-    description: 'Kontakt Cykelbørsen — vi svarer typisk inden for 24 timer på hverdage.' },
+    description: 'Kontakt Cykelbørsen. Vi svarer typisk inden for 24 timer på hverdage.' },
   { path: '/vilkaar',                h1: 'Vilkår og betingelser',
     title: 'Vilkår og betingelser | Cykelbørsen',
     description: 'Vilkår og betingelser for brug af Cykelbørsen.' },
@@ -889,10 +889,10 @@ const STATIC_APP_PAGES = [
     description: 'Sådan behandler Cykelbørsen dine personoplysninger.' },
   { path: '/cookiepolitik',          h1: 'Cookiepolitik',
     title: 'Cookiepolitik | Cykelbørsen',
-    description: 'Cookies og lokal lagring på Cykelbørsen — hvad vi gemmer og hvorfor.' },
+    description: 'Cookies og lokal lagring på Cykelbørsen: hvad vi gemmer og hvorfor.' },
   { path: '/tilladt-sortiment',      h1: 'Tilladt sortiment',
     title: 'Tilladt sortiment | Cykelbørsen',
-    description: 'Hvad må sælges på Cykelbørsen? Cykler, el-cykler og cykeltilbehør — og hvad der ikke hører hjemme her.' },
+    description: 'Hvad må sælges på Cykelbørsen? Cykler, el-cykler og cykeltilbehør, og hvad der ikke hører hjemme her.' },
   { path: '/databehandleraftale',    h1: 'Databehandleraftale',
     title: 'Databehandleraftale | Cykelbørsen',
     description: 'Databehandleraftale for Cykelbørsens onboarding-service til forhandlere.' },
