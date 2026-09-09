@@ -2142,12 +2142,38 @@ function updatePwStrength(inputId, wrapId) {
   if (label) label.textContent = labels[tier];
 }
 
+/* Fjern en afsluttende skraastreg, saa '/racercykler/' og '/racercykler' er
+   samme rute for routeren.
+
+   HVORFOR DEN SKAL VAERE HER
+   De prerenderede sider ligger som <rute>/index.html, og GitHub Pages serverer
+   dem derfor paa /rute/ MED skraastreg. Canonical og sitemap blev i august
+   flyttet over paa netop den form. Men HVER ENESTE match i handleRoute() er
+   skrevet uden skraastreg ('/forhandlere', /^\/bike\/([^/]+)$/ osv.), saa alle
+   prerenderede adresser faldt igennem til forsiden.
+
+   To konsekvenser, begge alvorlige:
+     1. En besoegende der klikkede paa et Google-resultat landede paa forsiden
+        i stedet for den side de valgte. Sidens eget indhold blev skjult igen.
+     2. updateSEOMeta blev kaldt med '/', saa canonical paa hver eneste
+        prerenderet side blev skrevet om til forsiden EFTER JS var koert.
+        Google renderer JS. Derfor stod 196 sider i Search Console som
+        "Alternate page with proper canonical tag", og kun forsiden og
+        /om-os/ var indekseret.
+
+   Roeres denne funktion, saa test bagefter at BEGGE former virker: baade
+   /forhandlere og /forhandlere/. */
+function normalizePath(p) {
+  const s = String(p || '/');
+  return s.length > 1 && s.endsWith('/') ? s.slice(0, -1) : s;
+}
+
 function navigateTo(path) {
   document.body.classList.remove('on-sell-page');
   // Undgå duplikerede consecutive history-entries: hvis vi allerede er på
   // samme path, brug replaceState i stedet — så browser-back ikke skal
   // klikkes 2 gange for at komme forbi en 'no-op'-navigation.
-  const currentPath = window.location.pathname + window.location.search;
+  const currentPath = normalizePath(window.location.pathname) + window.location.search;
   if (currentPath === path) {
     history.replaceState({}, '', path);
   } else {
@@ -2172,7 +2198,7 @@ function handleRoute() {
   if (document.body.classList.contains('mobile-filters-open')) {
     document.body.classList.remove('mobile-filters-open');
   }
-  const path = window.location.pathname;
+  const path = normalizePath(window.location.pathname);
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
   const dealerMatch  = path.match(/^\/dealer\/([^/]+)$/);
@@ -2225,7 +2251,7 @@ function handleRoute() {
   if (_isRentalRoute && !rentalAllowed(currentProfile)) {
     if (currentUser && !currentProfile && _rentalGuardWaits < 6) {
       _rentalGuardWaits++;
-      setTimeout(() => { if (location.pathname === path) handleRoute(); }, 250);
+      setTimeout(() => { if (normalizePath(location.pathname) === path) handleRoute(); }, 250);
       return;
     }
     _rentalGuardWaits = 0;
@@ -3401,7 +3427,7 @@ function stopActingAsDealer() {
   sessionStorage.removeItem('_adminActingAs');
   showToast('Acting-as-tilstand stoppet');
   // Reload sell-page så banner forsvinder og normal-flow gælder
-  if (location.pathname === '/saelg') location.reload();
+  if (normalizePath(location.pathname) === '/saelg') location.reload();
 }
 
 function getActingAsDealer() {
@@ -3875,7 +3901,7 @@ window.filterByDealerCard    = filterByDealerCard;
 
 window.showBikeOnMap = function(bikeId) {
   closeBikeModal && closeBikeModal();
-  if (window.location.pathname !== '/kort') {
+  if (normalizePath(window.location.pathname) !== '/kort') {
     window._pendingMapBikeId = bikeId;
     navigateTo('/kort');
   } else {
