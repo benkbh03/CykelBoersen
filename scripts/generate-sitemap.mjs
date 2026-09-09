@@ -134,7 +134,7 @@ async function main() {
 
   try {
     // brand hentes med, så mærkesider uden aktive annoncer kan udelades nedenfor.
-    bikes = await fetchSupabase('bikes?is_active=eq.true&select=id,brand');
+    bikes = await fetchSupabase('bikes?is_active=eq.true&select=id,brand,user_id');
   } catch (err) {
     console.warn('Kunne ikke hente bikes:', err.message);
     dynamicFailed = true;
@@ -179,13 +179,36 @@ async function main() {
   const brandSlugsWithBikes = BRAND_SLUGS.filter(([slug]) => slugsWithBikes.has(slug));
   console.log(`Mærkesider i sitemap: ${brandSlugsWithBikes.length} af ${BRAND_SLUGS.length} (resten har ingen aktive annoncer).`);
 
+  /* Ukuraterede mærkesider. prerender.mjs bygger en side for HVERT mærke der
+     har mindst én aktiv annonce, også dem uden kurateret tekst, og de sider er
+     indekserbare. De manglede i sitemappet, så syv færdige sider stod uden for.
+     Samme ASCII-regel som prerenderingen, ellers peger vi på en side der ikke
+     blev bygget. */
+  const curatedSlugs = new Set(BRAND_SLUGS.map(([slug]) => slug));
+  const uncuratedSlugs = [...slugsWithBikes]
+    .filter(slug => !curatedSlugs.has(slug) && /^[a-z0-9-]+$/.test(slug))
+    .sort();
+  if (uncuratedSlugs.length) {
+    console.log(`Ukuraterede mærkesider i sitemap: ${uncuratedSlugs.length} (${uncuratedSlugs.join(', ')}).`);
+  }
+
+  /* Kun forhandlere med mindst én aktiv annonce.
+     prerender.mjs sætter noindex på en forhandlerside uden lager (`noindex:
+     !bikes.length`), men sitemappet listede dem alligevel. Så bad vi Google om
+     at indeksere fem sider der selv sagde nej. Samme selvhelende logik som for
+     mærkesiderne: får butikken en cykel op, er den med igen næste kørsel. */
+  const dealersWithBikes = new Set(bikes.map(b => b.user_id).filter(Boolean));
+  const dealersInSitemap = dealers.filter(d => dealersWithBikes.has(d.id));
+  console.log(`Forhandlersider i sitemap: ${dealersInSitemap.length} af ${dealers.length} (resten har ingen aktive annoncer).`);
+
   const urls = [
     ...STATIC_URLS,
     ...CATEGORY_SLUGS.map(slug => ({ loc: `/${slug}`, changefreq: 'daily', priority: '0.9' })),
     ...BLOG_SLUGS.map(slug => ({ loc: `/blog/${slug}`, changefreq: 'monthly', priority: '0.7' })),
     ...brandSlugsWithBikes.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
     ...bikes.map(b => ({ loc: `/bike/${b.id}`, changefreq: 'weekly', priority: '0.6' })),
-    ...dealers.map(d => ({ loc: `/dealer/${d.id}`, changefreq: 'weekly', priority: '0.6' })),
+    ...uncuratedSlugs.map(slug => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority: '0.5' })),
+    ...dealersInSitemap.map(d => ({ loc: `/dealer/${d.id}`, changefreq: 'weekly', priority: '0.6' })),
     // Udlejnings-items udelades ligeledes mens funktionen er skjult.
   ];
 
@@ -199,7 +222,7 @@ ${urls.map(urlNode).join('\n')}
   console.log(
     `Genereret sitemap.xml med ${urls.length} URLs ` +
     `(${STATIC_URLS.length} statiske + ${BLOG_SLUGS.length} blog + ${BRAND_SLUGS.length} mærker + ` +
-    `${bikes.length} bikes + ${dealers.length} dealers)`
+    `${bikes.length} bikes + ${dealersInSitemap.length} dealers)`
   );
 }
 

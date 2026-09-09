@@ -846,7 +846,9 @@ const STATIC_APP_PAGES = [
   { path: '/bliv-forhandler',        h1: 'Bliv forhandler på Cykelbørsen',
     title: 'Bliv forhandler på Cykelbørsen — gratis i lanceringsfasen',
     description: 'Bliv forhandler på Cykelbørsen. Nå cykelkøbere i hele Danmark. Helt gratis — ingen binding.' },
-  { path: '/sell',                   h1: 'Sæt din cykel til salg',
+  /* Formular bag login, intet indhold at indeksere. Den laa som index,follow
+     og konkurrerede med /vurder-min-cykel og forsiden om de samme ord. */
+  { path: '/sell',                   h1: 'Sæt din cykel til salg', noindex: true,
     title: 'Sæt din cykel til salg — gratis annonce | Cykelbørsen',
     description: 'Sælg din cykel eller cykeltilbehør gratis på Cykelbørsen. Opret en annonce på under 2 minutter.' },
   { path: '/vurder-min-cykel',       h1: 'Hvad er min cykel værd?',
