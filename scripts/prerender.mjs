@@ -606,10 +606,21 @@ function bikePage(b) {
     breadcrumb([['Forside', '/'], [name, canonicalPath]]),
   ];
 
+  /* INGEN noindex her. Annoncerne ER markedspladsen.
+
+     Fra 24. august (0cf3ddc2, "Skjul udlejning ... indtil flowet er testet")
+     og frem stod der `noindex: true` netop her, med en kommentar om UDLEJNING.
+     Flaget var kopieret ind i den forkerte funktion: det hoerte til
+     rentalItemPage() nedenfor, som til gengaeld slet ikke fik det.
+
+     Konsekvensen var at hver eneste annonceside bad Google om ikke at
+     indeksere sig. Search Console gik fra 8 indekserede sider i august til 2
+     i september, og "Excluded by 'noindex' tag" var paa vej op ad listen.
+
+     Skal annoncer nogensinde skjules igen, saa gør det betinget (som
+     brandPage og dealerPage gør paa antal annoncer), aldrig ubetinget. */
   return {
     title, description, canonicalPath, jsonldBlocks, contentHtml,
-    // Skjult under test, se js/feature-flags.js. Fjern når udlejning åbnes.
-    noindex: true,
     ogImage: primary || undefined,
     ogImageAlt: primary ? `${name} – ${b.type || 'cykel'} i ${city}` : undefined,
   };
@@ -679,6 +690,9 @@ function rentalItemPage(it) {
 
   return {
     title, description, canonicalPath, jsonldBlocks, contentHtml,
+    // Skjult under test, se js/feature-flags.js. Fjern når udlejning åbnes.
+    // Det er HER flaget hoerte til; det stod ved en fejl i bikePage() i stedet.
+    noindex: true,
     ogImage: primary || undefined,
     ogImageAlt: primary ? name : undefined,
   };
