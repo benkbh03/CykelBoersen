@@ -251,7 +251,7 @@ export function createBikeDetail({
               return cols.map(c => `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('color','${escAttr(c)}')" title="Se alle ${escAttr(c)}e cykler">${esc(c)}</button>`).join('');
             })()}
             ${b.city ? `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('city','${escAttr(b.city)}')" title="Se alle cykler i ${escAttr(b.city)}">${esc(b.city)}</button>` : ''}
-            ${b.warranty ? `<span class="detail-tag" style="background:#e8f5e9;color:#2e7d32;">${iconShield()} ${esc(b.warranty)}</span>` : ''}
+            ${b.warranty ? `<span class="detail-tag detail-tag--garanti">${iconShield()} ${esc(b.warranty)}</span>` : ''}
             ${(() => {
               /* Stelnummer-tag: gør åbenheden synlig ved første øjekast i stedet for
                  kun i badgen længere nede. Vi viser aldrig nummeret — kun at det er

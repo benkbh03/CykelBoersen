@@ -178,7 +178,7 @@
   contain-intrinsic-block-size: 1200px;
 }
 .bike-card {
-  background: var(--cream); border-radius: 14px;
+  background: var(--cream); border-radius: 10px;
   border: 1px solid var(--border); overflow: hidden;
   cursor: pointer; transition: transform 0.2s, box-shadow 0.22s, border-color 0.2s;
   animation: fadeUp 0.5s ease both;
@@ -217,28 +217,38 @@
 /* ── Fremhævet (boost) annonce — diskret badge, blender ind (DBA-stil) ── */
 .featured-card-badge {
   display: inline-flex; align-items: center;
-  background: linear-gradient(135deg, #f7e4a1, #e6c25c);
-  color: #6e4e00;
-  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.1px;
+  background: #EFE0B4;
+  color: #5A4407;
+  border: 1px solid #D9C482;
+  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
   padding: 2px 5px; border-radius: 4px;
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
-  box-shadow: 0 1px 3px rgba(184,134,11,0.3);
 }
 .featured-card-img-placeholder { font-size: 4rem; }
 
+/* Standsmærkaterne stod tidligere i Material Designs standardfarver (Green 50,
+   Blue 50, Orange 50) — tre ubeslægtede kulører der ikke fandtes andre steder i
+   paletten. Nu ÉN familie, hvor mørkere = bedre stand. Det gør rækkefølgen
+   Ny > Som ny > God stand > Brugt aflæselig på afstand uden at læse ordet. */
 .condition-tag {
-  border-radius: 6px;
-  padding: 3px 8px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2px;
-  background: rgba(255,255,255,0.92); color: var(--charcoal);
+  border-radius: 4px;
+  padding: 3px 8px; font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: rgba(254,250,243,0.94); color: var(--forest);
+  border: 1px solid rgba(42,61,46,0.16);
   white-space: nowrap;
 }
-.condition-tag--ny      { background: #e8f5e9; color: #2e7d32; }
-.condition-tag--som-ny  { background: #e3f2fd; color: #1565c0; }
-.condition-tag--god     { background: #fff3e0; color: #bf360c; }
-.condition-tag--brugt   { background: #efeae0; color: #5a544a; }
+.condition-tag--ny      { background: var(--forest); border-color: var(--forest); color: var(--cream); }
+.condition-tag--som-ny  { background: #DFE7DD; border-color: #BFCEBC; color: #223226; }
+.condition-tag--god     { background: var(--cream); border-color: var(--border); color: #4A453C; }
+.condition-tag--brugt   { background: #EFEAE0; border-color: #D7D1C5; color: #5A544A; }
+/* Garanti hørte til den samme grønne Material-familie. Nu samme dæmpede sprog
+   som stelnummer-tagget på annoncesiden — begge er tillidssignaler, ikke reklame. */
 .warranty-card-badge {
-  background: #e8f5e9; color: #2e7d32;
-  border-radius: 6px; padding: 3px 7px;
+  background: rgba(254,250,243,0.94); color: var(--forest);
+  border: 1px solid rgba(42,61,46,0.18);
+  border-radius: 4px; padding: 3px 7px;
   font-size: 0.58rem; font-weight: 700; letter-spacing: 0.3px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -253,13 +263,14 @@
   display: inline-flex; align-items: center; gap: 3px;
   box-shadow: 0 2px 6px rgba(191,54,12,0.18);
 }
+/* Stod paa #c8302a mens brandfarven er #C8502A — to roede en haarsbredde fra
+   hinanden paa samme kort. Nu variablen, saa de ikke kan drive fra hinanden. */
 .price-reduced-card-badge {
-  background: #c8302a; color: #fff;
+  background: var(--rust); color: #fff;
   border-radius: 4px; padding: 2px 5px;
-  font-size: 0.5rem; font-weight: 800; letter-spacing: 0.3px;
+  font-size: 0.5rem; font-weight: 800; letter-spacing: 0.06em;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 2px;
-  box-shadow: 0 2px 6px rgba(200,48,42,0.25);
 }
 @media (max-width: 560px) {
   /* Kompakte badges på mobil — de må ikke dække cyklen. Mindre tekst/padding,
@@ -269,7 +280,10 @@
   .price-reduced-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
   .warranty-card-badge { font-size: 0.48rem; padding: 2px 5px; letter-spacing: 0; }
   .demo-badge { font-size: 0.48rem; padding: 2px 5px; box-shadow: none; }
-  .condition-tag { font-size: 0.52rem; padding: 2px 6px; }
+  /* Versaler + sperring bliver trange under 0.55rem, saa sperringen skrues ned
+     paa mobil frem for at droppe versalerne (som ville give to forskellige
+     mærkat-udtryk paa samme site). */
+  .condition-tag { font-size: 0.52rem; padding: 2px 6px; letter-spacing: 0.03em; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
@@ -374,7 +388,7 @@
 .dealer-card {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 10px;
   /* Top-padding 38px (ikke 22) reserverer en vertikal "lane" øverst hvor
      fremhævet-badgen (absolut placeret) bor uden at skubbe logo/navn/adresse
      nedad. Konsekvensen: logo + navn + adresse starter på samme y-position
@@ -387,12 +401,15 @@
   /* Kolonne + fuld hoejde, saa .dealer-card-foot kan skubbes til bunden. */
   display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
 }
+/* Striben var tidligere en gradient fra skovgroen til rust. De to farver ligger
+   langt fra hinanden i kuloercirklen, saa overgangen loeb gennem en oliven-brun
+   midte der ikke findes i paletten. Nu ensfarvet. */
 .dealer-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--forest) 0%, var(--rust) 100%);
+  background: var(--forest);
 }
 /* Kun margin-top:auto — indholdet staar som foer, men foden skubbes til
    bunden saa Google Maps-knapperne staar paa linje paa tvaers af kort med

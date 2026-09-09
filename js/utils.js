@@ -176,6 +176,14 @@ export const iconTag     = (s) => _svgIcon('<path d="M20.6 12.6 12 21.2l-8.5-8.5
 export const iconWrench  = (s) => _svgIcon('<path d="M14.7 6.3a4 4 0 1 0 5 5L21 21H3l9.7-15.7z"/>', s);
 export const iconPencil  = (s) => _svgIcon('<path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>', s);
 export const iconBike    = (s) => _svgIcon('<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/>', s);
+/* Fire ikoner der afloeser emoji i saelgerens overblik (visninger, gemt,
+   advarsel, billeder) plus stjernen paa forhandlerkortet. Emoji renderede
+   forskelligt paa hvert styresystem og var det sidste sted paa siden hvor de
+   blev brugt som ikoner. */
+export const iconEye     = (s) => _svgIcon('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>', s);
+export const iconAlert   = (s) => _svgIcon('<path d="M12 3 2.6 20h18.8z"/><path d="M12 10v4"/><path d="M12 17.4h.01"/>', s);
+export const iconCamera  = (s) => _svgIcon('<path d="M3 7h3.5l1.6-2.4h7.8L17.5 7H21v13H3z"/><circle cx="12" cy="13" r="4"/>', s);
+export const iconStar    = (s) => _svgIcon('<path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9z"/>', s);
 
 /* ── PRIS ──────────────────────────────────────────────────────
    "Gives væk"-annoncer har price = 0. De må ALDRIG vises som "0 kr.", så al
