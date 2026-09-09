@@ -157,7 +157,7 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
       .in('id', ids);
 
     if (error || !bikes || bikes.length === 0) {
-      detailView.innerHTML = `<div style="padding:60px 24px;text-align:center;color:var(--rust);">Kunne ikke hente cykler — prøv igen.</div>`;
+      detailView.innerHTML = `<div style="padding:60px 24px;text-align:center;color:var(--rust);">Kunne ikke hente cykler. Prøv igen.</div>`;
       return;
     }
 

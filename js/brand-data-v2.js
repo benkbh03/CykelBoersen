@@ -246,7 +246,7 @@ export const BRANDS_META = {
     country: 'Italien',
     founded: 1906,
     tagline: 'Italiensk racing-arv siden 1906',
-    description: 'Wilier Triestina blev grundlagt i Bassano del Grappa i 1906 (oprindeligt under et andet navn — Wilier-navnet kom efter Anden Verdenskrig). Mærket er kendt for sit karakteristiske bronze-lakerede look og en lang historie i Giro d\'Italia. Topmodellerne tæller Filante SLR, Zero SLR og Cento10.',
+    description: 'Wilier Triestina blev grundlagt i Bassano del Grappa i 1906 (oprindeligt under et andet navn, og Wilier-navnet kom efter Anden Verdenskrig). Mærket er kendt for sit karakteristiske bronze-lakerede look og en lang historie i Giro d\'Italia. Topmodellerne tæller Filante SLR, Zero SLR og Cento10.',
     popular_models: {
       'Racercykel': ['Filante SLR', 'Zero SLR', 'Cento10 SLR', 'Triestina'],
       'Gravel': ['Rave SLR'],
@@ -634,7 +634,7 @@ export const BRANDS_META = {
     country: 'Danmark',
     founded: 2013,
     tagline: 'Lænende danske 3-hjulede cargobikes',
-    description: 'Butchers & Bicycles er et dansk cargobike-mærke grundlagt i 2013 i København. Mærket er kendt for de unikke Mk1- og Mk1-E-modeller — trehjulede ladcykler med TiltingTrike-systemet, der lader cyklen læne sig i kurver og dermed føles mere som en almindelig tohjulet cykel.',
+    description: 'Butchers & Bicycles er et dansk cargobike-mærke grundlagt i 2013 i København. Mærket er kendt for de unikke Mk1- og Mk1-E-modeller: trehjulede ladcykler med TiltingTrike-systemet, der lader cyklen læne sig i kurver og dermed føles mere som en almindelig tohjulet cykel.',
     popular_models: {
       'Ladcykel': ['Mk1', 'Mk1-E Vario', 'Mk1-E Vans'],
     },

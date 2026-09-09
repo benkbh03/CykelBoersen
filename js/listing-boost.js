@@ -15,7 +15,7 @@ const BOOST_BENEFITS = `
   <ul class="boost-benefits">
     <li><span>⬆️</span> Vist <strong>øverst i listen</strong> på forsiden</li>
     <li><span>🏷️</span> <strong>Betalt promovering</strong>-mærkat der fanger øjet</li>
-    <li><span>🚀</span> Større chance for at blive set — og solgt hurtigere</li>
+    <li><span>🚀</span> Større chance for at blive set, og solgt hurtigere</li>
   </ul>`;
 
 function fmtDate(d) {
@@ -102,7 +102,7 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
           <p class="boost-pitch">Få din annonce vist øverst og med en "Betalt promovering"-mærkat i <strong>${BOOST_DAYS} dage</strong>.</p>
           ${BOOST_BENEFITS}
           <button class="boost-cta-btn" id="boost-claim-btn">Fremhæv gratis i ${BOOST_DAYS} dage</button>
-          <p class="boost-fineprint">Normalpris ${BOOST_PRICE_KR} kr. — <strong>gratis</strong> for din første fremhævning.</p>
+          <p class="boost-fineprint">Normalpris ${BOOST_PRICE_KR} kr., men <strong>gratis</strong> for din første fremhævning.</p>
         </div>`;
     }
     // 3) Gratis brugt — betal for at fremhæve

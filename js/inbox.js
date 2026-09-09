@@ -181,7 +181,7 @@ export function createInbox({
     document.getElementById('inbox-list').style.display     = 'none';
     document.getElementById('message-thread').style.display = 'block';
     document.getElementById('thread-header').innerHTML      =
-      `<strong>${otherName}</strong> — <span style="color:var(--muted)">Henter...</span>`;
+      `<strong>${otherName}</strong> · <span style="color:var(--muted)">Henter...</span>`;
 
     const [{ data, error }, { data: bike }, { data: otherProf }] = await Promise.all([
       supabase.from('messages')
@@ -210,7 +210,7 @@ export function createInbox({
 
     const openProfileFn = otherProf?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`;
     document.getElementById('thread-header').innerHTML =
-      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button> — <span style="color:var(--muted)">${esc(bikeName)}</span>`;
+      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button> · <span style="color:var(--muted)">${esc(bikeName)}</span>`;
 
     const threadEl = document.getElementById('thread-messages');
     if (error || !data) {

@@ -49,7 +49,7 @@ export function createRentalItemPage({
 
     _item = it;
 
-    const title = `Lej ${it.title} — ${(it.daily_rate || 0).toLocaleString('da-DK')} kr./dag | Cykelbørsen`;
+    const title = `Lej ${it.title}, ${(it.daily_rate || 0).toLocaleString('da-DK')} kr./dag | Cykelbørsen`;
     document.title = title;
     updateSEOMeta(
       `Lej ${it.title}${it.city ? ` i ${it.city}` : ''} for ${(it.daily_rate || 0).toLocaleString('da-DK')} kr./dag. Book direkte hos forhandleren på Cykelbørsen.`,

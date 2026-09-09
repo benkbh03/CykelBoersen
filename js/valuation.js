@@ -112,7 +112,7 @@ export function createValuation({
           <h1 class="valuation-title">Hvad er din cykel værd?</h1>
           <p class="valuation-subtitle">
             Gratis vurdering baseret på rigtige handler på Cykelbørsen.
-            Indtast oplysningerne — vi giver dig et realistisk prisinterval.
+            Indtast oplysningerne, så giver vi dig et realistisk prisinterval.
           </p>
         </header>
 
@@ -124,7 +124,7 @@ export function createValuation({
             <div class="valuation-info-card">
               <div class="valuation-info-icon">📊</div>
               <h3>Rigtige data</h3>
-              <p>Vurderingen er baseret på faktiske annoncer fra Cykelbørsen — ikke gætteri eller udenlandske prisindeks.</p>
+              <p>Vurderingen er baseret på faktiske annoncer fra Cykelbørsen, ikke gætteri eller udenlandske prisindeks.</p>
             </div>
             <div class="valuation-info-card">
               <div class="valuation-info-icon">⚡</div>
@@ -147,11 +147,11 @@ export function createValuation({
           </details>
           <details class="valuation-faq-item">
             <summary>Hvad gør jeg hvis I ikke har data nok?</summary>
-            <p>Hvis vi ikke finder lignende cykler giver vi et bredere interval baseret på din cykels mærke og type. Du kan også kontakte en af vores forhandlere for personlig vurdering — de kender markedet bedst.</p>
+            <p>Hvis vi ikke finder lignende cykler giver vi et bredere interval baseret på din cykels mærke og type. Du kan også kontakte en af vores forhandlere for personlig vurdering. De kender markedet bedst.</p>
           </details>
           <details class="valuation-faq-item">
             <summary>Skal jeg sætte prisen på medianværdien?</summary>
-            <p>Hvis du har travlt med at sælge — start på medianen eller lidt under. Hvis du kan vente — start på den høje pris og sæt ned hvis du ikke får henvendelser. Cykler i 'Som ny'-stand sælger typisk hurtigere end 'Brugt'.</p>
+            <p>Hvis du har travlt med at sælge, så start på medianen eller lidt under. Hvis du kan vente, så start på den høje pris og sæt ned hvis du ikke får henvendelser. Cykler i 'Som ny'-stand sælger typisk hurtigere end 'Brugt'.</p>
           </details>
           <details class="valuation-faq-item">
             <summary>Hvad påvirker prisen mest?</summary>
@@ -332,7 +332,7 @@ export function createValuation({
           <div class="valuation-result-icon">📭</div>
           <h2 class="valuation-result-title">Ikke data nok</h2>
           <p>Vi har endnu ikke set nok handler af ${esc(input.brand)} ${esc(input.model)} til at give en præcis vurdering.</p>
-          <p style="margin-top:12px;">Du kan stadig oprette annoncen og lade markedet vise dig den rigtige pris — eller spørge en af vores forhandlere om vejledning.</p>
+          <p style="margin-top:12px;">Du kan stadig oprette annoncen og lade markedet vise dig den rigtige pris, eller spørge en af vores forhandlere om vejledning.</p>
           <div class="valuation-result-cta">
             ${_valuationMode === 'modal'
               ? `<button class="valuation-cta-primary" onclick="closeValuationModal()">Tilbage til annoncen</button>`

@@ -412,7 +412,7 @@ export function createMyProfilePage({
           const missing = MAX_IMGS - imgCount;
           tip = `Tilføj ${missing} ${missing === 1 ? 'billede mere' : 'billeder mere'} for at øge synligheden`;
         } else if (daysOld >= 21) {
-          tip = `Annoncen er ${daysOld} dage gammel — overvej at justere prisen`;
+          tip = `Annoncen er ${daysOld} dage gammel. Overvej at justere prisen`;
         } else {
           tip = `Del annoncen med venner for at nå flere potentielle købers`;
         }
@@ -518,7 +518,7 @@ export function createMyProfilePage({
       if (bikes.length === 0) {
         el.innerHTML = `<div class="mp-insight-empty">
           <p style="color:var(--muted);padding:32px 0;text-align:center;">
-            Når du har annoncer, vises dybtgående indsigt her — visninger per cykel, sammenligninger, og forslag til hvad du kan optimere.
+            Når du har annoncer, vises dybtgående indsigt her: visninger per cykel, sammenligninger, og forslag til hvad du kan optimere.
           </p>
         </div>`;
         return;
@@ -591,7 +591,7 @@ export function createMyProfilePage({
           <div class="insight-card ${stale.length > 0 ? 'insight-card--warn' : ''}">
             <div class="insight-card-label">${iconAlert(14)} Stille cykler</div>
             <div class="insight-card-value">${stale.length}</div>
-            <div class="insight-card-sub">${stale.length > 0 ? 'Under 5 visninger på 14+ dage' : 'Ingen — flot!'}</div>
+            <div class="insight-card-sub">${stale.length > 0 ? 'Under 5 visninger på 14+ dage' : 'Ingen. Flot!'}</div>
           </div>
           <div class="insight-card ${noPics.length > 0 ? 'insight-card--warn' : ''}">
             <div class="insight-card-label">${iconCamera(14)} Mangler billeder</div>
@@ -656,7 +656,7 @@ export function createMyProfilePage({
       `;
     } catch (e) {
       console.error('loadDealerInsights fejl:', e);
-      el.innerHTML = `<p style="color:var(--rust);padding:20px 0">Kunne ikke hente indsigt — prøv igen.</p>`;
+      el.innerHTML = `<p style="color:var(--rust);padding:20px 0">Kunne ikke hente indsigt. Prøv igen.</p>`;
     }
   }
 

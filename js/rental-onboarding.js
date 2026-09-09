@@ -26,7 +26,7 @@ export function createRentalOnboarding({
     const title = 'Udlej dine cykler – bliv udlejer | Cykelbørsen';
     document.title = title;
     updateSEOMeta(
-      'Tilbyd cykeludlejning gennem CykelBørsen. Du sætter priser og tilgængelighed — vi håndterer booking og betaling, og du får pengene direkte. For registrerede forhandlere.',
+      'Tilbyd cykeludlejning gennem CykelBørsen. Du sætter priser og tilgængelighed. Vi håndterer booking og betaling, og du får pengene direkte. For registrerede forhandlere.',
       '/bliv-udlejer',
       { title }
     );
@@ -42,7 +42,7 @@ export function createRentalOnboarding({
          for dem. Begge veje skal være tydelige her, før nogen registrerer sig. */
       dv.innerHTML = shell(`
         <h1 class="rental-onb-title">Udlej dine cykler gennem CykelBørsen</h1>
-        <p class="rental-onb-lead">Udlejning er kun for registrerede forhandlere — det er gratis at blive forhandler.</p>
+        <p class="rental-onb-lead">Udlejning er kun for registrerede forhandlere. Det er gratis at blive forhandler.</p>
         <button class="rental-onb-btn" onclick="openLoginModal()">Log ind som forhandler</button>
         <p class="rental-onb-fineprint" style="margin-top:14px;">
           Er du ikke forhandler endnu?

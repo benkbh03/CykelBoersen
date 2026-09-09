@@ -284,7 +284,7 @@ function setBrowseCategory(cat) {
     : 'Cykelbørsen – Danmarks markedsplads for cykler';
   updateSEOMeta(
     isAcc
-      ? 'Køb og sælg cykeltilbehør, udstyr og reservedele på Cykelbørsen — hjelme, lygter, låse, dæk, gear, batterier og meget mere. Gratis at oprette annonce.'
+      ? 'Køb og sælg cykeltilbehør, udstyr og reservedele på Cykelbørsen: hjelme, lygter, låse, dæk, gear, batterier og meget mere. Gratis at oprette annonce.'
       : 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler, cykeltilbehør og meget mere. Gratis at oprette annonce.',
     isAcc ? '/tilbehoer' : '/'
   );
@@ -301,7 +301,7 @@ function setBrowseCategory(cat) {
     ? 'Find alt til din cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
     : _heroCykel.title;
   if (_hSub) _hSub.textContent = isAcc
-    ? 'Hjelme, lygter, dæk, gear og reservedele — køb og sælg, nyt og brugt.'
+    ? 'Hjelme, lygter, dæk, gear og reservedele. Køb og sælg, nyt og brugt.'
     : _heroCykel.sub;
 
   // Genindlæs forside-listen i den nye kategori (nulstiller øvrige filtre)
@@ -1448,7 +1448,7 @@ async function init() {
         agentActivated = await flushPendingCykelagent({ silent: true }).catch(() => false);
       }
       showToast(agentActivated
-        ? '✅ Din e-mail er bekræftet — og din Cykelagent er nu aktiveret! 🔔'
+        ? '✅ Din e-mail er bekræftet, og din Cykelagent er nu aktiveret! 🔔'
         : '✅ Din e-mail er bekræftet!');
       // Førstegangs-velkomst: vis onboarding-modalen når brugeren lander logget ind
       // efter email-bekræftelse. showOnboardingBanner er idempotent (viser ikke dobbelt),
@@ -1970,7 +1970,7 @@ async function checkSavedSearchNotifications() {
   banner.innerHTML = `
     <div class="ss-notif-content">
       <span class="ss-notif-icon">🔔</span>
-      <span class="ss-notif-text">${count} nye cykler matcher dine Cykelagenter — <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Se matches →</a></span>
+      <span class="ss-notif-text">${count} nye cykler matcher dine Cykelagenter. <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Se matches →</a></span>
       <button onclick="this.closest('#ss-notification').remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px;">✕</button>
     </div>
   `;
@@ -2133,8 +2133,8 @@ function updatePwStrength(inputId, wrapId) {
              : 'strong';
   const labels = {
     'too-short': `Mindst 8 tegn (du har ${v.length})`,
-    weak:        'Svag — gør den længere eller mere unik',
-    medium:      'OK — kan gøres stærkere',
+    weak:        'Svag. Gør den længere eller mere unik',
+    medium:      'OK, kan gøres stærkere',
     strong:      'Stærk adgangskode',
   };
   const widths = { 'too-short': '20%', weak: '35%', medium: '65%', strong: '100%' };
@@ -2727,11 +2727,11 @@ function quizPick(step, val) {
 let _quizA2 = null;
 function _showQuizResult() {
   const map = {
-    pendler: { komfort: { type: 'Citybike', desc: 'Opret, behagelig og nem at vedligeholde — perfekt til daglig pendling.' }, fart: { type: 'Racercykel', desc: 'Hurtig og effektiv — kommer hurtigt frem på asfalt.' }, pris: { type: 'Citybike', desc: 'Citybikes er typisk billige i drift og robuste.' } },
-    motion:  { fart: { type: 'Racercykel', desc: 'Optimeret til fart — ideel til konditionstræning på vej.' }, komfort: { type: 'Gravel', desc: 'Alsidig og komfortabel — god til både vej og let terræn.' }, pris: { type: 'Mountainbike', desc: 'Robust og billig i vedligehold — god til motion på varieret underlag.' } },
-    tur:     { komfort: { type: 'Gravel', desc: 'Håndterer både grusveje og asfalt — perfekt til naturture.' }, fart: { type: 'Racercykel', desc: 'Hurtig på vej — god til lange distancer.' }, pris: { type: 'Mountainbike', desc: 'Robust og alsidig til naturture.' } },
-    shopping:{ komfort: { type: 'Ladcykel', desc: 'Masser af plads til indkøb og stor lasteevne.' }, pris: { type: 'Citybike', desc: 'Nem og billig løsning til daglige indkøb.' }, fart: { type: 'El-cykel', desc: 'Kom nemt frem med fuld kurv — motor tager det tunge arbejde.' } },
-    born:    { type: 'Børnecykel', desc: 'Vælg størrelse baseret på barnets højde — brug vores størrelsesguide under stelstørrelse.' },
+    pendler: { komfort: { type: 'Citybike', desc: 'Opret, behagelig og nem at vedligeholde, perfekt til daglig pendling.' }, fart: { type: 'Racercykel', desc: 'Hurtig og effektiv, kommer hurtigt frem på asfalt.' }, pris: { type: 'Citybike', desc: 'Citybikes er typisk billige i drift og robuste.' } },
+    motion:  { fart: { type: 'Racercykel', desc: 'Optimeret til fart, ideel til konditionstræning på vej.' }, komfort: { type: 'Gravel', desc: 'Alsidig og komfortabel, god til både vej og let terræn.' }, pris: { type: 'Mountainbike', desc: 'Robust og billig i vedligehold, god til motion på varieret underlag.' } },
+    tur:     { komfort: { type: 'Gravel', desc: 'Håndterer både grusveje og asfalt, perfekt til naturture.' }, fart: { type: 'Racercykel', desc: 'Hurtig på vej, god til lange distancer.' }, pris: { type: 'Mountainbike', desc: 'Robust og alsidig til naturture.' } },
+    shopping:{ komfort: { type: 'Ladcykel', desc: 'Masser af plads til indkøb og stor lasteevne.' }, pris: { type: 'Citybike', desc: 'Nem og billig løsning til daglige indkøb.' }, fart: { type: 'El-cykel', desc: 'Kom nemt frem med fuld kurv, motoren tager det tunge arbejde.' } },
+    born:    { type: 'Børnecykel', desc: 'Vælg størrelse baseret på barnets højde. Brug vores størrelsesguide under stelstørrelse.' },
   };
   const result = _quizA1 === 'born' ? map.born : (map[_quizA1]?.[_quizA2] || { type: 'Citybike', desc: 'En god alsidig løsning.' });
   document.getElementById('quiz-step-2').style.display = 'none';
@@ -2774,7 +2774,7 @@ function suggestChildBikeSize() {
   else if (h < 125) { label = '18"'; desc = 'Ca. 5–7 år. Hjul: 18 tommer.'; }
   else if (h < 140) { label = '20"'; desc = 'Ca. 6–9 år. Hjul: 20 tommer.'; }
   else if (h < 160) { label = '24"'; desc = 'Ca. 9–12 år. Hjul: 24 tommer.'; }
-  else              { label = '26"'; desc = 'Ca. 12+ år — snart voksenstørrelse.'; }
+  else              { label = '26"'; desc = 'Ca. 12+ år, snart voksenstørrelse.'; }
   result.textContent = '→ ' + label;
   if (detail) detail.textContent = desc;
 }

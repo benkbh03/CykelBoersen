@@ -240,7 +240,7 @@ export function createBikeDetail({
             ${(b.size || b.size_cm) ? (() => {
               const _sl = frameSizeLetter(b.size);
               const _cm = b.size_cm ? `${b.size_cm} cm` : (_sl || esc(b.size));
-              const _guide = (b.size_cm && _sl) ? ` <span style="color:var(--muted);font-weight:400;" title="Bogstav-størrelser (S/M/L) varierer mellem mærker — cm er det pålidelige mål">· ca. ${_sl}</span>` : '';
+              const _guide = (b.size_cm && _sl) ? ` <span style="color:var(--muted);font-weight:400;" title="Bogstav-størrelser (S/M/L) varierer mellem mærker. Cm er det pålidelige mål">· ca. ${_sl}</span>` : '';
               return b.size
                 ? `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('size','${escAttr(b.size)}')" title="Se alle i str. ${escAttr(b.size)}">Str. ${_cm}${_guide}</button>`
                 : `<span class="detail-tag">Str. ${_cm}${_guide}</span>`;
@@ -304,13 +304,13 @@ export function createBikeDetail({
           ${adminCanEdit ? `
           <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
             <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">${iconWrench(14)} Admin · forhandler-annonce</div>
-            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt — annoncen låses, så natlig sync herefter kun opdaterer pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt. Så låses annoncen, og natlig sync opdaterer herefter kun pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
             <button class="btn-save-listing" onclick="openEditModal('${b.id}')">${iconPencil(14)} Redigér som admin</button>
           </div>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">
-              Cyklen er ikke til salg — det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
+              Cyklen er ikke til salg. Det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
             </div>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">${iconShare(14)} Del annonce</button>
           </div>
@@ -420,13 +420,13 @@ export function createBikeDetail({
               <div class="fit-card-value">${esc(b.wheel_size)}</div>
             </div>` : ''}
           </div>
-          <p class="fit-disclaimer">Vejledende — den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>
+          <p class="fit-disclaimer">Vejledende. Den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>
           <div class="fit-info-popup" id="fit-info-popup" style="display:none;">
             <p><strong>Hvorfor er det kun vejledende?</strong></p>
             <p>Højde er det første, men ikke det eneste, der bestemmer pasform:</p>
             <ul>
-              <li><strong>Benlængde (inseam):</strong> To personer på 175 cm kan have benlængde der varierer 5-10 cm — det påvirker sadelhøjde</li>
-              <li><strong>Cykeltype:</strong> Racere kræver mere strakt position end citybikes — så samme rammestørrelse passer forskelligt</li>
+              <li><strong>Benlængde (inseam):</strong> To personer på 175 cm kan have benlængde der varierer 5-10 cm, og det påvirker sadelhøjde</li>
+              <li><strong>Cykeltype:</strong> Racere kræver mere strakt position end citybikes, så samme rammestørrelse passer forskelligt</li>
               <li><strong>Personlig præference:</strong> Nogle foretrækker oprejst position, andre aerodynamisk</li>
               <li><strong>Stelfabrikantens mål:</strong> En "M" hos Trek er ikke nødvendigvis præcis "M" hos Specialized</li>
             </ul>
@@ -489,7 +489,7 @@ export function createBikeDetail({
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>
           <strong>Tjek stelnummeret</strong>
-          <span>Politiets register er den danske, autoritative kilde — tjek stelnummeret gratis inden du køber</span>
+          <span>Politiets register er den danske, autoritative kilde. Tjek stelnummeret gratis inden du køber</span>
         </div>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>

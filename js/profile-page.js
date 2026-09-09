@@ -572,7 +572,7 @@ export function createProfilePage({
     restore();
     if (error) {
       console.error('grantAdminOnboarding fejl:', error);
-      showToast('❌ Kunne ikke aktivere — prøv igen');
+      showToast('❌ Kunne ikke aktivere. Prøv igen');
       return;
     }
     showToast('✓ Onboarding-service aktiveret');
@@ -584,13 +584,13 @@ export function createProfilePage({
   async function revokeAdminOnboarding() {
     const currentUser = getCurrentUser();
     if (!currentUser) return;
-    if (!confirm('Tilbagekald tilladelsen til at Cykelbørsen opretter annoncer på dine vegne?\n\nEksisterende annoncer påvirkes ikke — de forbliver dine og kan redigeres som normalt. Vi kan bare ikke oprette nye på dine vegne efter dette punkt.')) return;
+    if (!confirm('Tilbagekald tilladelsen til at Cykelbørsen opretter annoncer på dine vegne?\n\nEksisterende annoncer påvirkes ikke. De forbliver dine og kan redigeres som normalt. Vi kan bare ikke oprette nye på dine vegne efter dette punkt.')) return;
     const { error } = await supabase.from('profiles').update({
       admin_can_create_listings: false,
     }).eq('id', currentUser.id);
     if (error) {
       console.error('revokeAdminOnboarding fejl:', error);
-      showToast('❌ Kunne ikke tilbagekalde — prøv igen');
+      showToast('❌ Kunne ikke tilbagekalde. Prøv igen');
       return;
     }
     showToast('Tilladelse tilbagekaldt');

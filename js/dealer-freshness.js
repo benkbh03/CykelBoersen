@@ -97,7 +97,7 @@ function renderNudge(stale) {
   card.querySelector('[data-act="confirm-all"]').onclick = async () => {
     await bumpFresh(stale.map(b => b.id));
     close();
-    toast('✓ Tak — dine annoncer er markeret som aktuelle');
+    toast('✓ Tak. Dine annoncer er markeret som aktuelle');
   };
 
   card.querySelectorAll('.dfn-row').forEach(row => {

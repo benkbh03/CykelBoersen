@@ -320,11 +320,11 @@ export function createBrandPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    document.title = 'Alle cykelmærker — Brugte og nye cykler | Cykelbørsen';
+    document.title = 'Alle cykelmærker: brugte og nye cykler | Cykelbørsen';
     updateSEOMeta(
-      'Browse alle cykelmærker på Cykelbørsen — fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
+      'Browse alle cykelmærker på Cykelbørsen, fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
       '/maerker',
-      { title: 'Alle cykelmærker — Brugte og nye cykler | Cykelbørsen' }
+      { title: 'Alle cykelmærker: brugte og nye cykler | Cykelbørsen' }
     );
 
     const detailView = document.getElementById('detail-view');
@@ -371,7 +371,7 @@ export function createBrandPage({
         <header class="brands-overview-hero">
           <h1 class="brands-overview-title">Alle cykelmærker</h1>
           <p class="brands-overview-subtitle">
-            Browse cykler fra over ${KNOWN_BRANDS.length} mærker —
+            Browse cykler fra over ${KNOWN_BRANDS.length} mærker,
             ${totalActive.toLocaleString('da-DK')} aktive annoncer i alt.
           </p>
         </header>

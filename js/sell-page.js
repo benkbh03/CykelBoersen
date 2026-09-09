@@ -685,7 +685,7 @@ export function createSellPage({
         </div>
         <div class="sell-wizard-body">
           <h1 class="sell-step-heading">Hvad vil du <em>sælge?</em></h1>
-          <p class="sell-step-subtitle">Vælg kategori — så tilpasser vi formularen.</p>
+          <p class="sell-step-subtitle">Vælg kategori, så tilpasser vi formularen.</p>
           <div class="acc-chooser">
             <button class="acc-choice" onclick="renderSellPage()">
               <div class="acc-choice-ic">${BIKE}</div>
@@ -763,7 +763,7 @@ export function createSellPage({
           <span class="sell-acting-as-icon">🛠️</span>
           <div>
             <div class="sell-acting-as-title">Du opretter annonce på vegne af <strong>${esc(actingAs.name)}</strong></div>
-            <div class="sell-acting-as-sub">Annoncen tilhører forhandleren — ikke dig. Du kan ikke svare på beskeder eller redigere bagefter.</div>
+            <div class="sell-acting-as-sub">Annoncen tilhører forhandleren, ikke dig. Du kan ikke svare på beskeder eller redigere bagefter.</div>
           </div>
           <button class="sell-acting-as-stop" onclick="stopActingAsDealer()" title="Stop acting-as-tilstand">✕ Stop</button>
         </div>
@@ -838,8 +838,8 @@ export function createSellPage({
     return `
       <h1 class="sell-step-heading">Start med <em>billeder</em></h1>
       <p class="sell-step-subtitle">${_isAcc()
-        ? 'Gode billeder sælger bedre. Tilføj mindst ét — gerne fra flere vinkler.'
-        : 'Læg billederne ind — så udfylder vi resten for dig.'}</p>
+        ? 'Gode billeder sælger bedre. Tilføj mindst ét, gerne fra flere vinkler.'
+        : 'Læg billederne ind, så udfylder vi resten for dig.'}</p>
 
       <div class="sell-drop-zone" id="sell-drop-zone" onclick="document.getElementById('sell-file-input').click()"
         ondragover="event.preventDefault();this.classList.add('dragover')"
@@ -958,7 +958,7 @@ export function createSellPage({
 
     return `
       <h1 class="sell-step-heading">Om <em>cyklen</em></h1>
-      <p class="sell-step-subtitle">${ai ? 'Vi har udfyldt det vi kunne — gennemgå og ret hvis nødvendigt.' : 'Jo mere præcist, jo bedre bud.'}</p>
+      <p class="sell-step-subtitle">${ai ? 'Vi har udfyldt det vi kunne. Gennemgå og ret hvis nødvendigt.' : 'Jo mere præcist, jo bedre bud.'}</p>
 
       <div class="sell-form-grid-2">
         <div class="sell-field">
@@ -1058,7 +1058,7 @@ export function createSellPage({
 
       ${isDealer ? `
       <div class="sell-field">
-        <label>Før-pris <span class="hint">(valgfri — vejl. udsalgspris; vises som rabat hvis højere end prisen)</span></label>
+        <label>Før-pris <span class="hint">(valgfri, vejl. udsalgspris; vises som rabat hvis højere end prisen)</span></label>
         <div class="suffix-wrap">
           <input type="number" id="sell-original-price" placeholder="f.eks. 5.999" min="1" max="9999999" step="1" value="${c['sell-original-price'] || ''}" onwheel="this.blur()">
           <span class="suffix">DKK</span>
@@ -1069,7 +1069,7 @@ export function createSellPage({
         <input type="text" id="sell-warranty" placeholder="f.eks. 2 års garanti" value="${esc(c['sell-warranty'] || '')}">
       </div>
       <div class="sell-field">
-        <label>Link til din webshop <span class="hint">(valgfrit — skjuler bud-knap så købere går direkte til din side)</span></label>
+        <label>Link til din webshop <span class="hint">(valgfrit, skjuler bud-knap så købere går direkte til din side)</span></label>
         <input type="url" id="sell-external-url" placeholder="https://din-webshop.dk/cykler/..." value="${esc(c['sell-external-url'] || '')}">
       </div>` : ''}
 
@@ -1091,7 +1091,7 @@ export function createSellPage({
 
       <button type="button" id="sell-advanced-toggle" class="sell-advanced-toggle" onclick="toggleAdvancedSpecs()" aria-expanded="false">
         <span class="sell-advanced-icon">▸</span>
-        <span class="sell-advanced-label" id="sell-advanced-label">Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB, gravel og el-cykler — købere filtrerer på dem)</span></span>
+        <span class="sell-advanced-label" id="sell-advanced-label">Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB, gravel og el-cykler; købere filtrerer på dem)</span></span>
       </button>
 
       <div id="sell-advanced-section" class="sell-advanced-section" style="display:none;">
@@ -1208,7 +1208,7 @@ export function createSellPage({
 
       <div class="sell-field">
         <label>Beskrivelse <span class="optional-hint">(anbefales)</span></label>
-        <textarea id="sell-desc" placeholder="Stand, størrelse, alder, evt. fejl — jo mere præcist, jo bedre." rows="5" maxlength="2000">${esc(c['sell-desc'] || '')}</textarea>
+        <textarea id="sell-desc" placeholder="Stand, størrelse, alder, evt. fejl. Jo mere præcist, jo bedre." rows="5" maxlength="2000">${esc(c['sell-desc'] || '')}</textarea>
       </div>
 
       <div class="sell-field">
@@ -1654,11 +1654,11 @@ export function createSellPage({
     const label = document.getElementById('sell-advanced-label');
     if (label) {
       if (isEbike) {
-        label.innerHTML = 'El-cykel-detaljer <span class="hint">(motor, batteri og placering — købere filtrerer på dem)</span>';
+        label.innerHTML = 'El-cykel-detaljer <span class="hint">(motor, batteri og placering; købere filtrerer på dem)</span>';
       } else if (currentType && _PERF_TYPES.includes(currentType)) {
-        label.innerHTML = 'Tekniske detaljer <span class="hint">(gear, bremser og vægt — købere filtrerer på dem)</span>';
+        label.innerHTML = 'Tekniske detaljer <span class="hint">(gear, bremser og vægt; købere filtrerer på dem)</span>';
       } else {
-        label.innerHTML = 'Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB, gravel og el-cykler — købere filtrerer på dem)</span>';
+        label.innerHTML = 'Tekniske detaljer <span class="hint">(stærkt anbefalet for racere, MTB, gravel og el-cykler; købere filtrerer på dem)</span>';
       }
     }
 
@@ -1952,7 +1952,7 @@ export function createSellPage({
         <div class="sell-ai-auto is-failed">
           <div class="sell-ai-auto-text">
             <b>Vi kunne ikke læse billederne denne gang.</b>
-            <span>Du kan udfylde felterne selv i næste trin — eller prøve igen.</span>
+            <span>Du kan udfylde felterne selv i næste trin, eller prøve igen.</span>
           </div>
           <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Prøv igen</button>
         </div>`;
@@ -2155,7 +2155,7 @@ export function createSellPage({
     const rseq = [...s].every((ch, i, a) =>
       i === 0 || ch.charCodeAt(0) === a[i - 1].charCodeAt(0) - 1);
     if (seq || rseq) return 'Det ligner ikke et rigtigt stelnummer.';
-    if (!/\d/.test(s)) return 'Stelnumre indeholder næsten altid tal — tjek at du har skrevet det rigtigt.';
+    if (!/\d/.test(s)) return 'Stelnumre indeholder næsten altid tal. Tjek at du har skrevet det rigtigt.';
     return null;
   }
 
@@ -2322,7 +2322,7 @@ export function createSellPage({
       // (nogle sider oplyser den slet ikke i deres metadata). Sig det direkte
       // frem for at lade sælgeren opdage et tomt pris-felt to trin senere.
       if (data.price == null) {
-        setStatus('Prisen stod ikke i annoncens data — den skal du taste selv.', '');
+        setStatus('Prisen stod ikke i annoncens data. Den skal du taste selv.', '');
       } else {
         setStatus('', '');
       }
@@ -2544,7 +2544,7 @@ export function createSellPage({
         </div>
         <div style="padding:16px 24px;border-top:1px solid var(--border);flex-shrink:0;background:var(--cream)">
           <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:100%;padding:14px;background:var(--forest);color:var(--sand);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer">
-            Forstået — fortsæt
+            Forstået, fortsæt
           </button>
         </div>
       </div>

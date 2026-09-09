@@ -4,7 +4,7 @@ export function isPendingDealerProfile(currentProfile) {
 
 export function blockIfPendingDealerProfile({ currentProfile, showToast, navigateTo }) {
   if (isPendingDealerProfile(currentProfile)) {
-    showToast('⏳ Din forhandlerprofil afventer godkendelse — du kan oprette annoncer når en admin har godkendt dig');
+    showToast('⏳ Din forhandlerprofil afventer godkendelse. Du kan oprette annoncer når en admin har godkendt dig');
     navigateTo('/min-profil');
     return true;
   }

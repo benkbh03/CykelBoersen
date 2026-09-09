@@ -10,7 +10,7 @@ export const footerContent = {
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Rammen er cyklens hjerte</h2>
       <p style="margin-bottom:16px;">Rammen er det vigtigste enkeltpunkt på cyklen. En beskadiget ramme kan sjældent repareres sikkert, og det bør få dig til at gå fra handlen uanset hvor god prisen er. Gennemgå alle rør grundigt: overrøret, underrøret, kæderørene og sadelrøret. Kig særligt nøje ved svejsningerne, ved bundbeslaget og rundt om styrhovedet, fordi det er her revner typisk opstår.</p>
-      <p style="margin-bottom:16px;">På stålrammer er overfladerust normalt og kan behandles. Det er rust inde i selve rørene der er et problem, og det opdager du ved at banke let på rørene og lytte efter en dump eller ujævn lyd. På aluminium kan revner være svære at se, men hold udkig efter hvide pletter ved svejsningerne — det er oxidering og et tegn på at metallet er svækket. Karbon-rammer holder du op mod en lyskilde og kigger efter sprækker eller misfarvninger. Køb aldrig en brugt karbon-cykel uden en grundig inspektion, fordi en lille revne kan udvikle sig til at rammen knækker.</p>
+      <p style="margin-bottom:16px;">På stålrammer er overfladerust normalt og kan behandles. Det er rust inde i selve rørene der er et problem, og det opdager du ved at banke let på rørene og lytte efter en dump eller ujævn lyd. På aluminium kan revner være svære at se, men hold udkig efter hvide pletter ved svejsningerne. Det er oxidering og et tegn på at metallet er svækket. Karbon-rammer holder du op mod en lyskilde og kigger efter sprækker eller misfarvninger. Køb aldrig en brugt karbon-cykel uden en grundig inspektion, fordi en lille revne kan udvikle sig til at rammen knækker.</p>
       <p style="margin-bottom:24px;">Selv små bøjninger på rørene tyder på, at cyklen har været i et hårdt stød, typisk et styrt. Lad være med at købe i den situation.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Hjul, dæk og lejer</h2>
@@ -20,7 +20,7 @@ export const footerContent = {
       <p style="margin-bottom:24px;">Til sidst lejerne. Hold hjulet fast i aksen og vip det sideværts. Et helt fast hjul er godt. Mærker du slør, er navlejerne ved at være slidte, og det er typisk en 200-400 kr reparation hos en cykelhandler.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Drivlinjen kan blive dyr</h2>
-      <p style="margin-bottom:16px;">Drivlinjen — kæde, kassette, klinger og bundbeslag — er en af de dyreste dele at udskifte. Et komplet nyt sæt kan let koste 500-1500 kr, så et grundigt tjek her er værd at lave.</p>
+      <p style="margin-bottom:16px;">Drivlinjen, altså kæde, kassette, klinger og bundbeslag, er en af de dyreste dele at udskifte. Et komplet nyt sæt kan let koste 500-1500 kr, så et grundigt tjek her er værd at lave.</p>
       <p style="margin-bottom:16px;">Den hurtigste test på kæden er at løfte den fra den forreste klinge midt på cyklen. Kan du løfte den mere end en halv centimeter, er den slidt. Kig så på kassetten bagest og klingerne foran. Tænderne skal være symmetriske, ikke skæve eller spidse. Det kaldes "hajtænder" når de begynder at se ud som krumme hajfinner, og det betyder slid.</p>
       <p style="margin-bottom:16px;">Hold pedalerne og vip dem sideværts uden at træde. Mærker du slør, er bundbeslagets lejer slidte. Drej pedalerne langsomt rundt og lyt efter klik eller knirk. Lyde fra drivlinjen tyder på slid et eller andet sted i systemet.</p>
       <p style="margin-bottom:24px;">På elcykler slides drivlinjen markant hurtigere end på almindelige cykler, fordi motoren tilfører ekstra kraft. Spørg sælger hvornår kæden sidst er skiftet, og overvej at få en cykelhandler til at vurdere hvor meget liv der er tilbage.</p>
@@ -58,7 +58,7 @@ export const footerContent = {
     title: 'Om Cykelbørsen',
     body: `
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet — hurtigt, nemt og gratis.</p>
+      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet. Hurtigt, nemt og gratis.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Vores mission</h3>
       <p style="margin-bottom:16px;">Vi tror på, at en god brugt cykel fortjener en ny ejer. Ved at gøre det nemt at købe og sælge brugte cykler hjælper vi med at forlænge cyklernes levetid og reducere unødvendigt affald.</p>
@@ -70,7 +70,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer helt gratis. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere. Det kræver ingen betaling eller binding at oprette en forhandlerkonto.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt os</h3>
-      <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a> — vi vender tilbage hurtigst muligt.</p>
+      <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a>. Vi vender tilbage hurtigst muligt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Virksomhedsoplysninger</h3>
       <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>E-mail: hej@cykelbørsen.dk</p>
@@ -111,26 +111,26 @@ export const footerContent = {
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4a. Tilladt sortiment</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>Almindelige cykler</strong> i alle kategorier — racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
+        <li><strong>Almindelige cykler</strong> i alle kategorier: racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
         <li><strong>El-cykler (pedelec)</strong> med motor op til 250W og max 25 km/t med pedal-assist. Det er det færdselsloven definerer som "cykel" og kræver ikke registrering, kørekort eller forsikring.</li>
-        <li><strong>Speed pedelecs (S-pedelec)</strong> — pedelecs med pedal-assist over 25 km/t (op til 45 km/t). <strong>Vigtigt:</strong> en speed pedelec er juridisk en lille knallert (L1e-B) og kræver registrering med nummerplade, lovpligtig ansvarsforsikring, kørekort (mindst kategori AM) og styrthjelm. Sælger skal oplyse dette tydeligt i annoncen (se nedenfor).</li>
-        <li><strong>Cykeltilbehør og -udstyr</strong> — fx hjelme, lygter, låse, cykelcomputere, tasker, pumper, barnestole, hometrainere, cykelsko, cykelbeklædning, skærme og dæk/slanger.</li>
-        <li><strong>Reservedele og komponenter</strong> — fx hjul, dæk/slanger, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr og forgafler.</li>
+        <li><strong>Speed pedelecs (S-pedelec)</strong>: pedelecs med pedal-assist over 25 km/t (op til 45 km/t). <strong>Vigtigt:</strong> en speed pedelec er juridisk en lille knallert (L1e-B) og kræver registrering med nummerplade, lovpligtig ansvarsforsikring, kørekort (mindst kategori AM) og styrthjelm. Sælger skal oplyse dette tydeligt i annoncen (se nedenfor).</li>
+        <li><strong>Cykeltilbehør og -udstyr</strong>: fx hjelme, lygter, låse, cykelcomputere, tasker, pumper, barnestole, hometrainere, cykelsko, cykelbeklædning, skærme og dæk/slanger.</li>
+        <li><strong>Reservedele og komponenter</strong>: fx hjul, dæk/slanger, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr og forgafler.</li>
       </ul>
       <p style="margin-bottom:8px;">Følgende må <strong>ikke</strong> sælges på Cykelbørsen, da de ikke har trædefunktion / ikke er cykler eller speed pedelecs jvf. dansk lovgivning:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>El-løbehjul og el-scootere</strong> — andet køretøj-segment.</li>
-        <li><strong>El-motorcykler, el-motocross og el-mopeder</strong> — motorkøretøjer uden pedal-assist eller med tophastighed over 45 km/t.</li>
+        <li><strong>El-løbehjul og el-scootere</strong>: andet køretøj-segment.</li>
+        <li><strong>El-motorcykler, el-motocross og el-mopeder</strong>: motorkøretøjer uden pedal-assist eller med tophastighed over 45 km/t.</li>
         <li><strong>Almindelige knallerter, scootere og motorcykler</strong> uden trædefunktion.</li>
       </ul>
-      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist. Sælger du en <strong>speed pedelec</strong>, skal du derudover tydeligt angive i annoncen, at det er en speed pedelec der kræver registrering, nummerplade, ansvarsforsikring og kørekort — så køber kender de juridiske krav inden køb.</p>
+      <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist. Sælger du en <strong>speed pedelec</strong>, skal du derudover tydeligt angive i annoncen, at det er en speed pedelec der kræver registrering, nummerplade, ansvarsforsikring og kørekort, så køber kender de juridiske krav inden køb.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
       <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 90 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres forbrugeransvar</h3>
-      <p style="margin-bottom:16px;">Forhandlere der sælger til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning — herunder reklamationsret, fortrydelsesret ved fjernsalg, oplysningspligt og markedsføringsloven. Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse heraf. Tvister mellem forbrugere og forhandlere løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
+      <p style="margin-bottom:16px;">Forhandlere der sælger til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning, herunder reklamationsret, fortrydelsesret ved fjernsalg, oplysningspligt og markedsføringsloven. Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse heraf. Tvister mellem forbrugere og forhandlere løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
@@ -160,7 +160,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Fortrydelsesret</h3>
-      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, er der ingen fortrydelsesret forbundet med at oprette en brugerkonto eller en annonce — begge kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger; om der gælder fortrydelsesret — fx 14 dage ved fjernkøb fra en erhvervsdrivende, jf. forbrugeraftaleloven — afhænger af den konkrete handel og er sælgers ansvar (se §5a). Ved handler mellem to private gælder der ingen fortrydelsesret.</p>
+      <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, er der ingen fortrydelsesret forbundet med at oprette en brugerkonto eller en annonce. Begge kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger; om der gælder fortrydelsesret (fx 14 dage ved fjernkøb fra en erhvervsdrivende, jf. forbrugeraftaleloven) afhænger af den konkrete handel og er sælgers ansvar (se §5a). Ved handler mellem to private gælder der ingen fortrydelsesret.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. AI-chatassistent</h3>
       <p style="margin-bottom:16px;">Platformen tilbyder en AI-baseret chatassistent til generel hjælp og support. Svar fra AI-assistenten er udelukkende vejledende og udgør ikke juridisk, økonomisk eller professionel rådgivning. Vi garanterer ikke for rigtigheden eller fuldstændigheden af AI-assistentens svar. Ved tvivl bør du altid kontakte os direkte eller søge professionel rådgivning.</p>
@@ -190,22 +190,22 @@ export const footerContent = {
         <li><strong>Kontooplysninger:</strong> Navn, e-mailadresse, adgangskode (krypteret), profilbillede (valgfrit).</li>
         <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere; CVR-nummeret verificeres via opslag i CVR-registret hos cvrapi.dk).</li>
         <li><strong>Annoncedata:</strong> Cykelbeskrivelser, billeder, priser, kontaktoplysninger i annoncer.</li>
-        <li><strong>AI-analyse af annoncebilleder:</strong> Når du opretter en annonce, sendes de billeder du uploader automatisk til Anthropics API, så vi kan foreslå mærke, model, type, størrelse, stand, pris og en beskrivelse for dig. Formålet er alene at udfylde annoncefelterne — du kan altid rette forslagene. Billederne bruges ikke til at træne AI-modeller.</li>
+        <li><strong>AI-analyse af annoncebilleder:</strong> Når du opretter en annonce, sendes de billeder du uploader automatisk til Anthropics API, så vi kan foreslå mærke, model, type, størrelse, stand, pris og en beskrivelse for dig. Formålet er alene at udfylde annoncefelterne, og du kan altid rette forslagene. Billederne bruges ikke til at træne AI-modeller.</li>
         <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
         <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
         <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
         <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>
-        <li><strong>Anonym brugsstatistik:</strong> Vi logger hvad der søges efter i søgefeltet, og hvor langt folk når i flowet for at oprette en annonce (åbnet, udfyldt, oprettet). Begge dele bruges udelukkende til at forbedre siden — fx til at se hvilke cykler folk leder efter uden at finde, og hvor et oprettelsesforløb bliver for besværligt. Der gemmes <strong>intet bruger-ID og ingen IP-adresse</strong>, og der lægges intet i din browser. Registreringerne kan ikke føres tilbage til dig.</li>
+        <li><strong>Anonym brugsstatistik:</strong> Vi logger hvad der søges efter i søgefeltet, og hvor langt folk når i flowet for at oprette en annonce (åbnet, udfyldt, oprettet). Begge dele bruges udelukkende til at forbedre siden, fx til at se hvilke cykler folk leder efter uden at finde, og hvor et oprettelsesforløb bliver for besværligt. Der gemmes <strong>intet bruger-ID og ingen IP-adresse</strong>, og der lægges intet i din browser. Registreringerne kan ikke føres tilbage til dig.</li>
         <li><strong>Sidst sete annoncer:</strong> Vi gemmer lokalt i din browser (localStorage) de seneste 8 annoncer du har klikket på, så vi kan vise dem i "Sidst set"-rækken på forsiden. Data forlader aldrig din browser og slettes når du rydder browserdata.</li>
         <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
         <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
         <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
-        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres af Stripe — se betalingsdata.</li>
+        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres af Stripe, se betalingsdata.</li>
         <li><strong>Betalingsdata:</strong> Betalt fremhævning (boost) af annoncer samt udlejnings-bookinger håndteres af Stripe. Forhandlerabonnementer er gratis under platformens lanceringsfase; når betaling for abonnementer senere aktiveres, håndteres den ligeledes af Stripe. Vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
         <li><strong>Udlejningsdata:</strong> Hvis du udbyder cykler til udlejning som forhandler, gemmer vi dine udlejningsopslag (titel, type, priser, depositum, tilgængelighed, billeder). Hvis du booker en udlejningscykel som kunde, gemmer vi bookingen (den valgte cykel, forhandler, datoer, beløb og status) for at gennemføre lejeaftalen mellem dig og forhandleren.</li>
-        <li><strong>Udlejer-verifikation (Stripe Connect):</strong> For at en forhandler kan modtage udlejningsbetalinger opretter Stripe en konto til forhandleren, hvor forhandleren afgiver identitets-, virksomheds- og bankoplysninger direkte til Stripe (KYC-verifikation). Vi opbevarer kun en reference til Stripe-kontoen og dens status — ikke selve identitets- eller bankoplysningerne.</li>
+        <li><strong>Udlejer-verifikation (Stripe Connect):</strong> For at en forhandler kan modtage udlejningsbetalinger opretter Stripe en konto til forhandleren, hvor forhandleren afgiver identitets-, virksomheds- og bankoplysninger direkte til Stripe (KYC-verifikation). Vi opbevarer kun en reference til Stripe-kontoen og dens status, ikke selve identitets- eller bankoplysningerne.</li>
         <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
-        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, gemmer vi <strong>kun de sidste 4 cifre</strong> — aldrig hele nummeret. Resten kasseres med det samme og videregives ikke til nogen. Køberen får det fulde nummer af dig ved overleveringen.</li>
+        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, gemmer vi <strong>kun de sidste 4 cifre</strong>, aldrig hele nummeret. Resten kasseres med det samme og videregives ikke til nogen. Køberen får det fulde nummer af dig ved overleveringen.</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
@@ -217,76 +217,76 @@ export const footerContent = {
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Oprettelse og drift af din konto</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Visning af dine annoncer</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">AI-analyse af annoncebilleder for at udfylde annoncefelter</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Beskedsystem mellem brugere</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">E-mail-notifikationer (beskeder, bud, likes)</td>
-          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Følg-forhandler-notifikationer og gemte søgninger</td>
-          <td style="padding:8px 0;">Art. 6(1)(a) — samtykke (ved aktiv tilmelding)</td>
+          <td style="padding:8px 0;">Art. 6(1)(a): samtykke (ved aktiv tilmelding)</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Håndtering af forhandlerabonnement</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Forebyggelse af misbrug og svindel</td>
-          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Henvendelser via kontaktformular</td>
-          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
-          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Anonym brugsstatistik (søgninger og oprettelsesforløb) til forbedring af siden</td>
-          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Fremhævning/boost af annoncer</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Visning af de sidste 4 cifre af et oplyst stelnummer på annoncen</td>
-          <td style="padding:8px 0;">Art. 6(1)(f) — legitim interesse (bekæmpelse af tyverihæleri)</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse (bekæmpelse af tyverihæleri)</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">Udlejnings-booking, betaling og udbetaling til forhandler</td>
-          <td style="padding:8px 0;">Art. 6(1)(b) — kontraktopfyldelse</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr>
           <td style="padding:8px 8px 8px 0;">Bogføring af udlejningsbetalinger og kommission</td>
-          <td style="padding:8px 0;">Art. 6(1)(c) — retlig forpligtelse (bogføringsloven)</td>
+          <td style="padding:8px 0;">Art. 6(1)(c): retlig forpligtelse (bogføringsloven)</td>
         </tr>
       </table>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Databehandlere og tredjeparter</h3>
       <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>Supabase (USA)</strong> — Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
-        <li><strong>Stripe (USA)</strong> — Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
-        <li><strong>Resend (USA)</strong> — Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
-        <li><strong>GitHub Pages (USA)</strong> — Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
-        <li><strong>Anthropic (USA)</strong> — AI-chatassistent (support) samt automatisk analyse af annoncebilleder ved oprettelse af en annonce. Chatbeskeder og annoncebilleder sendes til Anthropic's API for henholdsvis at generere svar og foreslå annoncefelter. Hverken beskeder eller billeder logges permanent af os, og de behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten, og undgå at uploade billeder hvor personer kan identificeres.</li>
-        <li><strong>DAWA (Danmark)</strong> — Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
-        <li><strong>cvrapi.dk (Danmark)</strong> — CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
+        <li><strong>Supabase (USA)</strong>: Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
+        <li><strong>Stripe (USA)</strong>: Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
+        <li><strong>Resend (USA)</strong>: Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
+        <li><strong>GitHub Pages (USA)</strong>: Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
+        <li><strong>Anthropic (USA)</strong>: AI-chatassistent (support) samt automatisk analyse af annoncebilleder ved oprettelse af en annonce. Chatbeskeder og annoncebilleder sendes til Anthropic's API for henholdsvis at generere svar og foreslå annoncefelter. Hverken beskeder eller billeder logges permanent af os, og de behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten, og undgå at uploade billeder hvor personer kan identificeres.</li>
+        <li><strong>DAWA (Danmark)</strong>: Danmarks Adresse-API (offentlig myndighedstjeneste). Adresser sendes til DAWA for geokoding (omsætning til koordinater) når du angiver bopæl eller butiksadresse.</li>
+        <li><strong>cvrapi.dk (Danmark)</strong>: CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 
@@ -305,17 +305,17 @@ export const footerContent = {
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
-      <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle" — i dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
+      <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Dine rettigheder</h3>
       <p style="margin-bottom:8px;">I henhold til GDPR har du følgende rettigheder:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
-        <li><strong>Ret til indsigt</strong> (art. 15) — Du kan anmode om at se hvilke data vi har om dig.</li>
-        <li><strong>Ret til berigtigelse</strong> (art. 16) — Du kan rette forkerte oplysninger i din profil.</li>
-        <li><strong>Ret til sletning</strong> (art. 17) — Du kan slette din konto og alle tilknyttede data via profilindstillingerne eller ved at kontakte os.</li>
-        <li><strong>Ret til begrænsning</strong> (art. 18) — Du kan anmode om begrænsning af behandlingen.</li>
-        <li><strong>Ret til dataportabilitet</strong> (art. 20) — Du kan anmode om at modtage dine data i et struktureret, maskinlæsbart format.</li>
-        <li><strong>Ret til indsigelse</strong> (art. 21) — Du kan gøre indsigelse mod behandling baseret på legitim interesse.</li>
+        <li><strong>Ret til indsigt</strong> (art. 15): Du kan anmode om at se hvilke data vi har om dig.</li>
+        <li><strong>Ret til berigtigelse</strong> (art. 16): Du kan rette forkerte oplysninger i din profil.</li>
+        <li><strong>Ret til sletning</strong> (art. 17): Du kan slette din konto og alle tilknyttede data via profilindstillingerne eller ved at kontakte os.</li>
+        <li><strong>Ret til begrænsning</strong> (art. 18): Du kan anmode om begrænsning af behandlingen.</li>
+        <li><strong>Ret til dataportabilitet</strong> (art. 20): Du kan anmode om at modtage dine data i et struktureret, maskinlæsbart format.</li>
+        <li><strong>Ret til indsigelse</strong> (art. 21): Du kan gøre indsigelse mod behandling baseret på legitim interesse.</li>
       </ul>
       <p style="margin-bottom:16px;">For at udøve dine rettigheder, kontakt os på <strong>hej@cykelbørsen.dk</strong>. Vi svarer inden for 30 dage.</p>
 
@@ -331,15 +331,15 @@ export const footerContent = {
   },
   cookies: {
     title: 'Cookiepolitik',
-    metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring — vi bruger kun teknisk nødvendige cookies.',
+    metaDesc: 'Læs om Cykelbørsens brug af cookies og lokal lagring. Vi bruger kun teknisk nødvendige cookies.',
     body: `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 28. juli 2026</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
-      <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde — små data-poster i din browser, vi bruger til at huske dig.</p>
+      <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde: små data-poster i din browser, vi bruger til at huske dig.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvilke kategorier bruger vi?</h3>
-      <p style="margin-bottom:8px;">Vi bruger primært <strong>teknisk nødvendige cookies</strong>. Vi viser en cookie-banner første gang du besøger sitet, hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen tracking eller markedsføringscookies uanset dit valg — banneret er forberedt til når vi senere måtte tilføje analyse-værktøjer.</p>
+      <p style="margin-bottom:8px;">Vi bruger primært <strong>teknisk nødvendige cookies</strong>. Vi viser en cookie-banner første gang du besøger sitet, hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen tracking eller markedsføringscookies uanset dit valg. Banneret er forberedt til når vi senere måtte tilføje analyse-værktøjer.</p>
 
       <h4 style="font-family:'Fraunces',serif;margin-top:16px;margin-bottom:8px;font-size:1rem;">Teknisk nødvendige (sættes altid)</h4>
       <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
@@ -385,7 +385,7 @@ export const footerContent = {
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;">bike_name_&lt;annonce-ID&gt;</td>
-          <td style="padding:8px 8px 8px 0;">Husker mærke og model på annoncer du har skrevet om, så din indbakke kan vise navnet med det samme — også hvis annoncen senere fjernes.</td>
+          <td style="padding:8px 8px 8px 0;">Husker mærke og model på annoncer du har skrevet om, så din indbakke kan vise navnet med det samme, også hvis annoncen senere fjernes.</td>
           <td style="padding:8px 0;">Indtil du rydder browserdata</td>
         </tr>
         <tr style="border-bottom:1px solid var(--border);">
@@ -417,7 +417,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Teknisk nødvendige cookies kræver ikke samtykke jf. cookiebekendtgørelsens § 4, stk. 2 og må sættes uden dit valg. Hvis vi tilføjer statistik- eller markedsføringscookies, vil de først aktiveres efter dit aktive samtykke i cookie-banneret.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Tredjepartscookies</h3>
-      <p style="margin-bottom:16px;">Vi bruger i dag ingen tredjepartscookies til tracking eller annoncering. Vores fremtidige betalingspartner Stripe vil sætte egne cookies på betalingssider når forhandlerbetaling aktiveres — disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
+      <p style="margin-bottom:16px;">Vi bruger i dag ingen tredjepartscookies til tracking eller annoncering. Vores fremtidige betalingspartner Stripe vil sætte egne cookies på betalingssider når forhandlerbetaling aktiveres. Disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Sådan ændrer eller sletter du</h3>
       <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies, localStorage og sessionStorage i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen. Du kan også få cookie-banneret vist igen ved at slette browserdata for cykelbørsen.dk og genindlæse siden.</p>
@@ -430,17 +430,17 @@ export const footerContent = {
     title: 'Tilladt sortiment',
     metaDesc: 'Hvad må sælges på Cykelbørsen? Alle cykler, el-cykler op til 250W og cykeltilbehør. Ikke el-løbehjul, knallerter eller motorcykler.',
     body: `
-      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler og cykeltilbehør. Her er hvad der må sælges, og hvad der ikke gør — så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
+      <p style="margin-bottom:24px;color:var(--muted);font-size:0.95rem;line-height:1.6;">Cykelbørsen er en specialiseret markedsplads for cykler og cykeltilbehør. Her er hvad der må sælges, og hvad der ikke gør, så du som sælger eller forhandler kan se afgrænsningen med det samme.</p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
         <div style="background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:18px 20px;">
           <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#2e7d32;margin:0 0 12px;display:flex;align-items:center;gap:8px;">✅ Må sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
-            <li>Alle slags cykler — racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
+            <li>Alle slags cykler: racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
-            <li>Speed pedelecs (op til <strong>45 km/t</strong>) — kræver registrering, forsikring &amp; kørekort; skal oplyses i annoncen</li>
-            <li>Cykeltilbehør og -udstyr — hjelme, lygter, låse, computere, tasker, pumper, barnestole, hometrainere, sko, beklædning, skærme, dæk/slanger m.m.</li>
-            <li>Reservedele og komponenter — hjul, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr, forgafler m.m.</li>
+            <li>Speed pedelecs (op til <strong>45 km/t</strong>): kræver registrering, forsikring &amp; kørekort; skal oplyses i annoncen</li>
+            <li>Cykeltilbehør og -udstyr: hjelme, lygter, låse, computere, tasker, pumper, barnestole, hometrainere, sko, beklædning, skærme, dæk/slanger m.m.</li>
+            <li>Reservedele og komponenter: hjul, pedaler, sadler, kæder, kassetter, gear, bremseklodser, styr, forgafler m.m.</li>
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
@@ -455,8 +455,8 @@ export const footerContent = {
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Hvorfor er grænsen ved 250W og 25 km/t?</h3>
       <p style="margin-bottom:16px;">Det er Færdselslovens definition af en "cykel". En el-cykel med motor på højst 250W og maksimal hastighed 25 km/t med pedal-assist betragtes juridisk som en cykel og kræver ikke registrering, nummerplade, kørekort eller forsikring.</p>
-      <p style="margin-bottom:16px;">En pedelec der hjælper over 25 km/t (op til 45 km/t) er en <strong>speed pedelec</strong> — juridisk en lille knallert (L1e-B). Den <strong>må gerne sælges på Cykelbørsen</strong>, men den kræver registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring og kørekort (mindst kategori AM). Derfor skal sælger oplyse dette tydeligt i annoncen, så køber kender kravene inden køb.</p>
-      <p style="margin-bottom:24px;">Rene motorkøretøjer <strong>uden trædefunktion</strong> — eller køretøjer der kan køre over 45 km/t — hører ikke hjemme på en cykel-markedsplads og må ikke sælges her.</p>
+      <p style="margin-bottom:16px;">En pedelec der hjælper over 25 km/t (op til 45 km/t) er en <strong>speed pedelec</strong>, juridisk en lille knallert (L1e-B). Den <strong>må gerne sælges på Cykelbørsen</strong>, men den kræver registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring og kørekort (mindst kategori AM). Derfor skal sælger oplyse dette tydeligt i annoncen, så køber kender kravene inden køb.</p>
+      <p style="margin-bottom:24px;">Rene motorkøretøjer <strong>uden trædefunktion</strong>, eller køretøjer der kan køre over 45 km/t, hører ikke hjemme på en cykel-markedsplads og må ikke sælges her.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Oplysningspligt ved salg af el-cykler</h3>
       <p style="margin-bottom:16px;">Sælger du en el-cykel, skal du i selve annonceteksten oplyse:</p>
@@ -469,7 +469,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Sælger du en <strong>speed pedelec</strong> (over 25 km/t), skal du derudover tydeligt skrive i annoncen, at det er en speed pedelec, og at den kræver <strong>registrering, nummerplade, ansvarsforsikring og kørekort</strong> (mindst kategori AM). Så ved køber præcis hvad der følger med.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Tvivlstilfælde</h3>
-      <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs — så svarer vi indenfor et par timer.</p>
+      <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs, så svarer vi indenfor et par timer.</p>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Du kan altid læse den fulde paragraf i <a href="/vilkaar" onclick="event.preventDefault();navigateTo('/vilkaar')" style="color:var(--rust);text-decoration:underline;">vilkår § 4a</a>.</p>
     `
   },
@@ -513,7 +513,7 @@ export const footerContent = {
     `
   },
   'sikkerhedsguide': {
-    title: 'Sikkerhedsguide — handl trygt på Cykelbørsen',
+    title: 'Sikkerhedsguide: handl trygt på Cykelbørsen',
     metaDesc: 'Sikkerhedsguide: tjek for stjålne cykler, undgå svindel, lav sikre handler og beskyt dig selv. Sådan handler du trygt på Cykelbørsen.',
     body: `
       <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret 2026 · 5 min. læsning</p>
@@ -525,7 +525,7 @@ export const footerContent = {
       </div>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
-      <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler — det tager under et minut.</p>
+      <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler. Det tager under et minut.</p>
       <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">${iconShield()} Åbn politiets register →</a>
       <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
@@ -535,11 +535,11 @@ export const footerContent = {
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Brug en sikker betalingsform</h2>
       <p style="margin-bottom:16px;">MobilePay er det mest praktiske valg ved fysisk overdragelse. Det er straksbetaling, det kan dokumenteres, og det er svært at fuske med. Kontant fungerer fint ved mindre handler under 5.000 kr, og bankoverførsel er en mulighed hvis du handler med en forhandler hvor du kan verificere kontoen.</p>
-      <p style="margin-bottom:16px;">Hold dig derimod helt fra Western Union eller andre udenlandske overførselstjenester. Gavekort som betalingsmiddel er et klassisk svindel-signal — beder nogen om betaling i Apple gift cards eller lignende, så er det 100 procent svindel. Kryptovaluta er næsten umulig at få tilbage, og fjernhandler hvor "halvdelen sendes før resten" er højrisiko og bør undgås helt.</p>
+      <p style="margin-bottom:16px;">Hold dig derimod helt fra Western Union eller andre udenlandske overførselstjenester. Gavekort som betalingsmiddel er et klassisk svindel-signal. Beder nogen om betaling i Apple gift cards eller lignende, så er det 100 procent svindel. Kryptovaluta er næsten umulig at få tilbage, og fjernhandler hvor "halvdelen sendes før resten" er højrisiko og bør undgås helt.</p>
       <p style="margin-bottom:24px;">Klik aldrig på links der angiver at være Cykelbørsens betalingssystem. Vi har ikke et sådant, og enhver kommunikation der ligner det er forsøg på phishing.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tag en prøvetur før du betaler</h2>
-      <p style="margin-bottom:16px;">Det er din mulighed for at tjekke at cyklen rent faktisk fungerer som den skal. Skift gennem alle gear — det skal være jævnt og uden støj. Bremserne skal kunne stoppe cyklen helt med fast greb. Snurr hjulene og se efter at de er snorlige uden wobble. Tjek kæden og kranken for knirken eller synlige skader. Kig rammen efter for revner, buler og rust ved svejsningerne. Og tjek dækmønstret for slid.</p>
+      <p style="margin-bottom:16px;">Det er din mulighed for at tjekke at cyklen rent faktisk fungerer som den skal. Skift gennem alle gear. Det skal være jævnt og uden støj. Bremserne skal kunne stoppe cyklen helt med fast greb. Snurr hjulene og se efter at de er snorlige uden wobble. Tjek kæden og kranken for knirken eller synlige skader. Kig rammen efter for revner, buler og rust ved svejsningerne. Og tjek dækmønstret for slid.</p>
       <p style="margin-bottom:24px;">For en grundigere gennemgang, find vores fulde <a href="/guide/tjek-brugt-cykel" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a>.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentér handlen</h2>
@@ -553,17 +553,17 @@ export const footerContent = {
       <p style="margin-bottom:24px;"><strong>Falske MobilePay-skærmbilleder.</strong> En sælger eller køber viser et skærmbillede der ligner en gennemført overførsel. Tjek altid din egen konto i banken, ikke et skærmbillede den anden viser dig. Rigtige MobilePay-overførsler vises straks.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
-      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via 🚩-knappen på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme — chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
+      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via 🚩-knappen på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
 
       <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
         <h3 style="font-family:'Fraunces',serif;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
-        <p style="margin:0;line-height:1.8;color:rgba(245,240,232,0.92);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant — aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
+        <p style="margin:0;line-height:1.8;color:rgba(245,240,232,0.92);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant, aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
       </div>
     `
   },
   udlejningsvilkaar: {
     title: 'Udlejningsvilkår',
-    metaDesc: 'Vilkår for cykeludlejning via Cykelbørsen — booking, betaling, depositum, afbestilling og ansvar mellem kunde og forhandler.',
+    metaDesc: 'Vilkår for cykeludlejning via Cykelbørsen: booking, betaling, depositum, afbestilling og ansvar mellem kunde og forhandler.',
     body: `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 10. juli 2026</p>
 
@@ -588,12 +588,12 @@ export const footerContent = {
     `
   },
   databehandleraftale: {
-    title: 'Databehandleraftale — Cykelbørsen onboarding-service',
+    title: 'Databehandleraftale for Cykelbørsens onboarding-service',
     metaDesc: 'Databehandleraftale for forhandlere der ønsker at Cykelbørsen opretter annoncer på deres vegne under onboarding.',
     body: `
       <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 19. juni 2026</p>
       <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
-      <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;">⚠️ <strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen — udover at oprette annoncer — også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
+      <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;">⚠️ <strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen, udover at oprette annoncer, også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Formål og omfang</h3>
       <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette <em>og løbende vedligeholde</em> annoncer på dine vegne. Konkret må Cykelbørsen:</p>
@@ -603,17 +603,17 @@ export const footerContent = {
         <li><strong>Synkronisere automatisk:</strong> køre en natlig synkronisering der opdaterer pris og lagerstatus (aktiv/inaktiv) på de annoncer der stammer fra dit feed, så de matcher din webshop</li>
         <li><strong>Rette specifikationer:</strong> manuelt korrigere felter på de importerede annoncer (fx type, mærke, beskrivelse, billeder) for at sikre korrekt visning</li>
       </ul>
-      <p style="margin-bottom:16px;"><strong>Låsning af manuelt rettede annoncer:</strong> Når en Cykelbørsen-administrator manuelt retter en importeret annonce, "låses" den (<code>feed_locked=true</code>), så den natlige synkronisering derefter <em>kun</em> opdaterer pris og lagerstatus — dine manuelle rettelser overskrives ikke.</p>
-      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette din konto, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge functions og database-funktioner (<code>admin-create-bike</code>, <code>import-dealer-feed</code>, <code>admin_update_bike</code>) — der findes ingen genvej til andre handlinger, og hver funktion verificerer dit aktive samtykke før den kører.</p>
+      <p style="margin-bottom:16px;"><strong>Låsning af manuelt rettede annoncer:</strong> Når en Cykelbørsen-administrator manuelt retter en importeret annonce, "låses" den (<code>feed_locked=true</code>), så den natlige synkronisering derefter <em>kun</em> opdaterer pris og lagerstatus. Dine manuelle rettelser overskrives ikke.</p>
+      <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette din konto, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge functions og database-funktioner (<code>admin-create-bike</code>, <code>import-dealer-feed</code>, <code>admin_update_bike</code>). Der findes ingen genvej til andre handlinger, og hver funktion verificerer dit aktive samtykke før den kører.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Forhandlerens ansvar (Dataansvarlig)</h3>
       <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes eller vedligeholdes på dine vegne. Det betyder konkret:</p>
       <ul style="margin-bottom:16px;">
-        <li>Du skal selv reviewe annoncen efter oprettelse — vi anbefaler du gør det inden for 48 timer</li>
-        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig — også de værdier der importeres automatisk fra dit feed</li>
+        <li>Du skal selv reviewe annoncen efter oprettelse, og vi anbefaler du gør det inden for 48 timer</li>
+        <li>Du er ansvarlig for at pris, beskrivelse og specifikationer er korrekte før køber kontakter dig, også de værdier der importeres automatisk fra dit feed</li>
         <li>Du er ansvarlig for at den feed-URL du angiver er din egen, og at du har ret til at offentliggøre produkterne på den</li>
         <li>Du er ansvarlig for kommunikation med købere og opfølgning på handler</li>
-        <li>Du kan til enhver tid redigere, deaktivere eller slette enhver annonce der er oprettet på dine vegne — også de importerede</li>
+        <li>Du kan til enhver tid redigere, deaktivere eller slette enhver annonce der er oprettet på dine vegne, også de importerede</li>
         <li>Du er forbrugerretsligt ansvarlig sælger jf. Købeloven og Markedsføringsloven</li>
       </ul>
 
@@ -622,13 +622,13 @@ export const footerContent = {
       <ul style="margin-bottom:16px;">
         <li>Kun at behandle dine data inden for ovennævnte scope, og kun så længe dit samtykke er aktivt</li>
         <li>At føre audit-log for hver handling: hvilken admin oprettede eller rettede hvilken annonce hvornår (logges i <code>bikes.created_by_admin_id</code> + Supabase function-logs i 90 dage)</li>
-        <li>At gøre audit-loggen tilgængelig for dig på forespørgsel — du kan altid kontakte os på <strong>hej@cykelbørsen.dk</strong> for udtræk</li>
+        <li>At gøre audit-loggen tilgængelig for dig på forespørgsel, så du kan altid kontakte os på <strong>hej@cykelbørsen.dk</strong> for udtræk</li>
         <li>At sikre at kun verificerede Cykelbørsen-administratorer har adgang til funktionerne</li>
         <li>At indhente fornyet samtykke fra dig, før et udvidet omfang af Aftalen tages i brug</li>
       </ul>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Tilbagekaldelse</h3>
-      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå onboarding-servicen fra. Tilbagekaldelse træder i kraft med det samme — vi kan ikke oprette, importere, synkronisere eller rette nye annoncer efter det tidspunkt, og den natlige synkronisering stopper. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
+      <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå onboarding-servicen fra. Tilbagekaldelse træder i kraft med det samme. Vi kan ikke oprette, importere, synkronisere eller rette nye annoncer efter det tidspunkt, og den natlige synkronisering stopper. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Varighed</h3>
       <p style="margin-bottom:16px;">Aftalen gælder fra du aktiverer onboarding-servicen og indtil du selv tilbagekalder den. Der er ingen automatisk udløb. Cykelbørsen anbefaler dog at du tilbagekalder tilladelsen når du selv er fortrolig med at oprette annoncer (typisk efter 1-2 ugers brug af platformen).</p>

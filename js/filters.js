@@ -349,7 +349,7 @@ export function createFilters({
         document.querySelectorAll('.filters-row .pill.active:not(#pill-nearme)').forEach(p => p.classList.remove('active'));
         applyNearMeFilter();
       },
-      () => showToast('❌ Kunne ikke hente din position — tjek GPS-tilladelser')
+      () => showToast('❌ Kunne ikke hente din position. Tjek GPS-tilladelser')
     );
   }
 

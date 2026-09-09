@@ -37,7 +37,7 @@ export function createSizeFinder({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    document.title = 'Stelstørrelse-finder — Hvilken cykelstørrelse passer mig? | Cykelbørsen';
+    document.title = 'Stelstørrelse-finder: hvilken cykelstørrelse passer mig? | Cykelbørsen';
     updateSEOMeta(
       'Find den rigtige cykelstørrelse: indtast højde + benlængde + cykeltype og få anbefalet stelstørrelse på sekunder. Gratis værktøj fra Cykelbørsen.',
       '/stelstoerrelse-guide'
@@ -55,7 +55,7 @@ export function createSizeFinder({
         <header class="size-finder-hero">
           <h1 class="size-finder-title">Find din cykelstørrelse</h1>
           <p class="size-finder-subtitle">
-            Indtast din højde, cykeltype og — hvis du kender den — din benlængde.
+            Indtast din højde, cykeltype og, hvis du kender den, din benlængde.
             Vi giver dig den anbefalede stelstørrelse på 2 sekunder.
           </p>
         </header>
@@ -108,7 +108,7 @@ export function createSizeFinder({
             <div class="size-finder-info-card">
               <div class="size-finder-info-icon">🦵</div>
               <h3>2. Med benlængde</h3>
-              <p>Indtaster du også benlængde, beregner vi præcis cm-størrelse — særligt nyttigt hvis du er i grænseland mellem to størrelser.</p>
+              <p>Indtaster du også benlængde, beregner vi præcis cm-størrelse, hvilket er særligt nyttigt hvis du er i grænseland mellem to størrelser.</p>
             </div>
             <div class="size-finder-info-card">
               <div class="size-finder-info-icon">🚲</div>
@@ -126,7 +126,7 @@ export function createSizeFinder({
           </details>
           <details class="size-finder-faq-item">
             <summary>Hvad gør jeg hvis jeg er imellem to størrelser?</summary>
-            <p>Hvis du er på grænsen (fx 178 cm — mellem M og L racere) afhænger valget af din krops-proportioner og kørestil:
+            <p>Hvis du er på grænsen (fx 178 cm, mellem M og L racere) afhænger valget af din krops-proportioner og kørestil:
             <ul><li><strong>Vælg M</strong> hvis du har korte ben + lang overkrop, eller foretrækker oprejst position</li>
             <li><strong>Vælg L</strong> hvis du har lange ben + kort overkrop, eller foretrækker race-position</li></ul></p>
           </details>
@@ -135,7 +135,7 @@ export function createSizeFinder({
             <p>Ja. Vores værktøj er meget præcist baseret på de standard-formler producenter selv bruger. Men hver krop er unik. En 5-minutters prøvetur kan afsløre om en cykel der "passer på papiret" virkelig passer dig.</p>
           </details>
           <details class="size-finder-faq-item">
-            <summary>Børnecykler — hvordan finder jeg den rigtige størrelse?</summary>
+            <summary>Børnecykler: hvordan finder jeg den rigtige størrelse?</summary>
             <p>Til børn handler det mere om hjulstørrelse end stelstørrelse:
             <ul><li>3-5 år: 12-16" hjul</li>
             <li>5-7 år: 16-20" hjul</li>
@@ -226,7 +226,7 @@ export function createSizeFinder({
         <div class="size-finder-result-tips">
           <h3>💡 Husk</h3>
           <ul>
-            <li><strong>Mærkeforskel</strong>: en "M" Trek er ikke 100% lig en "M" Specialized — tjek altid producentens egen tabel</li>
+            <li><strong>Mærkeforskel</strong>: en "M" Trek er ikke 100% lig en "M" Specialized. Tjek altid producentens egen tabel</li>
             <li><strong>Prøvetur</strong>: lav altid en kort prøvetur før du køber</li>
             <li><strong>Foden på jorden</strong>: du skal kunne sætte begge fødder fast på jorden når du sidder af</li>
           </ul>

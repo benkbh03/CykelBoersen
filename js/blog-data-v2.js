@@ -136,7 +136,7 @@ export const BLOG_ARTICLES = {
     publishedAt: '2026-11-02',
     heroEmoji: '⚡',
     body: `
-      <p>Brugte el-cykler kan være en rigtig god handel. Du sparer typisk mellem 30 og 50 procent i forhold til ny pris. Men en e-cykel har flere kritiske komponenter end en almindelig cykel — batteri, motor, controller og display — og hver af dem kan koste fem til femten tusind kroner at udskifte. Det er derfor det er værd at bruge et kvarter på at tjekke en brugt e-cykel grundigt igennem inden du betaler.</p>
+      <p>Brugte el-cykler kan være en rigtig god handel. Du sparer typisk mellem 30 og 50 procent i forhold til ny pris. Men en e-cykel har flere kritiske komponenter end en almindelig cykel (batteri, motor, controller og display), og hver af dem kan koste fem til femten tusind kroner at udskifte. Det er derfor det er værd at bruge et kvarter på at tjekke en brugt e-cykel grundigt igennem inden du betaler.</p>
 
       <h2>Batteriets sundhed kommer først</h2>
       <p>Batteriet er den dyreste enkeltdel og den der slides hurtigst. Et nyt originalbatteri koster typisk mellem 4.000 og 8.000 kr afhængig af mærke. Er batteriet udslidt er hele besparelsen ofte tabt.</p>
@@ -245,10 +245,10 @@ export const BLOG_ARTICLES = {
 
       <h2>Forhandl med en bundgrænse</h2>
       <p>Næsten alle vil byde under din pris. Vær forberedt og lav et indre tal, den laveste pris du kan acceptere. Imødekom rimelige bud (fem-ti procent under) i god ro, men afvis tomme bud som "vil du tage 1500 for en 8000-cykel". Det er ikke forhandling.</p>
-      <p>Cykelbørsen viser automatisk et mød-i-midten-bud du kan acceptere med et klik, hvilket sparer en masse beskedudveksling. Har du flere interesserede ad gangen, må du gerne lade dem konkurrere lidt. "Jeg har tre interesserede — højeste tilbud i morgen aften får cyklen" er en helt fair måde at gøre det på, og det presser priserne op.</p>
+      <p>Cykelbørsen viser automatisk et mød-i-midten-bud du kan acceptere med et klik, hvilket sparer en masse beskedudveksling. Har du flere interesserede ad gangen, må du gerne lade dem konkurrere lidt. "Jeg har tre interesserede, og højeste tilbud i morgen aften får cyklen" er en helt fair måde at gøre det på, og det presser priserne op.</p>
 
       <h2>Genopfrisk efter to uger</h2>
-      <p>Hvis cyklen ikke er solgt efter et par uger, så sænk prisen med fem-ti procent. Det giver fornyet synlighed i feed'et. Skift gerne forsidebilledet samtidig, så nye billeder genaktiverer interessen som om annoncen er ny. Du kan også tilføje flere specs i titlen ("Trek FX 3 Disc M 2022 — Carbon, Shimano Tiagra"), så folk der søger på specifikke detaljer også finder annoncen.</p>
+      <p>Hvis cyklen ikke er solgt efter et par uger, så sænk prisen med fem-ti procent. Det giver fornyet synlighed i feed'et. Skift gerne forsidebilledet samtidig, så nye billeder genaktiverer interessen som om annoncen er ny. Du kan også tilføje flere specs i titlen ("Trek FX 3 Disc M 2022, carbon, Shimano Tiagra"), så folk der søger på specifikke detaljer også finder annoncen.</p>
 
       <h2>To timer, stor forskel</h2>
       <p>De seks ting tager samlet omkring to timer at gennemføre. Det er typisk forskellen mellem at sælge på tre dage til 90 procent af din ønskepris, eller at sælge på seks uger til 70. Det er en rigtig god timeløn på en eftermiddag du alligevel skulle bruge på cyklen. Husk at Cykelbørsen er gratis for private sælgere, så der er ingen oprettelsesgebyrer eller provision når handlen lukker.</p>
@@ -258,7 +258,7 @@ export const BLOG_ARTICLES = {
   'racercykler-under-15000': {
     slug: 'racercykler-under-15000',
     title: 'Bedste racercykler under 15.000 kr',
-    excerpt: '15.000 kr er en god prisklasse at komme ind i racercykling. Hvad får du for pengene ny — og hvad får du brugt?',
+    excerpt: '15.000 kr er en god prisklasse at komme ind i racercykling. Hvad får du for pengene ny, og hvad får du brugt?',
     metaDesc: 'Bedste racercykler under 15.000 kr: Trek Domane, Cube Attain, Specialized Allez og flere. Komparativ guide.',
     category: 'Køb',
     readTime: 6,

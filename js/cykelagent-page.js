@@ -89,7 +89,7 @@ export function createCykelagentPage({
     document.title = isLoggedIn ? 'Mine Cykelagenter – Cykelbørsen' : 'Opret Cykelagent – Cykelbørsen';
     updateSEOMeta(
       isLoggedIn
-        ? 'Opret og administrer dine Cykelagenter — få besked på e-mail når nye cykler matcher dine kriterier.'
+        ? 'Opret og administrer dine Cykelagenter, og få besked på e-mail når nye cykler matcher dine kriterier.'
         : 'Opret en Cykelagent og få besked når den perfekte cykel dukker op. Du behøver ikke have en konto for at komme i gang.',
       '/cykelagenter'
     );
@@ -111,7 +111,7 @@ export function createCykelagentPage({
           <h1 class="cykelagent-title">${isLoggedIn ? 'Mine Cykelagenter' : 'Opret en Cykelagent'}</h1>
           <p class="cykelagent-sub">${isLoggedIn
             ? 'En Cykelagent holder øje med nye cykler der matcher dine kriterier og sender dem til din e-mail.'
-            : 'Få besked på e-mail når en cykel der matcher dine ønsker dukker op. Udfyld dine kriterier først — vi opretter din konto når du er færdig.'}</p>
+            : 'Få besked på e-mail når en cykel der matcher dine ønsker dukker op. Udfyld dine kriterier først. Vi opretter din konto når du er færdig.'}</p>
         </header>
 
         ${isLoggedIn ? `
@@ -149,7 +149,7 @@ export function createCykelagentPage({
       .order('created_at', { ascending: false });
 
     if (error) {
-      list.innerHTML = '<p style="color:var(--muted);padding:20px 0;">Kunne ikke hente dine Cykelagenter — prøv at genindlæse siden.</p>';
+      list.innerHTML = '<p style="color:var(--muted);padding:20px 0;">Kunne ikke hente dine Cykelagenter. Prøv at genindlæse siden.</p>';
       return;
     }
     if (!data || data.length === 0) {
@@ -157,7 +157,7 @@ export function createCykelagentPage({
         <div class="cykelagent-empty">
           <div class="cykelagent-empty-icon">🔔</div>
           <h2 class="cykelagent-empty-title">Ingen Cykelagenter endnu</h2>
-          <p class="cykelagent-empty-sub">Opret din første agent med knappen ovenfor. Du får besked på e-mail når nye cykler matcher dine kriterier — du behøver ikke tjekke sitet hver dag.</p>
+          <p class="cykelagent-empty-sub">Opret din første agent med knappen ovenfor. Du får besked på e-mail når nye cykler matcher dine kriterier. Du behøver ikke tjekke sitet hver dag.</p>
         </div>
       `;
       return;
@@ -211,7 +211,7 @@ export function createCykelagentPage({
         <div class="cykelagent-matches-grid">
           ${matches.map(_buildMatchCard).join('')}
         </div>
-        ${totalMatches > matches.length ? `<p class="cykelagent-matches-more">Viser ${matches.length} af ${totalMatches} match — gå til <a href="/" onclick="event.preventDefault();navigateTo('/')">forsiden</a> for at se alle.</p>` : ''}
+        ${totalMatches > matches.length ? `<p class="cykelagent-matches-more">Viser ${matches.length} af ${totalMatches} match. Gå til <a href="/" onclick="event.preventDefault();navigateTo('/')">forsiden</a> for at se alle.</p>` : ''}
       </section>
     `;
   }
@@ -358,7 +358,7 @@ export function createCykelagentPage({
         <div class="cykelagent-field">
           <label class="cykelagent-label">Navn på agent</label>
           <input type="text" class="cykelagent-input" id="cyk-name" placeholder="fx 'Brugte racere i KBH under 10.000'" value="${esc(_form.name)}" oninput="updateCykelagentField('name', this.value)">
-          <div class="cykelagent-hint">Valgfrit — vi laver et automatisk hvis du springer over.</div>
+          <div class="cykelagent-hint">Valgfrit. Vi laver et automatisk hvis du springer over.</div>
         </div>
 
         <div class="cykelagent-field">
@@ -455,7 +455,7 @@ export function createCykelagentPage({
         </div>
 
         <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length ? 'open' : ''}>
-          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt — helt valgfrit, men giver dig mere præcise match</span></summary>
+          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt. Helt valgfrit, men giver dig mere præcise match</span></summary>
 
           <div class="cykelagent-field">
             <label class="cykelagent-label">Stelmaterial</label>
@@ -497,7 +497,7 @@ export function createCykelagentPage({
           <div class="cykelagent-field">
             <label class="cykelagent-label">Maks. vægt (kg)</label>
             <input type="number" min="2" max="50" step="0.1" class="cykelagent-input" id="cyk-max-weight" placeholder="fx 9" value="${_form.maxWeightKg ?? ''}" oninput="updateCykelagentField('maxWeightKg', this.value ? parseFloat(this.value) : null)">
-            <div class="cykelagent-hint">Relevant for racere — efterlad tomt for cykler hvor vægt ikke betyder noget.</div>
+            <div class="cykelagent-hint">Relevant for racere. Efterlad tomt for cykler hvor vægt ikke betyder noget.</div>
           </div>
 
           <div class="cykelagent-field">
@@ -559,7 +559,7 @@ export function createCykelagentPage({
 
         <div class="cykelagent-strict-notice">
           <span class="cykelagent-strict-icon">🎯</span>
-          <span>Jo flere filtre du sætter, jo mere præcist matcher vi. Vi sender <strong>kun</strong> notifikation om cykler der opfylder ALLE dine kriterier — så du aldrig spilder tid på "tæt-på"-matches.</span>
+          <span>Jo flere filtre du sætter, jo mere præcist matcher vi. Vi sender <strong>kun</strong> notifikation om cykler der opfylder ALLE dine kriterier, så du aldrig spilder tid på "tæt-på"-matches.</span>
         </div>
 
         <div class="cykelagent-editor-actions">
@@ -667,7 +667,7 @@ export function createCykelagentPage({
       try {
         localStorage.setItem('_pendingCykelagent', JSON.stringify({ name, filters, savedAt: Date.now() }));
       } catch {}
-      showToast('Næsten færdig — opret en gratis konto for at aktivere din Cykelagent');
+      showToast('Næsten færdig. Opret en gratis konto for at aktivere din Cykelagent');
       openLoginModal();
       return;
     }
@@ -676,13 +676,13 @@ export function createCykelagentPage({
       const { error } = await supabase.from('saved_searches').insert({
         user_id: currentUser.id, name, filters,
       });
-      if (error) { showToast('❌ Kunne ikke oprette — prøv igen'); return; }
+      if (error) { showToast('❌ Kunne ikke oprette. Prøv igen'); return; }
       showToast('🔔 Cykelagent oprettet');
     } else {
       const { error } = await supabase.from('saved_searches')
         .update({ name, filters })
         .eq('id', _editingId).eq('user_id', currentUser.id);
-      if (error) { showToast('❌ Kunne ikke gemme — prøv igen'); return; }
+      if (error) { showToast('❌ Kunne ikke gemme. Prøv igen'); return; }
       showToast('✓ Cykelagent opdateret');
     }
 
@@ -747,7 +747,7 @@ export function createCykelagentPage({
     if (!currentUser) return;
     const { error } = await supabase.from('saved_searches')
       .delete().eq('id', id).eq('user_id', currentUser.id);
-    if (error) { showToast('❌ Kunne ikke slette — prøv igen'); return; }
+    if (error) { showToast('❌ Kunne ikke slette. Prøv igen'); return; }
     showToast('🗑️ Cykelagent slettet');
     closeCykelagentEditor();
     await _loadAndRenderList();

@@ -99,7 +99,7 @@ export function createDealersPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
     document.title = 'Forhandlere – Cykelbørsen';
-    updateSEOMeta('Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed — garanti, servicehistorik og professionel rådgivning.', '/forhandlere');
+    updateSEOMeta('Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed: garanti, servicehistorik og professionel rådgivning.', '/forhandlere');
     _dealersPageData = [];
     _dealerGPSActive = false;
     _dealerGPSCoords = null;
@@ -118,7 +118,7 @@ export function createDealersPage({
       <div class="dealers-page-header">
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="dealers-page-title">Autoriserede forhandlere</h1>
-        <p class="dealers-page-subtitle">Køb med tryghed fra verificerede cykelforhandlere — alle med garanti, servicehistorik og professionel rådgivning.</p>
+        <p class="dealers-page-subtitle">Køb med tryghed fra verificerede cykelforhandlere. Alle har garanti, servicehistorik og professionel rådgivning.</p>
         <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">${iconDealer()} Bliv forhandler</button>
       </div>
       <div class="dealers-toolbar">
@@ -225,7 +225,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       if (sel) sel.value = 'nearest';
       sortAndRenderDealers();
     }, () => {
-      showToast('❌ Kunne ikke hente position — tjek tilladelser');
+      showToast('❌ Kunne ikke hente position. Tjek tilladelser');
       if (btn) { setGpsLabel('Brug min position'); btn.disabled = false; }
     });
   }
@@ -411,7 +411,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
     document.title = 'Bliv forhandler – Cykelbørsen';
-    updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå cykellkøbere i hele Danmark. Helt gratis — ingen binding.', '/bliv-forhandler');
+    updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå cykellkøbere i hele Danmark. Helt gratis, ingen binding.', '/bliv-forhandler');
 
     const isLoggedIn      = !!currentUser;
     const isAlreadyDealer = isLoggedIn && currentProfile?.seller_type === 'dealer';
@@ -432,7 +432,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Prioriteret placering i søgning</span></div>
-          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis — ingen kreditkort</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis, ingen kreditkort</span></div>
         </div>
 
         <div class="bd-form" style="text-align:center;">
@@ -440,7 +440,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <h3 class="bd-form-title" style="margin-bottom:10px;">Opret dig som forhandler</h3>
           <p style="font-size:0.92rem;color:var(--muted);line-height:1.6;max-width:420px;margin:0 auto 28px;">
             Du er logget ind som <strong>${name}</strong> (privat bruger).
-            Forhandlerkonti oprettes som en separat konto — log ud og opret en ny konto med din butiks e-mailadresse.
+            Forhandlerkonti oprettes som en separat konto. Log ud og opret en ny konto med din butiks e-mailadresse.
           </p>
           <button class="form-submit" onclick="logout().then(()=>navigateTo('/bliv-forhandler'))" style="width:auto;padding:14px 32px;margin-bottom:12px;">
             Log ud og opret forhandlerkonto →
@@ -479,7 +479,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       </div>
 
       <div class="bd-trial-banner">
-        🎉 <strong>Gratis for forhandlere</strong> — opret din butiksprofil uden binding eller betaling.
+        🎉 <strong>Gratis for forhandlere</strong>: opret din butiksprofil uden binding eller betaling.
       </div>
 
       <div class="bd-social-proof" id="bd-social-proof" aria-live="polite">
@@ -507,7 +507,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Prioriteret placering i søgning</span></div>
-        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis — ingen kreditkort</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis, ingen kreditkort</span></div>
       </div>
 
       <div class="bd-why">
@@ -517,7 +517,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
             <span class="bd-why-icon" aria-hidden="true">🚲</span>
             <div class="bd-why-text">
               <strong>Cykler i centrum</strong>
-              <p>Her drukner jeres cykler ikke mellem møbler, tøj og alt muligt andet. Køberne kommer for cykler — og kun cykler.</p>
+              <p>Her drukner jeres cykler ikke mellem møbler, tøj og alt muligt andet. Køberne kommer for cykler, og kun cykler.</p>
             </div>
           </div>
           <div class="bd-why-item">
@@ -560,7 +560,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <div class="form-group"><label>Adresse *</label><input type="text" id="dealer-address" placeholder="Start med at skrive gadenavn…" autocomplete="off"></div>
           <div class="form-group"><label>By</label><input type="text" id="dealer-city" placeholder="Udfyldes automatisk" autocomplete="off"></div>
         </div>
-        <p class="bd-auth-note" style="margin:-4px 0 0;">Vælg din præcise butiks-adresse fra listen — så vises butikken korrekt på kortet.</p>
+        <p class="bd-auth-note" style="margin:-4px 0 0;">Vælg din præcise butiks-adresse fra listen, så vises butikken korrekt på kortet.</p>
 
         ${!isLoggedIn ? `
         <div class="bd-form-divider">
@@ -590,7 +590,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
 
         <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil →</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">
-          Gratis at oprette — ingen binding, ingen kreditkort.<br>
+          Gratis at oprette, ingen binding, ingen kreditkort.<br>
           Ved at oprette en forhandlerkonto accepterer du vores <a onclick="navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.
         </p>
       </div>
@@ -649,7 +649,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         const shopInput = document.getElementById('dealer-shop-name');
         if (shopInput && !shopInput.value.trim() && data.name) shopInput.value = data.name;
       } else if (data?.reason === 'lookup_error') {
-        status.textContent = 'Kunne ikke tjekke lige nu — vi verificerer manuelt.';
+        status.textContent = 'Kunne ikke tjekke lige nu. Vi verificerer manuelt.';
         status.className = 'cvr-status cvr-status--warn';
       } else if (data?.reason === 'ceased') {
         status.textContent = `✗ ${data.name || 'Virksomheden'} står som ophørt i CVR-registret.`;
@@ -660,7 +660,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       }
     } catch (_e) {
       _cvrVerified = { valid: false, reason: 'lookup_error', _cvr: cvr };
-      status.textContent = 'Kunne ikke tjekke lige nu — vi verificerer manuelt.';
+      status.textContent = 'Kunne ikke tjekke lige nu. Vi verificerer manuelt.';
       status.className = 'cvr-status cvr-status--warn';
     }
   }
@@ -745,7 +745,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       if (signUpErr) {
         restore();
         if (signUpErr.message?.includes('already registered')) {
-          showToast('⚠️ E-mailen er allerede i brug — log ind i stedet');
+          showToast('⚠️ E-mailen er allerede i brug. Log ind i stedet');
         } else {
           showToast('❌ ' + (signUpErr.message || 'Kunne ikke oprette konto'));
         }
