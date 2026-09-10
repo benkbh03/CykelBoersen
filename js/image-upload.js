@@ -24,14 +24,14 @@ export function createImageUpload({
   async function openCropModal(mode, index) {
     const list = mode === 'sell' ? selectedFiles : getEditNewFiles();
     const item = list?.[index];
-    if (!item || !item.url) { showToast('❌ Kunne ikke åbne beskæring'); return; }
+    if (!item || !item.url) { showToast('Kunne ikke åbne beskæring', 'fejl'); return; }
 
     if (typeof Cropper === 'undefined') {
       try {
         const { ensureCropper } = await import('./asset-loader.js');
         await ensureCropper();
       } catch {
-        showToast('❌ Kunne ikke loade Cropper-biblioteket');
+        showToast('Kunne ikke loade Cropper-biblioteket', 'fejl');
         return;
       }
     }
@@ -76,7 +76,7 @@ export function createImageUpload({
       imageSmoothingEnabled: true,
       imageSmoothingQuality: 'high',
     });
-    if (!canvas) { showToast('❌ Kunne ikke beskære billedet'); return; }
+    if (!canvas) { showToast('Kunne ikke beskære billedet', 'fejl'); return; }
 
     const { mode, index } = _cropContext;
     const list   = mode === 'sell' ? selectedFiles : getEditNewFiles();
@@ -84,7 +84,7 @@ export function createImageUpload({
     if (!target) { closeCropModal(); return; }
 
     const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
-    if (!blob) { showToast('❌ Kunne ikke gemme beskæring'); return; }
+    if (!blob) { showToast('Kunne ikke gemme beskæring', 'fejl'); return; }
 
     const newName = (target.file?.name || 'billede.jpg').replace(/\.(heic|heif|png|webp|gif)$/i, '.jpg');
     const newFile = new File([blob], newName, { type: 'image/jpeg' });
@@ -98,7 +98,7 @@ export function createImageUpload({
     else                 renderEditNewImages();
 
     closeCropModal();
-    showToast('✂️ Beskæring gemt');
+    showToast('Beskæring gemt', 'ok');
   }
 
   function closeCropModal() {
@@ -117,19 +117,19 @@ export function createImageUpload({
     const nameLower = (file.name || '').toLowerCase();
     if (file.type === 'image/heic' || file.type === 'image/heif' ||
         nameLower.endsWith('.heic') || nameLower.endsWith('.heif')) {
-      showToast('⚠️ HEIC-billeder understøttes ikke. Skift til "Mest kompatibel" under iPhone kamera-indstillinger, eller konvertér til JPG.');
+      showToast('HEIC-billeder understøttes ikke. Skift til "Mest kompatibel" under iPhone kamera-indstillinger, eller konvertér til JPG.', 'advarsel');
       return false;
     }
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      showToast(`⚠️ "${file.name}" er ikke et gyldigt billedformat (kun JPG, PNG, WebP, GIF)`);
+      showToast(`"${file.name}" er ikke et gyldigt billedformat (kun JPG, PNG, WebP, GIF)`, 'advarsel');
       return false;
     }
     if (file.size === 0) {
-      showToast(`⚠️ "${file.name}" er tom eller korrupt`);
+      showToast(`"${file.name}" er tom eller korrupt`, 'advarsel');
       return false;
     }
     if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-      showToast(`⚠️ "${file.name}" er for stor (maks ${MAX_IMAGE_SIZE_MB} MB)`);
+      showToast(`"${file.name}" er for stor (maks ${MAX_IMAGE_SIZE_MB} MB)`, 'advarsel');
       return false;
     }
     return true;
@@ -201,7 +201,7 @@ export function createImageUpload({
         return { compressed, original: f };
       } catch (e) {
         console.warn('Kunne ikke behandle billede, springes over:', f.name, e);
-        showToast(`⚠️ "${f.name}" kunne ikke behandles og blev ikke tilføjet`);
+        showToast(`"${f.name}" kunne ikke behandles og blev ikke tilføjet`, 'advarsel');
         return null;
       } finally {
         done++;
@@ -304,7 +304,7 @@ export function createImageUpload({
       });
     }
 
-    if (failed > 0) showToast(`⚠️ ${failed} billede${failed > 1 ? 'r' : ''} kunne ikke uploades`);
+    if (failed > 0) showToast(`${failed} billede${failed > 1 ? 'r' : ''} kunne ikke uploades`, 'advarsel');
 
     selectedFiles.forEach(f => URL.revokeObjectURL(f.url));
     selectedFiles = [];
@@ -342,7 +342,7 @@ export function createImageUpload({
 
       urls.push({ url: publicUrl, is_primary: item.isPrimary });
     }
-    if (failed > 0) showToast(`⚠️ ${failed} billede${failed > 1 ? 'r' : ''} kunne ikke uploades`);
+    if (failed > 0) showToast(`${failed} billede${failed > 1 ? 'r' : ''} kunne ikke uploades`, 'advarsel');
     selectedFiles.forEach(f => URL.revokeObjectURL(f.url));
     selectedFiles = [];
     return urls;

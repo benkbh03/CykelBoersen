@@ -549,7 +549,7 @@
   color: var(--muted); cursor: pointer; transition: color 0.15s;
 }
 .mp-link:hover { color: var(--charcoal); text-decoration: underline; }
-.mp-link--danger:hover { color: #c8302a; }
+.mp-link--danger:hover { color: var(--error); }
 .mp-link-sep { color: var(--border); font-size: 0.76rem; }
 .mp-btn-boost--active {
   background: #fff; color: #8a6817;
@@ -3793,7 +3793,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   min-height: 1em;
 }
 .ai-suggest-status.success { color: #2e7d32; }
-.ai-suggest-status.error   { color: #c0392b; }
+.ai-suggest-status.error   { color: var(--error); }
 
 @keyframes ai-spin {
   from { transform: rotate(0deg); }

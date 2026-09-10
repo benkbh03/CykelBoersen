@@ -25,8 +25,8 @@ export function createReviews({
     const comment = document.getElementById('review-comment')?.value?.trim() || '';
 
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at give en vurdering'); return; }
-    if (rating < 1)   { showToast('⚠️ Vælg et antal stjerner'); return; }
+    if (!currentUser) { showToast('Log ind for at give en vurdering', 'advarsel'); return; }
+    if (rating < 1)   { showToast('Vælg et antal stjerner', 'advarsel'); return; }
 
     // Kun system-genererede handelsbeskeder tæller — begge handelsveje (acceptBid
     // og "Sæt solgt") indsætter en besked der STARTER med ✅ og indeholder "accepteret".
@@ -37,7 +37,7 @@ export function createReviews({
       .ilike('content', '✅%accepteret%')
       .limit(1);
     const hasTraded = tradeMsg?.length > 0;
-    if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
+    if (!hasTraded) { showToast('Du kan kun vurdere brugere du har handlet med via Cykelbørsen', 'advarsel'); return; }
 
     const { error } = await supabase.from('reviews').insert({
       reviewer_id:      currentUser.id,
@@ -52,9 +52,9 @@ export function createReviews({
       comment: comment || null,
     });
 
-    if (error) { showToast('❌ Kunne ikke sende vurdering'); console.error(error); return; }
+    if (error) { showToast('Kunne ikke sende vurdering', 'fejl'); console.error(error); return; }
 
-    showToast('✅ Vurdering sendt!');
+    showToast('Vurdering sendt!', 'ok');
     openUserProfile(reviewedUserId);
   }
 
@@ -106,8 +106,8 @@ export function createReviews({
     const comment = document.getElementById('rate-modal-comment')?.value?.trim() || '';
 
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at give en vurdering'); return; }
-    if (rating < 1)   { showToast('⚠️ Vælg et antal stjerner'); return; }
+    if (!currentUser) { showToast('Log ind for at give en vurdering', 'advarsel'); return; }
+    if (rating < 1)   { showToast('Vælg et antal stjerner', 'advarsel'); return; }
 
     // Kun system-genererede handelsbeskeder tæller (starter med ✅ + "accepteret").
     const { data: tradeMsg } = await supabase.from('messages')
@@ -116,7 +116,7 @@ export function createReviews({
       .ilike('content', '✅%accepteret%')
       .limit(1);
     const hasTraded = tradeMsg?.length > 0;
-    if (!hasTraded) { showToast('⚠️ Du kan kun vurdere brugere du har handlet med via Cykelbørsen'); return; }
+    if (!hasTraded) { showToast('Du kan kun vurdere brugere du har handlet med via Cykelbørsen', 'advarsel'); return; }
 
     const { error } = await supabase.from('reviews').insert({
       reviewer_id:      currentUser.id,
@@ -126,9 +126,9 @@ export function createReviews({
       comment: comment || null,
     });
 
-    if (error) { showToast('❌ Kunne ikke sende vurdering'); console.error(error); return; }
+    if (error) { showToast('Kunne ikke sende vurdering', 'fejl'); console.error(error); return; }
 
-    showToast('✅ Vurdering sendt!');
+    showToast('Vurdering sendt!', 'ok');
     closeRateModal();
   }
 

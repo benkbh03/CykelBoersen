@@ -149,7 +149,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
               <div style="color:var(--muted);font-size:0.8rem;word-break:break-all;">${esc(f.feed_url)}</div>
               <div style="font-size:0.8rem;margin-top:4px;">
                 <span style="color:var(--muted);">${esc(f.format)}${f.currency && f.currency !== 'auto' && f.currency !== 'DKK' ? ' · ' + esc(f.currency) + '→DKK' : ''} · sidst synket: ${synced}</span>
-                ${f.last_status ? `<span style="display:block;margin-top:2px;color:${statusOk ? '#2e7d32' : '#c8302a'};">${statusOk ? `✓ ${f.last_count ?? 0} cykler${f.last_deactivated ? ` · ${f.last_deactivated} deaktiveret` : ''}` : '✗ ' + esc(f.last_status)}</span>` : ''}
+                ${f.last_status ? `<span style="display:block;margin-top:2px;color:${statusOk ? '#2e7d32' : 'var(--error)'};">${statusOk ? `✓ ${f.last_count ?? 0} cykler${f.last_deactivated ? ` · ${f.last_deactivated} deaktiveret` : ''}` : '✗ ' + esc(f.last_status)}</span>` : ''}
               </div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -157,9 +157,9 @@ export function createAdminFeedImport({ supabase, showToast }) {
               <button data-act="draft" data-id="${esc(f.id)}" title="Importér cyklerne SKJULT (inaktive), så du kan rette dem før kunderne ser dem" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">📥 Importér som kladde</button>
               <button data-act="review" data-id="${esc(f.id)}" title="Gennemgå og udgiv de skjulte (kladde) cykler" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">👁 Gennemgå &amp; udgiv</button>
               <button data-act="sync" data-id="${esc(f.id)}" title="Synkronisér og udgiv med det samme (cyklerne bliver live nu)" style="background:var(--rust);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">🔄 Synkronisér nu</button>
-              <button data-act="remove" data-id="${esc(f.id)}" title="Skjul alle cykler importeret fra dette feed" style="background:none;border:1px solid #c8302a;color:#c8302a;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🗑️ Fjern cykler</button>
+              <button data-act="remove" data-id="${esc(f.id)}" title="Skjul alle cykler importeret fra dette feed" style="background:none;border:1px solid var(--error);color:var(--error);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🗑️ Fjern cykler</button>
               <button data-act="toggle" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">${f.active ? 'Deaktivér' : 'Aktivér'}</button>
-              <button data-act="delete" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);color:#c8302a;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">Slet</button>
+              <button data-act="delete" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);color:var(--error);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">Slet</button>
             </div>
           </div>
           <div id="feed-review-${esc(f.id)}" data-open="0" style="display:none;"></div>
@@ -183,7 +183,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
 
   async function removeFeedBikes(id, btn) {
     const f = _feeds.find(x => x.id === id);
-    if (!f) { showToast('❌ Feed ikke fundet'); return; }
+    if (!f) { showToast('Feed ikke fundet', 'fejl'); return; }
     if (!confirm('Fjern (skjul) ALLE cykler importeret fra dette feed?\n\nDe deaktiveres — manuelt oprettede annoncer røres ikke. Du kan altid synkronisere dem ind igen.')) return;
     const orig = btn.textContent;
     btn.disabled = true; btn.textContent = 'Fjerner…';
@@ -192,9 +192,9 @@ export function createAdminFeedImport({ supabase, showToast }) {
       // edge-deploy. Kræver SQL'en add_remove_dealer_feed_bikes.sql er kørt.
       const { data, error } = await supabase.rpc('remove_dealer_feed_bikes', { p_user_id: f.user_id });
       if (error) throw new Error(error.message || 'Kunne ikke fjerne');
-      showToast(`✓ ${data ?? 0} cykler fjernet (deaktiveret)`);
+      showToast(`${data ?? 0} cykler fjernet (deaktiveret)`, 'ok');
     } catch (e) {
-      showToast('❌ ' + (e.message || 'Kunne ikke fjerne'));
+      showToast((e.message || 'Kunne ikke fjerne'), 'fejl');
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }
@@ -207,14 +207,14 @@ export function createAdminFeedImport({ supabase, showToast }) {
     const defaultType = document.getElementById('feed-deftype-select').value || null;
     const currency = document.getElementById('feed-currency-select').value || 'auto';
     const priceRound = document.getElementById('feed-round-select').value || 'none';
-    if (!userId) { showToast('⚠️ Vælg en forhandler'); return; }
-    if (!/^https:\/\//.test(url)) { showToast('⚠️ Feed-URL skal starte med https://'); return; }
+    if (!userId) { showToast('Vælg en forhandler', 'advarsel'); return; }
+    if (!/^https:\/\//.test(url)) { showToast('Feed-URL skal starte med https://', 'advarsel'); return; }
 
     const { error } = await supabase.from('dealer_feeds').insert({
       user_id: userId, feed_url: url, format, default_type: defaultType, currency, price_round: priceRound, active: true,
     });
-    if (error) { showToast('❌ Kunne ikke gemme: ' + error.message); return; }
-    showToast('✓ Feed gemt — klik "Test" for at se cyklerne');
+    if (error) { showToast('Kunne ikke gemme: ' + error.message, 'fejl'); return; }
+    showToast('Feed gemt — klik "Test" for at se cyklerne', 'ok');
     document.getElementById('feed-url-input').value = '';
     await loadData();
     renderFeedList();
@@ -225,7 +225,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
   function testArbitraryUrl() {
     const url = document.getElementById('feed-test-url-input').value.trim();
     const format = document.getElementById('feed-test-format-select')?.value || 'shopify_json';
-    if (!/^https:\/\//.test(url)) { showToast('⚠️ URL skal starte med https://'); return; }
+    if (!/^https:\/\//.test(url)) { showToast('URL skal starte med https://', 'advarsel'); return; }
     runPreview({ test_url: url, test_format: format, preview: true }, document.getElementById('feed-test-url-btn'));
   }
 
@@ -293,7 +293,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
         </div>`;
       section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (e) {
-      showToast('❌ ' + (e.message || 'Test fejlede'));
+      showToast((e.message || 'Test fejlede'), 'fejl');
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }
@@ -317,7 +317,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
       await loadData();
       renderFeedList();
     } catch (e) {
-      showToast('❌ ' + (e.message || 'Sync fejlede'));
+      showToast((e.message || 'Sync fejlede'), 'fejl');
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }
@@ -373,7 +373,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
     // add_list_dealer_feed_bikes.sql.
     const { data: bikes, error } = await supabase.rpc('list_dealer_feed_bikes', { p_user_id: f.user_id });
     if (error) {
-      box.innerHTML = `<p style="color:#c8302a;font-size:0.85rem;">Kunne ikke hente cykler: ${esc(error.message || 'fejl')}. Har du kørt add_list_dealer_feed_bikes.sql?</p>`;
+      box.innerHTML = `<p style="color:var(--error);font-size:0.85rem;">Kunne ikke hente cykler: ${esc(error.message || 'fejl')}. Har du kørt add_list_dealer_feed_bikes.sql?</p>`;
       return;
     }
     if (!bikes || bikes.length === 0) {
@@ -396,7 +396,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
       const specs = feedBikeSpecs(b);
       const specHtml = specs.length
         ? specs.map(s => `<span style="display:inline-block;background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin:2px 3px 0 0;font-size:0.72rem;">${s}</span>`).join('')
-        : '<span style="color:#c8302a;font-size:0.74rem;">⚠ ingen specs udfyldt — trænger til redigering</span>';
+        : '<span style="color:var(--error);font-size:0.74rem;">⚠ ingen specs udfyldt — trænger til redigering</span>';
       const newBadge = (!b.feed_locked && isNew(b)) ? ' <span title="Tilføjet inden for 7 dage" style="background:#fff3e0;color:#bf360c;border-radius:4px;padding:0 5px;font-size:0.66rem;font-weight:700;">🆕 NY</span>' : '';
       return `
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);${!b.feed_locked ? 'background:rgba(191,54,12,0.03);' : ''}">
@@ -427,7 +427,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
 
   async function activateFeedBikes(id, btn) {
     const f = _feeds.find(x => x.id === id);
-    if (!f) { showToast('❌ Feed ikke fundet'); return; }
+    if (!f) { showToast('Feed ikke fundet', 'fejl'); return; }
     if (!confirm('Udgiv alle skjulte cykler fra dette feed?\n\nDe bliver synlige for kunderne med det samme.')) return;
     const orig = btn.textContent;
     btn.disabled = true; btn.textContent = 'Udgiver…';
@@ -435,10 +435,10 @@ export function createAdminFeedImport({ supabase, showToast }) {
       // SECURITY DEFINER RPC — kræver SQL'en add_activate_dealer_feed_bikes.sql.
       const { data, error } = await supabase.rpc('activate_dealer_feed_bikes', { p_user_id: f.user_id });
       if (error) throw new Error(error.message || 'Kunne ikke udgive');
-      showToast(`✓ ${data ?? 0} cykler udgivet (synlige nu)`);
+      showToast(`${data ?? 0} cykler udgivet (synlige nu)`, 'ok');
       await renderReviewBox(id);  // genindlæs boksen → de vises nu som 🟢 live
     } catch (e) {
-      showToast('❌ ' + (e.message || 'Kunne ikke udgive'));
+      showToast((e.message || 'Kunne ikke udgive'), 'fejl');
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }

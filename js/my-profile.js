@@ -200,7 +200,7 @@ export function createMyProfile({
     const patch = { is_active: false, deleted_at: new Date().toISOString() };
     if (sold) patch.sold_via = 'external';
     const { error } = await supabase.from('bikes').update(patch).eq('id', id);
-    if (error) { showToast('❌ Kunne ikke fjerne annonce'); console.error(error); return; }
+    if (error) { showToast('Kunne ikke fjerne annonce', 'fejl'); console.error(error); return; }
     showToast(sold ? 'Annonce fjernet. Tillykke med salget' : 'Annonce fjernet');
     reloadMyListings();
     loadBikes();
@@ -261,7 +261,7 @@ export function createMyProfile({
     const currentUser = getCurrentUser();
     if (!currentUser) return;
     const { error } = await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
-    if (error) { showToast('❌ Kunne ikke fjerne annonce'); return; }
+    if (error) { showToast('Kunne ikke fjerne annonce', 'fejl'); return; }
     showToast('Fjernet fra gemte');
     const card = btn.closest('.saved-card');
     if (card) card.remove();
@@ -354,7 +354,7 @@ export function createMyProfile({
       || fa.giveaway === true
       || warranty;
 
-    if (!hasFilters) { showToast('⚠️ Ingen aktive filtre at gemme'); return; }
+    if (!hasFilters) { showToast('Ingen aktive filtre at gemme', 'advarsel'); return; }
 
     const parts = [];
     if (search)                    parts.push(search);
@@ -410,8 +410,8 @@ export function createMyProfile({
       filters,
     });
 
-    if (error) { showToast('❌ Kunne ikke oprette Cykelagent'); return; }
-    showToast('🔔 Cykelagent oprettet! Du får besked på e-mail når nye cykler matcher.');
+    if (error) { showToast('Kunne ikke oprette Cykelagent', 'fejl'); return; }
+    showToast('Cykelagent oprettet! Du får besked på e-mail når nye cykler matcher.', 'ok');
 
     const btn = document.getElementById('save-search-btn');
     if (btn) { btn.style.color = 'var(--rust)'; btn.style.borderColor = 'var(--rust)'; setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 2000); }
@@ -472,13 +472,13 @@ export function createMyProfile({
 
     closeProfileModal();
     searchBikes();
-    showToast('🔍 Søgning genaktiveret');
+    showToast('Søgning genaktiveret', 'ok');
   }
 
   async function deleteSavedSearch(id, btn) {
     const currentUser = getCurrentUser();
     const { error } = await supabase.from('saved_searches').delete().eq('id', id).eq('user_id', currentUser.id);
-    if (error) { showToast('❌ Kunne ikke slette søgning'); return; }
+    if (error) { showToast('Kunne ikke slette søgning', 'fejl'); return; }
     btn.closest('.my-listing-row').remove();
     showToast('Søgning slettet');
     const list = document.getElementById('my-searches-list');

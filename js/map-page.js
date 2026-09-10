@@ -1491,7 +1491,7 @@ export function createMapPage({
   /* ── locateUser ─────────────────────────────────────────── */
 
   function locateUser() {
-    if (!navigator.geolocation) { showToast('⚠️ Din browser understøtter ikke lokation'); return; }
+    if (!navigator.geolocation) { showToast('Din browser understøtter ikke lokation', 'advarsel'); return; }
 
     navigator.geolocation.getCurrentPosition(function(pos) {
       var lat = pos.coords.latitude;
@@ -1510,9 +1510,9 @@ export function createMapPage({
         .openPopup();
 
       mapInstance.setView([lat, lng], 12);
-      showToast('📍 Viser cykler nær dig');
+      showToast('Viser cykler nær dig');
     }, function() {
-      showToast('⚠️ Kunne ikke hente din lokation');
+      showToast('Kunne ikke hente din lokation', 'advarsel');
     });
   }
 

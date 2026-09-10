@@ -338,8 +338,8 @@ export function createFilters({
       loadBikes(getCurrentFilters());
       return;
     }
-    if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt i din browser'); return; }
-    showToast('📍 Henter din position...');
+    if (!navigator.geolocation) { showToast('GPS er ikke tilgængeligt i din browser', 'advarsel'); return; }
+    showToast('Henter din position...');
     navigator.geolocation.getCurrentPosition(
       pos => {
         setUserGeoCoords([pos.coords.latitude, pos.coords.longitude]);
@@ -349,7 +349,7 @@ export function createFilters({
         document.querySelectorAll('.filters-row .pill.active:not(#pill-nearme)').forEach(p => p.classList.remove('active'));
         applyNearMeFilter();
       },
-      () => showToast('❌ Kunne ikke hente din position. Tjek GPS-tilladelser')
+      () => showToast('Kunne ikke hente din position. Tjek GPS-tilladelser', 'fejl')
     );
   }
 
@@ -367,7 +367,7 @@ export function createFilters({
     grid.querySelector('.nearme-empty')?.remove();
 
     cards.forEach(c => c.style.opacity = '0.4');
-    showToast('📍 Filtrerer efter afstand...');
+    showToast('Filtrerer efter afstand...');
 
     const resolved = await Promise.all(cards.map(async card => {
       const city    = card.dataset.city || card.querySelector('.bike-city')?.textContent.trim() || '';
@@ -418,7 +418,7 @@ export function createFilters({
       el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${radius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
       grid.appendChild(el);
     }
-    showToast(`📍 ${within.length} ${within.length === 1 ? 'cykel' : 'cykler'} inden for ${radius} km`);
+    showToast(`${within.length} ${within.length === 1 ? 'cykel' : 'cykler'} inden for ${radius} km`);
   }
 
   function sortBikes(value) {

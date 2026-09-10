@@ -1438,7 +1438,7 @@ async function init() {
     }
 
     if (isPendingDealer) {
-      showToast('✅ Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.');
+      showToast('Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.', 'ok');
       navigateTo('/min-profil');
     } else {
       // Aktivér evt. ventende Cykelagent fra "udfyld før login"-flow og vis
@@ -1462,7 +1462,7 @@ async function init() {
     const resetModal = document.getElementById('reset-modal');
     const resetClose = resetModal.querySelector('.modal-close');
     if (_initialAuthType === 'invite') {
-      showToast('👋 Velkommen! Vælg en adgangskode for at aktivere din konto.');
+      showToast('Velkommen! Vælg en adgangskode for at aktivere din konto.', 'ok');
       // Inviteret bruger har INGEN adgangskode endnu — gør det obligatorisk:
       // skjul luk-knappen (modalen kan i forvejen ikke lukkes via Escape/klik-udenfor).
       if (resetClose) resetClose.style.display = 'none';
@@ -1484,25 +1484,25 @@ async function init() {
       currentProfile = freshProfile;
       updateNav(true, freshProfile?.name, freshProfile?.avatar_thumb_url || freshProfile?.avatar_url);
     }
-    showToast('🎉 Velkommen som forhandler! Din 3-måneders gratis periode er startet.');
+    showToast('Velkommen som forhandler! Din 3-måneders gratis periode er startet.', 'ok');
     setTimeout(() => openProfileModal(), 600);
   } else if (urlParams.get('dealer_cancel') === 'true') {
     history.replaceState(null, '', window.location.pathname);
-    showToast('ℹ️ Betalingen blev annulleret. Du kan prøve igen når du er klar.');
+    showToast('Betalingen blev annulleret. Du kan prøve igen når du er klar.');
   } else if (urlParams.get('boost_success') === 'true') {
     history.replaceState(null, '', window.location.pathname);
-    showToast('⭐ Din annonce er nu promoveret og vises øverst!');
+    showToast('Din annonce er nu promoveret og vises øverst!', 'ok');
     // featured_until er sat af stripe-webhook — genindlæs listen så badgen vises
     try { loadBikes(); } catch {}
   } else if (urlParams.get('boost_cancel') === 'true') {
     history.replaceState(null, '', window.location.pathname);
-    showToast('ℹ️ Betalingen blev annulleret. Din annonce blev ikke promoveret.');
+    showToast('Betalingen blev annulleret. Din annonce blev ikke promoveret.');
   } else if (urlParams.get('rental_success') === 'true') {
     history.replaceState(null, '', window.location.pathname);
-    showToast('🎉 Din booking er bekræftet! Se den under Mine lejeaftaler.');
+    showToast('Din booking er bekræftet! Se den under Mine lejeaftaler.', 'ok');
   } else if (urlParams.get('rental_cancel') === 'true') {
     history.replaceState(null, '', window.location.pathname);
-    showToast('ℹ️ Booking annulleret. Du blev ikke opkrævet.');
+    showToast('Booking annulleret. Du blev ikke opkrævet.');
   }
 
   // Klik uden for modal lukker den
@@ -1850,7 +1850,7 @@ async function askIfAvailable(bikeId, sellerId, _btn) {
    ============================================================ */
 
 async function toggleSave(btn, bikeId) {
-  if (!currentUser) { showToast('⚠️ Log ind for at gemme annoncer'); return; }
+  if (!currentUser) { showToast('Log ind for at gemme annoncer', 'advarsel'); return; }
   /* Gemt/ikke-gemt blev aflæst på knappens TEKST (❤️ mod 🤍). Det bandt
      tilstanden til to emoji, og emoji tegnes af styresystemet: 🤍 kommer ud
      lilla på Windows, som en tom kontur på iPhone og forskelligt igen på
@@ -1864,15 +1864,15 @@ async function toggleSave(btn, bikeId) {
   };
   if (isSaved) {
     const { error } = await supabase.from('saved_bikes').delete().eq('user_id', currentUser.id).eq('bike_id', bikeId);
-    if (error) { showToast('❌ Kunne ikke fjerne fra gemte'); return; }
+    if (error) { showToast('Kunne ikke fjerne fra gemte', 'fejl'); return; }
     setSaved(false);
     _userSavedSet.delete(bikeId);
     showToast('Fjernet fra gemte');
   } else {
     const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
-    if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
+    if (bike && bike.user_id === currentUser.id) { showToast('Du kan ikke gemme din egen annonce', 'advarsel'); return; }
     const { error } = await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
-    if (error) { showToast('❌ Kunne ikke gemme annonce'); return; }
+    if (error) { showToast('Kunne ikke gemme annonce', 'fejl'); return; }
     setSaved(true);
     _userSavedSet.add(bikeId);
     showToast('Gemt! Find den under Gemte i din profil.');
@@ -2880,8 +2880,8 @@ async function handleResetPassword() {
   const pw2 = document.getElementById('reset-pw2').value;
 
   const pwCheck = validatePassword(pw1);
-  if (!pwCheck.ok) { showToast('⚠️ ' + pwCheck.message); return; }
-  if (pw1 !== pw2) { showToast('⚠️ Adgangskoderne matcher ikke'); return; }
+  if (!pwCheck.ok) { showToast(pwCheck.message, 'advarsel'); return; }
+  if (pw1 !== pw2) { showToast('Adgangskoderne matcher ikke', 'advarsel'); return; }
 
   const btn = document.querySelector('[onclick="handleResetPassword()"]');
   const originalText = btn?.textContent;
@@ -2904,7 +2904,7 @@ async function handleResetPassword() {
     if (updErr) throw updErr;
 
     history.replaceState(null, '', window.location.pathname);
-    showToast('✅ Adgangskode opdateret! Du er nu logget ind.');
+    showToast('Adgangskode opdateret! Du er nu logget ind.', 'ok');
   } catch (error) {
     // Åben modal igen hvis der var fejl
     document.getElementById('reset-modal').classList.add('open');
@@ -2912,7 +2912,7 @@ async function handleResetPassword() {
     if (btn) { btn.textContent = originalText; btn.disabled = false; }
     const msg = error?.message || '';
     // Vis den FAKTISKE årsag (fx udløbet session) så det kan diagnosticeres
-    showToast(msg ? '❌ Kunne ikke opdatere: ' + msg : '❌ Kunne ikke opdatere adgangskode');
+    showToast(msg ? 'Kunne ikke opdatere: ' + msg : 'Kunne ikke opdatere adgangskode', 'fejl');
     console.error('Reset password fejl:', error);
   }
 }
@@ -3159,7 +3159,7 @@ window.toggleCompareMode = function() {
     btn.setAttribute('aria-pressed', String(nowOn));
   }
   if (!nowOn) clearCompareIds();
-  showToast(nowOn ? '✓ Vælg cykler at sammenligne' : 'Sammenligning slået fra');
+  showToast(nowOn ? 'Vælg cykler at sammenligne' : 'Sammenligning slået fra', 'ok');
 };
 const { renderComparePage }   = createComparePage({ supabase, navigateTo, showToast });
 window.renderComparePage      = renderComparePage;
@@ -3420,7 +3420,7 @@ function startActingAsDealer(dealerId, dealerName, dealerCity) {
   sessionStorage.setItem('_adminActingAs', JSON.stringify({ id: dealerId, name: dealerName, city: dealerCity || '' }));
   closeAdminPanel();
   navigateTo('/saelg');
-  showToast('🛠️ Opretter annonce på vegne af ' + dealerName);
+  showToast('Opretter annonce på vegne af ' + dealerName);
 }
 
 function stopActingAsDealer() {
@@ -3449,8 +3449,8 @@ async function _callAdminAction(action, targetUserId) {
 
 async function approveDealer(userId) {
   const res = await _callAdminAction('approve_dealer', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('✅ Forhandler godkendt og verificeret!');
+  if (!res.ok) { showToast(res.error, 'fejl'); return; }
+  showToast('Forhandler godkendt og verificeret!', 'ok');
   loadDealerApplications();
   loadAllUsers();
 }
@@ -3458,17 +3458,17 @@ async function approveDealer(userId) {
 async function rejectDealer(userId) {
   if (!confirm('Afvis ansøgningen?\n\nForhandleren nedgraderes til privat bruger og får en mail om at ansøgningen ikke kunne godkendes.\n\nLigner det spam/en bot? Brug "Slet" i stedet.')) return;
   const res = await _callAdminAction('reject_dealer', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
+  if (!res.ok) { showToast(res.error, 'fejl'); return; }
   // Notificér forhandleren (fire-and-forget; admin-JWT sendes automatisk med).
   supabase.functions.invoke('notify-message', { body: { type: 'dealer_rejected', user_id: userId } }).catch(() => {});
-  showToast('✉️ Ansøgning afvist — forhandleren er notificeret');
+  showToast('Ansøgning afvist — forhandleren er notificeret', 'ok');
   loadDealerApplications();
 }
 
 async function revokeDealer(userId) {
   if (!confirm('Fjern verificering fra denne forhandler?')) return;
   const res = await _callAdminAction('revoke_dealer', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
+  if (!res.ok) { showToast(res.error, 'fejl'); return; }
   showToast('Verificering fjernet');
   loadAllUsers();
 }
@@ -3480,8 +3480,8 @@ async function deleteUserAsAdmin(userId, name) {
   if (!confirm(`⚠️ Slet ${displayName} permanent?\n\nDette sletter:\n• Profil + auth-konto\n• Alle deres annoncer + billeder\n• Beskeder sendt eller modtaget\n• Anmeldelser de har givet eller fået\n• Gemte søgninger og favoritter\n\nHandlingen kan IKKE fortrydes.`)) return;
   if (!confirm(`Sidste chance: bekræft permanent sletning af ${displayName}`)) return;
   const res = await _callAdminAction('delete_user', userId);
-  if (!res.ok) { showToast('❌ ' + res.error); return; }
-  showToast('🗑️ Bruger slettet');
+  if (!res.ok) { showToast(res.error, 'fejl'); return; }
+  showToast('Bruger slettet', 'ok');
   loadAllUsers();
 }
 
@@ -3846,7 +3846,7 @@ function initInviteForm() {
 
 async function submitDealerInvite() {
   const email = document.getElementById('di-email')?.value.trim();
-  if (!email) { showToast('⚠️ Email er påkrævet'); return; }
+  if (!email) { showToast('Email er påkrævet', 'advarsel'); return; }
   const restore = btnLoading('di-submit', 'Sender invitation...');
   const addressInput = document.getElementById('di-address');
   const addrData = readDawaData(addressInput);
@@ -3866,10 +3866,10 @@ async function submitDealerInvite() {
   restore();
   const result = document.getElementById('di-result');
   if (error || data?.error) {
-    if (result) result.innerHTML = `<span style="color:#c0392b;">❌ ${esc(data?.error || error?.message || 'Ukendt fejl')}</span>`;
+    if (result) result.innerHTML = `<span style="color:var(--error);">❌ ${esc(data?.error || error?.message || 'Ukendt fejl')}</span>`;
     return;
   }
-  showToast('✅ Invitation sendt til ' + email);
+  showToast('Invitation sendt til ' + email, 'ok');
   if (result) {
     result.innerHTML = `<span style="color:#2A7D4F;">✅ Forhandler oprettet og inviteret — de får en mail hvor de vælger password.</span>`
       + `<br><span style="color:var(--muted);font-size:0.82rem;">Bruger-ID (til bulk-import): <code>${esc(data.user_id)}</code></span>`;

@@ -227,17 +227,17 @@ export function createAdminBulkImport({ supabase, showToast }) {
 
   async function handleFile(file) {
     if (!/\.csv$/i.test(file.name)) {
-      showToast('⚠️ Kun .csv-filer accepteres. Gem din Excel som CSV.');
+      showToast('Kun .csv-filer accepteres. Gem din Excel som CSV.', 'advarsel');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      showToast('⚠️ Filen er for stor (max 5 MB)');
+      showToast('Filen er for stor (max 5 MB)', 'advarsel');
       return;
     }
     const text = await file.text();
     const { headers, rows } = parseCSV(text);
     if (rows.length === 0) {
-      showToast('⚠️ CSV indeholder ingen rækker');
+      showToast('CSV indeholder ingen rækker', 'advarsel');
       return;
     }
     _parsedRows = rows;
@@ -257,7 +257,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
       <p style="margin:0 0 12px;color:var(--muted);font-size:0.85rem;">
         <strong style="color:var(--charcoal);">${validated.length}</strong> rækker fundet —
         <span style="color:#2e7d32;font-weight:600;">${validCount} klar</span>
-        ${errCount > 0 ? `· <span style="color:#c8302a;font-weight:600;">${errCount} med fejl</span>` : ''}
+        ${errCount > 0 ? `· <span style="color:var(--error);font-weight:600;">${errCount} med fejl</span>` : ''}
       </p>
       <div style="max-height:400px;overflow:auto;border:1px solid var(--border);border-radius:8px;">
         <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
@@ -282,7 +282,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
                 <td style="padding:6px 10px;">${esc(v.row.city || '—')}</td>
                 <td style="padding:6px 10px;">${v.images.length}</td>
                 <td style="padding:6px 10px;font-size:0.78rem;">
-                  ${v.errors.length ? `<span style="color:#c8302a;">Mangler: ${v.errors.join(', ')}</span>` : ''}
+                  ${v.errors.length ? `<span style="color:var(--error);">Mangler: ${v.errors.join(', ')}</span>` : ''}
                   ${v.warnings.length ? `<span style="color:#a8761a;display:block;margin-top:2px;">⚠ ${v.warnings.join(' · ')}</span>` : ''}
                 </td>
               </tr>
@@ -321,7 +321,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
   // ── Eksekvér import ──────────────────────────────────────
   async function executeImport(validated) {
     if (!_selectedDealerId) {
-      showToast('⚠️ Vælg en forhandler først');
+      showToast('Vælg en forhandler først', 'advarsel');
       return;
     }
 
@@ -375,13 +375,13 @@ export function createAdminBulkImport({ supabase, showToast }) {
         } else {
           failed++;
           log.insertAdjacentHTML('beforeend',
-            `<div style="padding:4px 0;color:#c8302a;">✗ Række ${i + 1}: ${esc(bike.brand)} ${esc(bike.model || '')} — ${esc(json.error || 'Ukendt fejl')}</div>`
+            `<div style="padding:4px 0;color:var(--error);">✗ Række ${i + 1}: ${esc(bike.brand)} ${esc(bike.model || '')} — ${esc(json.error || 'Ukendt fejl')}</div>`
           );
         }
       } catch (err) {
         failed++;
         log.insertAdjacentHTML('beforeend',
-          `<div style="padding:4px 0;color:#c8302a;">✗ Række ${i + 1}: netværksfejl — ${esc(String(err))}</div>`
+          `<div style="padding:4px 0;color:var(--error);">✗ Række ${i + 1}: netværksfejl — ${esc(String(err))}</div>`
         );
       }
 
@@ -416,7 +416,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
           );
         } catch (err) {
           log.insertAdjacentHTML('beforeend',
-            `<div style="padding:4px 0;color:#c8302a;">✗ Reconcile fejlede: ${esc((err && err.message) || String(err))}</div>`
+            `<div style="padding:4px 0;color:var(--error);">✗ Reconcile fejlede: ${esc((err && err.message) || String(err))}</div>`
           );
         }
       }
@@ -428,7 +428,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
       </div>
     `);
     document.getElementById('bulk-import-btn').disabled = false;
-    showToast(`✓ ${success} cykler importeret${failed > 0 ? ` · ${failed} fejlede` : ''}${deactivated ? ` · ${deactivated} udsolgt` : ''}`);
+    showToast(`${success} cykler importeret${failed > 0 ? ` · ${failed} fejlede` : ''}${deactivated ? ` · ${deactivated} udsolgt` : ''}`, 'ok');
   }
 
   // ── Type-specifikke CSV-templates ────────────────────────

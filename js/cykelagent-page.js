@@ -622,7 +622,7 @@ export function createCykelagentPage({
       || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax
       || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length;
     if (!hasFilter) {
-      showToast('⚠️ Tilføj mindst ét filter til din Cykelagent');
+      showToast('Tilføj mindst ét filter til din Cykelagent', 'advarsel');
       return;
     }
 
@@ -676,14 +676,14 @@ export function createCykelagentPage({
       const { error } = await supabase.from('saved_searches').insert({
         user_id: currentUser.id, name, filters,
       });
-      if (error) { showToast('❌ Kunne ikke oprette. Prøv igen'); return; }
-      showToast('🔔 Cykelagent oprettet');
+      if (error) { showToast('Kunne ikke oprette. Prøv igen', 'fejl'); return; }
+      showToast('Cykelagent oprettet', 'ok');
     } else {
       const { error } = await supabase.from('saved_searches')
         .update({ name, filters })
         .eq('id', _editingId).eq('user_id', currentUser.id);
-      if (error) { showToast('❌ Kunne ikke gemme. Prøv igen'); return; }
-      showToast('✓ Cykelagent opdateret');
+      if (error) { showToast('Kunne ikke gemme. Prøv igen', 'fejl'); return; }
+      showToast('Cykelagent opdateret', 'ok');
     }
 
     closeCykelagentEditor();
@@ -720,7 +720,7 @@ export function createCykelagentPage({
     if (currentUser.user_metadata?.pending_cykelagent) {
       supabase.auth.updateUser({ data: { pending_cykelagent: null } }).catch(() => {});
     }
-    if (!silent) showToast('🔔 Din Cykelagent er nu aktiveret');
+    if (!silent) showToast('Din Cykelagent er nu aktiveret', 'ok');
     // Re-render hvis bruger er på /cykelagenter siden
     if (location.pathname === '/cykelagenter' || location.pathname === '/cykelagent') {
       _editingId = null;
@@ -747,8 +747,8 @@ export function createCykelagentPage({
     if (!currentUser) return;
     const { error } = await supabase.from('saved_searches')
       .delete().eq('id', id).eq('user_id', currentUser.id);
-    if (error) { showToast('❌ Kunne ikke slette. Prøv igen'); return; }
-    showToast('🗑️ Cykelagent slettet');
+    if (error) { showToast('Kunne ikke slette. Prøv igen', 'fejl'); return; }
+    showToast('Cykelagent slettet', 'ok');
     closeCykelagentEditor();
     await _loadAndRenderList();
   }

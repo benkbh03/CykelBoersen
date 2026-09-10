@@ -14,10 +14,10 @@ export async function submitContactForm(showToast) {
   var name    = document.getElementById('contact-name').value.trim();
   var email   = document.getElementById('contact-email').value.trim();
   var message = document.getElementById('contact-message').value.trim();
-  if (!name || !email || !message) { showToast('⚠️ Udfyld alle felter'); return; }
+  if (!name || !email || !message) { showToast('Udfyld alle felter', 'advarsel'); return; }
 
   const { error } = await supabase.from('contact_messages').insert({ name, email, message });
-  if (error) { showToast('❌ Noget gik galt – prøv igen'); return; }
+  if (error) { showToast('Noget gik galt – prøv igen', 'fejl'); return; }
 
   supabase.functions.invoke('notify-message', {
     body: { type: 'contact_form', name, email, message },
@@ -26,5 +26,5 @@ export async function submitContactForm(showToast) {
   document.getElementById('contact-name').value    = '';
   document.getElementById('contact-email').value   = '';
   document.getElementById('contact-message').value = '';
-  showToast('✅ Tak! Vi vender tilbage inden for 1-2 hverdage.');
+  showToast('Tak! Vi vender tilbage inden for 1-2 hverdage.', 'ok');
 }

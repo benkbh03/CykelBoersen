@@ -444,7 +444,7 @@ export const footerContent = {
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#c8302a;margin:0 0 12px;display:flex;align-items:center;gap:8px;">❌ Må IKKE sælges</h3>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--error);margin:0 0 12px;display:flex;align-items:center;gap:8px;">❌ Må IKKE sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>El-løbehjul og el-scootere</li>
             <li>El-motorcykler, el-motocross &amp; el-mopeder (uden pedaler / over 45 km/t)</li>

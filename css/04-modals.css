@@ -339,8 +339,8 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   border-radius: 2px;
   transition: width 0.25s, background 0.25s;
 }
-.pw-strength-fill[data-tier="too-short"] { background: #c0392b; }
-.pw-strength-fill[data-tier="weak"]      { background: #c0392b; }
+.pw-strength-fill[data-tier="too-short"] { background: var(--error); }
+.pw-strength-fill[data-tier="weak"]      { background: var(--error); }
 .pw-strength-fill[data-tier="medium"]    { background: #e8a82d; }
 .pw-strength-fill[data-tier="strong"]    { background: #2a7d4f; }
 .pw-strength-label {
@@ -603,6 +603,13 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   pointer-events: none;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
+/* Typen bærer betydningen i stedet for et emoji foran teksten. Farverne
+   kommer fra tilstands-tokens i 01-base.css. Alle tre er målt med hvid
+   tekst: ok 5,07:1 · fejl 6,54:1 · advarsel 5,93:1, altså WCAG AA.
+   Uden type beholder boblen den skovgrønne standard. */
+.toast--ok       { background: var(--success); color: #fff; }
+.toast--fejl     { background: var(--error);   color: #fff; }
+.toast--advarsel { background: var(--warning); color: #fff; }
 
 /* ── AI SUPPORT CHAT WIDGET ── */
 #chat-widget { position: fixed; bottom: 28px; right: 28px; z-index: 9999; pointer-events: none; }
@@ -726,7 +733,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
 .danger-zone { margin-top: 28px; padding-top: 20px; border-top: 1.5px dashed #ddd; }
 .danger-zone-label { font-size: 0.72rem; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
 .btn-delete-account { background: transparent; color: #bbb; border: 1.5px solid #e8e8e8; padding: 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer; width: 100%; font-family: 'DM Sans', sans-serif; transition: background 0.2s, color 0.2s, border-color 0.2s; }
-.btn-delete-account:hover { background: #fee; color: #c0392b; border-color: #c0392b; }
+.btn-delete-account:hover { background: #fee; color: var(--error); border-color: var(--error); }
 .btn-delete-account:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Mine annoncer */
@@ -1560,7 +1567,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
   color: #fff;
 }
 .btn-report-listing { background: transparent; color: var(--muted); border: 1.5px solid var(--border); padding: 11px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
-.btn-report-listing:hover { border-color: #c0392b; color: #c0392b; }
+.btn-report-listing:hover { border-color: var(--error); color: var(--error); }
 
 /* ── Hjælpe-handlinger: én kompakt række i stedet for tre fuldbredde-knapper ──
    Gem, prisfald og del er utilities. Da de havde samme vægt som købs-knappen,
@@ -1596,7 +1603,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
   font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
   color: var(--muted); text-decoration: underline; text-underline-offset: 2px;
 }
-.btn-report-link:hover { color: #c0392b; }
+.btn-report-link:hover { color: var(--error); }
 
 /* Touch: tilbage til 44px. Desktop-vaerdien ovenfor er sat lavere for at faa
    den sticky kolonne til at passe paa lave skaerme, men en finger har brug for

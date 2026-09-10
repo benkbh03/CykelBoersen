@@ -204,7 +204,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       sortAndRenderDealers();
       return;
     }
-    if (!navigator.geolocation) { showToast('⚠️ GPS er ikke tilgængeligt'); return; }
+    if (!navigator.geolocation) { showToast('GPS er ikke tilgængeligt', 'advarsel'); return; }
     if (btn) { setGpsLabel('Henter position...'); btn.disabled = true; }
     navigator.geolocation.getCurrentPosition(async pos => {
       _dealerGPSCoords = [pos.coords.latitude, pos.coords.longitude];
@@ -225,7 +225,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       if (sel) sel.value = 'nearest';
       sortAndRenderDealers();
     }, () => {
-      showToast('❌ Kunne ikke hente position. Tjek tilladelser');
+      showToast('Kunne ikke hente position. Tjek tilladelser', 'fejl');
       if (btn) { setGpsLabel('Brug min position'); btn.disabled = false; }
     });
   }
@@ -681,10 +681,10 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     const password = (document.getElementById('dealer-password')?.value || '').trim();
 
     if (!shopName || !cvr || !contact) {
-      showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
+      showToast('Udfyld alle påkrævede felter (*)', 'advarsel'); return;
     }
     if (!/^\d{8}$/.test(cvr)) {
-      showToast('⚠️ CVR-nummer skal være 8 cifre'); return;
+      showToast('CVR-nummer skal være 8 cifre', 'advarsel'); return;
     }
 
     // Verificér CVR mod registret så fake-numre (fx 00000000) ikke når køen.
@@ -706,7 +706,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     }
 
     if (!address || !addrData.lat || !addrData.lng) {
-      showToast('⚠️ Vælg din butiks-adresse fra listen så kortet viser jer korrekt'); return;
+      showToast('Vælg din butiks-adresse fra listen så kortet viser jer korrekt', 'advarsel'); return;
     }
 
     const restore = btnLoading('dealer-submit-btn', 'Opretter profil...');
@@ -715,12 +715,12 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     if (!currentUser) {
       if (!email || !password) {
         restore();
-        showToast('⚠️ Udfyld email og adgangskode'); return;
+        showToast('Udfyld email og adgangskode', 'advarsel'); return;
       }
       const pwCheck = validatePassword(password, { email, name: contact });
       if (!pwCheck.ok) {
         restore();
-        showToast('⚠️ ' + pwCheck.message); return;
+        showToast(pwCheck.message, 'advarsel'); return;
       }
 
       const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
@@ -745,9 +745,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       if (signUpErr) {
         restore();
         if (signUpErr.message?.includes('already registered')) {
-          showToast('⚠️ E-mailen er allerede i brug. Log ind i stedet');
+          showToast('E-mailen er allerede i brug. Log ind i stedet', 'advarsel');
         } else {
-          showToast('❌ ' + (signUpErr.message || 'Kunne ikke oprette konto'));
+          showToast((signUpErr.message || 'Kunne ikke oprette konto'), 'fejl');
         }
         return;
       }
@@ -812,7 +812,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     restore();
 
     if (error) {
-      showToast('❌ Noget gik galt – prøv igen');
+      showToast('Noget gik galt – prøv igen', 'fejl');
       return;
     }
 
@@ -865,7 +865,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     });
     restore();
     if (error || data?.error) {
-      showToast('❌ ' + (data?.error || 'Kunne ikke åbne abonnements-portal'));
+      showToast((data?.error || 'Kunne ikke åbne abonnements-portal'), 'fejl');
       return;
     }
     window.location.href = data.url;

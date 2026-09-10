@@ -304,8 +304,8 @@
   color: #fff;
 }
 .pp-follow-btn.following:hover {
-  background: #c0392b;
-  border-color: #c0392b;
+  background: var(--error);
+  border-color: var(--error);
 }
 .pp-follow-btn .follow-icon { font-size: 1rem; }
 /* Følg-knap i bruger-profil-modal (privat sælger) */

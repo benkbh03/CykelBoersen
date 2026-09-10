@@ -217,7 +217,7 @@ export function createSellPage({
 
   function openModal() {
     const currentUser = getCurrentUser();
-    if (!currentUser) { openLoginModal(); showToast('⚠️ Log ind for at oprette en annonce'); return; }
+    if (!currentUser) { openLoginModal(); showToast('Log ind for at oprette en annonce', 'advarsel'); return; }
     if (blockIfPendingDealer()) return;
     navigateTo('/sell');
   }
@@ -288,7 +288,7 @@ export function createSellPage({
 
   async function submitListing() {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+    if (!currentUser) { showToast('Log ind for at oprette en annonce', 'advarsel'); return; }
     if (blockIfPendingDealer()) return;
     const restore = btnLoading('submit-listing-btn', 'Opretter...');
     try {
@@ -322,14 +322,14 @@ export function createSellPage({
     };
 
     if (!bikeData.brand || !bikeData.price || !bikeData.city) {
-      showToast('⚠️ Udfyld alle påkrævede felter (*)'); return;
+      showToast('Udfyld alle påkrævede felter (*)', 'advarsel'); return;
     }
     if (!bikeData.model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
       restore(); return;
     }
 
     const { data: newBike, error } = await supabase.from('bikes').insert(bikeData).select().single();
-    if (error) { showToast('❌ Noget gik galt – prøv igen'); console.error(error); restore(); return; }
+    if (error) { showToast('Noget gik galt – prøv igen', 'fejl'); console.error(error); restore(); return; }
 
     // Upload billeder hvis der er valgt nogle
     if (getSelectedFiles().length > 0) {
@@ -341,7 +341,7 @@ export function createSellPage({
 
     closeModal();
     resetImageUpload();
-    showToast('✅ Din annonce er oprettet!');
+    showToast('Din annonce er oprettet!', 'ok');
     loadBikes();
     updateFilterCounts();
 
@@ -369,11 +369,11 @@ export function createSellPage({
     const desc  = getVal('sell-desc');
     const city  = getVal('sell-city');
 
-    if (!title || !type || !cond || !city) { showToast('⚠️ Udfyld alle påkrævede felter (*)'); return; }
+    if (!title || !type || !cond || !city) { showToast('Udfyld alle påkrævede felter (*)', 'advarsel'); return; }
     // Prisen valideres kun når der ER en pris. En gave har prisen 0, hvilket
     // reglen "mindst 1 kr." ellers ville afvise.
-    if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) { showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return; }
-    if (getSelectedFiles().length === 0) { showToast('⚠️ Tilføj mindst ét billede'); return; }
+    if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) { showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); return; }
+    if (getSelectedFiles().length === 0) { showToast('Tilføj mindst ét billede', 'advarsel'); return; }
 
     const visibleCtas = document.querySelectorAll('.sell-wizard-cta, .sell-desktop-cta');
     visibleCtas.forEach(b => { b.disabled = true; b.dataset.origText = b.innerHTML; b.innerHTML = '<span class="btn-spinner"></span>Opretter…'; });
@@ -395,7 +395,7 @@ export function createSellPage({
         is_active: true,
       };
       const res = await supabase.from('bikes').insert(bikeData).select().single();
-      if (res.error) { showToast('❌ Noget gik galt – prøv igen'); console.error('Tilbehør-insert fejl:', res.error); return; }
+      if (res.error) { showToast('Noget gik galt – prøv igen', 'fejl'); console.error('Tilbehør-insert fejl:', res.error); return; }
       const newBike = res.data;
       await uploadImages(newBike.id, () => {});
       loadBikes();
@@ -411,7 +411,7 @@ export function createSellPage({
     // Hård guard: kør ALDRIG to gange samtidigt
     if (_submittingSell) return;
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at oprette en annonce'); return; }
+    if (!currentUser) { showToast('Log ind for at oprette en annonce', 'advarsel'); return; }
     if (blockIfPendingDealer()) return;
     if (_isAcc()) {
       _submittingSell = true;
@@ -494,10 +494,10 @@ export function createSellPage({
       // !price ville også afvise en gave, fordi 0 er falsy. Derfor tjekkes
       // prisen kun når annoncen ikke er en gave.
       if (!brand || !city || !type || !condition || (!giveaway && !price)) {
-        showToast('⚠️ Udfyld alle påkrævede felter (*)'); restore(); return;
+        showToast('Udfyld alle påkrævede felter (*)', 'advarsel'); restore(); return;
       }
       if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
-        showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); restore(); return;
+        showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); restore(); return;
       }
       if (!model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
         visibleCtas.forEach(b => {
@@ -571,7 +571,7 @@ export function createSellPage({
               serverMsg = body?.error;
             } catch {}
           }
-          showToast('❌ ' + (serverMsg || error?.message || 'Kunne ikke oprette på vegne af forhandler'));
+          showToast((serverMsg || error?.message || 'Kunne ikke oprette på vegne af forhandler'), 'fejl');
           console.error('admin-create-bike fejl:', serverMsg || error || data?.error);
           restore();
           return;
@@ -580,10 +580,10 @@ export function createSellPage({
         // Bevar acting-as-tilstand efter oprettelse — admin opretter ofte
         // flere annoncer i træk for samme forhandler og skal ikke vælge
         // "Opret annonce" igen for hver. Stoppes manuelt via "✕ Stop"-knappen.
-        showToast(`✓ Annonce oprettet på vegne af ${actingAs.name}`);
+        showToast(`Annonce oprettet på vegne af ${actingAs.name}`, 'ok');
       } else {
         const res = await supabase.from('bikes').insert(bikeData).select().single();
-        if (res.error) { showToast('❌ Noget gik galt – prøv igen'); console.error(res.error); restore(); return; }
+        if (res.error) { showToast('Noget gik galt – prøv igen', 'fejl'); console.error(res.error); restore(); return; }
         newBike = res.data;
         if (getSelectedFiles().length > 0) {
           await uploadImages(newBike.id, (current, total) => {
@@ -640,7 +640,7 @@ export function createSellPage({
     const currentUser = getCurrentUser();
     if (!currentUser) {
       openLoginModal();
-      showToast('⚠️ Log ind for at oprette en annonce');
+      showToast('Log ind for at oprette en annonce', 'advarsel');
       navigateTo('/');
       return;
     }
@@ -706,7 +706,7 @@ export function createSellPage({
     const currentUser = getCurrentUser();
     if (!currentUser) {
       openLoginModal();
-      showToast('⚠️ Log ind for at oprette en annonce');
+      showToast('Log ind for at oprette en annonce', 'advarsel');
       navigateTo('/');
       return;
     }
@@ -1682,7 +1682,7 @@ export function createSellPage({
     // mens første request stadig kører.
     if (_submittingSell) return;
     if (!canAdvanceSell()) {
-      showToast('⚠️ Udfyld alle påkrævede felter');
+      showToast('Udfyld alle påkrævede felter', 'advarsel');
       return;
     }
     if (_sellStep < 3) {
@@ -2043,7 +2043,7 @@ export function createSellPage({
   // Manuel kørsel (fallback-knap + "Analysér igen"). Bruger 4 billeder.
   function suggestListingFromImages() {
     if (!getSelectedFiles().length) {
-      showToast('⚠️ Upload mindst ét billede først');
+      showToast('Upload mindst ét billede først', 'advarsel');
       return;
     }
     _aiAutoFired = true;   // undgå at auto-passet fyrer oveni
@@ -2316,7 +2316,7 @@ export function createSellPage({
       if (data.title || data.description) parts.push('tekst');
       if (data.price != null) parts.push('pris');
       const what = parts.length ? parts.join(', ') : 'data';
-      showToast(`✓ Hentede ${what}. Tjek felterne i næste trin.`);
+      showToast(`Hentede ${what}. Tjek felterne i næste trin.`, 'ok');
 
       // Prisen er det eneste påkrævede felt importen kan komme til at mangle
       // (nogle sider oplyser den slet ikke i deres metadata). Sig det direkte

@@ -253,7 +253,7 @@ export function createInbox({
       .eq('id', thread.bikeId)
       .eq('user_id', currentUser.id);
 
-    if (soldErr) { showToast('❌ Kunne ikke markere som solgt'); return; }
+    if (soldErr) { showToast('Kunne ikke markere som solgt', 'fejl'); return; }
 
     const confirmContent = `✅ Bud på ${amount} accepteret! Kontakt hinanden for at aftale overdragelse.`;
     const { data: inserted } = await supabase.from('messages').insert({
@@ -305,7 +305,7 @@ export function createInbox({
 
     if (!thread || !currentUser) return;
     const content = document.getElementById(textId).value.trim();
-    if (!content) { showToast('⚠️ Skriv et svar først'); return; }
+    if (!content) { showToast('Skriv et svar først', 'advarsel'); return; }
 
     const restore = btnLoading(btnId, 'Sender...');
     try {
@@ -316,9 +316,9 @@ export function createInbox({
         content,
       }).select('id').single();
 
-      if (error) { showToast('❌ Kunne ikke sende svar'); return; }
+      if (error) { showToast('Kunne ikke sende svar', 'fejl'); return; }
       document.getElementById(textId).value = '';
-      showToast('✅ Svar sendt!');
+      showToast('Svar sendt!', 'ok');
       if (inserted?.id) {
         supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } })
           .catch(e => console.error('Email notifikation fejlede:', e));

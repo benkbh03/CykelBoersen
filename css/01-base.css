@@ -19,6 +19,53 @@
   --charcoal:     #1A1A18;
   --muted:        #6B6557; /* WCAG AA på hvid baggrund (≥4.5:1) — tidligere #8A8578 fejlede */
   --border:       #DDD8CE;
+
+  /* ── TILSTANDE ──────────────────────────────────────────────────────
+     De her manglede, og DET er grunden til at kodebasen nåede 184
+     forskellige hex-værdier på en palet med elleve. Paletten ovenfor
+     beskriver brandet, ikke grænsefladen. Skulle nogen bruge "rød til en
+     fejl" eller "grøn til noget der lykkedes", fandtes der ingen at bruge,
+     så de opfandt en. 1.143 gange.
+
+     Resultatet var fem røde, tre succes-grønne, syv guld og ti mørke guld,
+     alle så tæt på hinanden at øjet ikke kan skelne dem.
+
+     BRUG DISSE. Skal du bruge en farve der ikke står her, så tilføj den
+     her frem for at hårdkode den ude i en komponent.
+
+     --error er BEVIDST trukket væk fra --rust. De gamle fejlfarver lå
+     inden for deltaE 12 af brandfarven (#C0392B: 10,6 og #D44A35: 8,3),
+     altså samme farve for øjet. En pris og en fejlbesked så ens ud.
+     #B3261D ligger deltaE 14,2 fra rust og kan skelnes.
+
+     Alle kombinationer er målt og består WCAG AA:
+       error   #B3261D på hvid 6,54:1   på --error-bg   5,74:1
+       success #2A7D4F på hvid 5,07:1   på --success-bg 4,53:1
+       warning #8A5A00 på hvid 5,93:1   på --warning-bg 5,38:1
+       gold-dark #7A5C00 på hvid 6,25:1                          */
+  --success:        #2A7D4F;
+  --success-bg:     #EDF4EE;
+  --success-border: #BFCEBC;
+
+  --error:          #B3261D;
+  --error-bg:       #FBEDEC;
+  --error-border:   #E3BAB6;
+
+  --warning:        #8A5A00;
+  --warning-bg:     #FBF3E6;
+  --warning-border: #DCC9A6;
+
+  /* Guld hører til fremhævning og boost, ikke til advarsler. */
+  --gold:           #D4A017;
+  --gold-dark:      #7A5C00;
+  --gold-bg:        #EFE0B4;
+  --gold-border:    #D9C482;
+
+  /* Overflader. De 51 næsten ens off-whites var alle forsøg på en af
+     disse tre. --surface-sand er den varme, --surface-forest den kølige. */
+  --surface:        #FFFFFF;
+  --surface-sand:   #FDFBF6;
+  --surface-forest: #F3F6F1;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }

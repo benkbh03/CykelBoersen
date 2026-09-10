@@ -25,7 +25,7 @@ export function createRealtimeNotifications({ supabase, getCurrentUser, updateIn
         if (!currentUser || msg.receiver_id !== currentUser.id) return;
 
         const isBid = msg.content && msg.content.indexOf('💰') === 0;
-        showToast(isBid ? '💰 Nyt bud modtaget!' : '✉️ Ny besked modtaget!');
+        showToast(isBid ? 'Nyt bud modtaget!' : 'Ny besked modtaget!', 'ok');
         updateInboxBadge();
 
         const btn = document.getElementById('nav-inbox-btn');
@@ -45,7 +45,7 @@ export function createRealtimeNotifications({ supabase, getCurrentUser, updateIn
           .from('bikes').select('user_id').eq('id', save.bike_id).single();
         if (!bike || bike.user_id !== currentUser.id) return;
 
-        showToast('❤️ En bruger har gemt din annonce!');
+        showToast('En bruger har gemt din annonce!', 'ok');
         updateInboxBadge();
         if (window.location.pathname === '/inbox') loadInboxPage();
       });

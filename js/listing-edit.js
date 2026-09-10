@@ -166,7 +166,7 @@ export function createListingEdit({
         return await compressImage(f);
       } catch (e) {
         console.warn('Kunne ikke behandle billede, springes over:', f.name, e);
-        showToast(`⚠️ "${f.name}" kunne ikke behandles og blev ikke tilføjet`);
+        showToast(`"${f.name}" kunne ikke behandles og blev ikke tilføjet`, 'advarsel');
         return null;
       }
     }))).filter(Boolean);
@@ -200,7 +200,7 @@ export function createListingEdit({
       .from('bikes')
       .select('*, bike_images(id, url, is_primary)')
       .eq('id', id).single();
-    if (error || !b) { showToast('❌ Kunne ikke hente annonce'); return; }
+    if (error || !b) { showToast('Kunne ikke hente annonce', 'fejl'); return; }
 
     // Admin der redigerer en ANDEN forhandlers annonce? (feed-rettelse + lås)
     const _cu = getCurrentUser();
@@ -381,9 +381,9 @@ export function createListingEdit({
       const price = giveaway ? 0 : parseInt(document.getElementById('edit-price').value);
       const desc  = document.getElementById('edit-description').value;
       const city  = document.getElementById('edit-bike-city').value.trim();
-      if (!title || !type || !cond || !city) { showToast('⚠️ Udfyld alle påkrævede felter'); return; }
+      if (!title || !type || !cond || !city) { showToast('Udfyld alle påkrævede felter', 'advarsel'); return; }
       if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
-        showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
+        showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); return;
       }
       const accUpdates = {
         last_edited_at: new Date().toISOString(),   // se note i cykel-grenen
@@ -449,10 +449,10 @@ export function createListingEdit({
     };
 
     if (!updates.brand || !updates.price || !updates.city) {
-      showToast('⚠️ Udfyld alle påkrævede felter'); return;
+      showToast('Udfyld alle påkrævede felter', 'advarsel'); return;
     }
     if (!Number.isFinite(updates.price) || updates.price < 1 || updates.price > 9999999) {
-      showToast('⚠️ Angiv en gyldig pris mellem 1 og 9.999.999 kr.'); return;
+      showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); return;
     }
 
     await _persistEditedListing(id, updates);
@@ -495,7 +495,7 @@ export function createListingEdit({
       }
     } else {
       const { error } = await supabase.from('bikes').update(updates).eq('id', id);
-      if (error) { showToast('❌ Kunne ikke gemme ændringer'); console.error(error); return; }
+      if (error) { showToast('Kunne ikke gemme ændringer', 'fejl'); console.error(error); return; }
     }
 
     // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret).
@@ -531,7 +531,7 @@ export function createListingEdit({
     const toKeep   = editExistingImgs.filter(img => !img.toDelete);
     for (const img of toDelete) {
       const { error: delErr } = await supabase.from('bike_images').delete().eq('id', img.id).eq('bike_id', id);
-      if (delErr) { showToast('❌ Kunne ikke slette et eksisterende billede'); console.error(delErr); return; }
+      if (delErr) { showToast('Kunne ikke slette et eksisterende billede', 'fejl'); console.error(delErr); return; }
       /* Dette kald har hele tiden været her, men fejlede tavst: DELETE-
          politikken krævede at første mappeled var brugerens id, mens det for
          annoncebilleder er annonce-id'et, så den kunne aldrig matche. Hvert
@@ -549,7 +549,7 @@ export function createListingEdit({
 
     for (const img of toKeep) {
       const { error: updErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('id', img.id).eq('bike_id', id);
-      if (updErr) { showToast('❌ Kunne ikke opdatere primærbillede'); console.error(updErr); return; }
+      if (updErr) { showToast('Kunne ikke opdatere primærbillede', 'fejl'); console.error(updErr); return; }
     }
 
     let insertedPrimaryId = null;
@@ -557,14 +557,14 @@ export function createListingEdit({
       const ext      = item.file.name.split('.').pop();
       const filename = `${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: uploadErr } = await supabase.storage.from('bike-images').upload(filename, item.file, { contentType: item.file.type, cacheControl: '2592000' });
-      if (uploadErr) { showToast('❌ Kunne ikke uploade et billede'); console.error(uploadErr); return; }
+      if (uploadErr) { showToast('Kunne ikke uploade et billede', 'fejl'); console.error(uploadErr); return; }
       const { data: { publicUrl } } = supabase.storage.from('bike-images').getPublicUrl(filename);
       const { data: insertedRow, error: insertErr } = await supabase
         .from('bike_images')
         .insert({ bike_id: id, url: publicUrl, is_primary: item.isPrimary })
         .select('id')
         .single();
-      if (insertErr) { showToast('❌ Kunne ikke gemme uploadet billede'); console.error(insertErr); return; }
+      if (insertErr) { showToast('Kunne ikke gemme uploadet billede', 'fejl'); console.error(insertErr); return; }
       if (item.isPrimary) insertedPrimaryId = insertedRow?.id || null;
     }
 
@@ -572,11 +572,11 @@ export function createListingEdit({
     const intendedPrimaryId = insertedPrimaryId || intendedPrimaryExisting;
 
     const { error: resetPrimaryErr } = await supabase.from('bike_images').update({ is_primary: false }).eq('bike_id', id);
-    if (resetPrimaryErr) { showToast('❌ Kunne ikke nulstille primærbillede'); console.error(resetPrimaryErr); return; }
+    if (resetPrimaryErr) { showToast('Kunne ikke nulstille primærbillede', 'fejl'); console.error(resetPrimaryErr); return; }
 
     if (intendedPrimaryId) {
       const { error: setPrimaryErr } = await supabase.from('bike_images').update({ is_primary: true }).eq('id', intendedPrimaryId).eq('bike_id', id);
-      if (setPrimaryErr) { showToast('❌ Kunne ikke gemme valgt primærbillede'); console.error(setPrimaryErr); return; }
+      if (setPrimaryErr) { showToast('Kunne ikke gemme valgt primærbillede', 'fejl'); console.error(setPrimaryErr); return; }
     } else {
       const { data: firstImg } = await supabase.from('bike_images').select('id').eq('bike_id', id).limit(1).single();
       if (firstImg) await supabase.from('bike_images').update({ is_primary: true }).eq('id', firstImg.id).eq('bike_id', id);
@@ -587,7 +587,7 @@ export function createListingEdit({
     bikeCache.delete(Number(id));
 
     closeEditModal();
-    showToast('✅ Annonce opdateret!');
+    showToast('Annonce opdateret!', 'ok');
     reloadMyListings();
     loadBikes();
     updateFilterCounts();
