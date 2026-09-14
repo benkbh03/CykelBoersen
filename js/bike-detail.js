@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
+import { beskedFejl, bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -569,7 +569,7 @@ export function createBikeDetail({
 
       // Dynamisk SEO: opdater document.title og OG-tags
       const _origTitle = document.title;
-      document.title = `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`;
+      document.title = bikePageTitle(bikeTitle(b.brand, b.model), priceText(b));
       const _setMeta = (prop, val) => {
         let el = document.querySelector(`meta[property="${prop}"]`);
         if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
@@ -711,7 +711,7 @@ export function createBikeDetail({
 
   function showMyDistanceOnBikeMap() {
     if (!navigator.geolocation) {
-      showToast('⚠️ Din browser understøtter ikke lokation');
+      showToast('Din browser understøtter ikke lokation', 'advarsel');
       return;
     }
     const btn = document.getElementById('bike-location-locate-btn');
@@ -723,7 +723,7 @@ export function createBikeDetail({
         _drawUserPositionOnBikeMap();
       },
       () => {
-        showToast('⚠️ Kunne ikke hente din lokation');
+        showToast('Kunne ikke hente din lokation', 'advarsel');
         if (btn) { btn.disabled = false; btn.innerHTML = `${iconPin(14)} Vis min afstand`; }
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
@@ -798,7 +798,7 @@ export function createBikeDetail({
     const allImages = (b.bike_images || []).map(i => i.url).filter(Boolean);
     const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
 
-    document.title = `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`;
+    document.title = bikePageTitle(bikeTitle(b.brand, b.model), priceText(b));
     updateSEOMeta(
       `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${priceText(b)} Køb på Cykelbørsen.`,
       `/bike/${bikeId}`,
@@ -1254,12 +1254,12 @@ export function createBikeDetail({
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
     if (!currentUser) {
-      showToast('⚠️ Du skal være logget ind for at rapportere en annonce');
+      showToast('Du skal være logget ind for at rapportere en annonce', 'advarsel');
       openLoginModal();
       return;
     }
     if (!currentUser.email_confirmed_at && !currentProfile?.email_verified) {
-      showToast('⚠️ Bekræft din e-mail for at kunne rapportere annoncer');
+      showToast('Bekræft din e-mail for at kunne rapportere annoncer', 'advarsel');
       return;
     }
     _reportBikeId    = bikeId;
@@ -1282,7 +1282,7 @@ export function createBikeDetail({
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
     if (!currentUser) {
-      showToast('⚠️ Du skal være logget ind for at rapportere');
+      showToast('Du skal være logget ind for at rapportere', 'advarsel');
       closeReportModal();
       openLoginModal();
       return;
@@ -1456,9 +1456,9 @@ export function createBikeDetail({
 
   async function sendMessage(bikeId, receiverId) {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at sende beskeder'); return; }
+    if (!currentUser) { showToast('Log ind for at sende beskeder', 'advarsel'); return; }
     const content = document.getElementById('message-text').value.trim();
-    if (!content) { showToast('⚠️ Skriv en besked først'); return; }
+    if (!content) { showToast('Skriv en besked først', 'advarsel'); return; }
 
     // Vis anti-scam-advarsel første gang en bruger sender besked til en sælger
     const ack = await maybeShowScamWarning();
@@ -1474,7 +1474,7 @@ export function createBikeDetail({
         content,
       }).select('id').single();
 
-      if (insertError) { showToast('❌ Kunne ikke sende besked'); console.error('Insert fejl:', insertError); return; }
+      if (insertError) { const f = beskedFejl(insertError, 'Kunne ikke sende besked'); showToast(f.tekst, f.type); console.error('Insert fejl:', insertError); return; }
 
       const textEl = document.getElementById('message-text');
       const boxEl  = document.getElementById('message-box');
@@ -1500,9 +1500,9 @@ export function createBikeDetail({
 
   async function sendBid(bikeId, receiverId) {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at give bud'); return; }
+    if (!currentUser) { showToast('Log ind for at give bud', 'advarsel'); return; }
     const amount = document.getElementById('bid-amount').value;
-    if (!amount || isNaN(parseInt(amount)) || parseInt(amount) <= 0) { showToast('⚠️ Indtast et gyldigt bud'); return; }
+    if (!amount || isNaN(parseInt(amount)) || parseInt(amount) <= 0) { showToast('Indtast et gyldigt bud', 'advarsel'); return; }
 
     // Vis anti-scam-advarsel første gang en bruger sender bud til en sælger
     const ack = await maybeShowScamWarning();
@@ -1520,7 +1520,7 @@ export function createBikeDetail({
         content,
       }).select('id').single();
 
-      if (error) { showToast('❌ Kunne ikke sende bud'); return; }
+      if (error) { const f = beskedFejl(error, 'Kunne ikke sende bud'); showToast(f.tekst, f.type); return; }
       document.getElementById('bid-amount').value = '';
       const bidBox = document.getElementById('bid-box');
       if (bidBox) {
@@ -1547,7 +1547,7 @@ export function createBikeDetail({
   async function toggleSaveFromModal(btn, bikeId) {
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
-    if (!currentUser) { showToast('⚠️ Log ind for at gemme'); return; }
+    if (!currentUser) { showToast('Log ind for at gemme', 'advarsel'); return; }
     /* Tilstanden ligger i et data-attribut — IKKE i knappens tekst. Tidligere
        blev der læst på om teksten indeholdt et hjerte-emoji, hvilket gjorde det
        umuligt at give knappen et SVG-ikon uden at ødelægge logikken. */
@@ -1558,7 +1558,7 @@ export function createBikeDetail({
       btn.innerHTML = `${iconHeart(15)}<span class="btn-icon-label">Gem</span>`;
     } else {
       const { data: bike } = await supabase.from('bikes').select('brand, model, user_id').eq('id', bikeId).single();
-      if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke gemme din egen annonce'); return; }
+      if (bike && bike.user_id === currentUser.id) { showToast('Du kan ikke gemme din egen annonce', 'advarsel'); return; }
       await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
       btn.dataset.saved = '1';
       btn.innerHTML = `${iconHeart(15)}<span class="btn-icon-label">Gemt</span>`;
@@ -1590,7 +1590,7 @@ export function createBikeDetail({
      er en toggle. Knappens tilstand opdateres synkront. */
   async function togglePriceDropWatch(btn, bikeId, currentPrice) {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at få prisfaldsbeskeder'); return; }
+    if (!currentUser) { showToast('Log ind for at få prisfaldsbeskeder', 'advarsel'); return; }
     const isWatching = btn.dataset.watching === '1';
     btn.disabled = true;
     try {
@@ -1600,14 +1600,14 @@ export function createBikeDetail({
           .delete()
           .eq('user_id', currentUser.id)
           .eq('bike_id', bikeId);
-        if (error) { showToast('❌ Kunne ikke fjerne prisalarm'); return; }
+        if (error) { showToast('Kunne ikke fjerne prisalarm', 'fejl'); return; }
         btn.dataset.watching = '0';
         btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Prisfald</span>`;
-        showToast('🔕 Prisalarm fjernet');
+        showToast('Prisalarm fjernet');
       } else {
         // Tjek at brugeren ikke watcher sin egen annonce
         const { data: bike } = await supabase.from('bikes').select('user_id').eq('id', bikeId).single();
-        if (bike && bike.user_id === currentUser.id) { showToast('⚠️ Du kan ikke watche din egen annonce'); return; }
+        if (bike && bike.user_id === currentUser.id) { showToast('Du kan ikke watche din egen annonce', 'advarsel'); return; }
         const { error } = await supabase
           .from('price_drop_watches')
           .insert({
@@ -1621,13 +1621,13 @@ export function createBikeDetail({
             btn.dataset.watching = '1';
             btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Alarm til</span>`;
           } else {
-            showToast('❌ Kunne ikke oprette prisalarm');
+            showToast('Kunne ikke oprette prisalarm', 'fejl');
           }
           return;
         }
         btn.dataset.watching = '1';
         btn.innerHTML = `${iconBell(15)}<span class="btn-icon-label">Alarm til</span>`;
-        showToast(`🔔 Du får besked hvis prisen falder under ${currentPrice.toLocaleString('da-DK')} kr.`);
+        showToast(`Du får besked hvis prisen falder under ${currentPrice.toLocaleString('da-DK')} kr.`, 'ok');
       }
     } finally {
       btn.disabled = false;

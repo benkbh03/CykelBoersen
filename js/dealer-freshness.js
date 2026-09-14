@@ -51,7 +51,7 @@ function rowHtml(b) {
       <div style="display:flex;gap:6px;">
         <button data-row-act="confirm" style="flex:1;background:none;border:1px solid var(--forest,#1f3d2b);color:var(--forest,#1f3d2b);padding:5px;border-radius:6px;cursor:pointer;font-size:0.76rem;">✓ Aktuel</button>
         <button data-row-act="edit" style="flex:1;background:none;border:1px solid var(--border,#e5e0d8);padding:5px;border-radius:6px;cursor:pointer;font-size:0.76rem;">Ret pris</button>
-        <button data-row-act="deactivate" title="Deaktivér annonce" style="background:none;border:1px solid #c8302a;color:#c8302a;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:0.76rem;">Fjern</button>
+        <button data-row-act="deactivate" title="Deaktivér annonce" style="background:none;border:1px solid var(--error);color:var(--error);padding:5px 8px;border-radius:6px;cursor:pointer;font-size:0.76rem;">Fjern</button>
       </div>
     </div>`;
 }

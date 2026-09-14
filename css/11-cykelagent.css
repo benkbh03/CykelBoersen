@@ -567,8 +567,8 @@
 .cykelagent-cancel-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
 .cykelagent-delete-btn {
   background: none;
-  border: 1.5px solid #d44a35;
-  color: #d44a35;
+  border: 1.5px solid var(--error);
+  color: var(--error);
   border-radius: 10px;
   padding: 12px 20px;
   font-family: 'DM Sans', sans-serif;
@@ -577,7 +577,7 @@
   margin-left: auto;
   transition: all 0.15s;
 }
-.cykelagent-delete-btn:hover { background: #d44a35; color: #fff; }
+.cykelagent-delete-btn:hover { background: var(--error); color: #fff; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 600px) {

@@ -23,11 +23,11 @@ export function createShareActions({ showToast }) {
   function copyShareLink() {
     var input = document.getElementById('share-link-input');
     navigator.clipboard.writeText(input.value).then(function() {
-      showToast('✅ Link kopieret!');
+      showToast('Link kopieret!', 'ok');
     }).catch(function() {
       input.select();
       document.execCommand('copy');
-      showToast('✅ Link kopieret!');
+      showToast('Link kopieret!', 'ok');
     });
   }
 
@@ -44,7 +44,7 @@ export function createShareActions({ showToast }) {
 
     if (navigator.share) {
       navigator.share({ title: title, text: text, url: url })
-        .then(function() { showToast('✅ Delt!'); })
+        .then(function() { showToast('Delt!', 'ok'); })
         .catch(function() {});
     } else {
       window.open('https://www.addtoany.com/share?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(text), '_blank', 'width=600,height=400');

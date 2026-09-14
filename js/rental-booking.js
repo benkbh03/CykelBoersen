@@ -54,7 +54,7 @@ export function createRentalBooking({
         try { m = (await error.context.json()).error || m; } catch {}
         throw new Error(m);
       }
-      if (showToast) showToast('✅ Opdateret');
+      if (showToast) showToast('Opdateret', 'ok');
       // Genindlæs den relevante liste
       const path = window.location.pathname;
       if (path === '/udlejning/bookinger') renderDealerBookings();

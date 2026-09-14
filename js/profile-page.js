@@ -291,7 +291,7 @@ export function createProfilePage({
     const restore = btnLoading('save-profile-btn', 'Gemmer...');
     try {
       const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
-      if (error) { showToast('❌ Kunne ikke gemme profil'); return; }
+      if (error) { showToast('Kunne ikke gemme profil', 'fejl'); return; }
 
       if (updates.city && updates.city !== (currentProfile && currentProfile.city)) {
         await supabase.from('bikes').update({ city: updates.city }).eq('user_id', currentUser.id);
@@ -306,7 +306,7 @@ export function createProfilePage({
       setCurrentProfile({ ...currentProfile, ...updates });
       showProfileData();
       updateNavAvatar(updates.name, getCurrentProfile().avatar_url);
-      showToast('✅ Profil opdateret!');
+      showToast('Profil opdateret!', 'ok');
       // Er brugeren på "Min konto"-siden, så gen-render den, så profil-
       // komplethedskortet ("Om mig udfyldt" osv.) opdateres/forsvinder straks.
       if (location.pathname === '/me' && typeof window.renderMyProfilePage === 'function') {
@@ -331,7 +331,7 @@ export function createProfilePage({
   async function uploadAvatar(file) {
     const currentUser = getCurrentUser();
     if (!file || !currentUser) return;
-    if (file.size > 5 * 1024 * 1024) { showToast('❌ Billedet må maks være 5 MB'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Billedet må maks være 5 MB', 'fejl'); return; }
 
     // Profilbilledet blev tidligere uploadet præcis som brugeren valgte det,
     // uden om canvas. Et selfie taget derhjemme bærer GPS i sin EXIF, og
@@ -343,7 +343,7 @@ export function createProfilePage({
       upload = await toStrippedBlob(file, 512, 'image/webp', 0.82);
     } catch (e) {
       console.error('Kunne ikke behandle profilbillede:', e);
-      showToast('❌ Billedet kunne ikke behandles. Prøv et andet.');
+      showToast('Billedet kunne ikke behandles. Prøv et andet.', 'fejl');
       return;
     }
 
@@ -356,7 +356,7 @@ export function createProfilePage({
       .from('avatars')
       .upload(path, upload, { upsert: true, contentType: 'image/webp', cacheControl: '2592000' });
 
-    if (uploadError) { showToast('❌ Kunne ikke uploade billede'); console.error(uploadError); return; }
+    if (uploadError) { showToast('Kunne ikke uploade billede', 'fejl'); console.error(uploadError); return; }
 
     /* Ryd det gamle billede væk. Stien hed før avatar.<original-endelse>, så
        et gammelt avatar.jpg ville ellers blive liggende offentligt ved siden
@@ -395,12 +395,12 @@ export function createProfilePage({
     const { error: updateError } = await supabase
       .from('profiles').update({ avatar_url: avatarUrl, avatar_thumb_url: avatarThumbUrl }).eq('id', currentUser.id);
 
-    if (updateError) { showToast('❌ Kunne ikke gemme profilbillede'); return; }
+    if (updateError) { showToast('Kunne ikke gemme profilbillede', 'fejl'); return; }
 
     setCurrentProfile({ ...getCurrentProfile(), avatar_url: avatarUrl, avatar_thumb_url: avatarThumbUrl });
     showProfileData();
     updateNavAvatar(getCurrentProfile()?.name, avatarUrl);
-    showToast('✅ Profilbillede opdateret!');
+    showToast('Profilbillede opdateret!', 'ok');
   }
 
 
@@ -456,7 +456,7 @@ export function createProfilePage({
     const btn = document.getElementById('delete-account-confirm-btn');
     const active = val === 'slet';
     btn.disabled = !active;
-    btn.style.background = active ? '#c0392b' : '#e0e0e0';
+    btn.style.background = active ? 'var(--error)' : '#e0e0e0';
     btn.style.color       = active ? '#fff'    : '#aaa';
     btn.style.cursor      = active ? 'pointer' : 'not-allowed';
   }
@@ -562,7 +562,7 @@ export function createProfilePage({
     const currentUser = getCurrentUser();
     if (!currentUser) return;
     const cb = document.getElementById('admin-onboarding-consent-cb');
-    if (!cb?.checked) { showToast('⚠️ Marker checkboksen for at bekræfte samtykke'); return; }
+    if (!cb?.checked) { showToast('Marker checkboksen for at bekræfte samtykke', 'advarsel'); return; }
     const btn = document.getElementById('admin-onboarding-grant-btn');
     const restore = btnLoading('admin-onboarding-grant-btn', 'Aktiverer...');
     const { error } = await supabase.from('profiles').update({
@@ -572,10 +572,10 @@ export function createProfilePage({
     restore();
     if (error) {
       console.error('grantAdminOnboarding fejl:', error);
-      showToast('❌ Kunne ikke aktivere. Prøv igen');
+      showToast('Kunne ikke aktivere. Prøv igen', 'fejl');
       return;
     }
-    showToast('✓ Onboarding-service aktiveret');
+    showToast('Onboarding-service aktiveret', 'ok');
     // Refresh profile state + UI
     const { data: fresh } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
     if (fresh) _renderAdminOnboardingState(fresh);
@@ -590,7 +590,7 @@ export function createProfilePage({
     }).eq('id', currentUser.id);
     if (error) {
       console.error('revokeAdminOnboarding fejl:', error);
-      showToast('❌ Kunne ikke tilbagekalde. Prøv igen');
+      showToast('Kunne ikke tilbagekalde. Prøv igen', 'fejl');
       return;
     }
     showToast('Tilladelse tilbagekaldt');

@@ -799,7 +799,7 @@
 .sub-status-active   { background: #e8f5e9; color: #2e7d32; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
 .sub-status-trial    { background: #e3f2fd; color: #1565c0; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
 .sub-status-past-due { background: #fff3e0; color: #e65100; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
-.sub-status-canceled { background: #fce4ec; color: #c62828; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.sub-status-canceled { background: #fce4ec; color: var(--error); font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
 .btn-manage-subscription {
   width: 100%;
   padding: 10px 16px;

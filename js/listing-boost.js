@@ -130,7 +130,7 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     try {
       const { data, error } = await supabase.rpc('claim_free_boost', { p_bike_id: bikeId });
       if (error) throw error;
-      if (showToast) showToast('⭐ Din annonce er nu fremhævet i ' + BOOST_DAYS + ' dage!');
+      if (showToast) showToast('Din annonce er nu fremhævet i ' + BOOST_DAYS + ' dage!', 'ok');
       // Vis den nye "aktiv"-tilstand
       renderStatus({ free_available: false, featured_until: data, is_owner: true });
       if (onBoosted) { try { onBoosted(bikeId); } catch {} }

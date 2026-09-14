@@ -9,7 +9,7 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     // selvhandel-cykler i at booste sælgers track record.
     const soldVia = buyerId ? 'platform' : 'external';
     const err = (await supabase.from('bikes').update({ is_active: false, sold_via: soldVia }).eq('id', bikeId)).error;
-    if (err) { showToast('❌ Kunne ikke markere som solgt'); return; }
+    if (err) { showToast('Kunne ikke markere som solgt', 'fejl'); return; }
 
     if (buyerId) {
       await supabase.from('messages').insert({
@@ -21,7 +21,7 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
       reloadMyListings(); loadBikes(); updateFilterCounts();
       openUserProfileWithReview(buyerId);
     } else {
-      showToast('🏷️ Annonce markeret som solgt eksternt');
+      showToast('Annonce markeret som solgt eksternt', 'ok');
       reloadMyListings(); loadBikes(); updateFilterCounts();
     }
   }
@@ -81,8 +81,8 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     const currentUser = getCurrentUser();
     if (currentlySold) {
       const err = (await supabase.from('bikes').update({ is_active: true }).eq('id', bikeId)).error;
-      if (err) { showToast('❌ Kunne ikke opdatere status'); return; }
-      showToast('✅ Annonce aktiv igen');
+      if (err) { showToast('Kunne ikke opdatere status', 'fejl'); return; }
+      showToast('Annonce aktiv igen', 'ok');
       reloadMyListings(); loadBikes(); updateFilterCounts();
       return;
     }
@@ -96,12 +96,12 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
       .select('created_at')
       .eq('id', bikeId)
       .single();
-    if (bikeErr || !bikeInfo) { showToast('❌ Kunne ikke hente annoncedata'); return; }
+    if (bikeErr || !bikeInfo) { showToast('Kunne ikke hente annoncedata', 'fejl'); return; }
     const ageMs = Date.now() - new Date(bikeInfo.created_at).getTime();
     const cooldownMs = 24 * 60 * 60 * 1000;
     if (ageMs < cooldownMs) {
       const hoursLeft = Math.ceil((cooldownMs - ageMs) / (60 * 60 * 1000));
-      showToast(`⏱️ Annoncen skal være aktiv i 24 timer før den kan markeres som solgt (${hoursLeft} ${hoursLeft === 1 ? 'time' : 'timer'} tilbage)`);
+      showToast(`Annoncen skal være aktiv i 24 timer før den kan markeres som solgt (${hoursLeft} ${hoursLeft === 1 ? 'time' : 'timer'} tilbage)`, 'advarsel');
       return;
     }
 

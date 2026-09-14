@@ -27,17 +27,17 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
 
   async function handleForgotPassword() {
     const email = document.getElementById('forgot-email').value.trim();
-    if (!email) { showToast('⚠️ Indtast din email'); return; }
+    if (!email) { showToast('Indtast din email', 'advarsel'); return; }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://xn--cykelbrsen-5cb.dk/',
     });
 
     if (error) {
-      showToast('❌ Kunne ikke sende link – tjek emailen');
+      showToast('Kunne ikke sende link – tjek emailen', 'fejl');
     } else {
       closeLoginModal();
-      showToast('✅ Tjek din email for nulstillingslinket');
+      showToast('Tjek din email for nulstillingslinket', 'ok');
     }
   }
 
@@ -51,12 +51,12 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
   async function handleLogin() {
     const email    = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    if (!email || !password) { showToast('⚠️ Udfyld email og adgangskode'); return; }
+    if (!email || !password) { showToast('Udfyld email og adgangskode', 'advarsel'); return; }
     const restore = btnLoading('login-btn', 'Logger ind...');
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) showToast('❌ Forkert email eller adgangskode');
-      else { closeLoginModal(); showToast('✅ Du er nu logget ind'); }
+      if (error) showToast('Forkert email eller adgangskode', 'fejl');
+      else { closeLoginModal(); showToast('Du er nu logget ind', 'ok'); }
     } finally { restore(); }
   }
 
@@ -64,9 +64,9 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
     const name     = document.getElementById('register-name').value;
     const email    = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
-    if (!name || !email || !password) { showToast('⚠️ Udfyld alle felter'); return; }
+    if (!name || !email || !password) { showToast('Udfyld alle felter', 'advarsel'); return; }
     const pwCheck = validatePassword(password, { email, name });
-    if (!pwCheck.ok) { showToast('⚠️ ' + pwCheck.message); return; }
+    if (!pwCheck.ok) { showToast(pwCheck.message, 'advarsel'); return; }
     const restore = btnLoading('register-btn', 'Opretter konto...');
     // Hvis brugeren udfyldte en Cykelagent før signup, send den med i user_metadata
     // så den overlever email-bekræftelse (også hvis linket åbnes i en anden browser).
@@ -84,8 +84,8 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
           emailRedirectTo: window.location.origin,
         },
       });
-      if (error) showToast('❌ ' + error.message);
-      else { closeLoginModal(); showToast('✅ Tjek din email for at bekræfte kontoen'); }
+      if (error) showToast(error.message, 'fejl');
+      else { closeLoginModal(); showToast('Tjek din email for at bekræfte kontoen', 'ok'); }
     } finally { restore(); }
   }
 

@@ -22,8 +22,41 @@ const corsHeaders = {
 const ALLOWED_ACTIONS = new Set([
   "approve_dealer", "reject_dealer", "revoke_dealer",
   "approve_id",     "reject_id",
+  "suspend_user",   "unsuspend_user",
   "delete_user",
 ]);
+
+// Standard-varighed for en suspendering hvis ingen angives.
+const DEFAULT_SUSPEND_DAYS = 30;
+
+/**
+ * Skriver til moderation_log. Kaldes for HVER handling, ikke kun de hårde.
+ *
+ * Hvorfor den findes: indtil 14. september var den eneste måde at stoppe en
+ * bruger permanent sletning, og sletningen fjerner også `messages`. Trykkede
+ * man Slet på en svindler, forsvandt svindelbeskeden med kontoen. Spurgte
+ * politiet tre måneder senere, fandtes der intet.
+ *
+ * Fejler loggen, fortsætter handlingen alligevel. En log der kan blokere
+ * moderation, er værre end ingen log: så lader man være med at moderere.
+ * Men vi råber i konsollen, så det kan opdages.
+ */
+async function logModeration(
+  supa,
+  entry: {
+    admin_id: string; admin_email?: string | null;
+    action: string; target_user_id: string;
+    target_email?: string | null; reason?: string | null;
+    snapshot?: unknown;
+  },
+) {
+  try {
+    const { error } = await supa.from("moderation_log").insert(entry);
+    if (error) console.error("KUNNE IKKE SKRIVE MODERATIONSLOG:", error, entry);
+  } catch (err) {
+    console.error("KUNNE IKKE SKRIVE MODERATIONSLOG:", err, entry);
+  }
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -86,7 +119,7 @@ serve(async (req) => {
     }
 
     // ── Parse handling ──────────────────────────────────────
-    const { action, target_user_id } = await req.json();
+    const { action, target_user_id, reason, days } = await req.json();
 
     if (!action || !ALLOWED_ACTIONS.has(action)) {
       return jsonResponse({ error: "Ugyldig handling" }, 400);
@@ -94,6 +127,33 @@ serve(async (req) => {
     if (!target_user_id || typeof target_user_id !== "string") {
       return jsonResponse({ error: "target_user_id påkrævet" }, 400);
     }
+
+    /* Hentes FØR handlingen. Efter en sletning findes hverken profilen
+       eller auth-brugeren, og så er der ikke noget at skrive i loggen.
+
+       `select("*")` frem for en kolonneliste: profiles har fået kolonner
+       gennem hele projektet, og en forkert stavet kolonne ville få hele
+       opslaget til at fejle og efterlade et tomt snapshot. Rækken er lille,
+       og den skal alligevel gemmes i sin helhed. */
+    const { data: targetProfile } = await supa
+      .from("profiles").select("*").eq("id", target_user_id).maybeSingle();
+
+    /* E-mailen bor i auth.users, ikke i profiles. Den er det eneste der
+       kan genkende den samme person når de kommer tilbage med en ny konto. */
+    let targetEmail: string | null = null;
+    try {
+      const { data: authUser } = await supa.auth.admin.getUserById(target_user_id);
+      targetEmail = authUser?.user?.email ?? null;
+    } catch { /* uden mail er loggen stadig bedre end ingen log */ }
+
+    const logBase = {
+      admin_id:     caller.id,
+      admin_email:  caller.email ?? null,
+      action,
+      target_user_id,
+      target_email: targetEmail,
+      reason:       typeof reason === "string" && reason.trim() ? reason.trim() : null,
+    };
 
     let updates: Record<string, unknown> = {};
     switch (action) {
@@ -112,12 +172,70 @@ serve(async (req) => {
       case "reject_id":
         updates = { id_pending: false, id_doc_url: null };
         break;
+
+      /* Suspendering. Fandtes ikke før 14. september, hvor den eneste vej til
+         at stoppe en bruger var permanent sletning. Valget stod derfor mellem
+         at overreagere og ikke at gøre noget.
+
+         En suspenderet bruger kan stadig logge ind og læse sine egne beskeder
+         og annoncer. Det er med vilje: de skal kunne se hvorfor. De kan bare
+         ikke skrive til nogen, oprette annoncer eller anmelde nogen. Se
+         is_suspended() i add_moderation_log_and_suspension.sql. */
+      case "suspend_user": {
+        if (target_user_id === caller.id) {
+          return jsonResponse({ error: "Du kan ikke suspendere dig selv" }, 400);
+        }
+        const d = Number.isFinite(Number(days)) && Number(days) > 0
+          ? Math.min(Number(days), 3650)          // 10 år er i praksis permanent
+          : DEFAULT_SUSPEND_DAYS;
+        const until = new Date(Date.now() + d * 86400000).toISOString();
+        updates = {
+          suspended_until:  until,
+          suspended_reason: logBase.reason,
+        };
+        break;
+      }
+      case "unsuspend_user":
+        updates = { suspended_until: null, suspended_reason: null };
+        break;
+
       case "delete_user": {
         // Beskyt mod selvsletning — admin kan ikke slette sig selv
         // (ville miste admin-access og kunne ikke gendannes uden DB-adgang)
         if (target_user_id === caller.id) {
           return jsonResponse({ error: "Du kan ikke slette dig selv" }, 400);
         }
+
+        /* LOG FØR SLETNING. Rækkefølgen er hele pointen.
+           Oprydningen nedenfor sletter `messages` for både afsender og
+           modtager, så trykker man Slet på en svindler, forsvinder
+           svindelbeskeden med kontoen. Snapshottet her er det eneste der
+           er tilbage bagefter.
+
+           De 20 seneste sendte beskeder: nok til at vise mønstret uden at
+           gemme hele korrespondancen. Er der mere brug for, skal det trækkes
+           inden sletningen, ikke efter. */
+        const { data: sidsteBeskeder } = await supa
+          .from("messages")
+          .select("id, receiver_id, bike_id, content, created_at")
+          .eq("sender_id", target_user_id)
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        const { count: antalBeskeder } = await supa
+          .from("messages")
+          .select("id", { count: "exact", head: true })
+          .eq("sender_id", target_user_id);
+
+        await logModeration(supa, {
+          ...logBase,
+          snapshot: {
+            profil:            targetProfile ?? null,
+            antal_sendte:      antalBeskeder ?? null,
+            sidste_20_sendte:  sidsteBeskeder ?? [],
+            slettet_tidspunkt: new Date().toISOString(),
+          },
+        });
 
         // Cascading sletning — samme logik som delete-account men gated til admin
         const { data: bikes } = await supa
@@ -178,6 +296,15 @@ serve(async (req) => {
       console.error("Update fejl:", updateErr);
       return jsonResponse({ error: "Kunne ikke opdatere profil" }, 500);
     }
+
+    /* Log ALLE handlinger, ikke kun de hårde. En godkendt forhandler der
+       senere viser sig at være svindel, er lige så vigtig at kunne datere
+       som en sletning. Her efter opdateringen, fordi der intet er at logge
+       hvis den fejlede. */
+    await logModeration(supa, {
+      ...logBase,
+      snapshot: { profil_foer: targetProfile ?? null, aendringer: updates },
+    });
 
     console.log(`Admin ${caller.id} udførte ${action} på ${target_user_id}`);
     return jsonResponse({ ok: true, action, target_user_id });

@@ -212,7 +212,7 @@ export function createRentalManage({
         f = await compressImage(file);
       } catch (e) {
         console.warn('Kunne ikke behandle billede, springes over:', file.name, e);
-        showToast(`⚠️ "${file.name}" kunne ikke behandles og blev ikke tilføjet`);
+        showToast(`"${file.name}" kunne ikke behandles og blev ikke tilføjet`, 'advarsel');
         continue;
       }
       const url = URL.createObjectURL(f);
@@ -333,7 +333,7 @@ export function createRentalManage({
         await supabase.from('rental_item_images').insert(rows);
       }
 
-      showToast(_editId ? '✅ Ændringer gemt' : '✅ Udlejningscykel oprettet');
+      showToast(_editId ? 'Ændringer gemt' : 'Udlejningscykel oprettet', 'ok');
       navigateTo('/udlejning/mine');
     } catch (e) {
       console.error('submitRentalItem fejl:', e);

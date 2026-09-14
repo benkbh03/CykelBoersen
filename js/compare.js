@@ -57,7 +57,7 @@ export function toggleCompareBike(checkbox, bikeId) {
   }
   if (ids.length >= MAX_COMPARE) {
     if (checkbox) checkbox.checked = false;
-    if (window.showToast) window.showToast(`⚠️ Du kan kun sammenligne op til ${MAX_COMPARE} cykler ad gangen`);
+    if (window.showToast) window.showToast(`Du kan kun sammenligne op til ${MAX_COMPARE} cykler ad gangen`, 'advarsel');
     return false;
   }
   ids.push(bikeId);

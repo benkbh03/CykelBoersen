@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -441,11 +441,11 @@ export function createProfileModals({
 
   async function sendProfileMessage(receiverId) {
     const currentUser = getCurrentUser();
-    if (!currentUser) { showToast('⚠️ Log ind for at sende beskeder'); return; }
+    if (!currentUser) { showToast('Log ind for at sende beskeder', 'advarsel'); return; }
     const bikeId  = document.getElementById('up-contact-bike-select')?.value;
     const content = document.getElementById('up-contact-message')?.value?.trim();
-    if (!bikeId)  { showToast('⚠️ Vælg en annonce'); return; }
-    if (!content) { showToast('⚠️ Skriv en besked'); return; }
+    if (!bikeId)  { showToast('Vælg en annonce', 'advarsel'); return; }
+    if (!content) { showToast('Skriv en besked', 'advarsel'); return; }
 
     const btn = document.querySelector('#up-contact-form .up-contact-send-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Sender...'; }
@@ -457,8 +457,8 @@ export function createProfileModals({
         content,
       }).select('id').single();
 
-      if (error) { showToast('❌ Kunne ikke sende besked'); console.error(error); return; }
-      showToast('✅ Besked sendt!');
+      if (error) { const f = beskedFejl(error, 'Kunne ikke sende besked'); showToast(f.tekst, f.type); console.error(error); return; }
+      showToast('Besked sendt!', 'ok');
       document.getElementById('up-contact-form').style.display = 'none';
       const ta = document.getElementById('up-contact-message');
       if (ta) ta.value = '';
