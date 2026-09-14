@@ -263,6 +263,30 @@ export function bikePageTitle(navn, prisTekst) {
   return `${k.replace(/[\s\-–—,/|.]+$/, '')}…${p}`;
 }
 
+/* Oversætter en fejl fra et messages-INSERT til noget et menneske forstår.
+
+   Databasen kan nu afvise en besked på to nye måder, og begge ville ellers
+   ende som den samme intetsigende "Kunne ikke sende besked":
+
+     limit_new_conversations()  en trigger der bremser mange nye samtaler
+                                på kort tid fra samme konto
+     RLS-politikken             afviser suspenderede brugere, og svarer med
+                                Postgres' generiske row-level security-tekst
+
+   Returnerer { tekst, type } klar til showToast(). Alt andet falder tilbage
+   på den besked kaldestedet selv har valgt, så intet kald bliver dårligere
+   af at bruge den her. */
+export function beskedFejl(error, standardTekst) {
+  const m = String(error?.message || error || '');
+  if (m.includes('For mange nye samtaler')) {
+    return { tekst: 'For mange nye samtaler på kort tid. Prøv igen om en time.', type: 'advarsel' };
+  }
+  if (/row-level security|violates row-level/i.test(m)) {
+    return { tekst: 'Din konto kan ikke sende beskeder lige nu. Skriv til os hvis det er en fejl.', type: 'advarsel' };
+  }
+  return { tekst: standardTekst, type: 'fejl' };
+}
+
 export function removeBikeJsonLd() {
   const old = document.getElementById('bike-jsonld');
   if (old) old.remove();

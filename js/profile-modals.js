@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -457,7 +457,7 @@ export function createProfileModals({
         content,
       }).select('id').single();
 
-      if (error) { showToast('Kunne ikke sende besked', 'fejl'); console.error(error); return; }
+      if (error) { const f = beskedFejl(error, 'Kunne ikke sende besked'); showToast(f.tekst, f.type); console.error(error); return; }
       showToast('Besked sendt!', 'ok');
       document.getElementById('up-contact-form').style.display = 'none';
       const ta = document.getElementById('up-contact-message');

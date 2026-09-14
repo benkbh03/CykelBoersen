@@ -3393,6 +3393,11 @@ async function loadAllUsers() {
     var isDealer   = p.seller_type === 'dealer';
     var canOnboard = isDealer && !!p.admin_can_create_listings;
     var safeName   = escAttr(p.shop_name || p.name || 'Ukendt');
+    // suspended_until kan ligge i fortiden; da er suspenderingen udloebet af sig selv.
+    var erSuspenderet = !!p.suspended_until && new Date(p.suspended_until) > new Date();
+    var suspTil    = erSuspenderet
+      ? new Date(p.suspended_until).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' })
+      : '';
     var onboardBtn = canOnboard
       ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\', \'' + escAttr(p.city || '') + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
       : (isDealer ? '<span class="admin-row-no-onboard" title="Forhandler skal selv aktivere onboarding-service i deres indstillinger">📋 Ikke aktiveret</span>' : '');
@@ -3403,12 +3408,18 @@ async function loadAllUsers() {
       + (isVerified ? ' <span class="verified-badge">✓</span>' : '')
       + (canOnboard ? ' <span class="onboard-indicator" title="Forhandler har givet tilladelse til at admin opretter annoncer på deres vegne">🛠️</span>' : '')
       + '</div>'
-      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat') + '</div>'
+      + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat')
+      + (erSuspenderet ? ' · <strong style="color:var(--error)">Suspenderet til ' + esc(suspTil) + '</strong>' : '')
+      + (erSuspenderet && p.suspended_reason ? ' · ' + esc(p.suspended_reason) : '')
+      + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'
       + (isDealer && !isVerified ? '<button class="btn-approve" onclick="approveDealer(\'' + p.id + '\')">✓ Verificer</button>' : '')
       + (isVerified ? '<button class="btn-reject" onclick="revokeDealer(\'' + p.id + '\')">Fjern verificering</button>' : '')
       + onboardBtn
+      + (erSuspenderet
+          ? '<button class="btn-unsuspend" onclick="unsuspendUser(\'' + p.id + '\')" title="Ophæv suspenderingen">Ophæv</button>'
+          : '<button class="btn-suspend" onclick="suspendUser(\'' + p.id + '\', \'' + safeName + '\')" title="Stop brugeren midlertidigt uden at slette noget">Suspendér</button>')
       + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + escAttr(p.name || 'Ukendt') + '\')" title="Slet bruger permanent">🗑️ Slet</button>'
       + '</div></div>';
   }).join('');
@@ -3437,9 +3448,9 @@ function getActingAsDealer() {
   } catch { return null; }
 }
 
-async function _callAdminAction(action, targetUserId) {
+async function _callAdminAction(action, targetUserId, extra) {
   const { data, error } = await supabase.functions.invoke('admin-actions', {
-    body: { action, target_user_id: targetUserId },
+    body: { action, target_user_id: targetUserId, ...(extra || {}) },
   });
   if (error || data?.error) {
     return { ok: false, error: data?.error || error?.message || 'Ukendt fejl' };
@@ -3463,6 +3474,34 @@ async function rejectDealer(userId) {
   supabase.functions.invoke('notify-message', { body: { type: 'dealer_rejected', user_id: userId } }).catch(() => {});
   showToast('Ansøgning afvist — forhandleren er notificeret', 'ok');
   loadDealerApplications();
+}
+
+/* Suspendering. Mellemvejen der manglede: indtil 14. september var den
+   eneste maade at stoppe en bruger PERMANENT SLETNING, saa valget stod
+   mellem at overreagere og ikke at goere noget.
+
+   Brugeren kan stadig logge ind og laese sine egne beskeder og annoncer.
+   De kan bare ikke skrive til nogen, oprette annoncer eller anmelde nogen.
+   Ingen data slettes, saa den kan fortrydes. */
+async function suspendUser(userId, navn) {
+  const dage = prompt('Suspendér ' + navn + ' i hvor mange dage?\n\nBrugeren kan stadig logge ind og se sine egne data, men kan ikke skrive beskeder, oprette annoncer eller anmelde nogen.\n\nIntet slettes, og du kan ophaeve den igen.', '30');
+  if (dage === null) return;
+  const d = parseInt(dage, 10);
+  if (!Number.isFinite(d) || d < 1) { showToast('Angiv et antal dage', 'advarsel'); return; }
+  const grund = prompt('Kort begrundelse (gemmes i moderationsloggen):', '');
+  if (grund === null) return;
+  const res = await _callAdminAction('suspend_user', userId, { days: d, reason: grund });
+  if (!res.ok) { showToast(res.error, 'fejl'); return; }
+  showToast(navn + ' er suspenderet i ' + d + ' dage', 'ok');
+  loadAllUsers();
+}
+
+async function unsuspendUser(userId) {
+  if (!confirm('Ophaev suspenderingen?\n\nBrugeren kan skrive og oprette annoncer igen med det samme.')) return;
+  const res = await _callAdminAction('unsuspend_user', userId, { reason: 'Ophaevet manuelt' });
+  if (!res.ok) { showToast(res.error, 'fejl'); return; }
+  showToast('Suspenderingen er ophaevet', 'ok');
+  loadAllUsers();
 }
 
 async function revokeDealer(userId) {
@@ -3491,6 +3530,8 @@ window.switchAdminTab       = switchAdminTab;
 window.approveDealer        = approveDealer;
 window.rejectDealer         = rejectDealer;
 window.revokeDealer         = revokeDealer;
+window.suspendUser          = suspendUser;
+window.unsuspendUser        = unsuspendUser;
 window.deleteUserAsAdmin    = deleteUserAsAdmin;
 window.startActingAsDealer  = startActingAsDealer;
 window.stopActingAsDealer   = stopActingAsDealer;

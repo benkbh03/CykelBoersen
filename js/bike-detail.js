@@ -3,7 +3,7 @@
    Extracted from main.js (lines 1105–1622 and 3365–4142).
    ============================================================ */
 
-import { bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
+import { beskedFejl, bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
@@ -1474,7 +1474,7 @@ export function createBikeDetail({
         content,
       }).select('id').single();
 
-      if (insertError) { showToast('Kunne ikke sende besked', 'fejl'); console.error('Insert fejl:', insertError); return; }
+      if (insertError) { const f = beskedFejl(insertError, 'Kunne ikke sende besked'); showToast(f.tekst, f.type); console.error('Insert fejl:', insertError); return; }
 
       const textEl = document.getElementById('message-text');
       const boxEl  = document.getElementById('message-box');
@@ -1520,7 +1520,7 @@ export function createBikeDetail({
         content,
       }).select('id').single();
 
-      if (error) { showToast('Kunne ikke sende bud', 'fejl'); return; }
+      if (error) { const f = beskedFejl(error, 'Kunne ikke sende bud'); showToast(f.tekst, f.type); return; }
       document.getElementById('bid-amount').value = '';
       const bidBox = document.getElementById('bid-box');
       if (bidBox) {

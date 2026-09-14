@@ -2,7 +2,7 @@
    INDBAKKE (modal + side)
    ============================================================ */
 
-import { escAttr } from './utils.js';
+import { escAttr, beskedFejl } from './utils.js';
 
 export function createInbox({
   supabase,
@@ -316,7 +316,7 @@ export function createInbox({
         content,
       }).select('id').single();
 
-      if (error) { showToast('Kunne ikke sende svar', 'fejl'); return; }
+      if (error) { const f = beskedFejl(error, 'Kunne ikke sende svar'); showToast(f.tekst, f.type); return; }
       document.getElementById(textId).value = '';
       showToast('Svar sendt!', 'ok');
       if (inserted?.id) {

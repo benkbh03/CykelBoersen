@@ -909,6 +909,18 @@
   margin-left: 4px;
 }
 .btn-delete-user:hover { background: var(--error); color: #fff; }
+/* Suspendér: mellemvejen mellem "gør ingenting" og "slet for evigt". Okker,
+   ikke rød, fordi den kan fortrydes og intet slettes. Ophæv er neutral. */
+.btn-suspend, .btn-unsuspend {
+  background: none; border-radius: 6px; padding: 7px 14px;
+  font-size: 0.78rem; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  margin-left: 4px;
+}
+.btn-suspend        { border: 1.5px solid var(--warning); color: var(--warning); }
+.btn-suspend:hover  { background: var(--warning); color: #fff; }
+.btn-unsuspend      { border: 1.5px solid var(--border);  color: var(--muted); }
+.btn-unsuspend:hover{ border-color: var(--forest); color: var(--forest); }
 /* "Opret annonce på vegne af"-knap i admin-panel — kun synlig for dealers
    med admin_can_create_listings=true. Forest-grøn for at signalere konstruktiv
    handling (i kontrast til den røde Slet-knap). */
