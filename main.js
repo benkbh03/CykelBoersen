@@ -3378,6 +3378,18 @@ async function loadAllUsers() {
       .from('profiles')
       .select('*')
       .order('created_at', { ascending: false });
+    /* Suspenderinger ligger i user_suspensions, ikke paa profiles. Bevidst:
+       profiles SELECT er USING (true), saa en begrundelse om en navngiven
+       person ville kunne hentes med den offentlige anon-noegle. Tabellen her
+       kan kun laeses af admin og af den suspenderede selv. */
+    try {
+      const susp = await supabase.from('user_suspensions').select('user_id, until, reason');
+      const kort = new Map((susp.data || []).map(r => [r.user_id, r]));
+      for (const p of (result.data || [])) {
+        const r = kort.get(p.id);
+        if (r) { p._susp_until = r.until; p._susp_reason = r.reason; }
+      }
+    } catch { /* uden dem vises listen bare uden suspenderings-markering */ }
   } catch (e) {
     list.innerHTML = retryHTML('Kunne ikke hente brugere.', 'loadAllUsers');
     return;
@@ -3394,9 +3406,9 @@ async function loadAllUsers() {
     var canOnboard = isDealer && !!p.admin_can_create_listings;
     var safeName   = escAttr(p.shop_name || p.name || 'Ukendt');
     // suspended_until kan ligge i fortiden; da er suspenderingen udloebet af sig selv.
-    var erSuspenderet = !!p.suspended_until && new Date(p.suspended_until) > new Date();
+    var erSuspenderet = !!p._susp_until && new Date(p._susp_until) > new Date();
     var suspTil    = erSuspenderet
-      ? new Date(p.suspended_until).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' })
+      ? new Date(p._susp_until).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' })
       : '';
     var onboardBtn = canOnboard
       ? '<button class="btn-onboard-create" onclick="startActingAsDealer(\'' + p.id + '\', \'' + safeName + '\', \'' + escAttr(p.city || '') + '\')" title="Opret annonce på vegne af denne forhandler">🚲 Opret annonce</button>'
@@ -3410,7 +3422,7 @@ async function loadAllUsers() {
       + '</div>'
       + '<div class="admin-row-meta">' + esc(p.email || '') + ' · ' + (isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat')
       + (erSuspenderet ? ' · <strong style="color:var(--error)">Suspenderet til ' + esc(suspTil) + '</strong>' : '')
-      + (erSuspenderet && p.suspended_reason ? ' · ' + esc(p.suspended_reason) : '')
+      + (erSuspenderet && p._susp_reason ? ' · ' + esc(p._susp_reason) : '')
       + '</div>'
       + '</div>'
       + '<div class="admin-row-actions">'

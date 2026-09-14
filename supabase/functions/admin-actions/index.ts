@@ -146,6 +146,12 @@ serve(async (req) => {
       targetEmail = authUser?.user?.email ?? null;
     } catch { /* uden mail er loggen stadig bedre end ingen log */ }
 
+    /* Uden det her opdaterede en handling mod et ukendt id nul raekker,
+       skrev alligevel en logpost og svarede ok: true. */
+    if (!targetProfile && action !== "delete_user") {
+      return jsonResponse({ error: "Bruger findes ikke" }, 404);
+    }
+
     const logBase = {
       admin_id:     caller.id,
       admin_email:  caller.email ?? null,
@@ -181,23 +187,43 @@ serve(async (req) => {
          og annoncer. Det er med vilje: de skal kunne se hvorfor. De kan bare
          ikke skrive til nogen, oprette annoncer eller anmelde nogen. Se
          is_suspended() i add_moderation_log_and_suspension.sql. */
-      case "suspend_user": {
+      case "suspend_user":
+      case "unsuspend_user": {
         if (target_user_id === caller.id) {
           return jsonResponse({ error: "Du kan ikke suspendere dig selv" }, 400);
         }
-        const d = Number.isFinite(Number(days)) && Number(days) > 0
-          ? Math.min(Number(days), 3650)          // 10 år er i praksis permanent
-          : DEFAULT_SUSPEND_DAYS;
-        const until = new Date(Date.now() + d * 86400000).toISOString();
-        updates = {
-          suspended_until:  until,
-          suspended_reason: logBase.reason,
-        };
-        break;
+        /* En suspenderet admin ophaever bare sig selv igen: suspendering
+           roerer ikke is_admin. Vaerktoejet ville give falsk tryghed, saa
+           det afvises helt frem for at lade som om det virkede. */
+        if (targetProfile?.is_admin) {
+          return jsonResponse({ error: "Kan ikke suspendere en admin. Fjern admin-rettigheden foerst." }, 400);
+        }
+
+        if (action === "unsuspend_user") {
+          await supa.from("user_suspensions").delete().eq("user_id", target_user_id);
+        } else {
+          const d = Number.isFinite(Number(days)) && Number(days) > 0
+            ? Math.min(Number(days), 3650)          // 10 år er i praksis permanent
+            : DEFAULT_SUSPEND_DAYS;
+          const until = new Date(Date.now() + d * 86400000).toISOString();
+          /* Begrundelsen bor KUN her og i moderation_log. Foerste udkast lagde
+             den paa profiles, hvor SELECT er USING (true) — altsaa kunne en
+             admins fritekst om en navngiven person hentes med anon-noeglen. */
+          const { error: suspErr } = await supa.from("user_suspensions").upsert({
+            user_id: target_user_id,
+            until,
+            reason: logBase.reason,
+            created_by: caller.id,
+          });
+          if (suspErr) {
+            console.error("Suspendering fejlede:", suspErr);
+            return jsonResponse({ error: "Kunne ikke suspendere brugeren" }, 500);
+          }
+        }
+
+        await logModeration(supa, { ...logBase, snapshot: { profil: targetProfile ?? null, dage: days ?? null } });
+        return jsonResponse({ ok: true, action, target_user_id });
       }
-      case "unsuspend_user":
-        updates = { suspended_until: null, suspended_reason: null };
-        break;
 
       case "delete_user": {
         // Beskyt mod selvsletning — admin kan ikke slette sig selv
