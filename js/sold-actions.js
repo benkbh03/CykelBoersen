@@ -1,4 +1,4 @@
-import { esc } from './utils.js';
+import { esc, beskedFejl } from './utils.js';
 
 export function createSoldActions({ supabase, getCurrentUser, showToast, reloadMyListings, loadBikes, updateFilterCounts, openUserProfileWithReview }) {
   async function markBikeSold(bikeId, buyerId, buyerName) {
@@ -12,12 +12,23 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
     if (err) { showToast('Kunne ikke markere som solgt', 'fejl'); return; }
 
     if (buyerId) {
-      await supabase.from('messages').insert({
+      /* Se noten i js/inbox.js: uden denne besked kan handlen aldrig
+         vurderes, fordi hasTraded leder efter netop den. */
+      const { error: bekraeftErr } = await supabase.from('messages').insert({
         bike_id: bikeId,
         sender_id: currentUser.id,
         receiver_id: buyerId,
+        /* ✅ SKAL staa forrest. require_trade_before_review i
+           harden_profile_insert_and_reviews.sql matcher
+           content ILIKE '✅%accepteret%'. Uden den afviser databasen
+           anmeldelsen bagefter, og handlen kan aldrig vurderes.
+           Det her er en protokol, ikke pynt. */
         content: '✅ Handel bekræftet og accepteret! Tak for handlen – I kan nu vurdere hinanden.',
       });
+      if (bekraeftErr) {
+        const f = beskedFejl(bekraeftErr, 'Annoncen er markeret som solgt, men bekraeftelsen kunne ikke sendes');
+        showToast(f.tekst, f.type);
+      }
       reloadMyListings(); loadBikes(); updateFilterCounts();
       openUserProfileWithReview(buyerId);
     } else {

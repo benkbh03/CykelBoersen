@@ -256,12 +256,22 @@ export function createInbox({
     if (soldErr) { showToast('Kunne ikke markere som solgt', 'fejl'); return; }
 
     const confirmContent = `✅ Bud på ${amount} accepteret! Kontakt hinanden for at aftale overdragelse.`;
-    const { data: inserted } = await supabase.from('messages').insert({
+    /* Fejlen SKAL laeses. Annoncen er allerede sat til solgt ovenfor, saa
+       falder beskeden vaek (suspenderet konto eller rate-limit), staar
+       annoncen som solgt uden at koeberen fik besked. Og fordi hasTraded og
+       require_trade_before_review leder efter praecis denne
+       "accepteret"-besked, kan handlen saa aldrig vurderes. */
+    const { data: inserted, error: bekraeftErr } = await supabase.from('messages').insert({
       bike_id:     thread.bikeId,
       sender_id:   currentUser.id,
       receiver_id: thread.otherId,
       content:     confirmContent,
     }).select('id').single();
+
+    if (bekraeftErr) {
+      const f = beskedFejl(bekraeftErr, 'Annoncen er markeret som solgt, men bekraeftelsen kunne ikke sendes');
+      showToast(f.tekst, f.type);
+    }
 
     if (inserted?.id) {
       supabase.functions.invoke('notify-message', { body: { message_id: inserted.id } }).catch(() => {});

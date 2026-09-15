@@ -46,6 +46,11 @@ CREATE INDEX IF NOT EXISTS moderation_log_created_idx ON moderation_log (created
 
 ALTER TABLE moderation_log ENABLE ROW LEVEL SECURITY;
 
+-- Eksplicit REVOKE oveni. RLS uden politik raekker i dag, men tilfoejer
+-- nogen senere en FOR ALL-politik (det er sket paa saved_bikes), aabner
+-- baade INSERT og DELETE paa én gang.
+REVOKE INSERT, UPDATE, DELETE ON moderation_log FROM anon, authenticated;
+
 -- Kun admins må LÆSE. Ingen INSERT/UPDATE/DELETE-politik: skrivning sker
 -- udelukkende fra edge functions med service-role, og ingen kan redigere
 -- eller slette en logpost bagefter. En log man kan rette i, er ingen log.
@@ -56,112 +61,79 @@ CREATE POLICY moderation_log_admin_select
 
 
 -- ── 2. SUSPENDERING ──────────────────────────────────────────────────
+--
+--  EGEN TABEL, IKKE KOLONNER PAA profiles. Foerste udkast lagde
+--  suspended_until og suspended_reason paa profiles. Det var forkert:
+--  profiles SELECT er `USING (true)`, saa en admins fritekst om en navngiven
+--  person ("mistaenkt for laanesvindel") kunne hentes i bulk med den
+--  offentlige anon-noegle, og hele listen over suspenderede brugere var
+--  scrapbar. Det er praecis det gentagne moenster fra CLAUDE.md: en ny
+--  foelsom kolonne paa profiles bliver offentlig samme dag.
+--
+--  Her er der ingen offentlig SELECT. Kun admin, og den suspenderede selv,
+--  kan se raekken. Sidstnaevnte fordi de skal kunne se HVORFOR.
 
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspended_until  timestamptz;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspended_reason text;
+CREATE TABLE IF NOT EXISTS user_suspensions (
+  user_id    uuid        PRIMARY KEY,   -- bevidst uden FK: skal overleve sletning
+  until      timestamptz NOT NULL,
+  reason     text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  created_by uuid
+);
 
-CREATE INDEX IF NOT EXISTS profiles_suspended_idx
-  ON profiles (suspended_until) WHERE suspended_until IS NOT NULL;
+CREATE INDEX IF NOT EXISTS user_suspensions_until_idx ON user_suspensions (until);
 
-/* De to nye kolonner SKAL med i protect_privileged_profile_columns, ellers
-   kan en suspenderet bruger simpelthen fjerne sin egen suspendering med et
-   almindeligt profil-UPDATE. Funktionen genskabes derfor i sin helhed
-   nedenfor; alt andet i den er uændret fra harden_profile_insert_and_reviews.sql. */
-CREATE OR REPLACE FUNCTION protect_privileged_profile_columns()
-RETURNS trigger AS $$
-DECLARE
-  is_admin_caller boolean;
-BEGIN
-  -- service-role har auth.uid() = NULL og må alt (edge functions)
-  IF auth.uid() IS NULL THEN
-    RETURN NEW;
-  END IF;
+ALTER TABLE user_suspensions ENABLE ROW LEVEL SECURITY;
 
-  SELECT COALESCE(p.is_admin, false) INTO is_admin_caller
-  FROM profiles p WHERE p.id = auth.uid();
+-- Ingen INSERT/UPDATE/DELETE-politik: kun service-role skriver.
+REVOKE INSERT, UPDATE, DELETE ON user_suspensions FROM anon, authenticated;
 
-  IF is_admin_caller THEN
-    RETURN NEW;
-  END IF;
+DROP POLICY IF EXISTS user_suspensions_admin_select ON user_suspensions;
+CREATE POLICY user_suspensions_admin_select
+  ON user_suspensions FOR SELECT
+  USING (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.is_admin));
 
-  IF TG_OP = 'INSERT' THEN
-    NEW.is_admin    := false;
-    NEW.verified    := false;
-    NEW.id_verified := false;
-    NEW.email_verified := COALESCE(
-      (SELECT u.email_confirmed_at IS NOT NULL FROM auth.users u WHERE u.id = NEW.id),
-      false);
-    NEW.stripe_customer_id         := NULL;
-    NEW.stripe_subscription_status := NULL;
-    -- Nyt: en ny konto kan ikke fødes ususpenderet hvis nogen prøver at
-    -- sætte feltet selv. Den kan heller ikke føde sig selv suspenderet,
-    -- men det er der ingen grund til at forhindre.
-    NEW.suspended_until  := NULL;
-    NEW.suspended_reason := NULL;
-    RETURN NEW;
-  END IF;
+-- Den suspenderede skal kunne se sin egen begrundelse, ellers ved de ikke hvorfor.
+DROP POLICY IF EXISTS user_suspensions_self_select ON user_suspensions;
+CREATE POLICY user_suspensions_self_select
+  ON user_suspensions FOR SELECT
+  USING (user_id = auth.uid());
 
-  IF NEW.is_admin       IS DISTINCT FROM OLD.is_admin       THEN RAISE EXCEPTION 'Kan ikke ændre is_admin'; END IF;
-  IF NEW.id_verified    IS DISTINCT FROM OLD.id_verified    THEN RAISE EXCEPTION 'Kan ikke ændre id_verified'; END IF;
-
-  -- Nyt: kun admin og service-role må røre suspenderingen.
-  IF NEW.suspended_until  IS DISTINCT FROM OLD.suspended_until  THEN RAISE EXCEPTION 'Kan ikke ændre suspended_until'; END IF;
-  IF NEW.suspended_reason IS DISTINCT FROM OLD.suspended_reason THEN RAISE EXCEPTION 'Kan ikke ændre suspended_reason'; END IF;
-
-  IF NEW.email_verified IS DISTINCT FROM OLD.email_verified THEN
-    IF NEW.email_verified = true THEN
-      IF NOT EXISTS (SELECT 1 FROM auth.users WHERE id = NEW.id AND email_confirmed_at IS NOT NULL) THEN
-        RAISE EXCEPTION 'Kan ikke selv-sætte email_verified uden faktisk bekræftelse';
-      END IF;
-    ELSE
-      RAISE EXCEPTION 'Kan ikke fjerne email_verified';
-    END IF;
-  END IF;
-
-  IF NEW.verified IS DISTINCT FROM OLD.verified AND NEW.verified = true THEN
-    RAISE EXCEPTION 'Kan ikke selv-promovere til verificeret forhandler';
-  END IF;
-
-  IF NEW.seller_type IS DISTINCT FROM OLD.seller_type THEN
-    IF NOT (COALESCE(OLD.seller_type, 'private') = 'private' AND NEW.seller_type = 'dealer') THEN
-      RAISE EXCEPTION 'Kan ikke ændre seller_type';
-    END IF;
-  END IF;
-
-  IF NEW.stripe_customer_id         IS DISTINCT FROM OLD.stripe_customer_id         THEN RAISE EXCEPTION 'Kan ikke ændre stripe_customer_id'; END IF;
-  IF NEW.stripe_subscription_status IS DISTINCT FROM OLD.stripe_subscription_status THEN RAISE EXCEPTION 'Kan ikke ændre stripe_subscription_status'; END IF;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-DROP TRIGGER IF EXISTS protect_profile_columns ON profiles;
-CREATE TRIGGER protect_profile_columns
-  BEFORE INSERT OR UPDATE ON profiles
-  FOR EACH ROW EXECUTE FUNCTION protect_privileged_profile_columns();
-
-
-/* Hjælper til politikkerne. SECURITY DEFINER fordi en suspenderet bruger
-   godt må kunne LÆSE sin egen profil, men politikken skal kunne slå op i
-   den uden at være afhængig af den kaldendes egne rettigheder. */
+/* pg_temp med i search_path: PostgreSQL soeger det midlertidige skema foerst
+   for relationsnavne, saa en pg_temp.user_suspensions ville kunne kapre
+   opslaget. Der er ingen kendt vej til at oprette temp-tabeller gennem
+   PostgREST i dag, saa det er haerdning, ikke et hul. */
 CREATE OR REPLACE FUNCTION is_suspended(uid uuid)
 RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER
-SET search_path = public
+SET search_path = public, pg_temp
 AS $$
-  SELECT COALESCE(
-    (SELECT suspended_until > now() FROM profiles WHERE id = uid),
-    false);
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_suspensions
+     WHERE user_id = uid AND until > now()
+  );
 $$;
 
-/* En suspenderet bruger kan stadig logge ind, læse sine egne beskeder og
-   se sine annoncer. Det er med vilje: de skal kunne se hvorfor, og de skal
-   kunne nå deres egne data. De kan bare ikke SKRIVE til nogen. */
+-- Funktionen eksponeres ellers automatisk som /rest/v1/rpc/is_suspended og
+-- ville vaere et boolean-orakel paa enhver bruger.
+REVOKE EXECUTE ON FUNCTION is_suspended(uuid) FROM anon, authenticated;
+
+/* En suspenderet bruger kan stadig logge ind, laese sine egne beskeder og se
+   sine annoncer. De kan bare ikke SKRIVE noget andre ser.
+
+   Foerste udkast daekkede kun tre INSERT-stier. Det var for lidt: en
+   suspenderet svindler kunne stadig omskrive beskrivelsen paa sine aktive
+   annoncer til "ring paa 12 34 56 78", uploade nye billeder og boost'e
+   annoncen til toppen. Annoncerteksten er den faktiske svindelflade. */
 DROP POLICY IF EXISTS "Indlogget bruger kan sende besked" ON messages;
 CREATE POLICY "Indlogget bruger kan sende besked"
   ON messages FOR INSERT
   WITH CHECK (auth.uid() = sender_id AND NOT is_suspended(auth.uid()));
 
+/* COALESCE(p.seller_type, 'private') SKAL med. Uden den giver
+   p.seller_type <> 'dealer' NULL naar feltet er NULL, OR p.verified (false)
+   giver NULL, EXISTS finder ingen raekke, og brugeren kan tavst ikke oprette
+   annoncer. Originalen staar i block_pending_dealer_listings.sql. */
 DROP POLICY IF EXISTS bikes_insert_verified_only ON bikes;
 CREATE POLICY bikes_insert_verified_only
   ON bikes FOR INSERT
@@ -169,10 +141,24 @@ CREATE POLICY bikes_insert_verified_only
     auth.uid() = user_id
     AND NOT is_suspended(auth.uid())
     AND EXISTS (
-      SELECT 1 FROM profiles p
+      SELECT 1 FROM public.profiles p
        WHERE p.id = auth.uid()
-         AND (p.seller_type <> 'dealer' OR p.verified)
+         AND (COALESCE(p.seller_type, 'private') <> 'dealer' OR p.verified = true)
     )
+  );
+
+DROP POLICY IF EXISTS "Kun ejer kan redigere annonce" ON bikes;
+CREATE POLICY "Kun ejer kan redigere annonce"
+  ON bikes FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id AND NOT is_suspended(auth.uid()));
+
+DROP POLICY IF EXISTS "Kun ejer kan tilføje billeder" ON bike_images;
+CREATE POLICY "Kun ejer kan tilføje billeder"
+  ON bike_images FOR INSERT
+  WITH CHECK (
+    auth.uid() = (SELECT b.user_id FROM public.bikes b WHERE b.id = bike_images.bike_id)
+    AND NOT is_suspended(auth.uid())
   );
 
 DROP POLICY IF EXISTS "Indlogget bruger kan indsætte" ON reviews;
@@ -197,7 +183,7 @@ CREATE POLICY "Indlogget bruger kan indsætte"
 CREATE OR REPLACE FUNCTION limit_new_conversations()
 RETURNS trigger
 LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   konto_alder   interval;
@@ -208,6 +194,13 @@ BEGIN
   -- service-role (edge functions) er undtaget
   IF auth.uid() IS NULL THEN RETURN NEW; END IF;
 
+  /* SKAL staa foerst. created_at er klient-sat ved INSERT (kun UPDATE blev
+     revoked i harden_messages_and_reviews.sql), saa en angriber kunne sende
+     created_at 61 minutter tilbage i hver besked. Taelleren nedenfor fandt
+     saa nul raekker i vinduet, og graensen var fuldstaendig virkningsloes.
+     Lukker samtidig forfalskede tidsstempler i indbakken. */
+  NEW.created_at := now();
+
   SELECT now() - created_at INTO konto_alder
     FROM profiles WHERE id = NEW.sender_id;
 
@@ -217,20 +210,33 @@ BEGIN
     ELSE 20
   END;
 
-  -- Kun NYE samtaler tælles. Et svar i en igangværende tråd er aldrig spam,
-  -- og en sælger der svarer tyve købere skal ikke bremses.
+  /* Kun NYE samtaler taelles. BEGGE retninger: skrev koeberen foerst, er
+     saelgerens svar ikke en ny samtale. Foerste udkast saa kun
+     sender -> receiver, saa en ny forhandler der besvarede fem henvendelser
+     paa en aften blev blokeret, stik imod hensigten. */
   SELECT NOT EXISTS (
     SELECT 1 FROM messages
-     WHERE sender_id = NEW.sender_id
-       AND receiver_id = NEW.receiver_id
+     WHERE (sender_id = NEW.sender_id   AND receiver_id = NEW.receiver_id)
+        OR (sender_id = NEW.receiver_id AND receiver_id = NEW.sender_id)
   ) INTO er_ny_samtale;
 
   IF NOT er_ny_samtale THEN RETURN NEW; END IF;
 
-  SELECT count(DISTINCT receiver_id) INTO modtagere
-    FROM messages
-   WHERE sender_id  = NEW.sender_id
-     AND created_at > now() - interval '1 hour';
+  /* Taeller kun modtagere som afsenderen ALDRIG har vaeret i kontakt med
+     foer den seneste time. Uden det undtag ville en travl saelgers
+     igangvaerende traade taelle med og bremse dem. */
+  SELECT count(*) INTO modtagere FROM (
+    SELECT DISTINCT m.receiver_id
+      FROM messages m
+     WHERE m.sender_id  = NEW.sender_id
+       AND m.created_at > now() - interval '1 hour'
+       AND NOT EXISTS (
+         SELECT 1 FROM messages tidligere
+          WHERE tidligere.created_at <= now() - interval '1 hour'
+            AND ((tidligere.sender_id = NEW.sender_id AND tidligere.receiver_id = m.receiver_id)
+              OR (tidligere.sender_id = m.receiver_id AND tidligere.receiver_id = NEW.sender_id))
+       )
+  ) AS nye;
 
   IF modtagere >= graense THEN
     -- Beskeden vises til brugeren. Hold den forståelig og uden bebrejdelse:
