@@ -167,6 +167,124 @@ CREATE POLICY "Indlogget bruger kan indsætte"
   WITH CHECK (auth.uid() = reviewer_id AND NOT is_suspended(auth.uid()));
 
 
+-- ── 2b. OPRYDNING EFTER FØRSTE VERSION ───────────────────────────────
+--
+--  Kun relevant hvis du nåede at køre den FØRSTE udgave af denne fil
+--  (commit a8db0b79). Den lagde suspended_until og suspended_reason som
+--  kolonner på profiles, hvor SELECT er USING (true). Afsnittet her flytter
+--  eventuelle data over og fjerner kolonnerne igen.
+--
+--  Har du aldrig kørt den version, gør hele afsnittet ingenting.
+--
+--  RÆKKEFØLGEN ER IKKE TILFÆLDIG. Den gamle udgave lagde to linjer ind i
+--  protect_privileged_profile_columns der henviser til NEW.suspended_until
+--  og NEW.suspended_reason. Droppes kolonnerne FØR triggeren er skrevet
+--  tilbage, fejler hver eneste INSERT og UPDATE på profiles med
+--  "record NEW has no field suspended_until". Og fordi appen skriver
+--  last_seen ved hver session, ville det ramme hver eneste indloggede
+--  bruger med det samme.
+
+DO $upgrade$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = 'profiles'
+       AND column_name = 'suspended_until'
+  ) THEN
+    -- 1) Red data over. Ingen havde nået at blive suspenderet da dette blev
+    --    skrevet, men koden må ikke antage det.
+    INSERT INTO user_suspensions (user_id, until, reason)
+    SELECT id, suspended_until, suspended_reason
+      FROM profiles
+     WHERE suspended_until IS NOT NULL
+    ON CONFLICT (user_id) DO NOTHING;
+
+    RAISE NOTICE 'Flyttede % suspendering(er) fra profiles til user_suspensions',
+      (SELECT count(*) FROM profiles WHERE suspended_until IS NOT NULL);
+  END IF;
+END
+$upgrade$;
+
+-- 2) Skriv triggeren tilbage til sin oprindelige form UDEN de to linjer om
+--    suspended_*. Ordret som i harden_profile_insert_and_reviews.sql.
+CREATE OR REPLACE FUNCTION protect_privileged_profile_columns()
+RETURNS trigger AS $$
+DECLARE
+  is_admin_caller boolean;
+BEGIN
+  -- service-role har auth.uid() = NULL og må alt (edge functions)
+  IF auth.uid() IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  -- Slår op i profiles. Ved en INSERT fra en ny bruger findes rækken endnu
+  -- ikke, så resultatet er NULL, og NULL er ikke true — den falder korrekt
+  -- igennem til begrænsningerne nedenfor.
+  SELECT COALESCE(p.is_admin, false) INTO is_admin_caller
+  FROM profiles p WHERE p.id = auth.uid();
+
+  IF is_admin_caller THEN
+    RETURN NEW;
+  END IF;
+
+  IF TG_OP = 'INSERT' THEN
+    NEW.is_admin    := false;
+    NEW.verified    := false;
+    NEW.id_verified := false;
+    -- email_verified afledes af den faktiske tilstand i auth.users frem for
+    -- at blive nulstillet: en OAuth-bruger har allerede bekræftet sin mail
+    -- på oprettelsestidspunktet, og sync-triggeren på auth.users fyrer kun
+    -- ved UPDATE og ville derfor ikke nå at rette det bagefter.
+    NEW.email_verified := COALESCE(
+      (SELECT u.email_confirmed_at IS NOT NULL FROM auth.users u WHERE u.id = NEW.id),
+      false);
+    NEW.stripe_customer_id         := NULL;
+    NEW.stripe_subscription_status := NULL;
+    RETURN NEW;
+  END IF;
+
+  -- ── Herfra: uændret UPDATE-logik ──
+  IF NEW.is_admin       IS DISTINCT FROM OLD.is_admin       THEN RAISE EXCEPTION 'Kan ikke ændre is_admin'; END IF;
+  IF NEW.id_verified    IS DISTINCT FROM OLD.id_verified    THEN RAISE EXCEPTION 'Kan ikke ændre id_verified'; END IF;
+
+  IF NEW.email_verified IS DISTINCT FROM OLD.email_verified THEN
+    IF NEW.email_verified = true THEN
+      IF NOT EXISTS (SELECT 1 FROM auth.users WHERE id = NEW.id AND email_confirmed_at IS NOT NULL) THEN
+        RAISE EXCEPTION 'Kan ikke selv-sætte email_verified uden faktisk bekræftelse';
+      END IF;
+    ELSE
+      RAISE EXCEPTION 'Kan ikke fjerne email_verified';
+    END IF;
+  END IF;
+
+  IF NEW.verified IS DISTINCT FROM OLD.verified AND NEW.verified = true THEN
+    RAISE EXCEPTION 'Kan ikke selv-promovere til verificeret forhandler';
+  END IF;
+
+  IF NEW.seller_type IS DISTINCT FROM OLD.seller_type THEN
+    IF NOT (COALESCE(OLD.seller_type, 'private') = 'private' AND NEW.seller_type = 'dealer') THEN
+      RAISE EXCEPTION 'Kan ikke ændre seller_type';
+    END IF;
+  END IF;
+
+  IF NEW.stripe_customer_id         IS DISTINCT FROM OLD.stripe_customer_id         THEN RAISE EXCEPTION 'Kan ikke ændre stripe_customer_id'; END IF;
+  IF NEW.stripe_subscription_status IS DISTINCT FROM OLD.stripe_subscription_status THEN RAISE EXCEPTION 'Kan ikke ændre stripe_subscription_status'; END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS protect_profile_columns ON profiles;
+CREATE TRIGGER protect_profile_columns
+  BEFORE INSERT OR UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION protect_privileged_profile_columns();
+
+-- 3) Først NU er det sikkert at fjerne kolonnerne.
+DROP INDEX IF EXISTS profiles_suspended_idx;
+ALTER TABLE profiles DROP COLUMN IF EXISTS suspended_until;
+ALTER TABLE profiles DROP COLUMN IF EXISTS suspended_reason;
+
+
 -- ── 3. GRÆNSE PÅ NYE SAMTALER ────────────────────────────────────────
 --
 --  Hvorfor en trigger og ikke en politik: en politik kan kun se den række
