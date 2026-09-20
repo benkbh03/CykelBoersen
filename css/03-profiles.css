@@ -581,12 +581,15 @@
 }
 
 /* Premium-look for verified dealers på bike-cards */
+/* Stod paa #d4edda og #1b5e20 med !important, altsaa to groenne mere der
+   ikke findes i paletten. Forskellen paa en verificeret og en almindelig
+   forhandler skal ligge i vaegt og kant, ikke i en helt ny kuloer. */
 .badge-dealer-verified {
-  background: #d4edda !important;
-  color: #1b5e20 !important;
+  background: var(--surface-forest) !important;
+  color: var(--forest) !important;
   font-weight: 700;
   letter-spacing: 0.01em;
-  border: 1px solid rgba(27,94,32,0.2);
+  border: 1px solid rgba(42,61,46,0.35);
 }
 
 /* Forhandler-leads banner på Min Konto */

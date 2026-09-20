@@ -1,11 +1,17 @@
 /* ── BADGES ── */
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border-radius: 100px;
-  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px;
+  padding: 3px 10px; border-radius: 4px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
 }
-.badge-dealer  { background: #E8F0E8; color: var(--forest); }
-.badge-private { background: #FBF0E8; color: #8A4A20; }
+/* Stod paa to pastelfarver der ikke findes i paletten (#E8F0E8 og #FBF0E8),
+   og "Privat" i brunorange laeste naesten som en advarsel. En privat saelger
+   er ikke en advarsel. Nu samme farvefamilie, hvor forskellen er vaegt og
+   ikke kuloer: forhandler faar husets groen, privat er neutral.
+   Bruges ni steder: profilsider, profilmodaler, maerkesider, kategorisider
+   og annoncesiden. Annoncekortet bruger .card-seller-id i stedet, se der. */
+.badge-dealer  { background: var(--surface-forest); color: var(--forest); border: 1px solid rgba(42,61,46,0.16); }
+.badge-private { background: var(--surface-sand);   color: var(--muted);  border: 1px solid var(--border); }
 
 /* ── LISTINGS HEADER ── */
 .listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
@@ -340,6 +346,27 @@
 .card-seller-details { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .card-seller-top {
   display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+  min-width: 0;
+}
+/* Variant F: ikonet baerer saelgertypen, navnet baerer identiteten, paa ÉN
+   linje. nowrap og min-width:0 er begge noedvendige: uden nowrap havner
+   ikonet paa sin egen linje over navnet saa snart butiksnavnet er langt,
+   og uden min-width:0 naegter flex-barnet at krympe, saa ellipsen aldrig
+   udloeses og kortet i stedet bliver for bredt. */
+.card-seller-id {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex-wrap: nowrap; min-width: 0; flex: 1;
+}
+.card-seller-ikon { display: inline-flex; align-items: center; color: var(--muted); flex-shrink: 0; }
+.card-seller-ikon.er-forhandler { color: var(--forest); }
+/* Fluebenet er 18 px med 2 px kant, altsaa 22 px ved siden af 0,78 rem tekst.
+   Paa et to-kolonne-kort paa mobil aad det saa meget at "Cykelhuset
+   Frederiksberg" blev til "Cykelh…". Navnet vejer tungere end fluebenet:
+   man kan ikke bruge "verificeret" til noget foer man ved HVEM det er, og
+   fluebenet staar i fuld stoerrelse paa annoncesiden. */
+.card-seller-id .verified-badge {
+  width: 14px; height: 14px; font-size: 0.5rem;
+  border-width: 1px; margin-left: 0; flex-shrink: 0;
 }
 /* Stelnummer-skjold paa annoncekortet. Vises kun naar saelgeren har oplyst et
    nummer, og kun som ikon — teksten staar i fuld laengde paa annoncesiden.
@@ -349,7 +376,7 @@
   display: inline-flex; align-items: center; justify-content: center;
   width: 20px; height: 20px; flex-shrink: 0;
   border-radius: 50%;
-  background: #E8F0E8; color: var(--forest);
+  background: var(--surface-forest); color: var(--forest);
   cursor: help;
 }
 .card-seller-bottom {
@@ -357,7 +384,8 @@
 }
 .seller-name {
   font-size: 0.78rem; color: var(--charcoal); font-weight: 600;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  min-width: 0;   /* uden denne krymper flex-barnet ikke, og ellipsen udloeses aldrig */
 }
 .card-location {
   font-size: 0.74rem; color: var(--muted); white-space: nowrap;
