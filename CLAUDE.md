@@ -90,17 +90,37 @@ Supabase Dashboard. Derfor:
 > der lister de præcise filer + trin. Ellers tror brugeren ændringen er live, men
 > den er kun i koden.**
 
-Deploy-tjeklisten skal altid have tre dele (udelad dem der ikke er relevante):
+Deploy-tjeklisten skal altid have fire dele (udelad dem der ikke er relevante):
+
+0. **Kør `supabase/sql/STATUS_TJEK.sql` FØRST.** Ét read-only opslag der viser
+   hvad der faktisk findes i databasen lige nu. Det tager ti sekunder og fjerner
+   al gætteri om hvad der er kørt.
+
+   **Spørg ALTID om resultatet før du skriver en tjekliste.** Den 15. september
+   viste tjekket at brugeren havde kørt en ÆLDRE version af en migration, som
+   havde efterladt to offentligt læsbare kolonner på `profiles`. Det blev kun
+   opdaget fordi tjekket blev kørt; ingen af os havde grund til at tro andet end
+   at filen var ny.
+
+   Er tjekket forældet (ny migration siden sidst), så udvid det i samme ombæring.
 
 1. **SQL** (hvis `supabase/sql/` rørt): "Kopiér indholdet af `supabase/sql/<fil>.sql`
    → Supabase Dashboard → SQL Editor → Run." Indsæt SQL'en inline i svaret så den er
    nem at kopiere. Alle migrationer er idempotente (`IF NOT EXISTS`) = sikre at køre igen.
+
+   **En migration skal kunne opgradere fra sin egen tidligere version.** Ændrer
+   du en fil der allerede kan være kørt, så skriv et afsnit der rydder op efter
+   den gamle udgave, og som gør ingenting hvis den aldrig blev kørt. Pas på
+   rækkefølgen: en trigger der henviser til en kolonne, skal skrives om FØR
+   kolonnen droppes, ellers fejler hver eneste skrivning til tabellen.
 2. **Edge functions** (hvis `supabase/functions/` rørt): list hvilke functions + 
    "Supabase Dashboard → Edge Functions → vælg function → indsæt HELE filens indhold → Deploy."
    Tilbyd at indsætte den komplette aktuelle fil (brugeren copy-paster hele indholdet —
    giv aldrig kun en diff medmindre brugeren bekræfter at den forrige version er deployet).
 3. **Merge + hard-refresh**: github.com/benkbh03/CykelBoersen → Compare & pull request →
    Merge → Ctrl+Shift+R.
+4. **Kør STATUS_TJEK igen bagefter.** Det er kvitteringen. "Det er deployet" er
+   ikke et svar; en række med `OK` er.
 
 **Edge functions der findes (alle kræver manuel deploy):** `notify-message`,
 `notify-saved-searches`, `delete-account`, `chat-support`, `suggest-listing`,
@@ -178,7 +198,7 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | Kontrol kun i frontenden, ikke i databasen | Mange (`hasTraded`, filter-guards, `validateImageFile`) | Delvist lukket med triggere; tjek altid om en ny regel også findes server-side |
 | Sletning der kun rammer rækker, ikke Storage | 3 (`delete-account`, `admin-actions`, `listing-edit`) | Lukket. Samme `emptyPrefix`-mønster begge steder |
 | Samme felt under to navne eller typer i to filer | 2 (`maxWeight`/`maxWeightKg`, `electronicShifting` bool/streng) | Lukket med `normalizeFilters()` i begge matchere |
-| Migration skrevet, committet — og aldrig kørt | 1 (`harden_bike_images_bucket.sql`, åben i to døgn) | Bekræft ALTID med en forespørgsel, ikke med et "det er deployet" |
+| Databasen er ikke i den tilstand koden tror | 2 (`harden_bike_images_bucket.sql` skrevet og aldrig kørt, åben i to døgn · `add_moderation_log_and_suspension.sql` kørt i en ÆLDRE udgave end den i repoet, opdaget 15. sept.) | **Lukket med et værktøj, ikke med god vilje.** `supabase/sql/STATUS_TJEK.sql` er ét read-only opslag der viser hvad der faktisk findes. Kør det FØR du skriver en deploy-tjekliste og IGEN bagefter. Anden forekomst var værre end den første: filen var kørt, så alle antog den var på plads, men den udgave der blev kørt efterlod to offentligt læsbare kolonner på `profiles`. En fil kan være kørt i en forældet version |
 | `el.hidden = true` gør intet, fordi en forfatter-`display` slår browserens `[hidden]`-regel | 2 (`.browse-cat-wrap`, `.fb-arrow`) | Har en klasse en `display`-erklæring OG bliver skjult via `.hidden`, SKAL der være en `[hidden]{display:none !important}` ved siden af. Test på `getComputedStyle(el).display`, ikke på `el.hidden` — egenskaben er sand, mens elementet stadig står på skærmen |
 | Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-`V` stod på `20260830b` og `main.js`' config-import på `20260701t` mens CSS var nået til `w`) | **Lukket.** Versionen står nu KUN på `<html data-asset-v>` i `index.html`; bootstrap'en, `ASSET_VERSION` og `main.js`' config-import læser den derfra. CSS-linkene er stadig literaler (statiske `href`s skal blokere gengivelsen), men bruger samme streng, så én søg-og-erstat i `index.html` rammer alt. Tæl stadig med `grep -c` efter en bump |
 

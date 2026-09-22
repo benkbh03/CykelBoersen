@@ -804,7 +804,10 @@
   .bike-price { font-size: 1.05rem; margin-left: 0; }
   .bike-meta { font-size: 0.72rem; margin-bottom: 8px; }
   .card-footer { padding-top: 8px; }
-  .seller-name { display: none; }
+  /* Var skjult. DET var grunden til at saelgertype-pillen dominerede kortet
+     paa mobil: den stod alene som eneste tekst paa linjen. Med variant F er
+     navnet tilbage, og pillen er vaek. Navnet klipper selv med ellipsis. */
+  .seller-name { font-size: 0.74rem; }
   .dealer-strip { padding: 28px 16px; }
   .dealer-strip h2 { font-size: 1.5rem; }
   .dealer-cards { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -997,7 +1000,7 @@
 .verified-badge {
   display: inline-flex; align-items: center; justify-content: center;
   width: 18px; height: 18px;
-  background: #2A7D4F;
+  background: var(--success);
   border-radius: 50%;
   color: #fff; font-size: 0.6rem;
   font-weight: 700; margin-left: 4px;

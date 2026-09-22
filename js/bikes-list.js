@@ -390,9 +390,26 @@ export function createBikesList({
             <div class="card-footer">
               <div class="seller-avatar">${avatarHtml}</div>
               <div class="card-seller-details">
+                ${/* Saelgertypen laa foer som en selvstaendig farvet pille ("Forhandler"
+                      / "Privat") ved siden af navnet. To ting var galt: pillen brugte
+                      to pastelfarver der ikke findes i paletten, og paa mobil er
+                      .seller-name skjult (05-pages.css), saa pillen stod ALENE som
+                      eneste tekst paa linjen og dominerede kortet.
+
+                      Nu baerer ikonet typen og navnet baerer identiteten, paa én
+                      linje. "Cykelhuset Frederiksberg" siger mere til en koeber end
+                      "Forhandler", og butiksikonet siger stadig at det er en butik.
+
+                      Ikonet ligger i en wrapper der IKKE kan brydes. Laa det som et
+                      soeskende-element i .card-seller-top (som har flex-wrap: wrap),
+                      blev det skubbet op paa sin egen linje over navnet saa snart
+                      butiksnavnet var langt. Kun .seller-name klippes. */''}
                 <div class="card-seller-top">
-                  <span class="seller-name">${esc(sellerName) || 'Ukendt'}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</span>
-                  <span class="badge ${sellerType === 'dealer' ? (profile.verified ? 'badge-dealer badge-dealer-verified' : 'badge-dealer') : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}</span>
+                  <span class="card-seller-id" title="${sellerType === 'dealer' ? 'Forhandler' : 'Privat sælger'}">
+                    <span class="card-seller-ikon${sellerType === 'dealer' ? ' er-forhandler' : ''}" aria-hidden="true">${sellerType === 'dealer' ? iconDealer(12) : iconPrivate(12)}</span>
+                    <span class="seller-name">${esc(sellerName) || 'Ukendt'}</span>
+                    ${profile.verified ? '<span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}
+                  </span>
                   ${/* Kun naar saelgeren FAKTISK har oplyst et nummer. Vises som
                         rent ikon med title, saa det ikke stjaeler plads fra
                         saelgerens navn — teksten staar i fuld laengde paa
