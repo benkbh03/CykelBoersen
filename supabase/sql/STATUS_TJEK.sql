@@ -10,6 +10,12 @@
 --
 --  Læs kolonnen STATUS. Alt skal stå OK. Står der MANGLER, er den
 --  migration ikke kørt endnu.
+--
+--  HVAD DEN IKKE KAN SVARE PÅ: om en edge function er deployet. Det står
+--  ikke i databasen, og der findes ingen forespørgsel der afslører det.
+--  Edge functions skal tjekkes i Supabase Dashboard → Edge Functions, hvor
+--  hver function viser sin seneste deploy-dato. Sammenlign den med datoen
+--  på den seneste commit der rørte `supabase/functions/<navn>/index.ts`.
 
 SELECT * FROM (
 
@@ -18,12 +24,19 @@ SELECT * FROM (
          CASE WHEN to_regclass('public.moderation_log')   IS NOT NULL THEN 'OK' ELSE 'MANGLER' END AS status
   UNION ALL SELECT 2, 'moderation', 'tabel user_suspensions',
          CASE WHEN to_regclass('public.user_suspensions') IS NOT NULL THEN 'OK' ELSE 'MANGLER' END
-  UNION ALL SELECT 3, 'moderation', 'funktion is_suspended()',
-         CASE WHEN EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'is_suspended')
-              THEN 'OK' ELSE 'MANGLER' END
-  UNION ALL SELECT 4, 'moderation', 'funktion limit_new_conversations()',
-         CASE WHEN EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'limit_new_conversations')
-              THEN 'OK' ELSE 'MANGLER' END
+  -- "Findes" er IKKE nok. Den 15. september stod der OK her, mens funktionen
+  -- var den GAMLE udgave der laeste profiles.suspended_until. Tjekket loej
+  -- ikke, det spurgte bare om det forkerte. Nu laeses selve kroppen.
+  UNION ALL SELECT 3, 'moderation', 'funktion is_suspended() laeser user_suspensions',
+         COALESCE((SELECT CASE WHEN prosrc LIKE '%user_suspensions%' THEN 'OK'
+                               ELSE 'GAMMEL VERSION (laeser profiles)' END
+                     FROM pg_proc WHERE proname = 'is_suspended' LIMIT 1), 'MANGLER')
+  -- Uden NEW.created_at := now() kan graensen omgaas ved at sende et
+  -- tidsstempel 61 minutter tilbage. Funktionen ville stadig "findes".
+  UNION ALL SELECT 4, 'moderation', 'limit_new_conversations() laaser created_at',
+         COALESCE((SELECT CASE WHEN prosrc LIKE '%created_at := now()%' THEN 'OK'
+                               ELSE 'GAMMEL VERSION (kan omgaas)' END
+                     FROM pg_proc WHERE proname = 'limit_new_conversations' LIMIT 1), 'MANGLER')
   UNION ALL SELECT 5, 'moderation', 'trigger paa messages',
          CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
                             WHERE tgname = 'limit_new_conversations_trg' AND NOT tgisinternal)
@@ -36,6 +49,14 @@ SELECT * FROM (
                      FROM pg_policies
                     WHERE schemaname = 'public'
                       AND with_check LIKE '%is_suspended%'), 'MANGLER')
+
+  -- Foerste udgave af moderations-migrationen lagde dem paa profiles, hvor
+  -- SELECT er USING (true). Ligger de der endnu, er oprydningen ikke koert.
+  UNION ALL SELECT 7, 'moderation', 'suspended_* fjernet fra profiles',
+         CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns
+                            WHERE table_schema = 'public' AND table_name = 'profiles'
+                              AND column_name LIKE 'suspended%')
+              THEN 'MANGLER (ligger stadig offentligt paa profiles)' ELSE 'OK' END
 
   -- ── add_anon_rate_limits.sql (8. september) ────────────────────────
   UNION ALL SELECT 10, 'rate-limit', 'tabel rate_limits_anon',
