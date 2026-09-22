@@ -37,6 +37,7 @@ import { createRealtimeNotifications } from './js/realtime-notifications.js';
 import { createShareActions } from './js/share-actions.js';
 import { createBoostModule } from './js/listing-boost.js';
 import { setMainView, showDetailView, showListingView as _baseShowListingView } from './js/view-switcher.js';
+import { hydrerLanding } from './js/landing-hydrate.js';
 import { createSoldActions } from './js/sold-actions.js';
 import { createQuickReplies } from './js/quick-replies.js';
 import { createEmailConfirmationActions } from './js/email-confirmation.js';
@@ -102,9 +103,11 @@ function lazyExport(loader, exportName) {
   };
 }
 
-/* showListingView wrapper med SEO-cleanup deps */
+/* showListingView wrapper med SEO-cleanup deps.
+   Returnerer et løfte: på en prerendret underside skal forsidens markup
+   hentes, før der er noget at vise. */
 function showListingView() {
-  return _baseShowListingView({ updateSEOMeta, removeBikeJsonLd });
+  return _baseShowListingView({ updateSEOMeta, removeBikeJsonLd, sikrForside });
 }
 
 /* Support-chat: stub window-funktioner der lazy-loader modulet ved første klik.
@@ -563,6 +566,7 @@ const _ensureBikeDetail = lazyCtrl(
   () => ({
     supabase, showToast, esc, safeAvatarUrl, getInitials, formatLastSeen, formatRelativeAge,
     haversineKm, BASE_URL, removeBikeJsonLd, updateSEOMeta, retryHTML,
+    showListingView:      (...args) => showListingView(...args),
     stableOffset, bikeCache, geocodeAddress, geocodeCity, transformImageUrl,
     openUserProfile,
     openDealerProfile,
@@ -970,42 +974,43 @@ async function injectModalPartials() {
   }
 }
 
-async function init() {
-  // Injicér modal-partials FØR alt andet — modaler skal være i DOM før
-  // routing/auth kan forsøge at åbne dem. Same-origin statisk fil = pålidelig.
-  await injectModalPartials();
+/* ══════════════════════════════════════════════════════════════════
+   initLandingUI — alt der binder sig til forsidens markup
 
-  // Cookie consent banner — vis hvis brugeren ikke har valgt endnu
-  import(`./js/cookie-banner.js?v=${ASSET_VERSION}`).then(({ initCookieBanner, handleCookieChoice, showCookieBannerAgain }) => {
-    window.handleCookieChoice = handleCookieChoice;
-    window.showCookieBannerAgain = showCookieBannerAgain;
-    initCookieBanner();
-  });
+   Ligger for sig selv fordi forsiden ikke altid er i dokumentet. De
+   prerendrede undersider udelader den (se js/landing-hydrate.js), og så
+   skal handlerne bindes igen når markup'en er hentet. Kaldes derfor to
+   steder: fra init() ved sideindlæsning, og fra sikrForside() efter
+   hydrering.
+
+   Skal være idempotent. Kører den to gange på samme DOM, må den ikke
+   dublere listeners eller tegne swatches dobbelt.
+   ══════════════════════════════════════════════════════════════════ */
+function initLandingUI() {
+  const rod = document.getElementById('landing-layout');
+  if (!rod || rod.children.length === 0) return;   // forsiden er ikke her
+  if (rod.dataset.uiKlar === '1') return;          // allerede bundet
+  rod.dataset.uiKlar = '1';
 
   // Rullepile på cykeltype-fanerne når rækken er bredere end feltet
   import(`./js/tab-scroll.js?v=${ASSET_VERSION}`).then(({ initTabScroll }) => {
     initTabScroll();
-  });
+  }).catch(() => {});
 
   // Render sidebar farve-swatches
   import(`./js/color-swatches.js?v=${ASSET_VERSION}`).then(({ renderColorSwatches }) => {
     const colorGrid = document.getElementById('color-filter-grid');
     renderColorSwatches(colorGrid, { filterAttr: 'color', onChange: () => applyFilters() });
-  });
+  }).catch(() => {});
 
-  // Mobil hamburger-menu (top-nav-links skjult på ≤768px)
-  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu, initMobileNavScroll }) => {
-    window.toggleMobileMenu = toggleMobileMenu;
-    window.closeMobileMenu = closeMobileMenu;
-    initMobileMenu();
-    initMobileNavScroll();
-  });
-
-  // Hover-galleri: krydsfader gennem annonce-billeder på desktop
-  import(`./js/card-hover-gallery.js?v=${ASSET_VERSION}`).then(({ initCardHoverGallery }) => {
-    initCardHoverGallery();
-    initNavSearch();
-  });
+  // Render "Sidst set"-sektion (lazy import — kun hvis bruger har localStorage-data)
+  import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(({ renderRecentlyViewedSection, clearRecentlyViewed }) => {
+    renderRecentlyViewedSection('recently-viewed');
+    window.clearRecentlyViewedSection = () => {
+      clearRecentlyViewed();
+      renderRecentlyViewedSection('recently-viewed');
+    };
+  }).catch(() => {});
 
   // By/postnummer-autocomplete + radius-søg på hero-søgefeltet
   const searchCityInput  = document.getElementById('search-city');
@@ -1085,6 +1090,51 @@ async function init() {
     }
     updateClearBtn();
   }
+}
+
+/**
+ * Sikrer at forsidens markup står i DOM og at dens handlere er bundet.
+ * Sendes til showListingView som dep, så hvert klik hjem fra en prerendret
+ * underside henter partialen først.
+ */
+function sikrForside() {
+  return hydrerLanding(ASSET_VERSION, () => {
+    initLandingUI();
+    loadBikes();          // gitteret er tomt — fyld det
+    loadInitialData();    // filtertællere hører til sidebaren
+  });
+}
+
+async function init() {
+  // Injicér modal-partials FØR alt andet — modaler skal være i DOM før
+  // routing/auth kan forsøge at åbne dem. Same-origin statisk fil = pålidelig.
+  await injectModalPartials();
+
+  // Cookie consent banner — vis hvis brugeren ikke har valgt endnu
+  import(`./js/cookie-banner.js?v=${ASSET_VERSION}`).then(({ initCookieBanner, handleCookieChoice, showCookieBannerAgain }) => {
+    window.handleCookieChoice = handleCookieChoice;
+    window.showCookieBannerAgain = showCookieBannerAgain;
+    initCookieBanner();
+  });
+
+  // Forsidens egne handlere. På forsiden er markup'en der fra start, så det
+  // her kører med det samme; på en prerendret underside kører det igen når
+  // brugeren klikker hjem og markup'en er hentet.
+  initLandingUI();
+
+  // Mobil hamburger-menu (top-nav-links skjult på ≤768px)
+  import(`./js/mobile-menu.js?v=${ASSET_VERSION}`).then(({ initMobileMenu, toggleMobileMenu, closeMobileMenu, initMobileNavScroll }) => {
+    window.toggleMobileMenu = toggleMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+    initMobileMenu();
+    initMobileNavScroll();
+  });
+
+  // Hover-galleri: krydsfader gennem annonce-billeder på desktop
+  import(`./js/card-hover-gallery.js?v=${ASSET_VERSION}`).then(({ initCardHoverGallery }) => {
+    initCardHoverGallery();
+    initNavSearch();
+  });
 
   // Start offentlig data med det samme – venter ikke på auth
   const sessionPromise = supabase.auth.getSession();
@@ -2420,15 +2470,20 @@ function handleRoute() {
     // Tilbehør-kategorien aktiv. setBrowseCategory sætter også titel/meta + URL.
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
-    showListingView();
-    setBrowseCategory('tilbehoer');
-    import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
+    // Begge grene venter på showListingView. Kommer man fra en prerendret
+    // underside, er forsidens markup ikke i dokumentet endnu, og både
+    // setBrowseCategory og "Sidst set" skriver ind i den.
+    showListingView().then(() => {
+      setBrowseCategory('tilbehoer');
+      import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
+    });
   } else {
-    showListingView();
-    // Kommer man til '/' mens tilbehør er aktiv (fx logo-klik), nulstil til cykel.
-    if (_browseCategory === 'tilbehoer') setBrowseCategory('cykel');
-    // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
-    import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
+    showListingView().then(() => {
+      // Kommer man til '/' mens tilbehør er aktiv (fx logo-klik), nulstil til cykel.
+      if (_browseCategory === 'tilbehoer') setBrowseCategory('cykel');
+      // Genrenderér "Sidst set" så listen opdateres efter en bike-modal/detail-visit
+      import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
+    });
   }
 }
 

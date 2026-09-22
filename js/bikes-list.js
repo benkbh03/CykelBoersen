@@ -110,7 +110,7 @@ export function createBikesList({
     if (!append) {
       setBikesOffset(0);
       setCurrentFilters(filters);
-      grid.innerHTML = Array(6).fill(`
+      if (grid) grid.innerHTML = Array(6).fill(`
         <div class="bike-card skeleton-card">
           <div class="skeleton-img"></div>
           <div class="skeleton-body">
@@ -205,7 +205,7 @@ export function createBikesList({
 
     if (error) {
       console.error('loadBikes fejl:', error);
-      if (!append) grid.innerHTML = '<p style="color:var(--rust);padding:20px">Kunne ikke hente annoncer.</p>';
+      if (!append && grid) grid.innerHTML = '<p style="color:var(--rust);padding:20px">Kunne ikke hente annoncer.</p>';
       return;
     }
 
@@ -298,6 +298,10 @@ export function createBikesList({
 
   function renderBikes(bikes, append = false, saveCounts = {}, localUserSavedSet = new Set()) {
     const grid = document.getElementById('listings-grid');
+    // Prerendrede undersider sender ikke forsidens markup med (se
+    // js/landing-hydrate.js). Data hentes stadig — _userSavedSet skal være
+    // varm til profil- og kort-visninger — men der er intet gitter at tegne i.
+    if (!grid) return;
 
     if (!append && (!bikes || bikes.length === 0)) {
       grid.innerHTML = renderListingsEmptyState();
@@ -485,7 +489,7 @@ export function createBikesList({
         suspensions, geartypes, stepTypes,
         maxWeight, city, search, giveaway, category,
       });
-      grid.innerHTML    = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
+      if (grid) grid.innerHTML = '<p style="color:var(--muted);padding:20px">Henter annoncer...</p>';
       const old = document.getElementById('load-more-btn');
       if (old) old.remove();
     }
@@ -574,7 +578,7 @@ export function createBikesList({
 
     const { data, error } = await query;
     if (error) {
-      grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'applyFilters');
+      if (grid) grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'applyFilters');
       return;
     }
 

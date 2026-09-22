@@ -207,8 +207,19 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
     .join('\n  ');
   html = html.replace('</head>', `  ${ldScripts}\n</head>`);
 
-  // Vis detalje-layout, skjul forside — matcher showDetailView()
-  html = html.replace('<main id="landing-layout">', '<main id="landing-layout" style="display:none;">');
+  /* Forsidens markup ud af undersiden.
+
+     Den lå her i 838 linjer og 71,6 KB, skjult bag display:none og aldrig
+     vist, men Google læste den. Det gav hver side to <h1> med forsidens
+     først, så /om-os/ meldte sig som "Find din næste cykel på Cykelbørsen",
+     og 612 ord var ordret ens på alle 218 sider. Search Console svarede med
+     188 sider under "Alternate page with proper canonical tag".
+
+     Markup'en skrives i stedet til partials/landing.html (se
+     skrivLandingPartial) og hentes af js/landing-hydrate.js når brugeren
+     klikker hjem. Elementet selv bliver stående tomt: showListingView og
+     showDetailView slår display på netop det id. */
+  html = fjernLandingMarkup(html);
   html = html.replace(
     '<div id="page-layout" style="display:none;">',
     '<div id="page-layout" style="display:block;">'
@@ -226,6 +237,53 @@ function writePage(canonicalPath, html) {
   const dir = join(ROOT, canonicalPath.replace(/^\//, ''));
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'index.html'), html);
+}
+
+/* ---------- Forsiden som partial ---------- */
+
+const LANDING_START = '<main id="landing-layout">';
+const LANDING_SLUT  = '</main><!-- #landing-layout -->';
+
+/** Returnerer forsidens indre markup fra index.html. Kaster hvis den ikke findes. */
+function udtraekLandingMarkup(html) {
+  const a = html.indexOf(LANDING_START);
+  const b = html.indexOf(LANDING_SLUT);
+  if (a < 0 || b < 0 || b < a) {
+    // Hellere et stop end 218 sider der tavst beholder hele forsiden igen.
+    throw new Error(
+      'Kunne ikke finde #landing-layout i index.html. Er markøren ' +
+      `"${LANDING_SLUT}" fjernet? Prerender stoppet.`,
+    );
+  }
+  return html.slice(html.indexOf('>', a) + 1, b);
+}
+
+/** Erstatter forsidens markup med et tomt, skjult element. */
+function fjernLandingMarkup(html) {
+  const a = html.indexOf(LANDING_START);
+  const b = html.indexOf(LANDING_SLUT);
+  if (a < 0 || b < 0 || b < a) throw new Error('Kunne ikke finde #landing-layout i index.html.');
+  return html.slice(0, a)
+       + '<main id="landing-layout" style="display:none;"></main>'
+       + html.slice(b + LANDING_SLUT.length);
+}
+
+/**
+ * Skriver forsiden til partials/landing.html, så js/landing-hydrate.js kan
+ * hente den. Filen er genereret — den må aldrig redigeres i hånden, ellers
+ * har vi to kopier af det samme markup der driver fra hinanden.
+ */
+function skrivLandingPartial(html) {
+  const markup = udtraekLandingMarkup(html);
+  const dir = join(ROOT, 'partials');
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(
+    join(dir, 'landing.html'),
+    '<!-- GENERERET af scripts/prerender.mjs ud fra #landing-layout i index.html.\n' +
+    '     Ret ikke i denne fil. Ret i index.html og kør scripts/prerender.mjs. -->\n' +
+    markup,
+  );
+  return markup.length;
 }
 
 /* ---------- Relaterede mærker (replikerer js/brand-page.js getRelatedBrands) ---------- */
@@ -917,6 +975,11 @@ function staticAppPage({ path, h1, title, description, noindex }) {
 /* ---------- Main ---------- */
 async function main() {
   let count = 0;
+
+  /* Forsiden ud i sin egen fil FØRST. Fejler udtrækket, skal det ske før 218
+     sider er skrevet, ikke efter. */
+  const landingBytes = skrivLandingPartial(TEMPLATE);
+  console.log(`Skrev partials/landing.html (${(landingBytes / 1024).toFixed(1)} KB) — udeladt fra hver prerendret side.`);
 
   /* Annoncerne hentes FØRST, fordi mærke- og kategorisiderne nu linker til dem
      i deres rå HTML. Fejler kaldet, forbliver indekserne tomme, og siderne

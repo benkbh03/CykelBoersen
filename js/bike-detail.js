@@ -42,6 +42,7 @@ export function createBikeDetail({
   BASE_URL,
   removeBikeJsonLd,
   updateSEOMeta,
+  showListingView,
   retryHTML,
   stableOffset,
   bikeCache,
@@ -931,16 +932,14 @@ export function createBikeDetail({
     if (pageLayout)    pageLayout.style.display    = 'block';
   }
 
-  function showListingView() {
-    const landingLayout = document.getElementById('landing-layout');
-    const pageLayout    = document.getElementById('page-layout');
-    if (pageLayout)    pageLayout.style.display    = 'none';
-    if (landingLayout) landingLayout.style.display = '';
-    document.body.classList.remove('is-mp-mobile');
-    document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
-    updateSEOMeta(null, '/');
-    removeBikeJsonLd();
-  }
+  /* showListingView lå her som en egen kopi, ordret magen til den i
+     js/view-switcher.js, og blev sat på window ved registerWindowExports.
+     Hvem af de to der vandt, afhang af importrækkefølgen.
+
+     Den kunne ikke blive stående: forsidens markup er ikke længere i
+     dokumentet på en prerendret underside, så den skal hentes før der er
+     noget at vise, og kopien her vidste intet om det. Nu kommer den ene
+     rigtige ind som dep — se showListingView i argumentlisten øverst. */
 
   /* ============================================================
      "Er den til salg?" — håndteret via ?ask=1 i URL'en

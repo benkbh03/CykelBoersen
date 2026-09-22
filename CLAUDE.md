@@ -202,6 +202,28 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | `el.hidden = true` gør intet, fordi en forfatter-`display` slår browserens `[hidden]`-regel | 2 (`.browse-cat-wrap`, `.fb-arrow`) | Har en klasse en `display`-erklæring OG bliver skjult via `.hidden`, SKAL der være en `[hidden]{display:none !important}` ved siden af. Test på `getComputedStyle(el).display`, ikke på `el.hidden` — egenskaben er sand, mens elementet stadig står på skærmen |
 | Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-`V` stod på `20260830b` og `main.js`' config-import på `20260701t` mens CSS var nået til `w`) | **Lukket.** Versionen står nu KUN på `<html data-asset-v>` i `index.html`; bootstrap'en, `ASSET_VERSION` og `main.js`' config-import læser den derfra. CSS-linkene er stadig literaler (statiske `href`s skal blokere gengivelsen), men bruger samme streng, så én søg-og-erstat i `index.html` rammer alt. Tæl stadig med `grep -c` efter en bump |
 
+## Forsiden er IKKE i dokumentet på en underside
+
+`#landing-layout` er tomt på alle 218 prerendrede sider. Markup'en ligger i
+`partials/landing.html` og hentes først når brugeren klikker hjem
+(`js/landing-hydrate.js`). Før lå den skjult på hver side og gav dem to `<h1>`
+med forsidens først, så `/om-os/` meldte sig til Google som "Find din næste
+cykel på Cykelbørsen".
+
+**Konsekvens for al ny kode:** rører du et element inde i forsiden — søgefelt,
+sidebar-filtre, `#listings-grid`, kategorichips, quiz — så tjek for `null`.
+Elementet findes på forsiden og ikke andre steder, og et manglende tjek fejler
+KUN på undersider, hvor ingen kigger. `renderBikes()` viser mønsteret: data
+hentes stadig (`_userSavedSet` skal være varm), men tegningen springes over.
+
+Skal handlere bindes til forsidens markup, hører de hjemme i `initLandingUI()`
+i `main.js`, ikke i `init()`. Den funktion kaldes to gange: ved sideindlæsning
+og igen efter hydrering. Den skal derfor være idempotent — `data-ui-klar` på
+rod-elementet er vagten.
+
+`partials/landing.html` er **genereret** af `scripts/prerender.mjs` ud fra
+`index.html`. Ret aldrig i den i hånden.
+
 ## Kodestil og filstruktur
 
 Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide eksisterende filer. Filer bør holdes under ~400 linjer. Eksportér funktioner og importér dem i `main.js` (eller den relevante modul). Husk at eksportere nye `onclick`-handlere til `window` i `main.js`.
