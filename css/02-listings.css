@@ -251,8 +251,11 @@
    Ny > Som ny > God stand > Brugt aflæselig på afstand uden at læse ordet. */
 .condition-tag {
   border-radius: 4px;
-  padding: 3px 8px; font-size: 0.6rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
+  /* Var 0,6 rem (9,6 px) og 0,52 rem (8,3 px) på mobil. Standen er en af de
+     vigtigste oplysninger på kortet, så den skal kunne læses: 11 px er
+     --text-2xs, den eneste undtagelse fra 12 px-gulvet (mærkater på billeder). */
+  padding: 2px 7px; font-size: var(--text-2xs); font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase;
   background: rgba(254,250,243,0.94); color: var(--forest);
   border: 1px solid rgba(42,61,46,0.16);
   white-space: nowrap;
@@ -305,7 +308,7 @@
   /* Versaler + sperring bliver trange under 0.55rem, saa sperringen skrues ned
      paa mobil frem for at droppe versalerne (som ville give to forskellige
      mærkat-udtryk paa samme site). */
-  .condition-tag { font-size: 0.52rem; padding: 2px 6px; letter-spacing: 0.03em; }
+  .condition-tag { padding: 2px 5px; letter-spacing: 0.02em; }
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
@@ -360,6 +363,28 @@
 }
 .seller-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card-seller-details { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+/* Kompakt sælgerlinje (js/card-seller.js): navn og by på ÉN linje. Navnet
+   klippes med ellipsis før byen gør, fordi byen er kort og afgør om køberen
+   gider køre derhen. */
+.card-seller-line {
+  display: flex; align-items: center; gap: var(--space-2);
+  min-width: 0; width: 100%;
+}
+.card-seller-line .card-seller-id { flex: 1 1 auto; }
+/* Byen må krympe, men aldrig tage mere end halvdelen: på et 2-kolonne-kort
+   på mobil forsvandt forhandlernavnet ellers helt bag byen. */
+.card-seller-line .card-location {
+  flex: 0 1 auto; min-width: 0; max-width: 50%; margin-left: auto;
+}
+.card-seller-line .bike-city { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+/* På et 2-kolonne-kort (≤480 px) er én linje ca. 150 px: både "Forum
+   Cykler" og "Frederiksberg C" blev klippet til "Foru…" og "Frederik…".
+   Her går byen på sin egen linje, så begge kan læses. Stadig ingen avatar. */
+@media (max-width: 480px) {
+  .card-seller-line { flex-wrap: wrap; row-gap: 2px; }
+  .card-seller-line .card-seller-id { flex-basis: 100%; }
+  .card-seller-line .card-location { max-width: 100%; margin-left: 0; }
+}
 .card-seller-top {
   display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
   min-width: 0;

@@ -800,7 +800,11 @@
      Fuld kortbredde over 2 linjer, pris på egen linje under — min-height
      på titlen holder alle kort i samme format/højde. */
   .card-top { flex-direction: column; align-items: stretch; gap: 2px; }
-  .bike-title { font-size: 0.9rem; min-height: calc(2 * 1.35 * 0.9rem); }
+  /* Ingen min-height her: den reserverede to linjer, så en titel på én linje
+     fik et stort hul ned til prisen. Nu står prisen altid 2 px under titlen,
+     og kortene i samme række flugter stadig i bunden (.card-footer har
+     margin-top:auto). */
+  .bike-title { font-size: 0.9rem; min-height: 0; max-height: calc(2 * 1.35em); }
   .bike-price { font-size: 1.05rem; margin-left: 0; }
   .bike-meta { font-size: 0.72rem; margin-bottom: 8px; }
   .card-footer { padding-top: 8px; }

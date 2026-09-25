@@ -213,20 +213,6 @@ export function createBikeDetail({
       <div class="bike-detail-grid${gridCls}">
         <div${colMedia}>
           ${galleryHtml}
-          ${(profile.city || profile.address) ? `
-          <a class="bike-location-card" id="bike-location-card" href="/" onclick="showBikeOnMap('${b.id}');return false;">
-            <div class="bike-location-header">
-              <div class="bike-location-title">
-                <span class="bike-location-pin">${iconPin(15)}</span>
-                <div>
-                  <div class="bike-location-label">Sælgers placering</div>
-                  <div class="bike-location-place">${esc(profile.city || '')}</div>
-                  ${profile.address ? `<div class="bike-location-address">${esc(profile.address)}</div>` : ''}
-                </div>
-              </div>
-              <span class="bike-location-chevron">→</span>
-            </div>
-          </a>` : ''}
         </div>
         <div class="${colInfoCls}">
           <div class="bike-detail-price">${priceLabel(b)}${isGiveaway(b) ? '' : renderPriceDrop(b)}</div>
@@ -271,7 +257,6 @@ export function createBikeDetail({
                 + `${iconShield()} Stelnummer oplyst</span>`;
             })()}
           </div>
-          ${b.description ? `<p style="font-size:0.85rem;color:var(--muted);margin:10px 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(b.description)}</p>${b.description.length > 100 ? `<button onclick="jumpToBikeDesc()" style="background:none;border:none;padding:2px 0 0;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--forest);cursor:pointer;">Se mere ↓</button>` : ''}` : ''}
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             <div class="seller-avatar-large">${avatarContent}</div>
             <div style="flex:1">
@@ -287,6 +272,22 @@ export function createBikeDetail({
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil →</div>
           </div>
+          ${/* Placeringen hører til sælgeren, ikke til billederne. Under galleriet
+                skubbede den prisen ned under folden på mobil. */''}
+          ${(profile.city || profile.address) ? `
+          <a class="bike-location-card" id="bike-location-card" href="/" onclick="showBikeOnMap('${b.id}');return false;">
+            <div class="bike-location-header">
+              <div class="bike-location-title">
+                <span class="bike-location-pin">${iconPin(15)}</span>
+                <div>
+                  <div class="bike-location-label">Sælgers placering</div>
+                  <div class="bike-location-place">${esc(profile.city || '')}</div>
+                  ${profile.address ? `<div class="bike-location-address">${esc(profile.address)}</div>` : ''}
+                </div>
+              </div>
+              <span class="bike-location-chevron">→</span>
+            </div>
+          </a>` : ''}
           ${isDemo ? '' : `
           <!-- Forbrugeraftaleloven § 8a: en online markedsplads skal oplyse
                forbrugeren om sælger er erhvervsdrivende eller privat, OG at
@@ -592,7 +593,7 @@ export function createBikeDetail({
       loadResponseTime(profile.id);
       loadSellerTrustCard(profile);
       loadSellerOtherListings(profile.id, b.id);
-      loadSimilarListings(b.type, b.id);
+      loadSimilarListings(b.type, b.id, b.user_id);
       initPriceDropButton(b.id);
       maybeOpenAskBox();
       initBikeDetailMap(b);
@@ -890,7 +891,7 @@ export function createBikeDetail({
     loadResponseTime(profile.id);
     loadSellerTrustCard(profile);
     loadSellerOtherListings(profile.id, b.id);
-    loadSimilarListings(b.type, b.id);
+    loadSimilarListings(b.type, b.id, b.user_id);
     initBikeDetailMap(b);
     initPriceDropButton(b.id);
     maybeOpenAskBox();
@@ -1146,7 +1147,7 @@ export function createBikeDetail({
 
   /* ── Lignende annoncer ── */
 
-  async function loadSimilarListings(bikeType, currentBikeId) {
+  async function loadSimilarListings(bikeType, currentBikeId, sellerId) {
     const wrap = document.getElementById('similar-listings');
     if (!wrap || !bikeType) {
       return;
@@ -1159,11 +1160,16 @@ export function createBikeDetail({
         .eq('type', bikeType)
         .eq('is_active', true)
         .neq('id', currentBikeId)
+        // Sælgerens egne cykler står allerede i "Sælgerens andre annoncer".
+        // Uden dette viste en forhandler med mange cykler af samme type de
+        // samme kort to gange, og køberen så ingen reelle alternativer.
+        .neq('user_id', sellerId || '00000000-0000-0000-0000-000000000000')
         .order('created_at', { ascending: false })
         .limit(8);
 
 
       if (!data || data.length === 0) {
+        wrap.hidden = true; // Ingen alternativer → ingen tom overskrift
         return;
       }
 

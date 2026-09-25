@@ -1,5 +1,6 @@
 import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
 import { iconSearch, noImagePlaceholder } from './ui-icons.js';
+import { cardSellerLine } from './card-seller.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -389,41 +390,13 @@ export function createBikesList({
                 : '';
             })()}
             <div class="card-footer">
-              <div class="seller-avatar">${avatarHtml}</div>
-              <div class="card-seller-details">
-                ${/* Saelgertypen laa foer som en selvstaendig farvet pille ("Forhandler"
-                      / "Privat") ved siden af navnet. To ting var galt: pillen brugte
-                      to pastelfarver der ikke findes i paletten, og paa mobil er
-                      .seller-name skjult (05-pages.css), saa pillen stod ALENE som
-                      eneste tekst paa linjen og dominerede kortet.
-
-                      Nu baerer ikonet typen og navnet baerer identiteten, paa én
-                      linje. "Cykelhuset Frederiksberg" siger mere til en koeber end
-                      "Forhandler", og butiksikonet siger stadig at det er en butik.
-
-                      Ikonet ligger i en wrapper der IKKE kan brydes. Laa det som et
-                      soeskende-element i .card-seller-top (som har flex-wrap: wrap),
-                      blev det skubbet op paa sin egen linje over navnet saa snart
-                      butiksnavnet var langt. Kun .seller-name klippes. */''}
-                <div class="card-seller-top">
-                  <span class="card-seller-id" title="${sellerType === 'dealer' ? 'Forhandler' : 'Privat sælger'}">
-                    <span class="card-seller-ikon${sellerType === 'dealer' ? ' er-forhandler' : ''}" aria-hidden="true">${sellerType === 'dealer' ? iconDealer(12) : iconPrivate(12)}</span>
-                    <span class="seller-name">${esc(sellerName) || 'Ukendt'}</span>
-                    ${profile.verified ? '<span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}
-                  </span>
-                  ${/* Kun naar saelgeren FAKTISK har oplyst et nummer. Vises som
-                        rent ikon med title, saa det ikke stjaeler plads fra
-                        saelgerens navn — teksten staar i fuld laengde paa
-                        annoncesiden. frame_last4 skal med i BEGGE select-strenge
-                        ovenfor, ellers forsvinder skjoldet saa snart brugeren
-                        filtrerer, uden nogen fejlbesked. */''}
-                  ${b.frame_last4 ? `<span class="card-frame-badge" title="Stelnummer oplyst af sælger" aria-label="Stelnummer oplyst af sælger">${iconShield(13)}</span>` : ''}
-                </div>
-                <div class="card-seller-bottom">
-                  <span class="card-location">${iconPin(12)}<span class="bike-city">${esc(b.city)}</span></span>
-                  <span class="card-last-seen">${lastSeenCard || '&nbsp;'}</span>
-                </div>
-              </div>
+              ${/* Én linje: type-ikon, navn, flueben, stelnummer-skjold, by.
+                    Avatar-cirklen og "sidst aktiv"-linjen er fjernet fra kortet:
+                    de gjorde kortet højere uden at hjælpe køberen med at vælge
+                    mellem to cykler. Begge står stadig på annoncesiden.
+                    frame_last4 skal med i BEGGE select-strenge ovenfor, ellers
+                    forsvinder skjoldet så snart brugeren filtrerer. */''}
+              ${cardSellerLine(profile, b.city, b.frame_last4 ? `<span class="card-frame-badge" title="Stelnummer oplyst af sælger" aria-label="Stelnummer oplyst af sælger">${iconShield(13)}</span>` : '')}
             </div>
           </div>
         </div>`;

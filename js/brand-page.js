@@ -5,6 +5,7 @@
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
 import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
+import { cardSellerLine } from './card-seller.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
@@ -205,8 +206,7 @@ export function createBrandPage({
               : '';
           })()}
           <div class="card-footer">
-            <span class="card-location">📍 ${esc(b.city || '')}</span>
-            <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + ' ' + esc(sellerName) : iconPrivate() + ' Privat'}</span>
+            ${cardSellerLine(profile, b.city)}
           </div>
         </div>
       </div>`;

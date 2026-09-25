@@ -219,6 +219,15 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - Admin-panelets ⚙️ er den eneste tilladte emoji. Besked-konventionerne (💰/✅/✉️ i beskedindhold) er data, ikke UI, og er undtaget.
 - **Status:** Ældre CSS har stadig værdier uden for skalaen (ca. 100 forskellige tekststørrelser). Reglen gælder al ny og ændret kode; ryd op i den blok du alligevel rører.
 
+**Udtryk (gælder ny og ændret kode; ældre kode er IKKE ryddet op, se status):**
+- Ingen pile (→ ← ↓) i linktekster. Eneste undtagelse er "← Tilbage".
+- Små overskrifter er almindelig tekst i `--weight-semibold`: ingen versaler, ingen `letter-spacing`.
+- Hover på knapper og kort er et farveskift. Intet `translateY`-løft.
+- Ingen farvede `box-shadow` (orange glød) og ingen guldgradienter. Skygger er neutrale.
+- Fraunces bruges kun i logoet. Al anden tekst er DM Sans.
+- Annoncekortets sælgerlinje bygges af `cardSellerLine()` i `js/card-seller.js`, aldrig i hånden. Én linje (navn + by) på desktop, to på kort under 480 px.
+- **Status (26. sep.):** Punkterne ovenfor er vedtaget, men ikke gennemført på eksisterende kode. Der står ca. 265 Fraunces-forekomster, 36 versal-overskrifter, 18 hover-løft og ca. 33 farvede skygger/guldgradienter. De blev fravalgt i design-oprydning del 2, fordi de ikke består prøven i `STRATEGI.md`. Ryd op i den blok du alligevel rører.
+
 ## Teknologier
 
 - **Frontend**: Vanilla JS (ES modules via CDN), HTML, CSS — ingen frameworks
