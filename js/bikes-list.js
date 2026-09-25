@@ -1,4 +1,5 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike, iconSearch, noImagePlaceholder } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
+import { iconSearch, noImagePlaceholder } from './ui-icons.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {

@@ -3,7 +3,8 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, noImagePlaceholder } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
+import { noImagePlaceholder } from './ui-icons.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.

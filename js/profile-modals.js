@@ -1,4 +1,5 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl, noImagePlaceholder } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl } from './utils.js';
+import { noImagePlaceholder } from './ui-icons.js';
 export function createProfileModals({
   supabase,
   esc,

@@ -2,7 +2,8 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword, iconDealer, iconPrivate, iconStar, iconPin, iconBell, iconSearch } from './js/utils.js';
+import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword, iconDealer, iconPrivate, iconStar, iconPin, iconBell } from './js/utils.js';
+import { iconSearch } from './js/ui-icons.js';
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
