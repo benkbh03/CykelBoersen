@@ -184,16 +184,6 @@ export const iconEye     = (s) => _svgIcon('<path d="M2 12s3.6-7 10-7 10 7 10 7-
 export const iconAlert   = (s) => _svgIcon('<path d="M12 3 2.6 20h18.8z"/><path d="M12 10v4"/><path d="M12 17.4h.01"/>', s);
 export const iconCamera  = (s) => _svgIcon('<path d="M3 7h3.5l1.6-2.4h7.8L17.5 7H21v13H3z"/><circle cx="12" cy="13" r="4"/>', s);
 export const iconStar    = (s) => _svgIcon('<path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9z"/>', s);
-/* Afløser 💡/🔍/🍪 i UI-tekster (Lucide: lightbulb, search, cookie). */
-export const iconBulb    = (s) => _svgIcon('<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>', s);
-export const iconSearch  = (s) => _svgIcon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>', s);
-export const iconCookie  = (s) => _svgIcon('<path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/>', s);
-
-/* Pladsholder til annoncekort uden billede. Én funktion til alle kort-
-   renderere, så de ikke hver især opfinder deres egen (før: en 🚲-emoji i
-   fire forskellige størrelser). Styles i .no-image (02-listings.css). */
-export const noImagePlaceholder = () =>
-  `<div class="no-image" role="img" aria-label="Intet billede">${iconBike(40)}<span>Intet billede</span></div>`;
 
 /* ── PRIS ──────────────────────────────────────────────────────
    "Gives væk"-annoncer har price = 0. De må ALDRIG vises som "0 kr.", så al

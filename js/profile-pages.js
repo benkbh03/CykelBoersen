@@ -5,7 +5,8 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, noImagePlaceholder } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail } from './utils.js';
+import { noImagePlaceholder } from './ui-icons.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';

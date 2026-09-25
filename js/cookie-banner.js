@@ -4,7 +4,7 @@
    Persisterer i localStorage ('cb_cookie_consent' = 'accepted'|'minimal').
    ============================================================ */
 
-import { iconCookie } from './utils.js';
+import { iconCookie } from './ui-icons.js';
 
 const STORAGE_KEY = 'cb_cookie_consent';
 const VERSION     = 'v1';

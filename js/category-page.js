@@ -8,7 +8,8 @@
    ============================================================ */
 
 import { CATEGORY_META } from './category-data.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, noImagePlaceholder } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
+import { noImagePlaceholder } from './ui-icons.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
