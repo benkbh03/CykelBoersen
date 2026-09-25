@@ -285,11 +285,12 @@
    hinanden paa samme kort. Nu variablen, saa de ikke kan drive fra hinanden. */
 .price-reduced-card-badge {
   background: var(--rust); color: #fff;
-  border-radius: 4px; padding: 2px 5px;
-  /* Var 0,5 rem (8 px) og 0,46 rem (7,4 px) på mobil — under grænsen for
-     hvad der kan læses på en telefon. Prisfaldet er en af de få ting der
-     hjælper køberen med at bedømme cyklen fra listen, så det skal kunne læses. */
-  font-size: var(--text-xs); font-weight: var(--weight-heavy); letter-spacing: 0.02em;
+  border-radius: 4px; padding: 1px 5px;
+  /* Var 0,5 rem (8 px) og 0,46 rem (7,4 px) på mobil — for småt til at læse.
+     12 px i vægt 800 blev derimod en klods der dominerede billedet. 11 px i
+     halvfed er læseligt uden at stjæle opmærksomheden fra cyklen. */
+  font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: 0;
+  line-height: 1.4;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 2px;
 }

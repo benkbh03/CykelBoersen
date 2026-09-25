@@ -12,7 +12,8 @@
    ============================================================ */
 :root {
   /* ── Tekststørrelser (12 · 14 · 16 · 20 · 28 · 40 px) ── */
-  --text-xs:   0.75rem;   /* 12px — mindste tilladte, også på mærkater */
+  --text-2xs:  0.6875rem; /* 11px — KUN mærkater oven på billeder (prisfald o.l.) */
+  --text-xs:   0.75rem;   /* 12px — mindste tilladte til al anden tekst */
   --text-sm:   0.875rem;  /* 14px */
   --text-base: 1rem;      /* 16px */
   --text-lg:   1.25rem;   /* 20px */
