@@ -10,6 +10,7 @@
 import { CATEGORY_META } from './category-data.js';
 import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
+import { cardSellerLine } from './card-seller.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
@@ -176,8 +177,7 @@ export function createCategoryPage({
               : '';
           })()}
           <div class="card-footer">
-            <span class="card-location">📍 ${esc(b.city || '')}</span>
-            <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">${sellerType === 'dealer' ? iconDealer() + ' ' + esc(sellerName) : iconPrivate() + ' Privat'}</span>
+            ${cardSellerLine(profile, b.city)}
           </div>
         </div>
       </div>`;

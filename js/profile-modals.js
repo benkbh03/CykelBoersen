@@ -1,5 +1,6 @@
 import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
+import { cardSellerLine } from './card-seller.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -141,14 +142,7 @@ export function createProfileModals({
                 : '';
             })()}
             <div class="card-footer">
-              <div class="seller-info">
-                <div class="seller-avatar">${avatarInit}</div>
-                <div>
-                  <div class="seller-name">${esc(sellerName)}${profile.verified ? ' <span class="verified-badge" title="Verificeret forhandler">✓</span>' : ''}</div>
-                  <span class="badge badge-dealer">${iconDealer()} Forhandler</span>
-                </div>
-              </div>
-              <div class="card-location">📍 ${esc(b.city)}</div>
+              ${cardSellerLine(profile, b.city)}
             </div>
           </div>
         </div>`;
