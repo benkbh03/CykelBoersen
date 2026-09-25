@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl, noImagePlaceholder } from './utils.js';
 export function createProfileModals({
   supabase,
   esc,
@@ -118,7 +118,7 @@ export function createProfileModals({
       const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
       const imgContent = primaryImg
         ? `<img src="${esc(primaryImg)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
-        : '<span style="font-size:4rem">🚲</span>';
+        : noImagePlaceholder();
       return `
         <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
           <div class="bike-card-img">

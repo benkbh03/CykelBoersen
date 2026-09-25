@@ -26,7 +26,7 @@
 }
 .brands-overview-subtitle {
   font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
+  font-size: var(--text-base);
   color: var(--muted);
 }
 .brands-overview-section {
@@ -68,11 +68,11 @@
 .brand-tile-count {
   font-size: 0.78rem;
   color: var(--rust);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 .brand-tile-count-empty {
   color: var(--muted);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   font-style: italic;
 }
 .brand-tile-compact {
@@ -80,7 +80,7 @@
 }
 .brand-tile-compact .brand-tile-name {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 /* ── Brand-landingsside (/cykler/:brand) ── */
@@ -92,7 +92,7 @@
 .brand-bikes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 250px));
-  gap: 16px;
+  gap: var(--space-4);
   justify-content: start;
 }
 @media (max-width: 600px) {
@@ -111,7 +111,7 @@
 .prerender-bike-links {
   grid-column: 1 / -1;
   margin: 0; padding: 0; list-style: none;
-  display: flex; flex-wrap: wrap; gap: 8px;
+  display: flex; flex-wrap: wrap; gap: var(--space-2);
 }
 .prerender-bike-links a {
   display: inline-block;
@@ -133,10 +133,10 @@
 .brand-show-more-btn {
   background: var(--cream); color: var(--charcoal);
   border: 1.5px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 10px 22px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 600;
+  font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
@@ -160,12 +160,12 @@
 }
 .brand-page-tagline {
   font-family: 'DM Sans', sans-serif;
-  font-size: 1rem; color: var(--muted);
+  font-size: var(--text-base); color: var(--muted);
   margin: 0 0 16px;
   font-style: italic;
 }
 .brand-page-meta {
-  display: flex; gap: 8px; flex-wrap: wrap;
+  display: flex; gap: var(--space-2); flex-wrap: wrap;
   justify-content: center;
 }
 .brand-meta-chip {
@@ -195,7 +195,7 @@
 .brand-models-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 .brand-models-group {
   background: var(--cream);
@@ -223,10 +223,10 @@
 .brand-dealers-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
+  gap: var(--space-3);
 }
 .brand-dealer-card {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: var(--space-3);
   background: var(--cream);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -251,7 +251,7 @@
   width: 100%; height: 100%; object-fit: cover;
 }
 .brand-dealer-name {
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   font-family: 'DM Sans', sans-serif;
   color: var(--charcoal);
 }
@@ -260,7 +260,7 @@
   margin-top: 2px;
 }
 .brand-related-grid {
-  display: flex; flex-wrap: wrap; gap: 8px;
+  display: flex; flex-wrap: wrap; gap: var(--space-2);
 }
 .brand-related-chip {
   background: var(--sand);
@@ -286,7 +286,7 @@
   border: none; border-radius: 8px;
   padding: 12px 24px;
   font-family: 'DM Sans', sans-serif;
-  font-weight: 600; cursor: pointer;
+  font-weight: var(--weight-semibold); cursor: pointer;
   margin-top: 12px;
 }
 
@@ -308,13 +308,13 @@
   cursor: pointer;
   padding: 16px 18px;
   font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--forest, #2a3d2e);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  color: var(--forest, var(--forest));
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .category-faq-item > summary::-webkit-details-marker { display: none; }
 .category-faq-item > summary::after {
@@ -348,7 +348,7 @@
   width: 100%;
   max-width: 600px;
   height: auto;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   object-fit: cover;
   display: block;
   margin: 12px 0;
@@ -356,12 +356,12 @@
 .bike-prerender-title {
   font-family: 'Fraunces', serif;
   font-size: 1.6rem;
-  color: var(--forest, #2a3d2e);
+  color: var(--forest, var(--forest));
   margin: 8px 0 4px;
 }
 .bike-prerender-price {
   font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   font-size: 1.4rem;
   color: var(--rust);
   margin: 0 0 10px;
@@ -369,7 +369,7 @@
 .bike-prerender-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
   color: var(--muted);
   font-size: 0.9rem;
   margin-bottom: 16px;

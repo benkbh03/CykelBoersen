@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, noImagePlaceholder } from './utils.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
@@ -187,7 +187,7 @@ export function createBrandPage({
         <div class="bike-card-img">
           ${primaryImg
             ? `<img src="${thumb}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
-            : '<span style="font-size:4rem">🚲</span>'}
+            : noImagePlaceholder()}
           <div class="bike-card-badges">
             <span class="condition-tag ${conditionClass(b.condition) || ''}">${esc(b.condition || '')}</span>
           </div>

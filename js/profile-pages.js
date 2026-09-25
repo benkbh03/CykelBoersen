@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, noImagePlaceholder } from './utils.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
 } from './trust-score.js';
@@ -155,7 +155,7 @@ export function createProfilePages({
       const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
-        : '<span style="font-size:3.5rem">🚲</span>';
+        : noImagePlaceholder();
       return `
         <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
           <div class="bike-card-img">

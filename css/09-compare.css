@@ -10,9 +10,9 @@
   position: absolute; bottom: 8px; right: 8px;
   z-index: 3;
   background: rgba(255,255,255,0.94);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 3px 7px 3px 5px;
-  align-items: center; gap: 4px;
+  align-items: center; gap: var(--space-1);
   font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
   text-transform: uppercase;
   cursor: pointer;
@@ -62,11 +62,11 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-family: 'DM Sans', sans-serif;
 }
 #compare-bar.compare-bar-visible { transform: translateX(-50%) translateY(0); }
-.compare-bar-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+.compare-bar-inner { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; justify-content: space-between; }
 .compare-bar-info { font-size: 0.92rem; }
 .compare-bar-info strong { color: var(--rust-light); }
 .compare-bar-hint { display: block; font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
-.compare-bar-actions { display: flex; gap: 8px; }
+.compare-bar-actions { display: flex; gap: var(--space-2); }
 .compare-bar-clear {
   background: transparent; color: rgba(255,255,255,0.78);
   border: 1px solid rgba(255,255,255,0.25);
@@ -132,7 +132,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   color: var(--muted);
   font-size: 0.92rem;
   margin: 0;
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: var(--space-2);
   flex-wrap: wrap;
 }
 .cmp-diff-marker {
@@ -177,7 +177,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   width: 100%;
   aspect-ratio: 4/3;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--sand);
   display: block;
 }
@@ -218,7 +218,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
-  font-size: 0.82rem; font-weight: 600;
+  font-size: 0.82rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s;
@@ -250,7 +250,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-row-label {
   padding: 14px 24px;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -290,7 +290,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-price {
   font-family: 'Fraunces', serif;
   font-size: 1.2rem;
-  font-weight: 800;
+  font-weight: var(--weight-heavy);
   color: var(--rust);
   line-height: 1.1;
 }
@@ -311,14 +311,14 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   padding: 1px 7px;
   border-radius: 4px;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   margin-left: 6px;
 }
 .cmp-seller-cell {
   display: flex; flex-direction: column; gap: 3px;
 }
 .cmp-seller-name {
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--charcoal);
   display: inline-flex; align-items: center; gap: 5px;
 }
@@ -340,12 +340,12 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
    dark-green omgivelser (sektionen kan ende oppe mod den grønne site-footer). */
 .cmp-footer {
   margin-top: 28px;
-  display: flex; gap: 12px; justify-content: center;
+  display: flex; gap: var(--space-3); justify-content: center;
 }
 .cmp-footer-secondary, .cmp-footer-primary {
   padding: 12px 24px;
   border-radius: 9px;
-  font-size: 0.92rem; font-weight: 600;
+  font-size: 0.92rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s, border-color 0.15s, box-shadow 0.15s;
@@ -375,16 +375,16 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
     grid-template-columns: 130px repeat(var(--cmp-cols), minmax(140px, 1fr));
   }
   .cmp-header-spacer { padding: 14px; }
-  .cmp-bike-header { padding: 14px 10px; gap: 8px; }
+  .cmp-bike-header { padding: 14px 10px; gap: var(--space-2); }
   .cmp-bike-title { font-size: 0.95rem; }
   .cmp-bike-subtitle { font-size: 0.7rem; }
   .cmp-bike-image-wrap { max-width: 140px; }
-  .cmp-bike-cta { font-size: 0.75rem; padding: 6px 12px; }
+  .cmp-bike-cta { font-size: var(--text-xs); padding: 6px 12px; }
 
   .cmp-section-title { padding: 12px 14px 6px; font-size: 0.7rem; }
   .cmp-row-label { padding: 11px 14px; font-size: 0.78rem; }
   .cmp-row-value { padding: 11px 12px; font-size: 0.85rem; }
-  .cmp-price { font-size: 1rem; }
+  .cmp-price { font-size: var(--text-base); }
 
   .cmp-footer { flex-direction: column; }
   .cmp-footer-secondary, .cmp-footer-primary { width: 100%; }

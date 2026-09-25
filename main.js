@@ -2,7 +2,7 @@
    CYKELBØRSEN – main.js
    ============================================================ */
 
-import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword, iconDealer, iconPrivate } from './js/utils.js';
+import { esc, escAttr, debounce, formatLastSeen, formatRelativeAge, removeBikeJsonLd, updateSEOMeta, safeAvatarUrl, trapFocus, enableFocusTrap, disableFocusTrap, haversineKm, stableOffset, BASE_URL, btnLoading, getInitials, formatDistanceKm, transformImageUrl, setImageTransformsEnabled, validatePassword, iconDealer, iconPrivate, iconStar, iconPin, iconBell, iconSearch } from './js/utils.js';
 import { toggleCompareBike, clearCompareIds, renderCompareBar, syncCompareCheckboxes, getCompareIds, createComparePage } from './js/compare.js';
 import { ensureLeaflet, ensureCropper } from './js/asset-loader.js';
 import { geocodeAddress, geocodeCity, invalidateGeocodeEntry } from './js/geocode.js';
@@ -1448,8 +1448,8 @@ async function init() {
         agentActivated = await flushPendingCykelagent({ silent: true }).catch(() => false);
       }
       showToast(agentActivated
-        ? '✅ Din e-mail er bekræftet, og din Cykelagent er nu aktiveret! 🔔'
-        : '✅ Din e-mail er bekræftet!');
+        ? 'Din e-mail er bekræftet, og din Cykelagent er nu aktiveret!'
+        : 'Din e-mail er bekræftet!');
       // Førstegangs-velkomst: vis onboarding-modalen når brugeren lander logget ind
       // efter email-bekræftelse. showOnboardingBanner er idempotent (viser ikke dobbelt),
       // og 'onboarded'-guarden sikrer den ikke dukker op igen ved senere logins.
@@ -1635,7 +1635,7 @@ async function loadDealers(dealers, bikeRows) {
     container.className = 'dealer-cards dealer-empty-state';
     container.innerHTML = `
       <div class="dealer-empty-card">
-        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+        <div style="margin-bottom:16px;color:var(--muted);">${iconSearch(40)}</div>
         <h3>Ingen forhandlere endnu</h3>
         <p>Bliv en af de første forhandlere på Cykelbørsen.
 Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
@@ -1745,7 +1745,7 @@ async function loadInitialData() {
   loadDealers(dealers, bikesData);
 }
 
-// Større version af dealer-card til "⭐ Fremhævede forhandlere"-sektionen.
+// Større version af dealer-card til "Fremhævede forhandlere"-sektionen.
 // Mere prominent visuel behandling end almindelige forhandler-kort —
 // det er pointen med at have betalt for pladsen.
 function buildPromotedDealerCard(dealer, countMap) {
@@ -1762,10 +1762,10 @@ function buildPromotedDealerCard(dealer, countMap) {
     : esc(initials);
   return `
     <article class="promoted-dealer-card" onclick="navigateToDealer('${dealer.id}')" title="Se ${esc(displayName)}s profil">
-      <div class="promoted-dealer-card-badge">⭐ Fremhævet</div>
+      <div class="promoted-dealer-card-badge">${iconStar(12)} Fremhævet</div>
       <div class="promoted-dealer-card-logo${avatarThumb ? ' promoted-dealer-card-logo--img' : ''}">${logoHtml}</div>
       <div class="promoted-dealer-card-name">${esc(displayName)}<span class="promoted-dealer-card-verified" title="Verificeret forhandler">✓</span></div>
-      ${locationText ? `<div class="promoted-dealer-card-loc">📍 ${esc(locationText)}</div>` : ''}
+      ${locationText ? `<div class="promoted-dealer-card-loc">${iconPin(12)} ${esc(locationText)}</div>` : ''}
       <div class="promoted-dealer-card-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
       <div class="promoted-dealer-card-cta">Se butik →</div>
     </article>
@@ -1781,14 +1781,14 @@ function buildDealerCard(dealer, countMap, featured = false) {
   // "⭐ Fremhævet"-badge når featured_until er fremtidigt (manuel kontrol via
   // Supabase Dashboard nu, automatisk via Stripe-webhook senere)
   const isPromoted    = dealer.featured_until && new Date(dealer.featured_until).getTime() > Date.now();
-  const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Fremhævet forhandler">⭐ Fremhævet</span>' : '';
+  const promotedBadge = isPromoted ? '<span class="dealer-promoted-badge" title="Fremhævet forhandler">' + iconStar(11) + ' Fremhævet</span>' : '';
   const promotedClass = isPromoted ? ' dealer-card--promoted' : '';
   return `
     <div class="dealer-card${featuredClass}${promotedClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
       ${promotedBadge}
       <div class="dealer-logo-circle">${esc(initials)}</div>
       <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
-      ${locationText ? `<div class="dealer-city">📍 ${esc(locationText)}</div>` : ''}
+      ${locationText ? `<div class="dealer-city">${iconPin(12)} ${esc(locationText)}</div>` : ''}
       <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
     </div>
   `;
@@ -1969,7 +1969,7 @@ async function checkSavedSearchNotifications() {
   banner.id = 'ss-notification';
   banner.innerHTML = `
     <div class="ss-notif-content">
-      <span class="ss-notif-icon">🔔</span>
+      <span class="ss-notif-icon">${iconBell(18)}</span>
       <span class="ss-notif-text">${count} nye cykler matcher dine Cykelagenter. <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Se matches →</a></span>
       <button onclick="this.closest('#ss-notification').remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px;">✕</button>
     </div>
