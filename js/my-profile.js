@@ -1,3 +1,4 @@
+import { iconBike, iconEye, iconPencil } from './utils.js';
 export function createMyProfile({
   supabase,
   esc,
@@ -46,7 +47,7 @@ export function createMyProfile({
 
     if (error || !data || data.length === 0) {
       grid.innerHTML = `<div class="empty-state-box">
-        <div class="empty-state-icon">🚲</div>
+        <div class="empty-state-icon">${iconBike(40)}</div>
         <h3 class="empty-state-title">Ingen annoncer endnu</h3>
         <p class="empty-state-sub">Sæt din første cykel til salg. Det tager under 2 minutter.</p>
         <button class="empty-state-cta" onclick="openModal()">+ Sæt til salg</button>
@@ -124,13 +125,13 @@ export function createMyProfile({
           <div class="my-listing-info">
             <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
             <div class="my-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
-            <div class="my-listing-views">👁 ${views.toLocaleString('da-DK')} visninger</div>
+            <div class="my-listing-views">${iconEye(13)} ${views.toLocaleString('da-DK')} visninger</div>
           </div>
           <div class="my-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             ${!isSold
               ? `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>
-                 <button class="btn-edit" onclick="openEditModal('${b.id}')">✏️</button>`
+                 <button class="btn-edit" onclick="openEditModal('${b.id}')" aria-label="Rediger">${iconPencil(14)}</button>`
               : `<button class="btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
             <button class="btn-delete" onclick="deleteListing('${b.id}')">Slet</button>
           </div>
@@ -239,7 +240,7 @@ export function createMyProfile({
       const primary = imgs.find(i => i.is_primary) || imgs[0];
       const imgHtml = primary
         ? `<img src="${primary.url}" alt="${esc(b.brand)} ${esc(b.model)}" class="saved-card-img" loading="lazy">`
-        : `<div class="saved-card-img-placeholder">🚲</div>`;
+        : `<div class="saved-card-img-placeholder">${iconBike(28)}</div>`;
       const isSold = b.is_active === false;
       return `
         <div class="saved-card${isSold ? ' saved-card--sold' : ''}" onclick="navigateToBike('${s.bike_id}')">
@@ -453,7 +454,7 @@ export function createMyProfile({
             <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">${tags}</div>
             <div class="my-listing-meta" style="margin-top:4px;">${new Date(s.created_at).toLocaleDateString('da-DK', { day:'numeric', month:'short', year:'numeric' })}</div>
           </div>
-          <button class="btn-delete" onclick="deleteSavedSearch('${s.id}', this)" title="Slet søgning">🗑️</button>
+          <button class="btn-delete" onclick="deleteSavedSearch('${s.id}', this)" title="Slet søgning">Slet</button>
         </div>`;
     }).join('');
   }
@@ -544,7 +545,7 @@ export function createMyProfile({
         return `
           <div class="trade-row">
             <div class="trade-img" onclick="openBikeModal('${trade.bike_id}')">
-              ${img ? `<img src="${img}" alt="" loading="lazy">` : '<span style="font-size:1.5rem">🚲</span>'}
+              ${img ? `<img src="${img}" alt="" loading="lazy">` : `<span style="color:var(--muted)">${iconBike(24)}</span>`}
             </div>
             <div class="trade-info">
               <div class="trade-title">${esc(bike.brand || '')} ${esc(bike.model || '')}</div>
@@ -552,7 +553,7 @@ export function createMyProfile({
               <div class="trade-date">${date}</div>
             </div>
             <div class="trade-price">${bike.price ? bike.price.toLocaleString('da-DK') + ' kr.' : ''}</div>
-            <span class="trade-status">✅ Gennemført</span>
+            <span class="trade-status">Gennemført</span>
           </div>`;
       }).join('');
     } catch (e) {

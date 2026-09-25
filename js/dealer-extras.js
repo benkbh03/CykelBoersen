@@ -321,13 +321,13 @@ export function createFollowDealer({ supabase, showToast, getCurrentUser, openLo
         .delete()
         .eq('user_id', u.id)
         .eq('dealer_id', dealerId);
-      if (error) { showToast?.('❌ Kunne ikke afmelde'); return; }
+      if (error) { showToast?.('Kunne ikke afmelde'); return; }
       showToast?.('Du følger ikke længere denne forhandler');
     } else {
       const { error } = await supabase
         .from('dealer_followers')
         .insert({ user_id: u.id, dealer_id: dealerId });
-      if (error) { showToast?.('❌ Kunne ikke følge forhandler'); return; }
+      if (error) { showToast?.('Kunne ikke følge forhandler'); return; }
       showToast?.('Du følger nu forhandleren');
     }
     if (btnEl) updateFollowButton(btnEl, !wasFollowing);

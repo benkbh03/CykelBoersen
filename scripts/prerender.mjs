@@ -195,7 +195,8 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
      hyppigste årsager til manuelle handlinger for spam med strukturerede data,
      og risikoen rammer hele domænet, ikke kun de enkelte sider.
 
-     Forsiden bygges ikke af dette script og beholder derfor sin FAQ. */
+     Forsidens eget FAQPage-schema er også fjernet (det stod ikke synligt),
+     så regex'en matcher normalt ingenting. Den bliver stående som værn. */
   html = html.replace(
     /\s*<script type="application\/ld\+json">(?:(?!<\/script>)[\s\S])*?"FAQPage"[\s\S]*?<\/script>/,
     '',
@@ -248,9 +249,9 @@ function brandPage(slug, meta) {
   const canonicalPath = `/cykler/${slug}`;
 
   const chips = [
-    meta.country ? `<span class="brand-meta-chip">🌍 ${escHtml(meta.country)}</span>` : '',
-    meta.founded ? `<span class="brand-meta-chip">📅 Grundlagt ${meta.founded}</span>` : '',
-    meta.typical_price_range ? `<span class="brand-meta-chip">💰 ${escHtml(meta.typical_price_range)}</span>` : '',
+    meta.country ? `<span class="brand-meta-chip">${escHtml(meta.country)}</span>` : '',
+    meta.founded ? `<span class="brand-meta-chip">Grundlagt ${meta.founded}</span>` : '',
+    meta.typical_price_range ? `<span class="brand-meta-chip">${escHtml(meta.typical_price_range)}</span>` : '',
   ].join('');
 
   const models = meta.popular_models ? `
@@ -339,7 +340,6 @@ function blogArticlePage(article) {
       <article class="blog-article">
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/blog')">← Tilbage</button>
         <header class="blog-article-header">
-          <div class="blog-article-emoji">${article.heroEmoji}</div>
           <span class="blog-article-category">${escHtml(article.category)}</span>
           <h1 class="blog-article-title">${escHtml(article.title)}</h1>
           <div class="blog-article-meta">
@@ -360,7 +360,6 @@ function blogArticlePage(article) {
           <div class="blog-related-grid">
             ${relatedFinal.map(a => `
               <a class="blog-related-card" href="/blog/${a.slug}/">
-                <div class="blog-related-emoji">${a.heroEmoji}</div>
                 <div class="blog-related-info">
                   <span class="blog-related-cat">${escHtml(a.category)}</span>
                   <h3>${escHtml(a.title)}</h3>
@@ -409,7 +408,6 @@ function blogOverviewPage() {
         <div class="blog-articles-grid" id="blog-articles-grid">
           ${articles.map(a => `
             <a class="blog-card" href="/blog/${a.slug}/" data-cat="${escHtml(a.category)}">
-              <div class="blog-card-emoji">${a.heroEmoji}</div>
               <div class="blog-card-body">
                 <span class="blog-card-category">${escHtml(a.category)}</span>
                 <h2 class="blog-card-title">${escHtml(a.title)}</h2>
@@ -660,7 +658,7 @@ function rentalItemPage(it) {
         ${primary ? `<img class="rental-item-main-img" src="${escHtml(primary)}" alt="${escHtml(name)}" style="max-width:520px;width:100%;border-radius:14px;">` : ''}
         <h1 class="rental-item-title">${escHtml(name)}</h1>
         <p class="rental-item-price">${daily.toLocaleString('da-DK')} kr. <span>/ dag</span></p>
-        <div class="rental-item-meta">${it.type ? `<span class="rental-item-chip">${escHtml(it.type)}</span>` : ''}${city ? `<span class="rental-item-chip">📍 ${escHtml(city)}</span>` : ''}</div>
+        <div class="rental-item-meta">${it.type ? `<span class="rental-item-chip">${escHtml(it.type)}</span>` : ''}${city ? `<span class="rental-item-chip">${escHtml(city)}</span>` : ''}</div>
         ${descHtml}
       </div>`;
 

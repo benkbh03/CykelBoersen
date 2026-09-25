@@ -11,13 +11,13 @@ export const CATEGORY_META = {
   racercykler: {
     type: 'Racercykel',
     name: 'Racercykler',
+    singular: 'Racercykel',
     h1: 'Brugte og nye racercykler til salg',
     title: 'Brugte racercykler til salg, køb & sælg | Cykelbørsen',
     metaDesc: 'Find brugte og nye racercykler til salg i Danmark. Filtrér på gruppesæt, rammemateriale, størrelse og pris. Fra private sælgere og forhandlere på Cykelbørsen.',
     intro: 'Racercykler er bygget til fart og lange distancer på asfalt: lette rammer, smalle dæk og aerodynamisk geometri. På Cykelbørsen finder du alt fra budget-aluminium til Tour de France-niveau carbon, både brugt og nyt. Brug filtrene til at indsnævre på gruppesæt (Shimano 105, Ultegra, SRAM), rammemateriale, stelstørrelse og pris, så du finder den rigtige racer til dit budget.',
     faq: [
       { q: 'Hvad koster en god brugt racercykel?', a: 'En velholdt brugt racercykel i aluminium med Shimano 105 starter typisk omkring 5.000–10.000 kr, mens carbon-racere med Ultegra eller Dura-Ace ligger fra 15.000 kr og opefter. Prisen afhænger af alder, gruppesæt og stand.' },
-      { q: 'Hvilken størrelse racercykel skal jeg have?', a: 'Racercykler måles typisk i cm (stellængde) eller S/M/L. Din højde og indvendige benlængde afgør størrelsen. Se vores stelstørrelse-guide for en tabel, eller filtrér direkte på størrelse her på siden.' },
       { q: 'Skal jeg vælge aluminium eller carbon?', a: 'Aluminium er billigere og robust, godt til begynder og pendling. Carbon er lettere og dæmper vibrationer bedre, men koster mere. Til de fleste motionister er en aluminiumsracer med et godt gruppesæt et bedre køb end en billig carbon.' },
     ],
     related: ['gravelbikes', 'mountainbikes', 'el-cykler'],
@@ -25,6 +25,7 @@ export const CATEGORY_META = {
   mountainbikes: {
     type: 'Mountainbike',
     name: 'Mountainbikes',
+    singular: 'Mountainbike',
     h1: 'Brugte og nye mountainbikes (MTB) til salg',
     title: 'Brugte mountainbikes (MTB) til salg | Cykelbørsen',
     metaDesc: 'Køb og sælg brugte og nye mountainbikes i Danmark. Hardtail og fuld affjedring (fully), 29" og 27,5". Filtrér på affjedring, gruppesæt og pris på Cykelbørsen.',
@@ -39,6 +40,7 @@ export const CATEGORY_META = {
   'el-cykler': {
     type: 'El-cykel',
     name: 'El-cykler',
+    singular: 'El-cykel',
     h1: 'Brugte og nye el-cykler til salg',
     title: 'Brugte el-cykler til salg, køb & sælg | Cykelbørsen',
     metaDesc: 'Find brugte og nye el-cykler i Danmark. Tjek batteri, motor og rækkevidde. Bosch, Shimano, Mahle m.fl. Filtrér på motor og pris på Cykelbørsen.',
@@ -53,6 +55,7 @@ export const CATEGORY_META = {
   citybikes: {
     type: 'Citybike',
     name: 'Citybikes',
+    singular: 'Citybike',
     h1: 'Brugte og nye citybikes til salg',
     title: 'Brugte citybikes & pendlercykler til salg | Cykelbørsen',
     metaDesc: 'Køb og sælg brugte og nye citybikes og pendlercykler i Danmark. Komfortable bycykler til hverdagen. Filtrér på gear, størrelse og pris på Cykelbørsen.',
@@ -66,6 +69,7 @@ export const CATEGORY_META = {
   ladcykler: {
     type: 'Ladcykel',
     name: 'Ladcykler',
+    singular: 'Ladcykel',
     h1: 'Brugte og nye ladcykler til salg',
     title: 'Brugte ladcykler til salg, christiania & long john | Cykelbørsen',
     metaDesc: 'Find brugte og nye ladcykler i Danmark: christianiacykler, long john og el-ladcykler. Til børn og transport. Filtrér på type og pris på Cykelbørsen.',
@@ -79,6 +83,7 @@ export const CATEGORY_META = {
   boernecykler: {
     type: 'Børnecykel',
     name: 'Børnecykler',
+    singular: 'Børnecykel',
     h1: 'Brugte og nye børnecykler til salg',
     title: 'Brugte børnecykler til salg, alle størrelser | Cykelbørsen',
     metaDesc: 'Køb og sælg brugte og nye børnecykler i Danmark: 12", 16", 20", 24". Find den rigtige størrelse til dit barn. Filtrér på pris på Cykelbørsen.',
@@ -92,6 +97,7 @@ export const CATEGORY_META = {
   gravelbikes: {
     type: 'Gravel',
     name: 'Gravelbikes',
+    singular: 'Gravelbike',
     h1: 'Brugte og nye gravelbikes til salg',
     title: 'Brugte gravelbikes til salg, grus & eventyr | Cykelbørsen',
     metaDesc: 'Find brugte og nye gravelbikes i Danmark. Én cykel til grus, asfalt og bikepacking. Filtrér på gruppesæt (GRX, Apex), dæk og pris på Cykelbørsen.',

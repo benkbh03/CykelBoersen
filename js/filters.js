@@ -1,5 +1,6 @@
 import { sortTypeFilterByCount } from './type-sort.js';
 import { syncTypeControls } from './type-sync.js';
+import { iconPin } from './utils.js';
 
 export function createFilters({
   supabase,
@@ -415,7 +416,7 @@ export function createFilters({
     if (within.length === 0) {
       const el = document.createElement('div');
       el.className = 'nearme-empty empty-state-box';
-      el.innerHTML = `<div class="empty-state-icon">📍</div><h3 class="empty-state-title">Ingen cykler inden for ${radius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
+      el.innerHTML = `<div class="empty-state-icon">${iconPin(40)}</div><h3 class="empty-state-title">Ingen cykler inden for ${radius} km</h3><p class="empty-state-sub">Prøv en større radius</p>`;
       grid.appendChild(el);
     }
     showToast(`${within.length} ${within.length === 1 ? 'cykel' : 'cykler'} inden for ${radius} km`);

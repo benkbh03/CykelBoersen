@@ -53,7 +53,6 @@ export function createBlogPage({
         <div class="blog-articles-grid" id="blog-articles-grid">
           ${articles.map(a => `
             <a class="blog-card" href="/blog/${a.slug}/" onclick="event.preventDefault();navigateTo('/blog/${a.slug}')" data-cat="${esc(a.category)}">
-              <div class="blog-card-emoji">${a.heroEmoji}</div>
               <div class="blog-card-body">
                 <span class="blog-card-category">${esc(a.category)}</span>
                 <h2 class="blog-card-title">${esc(a.title)}</h2>
@@ -112,7 +111,6 @@ export function createBlogPage({
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/blog')">← Tilbage</button>
 
         <header class="blog-article-header">
-          <div class="blog-article-emoji">${article.heroEmoji}</div>
           <span class="blog-article-category">${esc(article.category)}</span>
           <h1 class="blog-article-title">${esc(article.title)}</h1>
           <div class="blog-article-meta">
@@ -141,7 +139,6 @@ export function createBlogPage({
           <div class="blog-related-grid">
             ${relatedFinal.map(a => `
               <a class="blog-related-card" href="/blog/${a.slug}/" onclick="event.preventDefault();navigateTo('/blog/${a.slug}')">
-                <div class="blog-related-emoji">${a.heroEmoji}</div>
                 <div class="blog-related-info">
                   <span class="blog-related-cat">${esc(a.category)}</span>
                   <h3>${esc(a.title)}</h3>

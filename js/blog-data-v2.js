@@ -1,7 +1,7 @@
 /* ============================================================
    BLOG-INDHOLD
    Hver artikel har slug, title, excerpt, metaDesc, category,
-   readTime, publishedAt, heroEmoji og body (HTML).
+   readTime, publishedAt og body (HTML).
    ============================================================ */
 
 export const BLOG_ARTICLES = {
@@ -13,7 +13,6 @@ export const BLOG_ARTICLES = {
     category: 'Guides',
     readTime: 6,
     publishedAt: '2026-05-24',
-    heroEmoji: '🚵',
     body: `
       <p>Når folk skal købe deres første rigtige mountainbike, går de ofte direkte til mærke og pris. Men den beslutning der betyder mest for hvordan cyklen føles under dig, er affjedringen. Valget står typisk mellem en hardtail med affjedring kun foran og en fully med affjedring både for og bag, og det rigtige svar afhænger næsten udelukkende af hvor og hvordan du kører.</p>
 
@@ -27,7 +26,7 @@ export const BLOG_ARTICLES = {
       <p>Den er også lettere, kræver mindre vedligehold og tråder mere effektivt i opstigninger og på fast underlag. Hvis du primært kører på grusveje, skovveje, lettere singletrack eller bruger cyklen som en hurtig allround-cykel, er en hardtail oftest det rigtige valg. Det er også den klogeste start for de fleste begyndere.</p>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;">
-        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Forgaffel (hardtail)'})" style="background:var(--rust);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se hardtail-mountainbikes →</a>
+        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Forgaffel (hardtail)'})" style="background:var(--rust);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se hardtail-mountainbikes</a>
       </div>
 
       <h2>Fully: kontrol og komfort på det tekniske</h2>
@@ -35,7 +34,7 @@ export const BLOG_ARTICLES = {
       <p>Prisen er vægt, kroner og vedligehold. En fully er tungere, dyrere ved samme komponentniveau, og bagdæmper, lejer og pivotpunkter skal serviceres og slides over tid. Det er ikke afskrækkende, men det er en omkostning du skal regne med.</p>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;">
-        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Fuld affjedring (fully)'})" style="background:var(--forest);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se fuldaffjedrede mountainbikes →</a>
+        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Fuld affjedring (fully)'})" style="background:var(--forest);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se fuldaffjedrede mountainbikes</a>
       </div>
 
       <h2>Sådan vælger du efter din kørsel</h2>
@@ -57,7 +56,6 @@ export const BLOG_ARTICLES = {
     category: 'Sikkerhed',
     readTime: 4,
     publishedAt: '2026-11-08',
-    heroEmoji: '🛡️',
     body: `
       <p>Forestil dig at du lige har købt en velholdt brugt cykel for 8.000 kr, og en uge senere ringer politiet. Cyklen var stjålet. Du står både uden cykel og uden penge. Den situation kan man stort set altid undgå med fem minutters opmærksomhed inden hver handel, og det er en lille investering i forhold til hvad en brugt cykel typisk koster.</p>
 
@@ -97,7 +95,6 @@ export const BLOG_ARTICLES = {
     category: 'Guides',
     readTime: 6,
     publishedAt: '2026-11-05',
-    heroEmoji: '📏',
     body: `
       <p>At købe en cykel der ikke passer er en af de hyppigste måder at spilde penge på. Den ender enten i kælderen eller bliver solgt videre med tab efter et par måneder. Heldigvis er det ikke så svært at ramme den rigtige størrelse, hvis man forstår de tre faktorer der spiller ind: højde, benlængde og cykeltype.</p>
 
@@ -134,7 +131,6 @@ export const BLOG_ARTICLES = {
     category: 'Køb',
     readTime: 5,
     publishedAt: '2026-11-02',
-    heroEmoji: '⚡',
     body: `
       <p>Brugte el-cykler kan være en rigtig god handel. Du sparer typisk mellem 30 og 50 procent i forhold til ny pris. Men en e-cykel har flere kritiske komponenter end en almindelig cykel (batteri, motor, controller og display), og hver af dem kan koste fem til femten tusind kroner at udskifte. Det er derfor det er værd at bruge et kvarter på at tjekke en brugt e-cykel grundigt igennem inden du betaler.</p>
 
@@ -178,7 +174,6 @@ export const BLOG_ARTICLES = {
     category: 'Salg',
     readTime: 4,
     publishedAt: '2026-10-28',
-    heroEmoji: '📸',
     body: `
       <p>Forskellen mellem en cykel der sælges på to dage til en god pris, og en der ligger og samler støv i tre måneder, ligger ofte i billederne. Det kræver ikke en pro-fotograf at få gode resultater, men der er en håndfuld ting der gør en stor forskel. Det hele kan klares med en moderne mobiltelefon.</p>
 
@@ -220,7 +215,6 @@ export const BLOG_ARTICLES = {
     category: 'Salg',
     readTime: 5,
     publishedAt: '2026-10-25',
-    heroEmoji: '💰',
     body: `
       <p>At sælge en cykel hurtigt og til en god pris er ikke et tilfælde. Det er et håndværk man kan lære på en halv time. Her er det jeg ville gøre hvis jeg skulle sælge en cykel i dag.</p>
 
@@ -263,7 +257,6 @@ export const BLOG_ARTICLES = {
     category: 'Køb',
     readTime: 6,
     publishedAt: '2026-10-20',
-    heroEmoji: '🚴',
     body: `
       <p>15.000 kr er en god prisklasse at komme ind i racercykling. Ny er du på entry-til-mid niveau hos de store mærker, og brugt får du betydeligt mere for pengene, typisk en premium cykel der er to-tre år gammel. Spørgsmålet er hvad du skal lede efter, og hvilke modeller der reelt giver mest valuta for pengene.</p>
 

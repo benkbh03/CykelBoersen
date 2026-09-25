@@ -3,7 +3,8 @@
    ============================================================ */
 
 import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
-import { validatePassword, iconDealer, iconStar } from './utils.js';
+import { validatePassword, iconDealer, iconStar, iconMail } from './utils.js';
+import { iconSearch } from './ui-icons.js';
 
 export function createDealersPage({
   supabase,
@@ -157,11 +158,11 @@ export function createDealersPage({
       grid.className = 'dealer-cards dealer-empty-state';
       grid.innerHTML = `
       <div class="dealer-empty-card">
-        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+        <div style="margin-bottom:16px;color:var(--muted);">${iconSearch(40)}</div>
         <h3>Ingen forhandlere endnu</h3>
         <p>Bliv en af de første forhandlere på Cykelbørsen.
 Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
-        <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik →</button>
+        <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik</button>
       </div>`;
       return;
     }
@@ -297,7 +298,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       const remaining = filtered.length - DEALERS_INITIAL_LIMIT;
       const btn = document.createElement('div');
       btn.id = 'see-all-dealers-btn';
-      btn.innerHTML = `<button onclick="expandAllDealers()" class="see-all-dealers-cta">Se alle forhandlere (${remaining} flere) →</button>`;
+      btn.innerHTML = `<button onclick="expandAllDealers()" class="see-all-dealers-cta">Se alle forhandlere (${remaining} flere)</button>`;
       grid.after(btn);
     }
   }
@@ -431,7 +432,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Ubegrænset antal annoncer</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
-          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Prioriteret placering i søgning</span></div>
+          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Profilside med alle jeres cykler</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis, ingen kreditkort</span></div>
         </div>
 
@@ -443,7 +444,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
             Forhandlerkonti oprettes som en separat konto. Log ud og opret en ny konto med din butiks e-mailadresse.
           </p>
           <button class="form-submit" onclick="logout().then(()=>navigateTo('/bliv-forhandler'))" style="width:auto;padding:14px 32px;margin-bottom:12px;">
-            Log ud og opret forhandlerkonto →
+            Log ud og opret forhandlerkonto
           </button>
           <div>
             <button onclick="navigateTo('/')" style="background:none;border:none;color:var(--muted);font-size:0.85rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">
@@ -464,7 +465,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <p class="bd-page-subtitle">Din butiksprofil er aktiv på Cykelbørsen</p>
         </div>
         <div style="text-align:center;padding:32px 0;">
-          <button class="form-submit" onclick="navigateTo('/min-profil')" style="width:auto;padding:14px 32px;">Se min profil →</button>
+          <button class="form-submit" onclick="navigateTo('/min-profil')" style="width:auto;padding:14px 32px;">Se min profil</button>
         </div>
       </div>`;
       return;
@@ -479,7 +480,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       </div>
 
       <div class="bd-trial-banner">
-        🎉 <strong>Gratis for forhandlere</strong>: opret din butiksprofil uden binding eller betaling.
+        <strong>Gratis for forhandlere</strong>: opret din butiksprofil uden binding eller betaling.
       </div>
 
       <div class="bd-social-proof" id="bd-social-proof" aria-live="polite">
@@ -499,55 +500,34 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
 
       <p class="bd-preview-link">
         Vil du se hvordan jeres butik kommer til at se ud?
-        <a onclick="navigateTo('/forhandlere')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">Se eksisterende forhandlere →</a>
+        <a onclick="navigateTo('/forhandlere')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">Se eksisterende forhandlere</a>
       </p>
 
       <div class="bd-perks">
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Ubegrænset antal annoncer</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
-        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Prioriteret placering i søgning</span></div>
+        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Profilside med alle jeres cykler</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis, ingen kreditkort</span></div>
       </div>
 
-      <div class="bd-why">
-        <h2 class="bd-why-title">Derfor vælger forhandlere Cykelbørsen</h2>
-        <div class="bd-why-grid">
-          <div class="bd-why-item">
-            <span class="bd-why-icon" aria-hidden="true">🚲</span>
-            <div class="bd-why-text">
-              <strong>Cykler i centrum</strong>
-              <p>Her drukner jeres cykler ikke mellem møbler, tøj og alt muligt andet. Køberne kommer for cykler, og kun cykler.</p>
-            </div>
-          </div>
-          <div class="bd-why-item">
-            <span class="bd-why-icon" aria-hidden="true">🔍</span>
-            <div class="bd-why-text">
-              <strong>Købere finder præcis jeres cykel</strong>
-              <p>Filtre for gearsæt, stelmateriale, motor, vægt og størrelse. Når nogen leder efter en Shimano 105-racer i str. 56, dukker jeres annonce op.</p>
-            </div>
-          </div>
-          <div class="bd-why-item">
-            <span class="bd-why-icon" aria-hidden="true">✓</span>
-            <div class="bd-why-text">
-              <strong>I står frem som en rigtig butik</strong>
-              <p>Det verificerede forhandler-badge med CVR-tjek adskiller jer tydeligt fra private sælgere. Køberne ved, de handler med en professionel forhandler.</p>
-            </div>
-          </div>
-          <div class="bd-why-item">
-            <span class="bd-why-icon" aria-hidden="true">🇩🇰</span>
-            <div class="bd-why-text">
-              <strong>Dansk og lokalt</strong>
-              <p>Dansk platform, dansk support og lokal afhentning. Bygget til det danske cykelmarked.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      ${/* Var "Derfor vælger forhandlere Cykelbørsen" med fire kort og emoji.
+            Overskriften påstod noget om hvad andre forhandlere gør, og første
+            kort om hvad andre markedspladser gør. Nu kun hvad forhandleren
+            selv får, som almindelig nummereret tekst. */''}
+      <section class="bd-why">
+        <h2 class="bd-why-title">Hvad du får som forhandler</h2>
+        <ol class="num-steps">
+          <li><strong>En markedsplads kun for cykler.</strong> Cykelbørsen handler med cykler og cykeltilbehør, ikke andre varer.</li>
+          <li><strong>Filtre der matcher jeres lager.</strong> Købere kan filtrere på gearsæt, stelmateriale, motor, vægt og størrelse. Udfylder I specifikationerne, bliver annoncen fundet af dem der leder efter netop den cykel.</li>
+          <li><strong>Et verificeret forhandler-badge.</strong> Når vi har tjekket jeres CVR-nummer, står badget på jeres profil og annoncer, så køberen kan se at de handler med en virksomhed.</li>
+          <li><strong>Dansk platform og support.</strong> Siden, supporten og afhentningen foregår i Danmark.</li>
+        </ol>
+      </section>
 
       <a href="/tilladt-sortiment/" onclick="event.preventDefault();navigateTo('/tilladt-sortiment')" class="bd-scope-mini">
-        <span class="bd-scope-mini-icon" aria-hidden="true">🚴</span>
         <span class="bd-scope-mini-text">Hvad må jeg sælge på Cykelbørsen?</span>
-        <span class="bd-scope-mini-arrow" aria-hidden="true">→</span>
+
       </a>
 
       <div class="bd-form">
@@ -588,7 +568,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <input type="hidden" id="dealer-email" value="${esc(currentUser?.email || '')}">
         `}
 
-        <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil →</button>
+        <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">
           Gratis at oprette, ingen binding, ingen kreditkort.<br>
           Ved at oprette en forhandlerkonto accepterer du vores <a onclick="navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.
@@ -700,8 +680,8 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
     // lader vi den passere — admin verificerer manuelt som backstop.
     if (cvrCheck && !cvrCheck.valid && cvrCheck.reason !== 'lookup_error') {
       showToast(cvrCheck.reason === 'ceased'
-        ? '⚠️ Virksomheden står som ophørt i CVR-registret. Tjek nummeret.'
-        : '⚠️ CVR-nummer ikke fundet i registret. Tjek at det er korrekt.');
+        ? 'Virksomheden står som ophørt i CVR-registret. Tjek nummeret.'
+        : 'CVR-nummer ikke fundet i registret. Tjek at det er korrekt.');
       return;
     }
 
@@ -789,7 +769,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <h1 class="bd-page-title">Tjek din indbakke</h1>
           <p class="bd-page-subtitle">Vi har sendt en bekræftelsesmail til <strong>${esc(email)}</strong>.<br>Klik på linket i mailen for at aktivere din forhandlerkonto.</p>
         </div>
-        <div style="text-align:center;padding:32px 0;font-size:3rem;">📬</div>
+        <div style="text-align:center;padding:32px 0;color:var(--forest);">${iconMail(48)}</div>
       </div>`;
       return;
     }

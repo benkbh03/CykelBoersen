@@ -92,30 +92,18 @@ export function createSizeFinder({
             </div>
           </details>
 
-          <button type="submit" class="size-finder-submit">Find min størrelse →</button>
+          <button type="submit" class="size-finder-submit">Find min størrelse</button>
         </form>
 
         <div id="size-finder-result" class="size-finder-result" style="display:none;"></div>
 
         <section class="size-finder-info">
           <h2 class="size-finder-info-title">Sådan virker det</h2>
-          <div class="size-finder-info-grid">
-            <div class="size-finder-info-card">
-              <div class="size-finder-info-icon">📏</div>
-              <h3>1. Højde alene</h3>
-              <p>Vi bruger industri-standardtabeller baseret på højde, hvilket er præcist nok for 80% af ryttere.</p>
-            </div>
-            <div class="size-finder-info-card">
-              <div class="size-finder-info-icon">🦵</div>
-              <h3>2. Med benlængde</h3>
-              <p>Indtaster du også benlængde, beregner vi præcis cm-størrelse, hvilket er særligt nyttigt hvis du er i grænseland mellem to størrelser.</p>
-            </div>
-            <div class="size-finder-info-card">
-              <div class="size-finder-info-icon">🚲</div>
-              <h3>3. Cykeltypen påvirker</h3>
-              <p>En racer sidder anderledes end en citybike. Vi bruger forskellige formler pr. cykeltype så du får den rigtige fit.</p>
-            </div>
-          </div>
+          <ol class="num-steps">
+            <li><strong>Højde alene.</strong> Vi bruger standardtabeller baseret på højde, hvilket er præcist nok for de fleste ryttere.</li>
+            <li><strong>Med benlængde.</strong> Indtaster du også benlængde, beregner vi en præcis størrelse i cm. Det er særligt nyttigt, hvis du ligger mellem to størrelser.</li>
+            <li><strong>Cykeltypen påvirker.</strong> En racer sidder anderledes end en citybike, så vi bruger forskellige formler pr. cykeltype.</li>
+          </ol>
         </section>
 
         <section class="size-finder-faq">
@@ -133,15 +121,6 @@ export function createSizeFinder({
           <details class="size-finder-faq-item">
             <summary>Skal jeg altid lave en prøvetur?</summary>
             <p>Ja. Vores værktøj er meget præcist baseret på de standard-formler producenter selv bruger. Men hver krop er unik. En 5-minutters prøvetur kan afsløre om en cykel der "passer på papiret" virkelig passer dig.</p>
-          </details>
-          <details class="size-finder-faq-item">
-            <summary>Børnecykler: hvordan finder jeg den rigtige størrelse?</summary>
-            <p>Til børn handler det mere om hjulstørrelse end stelstørrelse:
-            <ul><li>3-5 år: 12-16" hjul</li>
-            <li>5-7 år: 16-20" hjul</li>
-            <li>7-10 år: 20-24" hjul</li>
-            <li>10+ år: 24-26" hjul</li></ul>
-            Barnet skal kunne sætte begge fødder fast på jorden når det sidder på sadlen.</p>
           </details>
         </section>
       </div>
@@ -201,7 +180,7 @@ export function createSizeFinder({
 
     resultEl.innerHTML = `
       <div class="size-finder-result-card">
-        <div class="size-finder-result-emoji">📏</div>
+        
         <p class="size-finder-result-label">Vi anbefaler dig</p>
         <h2 class="size-finder-result-size">${result.sizeShort}</h2>
         <p class="size-finder-result-cmrange">${result.cmRange[0]}–${result.cmRange[1]} cm rammestørrelse</p>
@@ -219,12 +198,12 @@ export function createSizeFinder({
 
         <div class="size-finder-result-cta">
           <button class="size-finder-cta-primary" onclick="window.applyPopularSearch && window.applyPopularSearch({type:'${input.type}', size:'${result.sizeLabel}'})">
-            🔍 Se ${result.sizeShort}-cykler på Cykelbørsen
+            Se ${result.sizeShort}-cykler på Cykelbørsen
           </button>
         </div>
 
         <div class="size-finder-result-tips">
-          <h3>💡 Husk</h3>
+          <h3>Husk</h3>
           <ul>
             <li><strong>Mærkeforskel</strong>: en "M" Trek er ikke 100% lig en "M" Specialized. Tjek altid producentens egen tabel</li>
             <li><strong>Prøvetur</strong>: lav altid en kort prøvetur før du køber</li>

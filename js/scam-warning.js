@@ -57,7 +57,7 @@ export function maybeShowScamWarning() {
           <li>
             <strong>Tjek stelnummeret.</strong>
             <span>Bed om stelnummeret før mødet og slå det op gratis hos politiet. Nægter sælger? Drop handlen.</span>
-            <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="scam-link">Tjek stelnummer på politi.dk →</a>
+            <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="scam-link">Tjek stelnummer på politi.dk</a>
           </li>
           <li>
             <strong>Betal aldrig forud.</strong>

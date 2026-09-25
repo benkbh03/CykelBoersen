@@ -69,7 +69,7 @@ function renderNudge(stale) {
   card.innerHTML = `
     <style>@keyframes dfnIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}</style>
     <div style="padding:13px 16px;background:linear-gradient(135deg,#1f3d2b,#a8521f);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <strong style="font-size:0.95rem;">🔄 Er priserne stadig aktuelle?</strong>
+      <strong style="font-size:0.95rem;">Er priserne stadig aktuelle?</strong>
       <button data-act="close" aria-label="Luk" style="background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;line-height:1;padding:0;">×</button>
     </div>
     <div style="padding:12px 16px;">

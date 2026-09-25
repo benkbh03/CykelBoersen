@@ -146,6 +146,7 @@ Gå den igennem selv før en større ændring:
 - [ ] Nye **tredjepartskald der koster penge pr. kald**? Er der rate limiting OG budgetalarm på dem?
 - [ ] Nye **miljøvariabler** som produktionen ikke kender endnu? (Edge functions fejler tavst uden dem.)
 - [ ] Nye **persondata eller ny underleverandør**? Hvis ja: kør `gdpr-update`-skillen.
+- [ ] Er en funktion **fjernet eller ændret**? Søg efter dens løfter i UI-teksten ("tjekkes", "prioriteret", "verificeret"). Teksten må ikke love mere end koden gør.
 - [ ] `console.log` med persondata, efterladte `TODO`'er eller **udkommenteret sikkerhedskode** i diffen?
 - [ ] Er `supabase/sql/CURRENT_POLICIES.md` stadig aktuel? Har ændringen rørt en RLS-politik, er facitlisten forældet, og `rls-og-autorisation` arbejder i blinde næste gang.
 
@@ -203,6 +204,7 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | Samme side under flere adresser, med og uden afsluttende skråstreg | 4 (canonical og sitemap i august · routeren 9. sep. · interne links 9. sep. · JSON-LD-`url` i syv filer 25. sep.) | Delvist lukket. Reglen er `canonicalUrl()` i `js/utils.js`, med kopier i `scripts/prerender.mjs` og `scripts/generate-sitemap.mjs`. Byg aldrig `${BASE_URL}/sti` i hånden, heller ikke i JSON-LD: kald `canonicalUrl` eller slut stien med `/`. Fejlen er tavs i ugevis og dukker først op i Search Console som "Alternate page with proper canonical tag" eller "Page with redirect" |
 | Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-`V` stod på `20260830b` og `main.js`' config-import på `20260701t` mens CSS var nået til `w`) | **Lukket.** Versionen står nu KUN på `<html data-asset-v>` i `index.html`; bootstrap'en, `ASSET_VERSION` og `main.js`' config-import læser den derfra. CSS-linkene er stadig literaler (statiske `href`s skal blokere gengivelsen), men bruger samme streng, så én søg-og-erstat i `index.html` rammer alt. Tæl stadig med `grep -c` efter en bump |
 | Ny eksport i et EKSISTERENDE modul, som en ændret fil importerer statisk | 1 (25. sep.: `iconSearch` m.fl. lagt i `utils.js`; ny `main.js?v=…` mødte en cachet gammel `utils.js` → "does not provide an export named" → hele siden død) | **Regel:** statiske imports (`from './utils.js'`) har ingen `?v=` i URL'en, så browser og Cloudflare kan levere en gammel udgave i timevis efter deploy. Tilføj aldrig en eksport til et eksisterende modul og importér den i samme deploy. Læg nye eksporter i en **ny fil** (ingen gammel udgave kan ligge i en cache), eller gør importen dynamisk med `?v=${ASSET_VERSION}`. Fejlen ses ikke lokalt eller i en ren browser, kun hos besøgende med cache |
+| UI-tekst lover noget koden ikke gør | 2 (26. sep.: "Prioriteret placering i søgning" på /bliv-forhandler/, men forhandlere sorteres som alle andre · "tyveri-tjekkes" ved stelnummer-feltet, men opslaget blev fjernet) | Begge rettet. Tavs fejl: ingen crash, men en løgn over for brugeren, og STRATEGI.md siger "vi skal ikke lade som om". Ikke en agent endnu: **én tjeklistelinje** i før-deploy-listen. Når en funktion fjernes eller ændres, så søg efter dens løfter i UI-teksten (`grep -rn` på funktionens navn i `js/`, `partials/`, `index.html`) |
 
 ## Kodestil og filstruktur
 
@@ -226,7 +228,8 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - Ingen farvede `box-shadow` (orange glød) og ingen guldgradienter. Skygger er neutrale.
 - Fraunces bruges kun i logoet. Al anden tekst er DM Sans.
 - Annoncekortets sælgerlinje bygges af `cardSellerLine()` i `js/card-seller.js`, aldrig i hånden. Én linje (navn + by) på desktop, to på kort under 480 px.
-- **Status (26. sep.):** Punkterne ovenfor er vedtaget, men ikke gennemført på eksisterende kode. Der står ca. 265 Fraunces-forekomster, 36 versal-overskrifter, 18 hover-løft og ca. 33 farvede skygger/guldgradienter. De blev fravalgt i design-oprydning del 2, fordi de ikke består prøven i `STRATEGI.md`. Ryd op i den blok du alligevel rører.
+- **Status (26. sep.):** Emojis og pile i knap- og linktekster er fjernet fra alle sider undtagen admin (del 3). Tilbage står bevidst: beskedkoderne (💰 ✅ ✉️), hurtigsvaret "Stadig til salg 👍" (indsættes i selve beskeden), prisfald-mærkets `↓` (betyder "faldet") og admin. Fraunces (ca. 265), versal-overskrifter (36), hover-løft (18) og farvede skygger/guldgradienter (ca. 33) er IKKE ryddet op. Ryd op i den blok du alligevel rører.
+- "Sådan virker det"-sektioner er en nummereret liste (`<ol class="num-steps">`), ikke kort med ikoner.
 
 ## Teknologier
 
