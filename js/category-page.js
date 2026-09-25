@@ -192,14 +192,15 @@ export function createCategoryPage({
         '@type': 'CollectionPage',
         'name': meta.h1,
         'description': meta.metaDesc,
-        'url': `${BASE_URL}/${slug}`,
+        // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i utils.js)
+        'url': `${BASE_URL}/${slug}/`,
       },
       {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         'itemListElement': [
           { '@type': 'ListItem', position: 1, name: 'Forside', item: `${BASE_URL}/` },
-          { '@type': 'ListItem', position: 2, name: meta.name, item: `${BASE_URL}/${slug}` },
+          { '@type': 'ListItem', position: 2, name: meta.name, item: `${BASE_URL}/${slug}/` },
         ],
       },
     ];

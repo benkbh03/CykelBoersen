@@ -427,7 +427,8 @@ export function createValuation({
       '@type': 'WebApplication',
       'name': 'Cykel-vurdering',
       'description': 'Gratis værktøj til at estimere markedsværdien af din cykel baseret på rigtige handler på Cykelbørsen.',
-      'url': `${BASE_URL}/vurder-min-cykel`,
+      // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i utils.js)
+      'url': `${BASE_URL}/vurder-min-cykel/`,
       'applicationCategory': 'BusinessApplication',
       'offers': {
         '@type': 'Offer',

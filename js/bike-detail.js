@@ -822,7 +822,9 @@ export function createBikeDetail({
       'image': allImages.length ? allImages : (primaryImg ? [primaryImg] : []),
       'brand': { '@type': 'Brand', 'name': b.brand },
       'category': b.type,
-      'url': `${BASE_URL}/bike/${bikeId}`,
+      // Afsluttende skråstreg: samme adresse som canonical og den prerendrede
+      // JSON-LD (canonicalUrl i utils.js). Uden den peger den på en 301.
+      'url': `${BASE_URL}/bike/${bikeId}/`,
       'offers': {
         '@type': 'Offer',
         'price': b.price,
@@ -830,7 +832,7 @@ export function createBikeDetail({
         'priceValidUntil': priceValidUntil,
         'availability': 'https://schema.org/InStock',
         'itemCondition': b.condition === 'Ny' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
-        'url': `${BASE_URL}/bike/${bikeId}`,
+        'url': `${BASE_URL}/bike/${bikeId}/`,
         'seller': {
           '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
           'name': b.profiles?.shop_name || b.profiles?.name || 'Sælger',
