@@ -425,14 +425,14 @@ function blogOverviewPage() {
     '@type': 'Blog',
     name: 'Cykelbørsen Blog',
     description: 'Guides, tests og tips om cykler.',
-    url: `${BASE_URL}/blog`,
+    url: canonicalUrl('/blog'),
     publisher: { '@type': 'Organization', name: 'Cykelbørsen', url: BASE_URL },
     blogPost: articles.map(a => ({
       '@type': 'BlogPosting',
       headline: a.title,
       description: a.excerpt,
       datePublished: a.publishedAt,
-      url: `${BASE_URL}/blog/${a.slug}`,
+      url: canonicalUrl(`/blog/${a.slug}`),
     })),
   }];
 

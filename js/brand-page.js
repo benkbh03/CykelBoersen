@@ -296,7 +296,8 @@ export function createBrandPage({
       '@type': 'CollectionPage',
       'name': `Brugte og nye ${brandName} cykler`,
       'description': meta.description,
-      'url': `${BASE_URL}/cykler/${brandToSlug(brandName)}`,
+      // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i utils.js)
+      'url': `${BASE_URL}/cykler/${brandToSlug(brandName)}/`,
       'about': {
         '@type': 'Brand',
         'name': brandName,

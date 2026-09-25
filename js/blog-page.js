@@ -170,7 +170,9 @@ export function createBlogPage({
       '@type': 'Blog',
       'name': 'Cykelbørsen Blog',
       'description': 'Guides, tests og tips om cykler.',
-      'url': `${BASE_URL}/blog`,
+      // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i
+      // utils.js). Uden den peger den strukturerede data på en 301.
+      'url': `${BASE_URL}/blog/`,
       'publisher': {
         '@type': 'Organization',
         'name': 'Cykelbørsen',
@@ -181,7 +183,7 @@ export function createBlogPage({
         'headline': a.title,
         'description': a.excerpt,
         'datePublished': a.publishedAt,
-        'url': `${BASE_URL}/blog/${a.slug}`,
+        'url': `${BASE_URL}/blog/${a.slug}/`,
       })),
     };
     const script = document.createElement('script');
@@ -211,7 +213,7 @@ export function createBlogPage({
       },
       'mainEntityOfPage': {
         '@type': 'WebPage',
-        '@id': `${BASE_URL}/blog/${article.slug}`,
+        '@id': `${BASE_URL}/blog/${article.slug}/`,
       },
     };
     const script = document.createElement('script');

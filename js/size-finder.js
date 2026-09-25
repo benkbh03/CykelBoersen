@@ -245,7 +245,8 @@ export function createSizeFinder({
       '@type': 'WebApplication',
       'name': 'Stelstørrelse-finder',
       'description': 'Gratis interaktivt værktøj til at finde den rigtige cykelstørrelse baseret på højde, benlængde og cykeltype.',
-      'url': `${BASE_URL}/stelstoerrelse-guide`,
+      // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i utils.js)
+      'url': `${BASE_URL}/stelstoerrelse-guide/`,
       'applicationCategory': 'BusinessApplication',
       'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'DKK' },
     };

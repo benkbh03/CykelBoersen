@@ -200,6 +200,7 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | Samme felt under to navne eller typer i to filer | 2 (`maxWeight`/`maxWeightKg`, `electronicShifting` bool/streng) | Lukket med `normalizeFilters()` i begge matchere |
 | Databasen er ikke i den tilstand koden tror | 2 (`harden_bike_images_bucket.sql` skrevet og aldrig kørt, åben i to døgn · `add_moderation_log_and_suspension.sql` kørt i en ÆLDRE udgave end den i repoet, opdaget 15. sept.) | **Lukket med et værktøj, ikke med god vilje.** `supabase/sql/STATUS_TJEK.sql` er ét read-only opslag der viser hvad der faktisk findes. Kør det FØR du skriver en deploy-tjekliste og IGEN bagefter. Anden forekomst var værre end den første: filen var kørt, så alle antog den var på plads, men den udgave der blev kørt efterlod to offentligt læsbare kolonner på `profiles`. En fil kan være kørt i en forældet version |
 | `el.hidden = true` gør intet, fordi en forfatter-`display` slår browserens `[hidden]`-regel | 2 (`.browse-cat-wrap`, `.fb-arrow`) | Har en klasse en `display`-erklæring OG bliver skjult via `.hidden`, SKAL der være en `[hidden]{display:none !important}` ved siden af. Test på `getComputedStyle(el).display`, ikke på `el.hidden` — egenskaben er sand, mens elementet stadig står på skærmen |
+| Samme side under flere adresser, med og uden afsluttende skråstreg | 4 (canonical og sitemap i august · routeren 9. sep. · interne links 9. sep. · JSON-LD-`url` i syv filer 25. sep.) | Delvist lukket. Reglen er `canonicalUrl()` i `js/utils.js`, med kopier i `scripts/prerender.mjs` og `scripts/generate-sitemap.mjs`. Byg aldrig `${BASE_URL}/sti` i hånden, heller ikke i JSON-LD: kald `canonicalUrl` eller slut stien med `/`. Fejlen er tavs i ugevis og dukker først op i Search Console som "Alternate page with proper canonical tag" eller "Page with redirect" |
 | Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-`V` stod på `20260830b` og `main.js`' config-import på `20260701t` mens CSS var nået til `w`) | **Lukket.** Versionen står nu KUN på `<html data-asset-v>` i `index.html`; bootstrap'en, `ASSET_VERSION` og `main.js`' config-import læser den derfra. CSS-linkene er stadig literaler (statiske `href`s skal blokere gengivelsen), men bruger samme streng, så én søg-og-erstat i `index.html` rammer alt. Tæl stadig med `grep -c` efter en bump |
 
 ## Kodestil og filstruktur
@@ -477,7 +478,7 @@ Besked-emoji-konventioner: `💰` = bud, `✅` = accepteret, `✉️` = almindel
 
 - Unicode: `cykelbørsen.dk`
 - Punycode (DNS/CNAME): `xn--cykelbrsen-5cb.dk`
-- `BASE_URL = 'https://xn--cykelbrsen-5cb.dk'` — brugt til canonical + OG tags
+- `BASE_URL = 'https://cykelbørsen.dk'` i `js/utils.js` — brugt til canonical + OG tags via `canonicalUrl(path)`, der altid ender stien på `/` (prerenderede sider serveres som `/rute/`; `/rute` svarer 301)
 - Del-links bruger Unicode-versionen: `https://cykelbørsen.dk/?bike=...`
 - Supabase redirect URLs bruger punycode
 - `updateSEOMeta(desc, path)` opdaterer meta-description, canonical og OG-tags ved routing
