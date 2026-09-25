@@ -1,4 +1,4 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin } from './utils.js';
+import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike, iconSearch, noImagePlaceholder } from './utils.js';
 
 // Byer der dækker flere kommuner/distrikter under samme søgeord
 const CITY_GROUPS = {
@@ -271,7 +271,7 @@ export function createBikesList({
     if (!hasActiveFilters()) {
       return `
         <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
-          <div style="font-size:4rem;margin-bottom:16px;">${_isAcc ? '📦' : '🚲'}</div>
+          <div style="margin-bottom:16px;color:var(--muted);">${iconBike(56)}</div>
           <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør her endnu' : 'Ingen cykler her endnu'}</h3>
           <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge ${_isAcc ? 'dit cykeltilbehør' : 'din cykel'} på Cykelbørsen. Det er gratis og tager kun 2 minutter.</p>
           <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">${_isAcc ? '+ Sæt tilbehør til salg' : '+ Sæt din cykel til salg'}</button>
@@ -285,13 +285,13 @@ export function createBikesList({
 
     return `
       <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
-        <div style="font-size:3.5rem;margin-bottom:14px;">🔍</div>
+        <div style="margin-bottom:14px;color:var(--muted);">${iconSearch(48)}</div>
         <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør matcher dine filtre' : 'Ingen cykler matcher dine filtre'}</h3>
         <p style="color:var(--muted);font-size:0.92rem;max-width:380px;margin:0 auto 14px;line-height:1.55;">Prøv at fjerne et filter eller udvid dit søgekriterium.</p>
         ${filterText}
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;">
           <button onclick="clearAllFilters()" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Nulstil filtre</button>
-          <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🔔 Få besked når der dukker en op</button>
+          <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Få besked når der dukker en op</button>
         </div>
       </div>`;
   }
@@ -332,7 +332,7 @@ export function createBikesList({
       const dataImgs   = hasMulti ? ` data-imgs='${JSON.stringify(imgUrls)}'` : '';
       const imgContent = primaryImg
         ? `<img src="${thumbSrc}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300" class="bcimg bcimg--front">${hasMulti ? '<img alt="" class="bcimg bcimg--back" loading="lazy" decoding="async">' : ''}`
-        : '<span style="font-size:4rem">🚲</span>';
+        : noImagePlaceholder();
       // Foretræk avatar_thumb_url (~128px WebP, ~10 KB) over fuld upload (~300 KB).
       // transformImageUrl er no-op uden Pro-plan og returnerede fuld URL — det
       // var den primære kilde til unødig forside-egress.
@@ -366,7 +366,7 @@ export function createBikesList({
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
             <div class="bike-card-badges">
               ${isFeatured ? '<span class="featured-card-badge">Betalt promovering</span>' : ''}
-              ${isDemo ? '<span class="demo-badge">📝 EKSEMPEL</span>' : ''}
+              ${isDemo ? '<span class="demo-badge">EKSEMPEL</span>' : ''}
               ${!isSold && !isDemo && saving > 0
                 ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${saving.toLocaleString('da-DK')} kr.</span>`
                 : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}

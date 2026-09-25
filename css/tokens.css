@@ -1,0 +1,55 @@
+/* ============================================================
+   DESIGN-TOKENS — den eneste kilde til tekststørrelser, vægte,
+   hjørneradier, afstande og brandfarver.
+
+   Regel (se CLAUDE.md): al styling bruger kun disse tokens. Skal du
+   bruge en værdi der ikke står her, så tilføj den her først — ellers
+   ender vi igen med 120 tekststørrelser og 30 radier.
+
+   Loades FØR 01-base.css i <head>, så variablerne findes når resten
+   af stylesheetet læses. Tilstandsfarver (--success, --error, --gold
+   osv.) står i 01-base.css med deres WCAG-målinger.
+   ============================================================ */
+:root {
+  /* ── Tekststørrelser (12 · 14 · 16 · 20 · 28 · 40 px) ── */
+  --text-xs:   0.75rem;   /* 12px — mindste tilladte, også på mærkater */
+  --text-sm:   0.875rem;  /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg:   1.25rem;   /* 20px */
+  --text-xl:   1.75rem;   /* 28px */
+  --text-2xl:  2.5rem;    /* 40px */
+
+  /* ── Fontvægte ── */
+  --weight-regular:  400;
+  --weight-semibold: 600;
+  --weight-heavy:    800;
+
+  /* ── Hjørneradier ── */
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-full: 999px;
+
+  /* ── Afstande (4-px-skala) ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Brandfarver ── */
+  --forest:       #2A3D2E;
+  --forest-light: #3D5942;
+  --forest-2:     #1F2E22;
+  --cream:        #FEFAF3;
+  --sand:         #F5F0E8;
+  --sand-2:       #EDE8DF;
+  --rust:         #C8502A;
+  --rust-light:   #E8694A;
+  --green:        #2A7D4F; /* = --success; brandnavnet til ikke-tilstands-brug */
+  --charcoal:     #1A1A18;
+  --muted:        #6B6557; /* WCAG AA på hvid baggrund (≥4.5:1) — tidligere #8A8578 fejlede */
+  --border:       #DDD8CE;
+}

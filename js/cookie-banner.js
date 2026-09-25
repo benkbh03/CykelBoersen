@@ -4,6 +4,8 @@
    Persisterer i localStorage ('cb_cookie_consent' = 'accepted'|'minimal').
    ============================================================ */
 
+import { iconCookie } from './utils.js';
+
 const STORAGE_KEY = 'cb_cookie_consent';
 const VERSION     = 'v1';
 
@@ -27,7 +29,7 @@ function showBanner() {
   banner.innerHTML = `
     <div class="cookie-banner-inner">
       <div class="cookie-banner-content">
-        <div class="cookie-banner-icon">🍪</div>
+        <div class="cookie-banner-icon">${iconCookie(28)}</div>
         <div class="cookie-banner-text">
           <strong>Cookies på Cykelbørsen</strong>
           <p>Vi bruger nødvendige cookies for at sitet virker (login, gemte annoncer, indstillinger). Vi vil gerne bruge ekstra cookies til at forstå hvordan sitet bruges, så vi kan forbedre det.</p>

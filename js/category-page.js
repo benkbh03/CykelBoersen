@@ -8,7 +8,7 @@
    ============================================================ */
 
 import { CATEGORY_META } from './category-data.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, noImagePlaceholder } from './utils.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
@@ -158,7 +158,7 @@ export function createCategoryPage({
         <div class="bike-card-img">
           ${primaryImg
             ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
-            : '<span style="font-size:4rem">🚲</span>'}
+            : noImagePlaceholder()}
           <div class="bike-card-badges">
             <span class="condition-tag ${conditionClass(b.condition) || ''}">${esc(b.condition || '')}</span>
           </div>

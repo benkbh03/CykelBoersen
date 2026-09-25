@@ -25,7 +25,7 @@
   letter-spacing: -0.02em;
 }
 .cykelagent-sub {
-  font-size: 1rem;
+  font-size: var(--text-base);
   color: var(--muted);
   line-height: 1.55;
   margin: 0;
@@ -38,12 +38,12 @@
   margin-bottom: 18px;
 }
 .cykelagent-new-btn {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: var(--space-2);
   background: var(--rust); color: #fff;
-  border: none; border-radius: 999px;
+  border: none; border-radius: var(--radius-full);
   padding: 12px 22px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem; font-weight: 600;
+  font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
   box-shadow: 0 4px 14px -4px rgba(200,80,42,0.45);
@@ -78,20 +78,20 @@
 }
 .cykelagent-matches-header {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; margin-bottom: 14px;
+  gap: var(--space-3); margin-bottom: 14px;
 }
 .cykelagent-matches-title {
   font-family: 'Fraunces', serif;
   font-size: 1.1rem; font-weight: 700;
   color: var(--charcoal);
   margin: 0;
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: var(--space-2);
 }
 .cykelagent-matches-count {
   background: var(--rust); color: #fff;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem; font-weight: 700;
-  padding: 2px 10px; border-radius: 999px;
+  padding: 2px 10px; border-radius: var(--radius-full);
   letter-spacing: 0.3px;
 }
 .cykelagent-matches-mark-read {
@@ -99,7 +99,7 @@
   color: var(--muted);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem; font-weight: 500;
-  padding: 6px 12px; border-radius: 999px;
+  padding: 6px 12px; border-radius: var(--radius-full);
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
@@ -139,7 +139,7 @@
   position: absolute; top: 8px; left: 8px;
   background: var(--rust); color: #fff;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.62rem; font-weight: 800;
+  font-size: 0.62rem; font-weight: var(--weight-heavy);
   letter-spacing: 0.5px;
   padding: 3px 8px; border-radius: 4px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.18);
@@ -150,7 +150,7 @@
 }
 .cykelagent-match-title {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem; font-weight: 600;
+  font-size: 0.82rem; font-weight: var(--weight-semibold);
   color: var(--charcoal);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -167,17 +167,17 @@
   margin: 12px 0 0; font-size: 0.82rem; color: var(--muted);
   text-align: center;
 }
-.cykelagent-matches-more a { color: var(--forest); font-weight: 600; }
+.cykelagent-matches-more a { color: var(--forest); font-weight: var(--weight-semibold); }
 @media (max-width: 600px) {
   .cykelagent-matches { padding: 14px 14px 12px; }
-  .cykelagent-matches-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .cykelagent-matches-title { font-size: 1rem; }
+  .cykelagent-matches-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
+  .cykelagent-matches-title { font-size: var(--text-base); }
 }
 
 /* ── LISTE: kort med eksisterende agenter ── */
 .cykelagent-list {
   display: flex; flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .cykelagent-card {
   background: #fff;
@@ -223,7 +223,7 @@
   display: inline-flex; align-items: center;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 4px 12px;
   font-size: 0.78rem;
   color: var(--charcoal);
@@ -232,7 +232,7 @@
 .cykelagent-card-cta {
   color: var(--rust);
   font-size: 0.86rem;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   font-family: 'DM Sans', sans-serif;
 }
 
@@ -383,7 +383,7 @@
 .cykelagent-chip-btn.active {
   background: transparent;
   color: var(--charcoal);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 .cykelagent-chip-btn.active::before {
   background: var(--forest) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.4l3 3 6-6'/></svg>") center / 12px no-repeat;
@@ -416,17 +416,17 @@
 }
 
 /* Farver: piller med prik, som i sidebaren. */
-.cykelagent-chips-row--colors { display: flex; flex-wrap: wrap; gap: 8px; }
+.cykelagent-chips-row--colors { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .cykelagent-chips-row--colors .cykelagent-chip-btn {
   width: auto; gap: 7px;
   background: #fff; border: 1.5px solid var(--border);
-  border-radius: 999px; padding: 7px 14px 7px 8px;
+  border-radius: var(--radius-full); padding: 7px 14px 7px 8px;
 }
 .cykelagent-chips-row--colors .cykelagent-chip-btn::before { display: none; }
 .cykelagent-chips-row--colors .cykelagent-chip-btn:hover { border-color: var(--forest); }
 .cykelagent-chips-row--colors .cykelagent-chip-btn.active {
   background: var(--sand-2); border-color: var(--forest);
-  color: var(--forest); font-weight: 600;
+  color: var(--forest); font-weight: var(--weight-semibold);
 }
 .cykelagent-color-swatch { flex-shrink: 0; }
 
@@ -453,14 +453,14 @@
 /* ── ADVANCED-FOLDOUT (tekniske specs) ── */
 .cykelagent-advanced {
   background: var(--sand);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 14px 18px 6px;
   margin: 18px 0;
 }
 .cykelagent-advanced-summary {
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   font-size: 0.92rem;
   color: var(--charcoal);
   padding: 4px 0;
@@ -468,7 +468,7 @@
   user-select: none;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 .cykelagent-advanced-summary::-webkit-details-marker { display: none; }
@@ -483,14 +483,14 @@
   transform: rotate(90deg);
 }
 .cykelagent-advanced-hint {
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   font-size: 0.78rem;
   color: var(--muted);
 }
 .cykelagent-advanced-preview {
   flex-basis: 100%;
   margin-left: 22px;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   font-size: 0.78rem;
   line-height: 1.5;
   color: var(--muted);
@@ -505,7 +505,7 @@
 
 /* ── STRICT-MATCH NOTICE ── */
 .cykelagent-strict-notice {
-  display: flex; gap: 12px; align-items: flex-start;
+  display: flex; gap: var(--space-3); align-items: flex-start;
   background: #f0f7e8;
   border: 1px solid rgba(46,125,50,0.2);
   border-radius: 10px;
@@ -546,7 +546,7 @@
   border: none; border-radius: 10px;
   padding: 12px 24px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem; font-weight: 600;
+  font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   flex: 1;
   min-width: 200px;
@@ -560,7 +560,7 @@
   border-radius: 10px;
   padding: 12px 20px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 600;
+  font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -572,7 +572,7 @@
   border-radius: 10px;
   padding: 12px 20px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 600;
+  font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   margin-left: auto;
   transition: all 0.15s;

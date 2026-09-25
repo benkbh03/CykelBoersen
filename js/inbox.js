@@ -407,7 +407,7 @@ export function createInbox({
       if (messagesEl && messagesEl.children.length === 0) {
         const ta = document.getElementById('inbox-modal-reply-text');
         if (ta) {
-          ta.value = `Hej ${likerName.split(' ')[0]}! Jeg kan se, at du har gemt min annonce. Er du stadig interesseret? Spørg endelig, hvis du har spørgsmål 😊`;
+          ta.value = `Hej ${likerName.split(' ')[0]}! Jeg kan se, at du har gemt min annonce. Er du stadig interesseret? Spørg endelig, hvis du har spørgsmål.`;
           ta.focus();
         }
       }

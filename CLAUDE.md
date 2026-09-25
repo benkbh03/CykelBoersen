@@ -207,6 +207,17 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 
 Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide eksisterende filer. Filer bør holdes under ~400 linjer. Eksportér funktioner og importér dem i `main.js` (eller den relevante modul). Husk at eksportere nye `onclick`-handlere til `window` i `main.js`.
 
+### Design-tokens og ikoner
+
+**Al styling bruger kun tokens fra `css/tokens.css`. Ingen emojis i UI. Ingen hårdkodede px-værdier til tekst, radius eller farver.**
+
+- Tekst: `--text-xs` (12) · `--text-sm` (14) · `--text-base` (16) · `--text-lg` (20) · `--text-xl` (28) · `--text-2xl` (40). Intet under 12 px, heller ikke på mærkater.
+- Vægt: `--weight-regular` · `--weight-semibold` · `--weight-heavy`. Radius: `--radius-sm` · `--radius-md` · `--radius-full`. Afstand: `--space-1` … `--space-16` (4-px-skala).
+- Farver: `--forest`, `--cream`, `--sand`, `--rust`, `--green`, `--charcoal`, `--muted` m.fl. i `tokens.css`; tilstandsfarver (`--success`, `--error`, `--gold` …) i `01-base.css`.
+- Ikoner: inline SVG via `iconX()` i `js/utils.js` (Lucide-stil, `currentColor`); i statisk HTML en `<svg class="ui-icon">`. Annoncekort uden billede bruger `noImagePlaceholder()`.
+- Admin-panelets ⚙️ er den eneste tilladte emoji. Besked-konventionerne (💰/✅/✉️ i beskedindhold) er data, ikke UI, og er undtaget.
+- **Status:** Ældre CSS har stadig værdier uden for skalaen (ca. 100 forskellige tekststørrelser). Reglen gælder al ny og ændret kode; ryd op i den blok du alligevel rører.
+
 ## Teknologier
 
 - **Frontend**: Vanilla JS (ES modules via CDN), HTML, CSS — ingen frameworks
