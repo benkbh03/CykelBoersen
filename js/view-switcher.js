@@ -1,3 +1,4 @@
+import { HOME_TITLE } from './seo-text.js';
 export function setMainView(view, deps) {
   const { initMap, setCurrentView } = deps;
   setCurrentView(view);
@@ -40,7 +41,7 @@ export function showListingView({ updateSEOMeta, removeBikeJsonLd } = {}) {
   if (pageLayout)    pageLayout.style.display    = 'none';
   if (landingLayout) landingLayout.style.display = '';
   document.body.classList.remove('is-mp-mobile');
-  document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
+  document.title = HOME_TITLE;
   if (updateSEOMeta) updateSEOMeta(null, '/');
   if (removeBikeJsonLd) removeBikeJsonLd();
 }

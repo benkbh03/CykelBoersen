@@ -86,7 +86,7 @@ export function createCykelagentPage({
 
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
-    document.title = isLoggedIn ? 'Mine Cykelagenter – Cykelbørsen' : 'Opret Cykelagent – Cykelbørsen';
+    document.title = isLoggedIn ? 'Mine cykelagenter – Cykelbørsen' : 'Opret en cykelagent – Cykelbørsen';
     updateSEOMeta(
       isLoggedIn
         ? 'Opret og administrer dine Cykelagenter, og få besked på e-mail når nye cykler matcher dine kriterier.'
@@ -156,7 +156,7 @@ export function createCykelagentPage({
       list.innerHTML = `
         <div class="cykelagent-empty">
           <div class="cykelagent-empty-icon">${iconBell(40)}</div>
-          <h2 class="cykelagent-empty-title">Ingen Cykelagenter endnu</h2>
+          <h2 class="cykelagent-empty-title">Ingen cykelagenter endnu</h2>
           <p class="cykelagent-empty-sub">Opret din første agent med knappen ovenfor. Du får besked på e-mail når nye cykler matcher dine kriterier. Du behøver ikke tjekke sitet hver dag.</p>
         </div>
       `;

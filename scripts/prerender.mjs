@@ -44,6 +44,7 @@ import { CATEGORY_META } from '../js/category-data.js';
    for at sige noget andet end appen; bikePageTitle SKAL vaere den samme
    funktion begge steder, ellers modsiger raa HTML og DOM hinanden. */
 import { bikeTitle, bikePageTitle } from '../js/utils.js';
+import { BLOG_TITLE, BLOG_DESC, BRANDS_DESC, DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC, brandTitle, brandDescription } from '../js/seo-text.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE_URL = 'https://cykelbørsen.dk'; // matcher BASE_URL i js/utils.js (canonical)
@@ -123,7 +124,38 @@ function canonicalUrl(path) {
   return BASE_URL + (p.endsWith('/') ? p : `${p}/`);
 }
 
+/* Google viser ca. 155-160 tegn. En længere description bliver klippet midt
+   i en sætning, og en der er skåret af i koden (tidligere .slice(0, 155) på
+   mærkesider) ender midt i et ord. Faste tekster SKAL derfor holde sig under
+   grænsen og slutte med et tegn: ellers fejler bygget, så det ses i CI.
+   Sider bygget af brugerdata (annonce, forhandler, udlejning) kan vi ikke
+   styre; de afkortes ved sidste hele sætning eller ord. */
+const MAX_DESC = 160;
+const USER_DATA_PAGE = /^\/(bike|dealer|udlejning)\/[^/]+$/;
+
+function shortenAtBoundary(d) {
+  if (d.length <= MAX_DESC) return d;
+  const cut = d.slice(0, MAX_DESC);
+  const sentence = cut.lastIndexOf('. ');
+  if (sentence >= 60) return cut.slice(0, sentence + 1);
+  const space = cut.lastIndexOf(' ', MAX_DESC - 1);
+  return cut.slice(0, space).replace(/[\s,;:–-]+$/, '') + '…';
+}
+
+function checkDescription(description, canonicalPath) {
+  const d = String(description || '').replace(/\s+/g, ' ').trim();
+  if (USER_DATA_PAGE.test(canonicalPath)) return shortenAtBoundary(d);
+  if (d.length > MAX_DESC) {
+    throw new Error(`Description på ${canonicalPath} er ${d.length} tegn (max ${MAX_DESC}): "${d}"`);
+  }
+  if (!/[.!?)]$/.test(d)) {
+    throw new Error(`Description på ${canonicalPath} slutter ikke med et tegn (afkortet?): "${d}"`);
+  }
+  return d;
+}
+
 function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtml, ogImage, ogImageAlt, noindex }) {
+  description = checkDescription(description, canonicalPath);
   const url = canonicalUrl(canonicalPath);
   const t = escHtml(title);
   const d = escHtml(description);
@@ -244,8 +276,8 @@ function getRelatedBrands(slug, meta) {
 /* ---------- Rute-generatorer ---------- */
 function brandPage(slug, meta) {
   const name = meta.name;
-  const title = `Brugte og nye ${name} cykler til salg | Cykelbørsen`;
-  const description = meta.description.slice(0, 155);
+  const title = brandTitle(name);
+  const description = brandDescription(name);
   const canonicalPath = `/cykler/${slug}`;
 
   const chips = [
@@ -326,7 +358,7 @@ function brandPage(slug, meta) {
 
 function blogArticlePage(article) {
   const slug = article.slug;
-  const title = `${article.title} | Cykelbørsen Blog`;
+  const title = `${article.title} | Cykelbørsen`;
   const description = article.metaDesc;
   const canonicalPath = `/blog/${slug}`;
 
@@ -398,7 +430,7 @@ function blogOverviewPage() {
       <div class="blog-page">
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="blog-hero">
-          <h1 class="blog-title">Cykelbørsen Blog</h1>
+          <h1 class="blog-title">Blog</h1>
           <p class="blog-subtitle">Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.</p>
         </header>
         <div class="blog-categories">
@@ -421,8 +453,8 @@ function blogOverviewPage() {
   const jsonldBlocks = [{
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'Cykelbørsen Blog',
-    description: 'Guides, tests og tips om cykler.',
+    name: 'Cykelbørsens blog',
+    description: BLOG_DESC,
     url: canonicalUrl('/blog'),
     publisher: { '@type': 'Organization', name: 'Cykelbørsen', url: BASE_URL },
     blogPost: articles.map(a => ({
@@ -435,8 +467,8 @@ function blogOverviewPage() {
   }];
 
   return {
-    title: 'Cykelbørsen Blog: guides, tests og tips',
-    description: 'Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster.',
+    title: BLOG_TITLE,
+    description: BLOG_DESC,
     canonicalPath: '/blog',
     jsonldBlocks,
     contentHtml,
@@ -464,7 +496,7 @@ function brandsOverviewPage() {
       </div>`;
   return {
     title: 'Alle cykelmærker: brugte og nye cykler | Cykelbørsen',
-    description: 'Browse alle cykelmærker på Cykelbørsen, fra Trek og Cube til Christiania Bikes og Brompton. Find brugte og nye cykler fra over 70 mærker.',
+    description: BRANDS_DESC,
     canonicalPath: '/maerker',
     jsonldBlocks: [breadcrumb([['Forside', '/'], ['Cykelmærker', '/maerker']])],
     contentHtml,
@@ -548,7 +580,11 @@ function bikePage(b) {
   const canonicalPath = `/bike/${b.id}`;
 
   const title = bikePageTitle(name, `${priceStr} kr.`);
-  const description = `${name} – ${b.type || 'Cykel'} i ${city}. ${b.condition || ''}. ${priceStr} kr. Køb på Cykelbørsen.`;
+  const description = [
+    `${name} – ${b.type || 'Cykel'} i ${city}.`,
+    b.condition ? `${b.condition}.` : '',
+    `${priceStr} kr. Køb på Cykelbørsen.`,
+  ].filter(Boolean).join(' ');
 
   const images = (b.bike_images || []).map(i => i.url).filter(Boolean);
   const primary = (b.bike_images || []).find(i => i.is_primary)?.url || images[0] || '';
@@ -765,9 +801,7 @@ function dealerPage(d) {
    forhandlersiderne — uden links her er de foraeldreloese. */
 function dealersOverviewPage(dealers) {
   const title = 'Cykelforhandlere i hele Danmark | Cykelbørsen';
-  const description = dealers.length
-    ? `${dealers.length} verificerede cykelforhandlere på Cykelbørsen. Se lager, adresse og åbningstider.`
-    : 'Alle verificerede cykelforhandlere på Cykelbørsen.';
+  const description = DEALERS_DESC;
 
   const sorteret = dealers.slice().sort((a, b) =>
     (BIKES_BY_DEALER.get(b.id)?.length || 0) - (BIKES_BY_DEALER.get(a.id)?.length || 0));
@@ -830,7 +864,7 @@ function formatDate(iso) {
 const STATIC_APP_PAGES = [
   { path: '/forhandlere',            h1: 'Cykelforhandlere i hele Danmark',
     title: 'Cykelforhandlere i hele Danmark | Cykelbørsen',
-    description: 'Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed: garanti, servicehistorik og professionel rådgivning.' },
+    description: DEALERS_DESC },
   { path: '/kort',                   h1: 'Cykler på kort',
     title: 'Cykler på kort: find cykler nær dig | Cykelbørsen',
     description: 'Se alle cykler til salg på et kort. Find cykler i nærheden af dig og filtrér på type, pris og stand.' },
@@ -838,13 +872,13 @@ const STATIC_APP_PAGES = [
     title: 'Cykelagenter: få besked når din næste cykel dukker op | Cykelbørsen',
     description: 'Opret en Cykelagent og få besked når den perfekte cykel dukker op. Du behøver ikke have en konto for at komme i gang.' },
   { path: '/bliv-forhandler',        h1: 'Bliv forhandler på Cykelbørsen',
-    title: 'Bliv forhandler på Cykelbørsen, gratis i lanceringsfasen',
-    description: 'Bliv forhandler på Cykelbørsen. Nå cykelkøbere i hele Danmark. Helt gratis, ingen binding.' },
+    title: BECOME_DEALER_TITLE,
+    description: BECOME_DEALER_DESC },
   /* Formular bag login, intet indhold at indeksere. Den laa som index,follow
      og konkurrerede med /vurder-min-cykel og forsiden om de samme ord. */
   { path: '/sell',                   h1: 'Sæt din cykel til salg', noindex: true,
     title: 'Sæt din cykel til salg: gratis annonce | Cykelbørsen',
-    description: 'Sælg din cykel eller cykeltilbehør gratis på Cykelbørsen. Opret en annonce på under 2 minutter.' },
+    description: 'Sælg din cykel eller cykeltilbehør gratis på Cykelbørsen.' },
   { path: '/vurder-min-cykel',       h1: 'Hvad er min cykel værd?',
     title: 'Hvad er min cykel værd? Gratis vurdering | Cykelbørsen',
     description: 'Få en gratis og øjeblikkelig vurdering af din cykels værdi baseret på mærke, model, alder og stand.' },
