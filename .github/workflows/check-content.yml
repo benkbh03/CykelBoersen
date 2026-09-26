@@ -1,0 +1,25 @@
+name: Tjek indhold
+
+# Fanger fejl i indholdet før merge: fx et blogindlæg dateret i fremtiden.
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'js/blog-data-v2.js'
+      - 'scripts/check-blog-dates.mjs'
+      - '.github/workflows/check-content.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  blog-dates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Ingen blogdatoer efter i dag
+        run: node scripts/check-blog-dates.mjs

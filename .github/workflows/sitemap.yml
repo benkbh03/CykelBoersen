@@ -13,6 +13,7 @@ on:
     paths:
       - 'scripts/generate-sitemap.mjs'
       - 'scripts/prerender.mjs'
+      - 'scripts/check-blog-dates.mjs'
       - '.github/workflows/sitemap.yml'
       # Prerendret indhold afhænger af disse — regenerér når de ændrer sig,
       # så de statiske sider ikke peger på gamle asset-versioner eller tekst.
@@ -38,6 +39,9 @@ jobs:
 
       - name: Generate sitemap.xml
         run: node scripts/generate-sitemap.mjs
+
+      - name: Ingen blogdatoer efter i dag
+        run: node scripts/check-blog-dates.mjs
 
       - name: Prerender statiske SEO-sider
         run: node scripts/prerender.mjs

@@ -6,7 +6,7 @@ export const footerContent = {
     metaDesc: 'Komplet guide til at tjekke en brugt cykel inden køb. Ramme, hjul, drivlinje, bremser og prøvekørsel.',
     body: `
       <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret 2026 · 5 min. læsning</p>
-      <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">En brugt cykel kan være en rigtig god investering, men kun hvis du ved hvad du kigger efter inden du betaler. Denne guide tager dig igennem de syv ting du skal tjekke, og det tager omkring et kvarter at lave en grundig gennemgang. Det er et lille besvær i forhold til at stå med en cykel der viser sig at have skjulte fejl.</p>
+      <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">En brugt cykel kan være et godt køb, men kun hvis du ved hvad du kigger efter inden du betaler. Denne guide tager dig igennem de syv ting du skal tjekke, og det tager omkring et kvarter at lave en grundig gennemgang. Det er et lille besvær i forhold til at stå med en cykel der viser sig at have skjulte fejl.</p>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Rammen er cyklens hjerte</h2>
       <p style="margin-bottom:16px;">Rammen er det vigtigste enkeltpunkt på cyklen. En beskadiget ramme kan sjældent repareres sikkert, og det bør få dig til at gå fra handlen uanset hvor god prisen er. Gennemgå alle rør grundigt: overrøret, underrøret, kæderørene og sadelrøret. Kig særligt nøje ved svejsningerne, ved bundbeslaget og rundt om styrhovedet, fordi det er her revner typisk opstår.</p>
@@ -40,7 +40,7 @@ export const footerContent = {
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Prøveturen er obligatorisk</h2>
       <p style="margin-bottom:16px;">Sælg eller køb aldrig en cykel uden at tage en prøvetur, og en sælger der nægter er et stort advarselstegn. Skift gennem alle gear og hør at det sker glat uden hop. Brems hårdt fra 15-20 km/t for at mærke bremsernes tilstand. Og lyt aktivt efter underlige lyde.</p>
       <p style="margin-bottom:16px;">Klik tyder typisk på slid i drivlinjen eller bundbeslaget. Knirk er løse dele et eller andet sted, ofte sadelpind eller bremseklodser. Slag eller "tuk-tuk" mens du kører kan være løse eger eller slidte hjullejer.</p>
-      <p style="margin-bottom:24px;">Mens du er ved cyklen, så find også stelnummeret. Det står typisk under krankboksen eller på underrøret. Tag et billede og slå det op på <a href="https://politi.dk" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk</a> for at sikre dig at cyklen ikke er meldt stjålet. Det tager under et minut og er værd at gøre på hver eneste handel.</p>
+      <p style="margin-bottom:24px;">Tjek også stelnummeret mod politiets register, inden du betaler. Hvordan, står i vores <a href="/sikkerhedsguide/" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')" style="color:var(--rust);">sikkerhedsguide</a>.</p>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentation og prisforhandling</h2>
       <p style="margin-bottom:16px;">En original kvittering er ikke et krav, men den er et godt tegn på at sælger er ærlig om cyklens oprindelse. Mangler kvittering, så er stelnummer-tjekket ekstra vigtigt. Servicehistorik fra en forhandler signalerer at cyklen er passet godt på, og det er ofte forskellen mellem en cykel der holder ti år til og en der bryder sammen efter to.</p>
@@ -513,8 +513,8 @@ export const footerContent = {
       </div>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
-      <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler. Det tager under et minut.</p>
-      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:var(--font-sans);">${iconShield()} Åbn politiets register</a>
+      <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det sidder på stellet, typisk under krankboksen, og ellers på sadelrøret eller styrrøret. Slå det op mod politiets gratis register over efterlyste cykler. Det tager under et minut.</p>
+      <a href="https://politi.dk/service-og-tilladelser/cykler-og-koeretoejer/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:var(--font-sans);">${iconShield()} Åbn politiets register</a>
       <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>

@@ -56,7 +56,7 @@ export function createSizeFinder({
           <h1 class="size-finder-title">Find din cykelstørrelse</h1>
           <p class="size-finder-subtitle">
             Indtast din højde, cykeltype og, hvis du kender den, din benlængde.
-            Vi giver dig den anbefalede stelstørrelse på 2 sekunder.
+            Vi giver dig den anbefalede stelstørrelse.
           </p>
         </header>
 
