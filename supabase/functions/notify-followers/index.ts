@@ -153,7 +153,7 @@ serve(async (req) => {
     const html = `<!DOCTYPE html><html lang="da"><body style="margin:0;background:#F5F0E8;font-family:Arial,sans-serif;">
       <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0E8;padding:32px 0;"><tr><td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="background:#FEFAF3;border-radius:12px;overflow:hidden;border:1px solid #DDD8CE;max-width:600px;width:100%;">
-          <tr><td style="background:#2A3D2E;padding:24px 32px;color:#F5F0E8;font-weight:bold;">🚲 Cykelbørsen</td></tr>
+          <tr><td style="background:#2A3D2E;padding:24px 32px;"><img src="https://xn--cykelbrsen-5cb.dk/img/brand/logo-dark-email.png" width="180" height="36" alt="Cykelbørsen" style="display:block;border:0;height:36px;width:180px;color:#F5F0E8;font-size:1.2rem;font-weight:bold;font-family:Arial,sans-serif;"></td></tr>
           <tr><td style="padding:32px;color:#2A3D2E;">
             <h2 style="margin:0 0 12px;font-family:Georgia,serif;">Ny cykel hos ${esc(dealerName)}</h2>
             <p style="line-height:1.55;">${esc(dealerName)} har netop oprettet en ny annonce du måske vil se:</p>

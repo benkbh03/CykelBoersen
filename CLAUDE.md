@@ -45,7 +45,8 @@ CykelBoersen/
 ├── _redirects          # SPA routing: /* → /index.html 200
 ├── robots.txt          # Tillader alle crawlers + sitemap-link
 ├── sitemap.xml         # 6 URLs (homepage, om, vilkår, privacy, kontakt, bliv-forhandler)
-├── hero.jpg.png        # Hero-billede
+├── hero.jpg            # Hero-billede (forsiden)
+├── img/brand/          # Logo (SVG + e-mail-PNG) og favicons
 ├── .claude/
 │   └── skills/
 │       └── idle-modal-debug/   # Skill: debug modals der hænger efter idle/auth-events
@@ -123,7 +124,7 @@ Deploy-tjeklisten skal altid have fire dele (udelad dem der ikke er relevante):
    ikke et svar; en række med `OK` er.
 
 **Edge functions der findes (alle kræver manuel deploy):** `notify-message`,
-`notify-saved-searches`, `delete-account`, `chat-support`, `suggest-listing`,
+`notify-saved-searches`, `notify-followers`, `delete-account`, `chat-support`, `suggest-listing`,
 `admin-create-bike`, `admin-invite-dealer`, samt DORMANT Stripe-functions.
 `notify-message` skal have "Verify JWT" **slået fra** (anonyme kontaktformularer).
 
@@ -227,6 +228,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - Hover på knapper og kort er et farveskift. Intet `translateY`-løft.
 - Ingen farvede `box-shadow` (orange glød) og ingen guldgradienter. Skygger er neutrale.
 - **Én skrift: Archivo** (`--font-sans` i `tokens.css`), selvhostet variabel font i `/fonts` via `css/00-fonts.css`. Overskrifter, priser og logo: `--weight-heavy` (800) + `letter-spacing: -0.02em`. Brødtekst: 400. Skriv aldrig et fontnavn i CSS eller inline-styles; brug `var(--font-sans)`. Hent aldrig fonte fra fonts.googleapis.com: det sender besøgendes IP til Google før cookie-samtykke. Tjek: `grep -rniE "fraunc[e]s|dm[ ]sans" --exclude-dir=.git .` skal give 0 (de prerendrede sider bygges om af workflowet ved merge) (fase 4b, 26. sep.).
+- **Logo:** ordmærket "cykelbørsen", hvor ø'et er en kursgraf. Markup: `logoHtml({ variant })` i `js/logo.js` (`light` = mørk tekst, `dark` = lys tekst på mørk grund); header og footer har samme markup statisk i `index.html`, så logoet står der fra første tegning. CSS: `.logo` i `01-base.css` (28 px header, 22 px mobil, 24 px footer). Som fil: `img/brand/logo-light.svg`/`logo-dark.svg` (bogstaverne er paths, ingen `<text>`), og `logo-dark-email.png` til e-mails (Gmail/Outlook viser ikke SVG). Favicons: `img/brand/` (SVG fra 32 px, forenklet 16 px i `.ico`/PNG); `/favicon.ico` og `/apple-touch-icon.png` i roden er kopier, fordi browsere henter dem derfra som standard.
 - **Hero'en med foto bliver** på forsiden. En version uden hero blev bygget og sammenlignet 26. sep.; brugeren foretrak hero'en. Foreslå ikke at fjerne den uden en ny grund.
 - Annoncekortets sælgerlinje bygges af `cardSellerLine()` i `js/card-seller.js`, aldrig i hånden. Én linje (navn + by) på desktop, to på kort under 480 px.
 - **Status (26. sep.):** Emojis og pile i knap- og linktekster er fjernet fra alle sider undtagen admin. Tilbage står bevidst: beskedkoderne (💰 ✅ ✉️), hurtigsvaret "Stadig til salg 👍" (indsættes i selve beskeden), prisfald-mærkets `↓` (betyder "faldet") og admin. Hover-løft, farvede skygger og guldgradienter er væk (fokus-ringe og puls-animationer er skovgrønne). **Tilbage:** ca. 30 versal-overskrifter (filterpanelet og /cykelagenter/ er ryddet). Ryd op i den blok du alligevel rører.

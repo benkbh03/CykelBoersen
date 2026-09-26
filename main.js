@@ -299,7 +299,7 @@ function setBrowseCategory(cat) {
   if (_hTitle && _heroCykel.title === null) _heroCykel.title = _hTitle.innerHTML;
   if (_hSub && _heroCykel.sub === null) _heroCykel.sub = _hSub.textContent;
   if (_hTitle) _hTitle.innerHTML = isAcc
-    ? 'Find alt til din cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span>'
+    ? 'Find alt til din cykel på Cykelbørsen'
     : _heroCykel.title;
   if (_hSub) _hSub.textContent = isAcc
     ? 'Hjelme, lygter, dæk, gear og reservedele. Køb og sælg, nyt og brugt.'

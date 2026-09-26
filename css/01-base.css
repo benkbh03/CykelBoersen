@@ -134,12 +134,25 @@ nav {
   border-bottom: 1px solid rgba(0,0,0,0.18);
   backdrop-filter: blur(4px);
 }
+/* ── LOGO: ordmærket "cykelbørsen", hvor ø'et er en kursgraf ──
+   Markup: logoHtml() i js/logo.js (samme markup står statisk i index.html
+   for header og footer, så det er der fra første tegning). Som fil:
+   img/brand/logo-light.svg / logo-dark.svg (bogstaverne som paths).
+   Ringen bruger currentColor, grafen --logo-accent. */
 .logo {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
-  font-size: 1.7rem;
-  color: var(--sand);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy);
+  letter-spacing: -0.035em; display: inline-flex;
+  align-items: baseline; text-decoration: none; line-height: 1;
+  white-space: nowrap; flex-shrink: 0;
+  font-size: var(--text-xl);                     /* 28 px i headeren på desktop */
 }
-.logo span { color: #FF8B60; } /* Lysere rust til AA-kontrast på mørk forest header */
+.logo--light { color: #2A3D2E; --logo-accent: #C8502A; }
+.logo--dark  { color: #FEFAF3; --logo-accent: #F08A5D; }
+.logo-oe { height: 0.89em; width: 0.515em; margin-left: 0.015em;
+           transform: translateY(0.17em); overflow: visible; flex-shrink: 0; }
+.logo-r  { margin-left: 0.015em; }
+footer .logo { font-size: 24px; }
+@media (max-width: 768px) { nav .logo { font-size: 22px; } }
 .nav-links { display: flex; gap: var(--space-8); align-items: center; }
 .nav-links a {
   color: var(--sand);
@@ -655,15 +668,6 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
-}
-.search-hero-title .hero-brand {
-  font-style: normal;
-  font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-}
-.search-hero-title .hero-brand-rust {
-  color: #FF8B60;
 }
 .search-hero-sub {
   color: #fff; font-size: 0.95rem; font-weight: var(--weight-regular);
