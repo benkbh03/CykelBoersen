@@ -4,7 +4,7 @@
    ============================================================ */
 
 import { BIKE_COLORS } from './config.js';
-import { bikeTitle, iconShield } from './utils.js';
+import { bikeTitle, iconShield, iconWrench, iconBike } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
 import { parseImportedListing } from './import-parse.js';
 import { startSellFlow, trackSellStep } from './sell-funnel.js';
@@ -269,7 +269,7 @@ export function createSellPage({
     const low    = prices[Math.floor(prices.length * 0.25)];
     const high   = prices[Math.floor(prices.length * 0.75)];
 
-    wrap.innerHTML = `💡 Andre ${esc(bikeType).toLowerCase()}er sælges typisk for <strong>${low.toLocaleString('da-DK')}–${high.toLocaleString('da-DK')} kr.</strong> (gns. ${avg.toLocaleString('da-DK')} kr.)`;
+    wrap.innerHTML = `Andre ${esc(bikeType).toLowerCase()}er sælges typisk for <strong>${low.toLocaleString('da-DK')}–${high.toLocaleString('da-DK')} kr.</strong> (gns. ${avg.toLocaleString('da-DK')} kr.)`;
     wrap.style.display = 'block';
   }
 
@@ -324,7 +324,7 @@ export function createSellPage({
     if (!bikeData.brand || !bikeData.price || !bikeData.city) {
       showToast('Udfyld alle påkrævede felter (*)', 'advarsel'); return;
     }
-    if (!bikeData.model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
+    if (!bikeData.model && !confirm('Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
       restore(); return;
     }
 
@@ -462,7 +462,7 @@ export function createSellPage({
       // Forhandler-valgfri før-pris (vejl. udsalgspris) → driver rabatbadge.
       // Bruges kun hvis højere end prisen, ellers = pris (ingen falsk rabat).
       const origPriceNum = isDealerListing ? (parseInt(getVal('sell-original-price')) || null) : null;
-      const frameNumber = getVal('sell-frame-number');  // valgfrit stelnr — tyveri-tjekkes efter oprettelse
+      const frameNumber = getVal('sell-frame-number');  // valgfrit stelnr — vises som "oplyst", tjekkes IKKE (opslaget er fjernet)
       const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
 
       // Cykel-specifikke felter
@@ -499,7 +499,7 @@ export function createSellPage({
       if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
         showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); restore(); return;
       }
-      if (!model && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
+      if (!model && !confirm('Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
         visibleCtas.forEach(b => {
           b.disabled = false;
           if (b.dataset.origText) b.innerHTML = b.dataset.origText;
@@ -760,7 +760,7 @@ export function createSellPage({
     const actingAsBanner = actingAs ? `
       <div class="sell-acting-as-banner">
         <div class="sell-acting-as-content">
-          <span class="sell-acting-as-icon">🛠️</span>
+          <span class="sell-acting-as-icon">${iconWrench(16)}</span>
           <div>
             <div class="sell-acting-as-title">Du opretter annonce på vegne af <strong>${esc(actingAs.name)}</strong></div>
             <div class="sell-acting-as-sub">Annoncen tilhører forhandleren, ikke dig. Du kan ikke svare på beskeder eller redigere bagefter.</div>
@@ -1053,7 +1053,7 @@ export function createSellPage({
           <span class="suffix">DKK</span>
         </div>
         ${giveawayToggleHtml(c, isDealer)}
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering →</a>
+        <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">💡 Ikke sikker på pris? Få gratis vurdering</a>
       </div>
 
       ${isDealer ? `
@@ -1192,7 +1192,7 @@ export function createSellPage({
       const primA = _sfA.find(f => f.isPrimary) || _sfA[0];
       const thumbA = primA
         ? `<img src="${primA.url}" alt="" class="sell-summary-thumb-img">`
-        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:.3">📦</div>`;
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:.3">${iconBike(28)}</div>`;
       const accTitle = [brand, model].filter(Boolean).join(' ') || 'Dit tilbehør';
       const rowsA = [
         ['Titel', model || '—'],
@@ -1782,7 +1782,7 @@ export function createSellPage({
         banner.id = 'sell-draft-banner';
         banner.className = 'sell-draft-banner';
         banner.innerHTML = `
-          <span>💾 Du har en gemt kladde fra ${minsAgo} min. siden.</span>
+          <span>Du har en gemt kladde fra ${minsAgo} min. siden.</span>
           <div class="sell-draft-banner-actions">
             <button type="button" class="sell-draft-restore">Gendan</button>
             <button type="button" class="sell-draft-discard">Kassér</button>
@@ -1831,7 +1831,7 @@ export function createSellPage({
     const low    = prices[Math.floor(prices.length * 0.25)];
     const high   = prices[Math.floor(prices.length * 0.75)];
 
-    wrap.innerHTML = `💡 Andre ${esc(bikeType).toLowerCase()}er sælges typisk for <strong>${low.toLocaleString('da-DK')}–${high.toLocaleString('da-DK')} kr.</strong> (gns. ${avg.toLocaleString('da-DK')} kr.)`;
+    wrap.innerHTML = `Andre ${esc(bikeType).toLowerCase()}er sælges typisk for <strong>${low.toLocaleString('da-DK')}–${high.toLocaleString('da-DK')} kr.</strong> (gns. ${avg.toLocaleString('da-DK')} kr.)`;
     wrap.style.display = 'block';
   }
 
@@ -1867,9 +1867,9 @@ export function createSellPage({
       <div class="img-preview-item ${i === 0 ? 'primary' : ''}" data-idx="${i}">
         <img src="${item.url}" alt="Billede ${i + 1}" draggable="false">
         ${i === 0
-          ? '<span class="primary-badge">⭐ Forsidebillede</span>'
+          ? '<span class="primary-badge">Forsidebillede</span>'
           : `<button class="set-primary" title="Gør til forsidebillede" onclick="setSellPrimary(${i})">★</button>`}
-        <button class="crop-img" title="Beskær billede" onclick="openCropModal('sell', ${i})">✂️</button>
+        <button class="crop-img" title="Beskær billede" onclick="openCropModal('sell', ${i})">Beskær</button>
         <button class="remove-img" onclick="removeSellImage(${i})">✕</button>
       </div>`).join('');
 
@@ -2201,7 +2201,7 @@ export function createSellPage({
     };
 
     if (!/^https?:\/\/.+\..+/i.test(url)) {
-      setStatus('⚠️ Indsæt et gyldigt link (fx https://www.dba.dk/...).', 'error');
+      setStatus('Indsæt et gyldigt link (fx https://www.dba.dk/...).', 'error');
       return;
     }
 
@@ -2213,15 +2213,15 @@ export function createSellPage({
       const { data, error } = await supabase.functions.invoke('import-listing', { body: { url } });
 
       if (error || !data) {
-        setStatus('❌ Kunne ikke hente linket. Udfyld manuelt, eller upload billeder.', 'error');
+        setStatus('Kunne ikke hente linket. Udfyld manuelt, eller upload billeder.', 'error');
         return;
       }
       if (!data.ok) {
         const host = data.source_host ? ` (${data.source_host})` : '';
         if (data.blocked) {
-          setStatus(`⚠️ Siden${host} tillod ikke automatisk hentning. Upload billeder og udfyld manuelt.`, 'error');
+          setStatus(`Siden${host} tillod ikke automatisk hentning. Upload billeder og udfyld manuelt.`, 'error');
         } else {
-          setStatus('⚠️ Fandt ingen annonce-data på linket. Udfyld manuelt.', 'error');
+          setStatus('Fandt ingen annonce-data på linket. Udfyld manuelt.', 'error');
         }
         return;
       }
@@ -2328,7 +2328,7 @@ export function createSellPage({
       }
     } catch (err) {
       console.error('importSellFromLink fejl:', err);
-      setStatus('❌ Noget gik galt. Prøv igen, eller udfyld manuelt.', 'error');
+      setStatus('Noget gik galt. Prøv igen, eller udfyld manuelt.', 'error');
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = originalLabel || 'Hent annonce'; }
     }

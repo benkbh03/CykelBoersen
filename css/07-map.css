@@ -363,7 +363,9 @@
   position: absolute;
   top: 6px;
   left: 6px;
-  font-size: 0.58rem;
+  /* Var 0,58 rem (9,3 px). Sælgertypen er et af de få signaler kortet
+     giver, så den skal kunne læses: --text-2xs (11 px), gulvet for mærkater. */
+  font-size: var(--text-2xs);
   font-weight: 700;
   letter-spacing: 0.03em;
   padding: 2px 6px;
@@ -1062,7 +1064,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   line-height: 1.15;
 }
 .split-popup-badge {
-  font-size: 0.66rem;
+  font-size: var(--text-2xs);
   font-weight: 700;
   border-radius: 4px;
   padding: 3px 8px;

@@ -434,7 +434,7 @@ export const footerContent = {
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
         <div style="background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:18px 20px;">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#2e7d32;margin:0 0 12px;display:flex;align-items:center;gap:8px;">✅ Må sælges</h3>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#2e7d32;margin:0 0 12px;display:flex;align-items:center;gap:8px;">Må sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>Alle slags cykler: racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
@@ -444,7 +444,7 @@ export const footerContent = {
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--error);margin:0 0 12px;display:flex;align-items:center;gap:8px;">❌ Må IKKE sælges</h3>
+          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--error);margin:0 0 12px;display:flex;align-items:center;gap:8px;">Må IKKE sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>El-løbehjul og el-scootere</li>
             <li>El-motorcykler, el-motocross &amp; el-mopeder (uden pedaler / over 45 km/t)</li>
@@ -480,7 +480,7 @@ export const footerContent = {
 
       <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;">
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
-          <span style="font-size:1.4rem;">📧</span>
+          
           <div>
             <div style="font-weight:600;font-size:0.88rem;">E-mail</div>
             <div style="color:var(--muted);font-size:0.85rem;">hej@cykelbørsen.dk</div>
@@ -526,7 +526,7 @@ export const footerContent = {
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
       <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler. Det tager under et minut.</p>
-      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">${iconShield()} Åbn politiets register →</a>
+      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">${iconShield()} Åbn politiets register</a>
       <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>
@@ -593,7 +593,7 @@ export const footerContent = {
     body: `
       <p style="margin-bottom:14px;color:var(--muted);font-size:0.88rem;">Senest opdateret: 19. juni 2026</p>
       <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
-      <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;">⚠️ <strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen, udover at oprette annoncer, også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
+      <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;"><strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen, udover at oprette annoncer, også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
 
       <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Formål og omfang</h3>
       <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette <em>og løbende vedligeholde</em> annoncer på dine vegne. Konkret må Cykelbørsen:</p>

@@ -2,7 +2,7 @@
    KORTVISNING MED LEAFLET — factory module
    ============================================================ */
 
-import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel, iconHeart } from './utils.js';
+import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel, iconHeart, iconPin } from './utils.js';
 import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
@@ -249,7 +249,7 @@ export function createMapPage({
                 <div class="map-dd-menu map-dd-menu--right" role="listbox" aria-label="Sortering">
                   <button class="map-dd-item is-sel" type="button" role="option" data-val="newest" onclick="pickMapDd(event,'dd-sort','newest','Nyeste')">Nyeste</button>
                   <button class="map-dd-item" type="button" role="option" data-val="price_asc" onclick="pickMapDd(event,'dd-sort','price_asc','Pris ↑')">Pris ↑</button>
-                  <button class="map-dd-item" type="button" role="option" data-val="price_desc" onclick="pickMapDd(event,'dd-sort','price_desc','Pris ↓')">Pris ↓</button>
+                  <button class="map-dd-item" type="button" role="option" data-val="price_desc" onclick="pickMapDd(event,'dd-sort','price_desc','Højeste pris')">Højeste pris</button>
                   <button class="map-dd-item" type="button" role="option" data-val="distance" onclick="pickMapDd(event,'dd-sort','distance','Afstand')">Afstand</button>
                 </div>
               </div>
@@ -625,13 +625,13 @@ export function createMapPage({
           iconAnchor: [12, 12],
         });
         _mapUserMarker = L.marker(_mapNearMeCoords, { icon: userIcon, zIndexOffset: 1000 })
-          .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.82rem;padding:4px 2px;">📍 <strong>Du er her</strong></div>', { closeButton: false })
+          .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.82rem;padding:4px 2px;"><strong>Du er her</strong></div>', { closeButton: false })
           .addTo(splitMapInstance);
         splitMapInstance.setView(_mapNearMeCoords, 11);
       }
       applyMapFilters(); updateMapFilterBadge();
     } catch (e) {
-      if (btn) btn.textContent = '📍 Nær mig';
+      if (btn) btn.textContent = 'Nær mig';
       showToast('Kunne ikke hente din position');
     }
   }
@@ -845,7 +845,7 @@ export function createMapPage({
           return '<button class="split-popup-list-item" onclick="navigateToBike(\'' + b.id + '\')">'
             + (primaryImg
                 ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + '" class="split-popup-list-img">'
-                : '<div class="split-popup-list-img-placeholder">🚲</div>')
+                : '<div class="split-popup-list-img-placeholder">' + iconBike(24) + '</div>')
             + '<div class="split-popup-list-info">'
             + '<div class="split-popup-list-title">' + esc(b.brand) + ' ' + esc(b.model) + '</div>'
             + '<div class="split-popup-list-meta">' + esc(b.type || '') + (b.year ? ' · ' + b.year : '') + '</div>'
@@ -866,7 +866,7 @@ export function createMapPage({
           + '</button>'
           + '</div>'
           + '<div class="split-popup-list">' + cardsHtml + '</div>'
-          + (isDealer ? '<button class="split-popup-btn" onclick="navigateToDealer(\'' + first.bike.user_id + '\')">Se forhandlerens profil →</button>' : '')
+          + (isDealer ? '<button class="split-popup-btn" onclick="navigateToDealer(\'' + first.bike.user_id + '\')">Se forhandlerens profil</button>' : '')
           + '</div>';
       } else {
         // Single-popup: som før
@@ -891,7 +891,7 @@ export function createMapPage({
           + '<div class="split-popup-media">'
           + (primaryImg
               ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + ' i ' + esc(b.city || 'Danmark') + '" class="split-popup-img">'
-              : '<div class="split-popup-img-placeholder">🚲</div>')
+              : '<div class="split-popup-img-placeholder">' + iconBike(32) + '</div>')
           + '<button class="split-popup-close" aria-label="Luk" onclick="event.stopPropagation();_closeMapPopup()">'
           + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
           + '</button>'
@@ -914,14 +914,14 @@ export function createMapPage({
           + '</div>'
           + '</div>'
           + '<div class="split-popup-info-col">'
-          + '<div class="split-popup-info-icon">📍</div>'
+          + '<div class="split-popup-info-icon">' + iconPin(14) + '</div>'
           + '<div class="split-popup-info-text">'
           + '<div class="split-popup-info-main">' + esc(b.city) + approxSuffix + '</div>'
           + (postalCode ? '<div class="split-popup-info-sub">' + postalCode + '</div>' : '<div class="split-popup-info-sub">Danmark</div>')
           + '</div>'
           + '</div>'
           + '</div>'
-          + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce →</button>'
+          + '<button class="split-popup-btn" onclick="navigateToBike(\'' + b.id + '\')">Se annonce</button>'
           + '</div>'
           + '</div>';
       }
@@ -1001,7 +1001,7 @@ export function createMapPage({
         + (distStr ? '<span class="split-card-loc-dist"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5" fill="currentColor"/></svg>' + distStr + '</span>' : '')
         + '</div>'
         + (chips.length ? '<div class="split-card-chips">' + chips.map(c => '<span class="split-card-chip">' + c + '</span>').join('') + '</div>' : '')
-        + '<div class="split-card-cta" onclick="event.stopPropagation();navigateToBike(\'' + b.id + '\')">Se annonce →</div>'
+        + '<div class="split-card-cta" onclick="event.stopPropagation();navigateToBike(\'' + b.id + '\')">Se annonce</div>'
         + '</div>'
         + '</div>';
     }).join('');
@@ -1325,7 +1325,7 @@ export function createMapPage({
       // Tilføj "Find mig" knap
       var locateBtn = document.createElement('button');
       locateBtn.className   = 'locate-btn';
-      locateBtn.textContent = '📍 Find mig';
+      locateBtn.textContent = 'Find mig';
       locateBtn.onclick     = locateUser;
       document.getElementById('listings-map').appendChild(locateBtn);
     }
@@ -1381,7 +1381,7 @@ export function createMapPage({
         + '<div class="map-popup-meta">' + b.type + ' · ' + b.condition + ' · ' + (sellerName || 'Ukendt')
         + ' <span style="background:' + (isDealer ? '#E8F0E8' : '#FBF0E8') + ';color:' + (isDealer ? '#2A3D2E' : '#8A4A20') + ';padding:2px 7px;border-radius:100px;font-size:.7rem;">'
         + (isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat') + '</span></div>'
-        + '<button class="map-popup-btn" onclick="openFromMap(&quot;' + b.id + '&quot;)">Se annonce →</button>'
+        + '<button class="map-popup-btn" onclick="openFromMap(&quot;' + b.id + '&quot;)">Se annonce</button>'
         + '</div>';
 
       marker.bindPopup(popupHtml, { maxWidth: 280, closeButton: false });
@@ -1453,7 +1453,7 @@ export function createMapPage({
                 + '<div class="map-popup-title">' + esc(displayName)
                 + ' <span style="background:#2A7D4F;color:white;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;margin-left:4px;">✓</span></div>'
                 + '<div class="map-popup-meta" style="color:#8A8578;">Ingen aktive annoncer</div>'
-                + '<button class="map-popup-btn" onclick="navigateToDealer(\'' + d.id + '\')">Se forhandler →</button>'
+                + '<button class="map-popup-btn" onclick="navigateToDealer(\'' + d.id + '\')">Se forhandler</button>'
                 + '</div>';
               marker.bindPopup(popupHtml, { maxWidth: 280, closeButton: false });
               marker.on('click', function() { marker.openPopup(); });
@@ -1506,7 +1506,7 @@ export function createMapPage({
 
       userLocationMarker = L.marker([lat, lng], { icon: userIcon })
         .addTo(mapInstance)
-        .bindPopup('<div style="padding:8px;font-family:DM Sans,sans-serif;font-size:.85rem;font-weight:600;">📍 Din placering</div>')
+        .bindPopup('<div style="padding:8px;font-family:DM Sans,sans-serif;font-size:.85rem;font-weight:600;">Din placering</div>')
         .openPopup();
 
       mapInstance.setView([lat, lng], 12);

@@ -1,4 +1,4 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl, iconPin, iconMail, iconBike } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 export function createProfileModals({
@@ -74,7 +74,7 @@ export function createProfileModals({
             ${esc(displayName)}
             ${dealer.verified ? '<span class="dealer-verified-tick" title="Verificeret forhandler">✓</span>' : ''}
           </h2>
-          ${dealer.city ? `<div class="dealer-profile-city">📍 ${esc(dealer.city)}</div>` : ''}
+          ${dealer.city ? `<div class="dealer-profile-city">${iconPin(13)} ${esc(dealer.city)}</div>` : ''}
           ${bikeCount !== null ? `<div class="dealer-profile-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>` : ''}
         </div>
       </div>
@@ -106,7 +106,7 @@ export function createProfileModals({
     if (bikes.length === 0) {
       bikesGrid.innerHTML = `
         <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--muted);">
-          <div style="font-size:3rem;margin-bottom:12px;">🚲</div>
+          <div style="margin-bottom:12px;">${iconBike(40)}</div>
           <p>Ingen aktive annoncer fra denne forhandler.</p>
         </div>`;
       return;
@@ -263,7 +263,7 @@ export function createProfileModals({
       const primaryImg = _pRec?.thumb_url || _pRec?.url;
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
-        : '<span style="font-size:2.5rem">🚲</span>';
+        : `<span style="color:var(--muted)">${iconBike(32)}</span>`;
       return `
         <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
           <div class="up-bike-img">${imgContent}</div>
@@ -318,7 +318,7 @@ export function createProfileModals({
     const numActive = (activeBikes || []).length;
     const sendMsgHtml = (!isOwnProfile && currentUser && numActive > 0) ? `
       <div class="up-contact-section" id="up-contact-section">
-        <button class="up-contact-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">✉️ Send besked</button>
+        <button class="up-contact-btn" id="up-contact-toggle-btn" onclick="toggleProfileContact()">${iconMail(15)} Send besked</button>
         <div class="up-contact-form" id="up-contact-form" style="display:none;">
           ${numActive > 1 ? `
           <select class="up-contact-bike-select" id="up-contact-bike-select">
@@ -344,10 +344,10 @@ export function createProfileModals({
           <h2 class="up-name">
             ${esc(displayName)}
             ${profile.verified ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-            ${profile.email_verified ? '<span class="email-badge" title="E-mail verificeret">✉️</span>' : ''}
+            ${profile.email_verified ? `<span class="email-badge" title="E-mail verificeret">${iconMail(12)}</span>` : ''}
           </h2>
-          ${isDealer && profile.address ? `<div class="up-city">📍 ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">📍 ${esc(profile.city)}</div>` : ''}
-          ${lastSeenText ? `<div class="up-last-seen">🕐 ${lastSeenText}</div>` : ''}
+          ${isDealer && profile.address ? `<div class="up-city">${iconPin(13)} ${esc(profile.address)}${profile.city ? ', ' + esc(profile.city) : ''}</div>` : profile.city ? `<div class="up-city">${iconPin(13)} ${esc(profile.city)}</div>` : ''}
+          ${lastSeenText ? `<div class="up-last-seen">${lastSeenText}</div>` : ''}
           <div class="up-badges">
             <span class="badge ${isDealer ? 'badge-dealer' : 'badge-private'}">${isDealer ? iconDealer() + ' Forhandler' : iconPrivate() + ' Privat sælger'}</span>
             ${memberYear ? `<span class="up-member-since">Medlem siden ${memberYear}</span>` : ''}

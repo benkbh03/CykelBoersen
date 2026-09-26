@@ -81,7 +81,7 @@ export function createValuation({
           </div>
 
           <button type="submit" class="valuation-submit">
-            <span class="valuation-submit-label">Få min vurdering →</span>
+            <span class="valuation-submit-label">Få min vurdering</span>
           </button>
         </form>
 
@@ -120,23 +120,11 @@ export function createValuation({
 
         <section class="valuation-info">
           <h2 class="valuation-info-title">Sådan fungerer vurderingen</h2>
-          <div class="valuation-info-grid">
-            <div class="valuation-info-card">
-              <div class="valuation-info-icon">📊</div>
-              <h3>Rigtige data</h3>
-              <p>Vurderingen er baseret på faktiske annoncer fra Cykelbørsen, ikke gætteri eller udenlandske prisindeks.</p>
-            </div>
-            <div class="valuation-info-card">
-              <div class="valuation-info-icon">⚡</div>
-              <h3>Hurtig og gratis</h3>
-              <p>Få et estimat på 2 sekunder. Ingen email-binding, ingen kreditkort, ingen forpligtelse.</p>
-            </div>
-            <div class="valuation-info-card">
-              <div class="valuation-info-icon">🎯</div>
-              <h3>Realistisk prisinterval</h3>
-              <p>Vi viser et lav-median-høj-interval så du ved både den hurtige pris og maksimum-prisen.</p>
-            </div>
-          </div>
+          <ol class="num-steps">
+            <li><strong>Rigtige data.</strong> Vurderingen bygger på faktiske annoncer på Cykelbørsen, ikke på gæt eller udenlandske prisindeks.</li>
+            <li><strong>Hurtig og gratis.</strong> Du får et estimat med det samme. Ingen e-mail, intet kreditkort, ingen forpligtelse.</li>
+            <li><strong>Et realistisk prisinterval.</strong> Vi viser lav, middel og høj, så du kender både den hurtige pris og den højeste.</li>
+          </ol>
         </section>
 
         <section class="valuation-faq">
@@ -329,14 +317,14 @@ export function createValuation({
     if (!result.ok) {
       resultEl.innerHTML = `
         <div class="valuation-result-card valuation-result-empty">
-          <div class="valuation-result-icon">📭</div>
+          
           <h2 class="valuation-result-title">Ikke data nok</h2>
           <p>Vi har endnu ikke set nok handler af ${esc(input.brand)} ${esc(input.model)} til at give en præcis vurdering.</p>
           <p style="margin-top:12px;">Du kan stadig oprette annoncen og lade markedet vise dig den rigtige pris, eller spørge en af vores forhandlere om vejledning.</p>
           <div class="valuation-result-cta">
             ${_valuationMode === 'modal'
               ? `<button class="valuation-cta-primary" onclick="closeValuationModal()">Tilbage til annoncen</button>`
-              : `<button class="valuation-cta-primary" onclick="navigateTo('/sell')">Opret annonce →</button>
+              : `<button class="valuation-cta-primary" onclick="navigateTo('/sell')">Opret annonce</button>
                  <button class="valuation-cta-secondary" onclick="navigateTo('/forhandlere')">Find forhandler</button>`}
           </div>
         </div>`;
@@ -386,7 +374,7 @@ export function createValuation({
         <p class="valuation-result-note">${sampleNote}</p>
 
         <div class="valuation-result-tips">
-          <h3>💡 Tips</h3>
+          <h3>Tips</h3>
           <ul>
             <li><strong>Sælg hurtigt</strong>: start på medianen eller 5% under</li>
             <li><strong>Maksimer pris</strong>: start på den høje pris med skarpe billeder og god beskrivelse</li>
@@ -400,7 +388,7 @@ export function createValuation({
                  ✓ Brug ${formatPrice(result.median)}
                </button>`
             : `<button class="valuation-cta-primary" onclick="navigateTo('/sell')">
-                 🚀 Opret annonce til ${formatPrice(result.median)}
+                 Opret annonce til ${formatPrice(result.median)}
                </button>`}
           <button class="valuation-cta-secondary" onclick="window.runValuation();">
             Beregn igen

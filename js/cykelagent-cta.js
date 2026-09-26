@@ -58,7 +58,7 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
       strip.innerHTML = `
         <span class="cta-strip-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når din næste cykel dukker op. Opret en gratis <strong>Cykelagent</strong></span>
         <div class="cta-strip-actions">
-          <button class="cta-strip-btn" onclick="navigateTo('/cykelagenter')">Opret Cykelagent →</button>
+          <button class="cta-strip-btn" onclick="navigateTo('/cykelagenter')">Opret Cykelagent</button>
         </div>
       `;
       return;
@@ -90,7 +90,7 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
       <span class="cta-strip-text">${leadText}</span>
       <div class="cta-strip-actions">
         <button class="cta-strip-btn" onclick="saveCurrentSearch()">
-          Opret Cykelagent →
+          Opret Cykelagent
         </button>
         <button class="cta-strip-dismiss" onclick="dismissCykelagentCta()" aria-label="Skjul">×</button>
       </div>

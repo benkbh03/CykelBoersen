@@ -13,9 +13,9 @@ const BOOST_DAYS     = 7;
 
 const BOOST_BENEFITS = `
   <ul class="boost-benefits">
-    <li><span>⬆️</span> Vist <strong>øverst i listen</strong> på forsiden</li>
-    <li><span>🏷️</span> <strong>Betalt promovering</strong>-mærkat der fanger øjet</li>
-    <li><span>🚀</span> Større chance for at blive set, og solgt hurtigere</li>
+    <li>Vist <strong>øverst i listen</strong> på forsiden</li>
+    <li><strong>Betalt promovering</strong>-mærkat der fanger øjet</li>
+    <li>Større chance for at blive set, og solgt hurtigere</li>
   </ul>`;
 
 function fmtDate(d) {
@@ -90,7 +90,7 @@ export function createBoostModule({ supabase, showToast, getCurrentUser, esc, on
     if (isFeatured) {
       el.innerHTML = `
         <div class="boost-state-active">
-          <div class="boost-badge-big">⭐ Promovering aktiveret</div>
+          <div class="boost-badge-big">Promovering aktiveret</div>
           <p class="boost-active-text">Din annonce er fremhævet og vises i toppen indtil <strong>${fmtDate(featuredUntil)}</strong>.</p>
           ${BOOST_BENEFITS}
         </div>`;

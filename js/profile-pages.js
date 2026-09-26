@@ -5,7 +5,7 @@
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, iconBike } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
@@ -211,7 +211,7 @@ export function createProfilePages({
       : initials;
 
     const bikeCards = nActive > 0 ? buildProfileBikeCards(activeBikes)
-      : `<div class="pp-empty-state"><div class="pp-empty-icon">🚲</div><p>Ingen aktive annoncer lige nu.</p></div>`;
+      : `<div class="pp-empty-state"><div class="pp-empty-icon">${iconBike(40)}</div><p>Ingen aktive annoncer lige nu.</p></div>`;
 
     const soldRows = (soldBikes || []).map(b => `
       <div class="up-sold-row">
@@ -352,7 +352,7 @@ export function createProfilePages({
       : initials;
 
     const bikeCards = nActive > 0 ? buildProfileBikeCards(bikes)
-      : `<div class="pp-empty-state"><div class="pp-empty-icon">🚲</div><p>Ingen aktive annoncer fra denne forhandler.</p></div>`;
+      : `<div class="pp-empty-state"><div class="pp-empty-icon">${iconBike(40)}</div><p>Ingen aktive annoncer fra denne forhandler.</p></div>`;
 
     const reviewCards = reviewList.map(r => {
       const rName = r.reviewer?.seller_type === 'dealer' ? r.reviewer.shop_name : r.reviewer?.name;

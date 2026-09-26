@@ -8,7 +8,7 @@
 
 import { BIKE_COLORS } from './config.js';
 import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
-import { iconDealer, iconPrivate, iconShield, priceText } from './utils.js';
+import { iconDealer, iconPrivate, iconShield, priceText, iconBell, iconBike } from './utils.js';
 
 const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
@@ -155,7 +155,7 @@ export function createCykelagentPage({
     if (!data || data.length === 0) {
       list.innerHTML = `
         <div class="cykelagent-empty">
-          <div class="cykelagent-empty-icon">🔔</div>
+          <div class="cykelagent-empty-icon">${iconBell(40)}</div>
           <h2 class="cykelagent-empty-title">Ingen Cykelagenter endnu</h2>
           <p class="cykelagent-empty-sub">Opret din første agent med knappen ovenfor. Du får besked på e-mail når nye cykler matcher dine kriterier. Du behøver ikke tjekke sitet hver dag.</p>
         </div>
@@ -226,7 +226,7 @@ export function createCykelagentPage({
       <a class="cykelagent-match-card" href="/bike/${bike.id}/" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
         ${img
           ? `<img class="cykelagent-match-img" src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">`
-          : '<div class="cykelagent-match-img cykelagent-match-img--empty">🚲</div>'}
+          : `<div class="cykelagent-match-img cykelagent-match-img--empty">${iconBike(28)}</div>`}
         ${isNew ? '<span class="cykelagent-match-new">NY</span>' : ''}
         <div class="cykelagent-match-info">
           <div class="cykelagent-match-title">${esc(title)}</div>
@@ -240,35 +240,35 @@ export function createCykelagentPage({
   function _buildAgentCard(agent) {
     const f = agent.filters || {};
     const chips = [];
-    if (f.search)                     chips.push(`🔍 ${esc(f.search)}`);
+    if (f.search)                     chips.push(`${esc(f.search)}`);
     if (f.type)                       chips.push(esc(f.type));
     if (Array.isArray(f.types))       f.types.forEach(t => chips.push(esc(t)));
-    if (f.brand)                      chips.push(`🏷️ ${esc(f.brand)}`);
+    if (f.brand)                      chips.push(`${esc(f.brand)}`);
     if (Array.isArray(f.conditions))  f.conditions.forEach(c => chips.push(esc(c)));
     if (Array.isArray(f.sizes))       f.sizes.forEach(s => chips.push('Str. ' + esc(s.split(' ')[0])));
     if (Array.isArray(f.wheelSizes))  f.wheelSizes.forEach(w => chips.push('Hjul ' + esc(w)));
-    if (Array.isArray(f.colors))      f.colors.forEach(c => chips.push('🎨 ' + esc(c)));
+    if (Array.isArray(f.colors))      f.colors.forEach(c => chips.push('' + esc(c)));
     if (f.sellerType === 'dealer')    chips.push(iconDealer() + ' Forhandlere');
     if (f.sellerType === 'private')   chips.push(iconPrivate() + ' Private');
     if (f.minPrice)                   chips.push(`Fra ${Number(f.minPrice).toLocaleString('da-DK')} kr.`);
     if (f.maxPrice)                   chips.push(`Op til ${Number(f.maxPrice).toLocaleString('da-DK')} kr.`);
     if (f.warranty)                   chips.push(iconShield() + ' Med garanti');
     if (f.giveaway)                   chips.push('Gives væk');
-    if (f.city)                       chips.push('📍 ' + esc(f.city));
-    if (Array.isArray(f.frameMaterials)) f.frameMaterials.forEach(m => chips.push('🔩 ' + esc(m)));
-    if (Array.isArray(f.brakeTypes))     f.brakeTypes.forEach(b => chips.push('🛑 ' + esc(b)));
-    if (Array.isArray(f.groupsets))      f.groupsets.forEach(g => chips.push('⚙️ ' + esc(g)));
-    if (f.electronicShifting === 'true')  chips.push('⚡ Elektronisk gear');
-    if (f.electronicShifting === 'false') chips.push('🔧 Mekanisk gear');
+    if (f.city)                       chips.push('' + esc(f.city));
+    if (Array.isArray(f.frameMaterials)) f.frameMaterials.forEach(m => chips.push('' + esc(m)));
+    if (Array.isArray(f.brakeTypes))     f.brakeTypes.forEach(b => chips.push('' + esc(b)));
+    if (Array.isArray(f.groupsets))      f.groupsets.forEach(g => chips.push('' + esc(g)));
+    if (f.electronicShifting === 'true')  chips.push('Elektronisk gear');
+    if (f.electronicShifting === 'false') chips.push('Mekanisk gear');
     if (f.maxWeightKg)                chips.push(`Maks ${Number(f.maxWeightKg)} kg`);
-    if (Array.isArray(f.motors))         f.motors.forEach(m => chips.push('🔋 ' + esc(m)));
-    if (Array.isArray(f.motorPositions)) f.motorPositions.forEach(p => chips.push('⚙️ ' + esc(p)));
-    if (f.batteryMin && f.batteryMax) chips.push(`🔋 ${f.batteryMin}–${f.batteryMax} Wh`);
-    else if (f.batteryMin)            chips.push(`🔋 Fra ${f.batteryMin} Wh`);
-    else if (f.batteryMax)            chips.push(`🔋 Op til ${f.batteryMax} Wh`);
-    if (Array.isArray(f.suspensions)) f.suspensions.forEach(s => chips.push('🚵 ' + esc(s)));
-    if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('⚙️ ' + esc(g) + ' gear'));
-    if (Array.isArray(f.stepTypes))   f.stepTypes.forEach(s => chips.push('🚲 ' + esc(s)));
+    if (Array.isArray(f.motors))         f.motors.forEach(m => chips.push('' + esc(m)));
+    if (Array.isArray(f.motorPositions)) f.motorPositions.forEach(p => chips.push('' + esc(p)));
+    if (f.batteryMin && f.batteryMax) chips.push(`${f.batteryMin}–${f.batteryMax} Wh`);
+    else if (f.batteryMin)            chips.push(`Fra ${f.batteryMin} Wh`);
+    else if (f.batteryMax)            chips.push(`Op til ${f.batteryMax} Wh`);
+    if (Array.isArray(f.suspensions)) f.suspensions.forEach(s => chips.push('' + esc(s)));
+    if (Array.isArray(f.geartypes))   f.geartypes.forEach(g => chips.push('' + esc(g) + ' gear'));
+    if (Array.isArray(f.stepTypes))   f.stepTypes.forEach(s => chips.push('' + esc(s)));
 
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -282,7 +282,7 @@ export function createCykelagentPage({
         ${chips.length
           ? `<div class="cykelagent-card-chips">${chips.map(c => `<span class="cykelagent-chip">${c}</span>`).join('')}</div>`
           : `<div class="cykelagent-card-warn">Denne agent har ingen filtre og kan derfor ikke matche præcist. Åbn den og vælg mindst ét kriterium.</div>`}
-        <div class="cykelagent-card-cta">Rediger →</div>
+        <div class="cykelagent-card-cta">Rediger</div>
       </div>
     `;
   }
@@ -455,7 +455,7 @@ export function createCykelagentPage({
         </div>
 
         <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length ? 'open' : ''}>
-          <summary class="cykelagent-advanced-summary">⚙️ Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt. Helt valgfrit, men giver dig mere præcise match</span></summary>
+          <summary class="cykelagent-advanced-summary">Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt. Helt valgfrit, men giver dig mere præcise match</span></summary>
 
           <div class="cykelagent-field">
             <label class="cykelagent-label">Stelmaterial</label>
@@ -558,14 +558,14 @@ export function createCykelagentPage({
         </details>
 
         <div class="cykelagent-strict-notice">
-          <span class="cykelagent-strict-icon">🎯</span>
+          
           <span>Jo flere filtre du sætter, jo mere præcist matcher vi. Vi sender <strong>kun</strong> notifikation om cykler der opfylder ALLE dine kriterier, så du aldrig spilder tid på "tæt-på"-matches.</span>
         </div>
 
         <div class="cykelagent-editor-actions">
           <button class="cykelagent-save-btn" onclick="saveCykelagentForm()">${isNew ? 'Opret Cykelagent' : 'Gem ændringer'}</button>
           <button class="cykelagent-cancel-btn" onclick="closeCykelagentEditor()">Annuller</button>
-          ${!isNew ? `<button class="cykelagent-delete-btn" onclick="deleteCykelagentFromEditor('${_editingId}')">🗑️ Slet agent</button>` : ''}
+          ${!isNew ? `<button class="cykelagent-delete-btn" onclick="deleteCykelagentFromEditor('${_editingId}')">Slet agent</button>` : ''}
         </div>
       </div>
     `;

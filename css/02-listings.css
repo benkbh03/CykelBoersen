@@ -238,7 +238,7 @@
   background: #EFE0B4;
   color: #5A4407;
   border: 1px solid #D9C482;
-  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.06em;
+  font-size: var(--text-2xs); font-weight: 700; letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 2px 5px; border-radius: 4px;
   font-family: 'DM Sans', sans-serif; white-space: nowrap;
@@ -270,7 +270,7 @@
   background: rgba(254,250,243,0.94); color: var(--forest);
   border: 1px solid rgba(42,61,46,0.18);
   border-radius: 4px; padding: 3px 7px;
-  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.3px;
+  font-size: var(--text-2xs); font-weight: 700; letter-spacing: 0.3px;
   text-transform: uppercase;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
@@ -279,7 +279,7 @@
   background: #fff3e0; color: #bf360c;
   border: 1px solid #ff8b60;
   border-radius: var(--radius-sm); padding: 3px 7px;
-  font-size: 0.58rem; font-weight: var(--weight-heavy); letter-spacing: 0.4px;
+  font-size: var(--text-2xs); font-weight: var(--weight-heavy); letter-spacing: 0.4px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
   box-shadow: 0 2px 6px rgba(191,54,12,0.18);
@@ -301,10 +301,10 @@
   /* Kompakte badges på mobil — de må ikke dække cyklen. Mindre tekst/padding,
      tættere i hjørnet, ingen skygge, og kun ÉT ord-mellemrum så de wrapper mindre. */
   .bike-card-badges { gap: 3px; top: 6px; left: 6px; max-width: calc(100% - 38px); }
-  .featured-card-badge { font-size: 0.46rem; padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
+  .featured-card-badge { padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
   .price-reduced-card-badge { padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
-  .warranty-card-badge { font-size: 0.48rem; padding: 2px 5px; letter-spacing: 0; }
-  .demo-badge { font-size: 0.48rem; padding: 2px 5px; box-shadow: none; }
+  .warranty-card-badge { padding: 2px 5px; letter-spacing: 0; }
+  .demo-badge { padding: 2px 5px; box-shadow: none; }
   /* Versaler + sperring bliver trange under 0.55rem, saa sperringen skrues ned
      paa mobil frem for at droppe versalerne (som ville give to forskellige
      mærkat-udtryk paa samme site). */

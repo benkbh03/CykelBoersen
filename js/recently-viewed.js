@@ -5,7 +5,7 @@
    Vises på forsiden over "Seneste annoncer".
    ============================================================ */
 
-import { esc } from './utils.js';
+import { esc, iconBike } from './utils.js';
 
 const STORAGE_KEY = 'cb_recently_viewed';
 const MAX_ITEMS   = 8;
@@ -82,7 +82,7 @@ export function renderRecentlyViewedSection(containerId, opts = {}) {
     const priceFmt = b.price ? `${b.price.toLocaleString('da-DK')} kr.` : '';
     const imgHtml = b.image
       ? `<img src="${esc(b.image)}" alt="${title}" loading="lazy" decoding="async">`
-      : '<span class="rv-placeholder">🚲</span>';
+      : `<span class="rv-placeholder">${iconBike(24)}</span>`;
     return `
       <button class="rv-card" type="button" onclick="navigateToBike('${esc(b.id)}')" aria-label="Se ${title}">
         <div class="rv-card-img">${imgHtml}</div>

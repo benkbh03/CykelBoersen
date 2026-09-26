@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
+import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, iconPin } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 
@@ -67,9 +67,9 @@ export function createBrandPage({
           ${meta.tagline ? `<p class="brand-page-tagline">${esc(meta.tagline)}</p>` : ''}
           ${meta.country || meta.founded ? `
           <div class="brand-page-meta">
-            ${meta.country ? `<span class="brand-meta-chip">🌍 ${esc(meta.country)}</span>` : ''}
-            ${meta.founded ? `<span class="brand-meta-chip">📅 Grundlagt ${meta.founded}</span>` : ''}
-            ${meta.typical_price_range ? `<span class="brand-meta-chip">💰 ${esc(meta.typical_price_range)}</span>` : ''}
+            ${meta.country ? `<span class="brand-meta-chip">${esc(meta.country)}</span>` : ''}
+            ${meta.founded ? `<span class="brand-meta-chip">Grundlagt ${meta.founded}</span>` : ''}
+            ${meta.typical_price_range ? `<span class="brand-meta-chip">${esc(meta.typical_price_range)}</span>` : ''}
           </div>` : ''}
         </div>
 
@@ -146,7 +146,7 @@ export function createBrandPage({
         <div class="brand-empty-state">
           <p>Der er ingen ${esc(brandName)}-cykler til salg lige nu.</p>
           <p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Gem en søgning, så får du besked når en bliver tilgængelig.</p>
-          <button class="brand-cta-btn" onclick="navigateTo('/?search=${encodeURIComponent(brandName)}')">Se alle cykler →</button>
+          <button class="brand-cta-btn" onclick="navigateTo('/?search=${encodeURIComponent(brandName)}')">Se alle cykler</button>
         </div>`;
       return;
     }
@@ -157,7 +157,7 @@ export function createBrandPage({
     if (bikes.length > BRAND_INITIAL_BIKES) {
       grid.classList.add('brand-bikes-grid--collapsed');
       if (moreSlot) {
-        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandBrandBikes()">Vis alle ${bikes.length} ${brandName}-cykler →</button>`;
+        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandBrandBikes()">Vis alle ${bikes.length} ${brandName}-cykler</button>`;
       }
     } else if (moreSlot) {
       moreSlot.innerHTML = '';
@@ -251,7 +251,7 @@ export function createBrandPage({
           </div>
           <div class="brand-dealer-info">
             <div class="brand-dealer-name">${esc(name)}${d.verified ? ' ✓' : ''}</div>
-            ${d.city ? `<div class="brand-dealer-city">📍 ${esc(d.city)}</div>` : ''}
+            ${d.city ? `<div class="brand-dealer-city">${iconPin(12)} ${esc(d.city)}</div>` : ''}
           </div>
         </a>`;
     }).join('');
@@ -259,7 +259,7 @@ export function createBrandPage({
     if (dealers.length > BRAND_INITIAL_DEALERS) {
       list.classList.add('brand-dealers-list--collapsed');
       if (moreSlot) {
-        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandBrandDealers()">Vis alle ${dealers.length} forhandlere →</button>`;
+        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandBrandDealers()">Vis alle ${dealers.length} forhandlere</button>`;
       }
     } else if (moreSlot) {
       moreSlot.innerHTML = '';

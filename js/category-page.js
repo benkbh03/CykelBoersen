@@ -120,7 +120,7 @@ export function createCategoryPage({
         <div class="brand-empty-state">
           <p>Der er ingen ${esc(meta.name.toLowerCase())} til salg lige nu.</p>
           <p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Opret en cykelagent, så får du besked når en bliver tilgængelig.</p>
-          <button class="brand-cta-btn" onclick="navigateTo('/')">Se alle cykler →</button>
+          <button class="brand-cta-btn" onclick="navigateTo('/')">Se alle cykler</button>
         </div>`;
       return;
     }
@@ -130,7 +130,7 @@ export function createCategoryPage({
     if (bikes.length > CATEGORY_INITIAL_BIKES) {
       grid.classList.add('brand-bikes-grid--collapsed');
       if (moreSlot) {
-        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandCategoryBikes()">Vis alle ${bikes.length} ${esc(meta.name.toLowerCase())} →</button>`;
+        moreSlot.innerHTML = `<button class="brand-show-more-btn" onclick="expandCategoryBikes()">Vis alle ${bikes.length} ${esc(meta.name.toLowerCase())}</button>`;
       }
     } else if (moreSlot) {
       moreSlot.innerHTML = '';
@@ -138,7 +138,10 @@ export function createCategoryPage({
 
     const sectionTitle = document.querySelector('#category-bikes-section .brand-page-section-title');
     if (sectionTitle) {
-      sectionTitle.textContent = `${bikes.length} ${meta.name.toLowerCase()} til salg`;
+      // "1 racercykel", ikke "1 racercykler". Fallback til flertal hvis en
+      // cachet, ældre category-data.js endnu ikke har feltet `singular`.
+      const noun = bikes.length === 1 ? (meta.singular || meta.name) : meta.name;
+      sectionTitle.textContent = `${bikes.length} ${noun.toLowerCase()} til salg`;
     }
   }
 

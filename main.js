@@ -1640,7 +1640,7 @@ async function loadDealers(dealers, bikeRows) {
         <h3>Ingen forhandlere endnu</h3>
         <p>Bliv en af de første forhandlere på Cykelbørsen.
 Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
-        <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik →</button>
+        <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik</button>
       </div>
     `;
     return;
@@ -1711,7 +1711,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       restWrap.className = 'dealer-rest-wrap';
       restWrap.innerHTML = `
         <button class="btn-see-all-dealers" id="toggle-rest-dealers" onclick="toggleRestDealers()">
-          Se resten (${rest.length} forhandlere) ↓
+          Se resten (${rest.length} forhandlere)
         </button>
         <div class="dealer-cards dealer-rest-grid" id="rest-dealers-grid" style="display:none;margin-top:16px;">
           ${restHtml}
@@ -1768,7 +1768,7 @@ function buildPromotedDealerCard(dealer, countMap) {
       <div class="promoted-dealer-card-name">${esc(displayName)}<span class="promoted-dealer-card-verified" title="Verificeret forhandler">✓</span></div>
       ${locationText ? `<div class="promoted-dealer-card-loc">${iconPin(12)} ${esc(locationText)}</div>` : ''}
       <div class="promoted-dealer-card-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
-      <div class="promoted-dealer-card-cta">Se butik →</div>
+      <div class="promoted-dealer-card-cta">Se butik</div>
     </article>
   `;
 }
@@ -1803,7 +1803,7 @@ function toggleRestDealers() {
   grid.style.display  = open ? '' : 'none';
   btn.textContent     = open
     ? `Skjul resten ↑`
-    : `Se resten (${grid.querySelectorAll('.dealer-card').length} forhandlere) ↓`;
+    : `Se resten (${grid.querySelectorAll('.dealer-card').length} forhandlere)`;
 }
 
 function closeMapBikeModal() {
@@ -1971,7 +1971,7 @@ async function checkSavedSearchNotifications() {
   banner.innerHTML = `
     <div class="ss-notif-content">
       <span class="ss-notif-icon">${iconBell(18)}</span>
-      <span class="ss-notif-text">${count} nye cykler matcher dine Cykelagenter. <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Se matches →</a></span>
+      <span class="ss-notif-text">${count} nye cykler matcher dine Cykelagenter. <a onclick="navigateToMyProfile();setTimeout(()=>switchMyProfileTab('searches'),400)" style="color:var(--forest);font-weight:600;cursor:pointer;">Se matches</a></span>
       <button onclick="this.closest('#ss-notification').remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:4px;">✕</button>
     </div>
   `;

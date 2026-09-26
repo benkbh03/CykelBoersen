@@ -111,7 +111,7 @@ export function createListingEdit({
         ${item.isPrimary
           ? '<span class="primary-badge">Primær</span>'
           : `<button type="button" class="set-primary" onclick="editSetNewPrimary(${i})">★</button>`}
-        <button type="button" class="crop-img" title="Beskær billede" onclick="openCropModal('edit', ${i})">✂️</button>
+        <button type="button" class="crop-img" title="Beskær billede" onclick="openCropModal('edit', ${i})">Beskær</button>
         <button type="button" class="remove-img" onclick="editRemoveNew(${i})">✕</button>
       </div>`).join('');
     const label = document.getElementById('edit-upload-label');
@@ -366,7 +366,7 @@ export function createListingEdit({
   async function saveEditedListing() {
     const id = document.getElementById('edit-bike-id').value;
     const editModel = document.getElementById('edit-model').value.trim();
-    if (editCategory !== 'tilbehoer' && !editModel && !confirm('⚠️ Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du gemme uden model alligevel?')) {
+    if (editCategory !== 'tilbehoer' && !editModel && !confirm('Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du gemme uden model alligevel?')) {
       return;
     }
     enforceSinglePrimaryImage();
@@ -489,8 +489,8 @@ export function createListingEdit({
       const { error } = await supabase.rpc('admin_update_bike', { p_bike_id: id, p_updates: updates });
       if (error) {
         showToast(error.message?.includes('opdaterede onboarding')
-          ? '❌ Forhandleren har ikke accepteret de opdaterede onboarding-vilkår'
-          : '❌ Kunne ikke gemme ændringer');
+          ? 'Forhandleren har ikke accepteret de opdaterede onboarding-vilkår'
+          : 'Kunne ikke gemme ændringer');
         console.error(error); return;
       }
     } else {

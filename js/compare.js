@@ -7,7 +7,7 @@
    - State i sessionStorage (slettes når browseren lukkes)
    ============================================================ */
 
-import { esc, bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, isGiveaway } from './utils.js';
+import { esc, bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, isGiveaway, iconBike } from './utils.js';
 
 const STORAGE_KEY = 'cb_compare_ids';
 const MAX_COMPARE = 3;
@@ -103,7 +103,7 @@ export function renderCompareBar() {
       <div class="compare-bar-actions">
         <button type="button" class="compare-bar-clear" onclick="clearCompareIds()">Ryd</button>
         <button type="button" class="compare-bar-go" ${ids.length < 2 ? 'disabled' : ''} onclick="navigateTo('/sammenlign?ids=${ids.join(',')}')">
-          Sammenlign ${ids.length} cykler →
+          Sammenlign ${ids.length} cykler
         </button>
       </div>
     </div>
@@ -140,10 +140,10 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
     if (ids.length < 2) {
       detailView.innerHTML = `
         <div style="max-width:720px;margin:60px auto;padding:24px;text-align:center;">
-          <div style="font-size:3.5rem;margin-bottom:16px;">⚖️</div>
+          
           <h1 style="font-family:'Fraunces',serif;font-size:1.6rem;margin-bottom:10px;">Vælg cykler at sammenligne</h1>
           <p style="color:var(--muted);margin-bottom:24px;">Klik "Sammenlign"-checkboksen på 2-3 cykler i søgeresultaterne, så viser vi dem her side-om-side.</p>
-          <button onclick="navigateTo('/')" style="background:var(--forest);color:#fff;border:none;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">Find cykler →</button>
+          <button onclick="navigateTo('/')" style="background:var(--forest);color:#fff;border:none;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">Find cykler</button>
         </div>
       `;
       return;
@@ -269,12 +269,12 @@ function renderCompareTable(bikes, _navigateTo) {
     return `
       <div class="cmp-bike-header">
         <div class="cmp-bike-image-wrap">
-          ${img ? `<img src="${esc(img)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">` : '<div class="cmp-bike-noimg">🚲</div>'}
+          ${img ? `<img src="${esc(img)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy">` : `<div class="cmp-bike-noimg">${iconBike(32)}</div>`}
           <button onclick="event.stopPropagation();toggleCompareBike(null, '${b.id}');navigateTo('/sammenlign')" class="cmp-bike-remove" title="Fjern fra sammenligning" aria-label="Fjern">✕</button>
         </div>
         <h2 class="cmp-bike-title">${esc(bikeTitle(b.brand, b.model))}</h2>
         <div class="cmp-bike-subtitle">${esc(b.type || '')}${b.year ? ` · ${b.year}` : ''}</div>
-        <button onclick="navigateTo('/bike/${b.id}')" class="cmp-bike-cta">Se annonce →</button>
+        <button onclick="navigateTo('/bike/${b.id}')" class="cmp-bike-cta">Se annonce</button>
       </div>`;
   }).join('');
 

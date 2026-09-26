@@ -1484,3 +1484,29 @@ body:has(.map-page) #chat-widget {
   width: 100%;
 }
 
+
+/* ── NUMMERERET LISTE ("Sådan virker det", "Hvad du får som forhandler") ──
+   Afløser tre forskellige kort-grids med emoji-ikon (size-finder, valuation,
+   bd-why). Almindelig tekst med tal foran: ingen kort, ingen ikoner. Samme
+   klasse alle tre steder, så de ikke kan glide fra hinanden. */
+.num-steps {
+  list-style: none; counter-reset: num-steps;
+  margin: var(--space-4) 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: var(--space-4);
+  max-width: 680px;
+}
+.num-steps li {
+  counter-increment: num-steps;
+  position: relative; padding-left: var(--space-8);
+  font-size: var(--text-base); line-height: 1.55; color: var(--charcoal);
+}
+.num-steps li::before {
+  content: counter(num-steps) ".";
+  position: absolute; left: 0; top: 0;
+  font-weight: var(--weight-semibold); color: var(--muted);
+}
+.num-steps strong { font-weight: var(--weight-semibold); }
+@media (max-width: 480px) {
+  .num-steps { gap: var(--space-3); }
+  .num-steps li { font-size: var(--text-sm); padding-left: var(--space-6); }
+}

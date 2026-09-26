@@ -235,7 +235,7 @@ export function createMyProfilePage({
                 Handler <span class="mp-tab-count" id="mp-count-trades">–</span>
               </button>
               ${isDealer ? `<button class="mp-tab" data-tab="insights" onclick="switchMyProfileTab('insights')">
-                📊 Indsigt
+                Indsigt
               </button>` : ''}
             </div>
             <div id="mp-panel-listings" class="mp-tab-panel">
@@ -246,7 +246,7 @@ export function createMyProfilePage({
             </div>
             <div id="mp-panel-searches" class="mp-tab-panel" style="display:none;">
               <button onclick="navigateTo('/cykelagenter')" style="display:flex;align-items:center;gap:8px;background:var(--rust);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:16px;">
-                🔔 Opret ny Cykelagent
+                Opret ny Cykelagent
               </button>
               <div id="mp-searches-list"><p style="color:var(--muted);padding:20px 0">Henter Cykelagenter…</p></div>
             </div>
@@ -277,7 +277,7 @@ export function createMyProfilePage({
               <button class="mp-completion-item mp-completion-item--clickable" onclick="openProfileCompletion('${x.action}')">
                 <span class="mp-completion-check"></span>
                 <span class="mp-completion-label">${x.label}</span>
-                <span class="mp-completion-arrow">→</span>
+
               </button>`).join('')}
           </div>` : ''}
 
@@ -478,14 +478,14 @@ export function createMyProfilePage({
     }
 
     el.innerHTML = `
-      <div class="mp-attention-icon">⚠️</div>
+      <div class="mp-attention-icon">${iconAlert(22)}</div>
       <div class="mp-attention-body">
         <div class="mp-attention-title">Brug for opmærksomhed</div>
         <ul class="mp-attention-list">
           ${issues.map(i => `<li>${i}</li>`).join('')}
         </ul>
       </div>
-      <button class="mp-attention-cta" onclick="switchMyProfileTab('insights')">Se detaljer →</button>
+      <button class="mp-attention-cta" onclick="switchMyProfileTab('insights')">Se detaljer</button>
     `;
     el.style.display = '';
   }
@@ -559,10 +559,10 @@ export function createMyProfilePage({
           const msgs  = msgsByBike[b.id] || 0;
           const daysActive = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
           const updatedDays = b.updated_at ? Math.floor((Date.now() - new Date(b.updated_at)) / 86400000) : daysActive;
-          let status = '<span class="bike-status-ok">📊 OK</span>';
-          if (views >= 50 && msgs >= 2) status = '<span class="bike-status-hot">🔥 Hot</span>';
-          else if (updatedDays >= 14 && views < 5) status = '<span class="bike-status-stale">⚠️ Stille</span>';
-          else if (views > 30 && msgs === 0) status = '<span class="bike-status-prislejet">💰 Pris-tjek</span>';
+          let status = '<span class="bike-status-ok">OK</span>';
+          if (views >= 50 && msgs >= 2) status = '<span class="bike-status-hot">Populær</span>';
+          else if (updatedDays >= 14 && views < 5) status = '<span class="bike-status-stale">Stille</span>';
+          else if (views > 30 && msgs === 0) status = '<span class="bike-status-prislejet">Tjek prisen</span>';
           return `
             <tr onclick="openEditModal('${b.id}')" style="cursor:pointer;">
               <td>${esc(b.brand)} ${esc(b.model || '')}</td>
@@ -603,15 +603,15 @@ export function createMyProfilePage({
         <h3 class="insights-h3">Konverteringstragt</h3>
         <div class="conversion-funnel">
           <div class="funnel-step">
-            <div class="funnel-label">👁 Visninger</div>
+            <div class="funnel-label">Visninger</div>
             <div class="funnel-bar" style="width:100%"><span>${conversionViews.toLocaleString('da-DK')}</span></div>
           </div>
           <div class="funnel-step">
-            <div class="funnel-label">❤️ Gemte</div>
+            <div class="funnel-label">Gemte</div>
             <div class="funnel-bar" style="width:${Math.max(savePct, 5)}%;background:#e8a4c4"><span>${conversionSaves} (${savePct}%)</span></div>
           </div>
           <div class="funnel-step">
-            <div class="funnel-label">💬 Beskeder</div>
+            <div class="funnel-label">Beskeder</div>
             <div class="funnel-bar" style="width:${Math.max(msgPct, 3)}%;background:var(--rust)"><span>${conversionMsgs} (${msgPct}%)</span></div>
           </div>
         </div>
@@ -623,9 +623,9 @@ export function createMyProfilePage({
               <tr>
                 <th>Cykel</th>
                 <th>Online</th>
-                <th>👁 Visninger</th>
-                <th>❤️ Gemt</th>
-                <th>💬 Beskeder</th>
+                <th>Visninger</th>
+                <th>Gemt</th>
+                <th>Beskeder</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -638,7 +638,7 @@ export function createMyProfilePage({
           <div class="insight-actions">
             ${stale.length > 0 ? `
               <div class="action-card">
-                <div class="action-card-icon">🔄</div>
+                <div class="action-card-icon">${iconEye(22)}</div>
                 <div class="action-card-body">
                   <div class="action-card-title">${stale.length} ${stale.length === 1 ? 'cykel' : 'cykler'} trænger til opmærksomhed</div>
                   <div class="action-card-sub">De har fået under 5 visninger på 14+ dage. Overvej at sænke prisen eller tilføje flere billeder.</div>
@@ -646,7 +646,7 @@ export function createMyProfilePage({
               </div>` : ''}
             ${(noPics.length + fewPics.length) > 0 ? `
               <div class="action-card">
-                <div class="action-card-icon">📷</div>
+                <div class="action-card-icon">${iconCamera(22)}</div>
                 <div class="action-card-body">
                   <div class="action-card-title">Tilføj flere billeder</div>
                   <div class="action-card-sub">Annoncer med 5+ billeder får i gennemsnit 3× flere beskeder. Du har ${noPics.length + fewPics.length} med under 3 billeder.</div>
