@@ -623,18 +623,23 @@ body.viewing-bike-page #chat-widget { display: none; }
    ikke en modal — derfor target på .inbox-page i stedet for #inbox-modal. */
 body:has(.inbox-page) #chat-widget { display: none; }
 
+/* Var en rund orange boble med hvid kant og tung skygge, det mest AI-agtige
+   element på siden. Nu en lille, rolig "Spørg os"-knap: samme funktion, men
+   den råber ikke ad én på hver side. */
 #chat-toggle {
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--rust); color: #fff; border: 3px solid #fff; cursor: pointer;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.45);
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s, transform 0.2s;
+  height: 36px; padding: 0 14px; border-radius: var(--radius-full);
+  background: var(--cream); color: var(--forest);
+  border: 1px solid var(--border); cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: inline-flex; align-items: center; gap: 6px;
+  font: var(--weight-semibold) var(--text-sm)/1 'DM Sans', sans-serif;
+  transition: background 0.15s, border-color 0.15s;
 }
-#chat-toggle:hover { background: var(--rust-light); transform: scale(1.08); }
-#chat-toggle svg { width: 24px; height: 24px; }
+#chat-toggle:hover { background: var(--sand); border-color: var(--forest); }
+#chat-toggle svg { width: 16px; height: 16px; }
 
 #chat-window {
-  position: absolute; bottom: 68px; right: 0;
+  position: absolute; bottom: 48px; right: 0;
   width: 340px; max-height: 480px;
   background: var(--cream); border: 1px solid var(--border);
   border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.25);
@@ -705,12 +710,10 @@ body:has(.inbox-page) #chat-widget { display: none; }
     bottom: max(10px, env(safe-area-inset-bottom));
     right: 10px;
   }
-  /* 56 px er meget på en telefonskærm, hvor knappen altid ligger oven på et
-     annoncekort. 48 px er stadig langt over de 44 px der skal til for at
-     kunne rammes med en tommel. */
-  #chat-toggle { width: 48px; height: 48px; border-width: 2px; }
-  #chat-toggle svg { width: 21px; height: 21px; }
-  #chat-window { bottom: 58px; }
+  /* Tekstknappen er 40 px høj og ca. 100 px bred: stor nok til en tommel,
+     uden at dække så meget af annoncekortet under den som den gamle boble. */
+  #chat-toggle { height: 40px; padding: 0 14px; }
+  #chat-window { bottom: 46px; }
 }
 
 @media (max-width: 480px) {

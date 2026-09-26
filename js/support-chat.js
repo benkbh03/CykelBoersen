@@ -17,6 +17,8 @@ function toggleChat() {
   win.classList.toggle('open', chatOpen);
   iconOpen.style.display  = chatOpen ? 'none'  : '';
   iconClose.style.display = chatOpen ? ''      : 'none';
+  const label = document.getElementById('chat-toggle-label');
+  if (label) label.textContent = chatOpen ? 'Luk' : 'Spørg os';
   if (chatOpen) {
     setTimeout(() => document.getElementById('chat-input')?.focus(), 250);
   }

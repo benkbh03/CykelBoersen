@@ -182,17 +182,17 @@
   contain-intrinsic-block-size: 1200px;
 }
 .bike-card {
-  background: var(--cream); border-radius: 10px;
-  border: 1px solid var(--border); overflow: hidden;
-  cursor: pointer; transition: transform 0.2s, box-shadow 0.22s, border-color 0.2s;
+  /* Hvid flade på den lyse side, uden kant og uden skygge (26. sep.). Kant +
+     skygge + runde hjørner på hvert kort var det mest "genererede" ved
+     forsiden. Kortet skilles fra baggrunden af farven alene. */
+  background: var(--surface); border-radius: var(--radius-md);
+  border: none; overflow: hidden;
+  cursor: pointer; transition: background 0.15s;
   animation: fadeUp 0.5s ease both;
   display: flex; flex-direction: column; height: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-.bike-card:hover {
-  box-shadow: 0 12px 36px rgba(0,0,0,0.13);
-  border-color: rgba(42,61,46,0.18);
-}
+.bike-card:hover { background: var(--surface-sand); }
+.bike-card:hover .bike-title { color: var(--forest); }
 .bike-card-img {
   aspect-ratio: 3/2; width: 100%; background: var(--sand);
   display: flex; align-items: center; justify-content: center;

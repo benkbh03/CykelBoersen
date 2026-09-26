@@ -932,10 +932,13 @@ body.nav-search-on .nav-search { display: flex; }
 
 .sidebar {
   display: flex; flex-direction: column; gap: 0;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 2px 16px;
+  /* Ingen panel-ramme (26. sep.): filtrene stod i en hvid boks med kant ved
+     siden af kort med kant, altså kasser ved siden af kasser. Afsnittene
+     adskilles nu kun af skillestregerne mellem .sidebar-box. */
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   /* align-self:start er ikke pynt. .main er et grid, og grid-celler stræk-
      kes som standard til rækkens højde — altså hele annoncelistens højde.
      Så længe sidebaren var gennemsigtig, kunne man ikke se det. Med et hvidt

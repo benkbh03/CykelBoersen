@@ -1216,14 +1216,14 @@
 /* ── KORTVISNING ── */
 .view-toggle {
   background: var(--sand);
-  border: 1.5px solid var(--border);
+  border: 1.5px solid transparent;
   border-radius: 8px;
   width: 38px; height: 38px;
   cursor: pointer; font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
 }
-.view-toggle:hover      { border-color: var(--forest); }
+.view-toggle:hover      { background: var(--sand-2); }
 .view-toggle.active     { background: var(--forest); border-color: var(--forest); color: white; }
 
 /* Leaflet popup override */
