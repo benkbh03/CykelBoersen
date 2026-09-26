@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260927a">
+<html lang="da" data-asset-v="20260927b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,8 +40,8 @@
   <link rel="icon" href="/img/brand/favicon.ico" sizes="16x16 32x32">
   <link rel="apple-touch-icon" sizes="180x180" href="/img/brand/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <title>Cykelbørsen Blog: guides, tests og tips</title>
-  <meta name="description" content="Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster." id="meta-description">
+  <title>Blog: guides til køb og salg af cykler | Cykelbørsen</title>
+  <meta name="description" content="Guides til at købe og sælge brugte cykler: størrelse, el-cykler, billeder og sikker handel." id="meta-description">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#2A3D2E">
   <meta name="keywords" content="nye cykler, brugte cykler, køb cykel, sælg cykel, racercykel, mountainbike, el-cykel, citybike, cykeltilbehør, cykeludstyr, cykelhjelm, cykellygter, cykellås, Danmark, København, cykelmarkedsplads">
@@ -53,8 +53,8 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cykelbørsen.dk/blog/">
-  <meta property="og:title" content="Cykelbørsen Blog: guides, tests og tips">
-  <meta property="og:description" content="Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster.">
+  <meta property="og:title" content="Blog: guides til køb og salg af cykler | Cykelbørsen">
+  <meta property="og:description" content="Guides til at købe og sælge brugte cykler: størrelse, el-cykler, billeder og sikker handel.">
   <meta property="og:locale" content="da_DK">
   <meta property="og:site_name" content="Cykelbørsen">
   <meta property="og:image" content="https://xn--cykelbrsen-5cb.dk/og-image-v2.jpg">
@@ -65,8 +65,8 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Cykelbørsen Blog: guides, tests og tips">
-  <meta name="twitter:description" content="Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster.">
+  <meta name="twitter:title" content="Blog: guides til køb og salg af cykler | Cykelbørsen">
+  <meta name="twitter:description" content="Guides til at købe og sælge brugte cykler: størrelse, el-cykler, billeder og sikker handel.">
   <meta name="twitter:image" content="https://xn--cykelbrsen-5cb.dk/og-image-v2.jpg">
 
   <!-- ── Content Security Policy ──────────────────────────────────
@@ -113,23 +113,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260927a">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260927b">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260927a">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260927a">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260927a">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260927a">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260927a">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260927a">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260927a">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260927a">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260927a">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260927a">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260927a">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260927a">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260927a">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260927b">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260927b">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260927b">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260927b">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260927b">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260927b">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260927b">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260927b">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260927b">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260927b">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260927b">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260927b">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260927b">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -183,7 +183,7 @@
   <!-- FAQPage-schemaet er fjernet: de tre spørgsmål stod ikke synligt på
        forsiden, og markup for indhold brugeren ikke kan se, er imod Googles
        retningslinjer for struktureret data. -->
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Blog","name":"Cykelbørsen Blog","description":"Guides, tests og tips om cykler.","url":"https://cykelbørsen.dk/blog/","publisher":{"@type":"Organization","name":"Cykelbørsen","url":"https://cykelbørsen.dk"},"blogPost":[{"@type":"BlogPosting","headline":"Hardtail eller fully? Vælg den rigtige affjedring til din mountainbike","description":"Den vigtigste beslutning når du køber en MTB er ikke mærket, men affjedringen. Sådan vælger du mellem hardtail og fuld affjedring.","datePublished":"2026-05-24","url":"https://cykelbørsen.dk/blog/mtb-affjedring-guide/"},{"@type":"BlogPosting","headline":"Sådan undgår du at købe en stjålet cykel","description":"Køber du en stjålet cykel, mister du både cyklen og pengene. Sådan undgår du det.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/undgaa-stjaalet-cykel/"},{"@type":"BlogPosting","headline":"Hvilken cykelstørrelse passer mig?","description":"Højde er kun udgangspunktet. Sådan finder du den rigtige stelstørrelse uanset cykeltype.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/cykelstoerrelse-guide/"},{"@type":"BlogPosting","headline":"Køb brugt el-cykel: 7 ting du skal tjekke","description":"Brugte e-cykler kan være en god handel. Sådan undgår du at købe en med udslidt batteri eller knækkende motor.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/koeb-brugt-el-cykel/"},{"@type":"BlogPosting","headline":"Tag bedre cykel-billeder med din mobil","description":"Forskellen mellem en cykel der sælges på to dage og en der ligger i tre måneder ligger ofte i billederne.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/bedre-cykel-billeder/"},{"@type":"BlogPosting","headline":"Sælg din cykel hurtigt: sådan får du den bedste pris","description":"Pris, billeder, beskrivelse og hurtige svar. Her er det, der gør forskellen på en annonce der sælger, og en der bliver liggende.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/saelg-cykel-tips/"},{"@type":"BlogPosting","headline":"Bedste racercykler under 15.000 kr","description":"15.000 kr er en god prisklasse at komme ind i racercykling. Hvad får du for pengene ny, og hvad får du brugt?","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/racercykler-under-15000/"}]}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Blog","name":"Cykelbørsens blog","description":"Guides til at købe og sælge brugte cykler: størrelse, el-cykler, billeder og sikker handel.","url":"https://cykelbørsen.dk/blog/","publisher":{"@type":"Organization","name":"Cykelbørsen","url":"https://cykelbørsen.dk"},"blogPost":[{"@type":"BlogPosting","headline":"Hardtail eller fully? Vælg den rigtige affjedring til din mountainbike","description":"Den vigtigste beslutning når du køber en MTB er ikke mærket, men affjedringen. Sådan vælger du mellem hardtail og fuld affjedring.","datePublished":"2026-05-24","url":"https://cykelbørsen.dk/blog/mtb-affjedring-guide/"},{"@type":"BlogPosting","headline":"Sådan undgår du at købe en stjålet cykel","description":"Køber du en stjålet cykel, mister du både cyklen og pengene. Sådan undgår du det.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/undgaa-stjaalet-cykel/"},{"@type":"BlogPosting","headline":"Hvilken cykelstørrelse passer mig?","description":"Højde er kun udgangspunktet. Sådan finder du den rigtige stelstørrelse uanset cykeltype.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/cykelstoerrelse-guide/"},{"@type":"BlogPosting","headline":"Køb brugt el-cykel: 7 ting du skal tjekke","description":"Brugte e-cykler kan være en god handel. Sådan undgår du at købe en med udslidt batteri eller knækkende motor.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/koeb-brugt-el-cykel/"},{"@type":"BlogPosting","headline":"Tag bedre cykel-billeder med din mobil","description":"Forskellen mellem en cykel der sælges på to dage og en der ligger i tre måneder ligger ofte i billederne.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/bedre-cykel-billeder/"},{"@type":"BlogPosting","headline":"Sælg din cykel hurtigt: sådan får du den bedste pris","description":"Pris, billeder, beskrivelse og hurtige svar. Her er det, der gør forskellen på en annonce der sælger, og en der bliver liggende.","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/saelg-cykel-tips/"},{"@type":"BlogPosting","headline":"Bedste racercykler under 15.000 kr","description":"15.000 kr er en god prisklasse at komme ind i racercykling. Hvad får du for pengene ny, og hvad får du brugt?","datePublished":"2026-05-11","url":"https://cykelbørsen.dk/blog/racercykler-under-15000/"}]}</script>
 </head>
 <!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
      kun kunne ses af admin. js/feature-flags.js fjerner klassen igen hvis
@@ -1103,7 +1103,7 @@
       <div class="blog-page">
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="blog-hero">
-          <h1 class="blog-title">Cykelbørsen Blog</h1>
+          <h1 class="blog-title">Blog</h1>
           <p class="blog-subtitle">Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.</p>
         </header>
         <div class="blog-categories">
