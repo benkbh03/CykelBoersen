@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260926e">
+<html lang="da" data-asset-v="20260926g">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -107,27 +107,25 @@
        hentet fra fonts.googleapis.com, hvilket sendte den besøgendes IP til
        Google FØR cookie-banneret havde fået svar. Nu forlader der ingenting
        sitet for at vise tekst, og de to fremmede domæner er ude af den
-       kritiske sti. Preload på de to fonte der rammer først: brødteksten og
-       overskrifterne på forsiden. -->
-  <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926e">
+       kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
+  <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926g">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260926e">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260926e">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260926e">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926e">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260926e">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260926e">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926e">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260926e">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926e">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260926e">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926e">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926e">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260926e">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260926g">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260926g">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260926g">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926g">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260926g">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260926g">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926g">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260926g">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926g">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260926g">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926g">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926g">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260926g">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -244,7 +242,7 @@
   </nav>
 
   <!-- Email-bekræftelse banner -->
-  <div id="email-confirm-banner" style="display:none;background:var(--rust);color:#fff;text-align:center;padding:10px 16px;font-size:0.85rem;font-family:'DM Sans',sans-serif;">
+  <div id="email-confirm-banner" style="display:none;background:var(--rust);color:#fff;text-align:center;padding:10px 16px;font-size:0.85rem;font-family:var(--font-sans);">
     Du har ikke bekræftet din e-mail endnu. Tjek din indbakke (og spam) for bekræftelseslinket.
     <button onclick="resendConfirmationEmail()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;padding:4px 12px;border-radius:6px;margin-left:8px;cursor:pointer;font-size:0.8rem;">Send igen</button>
     <button onclick="dismissEmailBanner()" style="background:none;color:rgba(255,255,255,0.7);border:none;padding:4px 8px;cursor:pointer;font-size:1rem;margin-left:4px;">✕</button>
@@ -263,7 +261,7 @@
         <span id="hero-listing-count"><span id="stat-total">–</span> aktive annoncer i Danmark</span>
       </div>
       <h1 class="search-hero-title">Find din næste cykel på <span class="hero-brand">Cykel<span class="hero-brand-rust">børsen</span></span></h1>
-      <p class="search-hero-sub">Kun cykler, fra både forhandlere og private. Find dem, der er tættest på dig.</p>
+      <p class="search-hero-sub">Søg på gearsæt, motor, stelstørrelse og stand, hos cykelhandlere og private i hele Danmark.</p>
     </div>
     <div class="search-bar-wrap">
       <div class="search-bar">
@@ -303,7 +301,7 @@
     <span class="filters-label" aria-hidden="true">Hurtigfilter:</span>
     <span class="pill active" onclick="togglePill(this)" role="button" tabindex="0" aria-pressed="true">Alle</span>
     <span class="pill pill--nearme" id="pill-nearme" onclick="toggleNearMe(this)" role="button" tabindex="0" aria-pressed="false"><svg class="ui-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg> Nær mig</span>
-    <select id="nearme-radius" onchange="updateNearMeRadius(this.value)" style="display:none;font-size:0.8rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--sand);cursor:pointer;font-family:'DM Sans',sans-serif;">
+    <select id="nearme-radius" onchange="updateNearMeRadius(this.value)" style="display:none;font-size:0.8rem;padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--sand);cursor:pointer;font-family:var(--font-sans);">
       <option value="2">2 km</option>
       <option value="5">5 km</option>
       <option value="10">10 km</option>
@@ -880,7 +878,7 @@
            Se js/accessory-visibility.js. */
         .browse-cat-wrap[hidden]{display:none !important;}
         .browse-cat-toggle{display:inline-flex;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:4px;box-shadow:0 1px 3px rgba(26,26,24,0.06);}
-        .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 'DM Sans',sans-serif;padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
+        .browse-cat-btn{border:none;background:transparent;color:var(--muted);font:700 0.85rem/1 var(--font-sans);padding:8px 18px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;}
         .browse-cat-btn:hover{color:var(--charcoal);}
         .browse-cat-btn.active{background:var(--forest);color:#fff;}
         /* Cykeltype som FANEBLADE, stand som dropdown.
@@ -921,7 +919,7 @@
         .fb-arrow:focus-visible{outline:2px solid var(--rust);outline-offset:-2px;}
         .hero-cat-chips .hero-cat-chip{background:transparent;border:none;border-radius:0;
           border-bottom:2.5px solid transparent;color:var(--muted);
-          font:600 0.88rem/1 'DM Sans',sans-serif;padding:11px 10px 12px;
+          font:600 0.88rem/1 var(--font-sans);padding:11px 10px 12px;
           transition:color .12s,border-color .12s;}
         .hero-cat-chips .hero-cat-chip:hover{background:transparent;border-bottom-color:var(--border);color:var(--charcoal);}
         .hero-cat-chips .hero-cat-chip.active{background:transparent;color:var(--forest);
@@ -1082,7 +1080,7 @@
         <div class="sell-cta-label">Sælg din cykel</div>
         <h2 class="sell-cta-headline">Sæt din cykel til salg – det er gratis.</h2>
         <p class="sell-cta-sub">Tag tre billeder, sæt en pris, så er du live på få minutter.</p>
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:10px;color:#fff;font-size:0.88rem;text-decoration:underline;font-family:'DM Sans',sans-serif;opacity:0.9;"><svg class="ui-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Ikke sikker på pris? Få gratis vurdering</a>
+        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:10px;color:#fff;font-size:0.88rem;text-decoration:underline;font-family:var(--font-sans);opacity:0.9;"><svg class="ui-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Ikke sikker på pris? Få gratis vurdering</a>
       </div>
       <div>
         <button class="sell-cta-btn" onclick="openModal()">+ Sæt til salg</button>
@@ -1101,11 +1099,11 @@
       <div class="dealer-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
         <p style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
           <a href="/forhandlere/">Forhandlere</a></p>
-        <h1 style="font-family:'Fraunces',serif;margin-bottom:6px;">Forum cykler</h1>
+        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:6px;">Forum cykler</h1>
         <p style="color:var(--muted);margin-bottom:4px;">Rosenørns alle 9, Frederiksberg C</p>
         <p style="color:var(--muted);margin-bottom:18px;">Verificeret forhandler på Cykelbørsen</p>
         <p style="margin-bottom:18px;">vi sælger de billigeste cykler i hele kbh til enhver smag</p>
-        <h2 style="font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:10px;">
+        <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.1rem;margin-bottom:10px;">
           90 cykler til salg</h2>
         <ul class="prerender-bike-links"><li><a href="/bike/4733d0d2-2af4-47e1-b6e7-366d8f6c31d7/">Raleigh shiny grey herre – 6.499 kr. i Frederiksberg C</a></li><li><a href="/bike/f67c12ca-36c5-4fb4-a0ad-46dafd9e907c/">Raleigh Yate Cargo - m. lad - grøn - Herre - 60 cm - 7 gear – 6.499 kr. i Frederiksberg C</a></li><li><a href="/bike/366a8628-27c8-4962-9443-46f59d86282d/">Velo Lux herre grøn 3G – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/a348290f-d03c-4b6d-bed9-115f393be0b3/">Velo Lux herre blå 3G – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/d8524964-7d83-4b52-a184-308ab23f6dc3/">Centurion HELIUM FODBR MATT BLACK HERRE – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/">Brabus Bike Dame Mørkeblå 3G – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/beee7627-bbc7-4d84-ac26-ed1a0276d1f5/">Bike by Gubi Herrecykel - gear Shimano - Sort - Str. 56 cm – 6.999 kr. i Frederiksberg C</a></li><li><a href="/bike/24558035-abd7-4db9-b7a2-040157db2f72/">Velo Lux dame sort – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/fddd5ff9-bf08-446f-bc14-d90c0d11231d/">Van De Falk MØRKEGRØN – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/ad894225-a75d-409c-92ee-da2f901cc5ca/">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/ddd81f7d-c011-4ccd-ba22-e33f00202780/">Velo Lux dame blå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/ea7abe2d-fe13-436c-88e1-a5f6d0d6ea96/">Centurion Helium isblå – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/31913371-81ad-4620-86e3-8579ccde3119/">Velo Lux Herre Sort 3g – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/2f5386de-eff1-457d-a872-fa031ad7d281/">MBK Concept 6six Dame 56cm – 56/700 – Sort/Grøn – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/43f29c3e-6fc8-4c32-8cb1-fa13b6139e89/">Remington BIXBY ORANGE 2022 – 4.999 kr. i Frederiksberg C</a></li><li><a href="/bike/b09b0b59-6514-470a-9783-9da4e4412915/">Raleigh KENT HERRE 7G - 2026 – 6.499 kr. i Frederiksberg C</a></li><li><a href="/bike/c9976ad0-68ed-4c30-867b-f2200553c781/">Falcon blå dame 3G – 3.199 kr. i Frederiksberg C</a></li><li><a href="/bike/e925aad4-936f-4873-a8a6-6a738e7bbd8a/">Centurion AURA DAME – 6.399 kr. i Frederiksberg C</a></li><li><a href="/bike/3adfd656-faad-49e8-8b58-79662dc1ca53/">Raleigh City Classic | Brun – 5.499 kr. i Frederiksberg C</a></li><li><a href="/bike/804bef5a-fef6-4a2e-97b5-22908bb509f5/">Raleigh kent 7g sort – 6.499 kr. i Frederiksberg C</a></li><li><a href="/bike/a7181f4b-a9c8-45ae-98fc-0c607810f99c/">Raleigh Kent - Kobber - Dame - 7 Gear – 6.499 kr. i Frederiksberg C</a></li><li><a href="/bike/0fe990b7-52a8-4614-bac0-dbff7ddc9f5c/">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/869a6b25-ece3-43b3-9f6e-fdbc828a2ef0/">Van De Falk CAPPUCCINO – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/e8d5dce6-214d-4441-b6fd-6965cb5683ab/">Van De Falk MørkeGrøn – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/0a54009b-fbc0-4d93-9634-746744010ad9/">Falcon Dame grøn 3G – 3.199 kr. i Frederiksberg C</a></li><li><a href="/bike/284351d3-a29e-4188-b945-8e141ff3a5d8/">Remington DETOUR LADY BLÅ 2021 – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/e4b2017f-0f50-4c04-8321-b1d1af36a08c/">Van De Falk Bordeaux – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/97a3a27f-a2de-405b-bd67-2b114ef14172/">Norden Sportive Dame Sort – 4.999 kr. i Frederiksberg C</a></li><li><a href="/bike/bdd4921d-19a1-4196-9d39-07a7da03eda6/">Raleigh Darlington Dame blank kobber – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/331edfd9-df5b-499a-8e0c-64bf0791d69e/">Bike by Gubi - grå – 6.799 kr. i Frederiksberg C</a></li><li><a href="/bike/b3decc02-cd87-4e60-b696-fa8ef3a75ffd/">Falcon beige Dame 3G – 3.199 kr. i Frederiksberg C</a></li><li><a href="/bike/19fb3ab5-4ba5-40b9-a9d5-b1b86064594e/">Darlington - lys grøn – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/3a51c52f-5c92-4bb9-a6ce-80e6f2d4aea3/">Remington Paulette Lady – 5.499 kr. i Frederiksberg C</a></li><li><a href="/bike/3429fb66-af97-482c-8a55-2f695a8e77d6/">Norden Sportive Dame Aqua – 4.999 kr. i Frederiksberg C</a></li><li><a href="/bike/06cda630-3d37-4530-b993-fca1aad0ed95/">Velo Style Herre Sort 3G – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/e52f28a0-def2-4811-b7c9-c527734b9988/">MBK Mud DNA Dreng Mountain 24in – 4.999 kr. i Frederiksberg C</a></li><li><a href="/bike/27421048-b622-4fd7-bb1e-46ed1b0f16a4/">Brabus Damecykel med 3 – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/756a2734-7725-466a-88e1-56f6c750eb8e/">Van De Falk Dame Cykel Sort – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/3f5bb357-a918-4bd6-9be9-125b3b04894e/">Van De Falk Dame Cykel Lysegrøn – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/d67e24b1-10d4-4b92-b3dd-98e453902fc0/">MBK Mud XP 7g Junior 26in – 5.799 kr. i Frederiksberg C</a></li></ul>
       </div></section>
