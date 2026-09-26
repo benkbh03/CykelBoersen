@@ -8,6 +8,8 @@
 //         images er base64-data (uden "data:...;base64," prefix). Max 4 billeder.
 // Output: { suggestion: { brand, model, type, size, wheel_size, year, condition,
 //                         color, price_min, price_max, description } }
+//         eller { suggestion: null, not_bike: true } hvis billedet ikke viser en cykel.
+//         Alle felter er renset: ukendt = null, aldrig teksten "null".
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -67,6 +69,7 @@ Brugeren uploader 1-4 billeder af en cykel. Din opgave er at analysere billedern
 Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, intet andet. Brug dette præcise schema:
 
 {
+  "is_bike": true eller false,
   "brand": "string eller null",
   "model": "string eller null",
   "type": "Racercykel|Mountainbike|Citybike|El-cykel|Ladcykel|Børnecykel|Gravel|Senior cykel eller null",
@@ -77,10 +80,17 @@ Returnér KUN gyldig JSON – ingen forklaringer, ingen markdown-kodeblokke, int
   "color": "string eller null",
   "price_min": "integer - laveste realistiske pris i DKK",
   "price_max": "integer - højeste realistiske pris i DKK",
-  "description": "string - 2-4 sætninger på dansk om cyklen, dens stand og særlige features"
+  "description": "string eller null - 2-4 sætninger på dansk om cyklen, dens stand og særlige features"
 }
 
 Regler:
+- "is_bike": false hvis billederne ikke viser en cykel (fx en person, et rum,
+  en bil, en barnevogn, et skærmbillede). Så skal ALLE andre felter være null.
+- null betyder JSON-værdien null uden anførselstegn. Skriv aldrig teksten
+  "null", "undefined", "ukendt" eller "-" i et felt.
+- "description" handler KUN om cyklen, som sælgeren selv ville skrive den.
+  Aldrig noget om billedet, analysen, hvad du kan eller ikke kan se, eller
+  hvor sikker du er. Kan du ikke beskrive cyklen, så null.
 - ABSOLUT VIGTIGST: Start med at zoome ind mentalt på rammens down tube
   (det store rør mellem styr og pedaler). Næsten alle producenter sætter
   deres navn DER. Læs hvert bogstav. Eksempler på brands der ofte står
@@ -106,6 +116,69 @@ VIGTIGT om output:
 - Output ÉT enkelt JSON-objekt. Intet andet.
 - Ingen forklaringer, ingen kommentarer, ingen markdown.
 - Hvis du opdager en fejl undervejs, så outputtér IKKE multiple forsøg — tænk færdigt og output kun det endelige korrekte JSON.`;
+
+/* ── Rens modellens svar ──────────────────────────────────────────
+   Samme regler som js/ai-suggestion-clean.js (browseren renser igen, fordi
+   en ældre udgave af denne funktion kan være deployet). Filen her deployes
+   som én fil i Dashboardet og kan ikke importere fra js/, derfor en kopi.
+   Ændres den ene, skal den anden med. */
+const EMPTY_WORDS = /^(null|undefined|none|nil|n\/?a|ukendt|unknown|ingen|-+|—|\?+)$/i;
+const META_TEXT = /\b(jeg|billedet|billederne|foto(et)?|kan ikke (se|afgøre|bestemme|vurdere|identificere)|ikke muligt|ikke tydelig\w*|fremgår ikke|svært at (se|afgøre)|usikker|ingen cykel|ikke en cykel|analys\w*|json)\b/i;
+const NOT_BIKE_TEXT = /\b(ingen cykel|ikke en cykel|viser ikke en cykel|ikke (af )?en cykel|no bicycle|not a bicycle)\b/i;
+const BIKE_TYPES = ["Racercykel", "Mountainbike", "Citybike", "El-cykel", "Ladcykel", "Børnecykel", "Gravel", "Senior cykel"];
+const CONDITIONS = ["Ny", "Som ny", "God stand", "Brugt"];
+
+function cleanText(v: unknown): string | null {
+  if (v == null) return null;
+  if (typeof v !== "string" && typeof v !== "number") return null;
+  const s = String(v).trim();
+  if (!s || EMPTY_WORDS.test(s)) return null;
+  return s;
+}
+function cleanInt(v: unknown, min: number, max: number): number | null {
+  const t = cleanText(v);
+  if (t === null) return null;
+  // Hele tal: punktum er tusindtalsseparator ("4.500"), ikke decimaltegn.
+  const n = Number(String(t).replace(/[^\d-]/g, ""));
+  return Number.isFinite(n) && n >= min && n <= max ? n : null;
+}
+function cleanNumber(v: unknown, min: number, max: number): number | null {
+  const t = cleanText(v);
+  if (t === null) return null;
+  const n = Number(String(t).replace(",", "."));
+  return Number.isFinite(n) && n >= min && n <= max ? n : null;
+}
+function oneOf(v: unknown, list: string[]): string | null {
+  const t = cleanText(v);
+  if (t === null) return null;
+  return list.find((x) => x.toLowerCase() === t.toLowerCase()) ?? null;
+}
+
+function cleanSuggestion(raw: any): { notBike: boolean; suggestion: Record<string, unknown> | null } {
+  if (!raw || typeof raw !== "object") return { notBike: false, suggestion: null };
+  const rawDesc = cleanText(raw.description);
+  if (raw.is_bike === false || (rawDesc && NOT_BIKE_TEXT.test(rawDesc))) {
+    return { notBike: true, suggestion: null };
+  }
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof v === "string" || typeof v === "number") out[k] = cleanText(v);
+    else if (typeof v === "boolean") out[k] = v;
+    else out[k] = null;
+  }
+  delete out.is_bike;
+  const thisYear = new Date().getFullYear();
+  out.type       = oneOf(raw.type, BIKE_TYPES);
+  out.condition  = oneOf(raw.condition, CONDITIONS);
+  out.year       = cleanInt(raw.year, 1950, thisYear + 1);
+  out.price_min  = cleanInt(raw.price_min, 1, 500000);
+  out.price_max  = cleanInt(raw.price_max, 1, 500000);
+  out.weight_kg  = cleanNumber(raw.weight_kg, 3, 60);
+  out.battery_wh = cleanInt(raw.battery_wh, 100, 2000);
+  out.electronic_shifting = typeof raw.electronic_shifting === "boolean" ? raw.electronic_shifting : null;
+  out.description = rawDesc && !META_TEXT.test(rawDesc) ? rawDesc : null;
+  return { notBike: false, suggestion: out };
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -231,7 +304,9 @@ Deno.serve(async (req) => {
         system:      SYSTEM_PROMPT,
         messages: [
           { role: "user", content: userContent },
-          { role: "assistant", content: '{"brand":"' },
+          // Kun "{" som prefill. Tidligere stod '{"brand":"' her, og så kunne
+          // modellen ikke svare null på mærket, kun skrive ordet "null".
+          { role: "assistant", content: "{" },
         ],
       }),
     });
@@ -248,9 +323,9 @@ Deno.serve(async (req) => {
     const data = await response.json();
     const rawText = data.content?.[0]?.text ?? "";
 
-    // Pga. assistant-prefill ('{"brand":"') skal vi rekonstruere JSON.
+    // Pga. assistant-prefill ("{") skal vi rekonstruere JSON.
     // Modellen fortsætter fra hvor vi stoppede, så vi prepender prefix'et.
-    const reconstructed = '{"brand":"' + rawText;
+    const reconstructed = "{" + rawText;
 
     // Forsøg at parse JSON – strip evt. markdown fences
     const cleaned = reconstructed
@@ -298,8 +373,16 @@ Deno.serve(async (req) => {
       );
     }
 
+    const result = cleanSuggestion(suggestion);
+    if (result.notBike) {
+      return new Response(
+        JSON.stringify({ suggestion: null, not_bike: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ suggestion }),
+      JSON.stringify({ suggestion: result.suggestion }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 

@@ -9,6 +9,7 @@ import { renderColorSwatches, getSelectedColors, setSelectedColors } from './col
 import { parseImportedListing } from './import-parse.js';
 import { startSellFlow, trackSellStep } from './sell-funnel.js';
 import { enableDragReorder } from './drag-reorder.js';
+import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
 
 /**
  * @param {object} deps
@@ -228,8 +229,9 @@ export function createSellPage({
       const t = dom != null ? String(dom).trim() : '';
       return t || String(_sellFormCache[id] ?? '').trim();
     };
-    const title = getVal('sell-model');
-    const brand = getVal('sell-brand');
+    // "null"/"undefined" som tekst er aldrig et mærke eller en titel.
+    const title = cleanText(getVal('sell-model')) || '';
+    const brand = cleanText(getVal('sell-brand')) || '';
     const type  = getVal('sell-type');
     const cond  = getVal('sell-condition');
     const _accIsDealer = getCurrentProfile()?.seller_type === 'dealer';
@@ -306,8 +308,9 @@ export function createSellPage({
         if (trimmed) return trimmed;
         return String(_sellFormCache[id] ?? '').trim();
       };
-      const brand     = getVal('sell-brand');
-      const model     = getVal('sell-model');
+      // "null"/"undefined" som tekst er aldrig et mærke eller en model.
+      const brand     = cleanText(getVal('sell-brand')) || '';
+      const model     = cleanText(getVal('sell-model')) || '';
       let _giveActingAs = null;
       try { _giveActingAs = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
       const giveaway  = !(getCurrentProfile()?.seller_type === 'dealer' || _giveActingAs)
@@ -368,7 +371,7 @@ export function createSellPage({
       if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
         showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); restore(); return;
       }
-      if (!model && !confirm('Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du udgive uden model alligevel?')) {
+      if (!model && !confirm('Du har ikke angivet cykel-modellen.\n\nMed model er annoncen lettere at finde for købere, der søger på den.\n\nVil du udgive uden model alligevel?')) {
         visibleCtas.forEach(b => {
           b.disabled = false;
           if (b.dataset.origText) b.innerHTML = b.dataset.origText;
@@ -1805,6 +1808,15 @@ export function createSellPage({
           <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Udfyld resten med AI</button>
         </div>`;
     }
+    if (state === 'not-bike') {
+      return `
+        <div class="sell-ai-auto is-failed" role="status" aria-live="polite">
+          <div class="sell-ai-auto-text">
+            <b>${NOT_BIKE_MESSAGE}</b>
+          </div>
+          <button type="button" class="sell-ai-retry" onclick="suggestListingFromImages()">Prøv igen</button>
+        </div>`;
+    }
     if (state === 'failed') {
       // Bevidst neutral — ingen rød fejl. Det må aldrig føles som om noget gik i stykker.
       return `
@@ -1977,13 +1989,24 @@ export function createSellPage({
         body: { images, hint: hint || undefined },
       });
 
-      if (error || !data?.suggestion) {
+      if (error || !data) {
         console.error('suggest-listing fejl:', error || data);
         setAiStatus('failed');
         return;
       }
 
-      applyAiSuggestion(data.suggestion);
+      /* Billedet viser ikke en cykel: udfyld ingenting og sig det. Både den
+         nye edge-funktion (not_bike) og en ældre udgave (forklaring i
+         beskrivelsen) fanges af cleanAiSuggestion. */
+      const { notBike, suggestion } = cleanAiSuggestion(data.suggestion, { notBike: data.not_bike === true });
+      if (notBike) { setAiStatus('not-bike'); return; }
+      if (!suggestion) {
+        console.error('suggest-listing: tomt forslag', data);
+        setAiStatus('failed');
+        return;
+      }
+
+      applyAiSuggestion(suggestion);
       setAiStatus('done');
     } catch (err) {
       console.error('runAiSuggest fejl:', err);
@@ -2208,8 +2231,11 @@ export function createSellPage({
     });
   }
 
-  function applyAiSuggestion(s) {
-    if (!s || typeof s !== 'object') return;
+  function applyAiSuggestion(raw) {
+    // Rens altid: funktionen er også eksporteret til window, og intet felt
+    // må nogensinde få teksten "null" eller en forklaring fra modellen.
+    const { notBike, suggestion: s } = cleanAiSuggestion(raw);
+    if (notBike || !s) return;
     _aiApplied = true;
 
     // VIGTIGT: _sellFormCache er sandhedskilden — IKKE DOM'en.
@@ -2220,7 +2246,7 @@ export function createSellPage({
     // for at kunne fortsætte. renderSellStep2HTML/3HTML læser begge fra
     // _sellFormCache, så cache-skrivning virker uanset hvilket trin der vises.
     const setField = (id, value) => {
-      if (value == null || value === '') return;
+      if (cleanText(value) === null) return;
       // Skriv ikke over hvis brugeren allerede har udfyldt feltet — hverken
       // i cachen eller i det aktuelt renderede trin.
       const cached = _sellFormCache[id];
