@@ -506,7 +506,7 @@ export function createFilters({
     const countEl   = document.getElementById('listings-count');
     const statTotal = document.getElementById('stat-total');
     const _isAccCat = (getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer';
-    if (countEl)   countEl.textContent   = _isAccCat ? `${total} stykker tilbehør` : `${total} cykler til salg`;
+    if (countEl)   countEl.textContent   = _isAccCat ? `${total} ${total === 1 ? 'stykke' : 'stykker'} tilbehør` : `${total} ${total === 1 ? 'cykel' : 'cykler'} til salg`;
     if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
 
     const statDealers = document.getElementById('stat-dealers');

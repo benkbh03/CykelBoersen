@@ -475,18 +475,18 @@ export function createProfileModals({
       const numSold   = (soldBikes || []).length;
       const avgRating = reviewList.length ? (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length) : 0;
 
-      if (numActive >= 3) badges.push({ icon: '📦', label: 'Uploader ofte', title: '3+ aktive annoncer' });
+      if (numActive >= 3) badges.push({ label: 'Uploader ofte', title: '3+ aktive annoncer' });
 
-      if (numSold >= 5) badges.push({ icon: '🏆', label: 'Erfaren sælger', title: '5+ solgte cykler' });
-      else if (numSold >= 1) badges.push({ icon: '🤝', label: 'Har solgt', title: `${numSold} gennemført${numSold === 1 ? '' : 'e'} salg` });
+      if (numSold >= 5) badges.push({ label: 'Erfaren sælger', title: '5+ solgte cykler' });
+      else if (numSold >= 1) badges.push({ label: 'Har solgt', title: `${numSold} gennemført${numSold === 1 ? '' : 'e'} salg` });
 
-      if (reviewList.length >= 3 && avgRating >= 4.5) badges.push({ icon: '⭐', label: 'Topvurderet', title: `${avgRating.toFixed(1)} gns. fra ${reviewList.length} vurderinger` });
+      if (reviewList.length >= 3 && avgRating >= 4.5) badges.push({ label: 'Topvurderet', title: `${avgRating.toFixed(1)} gns. fra ${reviewList.length} vurderinger` });
 
-      if (profile.email_verified) badges.push({ icon: '✉️', label: 'E-mail verificeret', title: 'Har verificeret sin e-mail' });
+      if (profile.email_verified) badges.push({ label: 'E-mail verificeret', title: 'Har verificeret sin e-mail' });
 
       if (profile.created_at) {
         const ageMonths = (Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24 * 30);
-        if (ageMonths >= 12) badges.push({ icon: '🎖️', label: 'Veteranmedlem', title: 'Medlem i 1+ år' });
+        if (ageMonths >= 12) badges.push({ label: 'Veteranmedlem', title: 'Medlem i 1+ år' });
       }
 
       const { data: sent } = await supabase
@@ -512,15 +512,15 @@ export function createProfileModals({
         });
         if (responseTimes.length >= 2) {
           const avg = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
-          if (avg < 60) badges.push({ icon: '⚡', label: 'Svarer hurtigt', title: 'Svarer typisk inden for en time' });
-          else if (avg < 360) badges.push({ icon: '💬', label: 'Svarer samme dag', title: 'Svarer typisk inden for få timer' });
+          if (avg < 60) badges.push({ label: 'Svarer hurtigt', title: 'Svarer typisk inden for en time' });
+          else if (avg < 360) badges.push({ label: 'Svarer samme dag', title: 'Svarer typisk inden for få timer' });
         }
       }
 
       if (badges.length === 0) return;
 
       wrap.innerHTML = badges.map(b =>
-        `<span class="achievement-badge" title="${esc(b.title)}">${b.icon} ${esc(b.label)}</span>`
+        `<span class="achievement-badge" title="${esc(b.title)}">${esc(b.label)}</span>`
       ).join('');
     } catch (e) {
       console.error('loadUserAchievements fejl:', e);

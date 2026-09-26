@@ -70,7 +70,6 @@
 /* Stærkere visuel når resultater er få (≤5) */
 .cykelagent-cta-strip--accent {
   background: linear-gradient(135deg, var(--rust) 0%, #B04524 100%);
-  box-shadow: 0 4px 14px rgba(200,80,42,0.25);
 }
 .cykelagent-cta-strip--accent .cta-strip-text { color: #fff; }
 .cykelagent-cta-strip--accent .cta-strip-text strong { color: #fff; }
@@ -161,7 +160,6 @@
 .popular-chip:hover {
   background: var(--sand);
   border-color: var(--rust);
-  transform: translateY(-1px);
 }
 @media (max-width: 600px) {
   .popular-searches { padding: 0 16px; }
@@ -192,7 +190,6 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .bike-card:hover {
-  transform: translateY(-3px);
   box-shadow: 0 12px 36px rgba(0,0,0,0.13);
   border-color: rgba(42,61,46,0.18);
 }
@@ -487,7 +484,6 @@
    forskelligt indhold. Ingen omrokering, kun justering. */
 .dealer-card-foot { margin-top: auto; }
 .dealer-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(42,61,46,0.12);
   border-color: var(--forest);
 }
@@ -549,11 +545,10 @@
   padding: 14px 24px; border-radius: 10px; font-size: 0.9rem;
   font-weight: var(--weight-semibold); font-family: 'DM Sans', sans-serif;
   display: inline-flex; align-items: center; gap: var(--space-2);
-  box-shadow: 0 6px 18px -4px rgba(200,80,42,0.55);
   cursor: pointer; transition: background 0.2s, transform 0.15s;
   white-space: nowrap; position: relative;
 }
-.sell-cta-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
+.sell-cta-btn:hover { background: var(--rust-light);}
 @media (max-width: 768px) {
   .sell-cta-section { padding: 16px 16px 48px; }
   .sell-cta-inner { grid-template-columns: 1fr; padding: 28px 24px; gap: 20px; }
@@ -622,7 +617,7 @@
   overflow: hidden;
 }
 .rv-card:hover {
-  transform: translateY(-1px); border-color: rgba(42,61,46,0.18);
+border-color: rgba(42,61,46,0.18);
   box-shadow: 0 4px 12px rgba(0,0,0,0.07);
 }
 .rv-card-img {
@@ -665,11 +660,12 @@
   width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
   font-size: 0.95rem; font-weight: 700; cursor: pointer;
   font-family: 'DM Sans', sans-serif; color: #fff;
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
-  box-shadow: 0 3px 10px rgba(212,160,23,0.32);
-  transition: filter 0.15s, transform 0.1s;
+  /* Flad --gold-dark i stedet for guldgradienten: hvid tekst på #d4a017
+     havde kontrast 2,3:1; på --gold-dark er den 6,25:1. */
+  background: var(--gold-dark);
+  transition: background 0.15s;
 }
-.boost-cta-btn:hover { filter: brightness(1.05); }
+.boost-cta-btn:hover { background: #5E4700; }
 .boost-cta-btn:active { transform: translateY(1px); }
 .boost-cta-btn:disabled { cursor: default; opacity: 0.85; }
 .boost-cta-btn--soon {
@@ -682,10 +678,9 @@
 .boost-state-active .boost-benefits { text-align: left; }
 .boost-badge-big {
   display: inline-flex; align-items: center; gap: 6px;
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%); color: #fff;
+  background: var(--gold-bg); color: var(--gold-dark);
   font-weight: var(--weight-heavy); font-size: 0.8rem; letter-spacing: 0.4px; text-transform: uppercase;
-  padding: 6px 16px; border-radius: var(--radius-full); box-shadow: 0 2px 8px rgba(212,160,23,0.4);
-  margin-bottom: 10px;
+  padding: 6px 16px; border-radius: var(--radius-full);  margin-bottom: 10px;
 }
 .boost-active-text { font-size: 0.95rem; color: var(--charcoal); margin: 0 0 14px; line-height: 1.5; }
 
@@ -693,12 +688,12 @@
 .success-boost-cta {
   display: flex; align-items: center; gap: var(--space-3); width: 100%;
   margin: 4px 0 14px; padding: 12px 14px;
-  background: linear-gradient(135deg, rgba(212,160,23,0.12), rgba(232,185,51,0.08));
-  border: 1px solid rgba(212,160,23,0.4); border-radius: var(--radius-md);
+  background: var(--surface-sand);
+  border: 1px solid var(--gold-border); border-radius: var(--radius-md);
   cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.success-boost-cta:hover { border-color: #d4a017; box-shadow: 0 4px 14px rgba(212,160,23,0.18); }
+.success-boost-cta:hover { border-color: #d4a017;}
 .success-boost-cta-star { font-size: 1.5rem; flex-shrink: 0; }
 .success-boost-cta-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .success-boost-cta-text strong { font-size: 0.92rem; color: #6e4e00; }

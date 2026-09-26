@@ -69,7 +69,7 @@
   transition: opacity 0.15s, transform 0.1s;
   white-space: nowrap;
 }
-.cookie-banner-btn:hover { transform: translateY(-1px); }
+.cookie-banner-btn:hover {}
 .cookie-banner-btn-minimal {
   background: transparent;
   color: var(--sand);
@@ -356,7 +356,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   font-weight: var(--weight-semibold); cursor: pointer; width: 100%; margin-top: 20px;
   font-family: 'DM Sans', sans-serif; transition: background 0.2s, transform 0.15s;
 }
-.form-submit:hover { background: var(--rust-light); transform: translateY(-1px); }
+.form-submit:hover { background: var(--rust-light);}
 .form-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -583,7 +583,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   background: var(--forest);
   color: #fff;
 }
-.scam-confirm:hover { background: var(--forest-light); transform: translateY(-1px); }
+.scam-confirm:hover { background: var(--forest-light);}
 @media (max-width: 480px) {
   .scam-card { padding: 22px 18px 18px; }
   .scam-title { font-size: var(--text-lg); }
@@ -1250,7 +1250,6 @@ body:has(.inbox-page) #chat-widget { display: none; }
   transition: transform 0.15s, box-shadow 0.15s;
 }
 .related-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 .related-card-img {
@@ -1551,7 +1550,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
   text-align: center; text-decoration: none;
   transition: background 0.2s, transform 0.1s;
 }
-.btn-external-cta:hover { background: var(--rust-light); transform: translateY(-1px); }
+.btn-external-cta:hover { background: var(--rust-light);}
 .btn-external-cta-sub {
   font-size: 0.78rem; font-weight: var(--weight-regular); opacity: 0.92;
 }
@@ -1808,7 +1807,6 @@ body:has(.inbox-page) #chat-widget { display: none; }
   background: var(--sand);
   border-color: var(--rust);
   color: var(--rust);
-  transform: translateY(-1px);
 }
 .bulk-tpl-btn--universal {
   background: var(--forest);

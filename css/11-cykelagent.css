@@ -46,9 +46,8 @@
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
-  box-shadow: 0 4px 14px -4px rgba(200,80,42,0.45);
 }
-.cykelagent-new-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
+.cykelagent-new-btn:hover { background: var(--rust-light);}
 .cykelagent-new-btn:active { transform: translateY(0); }
 .cykelagent-new-icon {
   display: inline-flex; align-items: center; justify-content: center;
@@ -122,7 +121,6 @@
   transition: transform 0.15s, box-shadow 0.18s, border-color 0.15s;
 }
 .cykelagent-match-card:hover {
-  transform: translateY(-2px);
   border-color: var(--forest);
   box-shadow: 0 6px 18px rgba(42,61,46,0.10);
 }
@@ -190,7 +188,6 @@
 }
 .cykelagent-card:hover {
   border-color: var(--forest);
-  transform: translateY(-2px);
   box-shadow: 0 8px 22px rgba(42,61,46,0.1);
 }
 .cykelagent-card-top {
@@ -312,10 +309,8 @@
 .cykelagent-label {
   display: block;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--forest);
   margin-bottom: 10px;
 }
