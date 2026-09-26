@@ -719,7 +719,7 @@ export function createSellPage({
     updateSEOMeta(
       _isAcc()
         ? 'Sælg brugt cykeltilbehør og -udstyr gratis på Cykelbørsen.'
-        : 'Sælg din brugte cykel gratis på Cykelbørsen. Opret en annonce på under 2 minutter og nå tusindvis af cykellkøbere i Danmark.',
+        : 'Sælg din brugte cykel gratis på Cykelbørsen.',
       '/sell');
     getSelectedFiles().splice(0);
     _sellStep = 1;

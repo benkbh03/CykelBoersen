@@ -30,7 +30,7 @@ export function canonicalUrl(path) {
   if (p.includes('?') || p.includes('#')) return BASE_URL + p;
   return BASE_URL + (p.endsWith('/') ? p : `${p}/`);
 }
-const DEFAULT_DESC = 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og autoriserede forhandlere.';
+const DEFAULT_DESC = 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce. Fra private sælgere og verificerede forhandlere.';
 
 // Hjælper: deaktiver knap og vis spinner, returnerer gendan-funktion
 export function btnLoading(id, label) {

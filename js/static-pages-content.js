@@ -49,7 +49,7 @@ export const footerContent = {
 
       <div style="background:var(--sand);border-radius:12px;padding:20px 24px;margin-top:32px;border:1px solid var(--border);">
         <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Klar til at finde en cykel?</h3>
-        <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen, Danmarks dedikerede markedsplads for nye og brugte cykler.</p>
+        <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen.</p>
         <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Se alle cykler</button>
       </div>
     `
@@ -57,20 +57,9 @@ export const footerContent = {
   about: {
     title: 'Om Cykelbørsen',
     body: `
-      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
-      <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet. Hurtigt, nemt og gratis.</p>
-
-      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Vores mission</h3>
-      <p style="margin-bottom:16px;">Vi tror på, at en god brugt cykel fortjener en ny ejer. Ved at gøre det nemt at købe og sælge brugte cykler hjælper vi med at forlænge cyklernes levetid og reducere unødvendigt affald.</p>
-
-      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">For private sælgere</h3>
-      <p style="margin-bottom:16px;">Det er helt gratis at oprette en annonce som privat sælger. Upload billeder, sæt din pris, og kom i kontakt med interesserede købere direkte via vores beskedsystem.</p>
-
-      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">For forhandlere</h3>
-      <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer helt gratis. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere. Det kræver ingen betaling eller binding at oprette en forhandlerkonto.</p>
-
-      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Kontakt os</h3>
-      <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a>. Vi vender tilbage hurtigst muligt.</p>
+      <p style="margin-bottom:16px;">Cykelbørsen er en markedsplads kun for cykler og cykeludstyr. Private og cykelhandlere sætter cykler til salg, og købere kan søge på det, der betyder noget for en cykel: stelstørrelse, gear, bremser og motor.</p>
+      <p style="margin-bottom:16px;">Det er gratis at sætte en cykel til salg. Forhandlere får et verificeret-mærke, når vi har tjekket deres CVR-nummer.</p>
+      <p style="margin-bottom:24px;">Cykelbørsen er startet i 2025 og drives fra København.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Virksomhedsoplysninger</h3>
       <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>E-mail: hej@cykelbørsen.dk</p>
@@ -516,7 +505,7 @@ export const footerContent = {
     metaDesc: 'Sikkerhedsguide: tjek for stjålne cykler, undgå svindel, lav sikre handler og beskyt dig selv. Sådan handler du trygt på Cykelbørsen.',
     body: `
       <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret 2026 · 5 min. læsning</p>
-      <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">De fleste handler på Cykelbørsen forløber uden problemer. Men med omkring 16.000 cykeltyverier i Danmark hvert år og stigende online-svindel, er det værd at vide hvordan man beskytter sig selv. Følger man de tjek der står her, er man godt på den sikre side.</p>
+      <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">De fleste handler på Cykelbørsen forløber uden problemer. Men der bliver stjålet mange cykler i Danmark hvert år, og det er værd at vide, hvordan man beskytter sig selv. Følger man de tjek der står her, er man godt på den sikre side.</p>
 
       <div style="background:rgba(200,80,42,0.08);border-left:4px solid var(--rust);padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:28px;">
         <strong>Røde flag der altid skal stoppe en handel:</strong>
@@ -542,7 +531,7 @@ export const footerContent = {
       <p style="margin-bottom:24px;">For en grundigere gennemgang, find vores fulde <a href="/guide/tjek-brugt-cykel/" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a>.</p>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentér handlen</h2>
-      <p style="margin-bottom:16px;">Ved køb over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være komplet juridisk korrekt for at være nyttigt. Sælgers navn og adresse (gerne med de første seks cifre af CPR), cyklens mærke, model, årgang og stelnummer, aftalt pris og dato, og begge parters underskrift. Det er nok.</p>
+      <p style="margin-bottom:16px;">Ved køb over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være komplet juridisk korrekt for at være nyttigt. Sælgers navn og telefonnummer, cyklens mærke, model, årgang og stelnummer, aftalt pris og dato, og begge parters underskrift. Det er nok.</p>
       <p style="margin-bottom:24px;">Tag også billeder af cyklen og stelnummeret på handelsdagen. Det er din dokumentation hvis cyklen senere viser sig at være stjålet, og det er ofte forskellen mellem at få sine penge tilbage og at stå tilbage med ingenting.</p>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">De typiske svindelnumre</h2>

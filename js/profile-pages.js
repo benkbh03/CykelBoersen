@@ -543,7 +543,7 @@ export function createProfilePages({
 
     const displayName = data.dealer.shop_name || data.dealer.name || 'Forhandler';
     document.title = `${displayName} – Forhandler | Cykelbørsen`;
-    updateSEOMeta(`${displayName} – Autoriseret cykelforhandler på Cykelbørsen. Se udvalg og anmeldelser.`, `/dealer/${dealerId}`);
+    updateSEOMeta(`${displayName} – Cykelforhandler på Cykelbørsen. Se udvalg og anmeldelser.`, `/dealer/${dealerId}`);
     detailView.innerHTML = buildDealerProfilePageHTML(data);
 
     document.querySelectorAll('.star-pick').forEach(s => {

@@ -95,7 +95,7 @@ export function createValuation({
 
     document.title = 'Hvad er min cykel værd? Gratis vurdering | Cykelbørsen';
     updateSEOMeta(
-      'Gratis cykel-vurdering: indtast mærke, model og stand → få estimeret salgsværdi baseret på rigtige handler. Hurtigt, nemt og uden binding.',
+      'Gratis cykel-vurdering: indtast mærke, model og stand → få estimeret salgsværdi baseret på annoncer på Cykelbørsen. Hurtigt, nemt og uden binding.',
       '/vurder-min-cykel'
     );
 
@@ -111,7 +111,7 @@ export function createValuation({
         <header class="valuation-hero">
           <h1 class="valuation-title">Hvad er din cykel værd?</h1>
           <p class="valuation-subtitle">
-            Gratis vurdering baseret på rigtige handler på Cykelbørsen.
+            Gratis vurdering baseret på annoncer på Cykelbørsen.
             Indtast oplysningerne, så giver vi dig et realistisk prisinterval.
           </p>
         </header>
@@ -131,7 +131,7 @@ export function createValuation({
           <h2 class="valuation-info-title">Ofte stillede spørgsmål</h2>
           <details class="valuation-faq-item">
             <summary>Hvor præcis er vurderingen?</summary>
-            <p>Præcisionen afhænger af hvor mange lignende cykler der er solgt for nylig. Hvis vi finder mindst 5 sammenlignelige annoncer, er estimatet typisk inden for ±15% af den faktiske salgspris. Vi viser altid hvor mange handler estimatet er baseret på.</p>
+            <p>Jo flere lignende annoncer, jo mere præcist estimat. Vi viser, hvor mange annoncer estimatet bygger på.</p>
           </details>
           <details class="valuation-faq-item">
             <summary>Hvad gør jeg hvis I ikke har data nok?</summary>
@@ -319,7 +319,7 @@ export function createValuation({
         <div class="valuation-result-card valuation-result-empty">
           
           <h2 class="valuation-result-title">Ikke data nok</h2>
-          <p>Vi har endnu ikke set nok handler af ${esc(input.brand)} ${esc(input.model)} til at give en præcis vurdering.</p>
+          <p>Vi har endnu ikke nok annoncer med ${esc(input.brand)} ${esc(input.model)} til at give en præcis vurdering.</p>
           <p style="margin-top:12px;">Du kan stadig oprette annoncen og lade markedet vise dig den rigtige pris, eller spørge en af vores forhandlere om vejledning.</p>
           <div class="valuation-result-cta">
             ${_valuationMode === 'modal'
@@ -332,10 +332,10 @@ export function createValuation({
     }
 
     const sampleNote = result.sampleType === 'exact'
-      ? `Baseret på ${result.sampleSize} lignende handler`
+      ? `Baseret på ${result.sampleSize} lignende ${result.sampleSize === 1 ? 'annonce' : 'annoncer'}`
       : result.sampleType === 'wider-year'
-        ? `Baseret på ${result.sampleSize} ${esc(input.brand)} ${esc(input.model)}-handler (alle årgange)`
-        : `Baseret på ${result.sampleSize} ${esc(input.brand)}-handler (få model-specifikke data)`;
+        ? `Baseret på ${result.sampleSize} ${result.sampleSize === 1 ? 'annonce' : 'annoncer'} med ${esc(input.brand)} ${esc(input.model)} (alle årgange)`
+        : `Baseret på ${result.sampleSize} ${result.sampleSize === 1 ? 'annonce' : 'annoncer'} med ${esc(input.brand)} (få model-specifikke data)`;
 
     const rangeWidth = result.high - result.low;
     const medianPos  = ((result.median - result.low) / rangeWidth) * 100;
@@ -414,7 +414,7 @@ export function createValuation({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       'name': 'Cykel-vurdering',
-      'description': 'Gratis værktøj til at estimere markedsværdien af din cykel baseret på rigtige handler på Cykelbørsen.',
+      'description': 'Gratis værktøj til at estimere markedsværdien af din cykel baseret på annoncer på Cykelbørsen.',
       // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i utils.js)
       'url': `${BASE_URL}/vurder-min-cykel/`,
       'applicationCategory': 'BusinessApplication',

@@ -55,7 +55,7 @@ export const BLOG_ARTICLES = {
     metaDesc: 'Sådan undgår du at købe en stjålet cykel: stelnummer-tjek, røde flag og dokumentation. Komplet guide fra Cykelbørsen.',
     category: 'Sikkerhed',
     readTime: 4,
-    publishedAt: '2026-11-08',
+    publishedAt: '2026-05-11',
     body: `
       <p>Forestil dig at du lige har købt en velholdt brugt cykel for 8.000 kr, og en uge senere ringer politiet. Cyklen var stjålet. Du står både uden cykel og uden penge. Den situation kan man stort set altid undgå med fem minutters opmærksomhed inden hver handel, og det er en lille investering i forhold til hvad en brugt cykel typisk koster.</p>
 
@@ -94,7 +94,7 @@ export const BLOG_ARTICLES = {
     metaDesc: 'Find den rigtige cykelstørrelse: tabel over højde og stelstørrelse for racer, MTB, citybike. Plus måleguide og prøvetur-tips.',
     category: 'Guides',
     readTime: 6,
-    publishedAt: '2026-11-05',
+    publishedAt: '2026-05-11',
     body: `
       <p>At købe en cykel der ikke passer er en af de hyppigste måder at spilde penge på. Den ender enten i kælderen eller bliver solgt videre med tab efter et par måneder. Heldigvis er det ikke så svært at ramme den rigtige størrelse, hvis man forstår de tre faktorer der spiller ind: højde, benlængde og cykeltype.</p>
 
@@ -130,7 +130,7 @@ export const BLOG_ARTICLES = {
     metaDesc: 'Køb brugt el-cykel sikkert: tjek batteri, motor, hjul og bremser. Spørgsmål du skal stille sælger.',
     category: 'Køb',
     readTime: 5,
-    publishedAt: '2026-11-02',
+    publishedAt: '2026-05-11',
     body: `
       <p>Brugte el-cykler kan være en rigtig god handel. Du sparer typisk mellem 30 og 50 procent i forhold til ny pris. Men en e-cykel har flere kritiske komponenter end en almindelig cykel (batteri, motor, controller og display), og hver af dem kan koste fem til femten tusind kroner at udskifte. Det er derfor det er værd at bruge et kvarter på at tjekke en brugt e-cykel grundigt igennem inden du betaler.</p>
 
@@ -173,7 +173,7 @@ export const BLOG_ARTICLES = {
     metaDesc: 'Tag bedre billeder af din cykel inden salg: lys, vinkler, baggrund og opsætning. Komplet guide.',
     category: 'Salg',
     readTime: 4,
-    publishedAt: '2026-10-28',
+    publishedAt: '2026-05-11',
     body: `
       <p>Forskellen mellem en cykel der sælges på to dage til en god pris, og en der ligger og samler støv i tre måneder, ligger ofte i billederne. Det kræver ikke en pro-fotograf at få gode resultater, men der er en håndfuld ting der gør en stor forskel. Det hele kan klares med en moderne mobiltelefon.</p>
 
@@ -210,17 +210,17 @@ export const BLOG_ARTICLES = {
   'saelg-cykel-tips': {
     slug: 'saelg-cykel-tips',
     title: 'Sælg din cykel hurtigt: sådan får du den bedste pris',
-    excerpt: 'En god annonce kan sælge en cykel på 24 timer. En dårlig kan tage tre måneder. Her er forskellen.',
+    excerpt: 'Pris, billeder, beskrivelse og hurtige svar. Her er det, der gør forskellen på en annonce der sælger, og en der bliver liggende.',
     metaDesc: 'Sælg din cykel hurtigt og dyrt: prissætning, billeder, beskrivelse og forhandling. Komplet salgsguide.',
     category: 'Salg',
     readTime: 5,
-    publishedAt: '2026-10-25',
+    publishedAt: '2026-05-11',
     body: `
-      <p>At sælge en cykel hurtigt og til en god pris er ikke et tilfælde. Det er et håndværk man kan lære på en halv time. Her er det jeg ville gøre hvis jeg skulle sælge en cykel i dag.</p>
+      <p>At sælge en cykel hurtigt og til en god pris er ikke et tilfælde. Det er et håndværk man kan lære. Her er det, vi ville gøre, hvis vi skulle sælge en cykel i dag.</p>
 
       <h2>Begynd med en realistisk pris</h2>
       <p>Den klassiske fejl er at sætte prisen højere end markedet og håbe på det bedste. Resultatet er som regel det modsatte. Annoncen får ikke henvendelser, prisen sættes ned efter et par uger, og slutprisen ender ofte lavere end hvis man var startet realistisk fra begyndelsen.</p>
-      <p>Tjek Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">gratis vurderingsværktøj</a> for at se hvad lignende cykler faktisk er solgt for. Rammer du medianen, sælger du typisk inden for en uge eller to. Vil du sælge ekstra hurtigt, så sæt prisen fem procent under median. Det giver dig forrang i søgninger og bud kommer hurtigere ind.</p>
+      <p>Tjek Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">gratis vurderingsværktøj</a> for at se, hvad lignende cykler er sat til salg for. Ligger din pris på niveau med dem, er du med i feltet. Vil du sælge hurtigt, så sæt prisen lidt under: købere der sorterer efter pris, ser dig før de andre.</p>
 
       <h2>Beskrivelsen skal sælge, ikke bare beskrive</h2>
       <p>Skriv den i en bestemt rækkefølge, så bliver det aldrig forkert. Start med mærke, model, årgang og tilstand i én sætning. Forklar derefter kort hvorfor du sælger. Det er fint at være ærlig, og "jeg cykler ikke nok længere" lyder bedre end generiske floskler om at cyklen er fantastisk.</p>
@@ -228,24 +228,22 @@ export const BLOG_ARTICLES = {
       <p>Generelle floskler som "fantastisk cykel, må sælges" virker desperat. Vær konkret. Det skaber tillid og giver køberen følelsen af at du ved hvad du taler om.</p>
 
       <h2>Tag rigtig gode billeder</h2>
-      <p>Annoncer med fem til otte skarpe billeder sælger tre gange så hurtigt som dem med et eller to slørede. Vi har en separat <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
+      <p>Fem til otte skarpe billeder giver køberen et langt bedre grundlag end et eller to slørede, og det er ofte dét der afgør, om de skriver til dig. Vi har en separat <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
 
       <h2>Sælg i sæsonen</h2>
       <p>Cykelmarkedet er sæsonbestemt. Foråret og forsommeren (marts til juni) er peak-perioden hvor flest købere er aktive og priserne er højest. Juli og august er stadig gode, men det er ferieperiode. Fra september begynder markedet at falde, og december til februar er bunden hvor kun deal-jægere bevæger sig.</p>
-      <p>Sælger du i marts eller april, får du typisk den bedste pris. Skal du sælge om vinteren, må du regne med at gå 10-15 procent under median for at få et hurtigt salg.</p>
+      <p>Sælger du i marts eller april, er der flest købere. Skal du sælge om vinteren, må du regne med at gå lidt ned i pris for at få et hurtigt salg.</p>
 
       <h2>Vær hurtig til at svare</h2>
-      <p>De første henvendelser kommer typisk inden for seks timer efter annoncen er oprettet. Svarer du inden for en time, har du omkring 80 procents chance for at sælge. Venter du til næste dag, falder den til omkring 30 procent. Slå notifikationer til i Cykelbørsen så du får besked når der kommer nye beskeder, og svar høfligt og konkret.</p>
+      <p>De fleste henvendelser kommer kort efter at annoncen er oprettet, og en køber der ikke får svar, skriver til den næste sælger. Svar hurtigt, høfligt og konkret. Cykelbørsen sender dig en e-mail, når der kommer en ny besked.</p>
 
       <h2>Forhandl med en bundgrænse</h2>
       <p>Næsten alle vil byde under din pris. Vær forberedt og lav et indre tal, den laveste pris du kan acceptere. Imødekom rimelige bud (fem-ti procent under) i god ro, men afvis tomme bud som "vil du tage 1500 for en 8000-cykel". Det er ikke forhandling.</p>
-      <p>Cykelbørsen viser automatisk et mød-i-midten-bud du kan acceptere med et klik, hvilket sparer en masse beskedudveksling. Har du flere interesserede ad gangen, må du gerne lade dem konkurrere lidt. "Jeg har tre interesserede, og højeste tilbud i morgen aften får cyklen" er en helt fair måde at gøre det på, og det presser priserne op.</p>
+      <p>Når en køber skriver et bud under din pris, foreslår Cykelbørsen automatisk et mød-i-midten-bud mellem buddet og din pris, som køberen kan sende med et klik. Det sparer en del beskedudveksling. Har du flere interesserede ad gangen, må du gerne lade dem konkurrere lidt. "Jeg har tre interesserede, og højeste tilbud i morgen aften får cyklen" er en helt fair måde at gøre det på, og det presser priserne op.</p>
 
       <h2>Genopfrisk efter to uger</h2>
-      <p>Hvis cyklen ikke er solgt efter et par uger, så sænk prisen med fem-ti procent. Det giver fornyet synlighed i feed'et. Skift gerne forsidebilledet samtidig, så nye billeder genaktiverer interessen som om annoncen er ny. Du kan også tilføje flere specs i titlen ("Trek FX 3 Disc M 2022, carbon, Shimano Tiagra"), så folk der søger på specifikke detaljer også finder annoncen.</p>
+      <p>Hvis cyklen ikke er solgt efter et par uger, så sænk prisen. Købere der har trykket "Få besked ved prisfald" på din annonce, får en e-mail om det. Skift gerne forsidebilledet samtidig. Du kan også tilføje flere specs i titlen ("Trek FX 3 Disc M 2022, carbon, Shimano Tiagra"), så folk der søger på specifikke detaljer også finder annoncen.</p>
 
-      <h2>To timer, stor forskel</h2>
-      <p>De seks ting tager samlet omkring to timer at gennemføre. Det er typisk forskellen mellem at sælge på tre dage til 90 procent af din ønskepris, eller at sælge på seks uger til 70. Det er en rigtig god timeløn på en eftermiddag du alligevel skulle bruge på cyklen. Husk at Cykelbørsen er gratis for private sælgere, så der er ingen oprettelsesgebyrer eller provision når handlen lukker.</p>
     `,
   },
 
@@ -256,7 +254,7 @@ export const BLOG_ARTICLES = {
     metaDesc: 'Bedste racercykler under 15.000 kr: Trek Domane, Cube Attain, Specialized Allez og flere. Komparativ guide.',
     category: 'Køb',
     readTime: 6,
-    publishedAt: '2026-10-20',
+    publishedAt: '2026-05-11',
     body: `
       <p>15.000 kr er en god prisklasse at komme ind i racercykling. Ny er du på entry-til-mid niveau hos de store mærker, og brugt får du betydeligt mere for pengene, typisk en premium cykel der er to-tre år gammel. Spørgsmålet er hvad du skal lede efter, og hvilke modeller der reelt giver mest valuta for pengene.</p>
 
