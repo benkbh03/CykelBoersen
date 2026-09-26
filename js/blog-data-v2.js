@@ -51,21 +51,16 @@ export const BLOG_ARTICLES = {
   'undgaa-stjaalet-cykel': {
     slug: 'undgaa-stjaalet-cykel',
     title: 'Sådan undgår du at købe en stjålet cykel',
-    excerpt: 'Forestil dig at du lige har købt en velholdt brugt cykel, og en uge senere ringer politiet. Sådan undgår du den situation.',
+    excerpt: 'Køber du en stjålet cykel, mister du både cyklen og pengene. Sådan undgår du det.',
     metaDesc: 'Sådan undgår du at købe en stjålet cykel: stelnummer-tjek, røde flag og dokumentation. Komplet guide fra Cykelbørsen.',
     category: 'Sikkerhed',
     readTime: 4,
     publishedAt: '2026-05-11',
     body: `
-      <p>Forestil dig at du lige har købt en velholdt brugt cykel for 8.000 kr, og en uge senere ringer politiet. Cyklen var stjålet. Du står både uden cykel og uden penge. Den situation kan man stort set altid undgå med fem minutters opmærksomhed inden hver handel, og det er en lille investering i forhold til hvad en brugt cykel typisk koster.</p>
+      <p>Tjek cyklen, inden du betaler. Viser den sig at være stjålet, skal den tilbage til ejeren, og du står uden både cykel og penge. Det kan man stort set altid undgå med få minutters opmærksomhed inden handlen.</p>
 
       <h2>Stelnummeret er udgangspunktet</h2>
-      <p>Cyklens stelnummer fungerer som en bils registreringsnummer. Det står typisk på rammen under bundbeslaget mellem pedalerne, men kan også sidde på sadelpinden eller styrhovedet. Det vigtigste er at bede om det inden I overhovedet mødes.</p>
-      <p>Send sælger en kort besked på forhånd. Et eksempel kunne være: "Hej, må jeg lige få stelnummeret før vi ses? Jeg vil bare slå det op hos politiet for at handle med god samvittighed." En reel sælger har ikke noget imod det. Hvis personen nægter, finder undskyldninger eller pludselig siger at nummeret er slidt af, så drop handlen. Det er det største advarselstegn der findes.</p>
-
-      <h2>Slå nummeret op hos politiet</h2>
-      <p>Politiet har et offentligt register over cykler der er meldt stjålne, og du kan slå et stelnummer op på under et minut på <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener">politi.dk</a>.</p>
-      <p>Hvis cyklen står som efterlyst, dukker den op her. Et blankt resultat betyder ikke automatisk at cyklen er ren, fordi registret kun indeholder de cykler ejerne selv har meldt stjålet. Men det er det første og vigtigste tjek man kan lave inden man betaler.</p>
+      <p>Bed om stelnummeret, inden I mødes, og slå det op i politiets register over stjålne cykler. Hvor nummeret sidder, hvordan du slår det op, og hvor I bør mødes, står i vores <a href="/sikkerhedsguide/" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">sikkerhedsguide</a>.</p>
 
       <h2>Prisen siger ofte en hel del</h2>
       <p>Slå normalprisen for modellen op, gerne i Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a>. Ligger prisen 30 procent under markedet, så stil dig selv spørgsmålet hvorfor.</p>
@@ -74,16 +69,12 @@ export const BLOG_ARTICLES = {
       <h2>Spørg til historikken</h2>
       <p>En reel ejer kan typisk fremvise enten den originale kvittering, en servicehistorik fra en forhandler, billeder af registreringen hos sit forsikringsselskab, eller den tidligere annonce på Cykelbørsen hvis cyklen er købt brugt. Det er ikke ensbetydende med at en sælger uden papirer har stjålet cyklen, da mange privatpersoner smider kvitteringer ud over årene. Men kombineret med andre advarselstegn er det værd at tøve.</p>
 
-      <h2>Mødested og kvittering</h2>
-      <p>Insistér på at mødes et offentligt sted, fx foran en cykelhandler, en politistation eller en cafe. Tag billeder af cyklen og stelnummeret før du betaler. Hvis sælger nægter at mødes offentligt eller virker nervøs ved kameraet, så er det også et signal du skal lytte til.</p>
-      <p>Ved handler over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være kompliceret. Sælgers navn, dato, pris, stelnummer og begge parters underskrift på et stykke papir er nok. Send hinanden gerne en kopi pr. mail bagefter, så I begge har dokumentation.</p>
-
       <h2>Hvis det alligevel går galt</h2>
       <p>Skulle det vise sig, at cyklen var stjålet, så aflevér den til politiet med det samme. Du må ikke beholde stjålne genstande, heller ikke selvom du købte i god tro. Anmeld sælger med den dokumentation du har, kontakt din bank for at høre om chargeback (det er muligt op til 30 dage hvis du betalte med kort eller MobilePay), og overvej at rejse et civilretligt krav.</p>
       <p>I praksis er det dog ofte svært at få pengene tilbage hvis sælger forsvinder eller har brugt falsk identitet. Derfor er forebyggelsen langt vigtigere end alt det man kan gøre bagefter.</p>
 
-      <h2>Det tager ti minutter</h2>
-      <p>De fem tjek tager samlet omkring ti minutter at gennemføre, og de fjerner langt størstedelen af risikoen. Det er en lille investering i en handel der typisk koster mellem 5.000 og 20.000 kr. Vil du gå dybere i sikker handel, finder du vores fulde <a href="/sikkerhedsguide/" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">sikkerhedsguide</a> her på sitet.</p>
+      <h2>Det tager få minutter</h2>
+      <p>Tjekkene her tager få minutter, og det er langt billigere end at stå uden både cykel og penge bagefter.</p>
     `,
   },
 
@@ -161,7 +152,7 @@ export const BLOG_ARTICLES = {
       <p>Nogle ting bør stoppe en handel uanset hvor god prisen er. Batteriet er låst eller mangler oplader. Motoren laver underlige lyde. Sælger nægter at lade dig tage en prøvetur. Prisen ligger 30 procent under markedet (mistanke om tyveri eller skjulte fejl). Eller cyklen har et tredjeparts-batteri i stedet for et originalt, hvilket kan være en reel sikkerhedsrisiko.</p>
 
       <h2>Hvad betyder en realistisk pris</h2>
-      <p>Brug Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a> for at se hvad lignende e-cykler sælges for lige nu. Som tommelfingerregel taber en e-cykel 20-30 procent af nyprisen det første år. Efter to år ligger den typisk på 55-65 procent af nyprisen, efter tre-fire år på 40-50 procent, og er den fem år eller mere bør prisen ligge mellem 30 og 40 procent af original. På det tidspunkt nærmer batteriet sig udskiftning, og det skal afspejles i prisen.</p>
+      <p>Brug Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a> for at se hvad lignende e-cykler sælges for lige nu. En el-cykel taber typisk mest værdi de første år. Sammenlign altid med lignende annoncer. Jo ældre cyklen er, jo tættere er batteriet på udskiftning, og det skal afspejles i prisen.</p>
       <p>På Cykelbørsen kan du filtrere på "El-cykel" som type. Mange forhandlere tilbyder også garanti på brugte e-cykler, og det vises tydeligt med et garanti-mærke på annoncen.</p>
     `,
   },
@@ -197,13 +188,13 @@ export const BLOG_ARTICLES = {
       <p>Det første billede er det eneste mange købere ser. Det skal vise hele cyklen fra siden, gerne med pedalen i klokken seks-position (lige nedad) og kæden tydelig. Det er den klassiske cykelvinkel som alle genkender, og den får cyklen til at se samlet og helstøbt ud.</p>
 
       <h2>Gør cyklen klar inden</h2>
-      <p>Bare en hurtig overspuling og afpudsning gør en stor forskel. Pust dækkene op til normaltryk, smør kæden så den glinser, og rens bremseklodserne for sort bremsestøv. Et halvt times rengøring kan hæve salgsprisen med 5-10 procent og forkorte salgstiden mærkbart. Det er sandsynligvis den bedste timeløn du kan få på dit cykelsalg.</p>
+      <p>Bare en hurtig overspuling og afpudsning gør en stor forskel. Pust dækkene op til normaltryk, smør kæden så den glinser, og rens bremseklodserne for sort bremsestøv. En ren cykel ser bedre vedligeholdt ud på billederne, og det er dem køberen bedømmer den på.</p>
 
       <h2>Fejlene du skal undgå</h2>
       <p>Spejlbilleder eller billeder taget i bilvinduer virker amatøragtigt. Selfies med cyklen er heller ikke nogen god idé, fordi folk vil se cyklen, ikke dig. Hold dig fra filtre og overbearbejdning. Ærlige billeder sælger bedst, og overdrevent justerede billeder skaber mistanke. Og hvis flere cykler er med på samme billede, mister læseren fokus på hvad der egentlig er til salg.</p>
 
       <h2>Et kvarters arbejde, stor effekt</h2>
-      <p>Et kvarters arbejde med ordentligt lys, en ren baggrund og fem-otte gode vinkler giver typisk 40 procent hurtigere salg og 5-10 procent højere pris. Det er svært at finde en bedre afkast på din tid. Når du opretter annoncen på Cykelbørsen, kan du beskære dine billeder direkte til det 3:2-format der vises på annoncekort, så du selv vælger præcis hvilket udsnit køberne ser i feed'et.</p>
+      <p>Et kvarters arbejde med ordentligt lys, en ren baggrund og fem-otte gode vinkler er noget af det bedste, du kan gøre for din annonce. Når du opretter annoncen på Cykelbørsen, kan du beskære dine billeder direkte til det 3:2-format der vises på annoncekort, så du selv vælger præcis hvilket udsnit køberne ser i feed'et.</p>
     `,
   },
 
@@ -231,7 +222,7 @@ export const BLOG_ARTICLES = {
       <p>Fem til otte skarpe billeder giver køberen et langt bedre grundlag end et eller to slørede, og det er ofte dét der afgør, om de skriver til dig. Vi har en separat <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
 
       <h2>Sælg i sæsonen</h2>
-      <p>Cykelmarkedet er sæsonbestemt. Foråret og forsommeren (marts til juni) er peak-perioden hvor flest købere er aktive og priserne er højest. Juli og august er stadig gode, men det er ferieperiode. Fra september begynder markedet at falde, og december til februar er bunden hvor kun deal-jægere bevæger sig.</p>
+      <p>Cykelmarkedet er sæsonbestemt. Foråret og forsommeren (marts til juni) er højsæsonen, hvor flest købere er aktive og priserne er højest. Juli og august er stadig gode, men det er ferieperiode. Fra september begynder markedet at falde, og december til februar er bunden, hvor det mest er købere på udkig efter et godt tilbud.</p>
       <p>Sælger du i marts eller april, er der flest købere. Skal du sælge om vinteren, må du regne med at gå lidt ned i pris for at få et hurtigt salg.</p>
 
       <h2>Vær hurtig til at svare</h2>
@@ -251,27 +242,27 @@ export const BLOG_ARTICLES = {
     slug: 'racercykler-under-15000',
     title: 'Bedste racercykler under 15.000 kr',
     excerpt: '15.000 kr er en god prisklasse at komme ind i racercykling. Hvad får du for pengene ny, og hvad får du brugt?',
-    metaDesc: 'Bedste racercykler under 15.000 kr: Trek Domane, Cube Attain, Specialized Allez og flere. Komparativ guide.',
+    metaDesc: 'Racercykler under 15.000 kr: Trek Domane, Cube Attain, Specialized Allez og flere. Hvad de er, og hvad du skal tjekke.',
     category: 'Køb',
     readTime: 6,
     publishedAt: '2026-05-11',
     body: `
-      <p>15.000 kr er en god prisklasse at komme ind i racercykling. Ny er du på entry-til-mid niveau hos de store mærker, og brugt får du betydeligt mere for pengene, typisk en premium cykel der er to-tre år gammel. Spørgsmålet er hvad du skal lede efter, og hvilke modeller der reelt giver mest valuta for pengene.</p>
+      <p>15.000 kr er en god prisklasse at komme ind i racercykling. Ny er du på begynder- til mellemniveau hos de store mærker, og brugt får du betydeligt mere for pengene, typisk en premium cykel der er to-tre år gammel. Spørgsmålet er hvad du skal lede efter, og hvilke modeller der reelt giver mest valuta for pengene.</p>
 
       <h2>Aluminium eller carbon</h2>
       <p>For 15.000 kr har du grundlæggende to muligheder. Du kan købe en ny racercykel med aluminiumsramme og Shimano 105-gear, hvilket er et solidt udgangspunkt for begyndere og motionister. Eller du kan købe en brugt carbon-racer der er to-tre år gammel med samme gear-niveau, men en markant lettere og mere komfortabel ramme.</p>
-      <p>Carbon er lettere og dæmper vibrationer bedre, men ny carbon i denne prisklasse er fyldt med kompromisser: tunge rammer, billigere komponenter og billigere hjul. Brugt carbon fra to-tre år tilbage giver dig en cykel der oprindeligt kostede 25-35.000 kr nyt, til halv pris.</p>
+      <p>Carbon er lettere og dæmper vibrationer bedre, men ny carbon i denne prisklasse er fyldt med kompromisser: tunge rammer, billigere komponenter og billigere hjul. Brugt carbon fra to-tre år tilbage giver dig en cykel der oprindeligt kostede betydeligt mere.</p>
 
       <h2>Seks modeller værd at kigge på</h2>
-      <p><strong>Trek Domane AL 4</strong> er et godt udgangspunkt. En ny koster omkring 12.000 kr, og brugt finder du den typisk for 7-9.000 kr. Det er en endurance-racer med aluminiumsramme, carbon-forgaffel, Shimano Tiagra-gear og hydrauliske skivebremser. Geometrien er komfortabel og velegnet til lange ture, og Treks IsoSpeed-system dæmper vibrationer mærkbart.</p>
-      <p><strong>Cube Attain GTC</strong> er det tyske alternativ, omtrent samme prisniveau ny (14.000 kr) eller 9-12.000 kr brugt. Den giver dig en carbonramme og Shimano 105-gear til en aggressiv pris, og geometrien er mere race-orienteret end Domanes.</p>
-      <p><strong>Specialized Allez</strong> er en klassiker. Aluminium med carbon-forgaffel, Shimano-gear, og opbygget til at være hurtig og responsiv. Ny koster den omkring 10.000 kr, brugt får du den for 5-8.000 kr. Mange Allez har været gennem flere hænder, så tjek altid kæde, kassette og krans for slid.</p>
-      <p><strong>Canyon Endurace AL</strong> er Canyons direct-to-consumer-bud. Du sparer mellemleddet ved at købe direkte fra Canyon, så prisen er aggressiv (omkring 12.000 kr for AL-modellen). Bemærk at den kommer i flat pack og kræver lidt egen samling, men det er overskueligt med en cykelnøgle og en time.</p>
-      <p><strong>Cannondale Synapse AL</strong> er Cannondales endurance-cykel. Aluminium med SAVE-vibrationsdæmpning og Shimano 105 eller Tiagra. Ny ligger den på 13.000 kr, og brugt typisk 7-10.000 kr. God til granfondoer og lange søndagsture, mindre velegnet til ren racekørsel.</p>
-      <p>Til sidst er der brugt <strong>Cervélo R3 eller Soloist</strong>. En model fra 2017-2019 kan ligge på 12-15.000 kr brugt, og du får en World Tour-niveau carbon-ramme med Shimano Ultegra eller højere komponenter. Det er performance-cyklen i denne prisklasse hvis du jagter brugt premium.</p>
+      <p><strong>Trek Domane AL</strong> er en endurance-racer med aluminiumsramme og en komfortabel geometri til lange ture. Gruppesæt og bremser varierer fra årgang til årgang, så tjek hvad den konkrete cykel har.</p>
+      <p><strong>Cube Attain</strong> er Cubes endurance-racer. GTC-udgaven har carbonramme, de øvrige aluminium. Er den i carbon, så gå rammen efter for revner og skader.</p>
+      <p><strong>Specialized Allez</strong> er en race-cykel i aluminium. Mange har været gennem flere hænder, så tjek altid kæde, kassette og krans for slid.</p>
+      <p><strong>Canyon Endurace AL</strong> er en endurance-racer i aluminium, som Canyon sælger direkte uden forhandler. Køber du den brugt, så tjek at den er samlet og justeret ordentligt.</p>
+      <p><strong>Cannondale Synapse</strong> er Cannondales endurance-cykel og fås i både aluminium og carbon. Tjek hvilket gruppesæt og hvilke bremser den konkrete årgang har.</p>
+      <p>Til sidst er der brugt <strong>Cervélo R3 eller Soloist</strong>: race-cykler med carbonramme. Gå rammen grundigt efter for revner og styrtskader, og spørg til historikken.</p>
 
       <h2>Det du skal holde dig fra</h2>
-      <p>Friction-shifters er teknologi fra 80'erne, og du vil have indexed shifting med klik. Fælgbremser uden hydraulik er OK på racere, men skivebremser holder bedre på langs i alle vejrforhold. Pas på 26-tommer hjul, da det er gamle MTB-hjul, ikke moderne racerstandard, hvor 28-tommer (700c) er normen. Og hvis mærket er et navn du aldrig har hørt om, så er reservedele ofte umulige at finde senere.</p>
+      <p>Friction-shifters er teknologi fra 80'erne, og du vil have indexed shifting med klik. Fælgbremser uden hydraulik er OK på racere, men skivebremser bremser bedre i vådt vejr. Pas på 26-tommer hjul, da det er gamle MTB-hjul, ikke moderne racerstandard, hvor 28-tommer (700c) er normen. Og hvis mærket er et navn du aldrig har hørt om, så er reservedele ofte umulige at finde senere.</p>
 
       <h2>Brugt eller ny</h2>
       <p>Det er det evige spørgsmål. Ny giver dig garanti, en service-aftale med en forhandler, og du kan vælge præcis den størrelse og farve du vil have. Det er den rigtige løsning hvis du er helt ny til racing og vil have tryghed.</p>
