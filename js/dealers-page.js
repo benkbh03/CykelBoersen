@@ -65,21 +65,6 @@ export function createDealersPage({
     }
   }
 
-  async function fetchSocialProofCounts() {
-    try {
-      const [dealerRes, bikeRes] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true),
-        supabase.from('bikes').select('id', { count: 'exact', head: true }).eq('is_active', true),
-      ]);
-      return {
-        dealers: dealerRes.count ?? 0,
-        bikes:   bikeRes.count   ?? 0,
-      };
-    } catch {
-      return null;
-    }
-  }
-
   // ── Thin wrappers for legacy compat ──────────────────────
 
   function openBecomeDealerModal() {
@@ -118,8 +103,8 @@ export function createDealersPage({
     <div class="dealers-page">
       <div class="dealers-page-header">
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
-        <h1 class="dealers-page-title">Autoriserede forhandlere</h1>
-        <p class="dealers-page-subtitle">Køb med tryghed fra verificerede cykelforhandlere. Alle har garanti, servicehistorik og professionel rådgivning.</p>
+        <h1 class="dealers-page-title">Verificerede forhandlere</h1>
+        <p class="dealers-page-subtitle">Cykelhandlere hvis CVR-nummer vi har tjekket.</p>
         <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">${iconDealer()} Bliv forhandler</button>
       </div>
       <div class="dealers-toolbar">
@@ -160,8 +145,7 @@ export function createDealersPage({
       <div class="dealer-empty-card">
         <div style="margin-bottom:16px;color:var(--muted);">${iconSearch(40)}</div>
         <h3>Ingen forhandlere endnu</h3>
-        <p>Bliv en af de første forhandlere på Cykelbørsen.
-Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
+        <p>Bliv en af de første forhandlere på Cykelbørsen.</p>
         <button class="btn-become-dealer-small" onclick="navigateTo('/bliv-forhandler')">Tilmeld din butik</button>
       </div>`;
       return;
@@ -425,7 +409,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <div class="bd-page-header">
           <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
           <h1 class="bd-page-title">Bliv forhandler</h1>
-          <p class="bd-page-subtitle">Få din cykelbutik på Danmarks dedikerede cykelmarkedsplads</p>
+          <p class="bd-page-subtitle">Få din cykelbutik på Cykelbørsen</p>
         </div>
 
         <div class="bd-perks">
@@ -433,7 +417,6 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
           <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Profilside med alle jeres cykler</span></div>
-          <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis, ingen kreditkort</span></div>
         </div>
 
         <div class="bd-form" style="text-align:center;">
@@ -476,27 +459,9 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
       <div class="bd-page-header">
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="bd-page-title">Bliv forhandler</h1>
-        <p class="bd-page-subtitle">Få din cykelbutik på Danmarks dedikerede cykelmarkedsplads</p>
+        <p class="bd-page-subtitle">Få din cykelbutik på Cykelbørsen</p>
       </div>
 
-      <div class="bd-trial-banner">
-        <strong>Gratis for forhandlere</strong>: opret din butiksprofil uden binding eller betaling.
-      </div>
-
-      <div class="bd-social-proof" id="bd-social-proof" aria-live="polite">
-        <div class="bd-social-stat">
-          <span class="bd-social-num" id="bd-stat-dealers">–</span>
-          <span class="bd-social-label">verificerede forhandlere</span>
-        </div>
-        <div class="bd-social-stat">
-          <span class="bd-social-num" id="bd-stat-bikes">–</span>
-          <span class="bd-social-label">aktive cykler til salg</span>
-        </div>
-        <div class="bd-social-stat">
-          <span class="bd-social-num">2 min</span>
-          <span class="bd-social-label">at oprette profil</span>
-        </div>
-      </div>
 
       <p class="bd-preview-link">
         Vil du se hvordan jeres butik kommer til at se ud?
@@ -508,7 +473,6 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Verificeret forhandler-badge</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Direkte beskeder fra købere</span></div>
         <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Profilside med alle jeres cykler</span></div>
-        <div class="bd-perk"><svg class="bd-perk-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>100% gratis, ingen kreditkort</span></div>
       </div>
 
       ${/* Var "Derfor vælger forhandlere Cykelbørsen" med fire kort og emoji.
@@ -570,7 +534,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
 
         <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">
-          Gratis at oprette, ingen binding, ingen kreditkort.<br>
+          Gratis, ingen kreditkort.<br>
           Ved at oprette en forhandlerkonto accepterer du vores <a onclick="navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.
         </p>
       </div>
@@ -587,14 +551,6 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
         }
       });
     }
-
-    fetchSocialProofCounts().then((counts) => {
-      if (!counts) return;
-      const dealerEl = document.getElementById('bd-stat-dealers');
-      const bikeEl   = document.getElementById('bd-stat-bikes');
-      if (dealerEl) dealerEl.textContent = counts.dealers > 0 ? counts.dealers : '–';
-      if (bikeEl)   bikeEl.textContent   = counts.bikes   > 0 ? counts.bikes   : '–';
-    });
 
     try {
       window.dataLayer = window.dataLayer || [];
