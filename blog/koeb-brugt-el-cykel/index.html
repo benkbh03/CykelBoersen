@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260926k">
+<html lang="da" data-asset-v="20260927a">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,23 +113,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926k">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260927a">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260926k">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260926k">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260926k">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926k">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260926k">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260926k">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926k">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260926k">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926k">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260926k">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926k">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926k">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260926k">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260927a">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260927a">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260927a">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260927a">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260927a">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260927a">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260927a">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260927a">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260927a">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260927a">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260927a">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260927a">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260927a">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1141,7 +1141,7 @@
       <p>Nogle ting bør stoppe en handel uanset hvor god prisen er. Batteriet er låst eller mangler oplader. Motoren laver underlige lyde. Sælger nægter at lade dig tage en prøvetur. Prisen ligger 30 procent under markedet (mistanke om tyveri eller skjulte fejl). Eller cyklen har et tredjeparts-batteri i stedet for et originalt, hvilket kan være en reel sikkerhedsrisiko.</p>
 
       <h2>Hvad betyder en realistisk pris</h2>
-      <p>Brug Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a> for at se hvad lignende e-cykler sælges for lige nu. Som tommelfingerregel taber en e-cykel 20-30 procent af nyprisen det første år. Efter to år ligger den typisk på 55-65 procent af nyprisen, efter tre-fire år på 40-50 procent, og er den fem år eller mere bør prisen ligge mellem 30 og 40 procent af original. På det tidspunkt nærmer batteriet sig udskiftning, og det skal afspejles i prisen.</p>
+      <p>Brug Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a> for at se hvad lignende e-cykler sælges for lige nu. En el-cykel taber typisk mest værdi de første år. Sammenlign altid med lignende annoncer. Jo ældre cyklen er, jo tættere er batteriet på udskiftning, og det skal afspejles i prisen.</p>
       <p>På Cykelbørsen kan du filtrere på "El-cykel" som type. Mange forhandlere tilbyder også garanti på brugte e-cykler, og det vises tydeligt med et garanti-mærke på annoncen.</p>
     </div>
         <div class="blog-article-cta">

@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260926k">
+<html lang="da" data-asset-v="20260927a">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,23 +113,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926k">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260927a">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260926k">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260926k">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260926k">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926k">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260926k">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260926k">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926k">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260926k">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926k">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260926k">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926k">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926k">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260926k">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260927a">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260927a">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260927a">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260927a">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260927a">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260927a">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260927a">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260927a">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260927a">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260927a">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260927a">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260927a">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260927a">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1112,15 +1112,10 @@
           </div>
         </header>
         <div class="blog-article-body">
-      <p>Forestil dig at du lige har købt en velholdt brugt cykel for 8.000 kr, og en uge senere ringer politiet. Cyklen var stjålet. Du står både uden cykel og uden penge. Den situation kan man stort set altid undgå med fem minutters opmærksomhed inden hver handel, og det er en lille investering i forhold til hvad en brugt cykel typisk koster.</p>
+      <p>Tjek cyklen, inden du betaler. Viser den sig at være stjålet, skal den tilbage til ejeren, og du står uden både cykel og penge. Det kan man stort set altid undgå med få minutters opmærksomhed inden handlen.</p>
 
       <h2>Stelnummeret er udgangspunktet</h2>
-      <p>Cyklens stelnummer fungerer som en bils registreringsnummer. Det står typisk på rammen under bundbeslaget mellem pedalerne, men kan også sidde på sadelpinden eller styrhovedet. Det vigtigste er at bede om det inden I overhovedet mødes.</p>
-      <p>Send sælger en kort besked på forhånd. Et eksempel kunne være: "Hej, må jeg lige få stelnummeret før vi ses? Jeg vil bare slå det op hos politiet for at handle med god samvittighed." En reel sælger har ikke noget imod det. Hvis personen nægter, finder undskyldninger eller pludselig siger at nummeret er slidt af, så drop handlen. Det er det største advarselstegn der findes.</p>
-
-      <h2>Slå nummeret op hos politiet</h2>
-      <p>Politiet har et offentligt register over cykler der er meldt stjålne, og du kan slå et stelnummer op på under et minut på <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener">politi.dk</a>.</p>
-      <p>Hvis cyklen står som efterlyst, dukker den op her. Et blankt resultat betyder ikke automatisk at cyklen er ren, fordi registret kun indeholder de cykler ejerne selv har meldt stjålet. Men det er det første og vigtigste tjek man kan lave inden man betaler.</p>
+      <p>Bed om stelnummeret, inden I mødes, og slå det op i politiets register over stjålne cykler. Hvor nummeret sidder, hvordan du slår det op, og hvor I bør mødes, står i vores <a href="/sikkerhedsguide/" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">sikkerhedsguide</a>.</p>
 
       <h2>Prisen siger ofte en hel del</h2>
       <p>Slå normalprisen for modellen op, gerne i Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">vurderingsværktøj</a>. Ligger prisen 30 procent under markedet, så stil dig selv spørgsmålet hvorfor.</p>
@@ -1129,16 +1124,12 @@
       <h2>Spørg til historikken</h2>
       <p>En reel ejer kan typisk fremvise enten den originale kvittering, en servicehistorik fra en forhandler, billeder af registreringen hos sit forsikringsselskab, eller den tidligere annonce på Cykelbørsen hvis cyklen er købt brugt. Det er ikke ensbetydende med at en sælger uden papirer har stjålet cyklen, da mange privatpersoner smider kvitteringer ud over årene. Men kombineret med andre advarselstegn er det værd at tøve.</p>
 
-      <h2>Mødested og kvittering</h2>
-      <p>Insistér på at mødes et offentligt sted, fx foran en cykelhandler, en politistation eller en cafe. Tag billeder af cyklen og stelnummeret før du betaler. Hvis sælger nægter at mødes offentligt eller virker nervøs ved kameraet, så er det også et signal du skal lytte til.</p>
-      <p>Ved handler over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være kompliceret. Sælgers navn, dato, pris, stelnummer og begge parters underskrift på et stykke papir er nok. Send hinanden gerne en kopi pr. mail bagefter, så I begge har dokumentation.</p>
-
       <h2>Hvis det alligevel går galt</h2>
       <p>Skulle det vise sig, at cyklen var stjålet, så aflevér den til politiet med det samme. Du må ikke beholde stjålne genstande, heller ikke selvom du købte i god tro. Anmeld sælger med den dokumentation du har, kontakt din bank for at høre om chargeback (det er muligt op til 30 dage hvis du betalte med kort eller MobilePay), og overvej at rejse et civilretligt krav.</p>
       <p>I praksis er det dog ofte svært at få pengene tilbage hvis sælger forsvinder eller har brugt falsk identitet. Derfor er forebyggelsen langt vigtigere end alt det man kan gøre bagefter.</p>
 
-      <h2>Det tager ti minutter</h2>
-      <p>De fem tjek tager samlet omkring ti minutter at gennemføre, og de fjerner langt størstedelen af risikoen. Det er en lille investering i en handel der typisk koster mellem 5.000 og 20.000 kr. Vil du gå dybere i sikker handel, finder du vores fulde <a href="/sikkerhedsguide/" onclick="event.preventDefault();navigateTo('/sikkerhedsguide')">sikkerhedsguide</a> her på sitet.</p>
+      <h2>Det tager få minutter</h2>
+      <p>Tjekkene her tager få minutter, og det er langt billigere end at stå uden både cykel og penge bagefter.</p>
     </div>
         <div class="blog-article-cta">
           <h3>Klar til at handle?</h3>
