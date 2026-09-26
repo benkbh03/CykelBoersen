@@ -242,7 +242,7 @@ export function createProfilePages({
 
     const writeReviewHtml = (!isOwnProfile && currentUser && !hasReviewed && hasTraded) ? `
       <div class="up-write-review" id="write-review-wrap">
-        <h4 style="font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:12px;">Giv en vurdering</h4>
+        <h4 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin-bottom:12px;">Giv en vurdering</h4>
         <div class="up-star-picker" id="star-picker">
           ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
         </div>
@@ -374,7 +374,7 @@ export function createProfilePages({
 
     const writeReviewHtml = (!isOwnProfile && currentUser && !hasReviewed && hasTraded) ? `
       <div class="up-write-review" id="write-review-wrap">
-        <h4 style="font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:12px;">Giv en vurdering</h4>
+        <h4 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin-bottom:12px;">Giv en vurdering</h4>
         <div class="up-star-picker" id="star-picker">
           ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="pickStar(${i})">★</span>`).join('')}
         </div>

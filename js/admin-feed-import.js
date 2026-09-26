@@ -53,28 +53,28 @@ export function createAdminFeedImport({ supabase, showToast }) {
 
     container.innerHTML = `
       <div class="bulk-import-step">
-        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">Tilføj webshop-feed</h3>
+        <h3 style="margin:0 0 6px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">Tilføj webshop-feed</h3>
         <p style="margin:0 0 12px;color:var(--muted);font-size:0.85rem;line-height:1.5;">
           Indsæt forhandlerens produkt-feed-URL (typisk Google Shopping XML fra deres webshop).
           Cyklerne synkroniseres automatisk hver nat — og du kan synkronisere manuelt med det samme.
         </p>
         <div style="display:grid;gap:10px;max-width:560px;">
-          <select id="feed-dealer-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          <select id="feed-dealer-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;">
             <option value="">— Vælg forhandler —</option>
             ${_dealers.map(d => `<option value="${esc(d.id)}">${esc(d.shop_name || d.name || 'Unavngivet')} ${d.city ? '(' + esc(d.city) + ')' : ''}</option>`).join('')}
           </select>
-          <input type="url" id="feed-url-input" placeholder="Shopify: https://forhandler.dk/products.json" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          <input type="url" id="feed-url-input" placeholder="Shopify: https://forhandler.dk/products.json" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;">
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <select id="feed-format-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+            <select id="feed-format-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;flex:1;min-width:160px;">
               <option value="shopify_json">Shopify (automatisk)</option>
               <option value="google_xml">Google Shopping XML</option>
               <option value="csv">CSV</option>
             </select>
-            <select id="feed-deftype-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+            <select id="feed-deftype-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;flex:1;min-width:160px;">
               <option value="">Auto-gæt cykeltype</option>
               ${VALID_TYPES.map(t => `<option value="${t}">Default: ${t}</option>`).join('')}
             </select>
-            <select id="feed-currency-select" title="Butikkens valuta — priser omregnes til DKK" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+            <select id="feed-currency-select" title="Butikkens valuta — priser omregnes til DKK" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;flex:1;min-width:160px;">
               <option value="auto">Valuta: auto-registrér</option>
               <option value="DKK">DKK (kr)</option>
               <option value="EUR">EUR → DKK</option>
@@ -83,7 +83,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
               <option value="USD">USD → DKK</option>
               <option value="GBP">GBP → DKK</option>
             </select>
-            <select id="feed-round-select" title="Afrund omregnede priser til butikkens pris-mønster" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;min-width:160px;">
+            <select id="feed-round-select" title="Afrund omregnede priser til butikkens pris-mønster" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;flex:1;min-width:160px;">
               <option value="none">Afrunding: ingen</option>
               <option value="99">Afrund til x99 (fx 4.699)</option>
               <option value="95">Afrund til x95</option>
@@ -96,28 +96,28 @@ export function createAdminFeedImport({ supabase, showToast }) {
             Hvis butikken kun har udenlandsk valuta (fx EUR), omregnes der til DKK — vælg da <strong>afrunding</strong>
             der matcher butikkens priser (de fleste ender på x99), så fx 4.692 → 4.699. Afrunding rører kun omregnede priser.
           </p>
-          <button id="feed-add-btn" style="background:var(--forest);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;justify-self:start;">+ Gem feed</button>
+          <button id="feed-add-btn" style="background:var(--forest);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-weight:600;cursor:pointer;font-family:var(--font-sans);justify-self:start;">+ Gem feed</button>
         </div>
       </div>
 
       <div class="bulk-import-step" style="margin-top:24px;">
-        <h3 style="margin:0 0 4px;font-family:'Fraunces',serif;">🔍 Test en vilkårlig butik</h3>
+        <h3 style="margin:0 0 4px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">🔍 Test en vilkårlig butik</h3>
         <p style="margin:0 0 10px;color:var(--muted);font-size:0.82rem;line-height:1.5;">
           Indsæt enhver Shopify <code>products.json</code>-URL for at se hvordan den parses — <strong>skriver intet, kræver ingen forhandler</strong>. Perfekt til at tjekke en butik før du onboarder dem.
         </p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;max-width:560px;">
-          <input type="url" id="feed-test-url-input" placeholder="https://butik.dk/products.json" style="flex:1;min-width:220px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
-          <select id="feed-test-format-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          <input type="url" id="feed-test-url-input" placeholder="https://butik.dk/products.json" style="flex:1;min-width:220px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;">
+          <select id="feed-test-format-select" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;">
             <option value="shopify_json">Shopify</option>
             <option value="google_xml">Google XML</option>
             <option value="csv">CSV</option>
           </select>
-          <button id="feed-test-url-btn" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:10px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;">🔍 Test URL</button>
+          <button id="feed-test-url-btn" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:10px 16px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.88rem;font-weight:600;">🔍 Test URL</button>
         </div>
       </div>
 
       <div class="bulk-import-step" style="margin-top:28px;">
-        <h3 style="margin:0 0 12px;font-family:'Fraunces',serif;">Eksisterende feeds (${_feeds.length})</h3>
+        <h3 style="margin:0 0 12px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">Eksisterende feeds (${_feeds.length})</h3>
         <div id="feed-list"></div>
       </div>
 
@@ -153,13 +153,13 @@ export function createAdminFeedImport({ supabase, showToast }) {
               </div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button data-act="test" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🔍 Test</button>
-              <button data-act="draft" data-id="${esc(f.id)}" title="Importér cyklerne SKJULT (inaktive), så du kan rette dem før kunderne ser dem" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">📥 Importér som kladde</button>
-              <button data-act="review" data-id="${esc(f.id)}" title="Gennemgå og udgiv de skjulte (kladde) cykler" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">👁 Gennemgå &amp; udgiv</button>
-              <button data-act="sync" data-id="${esc(f.id)}" title="Synkronisér og udgiv med det samme (cyklerne bliver live nu)" style="background:var(--rust);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;">🔄 Synkronisér nu</button>
-              <button data-act="remove" data-id="${esc(f.id)}" title="Skjul alle cykler importeret fra dette feed" style="background:none;border:1px solid var(--error);color:var(--error);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">🗑️ Fjern cykler</button>
-              <button data-act="toggle" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">${f.active ? 'Deaktivér' : 'Aktivér'}</button>
-              <button data-act="delete" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);color:var(--error);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;">Slet</button>
+              <button data-act="test" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;">🔍 Test</button>
+              <button data-act="draft" data-id="${esc(f.id)}" title="Importér cyklerne SKJULT (inaktive), så du kan rette dem før kunderne ser dem" style="background:none;border:1px solid var(--forest);color:var(--forest);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;font-weight:600;">📥 Importér som kladde</button>
+              <button data-act="review" data-id="${esc(f.id)}" title="Gennemgå og udgiv de skjulte (kladde) cykler" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;">👁 Gennemgå &amp; udgiv</button>
+              <button data-act="sync" data-id="${esc(f.id)}" title="Synkronisér og udgiv med det samme (cyklerne bliver live nu)" style="background:var(--rust);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;font-weight:600;">🔄 Synkronisér nu</button>
+              <button data-act="remove" data-id="${esc(f.id)}" title="Skjul alle cykler importeret fra dette feed" style="background:none;border:1px solid var(--error);color:var(--error);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;">🗑️ Fjern cykler</button>
+              <button data-act="toggle" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;">${f.active ? 'Deaktivér' : 'Aktivér'}</button>
+              <button data-act="delete" data-id="${esc(f.id)}" style="background:none;border:1px solid var(--border);color:var(--error);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.82rem;">Slet</button>
             </div>
           </div>
           <div id="feed-review-${esc(f.id)}" data-open="0" style="display:none;"></div>
@@ -263,7 +263,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
       ].filter(Boolean).join(' · ');
       section.innerHTML = `
         <div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--sand);">
-          <h4 style="margin:0 0 4px;font-family:'Fraunces',serif;">Preview — ${data.total} cykler fundet${items.length < data.total ? ` (viser ${items.length})` : ''}</h4>
+          <h4 style="margin:0 0 4px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">Preview — ${data.total} cykler fundet${items.length < data.total ? ` (viser ${items.length})` : ''}</h4>
           <p style="margin:0 0 10px;font-size:0.8rem;color:${converted ? '#b8860b' : '#2e7d32'};">
             ${converted
               ? `⚠️ Butikkens valuta er <strong>${esc(cur)}</strong> — priser er <strong>ca.-omregnet</strong> til DKK (ikke butikkens eksakte danske priser). For præcise priser: brug butikkens danske markeds-URL, fx <code>…/en-dk/products.json</code>.`
@@ -419,7 +419,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
         <div style="font-size:0.82rem;font-weight:600;margin-bottom:3px;">${bikes.length} feed-cykler (🟢 live · ⚪ skjult · 🔒 låst)</div>
         ${todoLine}
         <div style="max-height:340px;overflow-y:auto;">${rows}</div>
-        <button id="feed-activate-${id}" style="margin-top:10px;width:100%;background:var(--forest);color:#fff;border:none;padding:9px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;">✅ Udgiv alle skjulte${hiddenCount ? ` (${hiddenCount})` : ''}</button>
+        <button id="feed-activate-${id}" style="margin-top:10px;width:100%;background:var(--forest);color:#fff;border:none;padding:9px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-weight:600;font-size:0.85rem;">✅ Udgiv alle skjulte${hiddenCount ? ` (${hiddenCount})` : ''}</button>
       </div>`;
     const actBtn = document.getElementById(`feed-activate-${id}`);
     if (actBtn) actBtn.onclick = () => activateFeedBikes(id, actBtn);

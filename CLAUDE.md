@@ -226,10 +226,10 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - Små overskrifter er almindelig tekst i `--weight-semibold`: ingen versaler, ingen `letter-spacing`.
 - Hover på knapper og kort er et farveskift. Intet `translateY`-løft.
 - Ingen farvede `box-shadow` (orange glød) og ingen guldgradienter. Skygger er neutrale.
-- **To skrifter, bevidst:** Fraunces til overskrifter, priser og logo; DM Sans til alt andet. Ingen tredje skrift (Playfair Display står stadig et par steder og skal ud, når blokken røres).
-- **Hero'en med foto og Fraunces-overskrift bliver.** 26. sep. blev en version uden hero og med én sans-serif (Archivo) bygget og sammenlignet; brugeren foretrak originalen, fordi den har personlighed. Foreslå ikke at fjerne den igen uden en ny grund.
+- **Én skrift: Archivo** (`--font-sans` i `tokens.css`), selvhostet variabel font i `/fonts` via `css/00-fonts.css`. Overskrifter, priser og logo: `--weight-heavy` (800) + `letter-spacing: -0.02em`. Brødtekst: 400. Skriv aldrig et fontnavn i CSS eller inline-styles; brug `var(--font-sans)`. Hent aldrig fonte fra fonts.googleapis.com: det sender besøgendes IP til Google før cookie-samtykke. Tjek: `grep -rniE "fraunc[e]s|dm[ ]sans" --exclude-dir=.git .` skal give 0 (de prerendrede sider bygges om af workflowet ved merge) (fase 4b, 26. sep.).
+- **Hero'en med foto bliver** på forsiden. En version uden hero blev bygget og sammenlignet 26. sep.; brugeren foretrak hero'en. Foreslå ikke at fjerne den uden en ny grund.
 - Annoncekortets sælgerlinje bygges af `cardSellerLine()` i `js/card-seller.js`, aldrig i hånden. Én linje (navn + by) på desktop, to på kort under 480 px.
-- **Status (26. sep.):** Emojis og pile i knap- og linktekster er fjernet fra alle sider undtagen admin. Tilbage står bevidst: beskedkoderne (💰 ✅ ✉️), hurtigsvaret "Stadig til salg 👍" (indsættes i selve beskeden), prisfald-mærkets `↓` (betyder "faldet") og admin. Hover-løft, farvede skygger og guldgradienter er væk. **Tilbage:** ca. 30 versal-overskrifter (filterpanelet og /cykelagenter/ er ryddet). Ryd op i den blok du alligevel rører.
+- **Status (26. sep.):** Emojis og pile i knap- og linktekster er fjernet fra alle sider undtagen admin. Tilbage står bevidst: beskedkoderne (💰 ✅ ✉️), hurtigsvaret "Stadig til salg 👍" (indsættes i selve beskeden), prisfald-mærkets `↓` (betyder "faldet") og admin. Hover-løft, farvede skygger og guldgradienter er væk (fokus-ringe og puls-animationer er skovgrønne). **Tilbage:** ca. 30 versal-overskrifter (filterpanelet og /cykelagenter/ er ryddet). Ryd op i den blok du alligevel rører.
 - "Sådan virker det"-sektioner er en nummereret liste (`<ol class="num-steps">`), ikke kort med ikoner.
 
 ## Teknologier

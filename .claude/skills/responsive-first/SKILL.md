@@ -228,7 +228,7 @@ Det forpligter mig og gør det synligt for fremtidig code-review at jeg har over
 }
 .card-body { padding: 14px 16px; }
 .card-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1rem;
   margin: 0 0 4px;
 }
@@ -251,7 +251,7 @@ Det forpligter mig og gør det synligt for fremtidig code-review at jeg har over
   font-weight: 600;
   cursor: pointer;
   border: none;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: var(--forest);
   color: #fff;
   transition: background 0.15s;
@@ -302,7 +302,7 @@ Det forpligter mig og gør det synligt for fremtidig code-review at jeg har over
   padding: 11px 14px;
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;             /* ALDRIG mindre — iOS auto-zoom */
   background: var(--cream);
   color: var(--charcoal);

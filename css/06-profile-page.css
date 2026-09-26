@@ -10,26 +10,24 @@
   font-size: 0.82rem;
   color: var(--rust);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 500;
   transition: opacity 0.15s;
 }
 .mp-back-btn:hover { opacity: 0.7; }
 .mp-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2.2rem;
-  font-weight: 900;
   color: var(--charcoal);
   margin: 0 0 5px;
   line-height: 1.05;
-  letter-spacing: -0.06em;
 }
 .mp-subtitle {
   font-size: 0.87rem;
   color: var(--muted);
   margin: 0;
   line-height: 1.5;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── Layout: 2-kolonne (main + sidebar) ── */
@@ -83,9 +81,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2rem;
-  font-weight: 700;
   flex-shrink: 0;
   overflow: hidden;
   border: 3px solid var(--sand-2);
@@ -101,13 +98,11 @@
   margin-bottom: 6px;
 }
 .mp-name {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.5rem;
-  font-weight: var(--weight-heavy);
   color: var(--charcoal);
   margin: 0;
   line-height: 1.1;
-  letter-spacing: -0.04em;
 }
 .mp-verified-icon { display: inline-flex; }
 .mp-meta {
@@ -165,7 +160,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s, box-shadow 0.15s;
 }
 .mp-action-primary:hover { background: var(--rust-light); }
@@ -187,7 +182,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s, border-color 0.15s;
 }
 .mp-action-secondary:hover { background: var(--sand); border-color: #c8c0b4; }
@@ -225,17 +220,15 @@
   flex-shrink: 0;
 }
 .mp-stat-num {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2rem;
-  font-weight: 900;
   color: var(--charcoal);
   line-height: 1;
-  letter-spacing: -0.04em;
 }
 .mp-stat-label {
   font-size: 0.73rem;
   color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 500;
   line-height: 1.3;
 }
@@ -269,10 +262,8 @@
 }
 .mp-insight-body { min-width: 0; }
 .mp-insight-title {
-  font-family: 'Fraunces', serif;
-  font-weight: 700;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: var(--text-base);
-  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-bottom: 4px;
 }
@@ -296,7 +287,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   flex-shrink: 0;
   transition: background 0.15s;
 }
@@ -330,7 +321,7 @@
   color: var(--charcoal);
   cursor: pointer;
   white-space: nowrap;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -423,7 +414,7 @@
   font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.03em;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   text-transform: uppercase;
   z-index: 2;
 }
@@ -438,11 +429,9 @@
   cursor: pointer;
 }
 .mp-listing-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.1rem;
-  font-weight: 700;
   color: var(--charcoal);
-  letter-spacing: -0.03em;
   line-height: 1.1;
   transition: color 0.15s;
 }
@@ -469,12 +458,10 @@
   gap: var(--space-2);
 }
 .mp-listing-price {
-  font-family: 'Fraunces', serif;
-  font-weight: 900;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.3rem;
   color: var(--rust);
   white-space: nowrap;
-  letter-spacing: -0.04em;
   line-height: 1;
 }
 .mp-price-mobile { display: none; }
@@ -496,7 +483,7 @@
   font-weight: var(--weight-semibold);
   color: var(--charcoal);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -513,7 +500,7 @@
   font-size: 0.78rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -527,13 +514,13 @@
    kontur med guld-accent: tydeligt til stede, men underordnet Redigér. */
 .mp-btn-boost {
   background: var(--cream);
-  color: #8a6817; border: 1px solid rgba(212,160,23,0.55); border-radius: 8px;
+  color: var(--gold-dark); border: 1px solid var(--gold-border); border-radius: 8px;
   padding: 7px 12px; font-size: 0.78rem; font-weight: var(--weight-semibold);
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; font-family: var(--font-sans);
   display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   transition: background 0.15s, border-color 0.15s;
 }
-.mp-btn-boost:hover { background: rgba(212,160,23,0.10); border-color: rgba(212,160,23,0.85); }
+.mp-btn-boost:hover { background: var(--gold-bg); border-color: var(--gold); }
 
 /* Sjældne og uoprettelige handlinger hører ikke til som fyldte knapper.
    "Se annonce" er oveni redundant — hele kortet er klikbart — men beholdes
@@ -544,7 +531,7 @@
 }
 .mp-link {
   background: none; border: none; padding: 2px 0;
-  font-family: 'DM Sans', sans-serif; font-size: 0.76rem;
+  font-family: var(--font-sans); font-size: 0.76rem;
   color: var(--muted); cursor: pointer; transition: color 0.15s;
 }
 .mp-link:hover { color: var(--charcoal); text-decoration: underline; }
@@ -552,7 +539,7 @@
 .mp-link-sep { color: var(--border); font-size: 0.76rem; }
 .mp-btn-boost--active {
   background: #fff; color: #8a6817;
-  border: 1px solid rgba(212,160,23,0.6);
+  border: 1px solid var(--gold-border);
 }
 .mp-btn-sold, .mp-btn-unsold {
   background: none;
@@ -563,7 +550,7 @@
   font-weight: 500;
   color: var(--charcoal);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: border-color 0.15s;
   text-align: center;
 }
@@ -575,7 +562,7 @@
   font-size: var(--text-xs);
   color: #c0b8b0;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: color 0.15s;
   text-align: center;
 }
@@ -589,10 +576,8 @@
   padding: 18px;
 }
 .mp-completion-title {
-  font-family: 'Fraunces', serif;
-  font-weight: 700;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: var(--text-base);
-  letter-spacing: -0.02em;
   margin-bottom: 4px;
   color: var(--charcoal);
 }
@@ -651,7 +636,7 @@
   font-size: 0.8rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s;
   width: 100%;
 }
@@ -667,7 +652,7 @@
   font-weight: 500;
   cursor: pointer;
   padding: 4px 2px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: color 0.15s;
   align-self: flex-start;
   margin-top: 4px;
@@ -766,11 +751,9 @@
   .mp-listing-aside { display: none; }
   .mp-price-mobile {
     display: block;
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
     font-size: var(--text-lg);
     color: var(--rust);
-    letter-spacing: -0.04em;
     line-height: 1;
     margin-top: 6px;
   }
@@ -1005,11 +988,9 @@ body.is-mp-mobile .mp-listing-title { font-size: 1.05rem; }
 body.is-mp-mobile .mp-listing-aside { display: none; }
 body.is-mp-mobile .mp-price-mobile {
   display: block;
-  font-family: 'Fraunces', serif;
-  font-weight: 900;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: var(--text-lg);
   color: var(--rust);
-  letter-spacing: -0.04em;
   line-height: 1;
   margin-top: 6px;
 }
@@ -1104,9 +1085,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.6rem;
-  font-weight: 700;
   flex-shrink: 0;
   overflow: hidden;
   border: 3px solid var(--border);
@@ -1122,9 +1102,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   min-width: 0;
 }
 .pp-name {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.5rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 8px;
   display: flex;
@@ -1202,9 +1181,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .pp-trust-item:last-child { border-right: none; }
 .pp-trust-item:hover { background: var(--sand); }
 .pp-trust-val {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: var(--text-lg);
-  font-weight: 700;
   color: var(--charcoal);
 }
 .pp-trust-label {
@@ -1243,9 +1221,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 32px;
 }
 .pp-section-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.15rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin-bottom: 16px;
 }
@@ -1343,15 +1320,15 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-wizard-back-btn:hover { background: var(--sand); }
 .sell-wizard-logo {
   display: flex; align-items: center; gap: 6px;
-  font-family: 'Fraunces', serif; font-weight: var(--weight-semibold); font-size: 17px;
-  letter-spacing: -0.3px; color: var(--forest);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 17px;
+color: var(--forest);
 }
 .sell-wizard-progress { padding: 16px 16px 4px; }
 .sell-progress-row { display: flex; align-items: center; gap: var(--space-1); }
 .sell-progress-step {
   display: flex; align-items: center; gap: 7px;
   background: transparent; border: none; padding: 6px 2px;
-  color: inherit; font-family: 'DM Sans', sans-serif;
+  color: inherit; font-family: var(--font-sans);
 }
 .sell-progress-dot {
   width: 26px; height: 26px; border-radius: 50%;
@@ -1368,12 +1345,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-progress-line { flex: 1; height: 1.5px; border-radius: 1px; margin: 0 2px; }
 .sell-wizard-body { padding: 4px 16px 0; }
 .sell-step-heading {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: var(--text-xl);
-  line-height: 1.1; letter-spacing: -0.7px; margin: 14px 0 6px; color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: var(--text-xl);
+  line-height: 1.1;margin: 14px 0 6px; color: var(--charcoal);
 }
 .sell-step-heading em { font-style: italic; color: var(--forest); }
 .sell-step-subtitle {
-  font-family: 'DM Sans', sans-serif; font-size: var(--text-sm); line-height: 1.5;
+  font-family: var(--font-sans); font-size: var(--text-sm); line-height: 1.5;
   color: var(--muted); margin: 0 0 20px;
 }
 /* Drop zone */
@@ -1392,20 +1369,19 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   box-shadow: 0 1px 3px rgba(42,61,46,0.1);
 }
 .sell-drop-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
-  color: var(--charcoal); margin-bottom: 4px; letter-spacing: -0.2px;
-}
-.sell-drop-sub { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 17px;
+  color: var(--charcoal); margin-bottom: 4px;}
+.sell-drop-sub { font-family: var(--font-sans); font-size: 13px; color: var(--muted); margin-bottom: 12px; }
 .sell-drop-badge {
   display: inline-flex; align-items: center; padding: 5px 11px; border-radius: var(--radius-full);
-  background: var(--cream); font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif;
+  background: var(--cream); font-size: 11px; color: var(--muted); font-family: var(--font-sans);
 }
 /* AI button */
 .sell-ai-btn {
   width: 100%; margin-top: 12px; padding: 13px 14px;
   background: var(--forest); border: none; border-radius: 14px; color: var(--cream);
   display: flex; align-items: center; gap: 11px; cursor: pointer; text-align: left;
-  transition: background 0.2s; font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s; font-family: var(--font-sans);
 }
 .sell-ai-btn:hover { background: var(--forest-light); }
 .sell-ai-btn-icon {
@@ -1414,15 +1390,15 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: var(--text-base);
 }
 .sell-ai-btn-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
-  letter-spacing: -0.2px; color: var(--cream); margin-bottom: 2px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 15px;
+color: var(--cream); margin-bottom: 2px;
 }
 .sell-ai-btn-sub { font-size: var(--text-xs); opacity: 0.75; line-height: 1.3; color: var(--cream); }
 .sell-ai-applied {
   margin-top: 12px; padding: 11px 13px;
   background: rgba(42,61,46,0.07); border-radius: var(--radius-md); border: 1px solid rgba(42,61,46,0.14);
   display: flex; align-items: center; gap: 10px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal);
+  font-family: var(--font-sans); font-size: 13px; color: var(--charcoal);
 }
 .sell-ai-applied-icon {
   width: 26px; height: 26px; border-radius: 8px;
@@ -1434,19 +1410,18 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    Erstatter "Få AI-forslag"-knappen: analysen kører af sig selv når
    billederne lægges ind, og dette kort viser status. */
 .sell-ai-notice {
-  margin: 10px 2px 0; font-family: 'DM Sans', sans-serif;
+  margin: 10px 2px 0; font-family: var(--font-sans);
   font-size: var(--text-xs); line-height: 1.45; color: var(--muted);
 }
 .sell-ai-auto {
   margin-top: 12px; padding: 12px 14px;
   background: rgba(42,61,46,0.07); border: 1px solid rgba(42,61,46,0.14); border-radius: var(--radius-md);
   display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
-  font-family: 'DM Sans', sans-serif; color: var(--charcoal);
+  font-family: var(--font-sans); color: var(--charcoal);
 }
 .sell-ai-auto-text { flex: 1 1 190px; min-width: 0; }
 .sell-ai-auto-text b {
-  display: block; font-family: 'Fraunces', serif; font-weight: 500;
-  font-size: var(--text-sm); letter-spacing: -0.2px; margin-bottom: 2px;
+  display: block; font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;  font-size: var(--text-sm);margin-bottom: 2px;
 }
 .sell-ai-auto-text span { display: block; font-size: var(--text-xs); line-height: 1.4; color: var(--muted); }
 .sell-ai-auto-check {
@@ -1464,7 +1439,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-ai-retry {
   flex-shrink: 0; min-height: 44px; padding: 10px 14px;
   background: none; border: 1px solid rgba(42,61,46,0.28); border-radius: 10px;
-  color: var(--forest); font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--forest); font-family: var(--font-sans); font-size: 13px;
   cursor: pointer; transition: background 0.15s, border-color 0.15s;
 }
 .sell-ai-retry:hover { background: rgba(42,61,46,0.08); border-color: var(--forest); }
@@ -1483,11 +1458,10 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 8px;
 }
 .sell-photo-grid-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
-  color: var(--charcoal); letter-spacing: -0.2px;
-}
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 15px;
+  color: var(--charcoal);}
 .sell-photo-count { color: var(--muted); font-weight: var(--weight-regular); }
-.sell-photo-hint { font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+.sell-photo-hint { font-size: 11px; color: var(--muted); font-family: var(--font-sans); }
 /* New preview grid style */
 .sell-preview-grid-new { grid-template-columns: repeat(3, 1fr) !important; gap: var(--space-2) !important; }
 .sell-preview-grid-new .img-preview-item {
@@ -1506,7 +1480,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 12px 14px;
   background: var(--sand);
   border: 1px solid var(--border); border-radius: 10px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: var(--weight-semibold);
+  font-family: var(--font-sans); font-size: 13px; font-weight: var(--weight-semibold);
   color: var(--charcoal); cursor: pointer;
   text-align: left; transition: background 0.15s, border-color 0.15s;
 }
@@ -1536,7 +1510,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .sell-field label {
   display: block; margin-bottom: 5px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: var(--weight-semibold);
+  font-family: var(--font-sans); font-size: 13px; font-weight: var(--weight-semibold);
   color: var(--charcoal); letter-spacing: -0.1px;
 }
 .sell-field label .req { color: var(--rust); margin-left: 2px; }
@@ -1557,7 +1531,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: inline-block; margin-left: 6px; padding: 2px 8px;
   border-radius: var(--radius-full); background: var(--forest); color: var(--sand);
   font-size: 10px; font-weight: var(--weight-semibold); letter-spacing: 0.02em;
-  font-family: 'DM Sans', sans-serif; vertical-align: 1px;
+  font-family: var(--font-sans); vertical-align: 1px;
 }
 .sell-frame-why {
   margin: 5px 0 9px; font-size: 11.5px; line-height: 1.5;
@@ -1576,7 +1550,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-field select,
 .sell-field textarea {
   width: 100%; padding: 11px 14px;
-  font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--charcoal);
+  font-family: var(--font-sans); font-size: 15px; color: var(--charcoal);
   background: var(--cream); border: 1.5px solid var(--border);
   border-radius: var(--radius-md); outline: none; box-sizing: border-box; transition: border-color 0.2s;
 }
@@ -1608,7 +1582,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   box-shadow: 0 8px 24px -8px rgba(42,61,46,0.3);
 }
 .sell-summary-label {
-  font-family: 'DM Sans', sans-serif; font-size: 10.5px; font-weight: var(--weight-semibold);
+  font-family: var(--font-sans); font-size: 10.5px; font-weight: var(--weight-semibold);
   letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.65; margin-bottom: 10px;
 }
 .sell-summary-top { display: flex; gap: var(--space-3); margin-bottom: 12px; }
@@ -1618,13 +1592,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .sell-summary-thumb-img { width: 100%; height: 100%; object-fit: cover; }
 .sell-summary-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
-  letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 3px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 17px;
+line-height: 1.2; margin-bottom: 3px;
 }
-.sell-summary-sub { font-family: 'DM Sans', sans-serif; font-size: var(--text-xs); opacity: 0.65; line-height: 1.4; }
-.sell-summary-price { font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; color: #f5d5a8; margin-top: 5px; letter-spacing: -0.3px; }
+.sell-summary-sub { font-family: var(--font-sans); font-size: var(--text-xs); opacity: 0.65; line-height: 1.4; }
+.sell-summary-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 19px; color: #f5d5a8; margin-top: 5px;}
 .sell-summary-rows { border-top: 1px solid rgba(245,240,232,0.1); padding-top: 10px; display: grid; gap: 6px; }
-.sell-summary-row { display: flex; justify-content: space-between; gap: var(--space-2); font-family: 'DM Sans', sans-serif; font-size: var(--text-xs); }
+.sell-summary-row { display: flex; justify-content: space-between; gap: var(--space-2); font-family: var(--font-sans); font-size: var(--text-xs); }
 .sell-summary-row-key { opacity: 0.55; }
 .sell-summary-row-val { font-weight: 500; text-align: right; max-width: 60%; }
 /* Wizard footer — inline i formularen (var tidligere position:fixed med en tung
@@ -1637,7 +1611,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; align-items: center; justify-content: center; gap: 7px;
   width: 100%; max-width: 520px; height: 52px; margin: 0 auto;
   border-radius: 14px; border: none;
-  font-family: 'DM Sans', sans-serif; font-weight: var(--weight-semibold); font-size: 15px; letter-spacing: -0.1px;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 15px; letter-spacing: -0.1px;
   transition: all 180ms ease; cursor: pointer;
 }
 .sell-wizard-cta.enabled { background: var(--rust); color: var(--cream);}
@@ -1665,12 +1639,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   /* Show desktop chrome */
   .sell-wizard-desktop-header { display: block; margin-bottom: 24px; }
   .sell-wizard-step-label {
-    font-family: 'DM Sans', sans-serif; font-size: var(--text-xs); color: var(--muted);
+    font-family: var(--font-sans); font-size: var(--text-xs); color: var(--muted);
     letter-spacing: 0.3px; margin-bottom: 6px;
   }
   .sell-wizard-page-title {
-    font-family: 'Fraunces', serif; font-weight: 700; font-size: 2.4rem;
-    letter-spacing: -1px; margin: 0; color: var(--charcoal); line-height: 1.15;
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 2.4rem;
+margin: 0; color: var(--charcoal); line-height: 1.15;
   }
   .sell-wizard-page-title em { font-style: italic; color: var(--forest); }
 
@@ -1693,7 +1667,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     top: 88px;
   }
   .sell-desktop-stepper-title {
-    font-family: 'Fraunces', serif; font-weight: var(--weight-semibold); font-size: var(--text-base);
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: var(--text-base);
     color: var(--forest); margin-bottom: 14px;
   }
   .sell-desktop-step-row {
@@ -1701,7 +1675,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     padding: 10px; border-radius: 10px;
     background: transparent; border: 1px solid transparent;
     text-align: left; margin-bottom: 4px;
-    align-items: center; font-family: 'DM Sans', sans-serif;
+    align-items: center; font-family: var(--font-sans);
     color: inherit; transition: background 0.15s;
   }
   .sell-desktop-step-row.active {
@@ -1715,7 +1689,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   .sell-desktop-stepper-footer {
     border-top: 1px solid var(--border);
     margin-top: 12px; padding-top: 12px;
-    font-family: 'DM Sans', sans-serif; font-size: var(--text-xs);
+    font-family: var(--font-sans); font-size: var(--text-xs);
     color: var(--muted); line-height: 1.5;
   }
 
@@ -1742,7 +1716,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     padding: 12px 22px; border-radius: 8px;
     background: transparent; border: 1.5px solid var(--border);
     color: var(--charcoal);
-    font-family: 'DM Sans', sans-serif; font-weight: var(--weight-semibold); font-size: var(--text-sm);
+    font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-sm);
     cursor: pointer; transition: background 0.15s;
   }
   .sell-desktop-back:hover:not(.disabled) { background: var(--sand); }
@@ -1751,7 +1725,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     display: inline-flex; align-items: center; gap: var(--space-2);
     padding: 14px 28px; border-radius: 8px;
     border: none; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; font-weight: var(--weight-semibold); font-size: var(--text-sm);
+    font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-sm);
     transition: all 0.18s ease;
   }
   .sell-desktop-cta.enabled {
@@ -1763,7 +1737,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   /* Live preview card */
   .sell-wizard-desktop-preview { display: block; position: sticky; top: 88px; }
   .sell-desktop-preview-label {
-    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: var(--weight-semibold);
+    font-family: var(--font-sans); font-size: 11px; font-weight: var(--weight-semibold);
     color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase;
     margin-bottom: 10px;
   }
@@ -1779,13 +1753,13 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
   .sell-desktop-preview-img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .sell-desktop-preview-placeholder {
-    color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--muted); font-family: var(--font-sans); font-size: 13px;
   }
   .sell-desktop-preview-badge {
     position: absolute; top: 12px; left: 12px;
     background: rgba(255,255,255,0.92); color: var(--charcoal);
     border-radius: 5px; padding: 3px 9px;
-    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: var(--weight-semibold);
+    font-family: var(--font-sans); font-size: 11px; font-weight: var(--weight-semibold);
   }
   .sell-desktop-preview-body { padding: 14px 16px 16px; }
   .sell-desktop-preview-topline {
@@ -1793,21 +1767,19 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
     margin-bottom: 6px; align-items: flex-start;
   }
   .sell-desktop-preview-title {
-    font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: var(--weight-semibold);
-    line-height: 1.35; color: var(--charcoal);
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.05rem;    line-height: 1.35; color: var(--charcoal);
   }
   .sell-desktop-preview-price {
-    font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 900;
-    color: var(--rust); white-space: nowrap;
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.15rem;    color: var(--rust); white-space: nowrap;
   }
   .sell-desktop-preview-meta {
-    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-family: var(--font-sans); font-size: 13px;
     color: var(--muted); margin-bottom: 12px;
   }
   .sell-desktop-preview-foot {
     border-top: 1px solid var(--border); padding-top: 12px;
     display: flex; justify-content: space-between; align-items: center;
-    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-family: var(--font-sans); font-size: 13px;
   }
   .sell-desktop-preview-owner { color: var(--charcoal); font-weight: 500; }
   .sell-desktop-preview-city { color: var(--muted); font-size: var(--text-xs); }
@@ -1869,7 +1841,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-size: 0.82rem;
   color: var(--muted);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: color 0.15s;
 }
 
@@ -1914,7 +1886,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   opacity: 0;
   transform: translateY(4px);
   transition: opacity 0.25s ease, transform 0.25s ease;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 .sell-draft-indicator.show { opacity: 1; transform: translateY(0); }
 
@@ -1929,7 +1901,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.92rem;
   color: var(--charcoal);
 }
@@ -1941,7 +1913,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: 1.5px solid transparent;
   font-size: 0.85rem;
   font-weight: var(--weight-semibold);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   transition: opacity 0.15s;
 }
@@ -2065,7 +2037,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   color: var(--charcoal);
   border: 1px solid var(--border);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 500;
   transition: background 0.15s;
   width: 100%;
@@ -2115,13 +2087,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 16px 0 32px;
 }
 .size-finder-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2.4rem; font-weight: 700;
-  color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 2.4rem;  color: var(--charcoal);
   margin: 12px 0;
 }
 .size-finder-subtitle {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-base); line-height: 1.6;
   color: var(--muted);
   max-width: 520px; margin: 0 auto;
@@ -2138,7 +2109,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .size-finder-field label {
   display: block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9rem; font-weight: var(--weight-semibold);
   color: var(--charcoal);
   margin-bottom: 8px;
@@ -2174,9 +2145,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: 3px solid #fff;
 }
 .size-finder-slider-value {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.2rem;
-  font-weight: 700;
   color: var(--rust);
   min-width: 80px;
   text-align: right;
@@ -2187,7 +2157,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   background: #fff;
 }
@@ -2205,7 +2175,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-left: 3px solid var(--forest);
 }
 .size-finder-advanced summary {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   cursor: pointer;
   color: var(--charcoal);
@@ -2234,7 +2204,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: none;
   border-radius: 10px;
   padding: 14px 20px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
@@ -2260,7 +2230,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 8px;
 }
 .size-finder-result-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.85rem;
   color: var(--muted);
   text-transform: uppercase;
@@ -2268,15 +2238,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 0 0 6px;
 }
 .size-finder-result-size {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 4rem;
-  font-weight: 700;
   color: var(--rust);
   margin: 0;
   line-height: 1;
 }
 .size-finder-result-cmrange {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--charcoal);
   margin: 8px 0 20px;
@@ -2298,9 +2267,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   color: var(--muted);
 }
 .size-finder-result-precise-value {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.4rem;
-  font-weight: 700;
   color: var(--forest);
 }
 .size-finder-result-note {
@@ -2318,7 +2286,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: none;
   border-radius: 10px;
   padding: 13px 24px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   cursor: pointer;
@@ -2334,7 +2302,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   text-align: left;
 }
 .size-finder-result-tips h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.92rem;
   font-weight: 700;
   margin: 0 0 8px;
@@ -2352,9 +2320,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 48px 0;
 }
 .size-finder-info-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.5rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 18px;
   text-align: center;
@@ -2376,7 +2343,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 6px;
 }
 .size-finder-info-card h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 700;
   margin: 0 0 6px;
@@ -2399,7 +2366,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 10px;
 }
 .size-finder-faq-item summary {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   cursor: pointer;
   color: var(--charcoal);
@@ -2440,13 +2407,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-bottom: 1px solid var(--border);
 }
 .blog-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2.4rem; font-weight: 700;
-  color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 2.4rem;  color: var(--charcoal);
   margin: 12px 0;
 }
 .blog-subtitle {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-base); line-height: 1.6;
   color: var(--muted);
   max-width: 540px; margin: 0 auto;
@@ -2461,7 +2427,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 8px 18px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.85rem; font-weight: 500;
   color: var(--charcoal);
   cursor: pointer;
@@ -2493,7 +2459,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .blog-card-category {
   display: inline-block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   /* Var en orange versal-label. Nu almindelig lille tekst: kategorien er
      en oplysning, ikke en overskrift. */
   font-size: var(--text-xs); font-weight: var(--weight-regular);
@@ -2501,9 +2467,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 6px;
 }
 .blog-card-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.2rem; font-weight: 700;
-  margin: 0 0 10px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 1.2rem;  margin: 0 0 10px;
   line-height: 1.3;
   color: var(--charcoal);
 }
@@ -2517,7 +2482,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   display: flex; gap: 6px;
   font-size: 0.78rem;
   color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── Blog-artikel (/blog/:slug) ── */
@@ -2534,15 +2499,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .blog-article-category {
   display: inline-block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-sm); font-weight: var(--weight-regular);
   color: var(--muted);
   margin-bottom: 8px;
 }
 .blog-article-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2rem; font-weight: 700;
-  margin: 0 0 16px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 2rem;  margin: 0 0 16px;
   line-height: 1.2;
   color: var(--charcoal);
 }
@@ -2551,24 +2515,23 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   justify-content: center;
   font-size: 0.85rem;
   color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 .blog-article-body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.04rem;
   line-height: 1.75;
   color: var(--charcoal);
 }
 .blog-article-body p { margin: 0 0 18px; }
 .blog-article-body h2 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.55rem;
-  font-weight: 700;
   margin: 36px 0 14px;
   color: var(--charcoal);
 }
 .blog-article-body h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.15rem;
   font-weight: 700;
   margin: 24px 0 10px;
@@ -2603,7 +2566,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 10px;
   text-align: left;
   border: 1px solid var(--border);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 700;
 }
 .blog-article-body td {
@@ -2619,7 +2582,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 40px 0;
 }
 .blog-article-cta h3 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.4rem;
   margin: 0 0 16px;
   color: var(--sand);
@@ -2635,7 +2598,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: 1px solid rgba(245,240,232,0.3);
   border-radius: 8px;
   padding: 12px 24px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   cursor: pointer;
 }
@@ -2653,7 +2616,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-top: 48px;
 }
 .blog-related h2 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.5rem;
   margin: 0 0 20px;
   color: var(--charcoal);
@@ -2681,10 +2644,10 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-size: var(--text-xs);
   color: var(--muted);
   font-weight: var(--weight-regular);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 .blog-related-info h3 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 0.98rem;
   margin: 4px 0;
   color: var(--charcoal);
@@ -2711,13 +2674,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 16px 0 32px;
 }
 .valuation-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2.4rem; font-weight: 700;
-  color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 2.4rem;  color: var(--charcoal);
   margin: 12px 0 12px;
 }
 .valuation-subtitle {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-base); line-height: 1.6;
   color: var(--muted);
   max-width: 540px; margin: 0 auto;
@@ -2737,7 +2699,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-field label {
   display: block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.88rem; font-weight: var(--weight-semibold);
   color: var(--charcoal);
   margin-bottom: 6px;
@@ -2756,7 +2718,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   background: #fff;
   color: var(--charcoal);
@@ -2774,7 +2736,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: none;
   border-radius: 10px;
   padding: 14px 20px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.05rem; font-weight: 700;
   cursor: pointer;
   margin-top: 12px;
@@ -2807,9 +2769,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 12px;
 }
 .valuation-result-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.5rem; font-weight: 700;
-  color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 1.5rem;  color: var(--charcoal);
   margin: 0 0 4px;
   text-align: center;
 }
@@ -2827,7 +2788,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 0 0 24px;
 }
 .valuation-result-median-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.82rem;
   color: var(--muted);
   text-transform: uppercase;
@@ -2835,9 +2796,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 6px;
 }
 .valuation-result-median-value {
-  font-family: 'Fraunces', serif;
-  font-size: var(--text-2xl); font-weight: 700;
-  color: var(--rust);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: var(--text-2xl);  color: var(--rust);
 }
 .valuation-result-range {
   margin: 24px 0;
@@ -2869,7 +2829,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-range-label {
   display: flex; flex-direction: column;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.85rem;
 }
 .valuation-range-label-center { align-items: center; }
@@ -2900,7 +2860,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-result-tips h3 {
   margin: 0 0 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.92rem; font-weight: 700;
 }
 .valuation-result-tips ul {
@@ -2922,7 +2882,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   min-width: 200px;
   padding: 13px 18px;
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   border: none;
@@ -2947,9 +2907,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin: 48px 0;
 }
 .valuation-info-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.5rem; font-weight: 700;
-  color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 1.5rem;  color: var(--charcoal);
   margin: 0 0 18px;
   text-align: center;
 }
@@ -2970,7 +2929,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 8px;
 }
 .valuation-info-card h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-base); font-weight: 700;
   margin: 0 0 8px;
   color: var(--charcoal);
@@ -2992,7 +2951,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 10px;
 }
 .valuation-faq-item summary {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   cursor: pointer;
   color: var(--charcoal);
@@ -3043,12 +3002,11 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 
 .bd-page-title {
   font-size: 1.9rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 4px;
   line-height: 1.2;
   text-align: center;
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
 }
 
 .bd-page-subtitle {
@@ -3089,9 +3047,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   justify-content: center;
 }
 .bd-social-num {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.6rem;
-  font-weight: 700;
   color: var(--charcoal);
   line-height: 1.1;
 }
@@ -3137,12 +3094,10 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
    Testet: ≤480, ≤768, 769-1024, ≥1025 */
 .bd-why { margin-bottom: 24px; }
 .bd-why-title {
-  font-family: 'Fraunces', serif;
-  font-weight: var(--weight-semibold);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: var(--text-lg);
   color: var(--charcoal);
   margin: 0 0 16px;
-  letter-spacing: -0.3px;
 }
 .bd-why-grid {
   display: grid;
@@ -3213,7 +3168,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-radius: 10px;
   text-decoration: none;
   color: var(--charcoal);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -3242,9 +3197,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 
 .bd-form-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.1rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 18px;
 }
@@ -3300,9 +3254,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   top: 6px;
 }
 .dealers-page-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 8px;
   line-height: 1.2;
@@ -3333,7 +3286,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-radius: 9px;
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
   box-shadow: 0 2px 10px rgba(42,61,46,0.15);
 }
@@ -3362,7 +3315,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   padding: 9px 16px;
   font-size: 0.88rem;
   font-weight: var(--weight-semibold);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   color: var(--charcoal);
   cursor: pointer;
   transition: all 0.2s;
@@ -3377,7 +3330,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border-radius: 8px;
   padding: 9px 12px;
   font-size: 0.88rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   color: var(--charcoal);
   cursor: pointer;
   outline: none;
@@ -3567,9 +3520,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
 }
 .static-page-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 24px 0 28px;
 }
@@ -3581,9 +3533,8 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 
 .static-page-body h3 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.05rem;
-  font-weight: 700;
   margin-top: 28px;
   margin-bottom: 8px;
   color: var(--charcoal);
@@ -3624,12 +3575,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   color: var(--muted); cursor: pointer; padding: 4px;
 }
 .onboarding-icon { font-size: 3rem; margin-bottom: 12px; }
-.onboarding-title { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 8px; color: var(--charcoal); }
+.onboarding-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.4rem; margin: 0 0 8px; color: var(--charcoal); }
 .onboarding-sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 24px; }
 .onboarding-actions { display: flex; flex-direction: column; gap: 10px; }
 .onboarding-btn {
   padding: 13px 20px; border-radius: 10px; font-size: 0.92rem; font-weight: var(--weight-semibold);
-  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  cursor: pointer; font-family: var(--font-sans); transition: all 0.2s;
   border: 1.5px solid var(--border); background: var(--sand); color: var(--charcoal);
 }
 .onboarding-btn--primary { background: var(--forest); color: var(--sand); border-color: var(--forest); }
@@ -3644,12 +3595,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   grid-column: 1 / -1;
 }
 .empty-state-icon { font-size: var(--text-2xl); margin-bottom: 12px; }
-.empty-state-title { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--charcoal); margin: 0 0 8px; }
+.empty-state-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem; color: var(--charcoal); margin: 0 0 8px; }
 .empty-state-sub { color: var(--muted); font-size: 0.88rem; margin: 0 0 20px; line-height: 1.5; }
 .empty-state-cta {
   background: var(--forest); color: var(--sand); border: none;
   padding: 11px 24px; border-radius: 8px; font-size: 0.88rem; font-weight: var(--weight-semibold);
-  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  cursor: pointer; font-family: var(--font-sans); transition: background 0.2s;
 }
 .empty-state-cta:hover { background: var(--forest-light); }
 
@@ -3669,7 +3620,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .mbn-btn {
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   background: none; border: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; color: var(--muted);
+  font-family: var(--font-sans); color: var(--muted);
   padding: 4px 12px; border-radius: 10px; transition: color 0.15s;
   position: relative; min-width: 52px;
 }
@@ -3728,7 +3679,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   border: none;
   border-radius: 10px;
   padding: 12px 22px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
@@ -3750,12 +3701,12 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-size: 0.76rem;
   color: var(--muted);
   margin: 8px 0 0;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 .ai-suggest-status {
   margin-top: 10px;
   font-size: 0.85rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   min-height: 1em;
 }
 .ai-suggest-status.success { color: #2e7d32; }
@@ -3784,7 +3735,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .meet-middle-btn {
   background: var(--forest); color: var(--sand); border: none;
   border-radius: var(--radius-sm); padding: 5px 12px; font-size: 0.8rem; font-weight: var(--weight-semibold);
-  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  cursor: pointer; font-family: var(--font-sans); transition: background 0.2s;
   white-space: nowrap;
 }
 .meet-middle-btn:hover { background: var(--forest-light); }
@@ -3874,7 +3825,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   background: var(--sand); border: 1px solid var(--border);
   border-radius: 14px; padding: 3px 10px;
   font-size: 0.72rem; font-weight: 500; color: var(--charcoal);
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; font-family: var(--font-sans);
   transition: border-color 0.15s, background 0.15s;
   white-space: nowrap; flex-shrink: 0;
 }

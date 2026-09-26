@@ -87,7 +87,7 @@ export function createListingOutcomes({ supabase, esc, retryHTML }) {
     const farve = andel >= 50 ? 'var(--forest)' : andel >= 25 ? '#B8860B' : 'var(--rust)';
     return `
       <div style="padding:22px;background:var(--sand);border-radius:12px;margin-bottom:18px;">
-        <div style="font-family:'Fraunces',serif;font-size:2.6rem;font-weight:900;line-height:1;color:${farve};">${andel} %</div>
+        <div style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:2.6rem;line-height:1;color:${farve};">${andel} %</div>
         <div style="font-size:0.9rem;color:var(--charcoal);margin-top:6px;">af afsluttede annoncer blev solgt</div>
         <div style="font-size:0.8rem;color:var(--muted);margin-top:4px;">
           ${solgt} solgt · ${opgivet} fjernet uden salg${median !== null ? ` · median liggetid ${median} dage` : ''}
@@ -113,7 +113,7 @@ export function createListingOutcomes({ supabase, esc, retryHTML }) {
   function renderCounts(aktive, solgt, opgivet, skjult) {
     const kort = (tal, tekst, note) => `
       <div style="flex:1 1 120px;padding:14px;border:1px solid var(--border);border-radius:10px;">
-        <div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;">${tal}</div>
+        <div style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;">${tal}</div>
         <div style="font-size:0.8rem;color:var(--charcoal);margin-top:2px;">${tekst}</div>
         <div style="font-size:0.72rem;color:var(--muted);margin-top:3px;line-height:1.35;">${note}</div>
       </div>`;
@@ -151,7 +151,7 @@ export function createListingOutcomes({ supabase, esc, retryHTML }) {
         </tr>`;
     }).join('');
     return `
-      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 10px;">Senest fjernet</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:0 0 10px;">Senest fjernet</h3>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;">
           <thead><tr style="border-bottom:1.5px solid var(--border);">

@@ -184,7 +184,7 @@ export function createBikeDetail({
         const thumbAlt = i === 0 ? `${altBase} – hovedbillede` : `${altBase} – billede ${i + 1}`;
         return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="${esc(thumbAlt)}" style="position:relative;">
           <img src="${img.url}" alt="${esc(thumbAlt)}" loading="lazy">
-          ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:'DM Sans',sans-serif;border-radius:5px;">+${extraCount}</span>` : ''}
+          ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:var(--font-sans);border-radius:5px;">+${extraCount}</span>` : ''}
         </button>`;
       }).join('');
       galleryHtml = `
@@ -386,7 +386,7 @@ export function createBikeDetail({
         ${sticky ? '<div class="bd-col-body">' : '</div>'}
       ${b.description ? `
       <div style="margin-top:20px;">
-        <h3 style="font-family:'Fraunces',serif;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
         <div class="desc-wrap is-clamped" id="bike-desc-wrap">
           <div class="bike-detail-description" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
         </div>
@@ -658,7 +658,7 @@ export function createBikeDetail({
 
     L.marker(coords, { icon: sellerIcon })
       .addTo(_bikeDetailMap)
-      .bindPopup(`<div style="font-family:'DM Sans',sans-serif;font-size:0.85rem;"><strong>${esc(isDealer ? (profile.shop_name || profile.name || '') : (profile.name || ''))}</strong><br>${esc(profile.city || '')}<br><span style="color:var(--muted);font-size:0.78rem;">${sellerLabel}</span></div>`);
+      .bindPopup(`<div style="font-family:var(--font-sans);font-size:0.85rem;"><strong>${esc(isDealer ? (profile.shop_name || profile.name || '') : (profile.name || ''))}</strong><br>${esc(profile.city || '')}<br><span style="color:var(--muted);font-size:0.78rem;">${sellerLabel}</span></div>`);
 
     _bikeDetailMapData = { sellerCoords: coords, profile, isDealer };
 
@@ -684,7 +684,7 @@ export function createBikeDetail({
     });
     L.marker(userGeoCoords, { icon: userIcon })
       .addTo(_bikeDetailMap)
-      .bindPopup(`<div style="font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;">${iconPin(14)} Din placering</div>`);
+      .bindPopup(`<div style="font-family:var(--font-sans);font-size:0.85rem;font-weight:600;">${iconPin(14)} Din placering</div>`);
 
     // Linje mellem bruger og sælger
     L.polyline([userGeoCoords, sellerCoords], {
@@ -784,7 +784,7 @@ export function createBikeDetail({
       detailView.innerHTML = `
         <div style="padding:60px 24px;text-align:center;">
           <p style="color:var(--rust);margin-bottom:16px;">Kunne ikke hente annonce.</p>
-          <button onclick="${errBackAction}" style="background:var(--forest);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;">← Tilbage</button>
+          <button onclick="${errBackAction}" style="background:var(--forest);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);">← Tilbage</button>
         </div>`;
       return;
     }
@@ -880,9 +880,9 @@ export function createBikeDetail({
     const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `
       <div style="max-width:1200px;margin:0 auto;padding:20px 16px;">
-        <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
-        <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;color:var(--charcoal);">${esc(bikeTitle(b.brand, b.model))}</h1>
-        ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}/" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler</a>` : ''}
+        <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
+        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.8rem;margin-bottom:6px;color:var(--charcoal);">${esc(bikeTitle(b.brand, b.model))}</h1>
+        ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}/" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:var(--font-sans);font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler</a>` : ''}
         ${html}
       </div>`;
 

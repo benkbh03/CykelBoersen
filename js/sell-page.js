@@ -661,11 +661,11 @@ export function createSellPage({
       .sell-wizard--chooser .sell-step-heading,
       .sell-wizard--chooser .sell-step-subtitle{text-align:center;}
       .acc-chooser{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px;}
-      .acc-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;min-height:300px;background:var(--cream);border:1.5px solid var(--border);border-radius:22px;padding:44px 28px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .15s,box-shadow .18s,transform .12s;}
-      .acc-choice:hover{border-color:var(--forest);box-shadow:0 16px 36px rgba(26,26,24,0.13);transform:translateY(-3px);}
+      .acc-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;min-height:300px;background:var(--cream);border:1.5px solid var(--border);border-radius:22px;padding:44px 28px;cursor:pointer;font-family:var(--font-sans);transition:border-color .15s,box-shadow .18s,transform .12s;}
+      .acc-choice:hover{border-color:var(--forest);background:var(--surface-sand);}
       .acc-choice:active{transform:translateY(0);}
       .acc-choice-ic{width:96px;height:96px;flex-shrink:0;border-radius:26px;display:flex;align-items:center;justify-content:center;background:var(--sand);color:var(--forest);}
-      .acc-choice-title{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:600;color:var(--charcoal);}
+      .acc-choice-title{font-family:var(--font-sans);font-size:1.7rem;font-weight:var(--weight-heavy);letter-spacing:-0.02em;color:var(--charcoal);}
       .acc-choice-sub{font-size:0.95rem;color:var(--muted);line-height:1.5;max-width:24ch;margin:0 auto;}
       @media(max-width:640px){
         .acc-chooser{grid-template-columns:1fr;gap:14px;margin-top:18px;}
@@ -1053,7 +1053,7 @@ export function createSellPage({
           <span class="suffix">DKK</span>
         </div>
         ${giveawayToggleHtml(c, isDealer)}
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:'DM Sans',sans-serif;">Ikke sikker på pris? Få gratis vurdering</a>
+        <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:var(--font-sans);">Ikke sikker på pris? Få gratis vurdering</a>
       </div>
 
       ${isDealer ? `
@@ -2510,22 +2510,22 @@ export function createSellPage({
 
     const TERMS_BODY = `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
       <p style="margin-bottom:16px;font-size:0.85rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman · CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg · hej@cykelbørsen.dk</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for at de oplysninger du angiver er korrekte, at holde dine loginoplysninger fortrolige og al aktivitet under din konto. Du skal være mindst 18 år.</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;margin-top:16px;">3. Platformens rolle</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;margin-top:16px;">3. Platformens rolle</h3>
       <p style="margin-bottom:16px;">Cykelbørsen er udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen.</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger indestår du for at annoncen er retvisende, at du har lovlig ret til at sælge varen, og at indholdet ikke krænker tredjemands rettigheder. Vi kan uden varsel fjerne annoncer der overtræder disse vilkår.</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;margin-top:16px;">5. Forhandlerkonto</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;margin-top:16px;">5. Forhandlerkonto</h3>
       <p style="margin-bottom:16px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto med gyldigt CVR-nummer. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene.</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:16px;">Det er ikke tilladt at oprette annoncer for stjålne varer, anvende platformen til svindel eller spam, uploade ulovligt indhold, eller manipulere priser eller anmeldelser. Overtrædelse kan medføre øjeblikkelig kontosletning.</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Ansvarsfraskrivelse</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">7. Ansvarsfraskrivelse</h3>
       <p style="margin-bottom:16px;">Platformen stilles til rådighed "som den er". Vi garanterer ikke for rigtigheden af annoncer og er ikke ansvarlig for tab som følge af handler indgået via platformen.</p>
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Ændringer og kontakt</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">8. Ændringer og kontakt</h3>
       <p style="margin-bottom:8px;">Vi kan opdatere disse vilkår fra tid til anden. Væsentlige ændringer meddeles via e-mail. Fortsat brug udgør accept af opdaterede vilkår.</p>
       <p>Ved spørgsmål: <strong>hej@cykelbørsen.dk</strong></p>
     `;
@@ -2535,15 +2535,15 @@ export function createSellPage({
         <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
           <div>
             <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Juridisk</div>
-            <h2 style="font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;color:var(--charcoal);margin:0">Vilkår og betingelser</h2>
+            <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.3rem;color:var(--charcoal);margin:0">Vilkår og betingelser</h2>
           </div>
           <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:36px;height:36px;border-radius:50%;background:var(--sand);border:none;color:var(--charcoal);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">×</button>
         </div>
-        <div style="overflow-y:auto;padding:24px;flex:1;font-family:'DM Sans',sans-serif;font-size:0.88rem;line-height:1.7;color:var(--charcoal)">
+        <div style="overflow-y:auto;padding:24px;flex:1;font-family:var(--font-sans);font-size:0.88rem;line-height:1.7;color:var(--charcoal)">
           ${TERMS_BODY}
         </div>
         <div style="padding:16px 24px;border-top:1px solid var(--border);flex-shrink:0;background:var(--cream)">
-          <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:100%;padding:14px;background:var(--forest);color:var(--sand);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer">
+          <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:100%;padding:14px;background:var(--forest);color:var(--sand);border:none;border-radius:12px;font-family:var(--font-sans);font-size:0.92rem;font-weight:600;cursor:pointer">
             Forstået, fortsæt
           </button>
         </div>

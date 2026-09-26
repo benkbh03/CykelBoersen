@@ -59,7 +59,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: calc(100vw - 32px);
   min-width: 320px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 #compare-bar.compare-bar-visible { transform: translateX(-50%) translateY(0); }
 .compare-bar-inner { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; justify-content: space-between; }
@@ -72,7 +72,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   border: 1px solid rgba(255,255,255,0.25);
   padding: 8px 14px; border-radius: 8px;
   font-size: 0.85rem; font-weight: 500;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s;
 }
 .compare-bar-clear:hover { background: rgba(255,255,255,0.1); color: #fff; }
@@ -80,7 +80,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   background: var(--rust); color: #fff;
   border: none; padding: 9px 18px; border-radius: 8px;
   font-size: 0.9rem; font-weight: 700;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
 .compare-bar-go:hover:not(:disabled) { background: var(--rust-light);}
@@ -106,14 +106,14 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   max-width: 1180px;
   margin: 0 auto;
   padding: 24px 20px 60px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   color: var(--charcoal);
 }
 
 .cmp-back-btn {
   background: none; border: 1px solid var(--border);
   padding: 8px 18px; border-radius: 8px;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; font-family: var(--font-sans);
   font-size: 0.88rem; color: var(--charcoal);
   margin-bottom: 22px;
   transition: background 0.15s, border-color 0.15s;
@@ -122,11 +122,9 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 
 .cmp-hero { margin-bottom: 28px; }
 .cmp-hero-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2rem; font-weight: 700;
-  margin: 0 0 6px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 2rem;  margin: 0 0 6px;
   color: var(--charcoal);
-  letter-spacing: -0.02em;
 }
 .cmp-hero-lead {
   color: var(--muted);
@@ -195,17 +193,15 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-size: 0.85rem; font-weight: 700;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
 .cmp-bike-remove:hover { background: var(--rust); transform: scale(1.06); }
 .cmp-bike-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem; font-weight: 700;
-  margin: 0;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 1.1rem;  margin: 0;
   color: var(--charcoal);
   line-height: 1.2;
-  letter-spacing: -0.01em;
 }
 .cmp-bike-subtitle {
   font-size: 0.78rem;
@@ -220,7 +216,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   border-radius: 8px;
   font-size: 0.82rem; font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
 .cmp-bike-cta:hover { background: var(--forest-light);}
@@ -229,11 +225,9 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-section { border-bottom: 1px solid var(--border); }
 .cmp-section:last-child { border-bottom: none; }
 .cmp-section-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 0.78rem;
-  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
   color: var(--muted);
   margin: 0;
   padding: 16px 24px 8px;
@@ -288,9 +282,8 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-size: 0.88rem;
 }
 .cmp-price {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.2rem;
-  font-weight: var(--weight-heavy);
   color: var(--rust);
   line-height: 1.1;
 }
@@ -347,7 +340,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   border-radius: 9px;
   font-size: 0.92rem; font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s, border-color 0.15s, box-shadow 0.15s;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }

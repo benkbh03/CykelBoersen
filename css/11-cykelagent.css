@@ -17,12 +17,10 @@
   margin-bottom: 16px;
 }
 .cykelagent-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2.1rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 8px;
-  letter-spacing: -0.02em;
 }
 .cykelagent-sub {
   font-size: var(--text-base);
@@ -42,7 +40,7 @@
   background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-full);
   padding: 12px 22px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
@@ -80,15 +78,14 @@
   gap: var(--space-3); margin-bottom: 14px;
 }
 .cykelagent-matches-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem; font-weight: 700;
-  color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 1.1rem;  color: var(--charcoal);
   margin: 0;
   display: inline-flex; align-items: center; gap: var(--space-2);
 }
 .cykelagent-matches-count {
   background: var(--rust); color: #fff;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.78rem; font-weight: 700;
   padding: 2px 10px; border-radius: var(--radius-full);
   letter-spacing: 0.3px;
@@ -96,7 +93,7 @@
 .cykelagent-matches-mark-read {
   background: none; border: 1px solid var(--border);
   color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.78rem; font-weight: 500;
   padding: 6px 12px; border-radius: var(--radius-full);
   cursor: pointer;
@@ -136,7 +133,7 @@
 .cykelagent-match-new {
   position: absolute; top: 8px; left: 8px;
   background: var(--rust); color: #fff;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.62rem; font-weight: var(--weight-heavy);
   letter-spacing: 0.5px;
   padding: 3px 8px; border-radius: 4px;
@@ -147,7 +144,7 @@
   display: flex; flex-direction: column; gap: 2px;
 }
 .cykelagent-match-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.82rem; font-weight: var(--weight-semibold);
   color: var(--charcoal);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -157,9 +154,8 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cykelagent-match-price {
-  font-family: 'Playfair Display', serif;
-  font-size: 0.95rem; font-weight: 700;
-  color: var(--rust); margin-top: 2px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 0.95rem;  color: var(--rust); margin-top: 2px;
 }
 .cykelagent-matches-more {
   margin: 12px 0 0; font-size: 0.82rem; color: var(--muted);
@@ -205,9 +201,8 @@
 }
 .cykelagent-card-date { color: var(--muted); }
 .cykelagent-card-name {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.18rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin-bottom: 10px;
   line-height: 1.3;
@@ -230,7 +225,7 @@
   color: var(--rust);
   font-size: 0.86rem;
   font-weight: var(--weight-semibold);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── EMPTY STATE ── */
@@ -246,9 +241,8 @@
   margin-bottom: 14px;
 }
 .cykelagent-empty-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.3rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0 0 8px;
 }
@@ -276,12 +270,10 @@
   border-bottom: 1px solid var(--border);
 }
 .cykelagent-editor-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.45rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 0;
-  letter-spacing: -0.01em;
 }
 .cykelagent-editor-close {
   width: 34px; height: 34px;
@@ -308,9 +300,9 @@
    i gråt. Den skal træde tilbage, ikke slukkes. */
 .cykelagent-label {
   display: block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   color: var(--forest);
   margin-bottom: 10px;
 }
@@ -326,7 +318,7 @@
   border: 1.5px solid var(--border);
   border-radius: 10px;
   font-size: 0.92rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   background: #fff;
   color: var(--charcoal);
   transition: border-color 0.15s;
@@ -356,7 +348,7 @@
   border: none;
   border-radius: 0;
   padding: 8px 2px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.88rem;
   color: var(--charcoal);
   cursor: pointer;
@@ -454,7 +446,7 @@
 }
 .cykelagent-advanced-summary {
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   font-size: 0.92rem;
   color: var(--charcoal);
@@ -540,7 +532,7 @@
   background: var(--forest); color: var(--cream);
   border: none; border-radius: 10px;
   padding: 12px 24px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   flex: 1;
@@ -554,7 +546,7 @@
   color: var(--muted);
   border-radius: 10px;
   padding: 12px 20px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: all 0.15s;
@@ -566,7 +558,7 @@
   color: var(--error);
   border-radius: 10px;
   padding: 12px 20px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   margin-left: auto;

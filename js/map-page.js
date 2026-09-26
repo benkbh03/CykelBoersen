@@ -625,7 +625,7 @@ export function createMapPage({
           iconAnchor: [12, 12],
         });
         _mapUserMarker = L.marker(_mapNearMeCoords, { icon: userIcon, zIndexOffset: 1000 })
-          .bindPopup('<div style="font-family:\'DM Sans\',sans-serif;font-size:0.82rem;padding:4px 2px;"><strong>Du er her</strong></div>', { closeButton: false })
+          .bindPopup('<div style="font-family:var(--font-sans);font-size:0.82rem;padding:4px 2px;"><strong>Du er her</strong></div>', { closeButton: false })
           .addTo(splitMapInstance);
         splitMapInstance.setView(_mapNearMeCoords, 11);
       }
@@ -1475,7 +1475,7 @@ export function createMapPage({
       legend.onAdd = function() {
         var div = L.DomUtil.create('div');
         div.id  = 'map-legend';
-        div.style.cssText = 'background:white;padding:10px 14px;border-radius:8px;font-family:DM Sans,sans-serif;font-size:.78rem;box-shadow:0 2px 8px rgba(0,0,0,.1);';
+        div.style.cssText = 'background:white;padding:10px 14px;border-radius:8px;font-family:var(--font-sans);font-size:.78rem;box-shadow:0 2px 8px rgba(0,0,0,.1);';
         div.innerHTML = '<div style="margin-bottom:6px;font-weight:600;">Forklaring</div>'
           + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div style="background:#C8502A;border-radius:50%;width:16px;height:16px;border:2px solid white;"></div> Privat sælger</div>'
           + '<div style="display:flex;align-items:center;gap:8px;"><div style="background:#2A3D2E;border-radius:50%;width:16px;height:16px;border:2px solid white;"></div> Forhandler</div>';
@@ -1506,7 +1506,7 @@ export function createMapPage({
 
       userLocationMarker = L.marker([lat, lng], { icon: userIcon })
         .addTo(mapInstance)
-        .bindPopup('<div style="padding:8px;font-family:DM Sans,sans-serif;font-size:.85rem;font-weight:600;">Din placering</div>')
+        .bindPopup('<div style="padding:8px;font-family:var(--font-sans);font-size:.85rem;font-weight:600;">Din placering</div>')
         .openPopup();
 
       mapInstance.setView([lat, lng], 12);

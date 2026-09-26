@@ -8,71 +8,71 @@ export const footerContent = {
       <p style="margin-bottom:8px;color:var(--muted);font-size:0.82rem;">Af Cykelbørsen · Opdateret 2026 · 5 min. læsning</p>
       <p style="margin-bottom:24px;font-size:1.05rem;line-height:1.7;">En brugt cykel kan være en rigtig god investering, men kun hvis du ved hvad du kigger efter inden du betaler. Denne guide tager dig igennem de syv ting du skal tjekke, og det tager omkring et kvarter at lave en grundig gennemgang. Det er et lille besvær i forhold til at stå med en cykel der viser sig at have skjulte fejl.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Rammen er cyklens hjerte</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Rammen er cyklens hjerte</h2>
       <p style="margin-bottom:16px;">Rammen er det vigtigste enkeltpunkt på cyklen. En beskadiget ramme kan sjældent repareres sikkert, og det bør få dig til at gå fra handlen uanset hvor god prisen er. Gennemgå alle rør grundigt: overrøret, underrøret, kæderørene og sadelrøret. Kig særligt nøje ved svejsningerne, ved bundbeslaget og rundt om styrhovedet, fordi det er her revner typisk opstår.</p>
       <p style="margin-bottom:16px;">På stålrammer er overfladerust normalt og kan behandles. Det er rust inde i selve rørene der er et problem, og det opdager du ved at banke let på rørene og lytte efter en dump eller ujævn lyd. På aluminium kan revner være svære at se, men hold udkig efter hvide pletter ved svejsningerne. Det er oxidering og et tegn på at metallet er svækket. Karbon-rammer holder du op mod en lyskilde og kigger efter sprækker eller misfarvninger. Køb aldrig en brugt karbon-cykel uden en grundig inspektion, fordi en lille revne kan udvikle sig til at rammen knækker.</p>
       <p style="margin-bottom:24px;">Selv små bøjninger på rørene tyder på, at cyklen har været i et hårdt stød, typisk et styrt. Lad være med at købe i den situation.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Hjul, dæk og lejer</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Hjul, dæk og lejer</h2>
       <p style="margin-bottom:16px;">Tag fat i hjulet og snurr det langsomt rundt mens du kigger fra enden af cyklen. Et lateralt slør, hvor fælgen bevæger sig fra side til side, kan ofte rettes hos cykelhandleren, men er stadig et tegn på slid eller slag. Et radialt slør, hvor hjulet hopper op og ned, kræver ofte ny fælg og er dyrere at få ordnet.</p>
       <p style="margin-bottom:16px;">På cykler med fælgbremser (V-bremser) skal du tjekke fælgslidet. De fleste fælge har en lille rille som slidindikator. Er rillen forsvundet, er fælgen slidt og bør udskiftes. Niv også på egerne hele vejen rundt på hjulet. Løse eger giver skæve hjul over tid og kan knække ved belastning.</p>
       <p style="margin-bottom:16px;">Dækkene fortæller meget om cyklens brug. Kig efter revner i slidbanen og i siderne, og hold udkig efter fladt mønster der signalerer at de er på vej til at være slidt op. Dæk over fem år gamle bør skiftes snart, uanset hvor lidt mønster der er tilbage, fordi gummiet bliver hårdt og mister vejgrebet.</p>
       <p style="margin-bottom:24px;">Til sidst lejerne. Hold hjulet fast i aksen og vip det sideværts. Et helt fast hjul er godt. Mærker du slør, er navlejerne ved at være slidte, og det er typisk en 200-400 kr reparation hos en cykelhandler.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Drivlinjen kan blive dyr</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Drivlinjen kan blive dyr</h2>
       <p style="margin-bottom:16px;">Drivlinjen, altså kæde, kassette, klinger og bundbeslag, er en af de dyreste dele at udskifte. Et komplet nyt sæt kan let koste 500-1500 kr, så et grundigt tjek her er værd at lave.</p>
       <p style="margin-bottom:16px;">Den hurtigste test på kæden er at løfte den fra den forreste klinge midt på cyklen. Kan du løfte den mere end en halv centimeter, er den slidt. Kig så på kassetten bagest og klingerne foran. Tænderne skal være symmetriske, ikke skæve eller spidse. Det kaldes "hajtænder" når de begynder at se ud som krumme hajfinner, og det betyder slid.</p>
       <p style="margin-bottom:16px;">Hold pedalerne og vip dem sideværts uden at træde. Mærker du slør, er bundbeslagets lejer slidte. Drej pedalerne langsomt rundt og lyt efter klik eller knirk. Lyde fra drivlinjen tyder på slid et eller andet sted i systemet.</p>
       <p style="margin-bottom:24px;">På elcykler slides drivlinjen markant hurtigere end på almindelige cykler, fordi motoren tilfører ekstra kraft. Spørg sælger hvornår kæden sidst er skiftet, og overvej at få en cykelhandler til at vurdere hvor meget liv der er tilbage.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Bremserne</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Bremserne</h2>
       <p style="margin-bottom:16px;">På hydrauliske skivebremser skal du tjekke for olielækage ved kaliberne og langs slangerne. Hold cyklen i en lysstrejf og kig efter dråber eller fugtige områder. Tjek også at bremseskiven er lige ved at se hjulet snurre og kigge fra siden. Hvis bremsehåndtaget skal trykkes langt ind før det biter, kan der være luft i systemet og det skal i så fald udluftes.</p>
       <p style="margin-bottom:16px;">På mekaniske skivebremser er det tykkelsen på bremseklodserne der er afgørende. De fleste har en slidindikator du kan se uden at skille noget ad. Er klodserne nede på en millimeter eller mindre, skal de skiftes snart.</p>
       <p style="margin-bottom:16px;">Klemmer du fælgbremsens håndtag ind, bør der være mindst to centimeter mellem håndtaget og styret når det biter. Tjek også at bremseklodserne rammer fælgen ordentligt, ikke dækket. Klodser der rammer dækket er en katastrofe, fordi de skærer ned i gummiet og kan forårsage punktering eller værre.</p>
       <p style="margin-bottom:24px;">Test altid bremserne på prøveturen. Cyklen skal stoppe kontrolleret uden at vibrere voldsomt eller trække til siden, når du bremser hårdt.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Styr, gaffel og sadel</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Styr, gaffel og sadel</h2>
       <p style="margin-bottom:16px;">Kig forfra på gaflen og se efter revner ved kronrøret. Hold derefter forbremsen inde og pres cyklen frem og tilbage. Der må ikke være slør i styrfittingen, og du mærker det som et lille klik eller bevægelse hvis der er.</p>
       <p style="margin-bottom:16px;">Hold forhjulet fast mellem benene og prøv at dreje styret. Bevægelsen skal være helt jævn uden slør eller modstand i bestemte vinkler. Slør tyder på løse lejer der bør strammes.</p>
       <p style="margin-bottom:16px;">På sadelpinden er ridser et tegn på forkert brug eller dårlig montering. Den skal sidde stramt nok til at sadlen ikke vrider sig, men ikke så stramt at sadelpinden bliver beskadiget.</p>
       <p style="margin-bottom:24px;">Har cyklen affjedring, som på de fleste mountainbikes og el-cykler, så tryk på gaflen og se den bevæge sig. Den skal returnere kontrolleret og jævnt. Olie på standrørene tyder på slidte pakninger, og det er en reparation der kan koste flere tusinde kroner.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Prøveturen er obligatorisk</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Prøveturen er obligatorisk</h2>
       <p style="margin-bottom:16px;">Sælg eller køb aldrig en cykel uden at tage en prøvetur, og en sælger der nægter er et stort advarselstegn. Skift gennem alle gear og hør at det sker glat uden hop. Brems hårdt fra 15-20 km/t for at mærke bremsernes tilstand. Og lyt aktivt efter underlige lyde.</p>
       <p style="margin-bottom:16px;">Klik tyder typisk på slid i drivlinjen eller bundbeslaget. Knirk er løse dele et eller andet sted, ofte sadelpind eller bremseklodser. Slag eller "tuk-tuk" mens du kører kan være løse eger eller slidte hjullejer.</p>
       <p style="margin-bottom:24px;">Mens du er ved cyklen, så find også stelnummeret. Det står typisk under krankboksen eller på underrøret. Tag et billede og slå det op på <a href="https://politi.dk" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk</a> for at sikre dig at cyklen ikke er meldt stjålet. Det tager under et minut og er værd at gøre på hver eneste handel.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentation og prisforhandling</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentation og prisforhandling</h2>
       <p style="margin-bottom:16px;">En original kvittering er ikke et krav, men den er et godt tegn på at sælger er ærlig om cyklens oprindelse. Mangler kvittering, så er stelnummer-tjekket ekstra vigtigt. Servicehistorik fra en forhandler signalerer at cyklen er passet godt på, og det er ofte forskellen mellem en cykel der holder ti år til og en der bryder sammen efter to.</p>
       <p style="margin-bottom:16px;">Sammenlign prisen med lignende annoncer på Cykelbørsen for at vurdere om niveauet er rimeligt. Finder du slid eller småfejl under gennemgangen, er det helt fair at byde under sælgers pris. En slidt drivlinje koster måske 800 kr at udskifte, og det kan med rette trækkes fra prisen.</p>
       <p style="margin-bottom:24px;">På elcykler er batteriet det vigtigste enkeltparameter. Bed sælger om at fremvise batteriets kapacitet i den medfølgende app, hvis cyklen har en. Ligger kapaciteten under cirka 70 procent af original, bør prisen være 1.000-3.000 kr lavere end en tilsvarende cykel med sundt batteri.</p>
 
       <div style="background:var(--sand);border-radius:12px;padding:20px 24px;margin-top:32px;border:1px solid var(--border);">
-        <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Klar til at finde en cykel?</h3>
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Klar til at finde en cykel?</h3>
         <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen, Danmarks dedikerede markedsplads for nye og brugte cykler.</p>
-        <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Se alle cykler</button>
+        <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Se alle cykler</button>
       </div>
     `
   },
   about: {
     title: 'Om Cykelbørsen',
     body: `
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Hvad er Cykelbørsen?</h3>
       <p style="margin-bottom:16px;">Cykelbørsen er Danmarks dedikerede markedsplads for køb og salg af nye og brugte cykler. Vi forbinder private sælgere og autoriserede forhandlere med cykelkøbere over hele landet. Hurtigt, nemt og gratis.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Vores mission</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Vores mission</h3>
       <p style="margin-bottom:16px;">Vi tror på, at en god brugt cykel fortjener en ny ejer. Ved at gøre det nemt at købe og sælge brugte cykler hjælper vi med at forlænge cyklernes levetid og reducere unødvendigt affald.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For private sælgere</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">For private sælgere</h3>
       <p style="margin-bottom:16px;">Det er helt gratis at oprette en annonce som privat sælger. Upload billeder, sæt din pris, og kom i kontakt med interesserede købere direkte via vores beskedsystem.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">For forhandlere</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">For forhandlere</h3>
       <p style="margin-bottom:16px;">Verificerede cykelforhandlere kan oprette ubegrænsede annoncer helt gratis. Forhandlere fremhæves med et verificeret badge, som øger tilliden hos potentielle købere. Det kræver ingen betaling eller binding at oprette en forhandlerkonto.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt os</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Kontakt os</h3>
       <p style="margin-bottom:16px;">Har du spørgsmål eller brug for hjælp? Skriv til os via <a onclick="closeFooterModal();openFooterModal('contact')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">kontaktformularen</a>. Vi vender tilbage hurtigst muligt.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Virksomhedsoplysninger</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Virksomhedsoplysninger</h3>
       <p style="font-size:0.88rem;">Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>E-mail: hej@cykelbørsen.dk</p>
     `
   },
@@ -81,11 +81,11 @@ export const footerContent = {
     body: `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
       <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li>At de oplysninger du angiver er korrekte og opdaterede.</li>
@@ -94,11 +94,11 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Du skal være mindst 18 år for at oprette en konto. Hver person må kun have én aktiv konto.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Platformens rolle</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Platformens rolle</h3>
       <p style="margin-bottom:8px;">Ved <strong>køb og salg</strong> af cykler er Cykelbørsen udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
       <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li>Annoncen er retvisende og ikke vildledende mht. stand, pris, billeder og beskrivelse.</li>
@@ -108,7 +108,7 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4a. Tilladt sortiment</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4a. Tilladt sortiment</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Almindelige cykler</strong> i alle kategorier: racercykel, mountainbike, citybike, gravelbike, ladcykel, børnecykel, BMX, tandem osv.</li>
@@ -125,14 +125,14 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Annoncer for el-cykler skal i selve annonceteksten angive effekt (watt) og max hastighed med pedal-assist. Sælger du en <strong>speed pedelec</strong>, skal du derudover tydeligt angive i annoncen, at det er en speed pedelec der kræver registrering, nummerplade, ansvarsforsikring og kørekort, så køber kender de juridiske krav inden køb.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Forhandlerkonto</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">5. Forhandlerkonto</h3>
       <p style="margin-bottom:8px;">Professionelle cykelforhandlere kan oprette en gratis forhandlerkonto uden binding eller betaling. Forhandlere skal oplyse gyldigt CVR-nummer, butiksnavn, kontaktperson og adresse. Forhandlerkonti verificeres med et badge der vises på annoncer og profil. Vi forbeholder os retten til at afvise eller fjerne forhandlerkonti der ikke opfylder kravene, herunder at CVR-nummeret er aktivt og tilhører en reel cykelvirksomhed.</p>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at indføre betaling for forhandlerkonti i fremtiden. Eksisterende forhandlere vil i så fald blive varslet mindst 90 dage i forvejen via e-mail, og der vil aldrig opkræves betaling uden udtrykkelig accept.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5a. Forhandleres forbrugeransvar</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">5a. Forhandleres forbrugeransvar</h3>
       <p style="margin-bottom:16px;">Forhandlere der sælger til forbrugere via platformen, er selv ansvarlige for at overholde gældende forbrugerlovgivning, herunder reklamationsret, fortrydelsesret ved fjernsalg, oplysningspligt og markedsføringsloven. Cykelbørsen er udelukkende formidler og hæfter ikke for forhandlernes overholdelse heraf. Tvister mellem forbrugere og forhandlere løses direkte mellem parterne, eventuelt via <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a>.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">6. Forbudt indhold og adfærd</h3>
       <p style="margin-bottom:8px;">Det er ikke tilladt at:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li>Oprette annoncer for stjålne varer eller varer du ikke ejer.</li>
@@ -143,10 +143,10 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Overtrædelse kan medføre øjeblikkelig sletning af konto og annoncer samt eventuelt politianmeldelse.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Immaterielle rettigheder</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">7. Immaterielle rettigheder</h3>
       <p style="margin-bottom:16px;">Alt indhold på platformen (design, kode, logo, tekster) tilhører Cykelbørsen. Ved at uploade billeder og tekst til en annonce giver du os en ikke-eksklusiv, vederlagsfri ret til at vise indholdet på platformen. Du bevarer selv ophavsretten til dit indhold.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Ansvarsfraskrivelse</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">8. Ansvarsfraskrivelse</h3>
       <p style="margin-bottom:8px;">Cykelbørsen:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li>Garanterer ikke for rigtigheden, fuldstændigheden eller kvaliteten af annoncer.</li>
@@ -156,22 +156,22 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Platformen stilles til rådighed "som den er" uden garantier af nogen art, i det omfang gældende lovgivning tillader det.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Sletning af konto</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">9. Sletning af konto</h3>
       <p style="margin-bottom:16px;">Du kan til enhver tid slette din konto via profilindstillingerne. Ved sletning fjernes dine personoplysninger, annoncer og beskeder permanent.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Fortrydelsesret</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">10. Fortrydelsesret</h3>
       <p style="margin-bottom:16px;">Da Cykelbørsen er en gratis formidlingsplatform, er der ingen fortrydelsesret forbundet med at oprette en brugerkonto eller en annonce. Begge kan til enhver tid slettes via profilindstillingerne. Køb og salg af cykler sker direkte mellem køber og sælger; om der gælder fortrydelsesret (fx 14 dage ved fjernkøb fra en erhvervsdrivende, jf. forbrugeraftaleloven) afhænger af den konkrete handel og er sælgers ansvar (se §5a). Ved handler mellem to private gælder der ingen fortrydelsesret.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. AI-chatassistent</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">11. AI-chatassistent</h3>
       <p style="margin-bottom:16px;">Platformen tilbyder en AI-baseret chatassistent til generel hjælp og support. Svar fra AI-assistenten er udelukkende vejledende og udgør ikke juridisk, økonomisk eller professionel rådgivning. Vi garanterer ikke for rigtigheden eller fuldstændigheden af AI-assistentens svar. Ved tvivl bør du altid kontakte os direkte eller søge professionel rådgivning.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">12. Ændringer af vilkår</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">12. Ændringer af vilkår</h3>
       <p style="margin-bottom:16px;">Vi kan opdatere disse vilkår fra tid til anden. Væsentlige ændringer vil blive meddelt via e-mail eller en meddelelse på platformen. Fortsat brug af platformen efter ændringer udgør accept af de opdaterede vilkår.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">13. Lovvalg og tvistløsning</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">13. Lovvalg og tvistløsning</h3>
       <p style="margin-bottom:16px;">Disse vilkår er underlagt dansk ret. Eventuelle tvister skal forsøges løst i mindelighed. Hvis dette ikke er muligt, afgøres tvisten ved de danske domstole. Som forbruger kan du også klage til <a href="https://naevneneshus.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Nævnenes Hus</a> eller <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">EU's online klageportal</a>.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">14. Kontakt</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">14. Kontakt</h3>
       <p>Ved spørgsmål til disse vilkår kan du kontakte os på <strong>hej@cykelbørsen.dk</strong>. Se virksomhedsoplysninger i sektion 1.</p>
     `
   },
@@ -180,11 +180,11 @@ export const footerContent = {
     body: `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. august 2026</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Dataansvarlig</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
       <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
       <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Kontooplysninger:</strong> Navn, e-mailadresse, adgangskode (krypteret), profilbillede (valgfrit).</li>
@@ -208,7 +208,7 @@ export const footerContent = {
         <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, gemmer vi <strong>kun de sidste 4 cifre</strong>, aldrig hele nummeret. Resten kasseres med det samme og videregives ikke til nogen. Køberen får det fulde nummer af dig ved overleveringen.</li>
       </ul>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
       <p style="margin-bottom:8px;">Vi behandler dine personoplysninger til følgende formål:</p>
       <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
         <tr style="border-bottom:1px solid var(--border);">
@@ -277,7 +277,7 @@ export const footerContent = {
         </tr>
       </table>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Databehandlere og tredjeparter</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Databehandlere og tredjeparter</h3>
       <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Supabase (USA)</strong>: Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
@@ -290,10 +290,10 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Overførsel til tredjelande</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">5. Overførsel til tredjelande</h3>
       <p style="margin-bottom:16px;">Dine data kan overføres til USA via vores databehandlere (Supabase, Stripe, Resend). Overførslen sker på baggrund af EU-US Data Privacy Framework eller EU-Kommissionens standardkontraktbestemmelser (SCC'er), jf. GDPR art. 46(2)(c).</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Opbevaringsperiode</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">6. Opbevaringsperiode</h3>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Kontodata:</strong> Opbevares så længe din konto er aktiv. Ved sletning af konto fjernes data permanent.</li>
         <li><strong>Annoncer:</strong> Aktive annoncer vises på platformen. Solgte/slettede annoncer fjernes fra databasen.</li>
@@ -304,10 +304,10 @@ export const footerContent = {
         <li><strong>Udlejnings-bookinger:</strong> Bookingoplysninger opbevares så længe kontoen eksisterer. Betalings- og regnskabsrelaterede oplysninger om gennemførte udlejningsbetalinger opbevares dog i op til 5 år efter udgangen af regnskabsåret, jf. bogføringslovens krav.</li>
       </ul>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
       <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik/" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Dine rettigheder</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">8. Dine rettigheder</h3>
       <p style="margin-bottom:8px;">I henhold til GDPR har du følgende rettigheder:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Ret til indsigt</strong> (art. 15): Du kan anmode om at se hvilke data vi har om dig.</li>
@@ -319,13 +319,13 @@ export const footerContent = {
       </ul>
       <p style="margin-bottom:16px;">For at udøve dine rettigheder, kontakt os på <strong>hej@cykelbørsen.dk</strong>. Vi svarer inden for 30 dage.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Klage til tilsynsmyndighed</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">9. Klage til tilsynsmyndighed</h3>
       <p style="margin-bottom:16px;">Hvis du mener at vi behandler dine personoplysninger i strid med GDPR, har du ret til at klage til <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Datatilsynet</a> (datatilsynet.dk), Carl Jacobsens Vej 35, 2500 Valby, tlf. 33 19 32 00.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">10. Ændringer</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">10. Ændringer</h3>
       <p style="margin-bottom:16px;">Vi kan opdatere denne privatlivspolitik. Væsentlige ændringer meddeles via e-mail til registrerede brugere. Den gældende version er altid tilgængelig her på platformen.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">11. Kontakt</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">11. Kontakt</h3>
       <p>Spørgsmål om persondata rettes til <strong>hej@cykelbørsen.dk</strong>. Se fulde virksomhedsoplysninger i sektion 1.</p>
     `
   },
@@ -335,13 +335,13 @@ export const footerContent = {
     body: `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 28. juli 2026</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvad er cookies?</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Hvad er cookies?</h3>
       <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde: små data-poster i din browser, vi bruger til at huske dig.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Hvilke kategorier bruger vi?</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Hvilke kategorier bruger vi?</h3>
       <p style="margin-bottom:8px;">Vi bruger primært <strong>teknisk nødvendige cookies</strong>. Vi viser en cookie-banner første gang du besøger sitet, hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen tracking eller markedsføringscookies uanset dit valg. Banneret er forberedt til når vi senere måtte tilføje analyse-værktøjer.</p>
 
-      <h4 style="font-family:'Fraunces',serif;margin-top:16px;margin-bottom:8px;font-size:1rem;">Teknisk nødvendige (sættes altid)</h4>
+      <h4 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-top:16px;margin-bottom:8px;font-size:1rem;">Teknisk nødvendige (sættes altid)</h4>
       <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
         <tr style="border-bottom:1px solid var(--border);">
           <td style="padding:8px 8px 8px 0;font-weight:600;">Navn</td>
@@ -410,19 +410,19 @@ export const footerContent = {
         </tr>
       </table>
 
-      <h4 style="font-family:'Fraunces',serif;margin-top:16px;margin-bottom:8px;font-size:1rem;">Statistik (kun hvis du accepterer)</h4>
+      <h4 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-top:16px;margin-bottom:8px;font-size:1rem;">Statistik (kun hvis du accepterer)</h4>
       <p style="margin-bottom:16px;">Vi har endnu ikke aktiveret analyse-værktøjer. Hvis vi senere tilføjer fx Plausible Analytics eller Google Analytics, vil de først loades efter du klikker "Accepter alle" i cookie-banneret, og denne tabel bliver opdateret med præcis information.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kræves der samtykke?</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Kræves der samtykke?</h3>
       <p style="margin-bottom:16px;">Teknisk nødvendige cookies kræver ikke samtykke jf. cookiebekendtgørelsens § 4, stk. 2 og må sættes uden dit valg. Hvis vi tilføjer statistik- eller markedsføringscookies, vil de først aktiveres efter dit aktive samtykke i cookie-banneret.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Tredjepartscookies</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Tredjepartscookies</h3>
       <p style="margin-bottom:16px;">Vi bruger i dag ingen tredjepartscookies til tracking eller annoncering. Vores fremtidige betalingspartner Stripe vil sætte egne cookies på betalingssider når forhandlerbetaling aktiveres. Disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Sådan ændrer eller sletter du</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Sådan ændrer eller sletter du</h3>
       <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies, localStorage og sessionStorage i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen. Du kan også få cookie-banneret vist igen ved at slette browserdata for cykelbørsen.dk og genindlæse siden.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">Kontakt</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Kontakt</h3>
       <p>Spørgsmål om vores brug af cookies rettes til <strong>hej@cykelbørsen.dk</strong>.</p>
     `
   },
@@ -434,7 +434,7 @@ export const footerContent = {
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
         <div style="background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:18px 20px;">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:#2e7d32;margin:0 0 12px;display:flex;align-items:center;gap:8px;">Må sælges</h3>
+          <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;color:#2e7d32;margin:0 0 12px;display:flex;align-items:center;gap:8px;">Må sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>Alle slags cykler: racer, mountainbike, gravel, citybike, ladcykel, børnecykel, BMX, tandem osv.</li>
             <li>El-cykler (pedelec) med motor op til <strong>250W</strong> og max <strong>25 km/t</strong> pedal-assist</li>
@@ -444,7 +444,7 @@ export const footerContent = {
           </ul>
         </div>
         <div style="background:#fff;border:1.5px solid #ffccbc;border-radius:12px;padding:18px 20px;">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--error);margin:0 0 12px;display:flex;align-items:center;gap:8px;">Må IKKE sælges</h3>
+          <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;color:var(--error);margin:0 0 12px;display:flex;align-items:center;gap:8px;">Må IKKE sælges</h3>
           <ul style="margin:0;padding-left:18px;line-height:1.6;font-size:0.92rem;color:var(--charcoal);">
             <li>El-løbehjul og el-scootere</li>
             <li>El-motorcykler, el-motocross &amp; el-mopeder (uden pedaler / over 45 km/t)</li>
@@ -453,12 +453,12 @@ export const footerContent = {
         </div>
       </div>
 
-      <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Hvorfor er grænsen ved 250W og 25 km/t?</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:24px 0 8px;">Hvorfor er grænsen ved 250W og 25 km/t?</h3>
       <p style="margin-bottom:16px;">Det er Færdselslovens definition af en "cykel". En el-cykel med motor på højst 250W og maksimal hastighed 25 km/t med pedal-assist betragtes juridisk som en cykel og kræver ikke registrering, nummerplade, kørekort eller forsikring.</p>
       <p style="margin-bottom:16px;">En pedelec der hjælper over 25 km/t (op til 45 km/t) er en <strong>speed pedelec</strong>, juridisk en lille knallert (L1e-B). Den <strong>må gerne sælges på Cykelbørsen</strong>, men den kræver registrering hos Motorstyrelsen, nummerplade, lovpligtig ansvarsforsikring og kørekort (mindst kategori AM). Derfor skal sælger oplyse dette tydeligt i annoncen, så køber kender kravene inden køb.</p>
       <p style="margin-bottom:24px;">Rene motorkøretøjer <strong>uden trædefunktion</strong>, eller køretøjer der kan køre over 45 km/t, hører ikke hjemme på en cykel-markedsplads og må ikke sælges her.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Oplysningspligt ved salg af el-cykler</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:24px 0 8px;">Oplysningspligt ved salg af el-cykler</h3>
       <p style="margin-bottom:16px;">Sælger du en el-cykel, skal du i selve annonceteksten oplyse:</p>
       <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
         <li><strong>Motoreffekt</strong> i watt (fx "250W")</li>
@@ -468,7 +468,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Det giver køberen tryghed for at cyklen falder inden for cykel-definitionen og ikke kræver registrering.</p>
       <p style="margin-bottom:16px;">Sælger du en <strong>speed pedelec</strong> (over 25 km/t), skal du derudover tydeligt skrive i annoncen, at det er en speed pedelec, og at den kræver <strong>registrering, nummerplade, ansvarsforsikring og kørekort</strong> (mindst kategori AM). Så ved køber præcis hvad der følger med.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin:24px 0 8px;">Tvivlstilfælde</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:24px 0 8px;">Tvivlstilfælde</h3>
       <p style="margin-bottom:16px;">Er du i tvivl om din cykel hører hjemme på platformen, så skriv til <strong>hej@cykelbørsen.dk</strong> med model og specs, så svarer vi indenfor et par timer.</p>
       <p style="margin-bottom:16px;">Vi forbeholder os retten til at fjerne annoncer der falder uden for ovenstående uden varsel, uanset om sælger er privatperson eller forhandler. Du kan altid læse den fulde paragraf i <a href="/vilkaar/" onclick="event.preventDefault();navigateTo('/vilkaar')" style="color:var(--rust);text-decoration:underline;">vilkår § 4a</a>.</p>
     `
@@ -497,17 +497,17 @@ export const footerContent = {
       <div style="display:flex;flex-direction:column;gap:10px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-size:0.82rem;font-weight:600;">Dit navn</label>
-          <input type="text" id="contact-name" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;">
+          <input type="text" id="contact-name" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-size:0.82rem;font-weight:600;">E-mail</label>
-          <input type="email" id="contact-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;">
+          <input type="email" id="contact-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-size:0.82rem;font-weight:600;">Besked</label>
-          <textarea id="contact-message" placeholder="Beskriv dit spørgsmål eller problem..." style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);outline:none;resize:vertical;min-height:100px;"></textarea>
+          <textarea id="contact-message" placeholder="Beskriv dit spørgsmål eller problem..." style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;resize:vertical;min-height:100px;"></textarea>
         </div>
-        <button onclick="submitContactForm()" style="background:var(--rust);color:#fff;border:none;padding:14px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;">Send besked</button>
+        <button onclick="submitContactForm()" style="background:var(--rust);color:#fff;border:none;padding:14px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);margin-top:4px;">Send besked</button>
       </div>
     `
   },
@@ -523,39 +523,39 @@ export const footerContent = {
         <p style="margin:8px 0 0;line-height:1.7;">Sælger vil ikke mødes, men kun sende cyklen. Prisen er meget under markedet. Sælger har travlt og presser dig til at handle nu. Sælger nægter at oplyse stelnummer. Eller sælger vil betales via udenlandsk konto, krypto eller gavekort. Står du med en eller flere af disse signaler, så drop handlen.</p>
       </div>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
       <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det står typisk under bundbeslaget mellem kranken, men kan også sidde på styrhovedet eller på sadelpinden. Slå det op mod politiets gratis register over efterlyste cykler. Det tager under et minut.</p>
-      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:'DM Sans',sans-serif;">${iconShield()} Åbn politiets register</a>
+      <a href="https://politi.dk/cykler-og-koeretoejer/tjek-om-en-cykel-eller-et-koeretoej-er-efterlyst/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:var(--font-sans);">${iconShield()} Åbn politiets register</a>
       <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>
       <p style="margin-bottom:16px;">Mød aldrig op i sælgers hjem eller på øde steder. Foreslå et offentligt sted med god trafik. Foran en cykelhandler er ofte godt, fordi der er adgang til luftpumpe og service hvis det skulle blive nødvendigt. Foran en politistation virker afskrækkende på svindlere, og foran et indkøbscenter eller en cafe har du masser af mennesker omkring dig.</p>
       <p style="margin-bottom:24px;">Tag en ven med hvis du handler for over 5.000 kr. Sælgere der ikke vil mødes offentligt har som regel noget at skjule, og det er en lille besvær at gardere sig mod.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Brug en sikker betalingsform</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Brug en sikker betalingsform</h2>
       <p style="margin-bottom:16px;">MobilePay er det mest praktiske valg ved fysisk overdragelse. Det er straksbetaling, det kan dokumenteres, og det er svært at fuske med. Kontant fungerer fint ved mindre handler under 5.000 kr, og bankoverførsel er en mulighed hvis du handler med en forhandler hvor du kan verificere kontoen.</p>
       <p style="margin-bottom:16px;">Hold dig derimod helt fra Western Union eller andre udenlandske overførselstjenester. Gavekort som betalingsmiddel er et klassisk svindel-signal. Beder nogen om betaling i Apple gift cards eller lignende, så er det 100 procent svindel. Kryptovaluta er næsten umulig at få tilbage, og fjernhandler hvor "halvdelen sendes før resten" er højrisiko og bør undgås helt.</p>
       <p style="margin-bottom:24px;">Klik aldrig på links der angiver at være Cykelbørsens betalingssystem. Vi har ikke et sådant, og enhver kommunikation der ligner det er forsøg på phishing.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tag en prøvetur før du betaler</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tag en prøvetur før du betaler</h2>
       <p style="margin-bottom:16px;">Det er din mulighed for at tjekke at cyklen rent faktisk fungerer som den skal. Skift gennem alle gear. Det skal være jævnt og uden støj. Bremserne skal kunne stoppe cyklen helt med fast greb. Snurr hjulene og se efter at de er snorlige uden wobble. Tjek kæden og kranken for knirken eller synlige skader. Kig rammen efter for revner, buler og rust ved svejsningerne. Og tjek dækmønstret for slid.</p>
       <p style="margin-bottom:24px;">For en grundigere gennemgang, find vores fulde <a href="/guide/tjek-brugt-cykel/" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')" style="color:var(--rust);">guide til at tjekke en brugt cykel</a>.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentér handlen</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Dokumentér handlen</h2>
       <p style="margin-bottom:16px;">Ved køb over 5.000 kr er det værd at lave et simpelt overdragelsesbevis. Det behøver ikke være komplet juridisk korrekt for at være nyttigt. Sælgers navn og adresse (gerne med de første seks cifre af CPR), cyklens mærke, model, årgang og stelnummer, aftalt pris og dato, og begge parters underskrift. Det er nok.</p>
       <p style="margin-bottom:24px;">Tag også billeder af cyklen og stelnummeret på handelsdagen. Det er din dokumentation hvis cyklen senere viser sig at være stjålet, og det er ofte forskellen mellem at få sine penge tilbage og at stå tilbage med ingenting.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">De typiske svindelnumre</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">De typiske svindelnumre</h2>
       <p style="margin-bottom:16px;"><strong>Phishing-links.</strong> "Klik her for at modtage betaling for din cykel." Cykelbørsen sender aldrig betalingslinks. Vi har ikke et indbygget betalingssystem, så alt der ligner det er svindel.</p>
       <p style="margin-bottom:16px;"><strong>"Min broder henter den."</strong> Sælger eller køber er angiveligt i udlandet og foreslår at en tredjepart henter cyklen i Danmark. Klassisk svindel. Sælg eller køb aldrig uden personlig overdragelse.</p>
       <p style="margin-bottom:16px;"><strong>Overbetaling med vilje.</strong> Køberen "kommer til" at sende 15.000 kr i stedet for de aftalte 5.000 kr og beder dig sende de 10.000 retur. Det oprindelige beløb bliver trukket tilbage senere, og du står med tabet alene.</p>
       <p style="margin-bottom:24px;"><strong>Falske MobilePay-skærmbilleder.</strong> En sælger eller køber viser et skærmbillede der ligner en gennemført overførsel. Tjek altid din egen konto i banken, ikke et skærmbillede den anden viser dig. Rigtige MobilePay-overførsler vises straks.</p>
 
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
       <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via "Rapporter annonce" nederst på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt/" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
 
       <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
-        <h3 style="font-family:'Fraunces',serif;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
         <p style="margin:0;line-height:1.8;color:rgba(245,240,232,0.92);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant, aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
       </div>
     `
@@ -566,23 +566,23 @@ export const footerContent = {
     body: `
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 10. juli 2026</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Om udlejningstjenesten</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Om udlejningstjenesten</h3>
       <p style="margin-bottom:16px;">Cykelbørsen formidler udlejning af cykler mellem private kunder og registrerede forhandlere ("udlejere"). Selve lejeaftalen indgås mellem kunden og forhandleren; Cykelbørsen håndterer booking og betaling som betalingsformidler via Stripe. Forhandleren er ansvarlig for cyklens stand, udlevering og for at leve op til lejeaftalen.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Booking og betaling</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Booking og betaling</h3>
       <p style="margin-bottom:8px;">Når du booker, betaler du leje og et eventuelt depositum via Stripe. Bookingen bekræftes automatisk ved gennemført betaling. Cykelbørsen opkræver en kommission af forhandleren og udbetaler resten til forhandleren.</p>
       <p style="margin-bottom:16px;">Betalinger behandles sikkert af Stripe. Cykelbørsen opbevarer ikke dine kortoplysninger.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Depositum</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Depositum</h3>
       <p style="margin-bottom:16px;">Hvis forhandleren kræver depositum, opkræves det sammen med lejen og <strong>tilbagebetales efter aflevering</strong>, forudsat at cyklen afleveres uden skader ud over normal brug. Ved skade kan forhandleren tilbageholde depositummet helt eller delvist. Uenigheder om skade afgøres mellem kunde og forhandler; Cykelbørsen er ikke part i vurderingen.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Afbestilling og refusion</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Afbestilling og refusion</h3>
       <p style="margin-bottom:16px;">En booking kan afbestilles af både kunde og forhandler frem til lejeperiodens start. Ved afbestilling refunderes hele det betalte beløb (leje + depositum). Forhandleren kan fastsætte yderligere betingelser i sin egen beskrivelse.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Ansvar</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">5. Ansvar</h3>
       <p style="margin-bottom:16px;">Kunden er ansvarlig for cyklen i lejeperioden og skal behandle den forsvarligt og følge færdselsloven. Forhandleren er ansvarlig for at cyklen er i lovlig og sikker stand ved udlevering. Cykelbørsen er alene betalingsformidler og platform og er ikke ansvarlig for skader, tyveri, personskade eller tab i forbindelse med udlejningen. Kunde og forhandler opfordres til at aftale forsikringsforhold indbyrdes.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Persondata</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">6. Persondata</h3>
       <p style="margin-bottom:16px;">Ved en booking behandles nødvendige oplysninger (navn, kontakt, datoer, beløb) for at gennemføre lejeaftalen. Se <a href="/privatlivspolitik/" onclick="event.preventDefault();navigateTo('/privatlivspolitik')" style="color:var(--rust);">privatlivspolitikken</a> for detaljer.</p>
     `
   },
@@ -594,7 +594,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Denne databehandleraftale ("Aftalen") indgås mellem den forhandler ("Dataansvarlig") som aktiverer onboarding-servicen i sine profilindstillinger, og Cykelbørsen ("Databehandler"). Aftalen indgås når du som forhandler aktivt sætter flueben i "Jeg giver tilladelse" i din profil under sektionen "Cykelbørsen onboarding-service".</p>
       <p style="margin-bottom:16px;padding:12px 14px;background:var(--sand);border-radius:10px;font-size:0.9rem;"><strong>Opdateret 19. juni 2026:</strong> Aftalens omfang er udvidet, så Cykelbørsen, udover at oprette annoncer, også må <strong>importere og løbende vedligeholde</strong> dine cykel-annoncer (automatisk pris- og lagersynkronisering fra dit produkt-feed samt manuelle rettelser af specifikationer). Hvis du har accepteret en tidligere version, bliver du bedt om at <strong>genbekræfte</strong> det udvidede omfang i dine profilindstillinger, før den udvidede service aktiveres. Indtil du genbekræfter, gælder kun det oprindelige "opret annonce"-omfang.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">1. Formål og omfang</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Formål og omfang</h3>
       <p style="margin-bottom:8px;">Cykelbørsen får tilladelse til at oprette <em>og løbende vedligeholde</em> annoncer på dine vegne. Konkret må Cykelbørsen:</p>
       <ul style="margin-bottom:16px;">
         <li><strong>Oprette annoncer:</strong> indsætte rækker i tabellen <code>bikes</code> med dit bruger-id som ejer, samt tilhørende billeder i <code>bike_images</code></li>
@@ -605,7 +605,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;"><strong>Låsning af manuelt rettede annoncer:</strong> Når en Cykelbørsen-administrator manuelt retter en importeret annonce, "låses" den (<code>feed_locked=true</code>), så den natlige synkronisering derefter <em>kun</em> opdaterer pris og lagerstatus. Dine manuelle rettelser overskrives ikke.</p>
       <p style="margin-bottom:16px;"><strong>Cykelbørsen får IKKE tilladelse til:</strong> at læse eller svare på dine beskeder, ændre dine profil-indstillinger, slette din konto, eller foretage handlinger uden for det ovenstående scope. Adgangen er teknisk begrænset i platformens edge functions og database-funktioner (<code>admin-create-bike</code>, <code>import-dealer-feed</code>, <code>admin_update_bike</code>). Der findes ingen genvej til andre handlinger, og hver funktion verificerer dit aktive samtykke før den kører.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">2. Forhandlerens ansvar (Dataansvarlig)</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Forhandlerens ansvar (Dataansvarlig)</h3>
       <p style="margin-bottom:8px;">Som forhandler er du retsansvarlig sælger for alle annoncer der oprettes eller vedligeholdes på dine vegne. Det betyder konkret:</p>
       <ul style="margin-bottom:16px;">
         <li>Du skal selv reviewe annoncen efter oprettelse, og vi anbefaler du gør det inden for 48 timer</li>
@@ -616,7 +616,7 @@ export const footerContent = {
         <li>Du er forbrugerretsligt ansvarlig sælger jf. Købeloven og Markedsføringsloven</li>
       </ul>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">3. Cykelbørsens forpligtelser (Databehandler)</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Cykelbørsens forpligtelser (Databehandler)</h3>
       <p style="margin-bottom:8px;">Cykelbørsen forpligter sig til:</p>
       <ul style="margin-bottom:16px;">
         <li>Kun at behandle dine data inden for ovennævnte scope, og kun så længe dit samtykke er aktivt</li>
@@ -626,22 +626,22 @@ export const footerContent = {
         <li>At indhente fornyet samtykke fra dig, før et udvidet omfang af Aftalen tages i brug</li>
       </ul>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">4. Tilbagekaldelse</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Tilbagekaldelse</h3>
       <p style="margin-bottom:16px;">Du kan til enhver tid tilbagekalde denne tilladelse ved at gå til dine profilindstillinger og slå onboarding-servicen fra. Tilbagekaldelse træder i kraft med det samme. Vi kan ikke oprette, importere, synkronisere eller rette nye annoncer efter det tidspunkt, og den natlige synkronisering stopper. Annoncer der allerede er oprettet før tilbagekaldelsen forbliver dine egne og kan redigeres eller slettes som normalt.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">5. Varighed</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">5. Varighed</h3>
       <p style="margin-bottom:16px;">Aftalen gælder fra du aktiverer onboarding-servicen og indtil du selv tilbagekalder den. Der er ingen automatisk udløb. Cykelbørsen anbefaler dog at du tilbagekalder tilladelsen når du selv er fortrolig med at oprette annoncer (typisk efter 1-2 ugers brug af platformen).</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">6. Underdatabehandlere</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">6. Underdatabehandlere</h3>
       <p style="margin-bottom:16px;">Cykelbørsen bruger Supabase (database + edge functions) og Resend (e-mail) som underdatabehandlere. Disse er underlagt deres egne databehandleraftaler med EU-baseret hosting. Vi tilføjer ikke nye underdatabehandlere uden at give dig 14 dages varsel via e-mail.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">7. Sikkerhedsbrud</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">7. Sikkerhedsbrud</h3>
       <p style="margin-bottom:16px;">Ved sikkerhedsbrud der involverer dine data underretter Cykelbørsen dig uden ugrundet ophold og senest 72 timer efter vi har fået kendskab til bruddet, jf. GDPR art. 33.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">8. Lovvalg og værneting</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">8. Lovvalg og værneting</h3>
       <p style="margin-bottom:16px;">Aftalen er underlagt dansk ret og enhver tvist afgøres ved Københavns Byret.</p>
 
-      <h3 style="font-family:'Fraunces',serif;margin-bottom:8px;">9. Kontakt</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">9. Kontakt</h3>
       <p style="margin-bottom:8px;">Cykelbørsen v/ Benjamin Vojdeman<br>
       CVR: 46403568<br>
       Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>

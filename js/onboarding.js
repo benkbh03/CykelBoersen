@@ -10,7 +10,7 @@ export function showOnboardingBanner() {
   overlay.innerHTML = `
     <div style="background:#F5F0E8;border-radius:18px;max-width:420px;width:100%;padding:32px 28px 24px;position:relative;box-shadow:0 12px 40px rgba(26,26,24,0.22);">
       <div style="text-align:center;margin-bottom:12px;color:var(--forest);">${iconBike(40)}</div>
-      <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;text-align:center;margin:0 0 6px;color:#1A1A18;">Velkommen til Cykelbørsen</h2>
+      <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;text-align:center;margin:0 0 6px;color:#1A1A18;">Velkommen til Cykelbørsen</h2>
       <p style="text-align:center;color:#6B6760;font-size:0.88rem;margin:0 0 24px;">Danmarks dedikerede markedsplads for nye og brugte cykler</p>
 
       <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:28px;">
@@ -37,7 +37,7 @@ export function showOnboardingBanner() {
         </div>
       </div>
 
-      <button onclick="dismissOnboarding()" style="width:100%;padding:14px;background:#2A3D2E;color:#F5F0E8;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;letter-spacing:0.01em;">
+      <button onclick="dismissOnboarding()" style="width:100%;padding:14px;background:#2A3D2E;color:#F5F0E8;border:none;border-radius:10px;font-family:var(--font-sans);font-size:0.95rem;font-weight:600;cursor:pointer;letter-spacing:0.01em;">
         Kom i gang
       </button>
     </div>

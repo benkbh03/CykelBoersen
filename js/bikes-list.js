@@ -257,7 +257,7 @@ export function createBikesList({
     footer.id = 'load-more-btn';
     // Fuld batch → der kan være flere → vis "Vis flere"-knap
     if (normalData.length === mainFetchCount && mainFetchCount > 0) {
-      footer.innerHTML = `<button onclick="loadMoreBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
+      footer.innerHTML = `<button onclick="loadMoreBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Vis flere cykler</button>`;
     } else if (append && getBikesOffset() > BIKES_PAGE_SIZE) {
       footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
     } else {
@@ -274,9 +274,9 @@ export function createBikesList({
       return `
         <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
           <div style="margin-bottom:16px;color:var(--muted);">${iconBike(56)}</div>
-          <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør her endnu' : 'Ingen cykler her endnu'}</h3>
+          <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør her endnu' : 'Ingen cykler her endnu'}</h3>
           <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge ${_isAcc ? 'dit cykeltilbehør' : 'din cykel'} på Cykelbørsen. Det er gratis og tager kun 2 minutter.</p>
-          <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">${_isAcc ? '+ Sæt tilbehør til salg' : '+ Sæt din cykel til salg'}</button>
+          <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">${_isAcc ? '+ Sæt tilbehør til salg' : '+ Sæt din cykel til salg'}</button>
         </div>`;
     }
 
@@ -288,12 +288,12 @@ export function createBikesList({
     return `
       <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
         <div style="margin-bottom:14px;color:var(--muted);">${iconSearch(48)}</div>
-        <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør matcher dine filtre' : 'Ingen cykler matcher dine filtre'}</h3>
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør matcher dine filtre' : 'Ingen cykler matcher dine filtre'}</h3>
         <p style="color:var(--muted);font-size:0.92rem;max-width:380px;margin:0 auto 14px;line-height:1.55;">Prøv at fjerne et filter eller udvid dit søgekriterium.</p>
         ${filterText}
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;">
-          <button onclick="clearAllFilters()" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">↺ Nulstil filtre</button>
-          <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Få besked når der dukker en op</button>
+          <button onclick="clearAllFilters()" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">↺ Nulstil filtre</button>
+          <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Få besked når der dukker en op</button>
         </div>
       </div>`;
   }
@@ -567,7 +567,7 @@ export function createBikesList({
     if ((data || []).length === filterFetchCount) {
       const btn = document.createElement('div');
       btn.id = 'load-more-btn';
-      btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Vis flere cykler</button>`;
+      btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Vis flere cykler</button>`;
       anchor.after(btn);
     } else if (append && getFilterOffset() > BIKES_PAGE_SIZE) {
       const msg = document.createElement('div');
