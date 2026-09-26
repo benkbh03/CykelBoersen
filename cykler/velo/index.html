@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260926b">
+<html lang="da" data-asset-v="20260926c">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,23 +111,23 @@
        overskrifterne på forsiden. -->
   <link rel="preload" href="/fonts/dm-sans-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/fraunces-normal-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926b">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926c">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260926b">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260926b">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260926b">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926b">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260926b">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260926b">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926b">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260926b">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926b">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260926b">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926b">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926b">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260926b">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260926c">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260926c">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260926c">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926c">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260926c">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260926c">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926c">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260926c">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926c">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260926c">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926c">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926c">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260926c">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -178,6 +178,9 @@
     }
   }
   </script>
+  <!-- FAQPage-schemaet er fjernet: de tre spørgsmål stod ikke synligt på
+       forsiden, og markup for indhold brugeren ikke kan se, er imod Googles
+       retningslinjer for struktureret data. -->
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"CollectionPage","name":"Brugte og nye Velo cykler","description":"Velo laver enkle citybikes i retrolook til hverdagskørsel i byen. Modelserien Velo Lux fås som både dame- og herrecykel med tre navgear og i flere klassiske farver, og mærket føres af danske cykelforhandlere.","url":"https://cykelbørsen.dk/cykler/velo/","about":{"@type":"Brand","name":"Velo"}}</script>
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Cykelmærker","item":"https://cykelbørsen.dk/maerker/"},{"@type":"ListItem","position":3,"name":"Velo","item":"https://cykelbørsen.dk/cykler/velo/"}]}</script>
 </head>
@@ -1079,7 +1082,7 @@
         <div class="sell-cta-label">Sælg din cykel</div>
         <h2 class="sell-cta-headline">Sæt din cykel til salg – det er gratis.</h2>
         <p class="sell-cta-sub">Tag tre billeder, sæt en pris, så er du live på få minutter.</p>
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:10px;color:#fff;font-size:0.88rem;text-decoration:underline;font-family:'DM Sans',sans-serif;opacity:0.9;"><svg class="ui-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Ikke sikker på pris? Få gratis vurdering →</a>
+        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:10px;color:#fff;font-size:0.88rem;text-decoration:underline;font-family:'DM Sans',sans-serif;opacity:0.9;"><svg class="ui-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Ikke sikker på pris? Få gratis vurdering</a>
       </div>
       <div>
         <button class="sell-cta-btn" onclick="openModal()">+ Sæt til salg</button>
