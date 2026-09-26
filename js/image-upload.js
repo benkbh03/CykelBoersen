@@ -180,81 +180,6 @@ export function createImageUpload({
 
   // ── selectedFiles management ───────────────────────────────
 
-  async function previewImages(input) {
-    const files = Array.from(input.files);
-    if (!files.length) return;
-
-    const remaining = 8 - selectedFiles.length;
-    const toAdd = files.filter(validateImageFile).slice(0, remaining);
-
-    const label = document.getElementById('upload-label');
-    const total = toAdd.length;
-    let done = 0;
-    if (label && total > 0) label.textContent = `Optimerer 0 af ${total}…`;
-
-    // Et billede der ikke kan afkodes, kan ikke få EXIF fjernet, og så
-    // springes det over i stedet for at blive uploadet råt. Resten af
-    // udvalget går uhindret igennem.
-    const processed = (await Promise.all(toAdd.map(async f => {
-      try {
-        const compressed = await compressImage(f);
-        return { compressed, original: f };
-      } catch (e) {
-        console.warn('Kunne ikke behandle billede, springes over:', f.name, e);
-        showToast(`"${f.name}" kunne ikke behandles og blev ikke tilføjet`, 'advarsel');
-        return null;
-      } finally {
-        done++;
-        if (label) label.textContent = `Optimerer ${done} af ${total}…`;
-      }
-    }))).filter(Boolean);
-
-    processed.forEach(({ compressed, original }, i) => {
-      const url = URL.createObjectURL(compressed);
-      selectedFiles.push({
-        file: compressed,
-        originalFile: original,
-        url,
-        isPrimary: selectedFiles.length === 0 && i === 0,
-      });
-    });
-
-    renderImagePreviews();
-    if (label) label.textContent =
-      `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`;
-  }
-
-  function renderImagePreviews() {
-    const grid = document.getElementById('img-preview-grid');
-    if (!grid) return;
-    grid.innerHTML = selectedFiles.map((item, i) => `
-      <div class="img-preview-item ${item.isPrimary ? 'primary' : ''}">
-        <img src="${item.url}" alt="Billede ${i+1}">
-        ${item.isPrimary ? '<span class="primary-badge">Primær</span>' : ''}
-        ${!item.isPrimary ? `<button class="set-primary" onclick="setPrimary(${i})">★</button>` : ''}
-        <button class="remove-img" onclick="removeImage(${i})">✕</button>
-      </div>
-    `).join('');
-  }
-
-  function setPrimary(index) {
-    selectedFiles = selectedFiles.map((item, i) => ({ ...item, isPrimary: i === index }));
-    renderImagePreviews();
-  }
-
-  function removeImage(index) {
-    URL.revokeObjectURL(selectedFiles[index].url);
-    selectedFiles.splice(index, 1);
-    if (selectedFiles.length > 0 && !selectedFiles.some(f => f.isPrimary)) {
-      selectedFiles[0].isPrimary = true;
-    }
-    renderImagePreviews();
-    const label = document.getElementById('upload-label');
-    if (label) label.textContent = selectedFiles.length > 0
-      ? `${selectedFiles.length} billede${selectedFiles.length !== 1 ? 'r' : ''} valgt`
-      : 'Klik for at vælge billeder';
-  }
-
   async function uploadImages(bikeId, onProgress) {
     if (selectedFiles.length === 0) return;
 
@@ -348,27 +273,12 @@ export function createImageUpload({
     return urls;
   }
 
-  function resetImageUpload() {
-    selectedFiles = [];
-    const grid  = document.getElementById('img-preview-grid');
-    const label = document.getElementById('upload-label');
-    const input = document.getElementById('img-file-input');
-    if (grid)  grid.innerHTML = '';
-    if (label) label.textContent = 'Klik for at vælge billeder';
-    if (input) input.value = '';
-  }
-
   return {
     validateImageFile,
     compressImage,
     compressForAI,
-    previewImages,
-    renderImagePreviews,
-    setPrimary,
-    removeImage,
     uploadImages,
     uploadImagesNoInsert,
-    resetImageUpload,
     openCropModal,
     setCropRatio,
     applyCrop,

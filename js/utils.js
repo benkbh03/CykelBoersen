@@ -72,7 +72,7 @@ export function validatePassword(pw, ctx = {}) {
   }
   const emailLocal = String(ctx.email || '').toLowerCase().split('@')[0];
   if (emailLocal.length >= 4 && lower.includes(emailLocal)) {
-    return { ok: false, message: 'Adgangskoden må ikke indeholde din email.' };
+    return { ok: false, message: 'Adgangskoden må ikke indeholde din e-mail.' };
   }
   const name = String(ctx.name || '').toLowerCase().trim();
   if (name.length >= 4 && lower === name) {

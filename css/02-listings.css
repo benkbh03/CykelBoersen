@@ -685,7 +685,7 @@ border-color: rgba(42,61,46,0.18);
 /* Boost-CTA i "annonce oprettet"-modalen */
 .success-boost-cta {
   display: flex; align-items: center; gap: var(--space-3); width: 100%;
-  margin: 4px 0 14px; padding: 12px 14px;
+  margin: var(--space-4) 0 0; padding: 12px 14px;
   background: var(--surface-sand);
   border: 1px solid var(--gold-border); border-radius: var(--radius-md);
   cursor: pointer; text-align: left; font-family: var(--font-sans);

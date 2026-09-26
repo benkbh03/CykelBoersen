@@ -54,7 +54,7 @@ export function calculateTrustScore(profile, stats) {
   const isTrusted = trustScore >= 5;
 
   const tips = [];
-  if (!profile.email_verified)  tips.push('Email-verifikation');
+  if (!profile.email_verified)  tips.push('E-mail-verifikation');
   if (soldCount < 5)             tips.push(`${Math.max(1, 5 - soldCount)} flere salg`);
   if (profile.seller_type === 'dealer' && !profile.verified) tips.push('CVR-godkendelse');
   if (reviewCount < 3)           tips.push('Flere anmeldelser');

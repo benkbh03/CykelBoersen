@@ -2,7 +2,7 @@
    INDBAKKE (modal + side)
    ============================================================ */
 
-import { escAttr, beskedFejl } from './utils.js';
+import { escAttr, beskedFejl, iconMail, iconBike } from './utils.js';
 
 export function createInbox({
   supabase,
@@ -40,6 +40,20 @@ export function createInbox({
     if (diff < 86400000) return Math.floor(diff / 3600000) + ' t';
     if (diff < 604800000) return d.toLocaleDateString('da-DK', { weekday: 'short' });
     return d.toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
+  }
+
+  /* Forhåndsvisning af sidste besked i trådlisten. Beskedkoderne (💰 bud,
+     ✅ accepteret) står i selve beskeden i databasen, fordi vurderinger og
+     notifikationer finder handler på dem. I UI'et vises de ikke som emoji:
+     koden fjernes, og en accepteret handel får et SVG-flueben. Teksten
+     escapes altid; den kommer fra en anden bruger. */
+  const PREVIEW_CHECK = '<svg class="msg-check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>';
+  function previewHTML(content, max) {
+    const raw = String(content || '');
+    const accepted = raw.startsWith('✅');
+    const text = raw.replace(/^(✅|💰|✉️)\s*/u, '');
+    const short = text.length > max ? text.substring(0, max) + '...' : text;
+    return (accepted ? PREVIEW_CHECK + ' ' : '') + esc(short);
   }
 
   // ── Fælles besked-renderer ────────────────────────────────
@@ -109,7 +123,7 @@ export function createInbox({
 
     if (!data || data.length === 0) {
       list.innerHTML = `<div class="empty-state-box">
-      <div class="empty-state-icon">✉️</div>
+      <div class="empty-state-icon">${iconMail(32)}</div>
       <h3 class="empty-state-title">Ingen beskeder endnu</h3>
       <p class="empty-state-sub">Når du kontakter en sælger eller modtager et bud, dukker beskederne op her.</p>
     </div>`;
@@ -157,7 +171,7 @@ export function createInbox({
     list.innerHTML = threadList.map(t => {
       const lastMsg  = t.messages[0];
       const initials = getInitials(t.otherName);
-      const preview  = lastMsg.content.length > 50 ? lastMsg.content.substring(0, 50) + '...' : lastMsg.content;
+      const preview  = previewHTML(lastMsg.content, 50);
       const time     = new Date(lastMsg.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
       const bikeName = t.bike ? `${t.bike.brand} ${t.bike.model}` : (localStorage.getItem(`bike_name_${t.bikeId}`) || 'Ukendt cykel');
       return `
@@ -390,7 +404,7 @@ export function createInbox({
           </div>
         </div>
         <div class="inbox-page-empty-state" id="inbox-page-empty-chat">
-          <div class="inbox-empty-icon">✉️</div>
+          <div class="inbox-empty-icon">${iconMail(32)}</div>
           <p>Vælg en samtale for at læse beskeder</p>
         </div>
       </div>
@@ -507,7 +521,7 @@ export function createInbox({
         + '<span class="inbox-page-name">' + esc(likerName) + '</span>'
         + '<span class="inbox-page-time">' + time + '</span>'
         + '</div>'
-        + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : '🚲') + ' ' + bikeName + '</div>'
+        + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : iconBike(14)) + ' ' + bikeName + '</div>'
         + '<div class="inbox-page-preview">'
         + '<span class="inbox-interest-tag">❤️ Har gemt din annonce</span> Klik for at starte samtale'
         + '</div>'
@@ -519,7 +533,7 @@ export function createInbox({
     const threadHTML = threadList.map(function(t) {
       const lastMsg  = t.messages[0];
       const initials = getInitials(t.otherName);
-      const preview  = esc(lastMsg.content.length > 60 ? lastMsg.content.substring(0, 60) + '...' : lastMsg.content);
+      const preview  = previewHTML(lastMsg.content, 60);
       const time     = formatInboxTime(lastMsg.created_at);
       const bikeName = t.bike ? esc(t.bike.brand + ' ' + t.bike.model) : esc(localStorage.getItem(`bike_name_${t.bikeId}`) || 'Ukendt cykel');
       const bikeImg  = t.bike?.bike_images?.find(i => i.is_primary)?.url || t.bike?.bike_images?.[0]?.url;
@@ -536,9 +550,9 @@ export function createInbox({
         + '<span class="inbox-page-name">' + esc(t.otherName || 'Ukendt') + '</span>'
         + '<span class="inbox-page-time">' + time + '</span>'
         + '</div>'
-        + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : '🚲') + ' ' + bikeName + '</div>'
+        + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : iconBike(14)) + ' ' + bikeName + '</div>'
         + '<div class="inbox-page-preview">'
-        + (isBid ? '<span class="inbox-bid-tag">💰 Bud</span> ' : '')
+        + (isBid ? '<span class="inbox-bid-tag">Bud</span> ' : '')
         + preview
         + '</div>'
         + '</div>'

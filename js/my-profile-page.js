@@ -135,7 +135,6 @@ export function createMyProfilePage({
 
           <!-- Profil-kort -->
           <div class="mp-account-card">
-            <div class="mp-avatar-decor"></div>
             <div class="mp-identity">
               <div class="mp-avatar">${avatarContent}</div>
               <div class="mp-info">
@@ -172,25 +171,21 @@ export function createMyProfilePage({
               <div class="mp-stat-icon" style="color:var(--forest)">${svgBike}</div>
               <div class="mp-stat-num" id="mp-stat-active">–</div>
               <div class="mp-stat-label">Aktive annoncer</div>
-              <div class="mp-stat-delta" style="color:var(--forest)" id="mp-stat-active-delta">Henter…</div>
             </div>
             <div class="mp-stat-card" title="Visninger">
               <div class="mp-stat-icon" style="color:var(--rust)">${svgEye}</div>
               <div class="mp-stat-num" id="mp-stat-views">–</div>
               <div class="mp-stat-label">Visninger i alt</div>
-              <div class="mp-stat-delta" style="color:var(--rust)" id="mp-stat-views-delta">Henter…</div>
             </div>
             <div class="mp-stat-card" onclick="switchMyProfileTab('saved')" title="Gemte annoncer">
               <div class="mp-stat-icon" style="color:var(--forest)">${svgHeart}</div>
               <div class="mp-stat-num" id="mp-stat-saved">–</div>
               <div class="mp-stat-label">Gemte cykler</div>
-              <div class="mp-stat-delta" style="color:var(--forest)" id="mp-stat-saved-delta">Henter…</div>
             </div>
             <div class="mp-stat-card" onclick="switchMyProfileTab('trades')" title="Handler">
               <div class="mp-stat-icon" style="color:var(--forest-light)">${svgShake}</div>
               <div class="mp-stat-num" id="mp-stat-trades">–</div>
               <div class="mp-stat-label">Handler afsluttet</div>
-              <div class="mp-stat-delta" style="color:var(--forest-light)" id="mp-stat-trades-delta">Henter…</div>
             </div>
           </div>
 
@@ -346,13 +341,6 @@ export function createMyProfilePage({
       const tradesEl = document.getElementById('mp-stat-trades');
       if (tradesEl) tradesEl.textContent = tradesCount;
 
-      const activeDelta = document.getElementById('mp-stat-active-delta');
-      if (activeDelta) activeDelta.textContent = activeBikes.length === 1 ? '1 live nu' : `${activeBikes.length} live nu`;
-      const viewsDelta = document.getElementById('mp-stat-views-delta');
-      if (viewsDelta) viewsDelta.textContent = totalViews > 0 ? `${totalViews.toLocaleString('da-DK')} totalt` : 'Ingen endnu';
-      const savedDelta = document.getElementById('mp-stat-saved-delta');
-      if (savedDelta) savedDelta.textContent = savedCount > 0 ? `${savedCount} favoritter` : 'Ingen endnu';
-
       const countListings = document.getElementById('mp-count-listings');
       if (countListings) countListings.textContent = bikes.length;
       const countSaved = document.getElementById('mp-count-saved');
@@ -361,9 +349,6 @@ export function createMyProfilePage({
       if (countSearches) countSearches.textContent = searches.length;
       const countTrades = document.getElementById('mp-count-trades');
       if (countTrades) countTrades.textContent = tradesCount;
-
-      const tradesDelta = document.getElementById('mp-stat-trades-delta');
-      if (tradesDelta) tradesDelta.textContent = tradesCount > 0 ? (tradesCount === 1 ? '1 gennemført' : `${tradesCount} gennemførte`) : 'Ingen endnu';
 
       if (currentProfile?.seller_type === 'dealer') {
         try {

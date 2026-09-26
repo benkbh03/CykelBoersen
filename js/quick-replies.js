@@ -2,7 +2,7 @@ export function createQuickReplies({ esc, getCurrentProfile }) {
   function useQuickReply(textareaId, btn) {
     const ta = document.getElementById(textareaId);
     if (!ta) return;
-    ta.value = btn.textContent.replace(/\s*👍$/, ' 👍').trim();
+    ta.value = btn.textContent.trim();
     ta.focus();
   }
 
@@ -18,7 +18,7 @@ export function createQuickReplies({ esc, getCurrentProfile }) {
       ];
     }
     return [
-      'Stadig til salg 👍',
+      'Stadig til salg',
       'Prisen er fast',
       'Kan mødes i weekenden',
       'Er du stadig interesseret?',

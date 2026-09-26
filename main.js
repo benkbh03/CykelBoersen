@@ -104,6 +104,17 @@ function lazyExport(loader, exportName) {
   };
 }
 
+/* Send en fejl til error-log.js uden at kaste den. Loggeren lytter på
+   window 'error'; en syntetisk ErrorEvent rammer samme vej som en rigtig
+   fejl, også hvis browseren har en ældre error-log.js i cachen. */
+function reportClientError(err, where) {
+  try {
+    const e = err instanceof Error ? err : new Error(String(err));
+    window.dispatchEvent(new ErrorEvent('error', { message: e.message || String(err), filename: where || '', error: e }));
+  } catch (_) {}
+  console.error(where || 'Fejl', err);
+}
+
 /* showListingView wrapper med SEO-cleanup deps */
 function showListingView() {
   return _baseShowListingView({ updateSEOMeta, removeBikeJsonLd });
@@ -406,8 +417,8 @@ const {
 });
 
 const {
-  validateImageFile, compressImage, compressForAI, previewImages, renderImagePreviews,
-  setPrimary, removeImage, uploadImages, uploadImagesNoInsert, resetImageUpload,
+  validateImageFile, compressImage, compressForAI,
+  uploadImages, uploadImagesNoInsert,
   openCropModal, setCropRatio, applyCrop, closeCropModal,
   getSelectedFiles,
 } = createImageUpload({
@@ -512,7 +523,6 @@ const _ensureSellPage = lazyCtrl(
     validateImageFile,
     uploadImages,
     uploadImagesNoInsert,
-    resetImageUpload,
     openCropModal,
     compressForAI,
     getCurrentUser:         () => currentUser,
@@ -521,11 +531,17 @@ const _ensureSellPage = lazyCtrl(
   }),
 );
 const renderSellChooser          = lazyMethod(_ensureSellPage, 'renderSellChooser');
-const openModal                  = lazyMethod(_ensureSellPage, 'openModal');
-const _openModalLegacy           = lazyMethod(_ensureSellPage, '_openModalLegacy');
-const closeModal                 = lazyMethod(_ensureSellPage, 'closeModal');
-const selectType                 = lazyMethod(_ensureSellPage, 'selectType');
-const submitListing              = lazyMethod(_ensureSellPage, 'submitListing');
+const _openModalLazy             = lazyMethod(_ensureSellPage, 'openModal');
+/* "+ Sæt til salg" lazy-loader sell-page.js. Fejler importen (netværk, en
+   cachet gammel fil der ikke passer), skete der før ingenting: knappen var
+   død, og ingen fik det at vide. Nu logges fejlen, og browseren følger
+   linkets href i stedet, så /sell/ indlæses som en helt ny side. */
+function openModal() {
+  return _openModalLazy().catch((err) => {
+    reportClientError(err, 'openModal: sell-page.js');
+    window.location.href = '/sell/';
+  });
+}
 const renderSellPage             = lazyMethod(_ensureSellPage, 'renderSellPage');
 const submitSellPage             = lazyMethod(_ensureSellPage, 'submitSellPage');
 const previewSellImages          = lazyMethod(_ensureSellPage, 'previewSellImages');
@@ -1303,7 +1319,7 @@ async function init() {
       if (el && el.style.display === 'flex') return true;
     }
     // ClassList: 'open' modals — disse bruger classList.add('open'), ikke style.display
-    for (const id of ['bike-modal', 'map-bike-modal', 'login-modal', 'reset-modal', 'modal', 'edit-modal', 'profile-modal', 'admin-modal', 'inbox-modal', 'share-modal']) {
+    for (const id of ['bike-modal', 'map-bike-modal', 'login-modal', 'reset-modal', 'edit-modal', 'profile-modal', 'admin-modal', 'inbox-modal', 'share-modal']) {
       const el = document.getElementById(id);
       if (el && el.classList.contains('open')) return true;
     }
@@ -1440,7 +1456,7 @@ async function init() {
     }
 
     if (isPendingDealer) {
-      showToast('Email bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.', 'ok');
+      showToast('E-mail bekræftet! Din forhandleransøgning er modtaget – vi vender tilbage hurtigst muligt.', 'ok');
       navigateTo('/min-profil');
     } else {
       // Aktivér evt. ventende Cykelagent fra "udfyld før login"-flow og vis
@@ -1543,7 +1559,6 @@ async function init() {
     if (document.getElementById('map-bike-modal')?.classList.contains('open'))   { closeMapBikeModal(); return; }
     if (document.getElementById('inbox-modal')?.classList.contains('open'))      { closeInboxModal(); return; }
     if (document.getElementById('profile-modal')?.classList.contains('open'))    { closeProfileModal(); return; }
-    if (document.getElementById('modal')?.classList.contains('open'))            { closeModal(); return; }
     if (document.getElementById('login-modal')?.classList.contains('open'))      { closeLoginModal(); return; }
     // display:flex-baserede modaler
     if (document.getElementById('valuation-modal')?.style.display === 'flex')       { closeValuationModal(); return; }
@@ -1820,7 +1835,7 @@ function closeAllModals() {
     if (el) el.style.display = 'none';
   });
   // Modaler der bruger .open-klasse
-  ['bike-modal','map-bike-modal','modal','edit-modal','login-modal',
+  ['bike-modal','map-bike-modal','edit-modal','login-modal',
    'profile-modal','inbox-modal','share-modal','report-modal',
    'admin-modal','reset-modal','listing-success-modal',
    'rate-now-modal','delete-account-modal'].forEach(id => {
@@ -3019,9 +3034,6 @@ window.updateInboxBadge           = updateInboxBadge;
 
 window.openModal         = openModal;
 window.blockIfPendingDealer = blockIfPendingDealer;
-window.closeModal        = closeModal;
-window.selectType        = selectType;
-window.submitListing     = submitListing;
 window.togglePasswordVisibility = togglePasswordVisibility;
 window.updatePwStrength = updatePwStrength;
 window.openLoginModal    = openLoginModal;
@@ -3188,9 +3200,6 @@ window.editSetExistingPrimary = editSetExistingPrimary;
 window.editRemoveExisting     = editRemoveExisting;
 window.editSetNewPrimary      = editSetNewPrimary;
 window.editRemoveNew          = editRemoveNew;
-window.previewImages      = previewImages;
-window.setPrimary         = setPrimary;
-window.removeImage        = removeImage;
 window.renderSellPage            = renderSellPage;
 window.renderSellChooser         = renderSellChooser;
 window.submitSellPage            = submitSellPage;
@@ -3493,7 +3502,7 @@ async function approveDealer(userId) {
 }
 
 async function rejectDealer(userId) {
-  if (!confirm('Afvis ansøgningen?\n\nForhandleren nedgraderes til privat bruger og får en mail om at ansøgningen ikke kunne godkendes.\n\nLigner det spam/en bot? Brug "Slet" i stedet.')) return;
+  if (!confirm('Afvis ansøgningen?\n\nForhandleren nedgraderes til privat bruger og får en e-mail om at ansøgningen ikke kunne godkendes.\n\nLigner det spam/en bot? Brug "Slet" i stedet.')) return;
   const res = await _callAdminAction('reject_dealer', userId);
   if (!res.ok) { showToast(res.error, 'fejl'); return; }
   // Notificér forhandleren (fire-and-forget; admin-JWT sendes automatisk med).
@@ -3913,7 +3922,7 @@ function initInviteForm() {
 
 async function submitDealerInvite() {
   const email = document.getElementById('di-email')?.value.trim();
-  if (!email) { showToast('Email er påkrævet', 'advarsel'); return; }
+  if (!email) { showToast('E-mail er påkrævet', 'advarsel'); return; }
   const restore = btnLoading('di-submit', 'Sender invitation...');
   const addressInput = document.getElementById('di-address');
   const addrData = readDawaData(addressInput);
@@ -3938,7 +3947,7 @@ async function submitDealerInvite() {
   }
   showToast('Invitation sendt til ' + email, 'ok');
   if (result) {
-    result.innerHTML = `<span style="color:#2A7D4F;">✅ Forhandler oprettet og inviteret — de får en mail hvor de vælger password.</span>`
+    result.innerHTML = `<span style="color:#2A7D4F;display:inline-flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Forhandler oprettet og inviteret — de får en e-mail hvor de vælger password.</span>`
       + `<br><span style="color:var(--muted);font-size:0.82rem;">Bruger-ID (til bulk-import): <code>${esc(data.user_id)}</code></span>`;
   }
   ['di-email','di-shop','di-cvr','di-contact','di-phone','di-city','di-address'].forEach(id => {
