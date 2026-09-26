@@ -85,7 +85,7 @@ export function createDealerTraction({ supabase, esc, retryHTML }) {
 
       const card = (value, label, sub, accent) => `
         <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-          <div style="font-family:'Fraunces',serif;font-size:1.7rem;line-height:1;color:${accent || 'var(--charcoal)'};">${value}</div>
+          <div style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.7rem;line-height:1;color:${accent || 'var(--charcoal)'};">${value}</div>
           <div style="font-size:0.82rem;color:var(--charcoal);margin-top:6px;font-weight:600;">${label}</div>
           ${sub ? `<div style="font-size:0.76rem;color:var(--muted);margin-top:2px;">${sub}</div>` : ''}
         </div>`;

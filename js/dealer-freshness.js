@@ -65,7 +65,7 @@ function renderNudge(stale) {
   if (document.getElementById('dealer-freshness-nudge')) return;
   const card = document.createElement('div');
   card.id = 'dealer-freshness-nudge';
-  card.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:4000;width:344px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border,#e5e0d8);border-radius:14px;box-shadow:0 12px 40px rgba(26,26,24,0.22);font-family:'DM Sans',sans-serif;overflow:hidden;animation:dfnIn .25s ease;";
+  card.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:4000;width:344px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border,#e5e0d8);border-radius:14px;box-shadow:0 12px 40px rgba(26,26,24,0.22);font-family:var(--font-sans);overflow:hidden;animation:dfnIn .25s ease;";
   card.innerHTML = `
     <style>@keyframes dfnIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}</style>
     <div style="padding:13px 16px;background:linear-gradient(135deg,#1f3d2b,#a8521f);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;">

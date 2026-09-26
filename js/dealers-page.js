@@ -447,7 +447,7 @@ Vær med fra starten og nå ud til tusindvis af cykelkøbere.</p>
             Log ud og opret forhandlerkonto
           </button>
           <div>
-            <button onclick="navigateTo('/')" style="background:none;border:none;color:var(--muted);font-size:0.85rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">
+            <button onclick="navigateTo('/')" style="background:none;border:none;color:var(--muted);font-size:0.85rem;cursor:pointer;text-decoration:underline;font-family:var(--font-sans);">
               Fortsæt som privat bruger
             </button>
           </div>

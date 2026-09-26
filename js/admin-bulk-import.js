@@ -150,9 +150,9 @@ export function createAdminBulkImport({ supabase, showToast }) {
 
     container.innerHTML = `
       <div class="bulk-import-step">
-        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">1. Vælg forhandler</h3>
+        <h3 style="margin:0 0 6px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">1. Vælg forhandler</h3>
         <p style="margin:0 0 10px;color:var(--muted);font-size:0.85rem;">Kun forhandlere med aktiv onboarding-tilladelse vises.</p>
-        <select id="bulk-dealer-select" style="width:100%;max-width:480px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+        <select id="bulk-dealer-select" style="width:100%;max-width:480px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;">
           <option value="">— Vælg forhandler —</option>
           ${_eligibleDealers.map(d => `
             <option value="${esc(d.id)}">${esc(d.shop_name || d.name || 'Unavngivet')} ${d.city ? '(' + esc(d.city) + ')' : ''}${d.verified ? ' ✓' : ''}</option>
@@ -161,7 +161,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
       </div>
 
       <div class="bulk-import-step" style="margin-top:24px;">
-        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">2. Download template til forhandleren</h3>
+        <h3 style="margin:0 0 6px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">2. Download template til forhandleren</h3>
         <p style="margin:0 0 10px;color:var(--muted);font-size:0.85rem;">Send forhandleren den template der passer til deres lager. De udfylder rækkerne og sender CSV tilbage.</p>
         <div class="bulk-template-buttons" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
           <button type="button" data-tpl="racercykel" class="bulk-tpl-btn">🏁 Racercykel</button>
@@ -181,7 +181,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
       </div>
 
       <div class="bulk-import-step" style="margin-top:24px;">
-        <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">3. Upload udfyldt CSV</h3>
+        <h3 style="margin:0 0 6px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">3. Upload udfyldt CSV</h3>
         <div id="bulk-drop-zone" style="border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;background:var(--sand);transition:all 0.15s;">
           <input type="file" id="bulk-file-input" accept=".csv,text/csv" style="display:none;">
           <p style="margin:0 0 8px;font-size:1.5rem;">📄</p>
@@ -253,7 +253,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
 
     section.style.display = 'block';
     section.innerHTML = `
-      <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">4. Gennemgå rækker</h3>
+      <h3 style="margin:0 0 6px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">4. Gennemgå rækker</h3>
       <p style="margin:0 0 12px;color:var(--muted);font-size:0.85rem;">
         <strong style="color:var(--charcoal);">${validated.length}</strong> rækker fundet —
         <span style="color:#2e7d32;font-weight:600;">${validCount} klar</span>
@@ -300,10 +300,10 @@ export function createAdminBulkImport({ supabase, showToast }) {
       </label>
 
       <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <button id="bulk-import-btn" ${validCount === 0 ? 'disabled' : ''} style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;${validCount === 0 ? 'opacity:0.5;cursor:not-allowed;' : ''}">
+        <button id="bulk-import-btn" ${validCount === 0 ? 'disabled' : ''} style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:600;cursor:pointer;font-family:var(--font-sans);font-size:0.95rem;${validCount === 0 ? 'opacity:0.5;cursor:not-allowed;' : ''}">
           🚀 Importér ${validCount} cykler
         </button>
-        <button id="bulk-reset-btn" style="background:none;border:1px solid var(--border);padding:12px 18px;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;">Nulstil</button>
+        <button id="bulk-reset-btn" style="background:none;border:1px solid var(--border);padding:12px 18px;border-radius:10px;cursor:pointer;font-family:var(--font-sans);">Nulstil</button>
         <span style="color:var(--muted);font-size:0.82rem;">Kører sekventielt, ~1 sek pr. cykel</span>
       </div>
     `;
@@ -329,7 +329,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
     const progress = document.getElementById('bulk-progress-section');
     progress.style.display = 'block';
     progress.innerHTML = `
-      <h3 style="margin:0 0 6px;font-family:'Fraunces',serif;">5. Import-status</h3>
+      <h3 style="margin:0 0 6px;font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">5. Import-status</h3>
       <div style="background:var(--sand);border-radius:10px;padding:16px;">
         <div style="margin-bottom:10px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.85rem;">
@@ -340,7 +340,7 @@ export function createAdminBulkImport({ supabase, showToast }) {
             <div id="bulk-progress-bar" style="background:var(--forest);height:100%;width:0%;transition:width 0.2s;"></div>
           </div>
         </div>
-        <div id="bulk-result-log" style="max-height:300px;overflow:auto;font-size:0.82rem;font-family:'DM Sans',sans-serif;"></div>
+        <div id="bulk-result-log" style="max-height:300px;overflow:auto;font-size:0.82rem;font-family:var(--font-sans);"></div>
       </div>
     `;
 

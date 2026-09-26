@@ -164,9 +164,9 @@ export function createMyProfile({
     el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:center;justify-content:center;padding:16px;';
     el.onclick = (ev) => { if (ev.target === el) closeRemoveListingModal(); };
     el.innerHTML = `
-      <div style="position:relative;background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;font-family:'DM Sans',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+      <div style="position:relative;background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;font-family:var(--font-sans);box-shadow:0 8px 40px rgba(0,0,0,0.18);">
         <button aria-label="Luk" onclick="closeRemoveListingModal()" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:var(--sand);color:var(--charcoal);font-size:1.1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
-        <h3 style="font-family:'Fraunces',serif;margin:0 0 6px;font-size:1.2rem;padding-right:32px;">Fjern annoncen</h3>
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:0 0 6px;font-size:1.2rem;padding-right:32px;">Fjern annoncen</h3>
         <p style="color:var(--muted);font-size:0.86rem;line-height:1.5;margin:0 0 18px;">Har du solgt cyklen? Svaret hjælper os med at se hvad der virker på siden. Annoncen fjernes uanset hvad du vælger.</p>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button class="buyer-pick-btn" onclick="confirmRemoveListing('${id}', true)">

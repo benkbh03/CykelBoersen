@@ -8,9 +8,8 @@
   padding: 32px 0 28px;
 }
 .inbox-page-title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 2rem;
-  font-weight: 700;
   color: var(--charcoal);
   margin: 12px 0 4px;
 }
@@ -182,7 +181,7 @@
 .inbox-chat-bike-icon { font-size: 1.5rem; }
 .inbox-chat-bike-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
 .inbox-chat-bike-name { font-weight: var(--weight-semibold); font-size: 0.82rem; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.inbox-chat-bike-price { font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem; color: var(--rust); }
+.inbox-chat-bike-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 0.88rem; color: var(--rust); }
 .inbox-chat-bike-sold { font-size: 0.72rem; font-weight: 700; background: var(--muted); color: #fff; padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap; }
 .inbox-chat-messages {
   flex: 1;
@@ -210,7 +209,7 @@
   padding: 11px 14px;
   border: 1.5px solid var(--border);
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.88rem;
   resize: none;
   outline: none;
@@ -229,7 +228,7 @@
   font-size: 0.88rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.2s;
   white-space: nowrap;
 }
@@ -345,7 +344,7 @@
   border-radius: 14px;
   padding: 22px 16px 12px;
   margin-top: 16px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.85rem;
   color: var(--charcoal);
   display: flex;
@@ -366,14 +365,12 @@
   letter-spacing: 0.8px;
   padding: 3px 10px;
   border-radius: var(--radius-full);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 .bid-amount {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.5rem;
-  font-weight: 900;
   line-height: 1;
-  letter-spacing: -0.01em;
   color: var(--charcoal);
 }
 .message-bubble.accepted-bubble {
@@ -405,23 +402,23 @@
   font-size: 0.9rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.18s, transform 0.1s;
 }
 .btn-accept-bid:hover { background: var(--rust);}
 .message-bubble.bid-bubble .msg-time {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: var(--weight-regular);
   font-size: 0.7rem;
 }
 .thread-reply { display: flex; flex-direction: column; gap: var(--space-2); border-top: 1px solid var(--border); padding-top: 14px; }
-.thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
+.thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: var(--font-sans); font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .thread-reply textarea:focus { border-color: var(--forest); }
-.thread-reply button { background: var(--forest); color: var(--sand); border: none; padding: 11px; border-radius: 8px; font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+.thread-reply button { background: var(--forest); color: var(--sand); border: none; padding: 11px; border-radius: 8px; font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
 .thread-reply button:hover { background: var(--forest-light); }
 
 /* ── LOGIN / GLEMT ── */
-.btn-back-login { background: none; border: none; color: var(--muted); font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 12px; padding: 0; display: block; width: 100%; text-align: center; transition: color 0.15s; }
+.btn-back-login { background: none; border: none; color: var(--muted); font-size: 0.85rem; cursor: pointer; font-family: var(--font-sans); margin-top: 12px; padding: 0; display: block; width: 100%; text-align: center; transition: color 0.15s; }
 .btn-back-login:hover { color: var(--charcoal); }
 
 /* OAuth login knapper */
@@ -429,7 +426,7 @@
 .oauth-btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; padding: 12px 16px; border-radius: 10px;
-  font-size: 0.92rem; font-weight: var(--weight-semibold); font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; font-weight: var(--weight-semibold); font-family: var(--font-sans);
   cursor: pointer; transition: box-shadow 0.15s, transform 0.1s;
   border: 1.5px solid var(--border);
 }
@@ -446,9 +443,9 @@
 
 /* ── NOTIFIKATION PULS ── */
 @keyframes inboxPulse {
-  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(200,80,42,0.7); }
-  50%  { transform: scale(1.2); box-shadow: 0 0 0 8px rgba(200,80,42,0); }
-  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(200,80,42,0); }
+  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(42,61,46,0.6); }
+  50%  { transform: scale(1.2); box-shadow: 0 0 0 8px rgba(42,61,46,0); }
+  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(42,61,46,0); }
 }
 .inbox-pulse { animation: inboxPulse 0.6s ease 3; }
 
@@ -487,9 +484,8 @@
   }
   .dealer-banner-text { flex: 1; min-width: 0; }
   .dealer-banner-title {
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
     font-size: 0.92rem;
-    font-weight: 700;
     color: #fff;
     line-height: 1.2;
     margin-bottom: 1px;
@@ -498,7 +494,7 @@
     font-size: 0.72rem;
     color: rgba(255,255,255,0.82);
     line-height: 1.3;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
   }
   .dealer-banner-arrow {
     color: #FF8B60;
@@ -513,7 +509,7 @@
   display: none; background: var(--cream); border: 1.5px solid var(--border);
   border-radius: 10px; padding: 12px 14px;
   font-size: 0.92rem; font-weight: var(--weight-semibold); color: var(--charcoal);
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; font-family: var(--font-sans);
   align-items: center; justify-content: center; gap: var(--space-2);
   transition: border-color 0.15s, background 0.15s;
   position: relative;
@@ -707,15 +703,13 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    font-family: 'Fraunces', Georgia, serif !important;
+    font-family: var(--font-sans) !important; font-weight: var(--weight-heavy) !important; letter-spacing: -0.02em !important;
     font-size: var(--text-base) !important;
-    font-weight: var(--weight-semibold) !important;
     /* Nulstil desktoppens versal-mikroetiket. Den er rigtig i et smalt
        sidepanel hvor overskriften skal træde tilbage, men her er den
        selve knappen man trykker på for at folde afsnittet ud, og
        "M Æ R K E" i serif-versaler er hverken læsbart eller pænt. */
     text-transform: none !important;
-    letter-spacing: normal !important;
     color: var(--forest) !important;
     margin: 0 !important;
     flex: 1 1 auto !important;
@@ -758,9 +752,8 @@
     z-index: 2;
   }
   .sidebar-mobile-header h3 {
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
     font-size: var(--text-lg);
-    font-weight: 700;
     color: var(--charcoal);
     margin: 0;
   }
@@ -778,7 +771,7 @@
     border-radius: 10px;
     margin-top: 12px;
     cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
   }
   .sidebar-mobile-apply:hover { background: var(--rust-light); }
@@ -897,14 +890,14 @@
   background: var(--forest); color: var(--sand);
   border: none; border-radius: var(--radius-sm); padding: 7px 14px;
   font-size: 0.78rem; font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  font-family: var(--font-sans); transition: background 0.15s;
 }
 .btn-approve:hover { background: var(--forest-light); }
 .btn-reject {
   background: none; border: 1.5px solid var(--border);
   border-radius: var(--radius-sm); padding: 7px 14px;
   font-size: 0.78rem; color: var(--muted); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  font-family: var(--font-sans); transition: all 0.15s;
 }
 .btn-reject:hover { border-color: var(--rust); color: var(--rust); }
 /* Slet-bruger-knap: rød-tonet for at signalere destructive action */
@@ -912,7 +905,7 @@
   background: none; border: 1.5px solid var(--error);
   border-radius: var(--radius-sm); padding: 7px 14px;
   font-size: 0.78rem; color: var(--error); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  font-family: var(--font-sans); transition: all 0.15s;
   margin-left: 4px;
 }
 .btn-delete-user:hover { background: var(--error); color: #fff; }
@@ -921,7 +914,7 @@
 .btn-suspend, .btn-unsuspend {
   background: none; border-radius: var(--radius-sm); padding: 7px 14px;
   font-size: 0.78rem; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  font-family: var(--font-sans); transition: all 0.15s;
   margin-left: 4px;
 }
 .btn-suspend        { border: 1.5px solid var(--warning); color: var(--warning); }
@@ -936,7 +929,7 @@
   border: none;
   border-radius: var(--radius-sm); padding: 7px 14px;
   font-size: 0.78rem; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  font-family: var(--font-sans); transition: background 0.15s;
   margin-left: 4px;
 }
 .btn-onboard-create:hover { background: var(--forest-light); }
@@ -964,7 +957,7 @@
 }
 .sell-acting-as-content {
   display: flex; align-items: center; gap: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
 }
 .sell-acting-as-icon {
   font-size: 1.5rem;
@@ -988,7 +981,7 @@
   padding: 8px 14px;
   font-size: 0.82rem;
   font-weight: var(--weight-semibold);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1087,7 +1080,7 @@
   cursor: pointer;
   text-decoration: none;
   border: 1.5px solid var(--border);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: all 0.15s;
   color: var(--charcoal);
   background: var(--sand);
@@ -1111,14 +1104,14 @@
 .share-link-box input {
   flex: 1; border: none; background: transparent;
   font-size: 0.82rem; color: var(--muted);
-  font-family: 'DM Sans', sans-serif; outline: none;
+  font-family: var(--font-sans); outline: none;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .share-link-box button {
   background: var(--forest); color: var(--sand);
   border: none; border-radius: var(--radius-sm); padding: 8px 16px;
   font-size: 0.82rem; font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  font-family: var(--font-sans); transition: background 0.15s;
   white-space: nowrap;
 }
 .share-link-box button:hover { background: var(--forest-light); }
@@ -1132,15 +1125,15 @@
 }
 .sold-tag span {
   background: var(--charcoal); color: #fff;
-  font-family: 'Fraunces', serif; font-size: 1.1rem;
-  font-weight: 700; padding: 8px 20px; border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem;
+padding: 8px 20px; border-radius: var(--radius-sm);
   transform: rotate(-5deg);
 }
 .btn-sold {
   background: var(--charcoal); color: var(--sand);
   border: none; border-radius: var(--radius-sm); padding: 6px 12px;
   font-size: 0.78rem; font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  font-family: var(--font-sans); transition: background 0.15s;
   white-space: nowrap;
 }
 .btn-sold:hover { background: #333; }
@@ -1148,7 +1141,7 @@
   background: var(--forest); color: var(--sand);
   border: none; border-radius: var(--radius-sm); padding: 6px 12px;
   font-size: 0.78rem; font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  font-family: var(--font-sans); transition: background 0.15s;
   white-space: nowrap;
 }
 .btn-unsold:hover { background: var(--forest-light); }
@@ -1157,7 +1150,7 @@
 .buyer-pick-btn {
   width: 100%; padding: 12px 16px; border: 1.5px solid var(--border);
   border-radius: 10px; background: #fff; cursor: pointer; text-align: left;
-  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  font-family: var(--font-sans); font-size: 0.9rem;
   transition: border-color 0.15s, background 0.15s;
 }
 .buyer-pick-btn:hover { border-color: var(--rust); background: var(--sand); }
@@ -1170,9 +1163,8 @@
   border-bottom: 1px solid var(--border);
 }
 .how-it-works h2 {
-  font-family: 'Fraunces', serif;
-  font-size: 1.8rem; font-weight: 700;
-  color: var(--charcoal); margin-bottom: 8px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 1.8rem;  color: var(--charcoal); margin-bottom: 8px;
 }
 .how-subtitle {
   color: var(--muted); font-size: 0.95rem;
@@ -1196,9 +1188,8 @@
 }
 .how-icon { font-size: 2.2rem; margin-bottom: 12px; }
 .how-step h3 {
-  font-family: 'Fraunces', serif;
-  font-size: var(--text-base); font-weight: var(--weight-semibold);
-  margin-bottom: 8px; color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: var(--text-base);  margin-bottom: 8px; color: var(--charcoal);
 }
 .how-step p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
 .how-step-arrow {
@@ -1230,7 +1221,7 @@
 .leaflet-popup-content-wrapper {
   border-radius: 10px !important;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: var(--font-sans) !important;
   padding: 0 !important;
 }
 .leaflet-popup-content {
@@ -1241,15 +1232,13 @@
   padding: 14px 16px;
 }
 .map-popup-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 0.95rem;
-  font-weight: var(--weight-semibold);
   margin-bottom: 4px;
 }
 .map-popup-price {
   color: var(--rust);
-  font-family: 'Fraunces', serif;
-  font-weight: 900;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.1rem;
   margin-bottom: 6px;
 }
@@ -1258,7 +1247,7 @@
   background: var(--forest); color: var(--sand);
   border: none; border-radius: var(--radius-sm); padding: 8px 14px;
   font-size: 0.82rem; font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; width: 100%;
+  font-family: var(--font-sans); width: 100%;
   transition: background 0.15s;
 }
 .map-popup-btn:hover { background: var(--forest-light); }
@@ -1275,7 +1264,7 @@
   font-size: 0.82rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: all 0.15s;
 }
@@ -1290,9 +1279,8 @@
   margin: 10px 0;
 }
 .verify-box-title {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 0.9rem;
-  font-weight: 700;
   margin-bottom: 2px;
 }
 .verify-box-sub { font-size: 0.74rem; color: var(--muted); margin-bottom: 10px; }
@@ -1322,7 +1310,7 @@
   border: none; border-radius: var(--radius-full);
   padding: 5px 14px; font-size: 0.78rem;
   font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s;
 }
 .verify-action-btn:hover { background: var(--forest-light); }
@@ -1392,9 +1380,8 @@
   margin-bottom: 16px;
 }
 .mp-verify-title {
-  font-family: 'Fraunces', serif;
-  font-size: 0.9rem; font-weight: 700;
-  margin-bottom: 8px;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: 0.9rem;  margin-bottom: 8px;
 }
 .mp-verify-items { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: 0; }
 .mp-verify-item {
@@ -1420,7 +1407,7 @@
   border: none; border-radius: 8px;
   padding: 10px 20px; font-size: 0.85rem;
   font-weight: var(--weight-semibold); cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   transition: background 0.15s;
 }
 .mp-verify-cta:hover { background: var(--forest-light); }

@@ -3779,7 +3779,7 @@ async function loadAdminStats() {
 
     const card = (label, value, sub) => `
       <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
-        <div style="font-family:'Fraunces',serif;font-size:1.6rem;color:var(--charcoal);line-height:1;">${value}</div>
+        <div style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.6rem;color:var(--charcoal);line-height:1;">${value}</div>
         <div style="font-size:0.82rem;color:var(--charcoal);margin-top:6px;font-weight:600;">${label}</div>
         ${sub ? `<div style="font-size:0.76rem;color:var(--muted);margin-top:2px;">${sub}</div>` : ''}
       </div>`;
@@ -3816,7 +3816,7 @@ async function loadAdminStats() {
 
     const trafficBlock = `
       <div style="background:var(--sand);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px;">
-        <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 4px;color:var(--charcoal);">Rigtig trafik</h3>
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:0 0 4px;color:var(--charcoal);">Rigtig trafik</h3>
         <p style="font-size:0.76rem;color:var(--muted);margin:0 0 14px;line-height:1.5;">
           Søgninger og annonce-visninger kræver at JavaScript kører, så crawlere tæller stort set ikke med.
           Et mere pålideligt tal end "besøgende" i Cloudflare. Visninger er talt én gang pr. person pr. cykel pr. døgn.
@@ -3849,21 +3849,21 @@ async function loadAdminStats() {
         ${card('Gns. pris (aktive)', avgPrice ? avgPrice.toLocaleString('da-DK') + ' kr.' : '–', '')}
         ${card('Anmeldelser', reviews.length, `Gns. ${avgRating} ★`)}
       </div>
-      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">Aktive annoncer pr. type</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">Aktive annoncer pr. type</h3>
       <div>${typeRows}</div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:22px;">
         <div>
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">🔍 Mest søgte</h3>
+          <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">🔍 Mest søgte</h3>
           ${topSearches.length ? topSearches.map(r => searchRow(r)).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen søgninger logget endnu.</p>'}
         </div>
         <div>
-          <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">⚠️ Søgt — 0 resultater</h3>
+          <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:0 0 8px;color:var(--charcoal);">⚠️ Søgt — 0 resultater</h3>
           <p style="font-size:0.76rem;color:var(--muted);margin:0 0 6px;">Umødt efterspørgsel — cykler folk leder efter, men ikke finder.</p>
           ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
         </div>
       </div>
-      <h3 style="font-family:'Fraunces',serif;font-size:1.05rem;margin:22px 0 4px;color:var(--charcoal);">Sælg-tragt (${DAYS} dage)</h3>
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:22px 0 4px;color:var(--charcoal);">Sælg-tragt (${DAYS} dage)</h3>
       <p style="font-size:0.76rem;color:var(--muted);margin:0 0 8px;">Hvor langt folk når, når de begynder at oprette en annonce.</p>
       ${fStart === 0 ? '<p style="color:var(--muted);font-size:0.86rem;">Ingen forsøg logget endnu.</p>' : `
         ${funnelRow('1. Åbnede sælg-flowet', fStart, null, '')}

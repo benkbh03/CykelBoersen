@@ -741,11 +741,11 @@ function dealerPage(d) {
       <div class="dealer-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
         <p style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
           <a href="/forhandlere/">Forhandlere</a></p>
-        <h1 style="font-family:'Fraunces',serif;margin-bottom:6px;">${escHtml(navn)}</h1>
+        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:6px;">${escHtml(navn)}</h1>
         ${sted ? `<p style="color:var(--muted);margin-bottom:4px;">${escHtml(sted)}</p>` : ''}
         <p style="color:var(--muted);margin-bottom:18px;">Verificeret forhandler på Cykelbørsen</p>
         ${d.bio ? `<p style="margin-bottom:18px;">${escHtml(d.bio)}</p>` : ''}
-        <h2 style="font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:10px;">
+        <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.1rem;margin-bottom:10px;">
           ${bikes.length ? `${bikes.length} ${bikes.length === 1 ? 'cykel' : 'cykler'} til salg` : 'Ingen annoncer lige nu'}</h2>
         ${bikeLinkList(bikes)}
       </div>`;
@@ -792,7 +792,7 @@ function dealersOverviewPage(dealers) {
 
   const contentHtml = `
       <div class="dealers-prerender" style="max-width:900px;margin:0 auto;padding:32px 24px;">
-        <h1 style="font-family:'Fraunces',serif;margin-bottom:8px;">Cykelforhandlere i hele Danmark</h1>
+        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Cykelforhandlere i hele Danmark</h1>
         <p style="color:var(--muted);margin-bottom:20px;">${escHtml(description)}</p>
         ${items ? `<ul style="list-style:none;padding:0;margin:0;">${items}</ul>` : ''}
       </div>`;
@@ -898,7 +898,7 @@ const STATIC_APP_PAGES = [
 function staticAppPage({ path, h1, title, description, noindex }) {
   const contentHtml = `
       <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
-        <h1 style="font-family:'Fraunces',serif;">${escHtml(h1)}</h1>
+        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">${escHtml(h1)}</h1>
         <p>${escHtml(description)}</p>
       </div>`;
   const jsonldBlocks = [{

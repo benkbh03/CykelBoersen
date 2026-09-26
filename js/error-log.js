@@ -98,7 +98,7 @@ export function createErrorLog({ supabase, esc, retryHTML }) {
       if (!rows.length) {
         el.innerHTML = `
           <div style="padding:22px;background:var(--sand);border-radius:12px;">
-            <div style="font-family:'Fraunces',serif;font-size:1.4rem;">Ingen fejl</div>
+            <div style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;">Ingen fejl</div>
             <p style="margin:6px 0 0;color:var(--muted);font-size:0.86rem;">
               Der er ikke logget nogen JavaScript-fejl de sidste ${DAGE} dage.</p>
           </div>`;
@@ -122,7 +122,7 @@ export function createErrorLog({ supabase, esc, retryHTML }) {
 
       el.innerHTML = `
         <div style="padding:16px 18px;background:var(--sand);border-radius:12px;margin-bottom:18px;">
-          <span style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;">${rows.length}</span>
+          <span style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.6rem;">${rows.length}</span>
           <span style="font-size:0.88rem;color:var(--charcoal);"> fejl fordelt på ${grupper.size} forskellige, sidste ${DAGE} dage</span>
         </div>
         ${sorteret.map(kortHtml).join('')}`;
