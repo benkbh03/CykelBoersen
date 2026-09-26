@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260926j">
+<html lang="da" data-asset-v="20260926k">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,23 +113,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926j">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926k">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260926j">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260926j">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260926j">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926j">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260926j">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260926j">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926j">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260926j">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926j">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260926j">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926j">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926j">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260926j">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260926k">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260926k">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260926k">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926k">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260926k">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260926k">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926k">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260926k">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926k">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260926k">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926k">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926k">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260926k">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1108,7 +1108,7 @@
           <h1 class="brand-page-title">Brugte og nye mountainbikes (MTB) til salg</h1>
         </div>
         <div class="brand-page-body">
-          <p class="brand-page-description">Mountainbikes er bygget til terræn: skov, spor og downhill. Valget står først og fremmest mellem hardtail (kun forgaffel-affjedring) og fully (fuld affjedring), og derfra mellem hjulstørrelser og gruppesæt. På Cykelbørsen finder du brugte og nye MTB&#39;er fra alle de store mærker. Filtrér på affjedring, rammemateriale og pris for at finde den rette til din kørsel.</p>
+          <p class="brand-page-description">Mountainbikes er bygget til skov og spor, enten som hardtail med affjedret forgaffel eller som fully med fuld affjedring. Filtrér på affjedring, hjulstørrelse, gruppesæt og pris.</p>
         </div>
         <div id="category-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Mountainbikes til salg</h2>
@@ -1203,7 +1203,7 @@
     </div>
     <div class="footer-bottom">
       <a href="/" class="logo logo--dark" aria-label="Cykelbørsen – forside" onclick="event.preventDefault();navigateTo('/');window.scrollTo({top:0,behavior:'smooth'});"><span aria-hidden="true">cykelb</span><svg class="logo-oe" viewBox="14 -12 72 124" aria-hidden="true" overflow="visible"><circle cx="50" cy="54" r="27" fill="none" stroke="currentColor" stroke-width="20"/><polyline points="12,92 29,71 40,77 50,54 60,58 71,35 88,16" fill="none" stroke="var(--logo-accent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></svg><span aria-hidden="true" class="logo-r">rsen</span></a>
-      <p>© 2025–2026 Cykelbørsen · CVR: 46403568 · Danmarks dedikerede markedsplads for nye og brugte cykler</p>
+      <p>© 2025–2026 Cykelbørsen · CVR: 46403568</p>
     </div>
   </footer>
 

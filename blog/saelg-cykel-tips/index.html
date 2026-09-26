@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260926j">
+<html lang="da" data-asset-v="20260926k">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,23 +113,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926j">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260926k">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260926j">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260926j">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260926j">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926j">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260926j">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260926j">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926j">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260926j">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926j">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260926j">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926j">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926j">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260926j">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260926k">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260926k">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260926k">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260926k">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260926k">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260926k">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260926k">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260926k">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260926k">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260926k">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260926k">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260926k">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260926k">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -183,7 +183,7 @@
   <!-- FAQPage-schemaet er fjernet: de tre spørgsmål stod ikke synligt på
        forsiden, og markup for indhold brugeren ikke kan se, er imod Googles
        retningslinjer for struktureret data. -->
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Sælg din cykel hurtigt: sådan får du den bedste pris","description":"Sælg din cykel hurtigt og dyrt: prissætning, billeder, beskrivelse og forhandling. Komplet salgsguide.","datePublished":"2026-10-25","author":{"@type":"Organization","name":"Cykelbørsen"},"publisher":{"@type":"Organization","name":"Cykelbørsen","url":"https://cykelbørsen.dk"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://cykelbørsen.dk/blog/saelg-cykel-tips/"}}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Sælg din cykel hurtigt: sådan får du den bedste pris","description":"Sælg din cykel hurtigt og dyrt: prissætning, billeder, beskrivelse og forhandling. Komplet salgsguide.","datePublished":"2026-05-11","author":{"@type":"Organization","name":"Cykelbørsen"},"publisher":{"@type":"Organization","name":"Cykelbørsen","url":"https://cykelbørsen.dk"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://cykelbørsen.dk/blog/saelg-cykel-tips/"}}</script>
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://cykelbørsen.dk/blog/"},{"@type":"ListItem","position":3,"name":"Sælg din cykel hurtigt: sådan får du den bedste pris","item":"https://cykelbørsen.dk/blog/saelg-cykel-tips/"}]}</script>
 </head>
 <!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
@@ -1107,16 +1107,16 @@
           <span class="blog-article-category">Salg</span>
           <h1 class="blog-article-title">Sælg din cykel hurtigt: sådan får du den bedste pris</h1>
           <div class="blog-article-meta">
-            <span>25. oktober 2026</span><span>·</span>
+            <span>11. maj 2026</span><span>·</span>
             <span>5 min. læsning</span><span>·</span><span>Cykelbørsen</span>
           </div>
         </header>
         <div class="blog-article-body">
-      <p>At sælge en cykel hurtigt og til en god pris er ikke et tilfælde. Det er et håndværk man kan lære på en halv time. Her er det jeg ville gøre hvis jeg skulle sælge en cykel i dag.</p>
+      <p>At sælge en cykel hurtigt og til en god pris er ikke et tilfælde. Det er et håndværk man kan lære. Her er det, vi ville gøre, hvis vi skulle sælge en cykel i dag.</p>
 
       <h2>Begynd med en realistisk pris</h2>
       <p>Den klassiske fejl er at sætte prisen højere end markedet og håbe på det bedste. Resultatet er som regel det modsatte. Annoncen får ikke henvendelser, prisen sættes ned efter et par uger, og slutprisen ender ofte lavere end hvis man var startet realistisk fra begyndelsen.</p>
-      <p>Tjek Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">gratis vurderingsværktøj</a> for at se hvad lignende cykler faktisk er solgt for. Rammer du medianen, sælger du typisk inden for en uge eller to. Vil du sælge ekstra hurtigt, så sæt prisen fem procent under median. Det giver dig forrang i søgninger og bud kommer hurtigere ind.</p>
+      <p>Tjek Cykelbørsens <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">gratis vurderingsværktøj</a> for at se, hvad lignende cykler er sat til salg for. Ligger din pris på niveau med dem, er du med i feltet. Vil du sælge hurtigt, så sæt prisen lidt under: købere der sorterer efter pris, ser dig før de andre.</p>
 
       <h2>Beskrivelsen skal sælge, ikke bare beskrive</h2>
       <p>Skriv den i en bestemt rækkefølge, så bliver det aldrig forkert. Start med mærke, model, årgang og tilstand i én sætning. Forklar derefter kort hvorfor du sælger. Det er fint at være ærlig, og "jeg cykler ikke nok længere" lyder bedre end generiske floskler om at cyklen er fantastisk.</p>
@@ -1124,24 +1124,22 @@
       <p>Generelle floskler som "fantastisk cykel, må sælges" virker desperat. Vær konkret. Det skaber tillid og giver køberen følelsen af at du ved hvad du taler om.</p>
 
       <h2>Tag rigtig gode billeder</h2>
-      <p>Annoncer med fem til otte skarpe billeder sælger tre gange så hurtigt som dem med et eller to slørede. Vi har en separat <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
+      <p>Fem til otte skarpe billeder giver køberen et langt bedre grundlag end et eller to slørede, og det er ofte dét der afgør, om de skriver til dig. Vi har en separat <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">guide til at tage cykelbilleder</a> her på sitet, og det er sandsynligvis den enkelte ting der giver mest tilbage for tiden.</p>
 
       <h2>Sælg i sæsonen</h2>
       <p>Cykelmarkedet er sæsonbestemt. Foråret og forsommeren (marts til juni) er peak-perioden hvor flest købere er aktive og priserne er højest. Juli og august er stadig gode, men det er ferieperiode. Fra september begynder markedet at falde, og december til februar er bunden hvor kun deal-jægere bevæger sig.</p>
-      <p>Sælger du i marts eller april, får du typisk den bedste pris. Skal du sælge om vinteren, må du regne med at gå 10-15 procent under median for at få et hurtigt salg.</p>
+      <p>Sælger du i marts eller april, er der flest købere. Skal du sælge om vinteren, må du regne med at gå lidt ned i pris for at få et hurtigt salg.</p>
 
       <h2>Vær hurtig til at svare</h2>
-      <p>De første henvendelser kommer typisk inden for seks timer efter annoncen er oprettet. Svarer du inden for en time, har du omkring 80 procents chance for at sælge. Venter du til næste dag, falder den til omkring 30 procent. Slå notifikationer til i Cykelbørsen så du får besked når der kommer nye beskeder, og svar høfligt og konkret.</p>
+      <p>De fleste henvendelser kommer kort efter at annoncen er oprettet, og en køber der ikke får svar, skriver til den næste sælger. Svar hurtigt, høfligt og konkret. Cykelbørsen sender dig en e-mail, når der kommer en ny besked.</p>
 
       <h2>Forhandl med en bundgrænse</h2>
       <p>Næsten alle vil byde under din pris. Vær forberedt og lav et indre tal, den laveste pris du kan acceptere. Imødekom rimelige bud (fem-ti procent under) i god ro, men afvis tomme bud som "vil du tage 1500 for en 8000-cykel". Det er ikke forhandling.</p>
-      <p>Cykelbørsen viser automatisk et mød-i-midten-bud du kan acceptere med et klik, hvilket sparer en masse beskedudveksling. Har du flere interesserede ad gangen, må du gerne lade dem konkurrere lidt. "Jeg har tre interesserede, og højeste tilbud i morgen aften får cyklen" er en helt fair måde at gøre det på, og det presser priserne op.</p>
+      <p>Når en køber skriver et bud under din pris, foreslår Cykelbørsen automatisk et mød-i-midten-bud mellem buddet og din pris, som køberen kan sende med et klik. Det sparer en del beskedudveksling. Har du flere interesserede ad gangen, må du gerne lade dem konkurrere lidt. "Jeg har tre interesserede, og højeste tilbud i morgen aften får cyklen" er en helt fair måde at gøre det på, og det presser priserne op.</p>
 
       <h2>Genopfrisk efter to uger</h2>
-      <p>Hvis cyklen ikke er solgt efter et par uger, så sænk prisen med fem-ti procent. Det giver fornyet synlighed i feed'et. Skift gerne forsidebilledet samtidig, så nye billeder genaktiverer interessen som om annoncen er ny. Du kan også tilføje flere specs i titlen ("Trek FX 3 Disc M 2022, carbon, Shimano Tiagra"), så folk der søger på specifikke detaljer også finder annoncen.</p>
+      <p>Hvis cyklen ikke er solgt efter et par uger, så sænk prisen. Købere der har trykket "Få besked ved prisfald" på din annonce, får en e-mail om det. Skift gerne forsidebilledet samtidig. Du kan også tilføje flere specs i titlen ("Trek FX 3 Disc M 2022, carbon, Shimano Tiagra"), så folk der søger på specifikke detaljer også finder annoncen.</p>
 
-      <h2>To timer, stor forskel</h2>
-      <p>De seks ting tager samlet omkring to timer at gennemføre. Det er typisk forskellen mellem at sælge på tre dage til 90 procent af din ønskepris, eller at sælge på seks uger til 70. Det er en rigtig god timeløn på en eftermiddag du alligevel skulle bruge på cyklen. Husk at Cykelbørsen er gratis for private sælgere, så der er ingen oprettelsesgebyrer eller provision når handlen lukker.</p>
     </div>
         <div class="blog-article-cta">
           <h3>Klar til at handle?</h3>
@@ -1154,6 +1152,13 @@
           <h2>Læs også</h2>
           <div class="blog-related-grid">
             
+              <a class="blog-related-card" href="/blog/mtb-affjedring-guide/">
+                <div class="blog-related-info">
+                  <span class="blog-related-cat">Guides</span>
+                  <h3>Hardtail eller fully? Vælg den rigtige affjedring til din mountainbike</h3>
+                  <span class="blog-related-meta">6 min. læsning</span>
+                </div>
+              </a>
               <a class="blog-related-card" href="/blog/undgaa-stjaalet-cykel/">
                 <div class="blog-related-info">
                   <span class="blog-related-cat">Sikkerhed</span>
@@ -1166,13 +1171,6 @@
                   <span class="blog-related-cat">Guides</span>
                   <h3>Hvilken cykelstørrelse passer mig?</h3>
                   <span class="blog-related-meta">6 min. læsning</span>
-                </div>
-              </a>
-              <a class="blog-related-card" href="/blog/koeb-brugt-el-cykel/">
-                <div class="blog-related-info">
-                  <span class="blog-related-cat">Køb</span>
-                  <h3>Køb brugt el-cykel: 7 ting du skal tjekke</h3>
-                  <span class="blog-related-meta">5 min. læsning</span>
                 </div>
               </a>
           </div>
@@ -1238,7 +1236,7 @@
     </div>
     <div class="footer-bottom">
       <a href="/" class="logo logo--dark" aria-label="Cykelbørsen – forside" onclick="event.preventDefault();navigateTo('/');window.scrollTo({top:0,behavior:'smooth'});"><span aria-hidden="true">cykelb</span><svg class="logo-oe" viewBox="14 -12 72 124" aria-hidden="true" overflow="visible"><circle cx="50" cy="54" r="27" fill="none" stroke="currentColor" stroke-width="20"/><polyline points="12,92 29,71 40,77 50,54 60,58 71,35 88,16" fill="none" stroke="var(--logo-accent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></svg><span aria-hidden="true" class="logo-r">rsen</span></a>
-      <p>© 2025–2026 Cykelbørsen · CVR: 46403568 · Danmarks dedikerede markedsplads for nye og brugte cykler</p>
+      <p>© 2025–2026 Cykelbørsen · CVR: 46403568</p>
     </div>
   </footer>
 
