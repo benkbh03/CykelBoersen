@@ -12,9 +12,9 @@
 
 export const LOGO_OE_SVG =
   '<svg class="logo-oe" viewBox="14 -12 72 124" aria-hidden="true" overflow="visible">'
-  + '<circle cx="50" cy="54" r="30" fill="none" stroke="currentColor" stroke-width="12"/>'
-  + '<polyline points="10,94 28,72 40,78 50,54 60,58 72,34 90,14" fill="none"'
-  + ' stroke="var(--logo-accent)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
+  + '<circle cx="50" cy="54" r="27" fill="none" stroke="currentColor" stroke-width="20"/>'
+  + '<polyline points="12,92 29,71 40,77 50,54 60,58 71,35 88,16" fill="none"'
+  + ' stroke="var(--logo-accent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>'
   + '</svg>';
 
 export function logoHtml({ variant = 'light' } = {}) {
