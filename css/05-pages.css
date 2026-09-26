@@ -570,7 +570,6 @@
   .nav-links { gap: 6px; }
   .nav-links a:not(.btn-sell) { display: none; }
   .btn-sell { font-size: 0.8rem; padding: 8px 14px; white-space: nowrap; }
-  .logo { font-size: 1.2rem; }
   .nav-profile { gap: var(--space-1); }
   .profile-avatar-btn { width: 34px; height: 34px; }
   .nav-inbox-btn { width: 34px; height: 34px; }
@@ -839,7 +838,6 @@
 @media (max-width: 420px) {
   nav { padding: 10px 12px; }
   .btn-sell { font-size: 0.76rem; padding: 7px 11px; }
-  .logo { font-size: 1.1rem; }
   .nav-links { gap: var(--space-1); }
   .profile-avatar-btn, .nav-inbox-btn, .nav-admin-btn { width: 32px; height: 32px; }
   .nav-inbox-btn { font-size: var(--text-base); }

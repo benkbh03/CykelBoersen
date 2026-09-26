@@ -99,7 +99,6 @@
 /* ── FOOTER ── */
 footer { background: var(--forest-2); padding: 48px 48px 24px; display: block; }
 @media (max-width: 999px) { body.on-sell-page footer, body.on-sell-page #chat-widget { display: none !important; } }
-footer .logo { font-size: 1.3rem; }
 footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .footer-grid {
   display: grid;

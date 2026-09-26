@@ -34,7 +34,7 @@ function emailWrapper(content) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0E8;padding:32px 0;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#FEFAF3;border-radius:12px;overflow:hidden;border:1px solid #DDD8CE;max-width:600px;width:100%;">
-        <tr><td style="background:#2A3D2E;padding:24px 32px;"><span style="color:#F5F0E8;font-size:1.2rem;font-weight:bold;">🚲 Cykelbørsen</span></td></tr>
+        <tr><td style="background:#2A3D2E;padding:24px 32px;"><img src="https://xn--cykelbrsen-5cb.dk/img/brand/logo-dark-email.png" width="180" height="36" alt="Cykelbørsen" style="display:block;border:0;height:36px;width:180px;color:#F5F0E8;font-size:1.2rem;font-weight:bold;font-family:Arial,sans-serif;"></td></tr>
         <tr><td style="padding:32px;">${content}</td></tr>
         <tr><td style="padding:16px 32px;background:#F5F0E8;border-top:1px solid #DDD8CE;">
           <p style="color:#8A8578;font-size:0.75rem;margin:0;">
