@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { BLOG_ARTICLES, getAllArticlesSorted, getArticleBySlug } from './blog-data-v2.js';
+import { BLOG_TITLE, BLOG_DESC } from './seo-text.js';
 
 export function createBlogPage({
   esc,
@@ -17,9 +18,9 @@ export function createBlogPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    document.title = 'Cykelbørsen Blog: guides, tests og tips';
+    document.title = BLOG_TITLE;
     updateSEOMeta(
-      'Cykelbørsens blog: guides til at købe og sælge cykler, sikkerhed, test og inspiration. Skrevet af cykel-entusiaster for cykel-entusiaster.',
+      BLOG_DESC,
       '/blog'
     );
 
@@ -36,7 +37,7 @@ export function createBlogPage({
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
 
         <header class="blog-hero">
-          <h1 class="blog-title">Cykelbørsen Blog</h1>
+          <h1 class="blog-title">Blog</h1>
           <p class="blog-subtitle">
             Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.
             Skrevet af os, brugt af dig.
@@ -89,7 +90,7 @@ export function createBlogPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    document.title = `${article.title} | Cykelbørsen Blog`;
+    document.title = `${article.title} | Cykelbørsen`;
     updateSEOMeta(article.metaDesc, `/blog/${slug}`);
 
     addBlogArticleJsonLd(article);
@@ -165,8 +166,8 @@ export function createBlogPage({
     const ld = {
       '@context': 'https://schema.org',
       '@type': 'Blog',
-      'name': 'Cykelbørsen Blog',
-      'description': 'Guides, tests og tips om cykler.',
+      'name': 'Cykelbørsens blog',
+      'description': BLOG_DESC,
       // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i
       // utils.js). Uden den peger den strukturerede data på en 301.
       'url': `${BASE_URL}/blog/`,

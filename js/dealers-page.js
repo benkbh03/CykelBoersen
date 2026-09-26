@@ -5,6 +5,7 @@
 import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
 import { validatePassword, iconDealer, iconStar, iconMail } from './utils.js';
 import { iconSearch } from './ui-icons.js';
+import { DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC } from './seo-text.js';
 
 export function createDealersPage({
   supabase,
@@ -85,7 +86,7 @@ export function createDealersPage({
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
     document.title = 'Forhandlere – Cykelbørsen';
-    updateSEOMeta('Alle verificerede cykelforhandlere på Cykelbørsen. Køb med tryghed: garanti, servicehistorik og professionel rådgivning.', '/forhandlere');
+    updateSEOMeta(DEALERS_DESC, '/forhandlere');
     _dealersPageData = [];
     _dealerGPSActive = false;
     _dealerGPSCoords = null;
@@ -395,8 +396,8 @@ export function createDealersPage({
     captureSignupSource();
     showDetailView();
     window.scrollTo({ top: 0, behavior: 'auto' });
-    document.title = 'Bliv forhandler – Cykelbørsen';
-    updateSEOMeta('Bliv forhandler på Cykelbørsen. Nå cykellkøbere i hele Danmark. Helt gratis, ingen binding.', '/bliv-forhandler');
+    document.title = BECOME_DEALER_TITLE;
+    updateSEOMeta(BECOME_DEALER_DESC, '/bliv-forhandler', { title: BECOME_DEALER_TITLE });
 
     const isLoggedIn      = !!currentUser;
     const isAlreadyDealer = isLoggedIn && currentProfile?.seller_type === 'dealer';
@@ -534,7 +535,8 @@ export function createDealersPage({
 
         <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">
-          Gratis, ingen kreditkort.<br>
+          Gratis at oprette. Ingen binding.<br>
+          Indfører vi senere betaling for forhandlere, får du besked mindst 90 dage før, og du betaler aldrig uden selv at have sagt ja.<br>
           Ved at oprette en forhandlerkonto accepterer du vores <a onclick="navigateTo('/vilkaar')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">vilkår og betingelser</a> samt <a onclick="navigateTo('/privatlivspolitik')" style="color:var(--rust);cursor:pointer;text-decoration:underline;">privatlivspolitik</a>.
         </p>
       </div>

@@ -8,6 +8,7 @@ import { brandToSlug } from './brand-data-v2.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
 import { createBikeDetailLightbox } from './bike-detail-lightbox.js';
+import { HOME_TITLE, HOME_DESC } from './seo-text.js';
 
 /* Stabil "viewer key" til visningstælling:
    - Logget ind → brugerens eget id (så samme person ikke tæller fra flere browsere).
@@ -583,8 +584,8 @@ export function createBikeDetail({
         document.title = _origTitle;
         const ogImage = document.querySelector('meta[property="og:image"]');
         if (ogImage && !ogImage.dataset.static) ogImage.remove();
-        _setMeta('og:title', 'Cykelbørsen – Køb & Sælg Nye og Brugte Cykler i Danmark');
-        _setMeta('og:description', 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler og meget mere. Gratis at oprette annonce.');
+        _setMeta('og:title', HOME_TITLE);
+        _setMeta('og:description', HOME_DESC);
       };
 
       document.getElementById('bike-modal-body').innerHTML = html;
@@ -940,7 +941,7 @@ export function createBikeDetail({
     if (pageLayout)    pageLayout.style.display    = 'none';
     if (landingLayout) landingLayout.style.display = '';
     document.body.classList.remove('is-mp-mobile');
-    document.title = 'Cykelbørsen – Køb & Sælg Brugte Cykler i Danmark';
+    document.title = HOME_TITLE;
     updateSEOMeta(null, '/');
     removeBikeJsonLd();
   }

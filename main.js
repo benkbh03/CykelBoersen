@@ -57,6 +57,7 @@ import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
 import { applyAccessoryVisibility } from './js/accessory-visibility.js';
+import { HOME_TITLE, HOME_DESC } from './js/seo-text.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
 // supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
@@ -282,11 +283,11 @@ function setBrowseCategory(cat) {
   try { history.replaceState(null, '', isAcc ? '/tilbehoer' : '/'); } catch {}
   document.title = isAcc
     ? 'Cykeltilbehør & udstyr – Cykelbørsen'
-    : 'Cykelbørsen – Danmarks markedsplads for cykler';
+    : HOME_TITLE;
   updateSEOMeta(
     isAcc
       ? 'Køb og sælg cykeltilbehør, udstyr og reservedele på Cykelbørsen: hjelme, lygter, låse, dæk, gear, batterier og meget mere. Gratis at oprette annonce.'
-      : 'Danmarks dedikerede markedsplads for nye og brugte cykler. Køb og sælg racercykler, mountainbikes, el-cykler, senior-cykler, cykeltilbehør og meget mere. Gratis at oprette annonce.',
+      : HOME_DESC,
     isAcc ? '/tilbehoer' : '/'
   );
   /* Hero-tekst tilpasses kategori. Cykel-varianten kopieres IKKE her: den
@@ -2199,6 +2200,10 @@ function handleRoute() {
   if (document.body.classList.contains('mobile-filters-open')) {
     document.body.classList.remove('mobile-filters-open');
   }
+  // En tidligere 404-visning satte robots=noindex; læg den gamle værdi tilbage.
+  if (document.querySelector('meta[name="robots"]')?.dataset.nfPrev !== undefined) {
+    import(`./js/not-found.js?v=${ASSET_VERSION}`).then(m => m.restoreRobots()).catch(() => {});
+  }
   const path = normalizePath(window.location.pathname);
   const bikeMatch    = path.match(/^\/bike\/([^/]+)$/);
   const profileMatch = path.match(/^\/profile\/([^/]+)$/);
@@ -2213,8 +2218,10 @@ function handleRoute() {
   const compareMatch = path === '/sammenlign';
   const blogArticleMatch = path.match(/^\/blog\/([^/]+)$/);
   const blogOverviewMatch = path === '/blog';
-  const meMatch      = path === '/me';
-  const sellMatch    = path === '/sell';
+  // /min-profil og /saelg bruges af navigateTo() flere steder; uden aliasset
+  // landede de på forsiden, og nu ville de ramme 404-visningen.
+  const meMatch      = path === '/me' || path === '/min-profil';
+  const sellMatch    = path === '/sell' || path === '/saelg';
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
   const becomeRenter = path === '/bliv-udlejer';
@@ -2424,6 +2431,12 @@ function handleRoute() {
     showListingView();
     setBrowseCategory('tilbehoer');
     import(`./js/recently-viewed.js?v=${ASSET_VERSION}`).then(m => m.renderRecentlyViewedSection('recently-viewed')).catch(() => {});
+  } else if (path !== '/' && path !== '/index.html') {
+    // Ukendt adresse: kort besked i stedet for hele forsiden (se js/not-found.js).
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    import(`./js/not-found.js?v=${ASSET_VERSION}`).then(m => m.renderNotFoundPage()).catch(() => showListingView());
   } else {
     showListingView();
     // Kommer man til '/' mens tilbehør er aktiv (fx logo-klik), nulstil til cykel.
