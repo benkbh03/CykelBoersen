@@ -480,8 +480,8 @@ export function createCykelagentPage({
             <!-- --single: Alle / Elektronisk / Mekanisk udelukker hinanden. -->
             <div class="cykelagent-chips-row cykelagent-chips-row--single">
               <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === '' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', '')">Alle</button>
-              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'true' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'true')">⚡ Elektronisk (Di2/eTap/AXS)</button>
-              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'false' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'false')">🔧 Mekanisk</button>
+              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'true' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'true')">Elektronisk (Di2/eTap/AXS)</button>
+              <button type="button" class="cykelagent-chip-btn${_form.electronicShifting === 'false' ? ' active' : ''}" onclick="setCykelagentField('electronicShifting', 'false')">Mekanisk</button>
             </div>
           </div>
 

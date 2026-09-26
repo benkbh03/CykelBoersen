@@ -188,7 +188,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  font-size: 0.68rem;
+  font-size: var(--text-2xs);
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -201,7 +201,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  font-size: 0.68rem;
+  font-size: var(--text-2xs);
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -461,7 +461,7 @@
 }
 .split-card-chip {
   padding: 2px 8px;
-  font-size: 0.66rem;
+  font-size: var(--text-2xs);
   font-weight: 500;
   background: var(--sand);
   border-radius: 4px;
@@ -1136,7 +1136,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   line-height: 1.3;
   margin-top: 1px;
 }
-.split-popup-approx { font-size: 0.66rem; font-style: italic; }
+.split-popup-approx { font-size: var(--text-2xs); font-style: italic; }
 .split-popup-btn {
   display: block;
   width: 100%;
@@ -1438,7 +1438,6 @@ body.map-page-view { padding-bottom: 0 !important; }
   .map-tab-btn.active {
     background: var(--rust);
     color: #fff;
-    box-shadow: 0 2px 12px rgba(200,80,42,0.35);
   }
 
   /* Filter-sheet (fuld-skærm bundsheet med filtre) */

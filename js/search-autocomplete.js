@@ -40,7 +40,7 @@ export function createSearchAutocompleteHandlers({ supabase, esc, onSearchSubmit
         var highlighted = display.replace(new RegExp('(' + safeQueryRegex + ')', 'gi'), '<strong>$1</strong>');
         var selectVal   = (b.brand + ' ' + b.model).replace(/'/g, '');
         return '<div class="autocomplete-item" data-index="' + i + '" onclick="selectAutocomplete(\'' + selectVal + '\')">'
-          + highlighted
+          + '<span class="autocomplete-name">' + highlighted + '</span>'  // én flex-del, ellers splittes ordet ved <strong>
           + '<span class="autocomplete-meta">' + esc(b.type) + ' · ' + b.price.toLocaleString('da-DK') + ' kr.</span>'
           + '</div>';
       }).join('');

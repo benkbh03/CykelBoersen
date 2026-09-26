@@ -283,7 +283,7 @@ export function createMyProfilePage({
 
           ${isDealer && !p.verified ? `
           <div class="mp-pending-card">
-            <div class="mp-pending-icon">⏳</div>
+            <div class="mp-pending-icon">${iconAlert(22)}</div>
             <div class="mp-pending-body">
               <div class="mp-pending-title">Ansøgning afventer godkendelse</div>
               <div class="mp-pending-sub">Vi gennemgår din ansøgning og vender tilbage hurtigst muligt.</div>

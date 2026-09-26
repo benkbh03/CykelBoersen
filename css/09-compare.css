@@ -83,7 +83,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   cursor: pointer; font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s;
 }
-.compare-bar-go:hover:not(:disabled) { background: var(--rust-light); transform: translateY(-1px); }
+.compare-bar-go:hover:not(:disabled) { background: var(--rust-light);}
 .compare-bar-go:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (max-width: 560px) {
@@ -223,7 +223,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-family: 'DM Sans', sans-serif;
   transition: background 0.15s, transform 0.1s;
 }
-.cmp-bike-cta:hover { background: var(--forest-light); transform: translateY(-1px); }
+.cmp-bike-cta:hover { background: var(--forest-light);}
 
 /* Section */
 .cmp-section { border-bottom: 1px solid var(--border); }
@@ -356,13 +356,13 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   color: var(--charcoal);
   border: 1px solid var(--border);
 }
-.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal); transform: translateY(-1px); }
+.cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal);}
 .cmp-footer-primary {
   background: var(--rust);
   color: #fff;
   border: none;
 }
-.cmp-footer-primary:hover { background: var(--rust-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,80,42,0.35); }
+.cmp-footer-primary:hover { background: var(--rust-light);}
 
 /* Responsivt: under 768px omdannes header til vandret-scrollbar layout */
 @media (max-width: 768px) {

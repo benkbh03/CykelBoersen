@@ -166,7 +166,6 @@
   justify-content: center;
   gap: 6px;
   font-family: 'DM Sans', sans-serif;
-  box-shadow: 0 4px 12px -4px rgba(200,80,42,0.45);
   transition: background 0.15s, box-shadow 0.15s;
 }
 .mp-action-primary:hover { background: var(--rust-light); }
@@ -738,7 +737,7 @@
     gap: var(--space-2);
     flex-wrap: nowrap;
   }
-  .mp-action-primary { width: 100%; padding: 12px 14px; font-size: 0.87rem; box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5); }
+  .mp-action-primary { width: 100%; padding: 12px 14px; font-size: 0.87rem;}
   .mp-action-secondary-row { gap: var(--space-2); justify-content: flex-start; }
   .mp-action-secondary { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; }
   .mp-action-secondary .mp-action-label { display: none !important; }
@@ -910,7 +909,6 @@ body.is-mp-mobile .mp-action-primary {
   padding: 12px 14px;
   font-size: 0.87rem;
   border-radius: 10px;
-  box-shadow: 0 4px 12px -4px rgba(200,80,42,0.5);
 }
 body.is-mp-mobile .mp-action-secondary-row { gap: var(--space-2); }
 body.is-mp-mobile .mp-action-secondary {
@@ -1233,7 +1231,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
-.pp-cta-btn:hover { background: var(--rust-light); transform: translateY(-1px); }
+.pp-cta-btn:hover { background: var(--rust-light);}
 
 /* Tabs (re-uses existing up-tab styling) */
 .pp-tabs {
@@ -1642,7 +1640,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   font-family: 'DM Sans', sans-serif; font-weight: var(--weight-semibold); font-size: 15px; letter-spacing: -0.1px;
   transition: all 180ms ease; cursor: pointer;
 }
-.sell-wizard-cta.enabled { background: var(--rust); color: var(--cream); box-shadow: 0 4px 14px -4px rgba(200,80,42,0.5); }
+.sell-wizard-cta.enabled { background: var(--rust); color: var(--cream);}
 .sell-wizard-cta.disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
 /* Default: desktop-only elements are hidden on mobile */
@@ -1758,7 +1756,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
   .sell-desktop-cta.enabled {
     background: var(--rust); color: #fff;
-    box-shadow: 0 4px 14px -4px rgba(200,80,42,0.55);
   }
   .sell-desktop-cta.enabled:hover { background: var(--rust-light, #E8694A); }
   .sell-desktop-cta.disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
@@ -2246,7 +2243,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .size-finder-submit:hover {
   background: var(--rust-light);
-  transform: translateY(-1px);
 }
 .size-finder-result {
   margin-top: 32px;
@@ -2786,7 +2782,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-submit:hover {
   background: var(--rust-light);
-  transform: translateY(-1px);
 }
 .valuation-submit:disabled {
   opacity: 0.6;
@@ -2939,7 +2934,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .valuation-cta-primary:hover {
   background: var(--rust-light);
-  transform: translateY(-1px);
 }
 .valuation-cta-secondary {
   background: transparent;
@@ -3228,7 +3222,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .bd-scope-mini:hover {
   background: #fff;
   border-color: var(--charcoal);
-  transform: translateY(-1px);
 }
 .bd-scope-mini-icon { font-size: var(--text-base); line-height: 1; }
 .bd-scope-mini-text { color: var(--charcoal); }
@@ -3346,7 +3339,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 .see-all-dealers-cta:hover {
   background: var(--forest-light);
-  transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(42,61,46,0.25);
 }
 .dealers-toolbar {
@@ -3465,7 +3457,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 }
 
 .saved-card:hover {
-  transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.09);
 }
 
@@ -3745,7 +3736,6 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   box-shadow: 0 2px 8px rgba(90, 122, 95, 0.25);
 }
 .ai-suggest-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(90, 122, 95, 0.32);
 }
 .ai-suggest-btn:disabled {

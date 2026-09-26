@@ -487,7 +487,6 @@ export const footerContent = {
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
-          <span style="font-size:1.4rem;">⏱️</span>
           <div>
             <div style="font-weight:600;font-size:0.88rem;">Du hører fra os</div>
             <div style="color:var(--muted);font-size:0.85rem;">Hverdage kl. 9–17</div>
@@ -553,7 +552,7 @@ export const footerContent = {
       <p style="margin-bottom:24px;"><strong>Falske MobilePay-skærmbilleder.</strong> En sælger eller køber viser et skærmbillede der ligner en gennemført overførsel. Tjek altid din egen konto i banken, ikke et skærmbillede den anden viser dig. Rigtige MobilePay-overførsler vises straks.</p>
 
       <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
-      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via 🚩-knappen på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt/" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
+      <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via "Rapporter annonce" nederst på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt/" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
 
       <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
         <h3 style="font-family:'Fraunces',serif;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>

@@ -267,7 +267,7 @@ export function createBikeDetail({
                   ${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}
                 </span>
                 ${!isDemo ? '<span id="seller-trust-pill-slot"></span>' : ''}
-                <span id="response-time-badge" style="font-size:0.75rem;color:var(--muted);">⏱ Henter responstid...</span>
+                <span id="response-time-badge" style="font-size:0.75rem;color:var(--muted);">Henter svartid…</span>
               </div>
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil</div>
@@ -1074,7 +1074,7 @@ export function createBikeDetail({
       else if (avgMins < 1440) label = `Svarer typisk samme dag`;
       else                     label = `Svarer typisk inden for ${Math.round(avgMins / 1440)} dage`;
 
-      badge.textContent = `⏱ ${label}`;
+      badge.textContent = label;
     } catch (e) {
       console.error('loadResponseTime error:', e.message);
       badge.textContent = '';
@@ -1489,7 +1489,7 @@ export function createBikeDetail({
       if (textEl) textEl.value = '';
       if (boxEl) {
         boxEl.innerHTML = `<div class="bid-sent-confirm">
-          <div class="bid-sent-icon">✅</div>
+          <div class="bid-sent-icon">${iconMail(28)}</div>
           <p class="bid-sent-title">Besked sendt!</p>
           <p class="bid-sent-sub">Sælgeren modtager en e-mail. Se svar i din <a onclick="openInboxModal()" style="color:var(--forest);cursor:pointer;font-weight:600;">Indbakke</a></p>
         </div>`;
@@ -1533,7 +1533,7 @@ export function createBikeDetail({
       const bidBox = document.getElementById('bid-box');
       if (bidBox) {
         bidBox.innerHTML = `<div class="bid-sent-confirm">
-          <div class="bid-sent-icon">✅</div>
+          <div class="bid-sent-icon">${iconMail(28)}</div>
           <p class="bid-sent-title">Bud sendt!</p>
           <p class="bid-sent-sub">Sælgeren modtager en e-mail. Følg svaret i din <a onclick="openInboxModal()" style="color:var(--forest);cursor:pointer;font-weight:600;">Indbakke</a></p>
         </div>`;

@@ -1,4 +1,4 @@
-import { iconBike, iconEye, iconPencil } from './utils.js';
+import { iconBike, iconEye, iconPencil, iconHeart } from './utils.js';
 export function createMyProfile({
   supabase,
   esc,
@@ -247,7 +247,7 @@ export function createMyProfile({
           <div class="saved-card-thumb">
             ${imgHtml}
             ${isSold ? '<span class="saved-card-sold-badge">Solgt</span>' : ''}
-            <button class="saved-card-remove" onclick="event.stopPropagation();removeSaved('${s.bike_id}',this)" title="Fjern fra gemte">♡</button>
+            <button class="saved-card-remove" onclick="event.stopPropagation();removeSaved('${s.bike_id}',this)" title="Fjern fra gemte" aria-label="Fjern fra gemte">${iconHeart(16)}</button>
           </div>
           <div class="saved-card-body">
             <div class="saved-card-title">${esc(b.brand)} ${esc(b.model)}</div>

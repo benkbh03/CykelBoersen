@@ -1559,7 +1559,7 @@ function updateNav(loggedIn, name, avatarUrl) {
   if (loggedIn) {
     if (sellBtn) {
       if (isPendingDealer()) {
-        sellBtn.textContent = '⏳ Afventer godkendelse';
+        sellBtn.textContent = 'Afventer godkendelse';
         sellBtn.setAttribute('onclick', 'event.preventDefault(); blockIfPendingDealer()');
         sellBtn.setAttribute('title', 'Din forhandlerprofil afventer admin-godkendelse');
         sellBtn.style.opacity = '0.6';

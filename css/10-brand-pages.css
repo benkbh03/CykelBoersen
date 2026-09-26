@@ -54,7 +54,6 @@
   transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
 }
 .brand-tile:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   border-color: var(--rust);
 }
@@ -236,7 +235,6 @@
   transition: transform 0.1s, box-shadow 0.1s;
 }
 .brand-dealer-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 .brand-dealer-logo {

@@ -94,7 +94,7 @@
   border-radius: 10px; overflow: hidden; cursor: pointer;
   transition: transform 0.15s, border-color 0.15s;
 }
-.up-bike-card:hover { transform: translateY(-2px); border-color: rgba(245,240,232,0.25); }
+.up-bike-card:hover {border-color: rgba(245,240,232,0.25); }
 .up-bike-img {
   height: 130px; background: rgba(245,240,232,0.08);
   display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -267,8 +267,8 @@
 .promoted-dealers {
   margin: 0 0 28px;
   padding: 22px 24px 24px;
-  background: linear-gradient(135deg, rgba(212,160,23,0.06) 0%, rgba(212,160,23,0.12) 100%);
-  border: 1px solid rgba(212,160,23,0.32);
+  background: var(--surface-sand);
+  border: 1px solid var(--gold-border);
   border-radius: 16px;
   position: relative;
 }
@@ -306,29 +306,25 @@
   cursor: pointer;
   display: flex; flex-direction: column; align-items: center;
   text-align: center; gap: 6px;
-  box-shadow: 0 4px 14px rgba(212,160,23,0.15);
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   min-width: 0;
 }
 .promoted-dealer-card:hover {
-  transform: translateY(-2px);
   border-color: #d4a017;
-  box-shadow: 0 8px 22px rgba(212,160,23,0.28);
 }
 .promoted-dealer-card-badge {
   position: absolute;
   top: -10px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
-  color: #fff;
+  background: var(--gold-bg);
+  color: var(--gold-dark);
   font-size: 0.68rem;
   font-weight: var(--weight-heavy);
   letter-spacing: 0.4px;
   text-transform: uppercase;
   padding: 4px 14px;
   border-radius: 20px;
-  box-shadow: 0 3px 8px rgba(212,160,23,0.45);
   white-space: nowrap;
   font-family: 'DM Sans', sans-serif;
 }
@@ -421,31 +417,28 @@
    Testet: ≤480 (iPhone SE), ≤768 (iPhone Plus), 769-1024 (iPad), ≥1025 */
 .dealer-card--promoted {
   border-color: rgba(212,160,23,0.55);
-  box-shadow: 0 4px 16px rgba(212,160,23,0.14);
 }
 .dealer-card--promoted:hover {
   border-color: #d4a017;
-  box-shadow: 0 8px 24px rgba(212,160,23,0.22);
 }
 /* Override top-stripe til guld for promoted cards (eksisterende ::before er
    forest-til-rust gradient). Reglen vinder via specificity. */
 .dealer-card--promoted::before {
-  background: linear-gradient(90deg, #d4a017 0%, #e8b933 100%);
+  background: var(--gold);
   height: 5px;
 }
 .dealer-promoted-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  background: linear-gradient(135deg, #d4a017 0%, #e8b933 100%);
-  color: #fff;
+  background: var(--gold-bg);
+  color: var(--gold-dark);
   font-size: 0.66rem;
   font-weight: var(--weight-heavy);
   letter-spacing: 0.4px;
   text-transform: uppercase;
   padding: 4px 11px;
   border-radius: var(--radius-full);
-  box-shadow: 0 2px 6px rgba(212,160,23,0.32);
   font-family: 'DM Sans', sans-serif;
   white-space: nowrap;
   /* Absolut position så badgen IKKE tager flow-plads — uden dette ville

@@ -408,7 +408,7 @@
   font-family: 'DM Sans', sans-serif;
   transition: background 0.18s, transform 0.1s;
 }
-.btn-accept-bid:hover { background: var(--rust); transform: translateY(-1px); }
+.btn-accept-bid:hover { background: var(--rust);}
 .message-bubble.bid-bubble .msg-time {
   font-family: 'DM Sans', sans-serif;
   font-weight: var(--weight-regular);
@@ -433,7 +433,7 @@
   cursor: pointer; transition: box-shadow 0.15s, transform 0.1s;
   border: 1.5px solid var(--border);
 }
-.oauth-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }
+.oauth-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
 .oauth-btn:active { transform: translateY(0); }
 .oauth-google { background: #fff; color: #3c4043; }
 .oauth-divider {
@@ -708,8 +708,8 @@
     visibility: visible !important;
     opacity: 1 !important;
     font-family: 'Fraunces', Georgia, serif !important;
-    font-size: 1.05rem !important;
-    font-weight: 700 !important;
+    font-size: var(--text-base) !important;
+    font-weight: var(--weight-semibold) !important;
     /* Nulstil desktoppens versal-mikroetiket. Den er rigtig i et smalt
        sidepanel hvor overskriften skal træde tilbage, men her er den
        selve knappen man trykker på for at folde afsnittet ud, og
@@ -1092,7 +1092,7 @@
   color: var(--charcoal);
   background: var(--sand);
 }
-.share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.share-btn:hover {box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .share-icon { font-size: 1.6rem; }
 .share-whatsapp:hover { border-color: #25D366; background: #f0fdf4; color: #16a34a; }
 .share-facebook:hover { border-color: #1877F2; background: #eff6ff; color: #1877F2; }

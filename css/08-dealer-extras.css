@@ -296,7 +296,6 @@
 .pp-follow-btn:hover {
   background: var(--rust);
   color: #fff;
-  transform: translateY(-1px);
 }
 .pp-follow-btn.following {
   background: var(--forest);

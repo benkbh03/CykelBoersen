@@ -986,7 +986,7 @@ export function createMapPage({
 
       return '<div class="split-card" data-bike-id="' + b.id + '" onclick="splitCardClick(\'' + b.id + '\')">'
         + '<div class="split-card-img">'
-        + (primaryImg ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + ' i ' + esc(b.city || 'Danmark') + '" loading="lazy">' : '<div class="split-card-img-placeholder">🚲</div>')
+        + (primaryImg ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + ' i ' + esc(b.city || 'Danmark') + '" loading="lazy">' : '<div class="split-card-img-placeholder">' + iconBike(28) + '</div>')
         + sellerBadge
         + '<button class="split-card-heart' + (_userSavedSet && _userSavedSet.has(b.id) ? ' is-saved' : '') + '" onclick="event.stopPropagation();toggleSave(this,\'' + b.id + '\')" aria-label="Gem annonce">'
         + iconHeart(14)
