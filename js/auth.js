@@ -27,17 +27,17 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
 
   async function handleForgotPassword() {
     const email = document.getElementById('forgot-email').value.trim();
-    if (!email) { showToast('Indtast din email', 'advarsel'); return; }
+    if (!email) { showToast('Indtast din e-mail', 'advarsel'); return; }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://xn--cykelbrsen-5cb.dk/',
     });
 
     if (error) {
-      showToast('Kunne ikke sende link – tjek emailen', 'fejl');
+      showToast('Kunne ikke sende link – tjek e-mailadressen', 'fejl');
     } else {
       closeLoginModal();
-      showToast('Tjek din email for nulstillingslinket', 'ok');
+      showToast('Tjek din e-mail for nulstillingslinket', 'ok');
     }
   }
 
@@ -51,11 +51,11 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
   async function handleLogin() {
     const email    = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    if (!email || !password) { showToast('Udfyld email og adgangskode', 'advarsel'); return; }
+    if (!email || !password) { showToast('Udfyld e-mail og adgangskode', 'advarsel'); return; }
     const restore = btnLoading('login-btn', 'Logger ind...');
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) showToast('Forkert email eller adgangskode', 'fejl');
+      if (error) showToast('Forkert e-mail eller adgangskode', 'fejl');
       else { closeLoginModal(); showToast('Du er nu logget ind', 'ok'); }
     } finally { restore(); }
   }
@@ -85,7 +85,7 @@ export function createAuthActions({ supabase, showToast, btnLoading, enableFocus
         },
       });
       if (error) showToast(error.message, 'fejl');
-      else { closeLoginModal(); showToast('Tjek din email for at bekræfte kontoen', 'ok'); }
+      else { closeLoginModal(); showToast('Tjek din e-mail for at bekræfte kontoen', 'ok'); }
     } finally { restore(); }
   }
 

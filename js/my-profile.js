@@ -67,7 +67,7 @@ export function createMyProfile({
 
         if (isPage) {
           const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
-          const statusLabel = isSold ? 'Solgt' : isOld ? `${daysOld}d gammel` : 'Aktiv';
+          const statusLabel = isSold ? 'Solgt' : isOld ? `${daysOld} dage` : 'Aktiv';
           const statusClass = isSold ? 'mp-status--sold' : isOld ? 'mp-status--old' : 'mp-status--active';
           const priceStr = (b.price || 0).toLocaleString('da-DK') + ' kr.';
           const svgEye    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;

@@ -40,13 +40,6 @@
 }
 .fav-count-badge svg { fill: currentColor; stroke: none; }
 
-/* Prisforslag */
-.price-suggestion {
-  margin-top: 6px; padding: 8px 12px;
-  background: #e8f5e9; border-radius: 8px;
-  font-size: 0.82rem; color: #2e7d32; line-height: 1.5;
-}
-
 /* Handelshistorik */
 .trade-row {
   display: flex; align-items: center; gap: var(--space-3);

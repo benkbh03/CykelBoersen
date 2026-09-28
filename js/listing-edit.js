@@ -366,7 +366,7 @@ export function createListingEdit({
   async function saveEditedListing() {
     const id = document.getElementById('edit-bike-id').value;
     const editModel = document.getElementById('edit-model').value.trim();
-    if (editCategory !== 'tilbehoer' && !editModel && !confirm('Du har ikke angivet cykel-modellen.\n\nAnnoncer med model får i gennemsnit 3× flere visninger og rangerer højere på Google.\n\nVil du gemme uden model alligevel?')) {
+    if (editCategory !== 'tilbehoer' && !editModel && !confirm('Du har ikke angivet cykel-modellen.\n\nMed model er annoncen lettere at finde for købere, der søger på den.\n\nVil du gemme uden model alligevel?')) {
       return;
     }
     enforceSinglePrimaryImage();

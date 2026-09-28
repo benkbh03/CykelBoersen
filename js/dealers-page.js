@@ -512,7 +512,7 @@ export function createDealersPage({
           <span>Din forhandlerkonto</span>
         </div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="form-group"><label>Email *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
+          <div class="form-group"><label>E-mail *</label><input type="email" id="dealer-email" placeholder="din@butik.dk" onkeydown="if(event.key==='Enter')submitDealerApplication()"></div>
           <div class="form-group">
             <label>Adgangskode *</label>
             <div class="pw-input-wrap">
@@ -527,7 +527,7 @@ export function createDealersPage({
             </div>
           </div>
         </div>
-        <p class="bd-auth-note">Vi opretter automatisk en forhandlerkonto med din email. Tjek din indbakke for at bekræfte.</p>
+        <p class="bd-auth-note">Vi opretter automatisk en forhandlerkonto med din e-mail. Tjek din indbakke for at bekræfte.</p>
         ` : `
         <div class="bd-form-divider"><span>Logget ind som ${esc(currentProfile?.name || currentUser?.email || '')}</span></div>
         <input type="hidden" id="dealer-email" value="${esc(currentUser?.email || '')}">
@@ -653,7 +653,7 @@ export function createDealersPage({
     if (!currentUser) {
       if (!email || !password) {
         restore();
-        showToast('Udfyld email og adgangskode', 'advarsel'); return;
+        showToast('Udfyld e-mail og adgangskode', 'advarsel'); return;
       }
       const pwCheck = validatePassword(password, { email, name: contact });
       if (!pwCheck.ok) {

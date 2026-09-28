@@ -78,14 +78,14 @@
     </div>
     <div class="modal-body" style="padding:24px;">
       <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">
-        Nu kan I begge vurdere hinanden for denne handel. Det hjælper os med at opbygge en troværdig community.
+        Nu kan I begge vurdere hinanden for denne handel. Det hjælper andre med at vide, hvem de handler med.
       </p>
       <div id="rate-modal-content">
         <!-- Dynamically filled: buyer/seller names and rating form -->
       </div>
       <div style="display:flex;gap:12px;margin-top:24px;">
         <button class="btn-secondary" style="flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--charcoal);font-size:0.9rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s;" onclick="closeRateModal()">
-          Skip for nu
+          Spring over
         </button>
         <button id="rate-submit-btn" style="flex:1;padding:12px;border-radius:8px;border:none;background:var(--rust);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:background 0.2s;" onclick="submitRatingFromModal()">
           Send vurdering
@@ -132,93 +132,6 @@
     </div>
   </div>
 
-  <!-- ── OPRET ANNONCE MODAL ── -->
-  <div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Sæt din cykel til salg</h2>
-        <button class="modal-close" onclick="closeModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p class="modal-seller-label">Hvem sælger du som?</p>
-        <div class="seller-toggle">
-          <div class="seller-type-btn selected" id="type-private" onclick="selectType('private')">
-            <span class="type-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></span>
-            <span class="type-label">Privatperson</span>
-            <span class="type-sub">Sælger min egen cykel</span>
-          </div>
-          <div class="seller-type-btn" id="type-dealer" onclick="selectType('dealer')">
-            <span class="type-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg></span>
-            <span class="type-label">Forhandler</span>
-            <span class="type-sub">Jeg er cykelbutik / forhandler</span>
-          </div>
-        </div>
-        <div id="dealer-fields" class="dealer-fields-hidden">
-          <div class="form-group">
-            <label>Butiksnavn / CVR</label>
-            <input type="text" placeholder="f.eks. VeloShop ApS eller 12345678">
-          </div>
-          <div class="form-group">
-            <label>Garanti <small style="color:var(--muted);font-weight:400">(valgfrit)</small></label>
-            <input type="text" id="modal-warranty" placeholder="f.eks. 2 års garanti, 6 måneder fabriksgaranti">
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-group"><label>Mærke *</label>
-            <div class="brand-autocomplete-wrap">
-              <input type="text" id="legacy-modal-sell-brand" placeholder="f.eks. Trek, Giant, Specialized" oninput="brandAutocomplete(this, 'legacy-modal-sell-brand-list')" autocomplete="off">
-              <div id="legacy-modal-sell-brand-list" class="brand-autocomplete-list" style="display:none"></div>
-            </div>
-          </div>
-          <div class="form-group"><label>Model <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(anbefales)</span></label><input type="text" placeholder="f.eks. FX 3 Disc"></div>
-          <div class="form-group">
-            <label>Cykeltype *</label>
-            <select><option value="">Vælg type</option><option>Racercykel</option><option>Mountainbike</option><option>Citybike</option><option>El-cykel</option><option>Ladcykel</option><option>Børnecykel</option><option>Gravel</option><option>Senior cykel</option></select>
-          </div>
-          <div class="form-group">
-            <label>Ramme / str.</label>
-            <select><option value="">Vælg</option><option>XS (44–48 cm)</option><option>S (49–52 cm)</option><option>M (53–56 cm)</option><option>L (57–60 cm)</option><option>XL (61+ cm)</option></select>
-          </div>
-          <div class="form-group">
-            <label>Hjulstørrelse</label>
-            <select id="modal-wheel-size"><option value="">Vælg</option><option>12"</option><option>14"</option><option>16"</option><option>18"</option><option>20"</option><option>24"</option><option>26"</option><option>27.5" / 650b</option><option>28"</option><option>29"</option></select>
-          </div>
-          <div class="form-group"><label>Pris (kr.) *</label><input type="number" placeholder="f.eks. 4500"><div id="price-suggestion" class="price-suggestion" style="display:none;"></div></div>
-          <div class="form-group"><label>Årstal</label><input type="number" placeholder="f.eks. 2021"></div>
-          <div class="form-group">
-            <label>Stand *</label>
-            <select id="modal-condition" onchange="updateConditionGuide('modal-condition','cg-create')"><option value="">Vælg stand</option><option>Ny</option><option>Som ny</option><option>God stand</option><option>Brugt</option></select>
-            <div class="condition-guide condition-guide--form" id="cg-create">
-              <div class="cg-row" data-cond="Ny"><span class="cg-badge cg-ny">Ny</span><div class="cg-text"><span class="cg-main">Ubrugt, stadig i original emballage</span></div></div>
-              <div class="cg-row" data-cond="Som ny"><span class="cg-badge cg-somny">Som ny</span><div class="cg-text"><span class="cg-main">Brugt meget lidt, ingen synlige ridser</span><span class="cg-sub">Typisk under 1 sæson</span></div></div>
-              <div class="cg-row" data-cond="God stand"><span class="cg-badge cg-god">God stand</span><div class="cg-text"><span class="cg-main">Normale brugsspor, fungerer fejlfrit</span><span class="cg-sub">Kan have mindre ridser</span></div></div>
-              <div class="cg-row" data-cond="Brugt"><span class="cg-badge cg-brugt">Brugt</span><div class="cg-text"><span class="cg-main">Tydelige brugsspor, muligvis slid</span><span class="cg-sub">Tjek beskrivelsen nøje</span></div></div>
-            </div>
-          </div>
-          <div class="form-group"><label>By *</label><input type="text" placeholder="f.eks. København"></div>
-          <div class="form-group full"><label>Beskrivelse</label><textarea placeholder="Beskriv din cykel — stand, udstyr, service, historik..."></textarea></div>
-          <div class="form-group full">
-            <label>Billeder <small style="color:var(--muted);font-weight:400">(maks 8 · JPG, PNG)</small></label>
-            <div class="img-upload" onclick="document.getElementById('img-file-input').click()">
-              <div class="upload-icon"><svg class="ui-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3.5l1.6-2.4h7.8L17.5 7H21v13H3z"/><circle cx="12" cy="13" r="4"/></svg></div>
-              <p id="upload-label">Klik for at vælge billeder</p>
-            </div>
-            <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
-            <div class="photo-tips">
-              <span class="photo-tip">Godt lys</span>
-              <span class="photo-tip">Fra siden</span>
-              <span class="photo-tip">Stelnummer</span>
-              <span class="photo-tip">Dæk & kæde</span>
-              <span class="photo-tip">Hele cyklen</span>
-            </div>
-            <div id="img-preview-grid" class="img-preview-grid"></div>
-          </div>
-        </div>
-        <button id="submit-listing-btn" class="form-submit" onclick="submitListing()">Opret annonce gratis</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ── LOGIN / REGISTRERING MODAL ── -->
   <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true">
     <div class="modal">
@@ -246,7 +159,7 @@
           <div class="oauth-divider"><span>eller</span></div>
 
           <div class="form-grid" style="grid-template-columns:1fr;">
-            <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+            <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleLogin()"></div>
             <div class="form-group">
               <label>Adgangskode</label>
               <div class="pw-input-wrap">
@@ -263,9 +176,9 @@
 
         <!-- Glemt adgangskode -->
         <div id="form-forgot" style="display:none;">
-          <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Indtast din email — vi sender dig et link til at nulstille din adgangskode.</p>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Indtast din e-mail, så sender vi dig et link til at nulstille din adgangskode.</p>
           <div class="form-grid" style="grid-template-columns:1fr;">
-            <div class="form-group"><label>Email</label><input type="email" id="forgot-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleForgotPassword()"></div>
+            <div class="form-group"><label>E-mail</label><input type="email" id="forgot-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleForgotPassword()"></div>
           </div>
           <button class="form-submit" onclick="handleForgotPassword()">Send nulstillingslink</button>
           <button class="btn-back-login" onclick="switchTab('login')">← Tilbage til login</button>
@@ -278,11 +191,11 @@
               Opret med Google
             </button>
           </div>
-          <div class="oauth-divider"><span>eller opret med email</span></div>
+          <div class="oauth-divider"><span>eller opret med e-mail</span></div>
 
           <div class="form-grid" style="grid-template-columns:1fr;">
             <div class="form-group"><label>Navn</label><input type="text" id="register-name" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')handleRegister()"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="register-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleRegister()"></div>
+            <div class="form-group"><label>E-mail</label><input type="email" id="register-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')handleRegister()"></div>
             <div class="form-group">
               <label>Adgangskode</label>
               <div class="pw-input-wrap">
@@ -525,7 +438,7 @@
             <div id="thread-messages" class="thread-messages"></div>
             <div class="thread-reply">
               <div class="quick-replies" id="quick-replies-modal">
-                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Stadig til salg 👍</button>
+                <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Stadig til salg</button>
                 <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Prisen er fast</button>
                 <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Kan mødes i weekenden</button>
                 <button class="qr-btn" onclick="useQuickReply('reply-text', this)">Er du stadig interesseret?</button>
@@ -800,7 +713,7 @@
           <div id="inbox-modal-thread-messages" class="thread-messages"></div>
           <div class="thread-reply">
               <div class="quick-replies" id="quick-replies-inbox">
-                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg 👍</button>
+                <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Stadig til salg</button>
                 <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Prisen er fast</button>
                 <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Kan mødes i weekenden</button>
                 <button class="qr-btn" onclick="useQuickReply('inbox-modal-reply-text', this)">Er du stadig interesseret?</button>
@@ -865,7 +778,7 @@
             Opret en forhandler uden at kende deres adgangskode. De får en mail hvor de
             <strong>selv vælger password</strong> — du sætter resten op (logo/cykler via bulk-import).
           </p>
-          <div class="form-group"><label>Email *</label><input type="email" id="di-email" placeholder="forhandler@eksempel.dk"></div>
+          <div class="form-group"><label>E-mail *</label><input type="email" id="di-email" placeholder="forhandler@eksempel.dk"></div>
           <div class="form-group"><label>Butiksnavn</label><input type="text" id="di-shop" placeholder="f.eks. Lindebjerg Cykler"></div>
           <div class="form-group"><label>CVR-nummer</label><input type="text" inputmode="numeric" pattern="\d*" id="di-cvr" placeholder="f.eks. 12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'')"></div>
           <div class="form-group"><label>Kontaktperson</label><input type="text" id="di-contact" placeholder="f.eks. Anders"></div>
@@ -892,11 +805,11 @@
       <div class="modal-body">
         <div class="share-link-box" style="margin-bottom:16px;">
           <input type="text" id="share-link-input" readonly>
-          <button onclick="copyShareLink()">Kopiér</button>
+          <button onclick="copyShareLink()">Kopiér link</button>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <button class="share-btn share-link" onclick="copyShareLink()" style="flex-direction:row;justify-content:center;gap:10px;padding:14px;">
-            <span>Kopier link</span>
+            <span>Kopiér link</span>
           </button>
           <button class="share-btn" onclick="openNativeShare()" style="flex-direction:row;justify-content:center;gap:10px;padding:14px;background:var(--forest);color:var(--sand);border-color:var(--forest);">
             <span>Del via sociale medier</span>
@@ -926,27 +839,23 @@
       <div class="success-icon-wrap">
         <div class="success-icon">✓</div>
       </div>
-      <h2 class="success-title">Tillykke!</h2>
-      <p class="success-subtitle">Din annonce er nu live på Cykelbørsen</p>
+      <h2 class="success-title">Din annonce er oprettet</h2>
       <div class="success-bike-card">
         <div class="success-bike-name" id="success-bike-title"></div>
         <div class="success-bike-price" id="success-bike-price"></div>
       </div>
-      <button class="success-boost-cta" id="success-boost-btn">
-        
-        <span class="success-boost-cta-text">
-          <strong>Fremhæv din annonce</strong>
-          <span>Få den vist i toppen — første gang er gratis</span>
-        </span>
-
-      </button>
       <div class="success-actions">
         <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce</button>
         <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
       </div>
+      <button class="success-boost-cta" id="success-boost-btn">
+        <span class="success-boost-cta-text">
+          <strong>Fremhæv din annonce</strong>
+          <span>Få den vist i toppen. Første gang er gratis.</span>
+        </span>
+      </button>
       <style>
         .success-crosssell{display:none;align-items:center;gap:12px;margin-top:16px;padding:14px 16px;background:var(--sand);border:1px solid var(--border);border-radius:14px;text-align:left;}
-        .success-crosssell-emoji{font-size:1.7rem;flex-shrink:0;line-height:1;}
         .success-crosssell-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
         .success-crosssell-text strong{font-size:0.92rem;color:var(--charcoal);font-family:var(--font-sans);}
         .success-crosssell-text span{font-size:0.8rem;color:var(--muted);line-height:1.4;}

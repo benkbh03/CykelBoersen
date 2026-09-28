@@ -77,6 +77,20 @@ SELECT * FROM (
                             WHERE schemaname = 'storage' AND policyname = 'bike_images_insert_own')
               THEN 'OK' ELSE 'MANGLER' END
 
+  -- ── guard_bike_brand_model.sql (mærke/model "null") ────────────────
+  UNION ALL SELECT 41, 'annoncer', 'trigger trg_guard_bike_brand_model',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_guard_bike_brand_model')
+              THEN 'OK' ELSE 'MANGLER' END
+
+  -- Annoncer der allerede har "null" som mærke eller model. Migrationen
+  -- retter model selv; mærke skal rettes i admin-panelet. Forventet: 0.
+  UNION ALL SELECT 42, 'annoncer', 'annoncer med mærke/model "null" (skal vaere 0)',
+         (SELECT CASE WHEN count(*) = 0 THEN 'OK'
+                      ELSE 'SE EFTER (' || count(*) || ')' END
+            FROM bikes
+           WHERE lower(btrim(COALESCE(brand, ''))) IN ('null', 'undefined')
+              OR lower(btrim(COALESCE(model, ''))) IN ('null', 'undefined'))
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville

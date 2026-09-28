@@ -231,7 +231,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - **Logo:** ordmærket "cykelbørsen", hvor ø'et er en kursgraf. Markup: `logoHtml({ variant })` i `js/logo.js` (`light` = mørk tekst, `dark` = lys tekst på mørk grund); header og footer har samme markup statisk i `index.html`, så logoet står der fra første tegning. CSS: `.logo` i `01-base.css` (28 px header, 22 px mobil, 24 px footer). Som fil: `img/brand/logo-light.svg`/`logo-dark.svg` (bogstaverne er paths, ingen `<text>`), og `logo-dark-email.png` til e-mails (Gmail/Outlook viser ikke SVG). Favicons: `img/brand/` (SVG fra 32 px, forenklet 16 px i `.ico`/PNG); `/favicon.ico` og `/apple-touch-icon.png` i roden er kopier, fordi browsere henter dem derfra som standard.
 - **Hero'en med foto bliver** på forsiden. En version uden hero blev bygget og sammenlignet 26. sep.; brugeren foretrak hero'en. Foreslå ikke at fjerne den uden en ny grund.
 - Annoncekortets sælgerlinje bygges af `cardSellerLine()` i `js/card-seller.js`, aldrig i hånden. Én linje (navn + by) på desktop, to på kort under 480 px.
-- **Status (26. sep.):** Emojis og pile i knap- og linktekster er fjernet fra alle sider undtagen admin. Tilbage står bevidst: beskedkoderne (💰 ✅ ✉️), hurtigsvaret "Stadig til salg 👍" (indsættes i selve beskeden), prisfald-mærkets `↓` (betyder "faldet") og admin. Hover-løft, farvede skygger og guldgradienter er væk (fokus-ringe og puls-animationer er skovgrønne). **Tilbage:** ca. 30 versal-overskrifter (filterpanelet og /cykelagenter/ er ryddet). Ryd op i den blok du alligevel rører.
+- **Status (26. sep.):** Emojis og pile i knap- og linktekster er fjernet fra alle sider undtagen admin. Tilbage står bevidst: beskedkoderne (💰 ✅ ✉️) i selve beskedindholdet i databasen (UI'et viser dem ikke som emoji: `previewHTML()` i `js/inbox.js` fjerner koden og tegner et SVG-flueben), prisfald-mærkets `↓` (betyder "faldet") og admin. Hover-løft, farvede skygger og guldgradienter er væk (fokus-ringe og puls-animationer er skovgrønne). **Tilbage:** ca. 30 versal-overskrifter (filterpanelet og /cykelagenter/ er ryddet). Ryd op i den blok du alligevel rører.
 - "Sådan virker det"-sektioner er en nummereret liste (`<ol class="num-steps">`), ikke kort med ikoner.
 
 ## Teknologier
@@ -248,7 +248,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 
 ### Modaler (id'er fra `index.html`)
 - `user-profile-modal`, `dealer-profile-modal`, `all-dealers-modal` — profil-visninger
-- `modal` — opret annonce (legacy), `edit-modal` — rediger annonce
+- `edit-modal` — rediger annonce (opret annonce sker på `/sell`; den gamle `#modal` er fjernet 27. sep.)
 - `login-modal`, `reset-modal` — auth
 - `profile-modal` — mine indstillinger
 - `bike-modal`, `map-bike-modal` — annonce-detaljer
@@ -267,7 +267,7 @@ Z-index hierarki (stigende prioritet):
 - `#buyer-picker-modal`: 5000
 - `.toast`: 10000
 
-De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map-bike-modal`, `admin-modal`, `edit-modal`, `modal`, `profile-modal`, `login-modal`, `inbox-modal`, `share-modal` bruger `classList.add/remove('open')`. `document.body.style.overflow = 'hidden'` ved åbning, `''` ved lukning. Global `Escape`-lytter lukker den øverste åbne modal.
+De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map-bike-modal`, `admin-modal`, `edit-modal`, `profile-modal`, `login-modal`, `inbox-modal`, `share-modal` bruger `classList.add/remove('open')`. `document.body.style.overflow = 'hidden'` ved åbning, `''` ved lukning. Global `Escape`-lytter lukker den øverste åbne modal.
 
 ### Routing (pathname-baseret)
 - `navigateTo(path)` → `history.pushState`, derefter `handleRoute()`
