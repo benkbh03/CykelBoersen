@@ -197,7 +197,7 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 
 | Mønster | Set | Status |
 |---|---|---|
-| Kontrol kun i frontenden, ikke i databasen | Mange (`hasTraded`, filter-guards, `validateImageFile`) | Delvist lukket med triggere; tjek altid om en ny regel også findes server-side |
+| Kontrol kun i frontenden, ikke i databasen | Mange (`hasTraded`, filter-guards, `validateImageFile`, mærke/model "null") | Delvist lukket med triggere. `hasTraded` lukket 29. sep. med `trades` + `require_trade_before_review`. Tjek altid om en ny regel også findes server-side |
 | Sletning der kun rammer rækker, ikke Storage | 3 (`delete-account`, `admin-actions`, `listing-edit`) | Lukket. Samme `emptyPrefix`-mønster begge steder |
 | Samme felt under to navne eller typer i to filer | 2 (`maxWeight`/`maxWeightKg`, `electronicShifting` bool/streng) | Lukket med `normalizeFilters()` i begge matchere |
 | Databasen er ikke i den tilstand koden tror | 2 (`harden_bike_images_bucket.sql` skrevet og aldrig kørt, åben i to døgn · `add_moderation_log_and_suspension.sql` kørt i en ÆLDRE udgave end den i repoet, opdaget 15. sept.) | **Lukket med et værktøj, ikke med god vilje.** `supabase/sql/STATUS_TJEK.sql` er ét read-only opslag der viser hvad der faktisk findes. Kør det FØR du skriver en deploy-tjekliste og IGEN bagefter. Anden forekomst var værre end den første: filen var kørt, så alle antog den var på plads, men den udgave der blev kørt efterlod to offentligt læsbare kolonner på `profiles`. En fil kan være kørt i en forældet version |
@@ -327,8 +327,9 @@ updateSEOMeta(description, canonicalPath)   // Opdatér meta-tags ved routing
 
 ### Vurderingssystem
 - Brugere kan kun vurdere hinanden efter en reel handel
-- `hasTraded` tjekker for beskeder der indeholder "accepteret"
-- Tre veje til handel: accepter bud → automatisk, "Sæt solgt" → buyer-picker modal, manuel markering
+- En handel er en række i `trades` med status `gennemført` | `annulleret` (`add_trades.sql`, 29. sep.). Databasen opretter den, når annoncens sælger sender ✅-beskeden til en bruger der har skrevet om annoncen; frontenden opretter aldrig handler. Sættes en solgt annonce aktiv igen, annulleres handlen og `sold_via` nulstilles
+- Læs handler via `js/trades.js` (`fetchTradesFor`, `findCompletedTradeWith`), aldrig ved at søge i beskeder. `require_trade_before_review` kræver en gennemført handel og sætter `reviews.trade_id`; vurderinger på annullerede handler er skjult via RLS (`review_trade_visible`)
+- To veje til handel: accepter bud (`js/inbox.js`) og "Sæt solgt" → buyer-picker modal (`js/sold-actions.js`). Begge sender ✅-beskeden, og den SKAL starte med ✅ og indeholde "accepteret"
 - Efter handel åbnes købers profil automatisk med vurderingsformular i fokus (`openUserProfileWithReview`)
 
 ### Sælgertype-kontrol
