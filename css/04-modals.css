@@ -1158,8 +1158,16 @@ body:has(.inbox-page) #chat-widget { display: none; }
 /* ───────────────────────────────────────────────────────────── */
 
 .seller-avatar-large { width: 44px; height: 44px; border-radius: 50%; background: var(--forest); color: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+/* Forhandlerlogo i sælgerboksen: hele logoet, ikke beskåret til en cirkel. */
+.seller-logo {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  height: 44px; max-width: 112px; padding: var(--space-1);
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.seller-logo img { max-height: 100%; max-width: 100%; object-fit: contain; display: block; }
+@media (max-width: 480px) { .seller-logo { height: 40px; max-width: 96px; } }
 .seller-detail-name { font-weight: var(--weight-semibold); font-size: 0.95rem; }
-.seller-detail-city { font-size: 0.8rem; color: var(--muted); }
+.seller-detail-city { font-size: var(--text-xs); color: var(--muted); display: flex; align-items: center; gap: var(--space-1); }
 .bike-detail-description { background: var(--sand); border-radius: 10px; padding: 16px; font-size: 0.88rem; line-height: 1.6; color: var(--charcoal); border: 1px solid var(--border); }
 .listing-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.76rem; color: var(--muted); }
 .desc-wrap { position: relative; }
