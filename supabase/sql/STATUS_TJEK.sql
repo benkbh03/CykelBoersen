@@ -91,6 +91,15 @@ SELECT * FROM (
            WHERE lower(btrim(COALESCE(brand, ''))) IN ('null', 'undefined')
               OR lower(btrim(COALESCE(model, ''))) IN ('null', 'undefined'))
 
+  -- ── remove_feed_template_description.sql ───────────────────────────
+  -- Feed-annoncer der stadig har skabelonteksten. Forventet: 0.
+  UNION ALL SELECT 43, 'feed', 'annoncer med skabelon-beskrivelse (skal vaere 0)',
+         (SELECT CASE WHEN count(*) = 0 THEN 'OK'
+                      ELSE 'SE EFTER (' || count(*) || ')' END
+            FROM bikes
+           WHERE external_id IS NOT NULL
+             AND description LIKE '%ny cykel fra forhandleren. Kontakt forhandleren%')
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville

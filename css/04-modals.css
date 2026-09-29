@@ -2025,3 +2025,16 @@ body:has(.inbox-page) #chat-widget { display: none; }
   to { transform: rotate(360deg); }
 }
 
+
+/* "Se fulde specifikationer hos {butik}": feed-annoncer uden beskrivelse.
+   Sekundær knap, så den ikke konkurrerer med "Se hos …"-knappen øverst. */
+.btn-full-specs {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--cream); color: var(--charcoal);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-semibold);
+  text-align: center; text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-full-specs:hover { background: var(--sand); border-color: var(--forest); }

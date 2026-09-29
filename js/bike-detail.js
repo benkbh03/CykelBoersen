@@ -379,14 +379,28 @@ export function createBikeDetail({
         ${/* sticky: gridet holdes åbent og det lange indhold bliver 3. grid-barn.
               ellers: gridet lukkes her, præcis som før. */''}
         ${sticky ? '<div class="bd-col-body">' : '</div>'}
-      ${b.description ? `
+      ${(() => {
+        /* Feed-importen skrev tidligere en skabelontekst, når butikken ingen
+           beskrivelse havde ("— ny cykel fra forhandleren. Kontakt …"). Den
+           siger intet om cyklen. Den vises ikke, heller ikke på annoncer der
+           endnu ikke er ryddet op i databasen. */
+        const desc = /— ny cykel fra forhandleren\. Kontakt forhandleren for nærmere info om udstyr og specifikationer\.\s*$/.test(b.description || '')
+          ? '' : (b.description || '');
+        if (desc) return `
       <div style="margin-top:20px;">
         <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
         <div class="desc-wrap is-clamped" id="bike-desc-wrap">
-          <div class="bike-detail-description" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
+          <div class="bike-detail-description" id="bike-desc-text">${esc(desc).replace(/\n/g, '<br>')}</div>
         </div>
         <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
-      </div>` : ''}
+      </div>`;
+        // Ingen beskrivelse fra butikken: send køberen til butikkens egen side.
+        if (b.external_url && sellerType === 'dealer') return `
+      <div style="margin-top:20px;">
+        <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-full-specs">Se fulde specifikationer hos ${esc(profile.shop_name || profile.name || 'forhandleren')}</a>
+      </div>`;
+        return '';
+      })()}
       ${(b.size || b.size_cm || b.wheel_size) ? (() => {
         const heightMap = {
           'XS (44–48 cm)': '148–162 cm',
