@@ -87,16 +87,20 @@
        forsvinder billederne på flere hundrede annoncer. Hentes feed-billeder
        en dag ind i vores egen bucket, kan img-src låses til Supabase.
 
+       Cloudflare Web Analytics: Cloudflare sætter selv beacon.min.js ind
+       (static.cloudflareinsights.com), og beaconen sender målingerne til
+       cloudflareinsights.com. Uden de to var scriptet blokeret af CSP'en.
+
        frame-ancestors mangler med vilje: direktivet ignoreres i en
        meta-tag og kræver en HTTP-header, som GitHub Pages ikke kan sætte.
   ─────────────────────────────────────────────────────────────── -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com;
     style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
     font-src 'self';
     img-src 'self' data: blob: https:;
-    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://api.dataforsyningen.dk;
+    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://api.dataforsyningen.dk https://cloudflareinsights.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
