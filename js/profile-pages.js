@@ -2,6 +2,7 @@
    PROFIL SIDER — Factory: renderUserProfilePage, renderDealerProfilePage
    ============================================================ */
 
+import { findCompletedTradeWith } from './trades.js';
 import {
   buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
 } from './dealer-extras.js';
@@ -70,12 +71,9 @@ export function createProfilePages({
     const [r1, r2, r3, r4] = await Promise.race([dataPromise, timeoutPromise]);
     let messagesCount = 0;
     if (currentUser) {
-      const { data: tradeMsg } = await safe(
-        supabase.from('messages').select('id')
-          .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`)
-          .ilike('content', '%accepteret%').limit(1)
-      );
-      messagesCount = tradeMsg?.length || 0;
+      // Kun en gennemført handel åbner for vurdering (js/trades.js).
+      const trade = await findCompletedTradeWith(supabase, currentUser.id, userId).catch(() => null);
+      messagesCount = trade ? 1 : 0;
     }
     // Følger-tæller + følger-status (samme dealer_followers-tabel som forhandler)
     let followerCount = 0, isFollowing = false;
@@ -114,12 +112,8 @@ export function createProfilePages({
     ]);
     let messagesCount = 0;
     if (currentUser) {
-      const { data: tradeMsg } = await safe(
-        supabase.from('messages').select('id')
-          .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${dealerId}),and(sender_id.eq.${dealerId},receiver_id.eq.${currentUser.id})`)
-          .ilike('content', '%accepteret%').limit(1)
-      );
-      messagesCount = tradeMsg?.length || 0;
+      const trade = await findCompletedTradeWith(supabase, currentUser.id, dealerId).catch(() => null);
+      messagesCount = trade ? 1 : 0;
     }
 
     let followerCount = 0;

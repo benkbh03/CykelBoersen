@@ -237,7 +237,6 @@ export function createBikeDetail({
               const cols = (Array.isArray(b.colors) && b.colors.length) ? b.colors : (b.color ? [b.color] : []);
               return cols.map(c => `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('color','${escAttr(c)}')" title="Se alle ${escAttr(c)}e cykler">${esc(c)}</button>`).join('');
             })()}
-            ${b.city ? `<button type="button" class="detail-tag detail-tag--link" onclick="filterByTag('city','${escAttr(b.city)}')" title="Se alle cykler i ${escAttr(b.city)}">${esc(b.city)}</button>` : ''}
             ${b.warranty ? `<span class="detail-tag detail-tag--garanti">${iconShield()} ${esc(b.warranty)}</span>` : ''}
             ${(() => {
               /* Stelnummer-tag: gør åbenheden synlig ved første øjekast i stedet for
@@ -259,10 +258,21 @@ export function createBikeDetail({
             })()}
           </div>
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
-            <div class="seller-avatar-large">${avatarContent}</div>
+            ${/* Forhandler: logoet hvis det findes, ellers kun butiksnavnet.
+                  En initial-cirkel ligner en privat profil og siger intet om butikken. */''}
+            ${sellerType === 'dealer'
+              ? (avatarUrl ? `<div class="seller-logo"><img src="${avatarUrl}" alt="${esc(sellerName || 'Forhandler')} logo"></div>` : '')
+              : `<div class="seller-avatar-large">${avatarContent}</div>`}
             <div style="flex:1">
               <div class="seller-detail-name">${esc(sellerName || 'Ukendt')}${profile.verified ? ' <span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}${profile.email_verified ? ` <span class="email-badge" title="E-mail verificeret">${iconMail(12)}</span>` : ''}</div>
-              <div class="seller-detail-city">${esc(profile.city || '')}</div>
+              ${/* Byen står ÉT sted: her. By-chippen og placeringsboksen er
+                    fjernet. Forhandlere får gadeadressen med, fordi køberen skal
+                    kunne finde butikken. */''}
+              ${(() => {
+                const place = [sellerType === 'dealer' ? profile.address : null, b.city || profile.city]
+                  .filter(Boolean).join(', ');
+                return place ? `<div class="seller-detail-city">${iconPin(13)} ${esc(place)}</div>` : '';
+              })()}
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;">
                 <span class="badge ${sellerType === 'dealer' ? 'badge-dealer' : 'badge-private'}">
                   ${sellerType === 'dealer' ? iconDealer() + 'Forhandler' : iconPrivate() + 'Privat'}
@@ -273,22 +283,6 @@ export function createBikeDetail({
             </div>
             <div style="color:var(--muted);font-size:0.8rem;align-self:center;">Se profil</div>
           </div>
-          ${/* Placeringen hører til sælgeren, ikke til billederne. Under galleriet
-                skubbede den prisen ned under folden på mobil. */''}
-          ${(profile.city || profile.address) ? `
-          <a class="bike-location-card" id="bike-location-card" href="/" onclick="showBikeOnMap('${b.id}');return false;">
-            <div class="bike-location-header">
-              <div class="bike-location-title">
-                <span class="bike-location-pin">${iconPin(15)}</span>
-                <div>
-                  <div class="bike-location-label">Sælgers placering</div>
-                  <div class="bike-location-place">${esc(profile.city || '')}</div>
-                  ${profile.address ? `<div class="bike-location-address">${esc(profile.address)}</div>` : ''}
-                </div>
-              </div>
-
-            </div>
-          </a>` : ''}
           ${isDemo ? '' : `
           <!-- Forbrugeraftaleloven § 8a: en online markedsplads skal oplyse
                forbrugeren om sælger er erhvervsdrivende eller privat, OG at
@@ -385,14 +379,28 @@ export function createBikeDetail({
         ${/* sticky: gridet holdes åbent og det lange indhold bliver 3. grid-barn.
               ellers: gridet lukkes her, præcis som før. */''}
         ${sticky ? '<div class="bd-col-body">' : '</div>'}
-      ${b.description ? `
+      ${(() => {
+        /* Feed-importen skrev tidligere en skabelontekst, når butikken ingen
+           beskrivelse havde ("— ny cykel fra forhandleren. Kontakt …"). Den
+           siger intet om cyklen. Den vises ikke, heller ikke på annoncer der
+           endnu ikke er ryddet op i databasen. */
+        const desc = /— ny cykel fra forhandleren\. Kontakt forhandleren for nærmere info om udstyr og specifikationer\.\s*$/.test(b.description || '')
+          ? '' : (b.description || '');
+        if (desc) return `
       <div style="margin-top:20px;">
         <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1rem;margin-bottom:10px;">Beskrivelse</h3>
         <div class="desc-wrap is-clamped" id="bike-desc-wrap">
-          <div class="bike-detail-description" id="bike-desc-text">${esc(b.description).replace(/\n/g, '<br>')}</div>
+          <div class="bike-detail-description" id="bike-desc-text">${esc(desc).replace(/\n/g, '<br>')}</div>
         </div>
         <button class="desc-expand-btn" id="bike-desc-btn" onclick="expandBikeDesc()">+ Vis fuld beskrivelse</button>
-      </div>` : ''}
+      </div>`;
+        // Ingen beskrivelse fra butikken: send køberen til butikkens egen side.
+        if (b.external_url && sellerType === 'dealer') return `
+      <div style="margin-top:20px;">
+        <a href="${esc(b.external_url)}" target="_blank" rel="noopener noreferrer" class="btn-full-specs">Se fulde specifikationer hos ${esc(profile.shop_name || profile.name || 'forhandleren')}</a>
+      </div>`;
+        return '';
+      })()}
       ${(b.size || b.size_cm || b.wheel_size) ? (() => {
         const heightMap = {
           'XS (44–48 cm)': '148–162 cm',
@@ -491,7 +499,7 @@ export function createBikeDetail({
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>
           <strong>Tjek stelnummeret</strong>
-          <span>Politiets register er den danske, autoritative kilde. Tjek stelnummeret gratis inden du køber</span>
+          <span>Slå stelnummeret op hos politiet, før du køber. Det er gratis.</span>
         </div>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -500,7 +508,7 @@ export function createBikeDetail({
       <div id="seller-other-listings" style="margin-top:28px;"></div>
       <div id="similar-listings" style="margin-top:24px;"></div>
       <div class="listing-meta">
-        <span>Annonce-ID: ${b.id}</span>
+        ${getCurrentProfile()?.is_admin ? `<span>Annonce-ID: ${b.id}</span>` : ''}
         <span title="${new Date(b.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}">Oprettet ${formatRelativeAge(b.created_at)}</span>
         ${/* last_edited_at — IKKE updated_at. Sidstnævnte bumpes af
               visningstælleren, den natlige feed-sync og friskheds-nudgen, så

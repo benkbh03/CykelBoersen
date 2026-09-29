@@ -1,4 +1,5 @@
 import { iconBike, iconEye, iconPencil, iconHeart } from './utils.js';
+import { fetchTradesFor, completedTrades } from './trades.js';
 export function createMyProfile({
   supabase,
   esc,
@@ -495,33 +496,25 @@ export function createMyProfile({
     if (!list) return;
 
     try {
-      const { data: tradeMessages, error } = await supabase
-        .from('messages')
-        .select('id, bike_id, sender_id, receiver_id, content, created_at')
-        .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-        .ilike('content', '%accepteret%')
-        .order('created_at', { ascending: false });
+      /* Handler fra trades-tabellen (js/trades.js). En annulleret handel
+         (annoncen sat aktiv igen) står stadig på listen, markeret
+         "Annulleret", men tæller ikke i "Handler afsluttet". */
+      let uniqueTrades;
+      try { uniqueTrades = await fetchTradesFor(supabase, currentUser.id); }
+      catch (e) { console.error('fetchTradesFor:', e); list.innerHTML = retryHTML('Kunne ikke hente handelshistorik.', 'loadTradeHistory'); return; }
 
-      if (error) { list.innerHTML = retryHTML('Kunne ikke hente handelshistorik.', 'loadTradeHistory'); return; }
+      const tradesCount = completedTrades(uniqueTrades).length;
       const tradesStat = document.getElementById('mp-stat-trades');
-      const tradesCount = new Set(tradeMessages ? tradeMessages.map(m => m.bike_id) : []).size;
       if (tradesStat) tradesStat.textContent = tradesCount;
       const tradesCountEl = document.getElementById('mp-count-trades');
       if (tradesCountEl) tradesCountEl.textContent = tradesCount;
-      if (!tradeMessages || tradeMessages.length === 0) {
+      if (uniqueTrades.length === 0) {
         list.innerHTML = '<p style="color:var(--muted)">Ingen gennemførte handler endnu.</p>';
         return;
       }
 
-      const seen = new Set();
-      const uniqueTrades = tradeMessages.filter(m => {
-        if (seen.has(m.bike_id)) return false;
-        seen.add(m.bike_id);
-        return true;
-      });
-
-      const bikeIds  = uniqueTrades.map(m => m.bike_id);
-      const otherIds = uniqueTrades.map(m => m.sender_id === currentUser.id ? m.receiver_id : m.sender_id);
+      const bikeIds  = [...new Set(uniqueTrades.map(t => t.bike_id))];
+      const otherIds = uniqueTrades.map(t => t.seller_id === currentUser.id ? t.buyer_id : t.seller_id);
 
       const [bikesRes, profilesRes] = await Promise.all([
         supabase.from('bikes').select('id, brand, model, price, is_giveaway, type, bike_images(url, is_primary)').in('id', bikeIds),
@@ -535,15 +528,16 @@ export function createMyProfile({
 
       list.innerHTML = uniqueTrades.map(trade => {
         const bike     = bikesMap[trade.bike_id] || {};
-        const otherId  = trade.sender_id === currentUser.id ? trade.receiver_id : trade.sender_id;
+        const otherId  = trade.seller_id === currentUser.id ? trade.buyer_id : trade.seller_id;
         const other    = profilesMap[otherId] || {};
         const otherName = other.seller_type === 'dealer' ? other.shop_name : other.name;
-        const isSeller  = trade.sender_id === currentUser.id;
+        const isSeller  = trade.seller_id === currentUser.id;
+        const cancelled = trade.status === 'annulleret';
         const date       = new Date(trade.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
         const img        = bike.bike_images?.find(i => i.is_primary)?.url || bike.bike_images?.[0]?.url;
 
         return `
-          <div class="trade-row">
+          <div class="trade-row${cancelled ? ' trade-row--cancelled' : ''}">
             <div class="trade-img" onclick="openBikeModal('${trade.bike_id}')">
               ${img ? `<img src="${img}" alt="" loading="lazy">` : `<span style="color:var(--muted)">${iconBike(24)}</span>`}
             </div>
@@ -553,7 +547,9 @@ export function createMyProfile({
               <div class="trade-date">${date}</div>
             </div>
             <div class="trade-price">${bike.price ? bike.price.toLocaleString('da-DK') + ' kr.' : ''}</div>
-            <span class="trade-status">Gennemført</span>
+            ${cancelled
+              ? `<span class="trade-status trade-status--cancelled" title="Annoncen blev sat til salg igen, så handlen tæller ikke">Annulleret</span>`
+              : '<span class="trade-status">Gennemført</span>'}
           </div>`;
       }).join('');
     } catch (e) {

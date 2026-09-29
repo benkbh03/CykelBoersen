@@ -386,11 +386,23 @@ function enrichFields(type: string, title: string, body: string, tags: string, v
   const colors = extractColors(name);
   if (colors.length) { out.colors = colors; out.color = colors.join(", "); }
 
-  // Stelmateriale udfyldes IKKE automatisk: keyword-match fangede ord som
-  // "alufælge" eller "stålgaffel" i beskrivelsen og troede det var stellet, så
-  // herre/dame-varianter fik forskellige (forkerte) materialer. Admin udfylder
-  // materiale manuelt. (frame_material sættes til null i payloadet, så et
-  // gammelt forkert auto-materiale ryddes ved næste sync på ulåste cykler.)
+  // Stelmateriale: KUN når teksten udtrykkeligt taler om stellet. Et løst
+  // keyword-match fangede tidligere "alufælge" og "stålgaffel" og gav forkerte
+  // materialer, så det var slået fra. Nu kræves ordet stel/ramme/frame lige ved
+  // materialet ("aluminiumsstel", "carbon frame", "Stel: aluminium").
+  {
+    const MAT = "(carbon|kulfiber|aluminiums?|aluminum|alu|stål|steel|titanium|titan)";
+    // Ingen \b efter materialet: i en regex uden u-flag er "å" ikke et
+    // ordtegn, så \b efter "stål" ville aldrig ramme. Derfor lookahead.
+    const END = "(?![a-zæøå])";
+    const m = spec.match(new RegExp(`\\b${MAT}[\\s-]*(stel(?:let)?|rammen?|frame)${END}`, "i"))
+           || spec.match(new RegExp(`\\b(stel(?:let)?|rammen?|frame)(?:materiale|material)?\\s*[:\\-]?\\s*(?:i\\s+|af\\s+|in\\s+)?${MAT}${END}`, "i"));
+    const word = m ? (m[1].match(/stel|ramme|frame/i) ? m[2] : m[1]).toLowerCase() : "";
+    if (/^(carbon|kulfiber)/.test(word)) out.frame_material = "Carbon";
+    else if (/^alu/.test(word)) out.frame_material = "Aluminium";
+    else if (/^(stål|steel)/.test(word)) out.frame_material = "Stål";
+    else if (/^titan/.test(word)) out.frame_material = "Titanium";
+  }
 
   // Hjulstørrelse: et bart tomme-tal i titlen er TVETYDIGT — det kan være HJUL
   // eller STEL. Gammeldags herre-/damecykler måles i tommer-stel (fx "Raleigh
@@ -510,11 +522,11 @@ function parseShopifyProducts(products: any[], origin: string): any[] {
     // Model = titel uden mærket (så "Centurion Basic Free" → "Basic Free")
     let model = title.replace(new RegExp(escapeRe(brand), "i"), "").replace(/\s+/g, " ").trim();
     if (!model) model = title;
-    // Beskrivelse: brug webshoppens tekst, men sikr min. længde (påkrævet felt)
-    let description = stripHtml(p.body_html ?? "");
-    if (description.length < 40) {
-      description = `${brand} ${model}`.trim() + " — ny cykel fra forhandleren. Kontakt forhandleren for nærmere info om udstyr og specifikationer.";
-    }
+    // Beskrivelse: webshoppens egen tekst, eller ingenting. Tidligere blev en
+    // skabelon indsat ("— ny cykel fra forhandleren. Kontakt …"), som intet
+    // sagde om cyklen. Uden tekst viser annoncesiden i stedet en knap til
+    // butikkens egen side ("Se fulde specifikationer hos …").
+    const description = stripHtml(p.body_html ?? "");
     return {
       external_id:   String(p.id ?? "").trim(),
       brand, model, title,
@@ -715,8 +727,10 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
         city:         it.city || fallbackCity,                     // obligatorisk
         description:  it.description || "",
         external_url: it.external_url,
-        ...enriched,                                               // year, colors, motor, groupset, …
-        frame_material: null,                                      // udfyldes manuelt — ryd evt. gammelt auto-materiale
+        ...enriched,                                               // year, colors, motor, groupset, frame_material, …
+        // Kun et udtrykkeligt stelmateriale (se enrichFields); ellers null, så
+        // et gammelt forkert auto-materiale ryddes ved næste sync.
+        frame_material: enriched.frame_material ?? null,
       },
       images: it.images.map((url: string, idx: number) => ({ url, is_primary: idx === 0 })),
     };

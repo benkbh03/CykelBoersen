@@ -23,7 +23,8 @@ Denne fil er øjebliksbilledet af hvad databasen faktisk håndhæver.
 
 - `profiles` INSERT tjekker kun `auth.uid() = id` og siger intet om kolonnerne. `protect_privileged_profile_columns` (nu `BEFORE INSERT OR UPDATE`) tvinger `is_admin`, `verified`, `id_verified` og Stripe-kolonnerne ned ved INSERT, og blokerer ændring af dem ved UPDATE. **Var `BEFORE UPDATE` alene indtil 3. september, hvor en ny konto kunne indsætte sin egen række med `is_admin = true`.**
 - `profiles` UPDATE ser løs ud af samme grund; samme trigger dækker den.
-- `reviews` INSERT tjekker kun `reviewer_id`. `require_trade_before_review` kræver at der findes en accepteret-besked mellem parterne. Forbeholdet står i `harden_profile_insert_and_reviews.sql`: en angriber kan selv sende sådan en besked, så det hæver barren uden at lukke den.
+- `reviews` INSERT tjekker kun `reviewer_id`. `require_trade_before_review` (fra `add_trades.sql`) kræver en **gennemført** række i `trades` mellem parterne og sætter selv `trade_id` og `bike_id`. En handel oprettes kun af triggeren `trg_create_trade_from_message`, når annoncens sælger sender ✅-beskeden til en bruger, der har skrevet om annoncen. Hullet fra `harden_profile_insert_and_reviews.sql` (en selvskrevet ✅-besked gav ret til at vurdere) er dermed lukket.
+- `bikes` UPDATE: `trg_cancel_trade_on_reactivate` annullerer handlen og nulstiller `sold_via`, når en solgt annonce sættes aktiv igen.
 - `strip_private_phone` nulstiller `phone` på ikke-forhandlere.
 
 Bekræft dem med:
@@ -155,8 +156,9 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | rental_items | SELECT | rental_items_select | public | `is_active OR dealer_id = auth.uid()` | – |
 | rental_items | UPDATE | rental_items_update | public | `dealer_id = auth.uid()` | `dealer_id = auth.uid()` |
 | reviews | INSERT | Indlogget bruger kan indsætte | public | – | `auth.uid() = reviewer_id` ⁴ |
-| reviews | SELECT | Alle kan se vurderinger | public | `true` | – |
+| reviews | SELECT | Alle kan se vurderinger | public | `review_trade_visible(trade_id)` ⁷ | – |
 | reviews | UPDATE | Bruger kan opdatere egne | public | `auth.uid() = reviewer_id` | – ¹ |
+| trades | SELECT | trades_select_parties | public | `auth.uid() = seller_id OR auth.uid() = buyer_id` | – ⁸ |
 | saved_bikes | DELETE | Bruger kan slette eget save | public | `auth.uid() = user_id` | – |
 | saved_bikes | DELETE | Kun ejer kan fjerne gemte annoncer ⁵ | public | `auth.uid() = user_id` | – |
 | saved_bikes | INSERT | Bruger kan indsætte eget save | public | – | `auth.uid() = user_id` |
@@ -177,9 +179,11 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 1. **Ikke et hul.** For UPDATE genbruger Postgres `USING` som `WITH CHECK` når sidstnævnte mangler, så rækken kan ikke gives videre til en anden. Kolonneadgangen er begrænset med `GRANT` i stedet — se afsnittet om kolonne-rettigheder øverst.
 2. **Kendt og accepteret.** Hele tabellen er læsbar med den offentlige anon-nøgle. Den eneste følsomme kolonne, `phone`, er fjernet for private profiler og håndhæves af triggeren `strip_private_phone`. Ændres skemaet med en ny følsom kolonne, bliver den offentlig samme dag.
 3. Beskyttet af triggeren `protect_privileged_profile_columns`, ikke af politikken.
-4. Ingen kontrol af at en handel har fundet sted. Begrænset af unik-indekset `reviews_unique_per_trade` og CHECK-constrainten `reviews_no_self_review`.
+4. Handelskravet ligger i triggeren `require_trade_before_review`, ikke i politikken (se "Triggere" øverst). Én vurdering pr. anmelder pr. handel: unik-indekset `reviews_one_per_trade` (erstatter `reviews_unique_per_trade`) og CHECK-constrainten `reviews_no_self_review`.
 5. Dublet af den foregående politik. Politikker OR'es sammen, så det er harmløst, men to migrationer har lavet den samme regel under forskellige navne.
 6. `FOR ALL` uden `WITH CHECK` er i orden: `USING` bruges også som check.
+7. `review_trade_visible` er `SECURITY DEFINER`: sand når `trade_id` er NULL (ældre vurdering uden handel) eller handlen er 'gennemført'. Vurderinger på en annulleret handel er skjult for alle. **Der må kun være denne ene SELECT-politik på `reviews`**; en ekstra ville OR'es ind og vise de skjulte igen. STATUS_TJEK række 47 tjekker det.
+8. Ingen INSERT-, UPDATE- eller DELETE-politik, og `authenticated`/`anon` har kun `SELECT`. Rækker skrives kun af triggerne i `add_trades.sql` og af service-role.
 
 ---
 

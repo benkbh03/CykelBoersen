@@ -2133,7 +2133,9 @@ export function createSellPage({
 
       // Tekst + pris → skriv til draft-cachen (skriv IKKE over hvad brugeren har).
       const put = (id, val) => {
-        if (val == null || val === '') return;
+        // Samme regel som billedanalysen: "null"/"undefined" som tekst er
+        // ingen værdi, og feltet skal forblive tomt.
+        if (cleanText(val) === null) return;
         const existing = String(_sellFormCache[id] ?? '').trim();
         if (!existing) _sellFormCache[id] = String(val);
       };
@@ -2147,7 +2149,7 @@ export function createSellPage({
       if (parsed.brand)          put('sell-brand', parsed.brand);
       // Model: parseren har renset mærke/årstal/pris ud af titlen. Kunne den
       // ikke finde noget, falder vi tilbage til den rå titel som før.
-      const model = parsed.model || (data.title ? data.title.slice(0, 80) : null);
+      const model = cleanText(parsed.model) || (cleanText(data.title) ? data.title.trim().slice(0, 80) : null);
       if (model)                 put('sell-model', model);
       if (parsed.type)           put('sell-type', parsed.type);
       if (parsed.condition)      put('sell-condition', parsed.condition);

@@ -1495,11 +1495,9 @@ body.nav-search-on .nav-search { display: flex; }
   gap: var(--space-1);
 }
 .fit-card-label {
-  font-size: 0.74rem;
+  font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 .fit-card-value {
   font-size: var(--text-base);
