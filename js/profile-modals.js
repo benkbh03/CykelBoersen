@@ -1,4 +1,5 @@
 import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl, iconPin, iconMail, iconBike } from './utils.js';
+import { findCompletedTradeWith } from './trades.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 export function createProfileModals({
@@ -199,14 +200,9 @@ export function createProfileModals({
       reviews     = r4.error ? [] : (r4.data || []);
 
       if (currentUser) {
-        const { data: tradeMsg } = await safe(
-          supabase.from('messages')
-            .select('id')
-            .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`)
-            .ilike('content', '%accepteret%')
-            .limit(1)
-        );
-        messagesCount = tradeMsg?.length || 0;
+        // Kun en gennemført handel åbner for vurdering (js/trades.js).
+        const trade = await findCompletedTradeWith(supabase, currentUser.id, userId).catch(() => null);
+        messagesCount = trade ? 1 : 0;
       } else {
         messagesCount = 0;
       }

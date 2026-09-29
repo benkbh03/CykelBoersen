@@ -100,6 +100,34 @@ SELECT * FROM (
            WHERE external_id IS NOT NULL
              AND description LIKE '%ny cykel fra forhandleren. Kontakt forhandleren%')
 
+  -- ── add_trades.sql (handler som rækker med status) ────────────────
+  UNION ALL SELECT 44, 'handler', 'tabel trades',
+         CASE WHEN to_regclass('public.trades') IS NOT NULL THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 45, 'handler', 'trigger: handel oprettes af saelgerens ✅-besked',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_create_trade_from_message')
+              THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 46, 'handler', 'trigger: genaktivering annullerer handlen',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_cancel_trade_on_reactivate')
+              THEN 'OK' ELSE 'MANGLER' END
+  -- Én SELECT-politik paa reviews, og den skjuler annullerede handler.
+  -- En ekstra politik ville OR'es ind og vise dem igen.
+  UNION ALL SELECT 47, 'handler', 'reviews: kun én SELECT-politik, og den bruger review_trade_visible',
+         (SELECT CASE WHEN count(*) = 1 AND bool_and(qual LIKE '%review_trade_visible%') THEN 'OK'
+                      ELSE 'SE EFTER (' || count(*) || ' politikker)' END
+            FROM pg_policies
+           WHERE schemaname = 'public' AND tablename = 'reviews' AND cmd = 'SELECT')
+  -- Gennemforte handler hvor annoncen er aktiv igen. Efter
+  -- cancel_reactivated_trades.sql: 0. Nye opstaar ikke, triggeren tager dem.
+  UNION ALL SELECT 48, 'handler', 'gennemfoerte handler paa aktive annoncer (skal vaere 0)',
+         -- Dynamisk (query_to_xml), fordi en direkte FROM trades ville faa HELE
+         -- tjekket til at fejle, foer add_trades.sql er koert.
+         CASE WHEN to_regclass('public.trades') IS NULL THEN 'MANGLER'
+              ELSE (SELECT CASE WHEN n = 0 THEN 'OK' ELSE 'SE EFTER (' || n || ')' END
+                      FROM (SELECT (xpath('/row/n/text()', query_to_xml(
+                              'SELECT count(*) AS n FROM trades t JOIN bikes b ON b.id = t.bike_id
+                                WHERE t.status = ''gennemført'' AND b.is_active = true',
+                              false, true, '')))[1]::text::int AS n) x) END
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville

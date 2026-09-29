@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { iconEye, iconHeart, iconAlert, iconCamera } from './utils.js';
+import { fetchTradesFor, completedTrades } from './trades.js';
 
 export function createMyProfilePage({
   supabase,
@@ -322,7 +323,8 @@ export function createMyProfilePage({
         supabase.from('bikes').select('id, brand, model, views, is_active, created_at, bike_images(id)').eq('user_id', currentUser.id),
         supabase.from('saved_bikes').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
         supabase.from('saved_searches').select('id, name, filters, created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
-        supabase.from('messages').select('bike_id').or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`).ilike('content', '%accepteret%'),
+        // Kun gennemførte handler tæller; annullerede (annoncen sat aktiv igen) gør ikke.
+        fetchTradesFor(supabase, currentUser.id).catch(() => []),
       ]);
 
       const bikes       = bikesRes.data || [];
@@ -330,7 +332,7 @@ export function createMyProfilePage({
       const totalViews  = bikes.reduce((s, b) => s + (b.views || 0), 0);
       const savedCount  = savedRes.count || 0;
       const searches    = searchesRes.data || [];
-      const tradesCount = new Set((tradesRes.data || []).map(m => m.bike_id)).size;
+      const tradesCount = completedTrades(tradesRes).length;
 
       const activeEl = document.getElementById('mp-stat-active');
       if (activeEl) activeEl.textContent = activeBikes.length;

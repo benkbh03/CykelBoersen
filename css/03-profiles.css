@@ -60,6 +60,12 @@
 .trade-date { font-size: var(--text-xs); color: var(--muted); }
 .trade-price { font-weight: 700; font-size: 0.9rem; color: var(--charcoal); white-space: nowrap; }
 .trade-status { font-size: var(--text-xs); color: #2e7d32; font-weight: var(--weight-semibold); white-space: nowrap; }
+/* Annulleret handel: annoncen blev sat til salg igen. Står på listen, men
+   nedtonet, så den ikke læses som en gennemført handel. */
+.trade-status--cancelled { color: var(--muted); }
+.trade-row--cancelled .trade-img,
+.trade-row--cancelled .trade-title,
+.trade-row--cancelled .trade-price { opacity: 0.55; }
 
 .up-stats {
   display: flex; gap: 0; border: 1px solid rgba(245,240,232,0.12);

@@ -1,3 +1,5 @@
+import { findCompletedTradeWith } from './trades.js';
+
 export function createReviews({
   supabase,
   esc,
@@ -28,16 +30,12 @@ export function createReviews({
     if (!currentUser) { showToast('Log ind for at give en vurdering', 'advarsel'); return; }
     if (rating < 1)   { showToast('Vælg et antal stjerner', 'advarsel'); return; }
 
-    // Kun system-genererede handelsbeskeder tæller — begge handelsveje (acceptBid
-    // og "Sæt solgt") indsætter en besked der STARTER med ✅ og indeholder "accepteret".
-    // En almindelig besked hvor nogen blot skriver "accepteret" kvalificerer IKKE.
-    const { data: tradeMsg } = await supabase.from('messages')
-      .select('id, bike_id')
-      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${reviewedUserId}),and(sender_id.eq.${reviewedUserId},receiver_id.eq.${currentUser.id})`)
-      .ilike('content', '✅%accepteret%')
-      .limit(1);
-    const hasTraded = tradeMsg?.length > 0;
-    if (!hasTraded) { showToast('Du kan kun vurdere brugere du har handlet med via Cykelbørsen', 'advarsel'); return; }
+    // Kun en gennemført handel giver ret til at vurdere. En annulleret handel
+    // (annoncen sat aktiv igen) gør ikke. Databasen tjekker det samme igen.
+    let trade = null;
+    try { trade = await findCompletedTradeWith(supabase, currentUser.id, reviewedUserId); }
+    catch (e) { console.error('findCompletedTradeWith:', e); }
+    if (!trade) { showToast('Du kan kun vurdere brugere du har handlet med via Cykelbørsen', 'advarsel'); return; }
 
     const { error } = await supabase.from('reviews').insert({
       reviewer_id:      currentUser.id,
@@ -47,7 +45,7 @@ export function createReviews({
       // indbyrdes forskellige, så den samme bruger kunne anmelde den samme
       // person ubegrænset mange gange. Handelsbeskeden ved hvilken cykel
       // handlen gjaldt, så værdien ligger lige ved hånden.
-      bike_id:          tradeMsg?.[0]?.bike_id ?? null,
+      bike_id:          trade.bike_id ?? null,
       rating,
       comment: comment || null,
     });
@@ -109,19 +107,15 @@ export function createReviews({
     if (!currentUser) { showToast('Log ind for at give en vurdering', 'advarsel'); return; }
     if (rating < 1)   { showToast('Vælg et antal stjerner', 'advarsel'); return; }
 
-    // Kun system-genererede handelsbeskeder tæller (starter med ✅ + "accepteret").
-    const { data: tradeMsg } = await supabase.from('messages')
-      .select('id, bike_id')
-      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${ratingModalUserId}),and(sender_id.eq.${ratingModalUserId},receiver_id.eq.${currentUser.id})`)
-      .ilike('content', '✅%accepteret%')
-      .limit(1);
-    const hasTraded = tradeMsg?.length > 0;
-    if (!hasTraded) { showToast('Du kan kun vurdere brugere du har handlet med via Cykelbørsen', 'advarsel'); return; }
+    let trade = null;   // se submitReview
+    try { trade = await findCompletedTradeWith(supabase, currentUser.id, ratingModalUserId); }
+    catch (e) { console.error('findCompletedTradeWith:', e); }
+    if (!trade) { showToast('Du kan kun vurdere brugere du har handlet med via Cykelbørsen', 'advarsel'); return; }
 
     const { error } = await supabase.from('reviews').insert({
       reviewer_id:      currentUser.id,
       reviewed_user_id: ratingModalUserId,
-      bike_id:          tradeMsg?.[0]?.bike_id ?? null,   // se kommentar i submitReview
+      bike_id:          trade.bike_id ?? null,   // se kommentar i submitReview
       rating,
       comment: comment || null,
     });
