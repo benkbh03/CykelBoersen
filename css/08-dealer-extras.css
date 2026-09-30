@@ -191,6 +191,8 @@
 }
 
 /* ── Forhandler-side filter (chips toolbar) ──────────────── */
+/* display:flex slår browserens [hidden]-regel; se CLAUDE.md. */
+.dealer-service-filters[hidden] { display: none !important; }
 .dealer-service-filters {
   display: flex;
   flex-wrap: wrap;
@@ -317,3 +319,6 @@
   padding: 3px 9px;
   border-radius: var(--radius-md);
 }
+
+/* Forhandlerkort uden aktive annoncer (sorteres sidst). */
+.dealer-count--none { color: var(--text-muted); font-weight: var(--weight-regular); }
