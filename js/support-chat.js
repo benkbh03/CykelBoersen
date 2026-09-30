@@ -9,20 +9,27 @@ const SUPABASE_ANON_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 let chatHistory = [];
 let chatOpen    = false;
 
-function toggleChat() {
-  chatOpen = !chatOpen;
-  const win  = document.getElementById('chat-window');
-  const iconOpen  = document.getElementById('chat-icon-open');
-  const iconClose = document.getElementById('chat-icon-close');
+/* Panelet åbnes fra "Hjælp" i menuen og footeren (openHelp) og lukkes med
+   krydset, Escape eller et nyt klik på Hjælp. Der er ingen svævende knap
+   længere, så intet i DOM'en skal skifte ikon eller tekst. */
+function setChatOpen(open) {
+  chatOpen = open;
+  const win = document.getElementById('chat-window');
+  if (!win) return;
   win.classList.toggle('open', chatOpen);
-  iconOpen.style.display  = chatOpen ? 'none'  : '';
-  iconClose.style.display = chatOpen ? ''      : 'none';
-  const label = document.getElementById('chat-toggle-label');
-  if (label) label.textContent = chatOpen ? 'Luk' : 'Spørg os';
+  win.setAttribute('aria-hidden', chatOpen ? 'false' : 'true');
   if (chatOpen) {
     setTimeout(() => document.getElementById('chat-input')?.focus(), 250);
   }
 }
+
+function openHelp()   { setChatOpen(true); }
+function closeHelp()  { setChatOpen(false); }
+function toggleChat() { setChatOpen(!chatOpen); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && chatOpen) closeHelp();
+});
 
 function handleChatKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -128,5 +135,7 @@ async function sendChatMessage() {
 }
 
 window.toggleChat      = toggleChat;
+window.openHelp        = openHelp;
+window.closeHelp       = closeHelp;
 window.sendChatMessage = sendChatMessage;
 window.handleChatKey   = handleChatKey;

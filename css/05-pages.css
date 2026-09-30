@@ -1443,8 +1443,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   overflow: hidden;
   min-height: unset;
 }
-body:has(.map-page) > footer,
-body:has(.map-page) #chat-widget {
+body:has(.map-page) > footer {
   display: none !important;
 }
 

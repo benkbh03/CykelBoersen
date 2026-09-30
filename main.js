@@ -128,6 +128,8 @@ function _ensureSupportChat() {
   return _supportChatPromise;
 }
 window.toggleChat      = (...args) => _ensureSupportChat().then(() => window.toggleChat(...args));
+window.openHelp        = (...args) => _ensureSupportChat().then(() => window.openHelp(...args));
+window.closeHelp       = (...args) => _ensureSupportChat().then(() => window.closeHelp(...args));
 window.sendChatMessage = (...args) => _ensureSupportChat().then(() => window.sendChatMessage(...args));
 window.handleChatKey   = (...args) => _ensureSupportChat().then(() => window.handleChatKey(...args));
 

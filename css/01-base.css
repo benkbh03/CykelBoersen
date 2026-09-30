@@ -336,6 +336,15 @@ body.nav-search-on .nav-search { display: flex; }
   .sell-label-full { display: none; }
   .sell-label-short { display: inline; }
 }
+/* Tablet (769–1100 px): fire tekstlinks + sælg + indbakke + avatar fylder
+   mere end rækken har. Før brød "+ Sæt til salg" over to linjer ved 800 px,
+   og med "Hjælp" (30. sep.) blev det fire. Kort label og mindre luft. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .nav-links { gap: var(--space-4); }
+  .nav-links a { white-space: nowrap; }
+  .sell-label-full { display: none; }
+  .sell-label-short { display: inline; }
+}
 .nav-hamburger:hover { background: color-mix(in srgb, var(--surface) 10%, transparent); }
 .nav-hamburger:focus-visible { outline: 2px solid color-mix(in srgb, var(--surface) 70%, transparent); outline-offset: 2px; }
 .mobile-menu-panel {
@@ -542,10 +551,6 @@ body.nav-search-on .nav-search { display: flex; }
   transition: border-color 0.2s, background 0.2s;
 }
 .btn-outline:hover { border-color: var(--sand); background: color-mix(in srgb, var(--surface) 7%, transparent); }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
 /* ── CTA SEKTION ── */
 .cta-hero {
