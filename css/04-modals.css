@@ -98,7 +98,7 @@
 
 /* ── FOOTER ── */
 footer { background: var(--forest-2); padding: 48px 48px 24px; display: block; }
-@media (max-width: 999px) { body.on-sell-page footer, body.on-sell-page #chat-widget { display: none !important; } }
+@media (max-width: 999px) { body.on-sell-page footer { display: none !important; } }
 footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size: 0.82rem; }
 .footer-grid {
   display: grid;
@@ -601,50 +601,37 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .toast--fejl     { background: var(--error);   color: #fff; }
 .toast--advarsel { background: var(--warning); color: #fff; }
 
-/* ── AI SUPPORT CHAT WIDGET ── */
-#chat-widget { position: fixed; bottom: 28px; right: 28px; z-index: 9999; pointer-events: none; }
-#chat-toggle { pointer-events: auto; }
-/* Skjul chat-widget på annonce-detalje — den overlappede den sticky
-   "Giv bud"/"Kontakt"-bar i bunden (sat via body.viewing-bike-page). */
-body.viewing-bike-page #chat-widget { display: none; }
-/* Samme problem i indbakken: chat-bobblen skygger for Send-knappen når
-   man er inde i en samtale. Indbakken er en route-side (.inbox-page),
-   ikke en modal — derfor target på .inbox-page i stedet for #inbox-modal. */
-body:has(.inbox-page) #chat-widget { display: none; }
-
-/* Var en rund orange boble med hvid kant og tung skygge, det mest AI-agtige
-   element på siden. Nu en lille, rolig "Spørg os"-knap: samme funktion, men
-   den råber ikke ad én på hver side. */
-#chat-toggle {
-  height: 36px; padding: 0 14px; border-radius: var(--radius-full);
-  background: var(--cream); color: var(--forest);
-  border: 1px solid var(--border); cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  display: inline-flex; align-items: center; gap: 6px;
-  font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans);
-  transition: background 0.15s, border-color 0.15s;
-}
-#chat-toggle:hover { background: var(--sand); border-color: var(--forest); }
-#chat-toggle svg { width: 16px; height: 16px; }
+/* ── HJÆLP-PANEL (support-chat) ──
+   Åbnes fra "Hjælp" i menuen og footeren. Den svævende "Spørg os"-knap er
+   fjernet (30. sep.), så lukket fylder panelet intet, og de gamle regler der
+   skjulte knappen på annonce-, indbakke-, kort- og sælg-siden er væk: der er
+   intet at skjule, og Hjælp skal kunne åbnes derfra også. */
+#chat-widget { position: fixed; bottom: var(--space-6); right: var(--space-6); z-index: 9999; pointer-events: none; }
 
 #chat-window {
-  position: absolute; bottom: 48px; right: 0;
-  width: 340px; max-height: 480px;
-  background: var(--cream); border: 1px solid var(--border);
-  border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  width: 340px; max-height: min(480px, calc(100vh - 120px));
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-md); box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   display: flex; flex-direction: column; overflow: hidden;
-  transform: scale(0.85) translateY(20px); opacity: 0; pointer-events: none;
-  transform-origin: bottom right;
-  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.15s, visibility 0.15s;
 }
-#chat-window.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+#chat-window.open { opacity: 1; visibility: visible; pointer-events: auto; }
 
 #chat-header {
-  background: var(--forest); color: var(--sand);
-  padding: 14px 18px; display: flex; flex-direction: column; gap: 2px;
-  font-weight: var(--weight-semibold); font-size: 0.95rem; flex-shrink: 0;
+  background: var(--forest); color: var(--bg);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: var(--weight-semibold); font-size: var(--text-base); flex-shrink: 0;
 }
-#chat-subtitle { font-size: 0.72rem; font-weight: var(--weight-regular); opacity: 0.75; }
+#chat-close-btn {
+  width: 36px; height: 36px; border: none; border-radius: var(--radius-full);
+  background: transparent; color: inherit; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+#chat-close-btn:hover { background: color-mix(in srgb, var(--bg) 15%, transparent); }
+#chat-close-btn svg { width: 18px; height: 18px; }
 
 #chat-messages {
   flex: 1; overflow-y: auto; padding: 14px 14px 6px;
@@ -652,6 +639,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
   scroll-behavior: smooth;
   background: var(--cream);
 }
+.chat-note { margin: 0; font-size: var(--text-xs); color: var(--text-muted); }
 .chat-msg { display: flex; }
 .chat-msg--bot { justify-content: flex-start; }
 .chat-msg--user { justify-content: flex-end; }
@@ -685,28 +673,12 @@ body:has(.inbox-page) #chat-widget { display: none; }
 #chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 #chat-send-btn svg { width: 16px; height: 16px; }
 
+/* Mobil: et ark i bunden i fuld bredde. max() med safe-area, så det ikke
+   ligger oven i iPhonens home-indikator, når siden kører fra hjemmeskærmen. */
 @media (max-width: 768px) {
-  /* Helt ned i hjørnet på mobil. Den lå 20 px fra kanten og oven på et
-     annoncekort, hvilket fik den til at se ud som om den svævede midt i
-     indholdet frem for at høre til i hjørnet — især i Safari, hvor browserens
-     egen bundbjælke skubber det synlige område op.
-
-     max() med env(safe-area-inset-bottom): i Safari er insetten 0 og der
-     bruges 10 px, men lægger man siden til hjemmeskærmen kører den uden
-     browserbjælke, og så ville 10 px lægge knappen oven i iPhonens
-     home-indikator. */
-  #chat-widget {
-    bottom: max(10px, env(safe-area-inset-bottom));
-    right: 10px;
-  }
-  /* Tekstknappen er 40 px høj og ca. 100 px bred: stor nok til en tommel,
-     uden at dække så meget af annoncekortet under den som den gamle boble. */
-  #chat-toggle { height: 40px; padding: 0 14px; }
-  #chat-window { bottom: 46px; }
-}
-
-@media (max-width: 480px) {
-  #chat-window { width: calc(100vw - 32px); }
+  #chat-widget { left: var(--space-2); right: var(--space-2); bottom: max(var(--space-2), env(safe-area-inset-bottom)); }
+  #chat-window { width: 100%; max-height: min(480px, calc(100vh - 96px)); }
+  #chat-input { font-size: var(--text-base); } /* under 16 px zoomer iOS ind */
 }
 
 /* ── PROFIL ── */

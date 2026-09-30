@@ -186,7 +186,6 @@
   background: var(--bg); border-radius: var(--radius-md);
   border: 1px solid var(--border); overflow: hidden;
   cursor: pointer; transition: background 0.15s;
-  animation: fadeUp 0.5s ease both;
   display: flex; flex-direction: column; height: 100%;
 }
 .bike-card:hover { background: var(--surface); }
@@ -553,24 +552,18 @@ margin: 0 0 8px; line-height: 1.15; color: var(--sand);
   .sell-cta-btn { width: 100%; justify-content: center; }
 }
 
-/* ── SKELETON LOADING (vises mens annoncer hentes — skal være i kritisk CSS) ── */
-@keyframes skeleton-shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
+/* ── SKELETON LOADING (vises mens annoncer hentes — skal være i kritisk CSS) ──
+   Flade grå felter i --surface. Ingen shimmer: bevægelsen fik ventetiden
+   til at se længere ud, ikke kortere. */
 .skeleton-card { pointer-events: none; }
 .skeleton-img {
-  width: 100%; aspect-ratio: 4/3; border-radius: 10px;
-  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-2) 50%, var(--surface-2) 75%);
-  background-size: 800px 100%;
-  animation: skeleton-shimmer 1.4s infinite linear;
+  width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-sm);
+  background: var(--surface);
 }
 .skeleton-body { padding: 12px 4px 4px; display: flex; flex-direction: column; gap: var(--space-2); }
 .skeleton-line {
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-2) 50%, var(--surface-2) 75%);
-  background-size: 800px 100%;
-  animation: skeleton-shimmer 1.4s infinite linear;
+  background: var(--surface);
 }
 .skeleton-line--title  { height: 16px; width: 80%; }
 .skeleton-line--sub    { height: 13px; width: 55%; }

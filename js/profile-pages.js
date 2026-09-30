@@ -152,7 +152,7 @@ export function createProfilePages({
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
         : noImagePlaceholder();
       return `
-        <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
+        <div class="bike-card" onclick="navigateToBike('${b.id}')">
           <div class="bike-card-img">
             ${imgContent}
             <div class="bike-card-badges">

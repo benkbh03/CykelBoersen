@@ -123,7 +123,7 @@ export function createProfileModals({
         ? `<img src="${esc(primaryImg)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : noImagePlaceholder();
       return `
-        <div class="bike-card" style="animation-delay:${i * 50}ms" onclick="navigateToBike('${b.id}')">
+        <div class="bike-card" onclick="navigateToBike('${b.id}')">
           <div class="bike-card-img">
             ${imgContent}
             <div class="bike-card-badges">
@@ -261,7 +261,7 @@ export function createProfileModals({
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : `<span style="color:var(--muted)">${iconBike(32)}</span>`;
       return `
-        <div class="up-bike-card" onclick="openBikeModal('${b.id}')" style="animation-delay:${i*40}ms">
+        <div class="up-bike-card" onclick="openBikeModal('${b.id}')">
           <div class="up-bike-img">${imgContent}</div>
           <div class="up-bike-info">
             <div class="up-bike-title">${esc(b.brand)} ${esc(b.model)}</div>

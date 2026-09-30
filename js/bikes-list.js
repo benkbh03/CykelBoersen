@@ -330,7 +330,6 @@ export function createBikesList({
 
     if (!bikes || bikes.length === 0) return;
 
-    const startIndex = append ? grid.querySelectorAll('.bike-card').length : 0;
     const conditionClass = c => {
       if (c === 'Ny')        return 'condition-tag--ny';
       if (c === 'Som ny')    return 'condition-tag--som-ny';
@@ -384,7 +383,7 @@ export function createBikesList({
       // linjen flugter ens og ikke ser ujævnt ud.
       const lastSeenCard = sellerType === 'dealer' ? null : formatLastSeen(profile.last_seen, 72);
       return `
-        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr} style="animation-delay:${(startIndex + i) * 50}ms;${isSold ? 'opacity:0.7' : ''}" onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
+        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr} ${isSold ? ' style="opacity:0.7"' : ''} onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
           <div class="bike-card-img"${dataImgs}>
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
