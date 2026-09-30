@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260930d">
+<html lang="da" data-asset-v="20260930e">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,23 +117,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260930d">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20260930e">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260930d">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260930d">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260930d">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260930d">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260930d">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260930d">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260930d">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260930d">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260930d">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260930d">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260930d">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260930d">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260930d">
+  <link rel="stylesheet" href="/css/tokens.css?v=20260930e">
+  <link rel="stylesheet" href="/css/01-base.css?v=20260930e">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20260930e">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20260930e">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20260930e">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20260930e">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260930e">
+  <link rel="stylesheet" href="/css/07-map.css?v=20260930e">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260930e">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20260930e">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260930e">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260930e">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20260930e">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1116,23 +1116,19 @@
           </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
             <a href="/dealer/04a85d44-4286-4af4-9535-e6bd38138a48/">Re-Cycle</a>
             <span style="color:var(--muted);"> · Vordingborg</span>
-            
+            <span style="color:var(--muted);"> · Ingen cykler lige nu</span>
           </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
             <a href="/dealer/d09d75d0-be87-474f-9d6d-d2fe246bf204/">Lindebjerg A/S</a>
             <span style="color:var(--muted);"> · Middelfart</span>
-            
-          </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
-            <a href="/dealer/afc48c21-f3fd-45e3-ab6f-afff22ba9cf9/">Cykelbørsen Demo</a>
-            <span style="color:var(--muted);"> · København V</span>
-            
+            <span style="color:var(--muted);"> · Ingen cykler lige nu</span>
           </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
             <a href="/dealer/93c7ea4f-c952-413d-aea0-49761ea27a56/">Hundested cykler</a>
             <span style="color:var(--muted);"> · Hundested</span>
-            
+            <span style="color:var(--muted);"> · Ingen cykler lige nu</span>
           </li><li style="padding:10px 0;border-bottom:1px solid var(--border);">
             <a href="/dealer/585ffe02-7136-475c-861e-8f45d470f77c/">Aakirkeby Cykler</a>
             <span style="color:var(--muted);"> · Aakirkeby</span>
-            
+            <span style="color:var(--muted);"> · Ingen cykler lige nu</span>
           </li></ul>
       </div></section>
   </div><!-- #page-layout -->
