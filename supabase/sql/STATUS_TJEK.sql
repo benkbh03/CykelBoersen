@@ -137,6 +137,14 @@ SELECT * FROM (
                                'idx_bikes_active_category_created',
                                'idx_bikes_user_id'))
 
+  -- ── hide_demo_account.sql ──────────────────────────────────────────
+  UNION ALL SELECT 53, 'forhandlere', 'Cykelbørsen Demo skjult (ikke verificeret, 0 aktive)',
+         (SELECT CASE WHEN count(*) = 0 THEN 'OK' ELSE 'SE EFTER' END
+            FROM profiles p
+           WHERE p.id = 'afc48c21-f3fd-45e3-ab6f-afff22ba9cf9'
+             AND (p.verified
+                  OR EXISTS (SELECT 1 FROM bikes b WHERE b.user_id = p.id AND b.is_active)))
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville
