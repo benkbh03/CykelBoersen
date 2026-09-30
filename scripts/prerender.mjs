@@ -811,7 +811,7 @@ function dealersOverviewPage(dealers) {
     return `<li style="padding:10px 0;border-bottom:1px solid var(--border);">
             <a href="/dealer/${escHtml(d.id)}/">${escHtml(dealerName(d))}</a>
             ${d.city ? `<span style="color:var(--muted);"> · ${escHtml(d.city)}</span>` : ''}
-            ${n ? `<span style="color:var(--muted);"> · ${n} ${n === 1 ? 'cykel' : 'cykler'}</span>` : ''}
+            <span style="color:var(--muted);"> · ${n ? `${n} ${n === 1 ? 'cykel' : 'cykler'}` : 'Ingen cykler lige nu'}</span>
           </li>`;
   }).join('');
 

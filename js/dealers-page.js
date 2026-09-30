@@ -39,6 +39,8 @@ export function createDealersPage({
   // for lang og overvældende når der er mange forhandlere.
   let _dealersShowAll = false;
   const DEALERS_INITIAL_LIMIT = 3;
+  // Servicefiltrene vises først fra dette antal forhandlere.
+  const DEALER_FILTER_MIN = 10;
   let _dealerGPSCoords = null;
   let _dealerActiveServices = new Set();
   let _dealerSignupSource = null;
@@ -119,7 +121,9 @@ export function createDealersPage({
           <option value="rating">Bedste rating</option>
         </select>
       </div>
-      <div class="dealer-service-filters" id="dealer-service-filters">
+      <!-- Skjult indtil der er mindst DEALER_FILTER_MIN forhandlere. Med en
+           håndfuld giver seks filtre flere knapper end resultater. -->
+      <div class="dealer-service-filters" id="dealer-service-filters" hidden>
         ${serviceChipsHtml}
       </div>
       <div id="dealers-page-grid" class="dealer-cards">
@@ -177,6 +181,8 @@ export function createDealersPage({
 
     window._dealerCountMap = countMap;
 
+    const filtersEl = document.getElementById('dealer-service-filters');
+    if (filtersEl) filtersEl.hidden = _dealersPageData.length < DEALER_FILTER_MIN;
     sortAndRenderDealers();
   }
 
@@ -250,7 +256,12 @@ export function createDealersPage({
       regular.sort((a, b) => b.bikeCount - a.bikeCount);
     }
 
-    _dealersPageData.splice(0, _dealersPageData.length, ...promoted, ...regular);
+    // Forhandlere uden cykler står sidst uanset sortering: et kort med "Ingen
+    // cykler lige nu" øverst lover noget siden ikke kan holde.
+    const ordered  = [...promoted, ...regular];
+    const withBikes = ordered.filter(d => d.bikeCount > 0);
+    const noBikes   = ordered.filter(d => d.bikeCount === 0);
+    _dealersPageData.splice(0, _dealersPageData.length, ...withBikes, ...noBikes);
 
     const grid = document.getElementById('dealers-page-grid');
     if (!grid) return;
@@ -313,12 +324,13 @@ export function createDealersPage({
 
   function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) {
     const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
-    const initials     = getInitials(displayName);
     const avatarUrl    = safeAvatarUrl ? safeAvatarUrl(dealer.avatar_url) : (dealer.avatar_url || null);
     const avatarThumb  = avatarUrl && transformImageUrl ? transformImageUrl(avatarUrl, { width: 120, quality: 80 }) : avatarUrl;
+    // Uden logo: ingen cirkel med forbogstaver ("FO"). Butiksnavnet står
+    // lige nedenunder og siger det samme bedre.
     const logoHtml     = avatarThumb
-      ? `<img src="${avatarThumb}" alt="${esc(displayName)}" loading="lazy" decoding="async" width="60" height="60">`
-      : initials;
+      ? `<div class="dealer-logo-circle dealer-logo-circle--img"><img src="${avatarThumb}" alt="${esc(displayName)}" loading="lazy" decoding="async" width="60" height="60"></div>`
+      : '';
     const locationText = dealer.address && dealer.city
       ? `${dealer.address}, ${dealer.city}`
       : dealer.city || '';
@@ -362,15 +374,15 @@ export function createDealersPage({
     return `
     <div class="dealer-card${promotedClass}" onclick="navigateToDealer('${dealer.id}')" style="cursor:pointer;" title="Se ${esc(displayName)}s profil">
       ${promotedBadge}
-      <div class="dealer-card-top">
-        <div class="dealer-logo-circle${avatarThumb ? ' dealer-logo-circle--img' : ''}">${logoHtml}</div>
+      ${logoHtml || distHtml ? `<div class="dealer-card-top">
+        ${logoHtml}
         ${distHtml}
-      </div>
+      </div>` : ''}
       <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
       ${locationText ? `<div class="dealer-city"><svg class="pin-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg><span>${esc(locationText)}</span></div>` : ''}
       ${openHtml}
       ${starsHtml}
-      <div class="dealer-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      <div class="dealer-count${bikeCount ? '' : ' dealer-count--none'}">${bikeCount ? `${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg` : 'Ingen cykler lige nu'}</div>
       <!-- Foden skubbes ned med margin-top:auto, saa Google Maps-knappen staar
            i samme hoejde paa alle kort i raekken. Indholdet staar som foer;
            det er kun justeringen der er tilfoejet. -->

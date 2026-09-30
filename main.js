@@ -1769,23 +1769,23 @@ async function loadInitialData() {
 // det er pointen med at have betalt for pladsen.
 function buildPromotedDealerCard(dealer, countMap) {
   const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
-  const initials     = getInitials(displayName);
   const bikeCount    = countMap[dealer.id] || 0;
   const locationText = dealer.address && dealer.city
     ? `${dealer.address}, ${dealer.city}`
     : dealer.city || dealer.address || '';
   const avatarUrl    = safeAvatarUrl ? safeAvatarUrl(dealer.avatar_url) : (dealer.avatar_url || null);
   const avatarThumb  = avatarUrl && transformImageUrl ? transformImageUrl(avatarUrl, { width: 160, quality: 80 }) : avatarUrl;
+  // Uden logo: ingen forbogstaver i en cirkel. Navnet står lige nedenunder.
   const logoHtml     = avatarThumb
-    ? `<img src="${esc(avatarThumb)}" alt="${esc(displayName)}" loading="lazy" decoding="async" width="84" height="84">`
-    : esc(initials);
+    ? `<div class="promoted-dealer-card-logo promoted-dealer-card-logo--img"><img src="${esc(avatarThumb)}" alt="${esc(displayName)}" loading="lazy" decoding="async" width="84" height="84"></div>`
+    : '';
   return `
     <article class="promoted-dealer-card" onclick="navigateToDealer('${dealer.id}')" title="Se ${esc(displayName)}s profil">
       <div class="promoted-dealer-card-badge">${iconStar(12)} Fremhævet</div>
-      <div class="promoted-dealer-card-logo${avatarThumb ? ' promoted-dealer-card-logo--img' : ''}">${logoHtml}</div>
+      ${logoHtml}
       <div class="promoted-dealer-card-name">${esc(displayName)}<span class="promoted-dealer-card-verified" title="Verificeret forhandler">✓</span></div>
       ${locationText ? `<div class="promoted-dealer-card-loc">${iconPin(12)} ${esc(locationText)}</div>` : ''}
-      <div class="promoted-dealer-card-count">${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg</div>
+      <div class="promoted-dealer-card-count">${bikeCount ? `${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg` : 'Ingen cykler lige nu'}</div>
       <div class="promoted-dealer-card-cta">Se butik</div>
     </article>
   `;
