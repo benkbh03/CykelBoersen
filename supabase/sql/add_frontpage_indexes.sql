@@ -16,10 +16,15 @@
 --                                  læser alle billeder
 --   bikes(category, created_at)    forsidens "nyeste først" i én kategori,
 --      WHERE is_active             kun de aktive
---   saved_bikes(user_id, bike_id)  hjerterne på kortene
+--   bikes(user_id)                 forhandlerlister, profilsider, "mine
+--                                  annoncer". idx_bikes_user_external
+--                                  dækker IKKE, fordi det er partielt
+--                                  (WHERE external_id IS NOT NULL) og
+--                                  derfor kun kender feed-annoncer
 --
--- bikes(user_id) mangler ikke: idx_bikes_user_external (user_id,
--- external_id) dækker opslag på user_id, fordi det står forrest.
+-- saved_bikes(user_id, bike_id) er IKKE med: PERF_TJEK 30. sep. viste at
+-- der allerede er to (saved_bikes_user_bike_unique og
+-- saved_bikes_user_id_bike_id_key). Et tredje ville kun koste skrivninger.
 --
 -- Ikke CONCURRENTLY: SQL Editor kører filen i én transaktion, og der er
 -- det ikke tilladt. Tabellerne er små, så låsen varer et øjeblik.
@@ -27,7 +32,7 @@
 -- Idempotent. Rollback:
 --   DROP INDEX IF EXISTS idx_bike_images_bike_id;
 --   DROP INDEX IF EXISTS idx_bikes_active_category_created;
---   DROP INDEX IF EXISTS idx_saved_bikes_user_bike;
+--   DROP INDEX IF EXISTS idx_bikes_user_id;
 -- ============================================================
 
 CREATE INDEX IF NOT EXISTS idx_bike_images_bike_id
@@ -37,9 +42,12 @@ CREATE INDEX IF NOT EXISTS idx_bikes_active_category_created
   ON bikes (category, created_at DESC)
   WHERE is_active;
 
-CREATE INDEX IF NOT EXISTS idx_saved_bikes_user_bike
-  ON saved_bikes (user_id, bike_id);
+CREATE INDEX IF NOT EXISTS idx_bikes_user_id
+  ON bikes (user_id);
+
+-- Første udgave af filen oprettede et tredje (user_id, bike_id)-indeks på
+-- saved_bikes. Gør ingenting, hvis den udgave aldrig blev kørt.
+DROP INDEX IF EXISTS idx_saved_bikes_user_bike;
 
 ANALYZE bikes;
 ANALYZE bike_images;
-ANALYZE saved_bikes;
