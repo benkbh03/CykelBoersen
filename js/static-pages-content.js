@@ -465,7 +465,7 @@ export const footerContent = {
   contact: {
     title: 'Kontakt os',
     body: `
-      <p style="margin-bottom:22px;color:#8A8578;">Har du spørgsmål, oplever du problemer eller vil du rapportere en annonce? Vi svarer inden for 1-2 hverdage.</p>
+      <p style="margin-bottom:22px;color:var(--muted);">Har du spørgsmål, oplever du problemer eller vil du rapportere en annonce? Vi svarer inden for 1-2 hverdage.</p>
 
       <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;">
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
@@ -545,7 +545,7 @@ export const footerContent = {
 
       <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
         <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
-        <p style="margin:0;line-height:1.8;color:rgba(245,240,232,0.92);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant, aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
+        <p style="margin:0;line-height:1.8;color:color-mix(in srgb, var(--surface) 92%, transparent);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant, aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
       </div>
     `
   },

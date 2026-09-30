@@ -745,7 +745,7 @@ export function createBikeDetail({
      ============================================================ */
 
   function renderBikeSkeleton() {
-    const s = 'background:linear-gradient(90deg,#e8e3d9 25%,#f0ebe3 50%,#e8e3d9 75%);background-size:200% 100%;animation:skeleton-shimmer 1.4s infinite;border-radius:6px;';
+    const s = 'background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-2) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:skeleton-shimmer 1.4s infinite;border-radius:6px;';
     return `
       <div style="max-width:1200px;margin:0 auto;padding:20px 16px;">
         <div style="${s}height:34px;width:90px;margin-bottom:24px;"></div>

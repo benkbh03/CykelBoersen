@@ -42,7 +42,7 @@
 .cookie-banner-text p {
   font-size: 0.85rem;
   line-height: 1.55;
-  color: rgba(245,240,232,0.75);
+  color: color-mix(in srgb, var(--surface) 75%, transparent);
   margin: 0;
 }
 .cookie-banner-actions {
@@ -52,7 +52,7 @@
   flex-wrap: wrap;
 }
 .cookie-banner-link {
-  color: rgba(245,240,232,0.75);
+  color: color-mix(in srgb, var(--surface) 75%, transparent);
   text-decoration: underline;
   font-size: 0.82rem;
   cursor: pointer;
@@ -73,10 +73,10 @@
 .cookie-banner-btn-minimal {
   background: transparent;
   color: var(--sand);
-  border: 1px solid rgba(245,240,232,0.3);
+  border: 1px solid color-mix(in srgb, var(--surface) 30%, transparent);
 }
 .cookie-banner-btn-minimal:hover {
-  background: rgba(245,240,232,0.08);
+  background: color-mix(in srgb, var(--surface) 8%, transparent);
 }
 .cookie-banner-btn-accept {
   background: var(--rust);
@@ -99,7 +99,7 @@
 /* ── FOOTER ── */
 footer { background: var(--forest-2); padding: 48px 48px 24px; display: block; }
 @media (max-width: 999px) { body.on-sell-page footer, body.on-sell-page #chat-widget { display: none !important; } }
-footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
+footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size: 0.82rem; }
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -119,7 +119,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   margin: 0 0 8px;
 }
 .footer-col a {
-  color: rgba(245,240,232,0.65);
+  color: color-mix(in srgb, var(--surface) 65%, transparent);
   text-decoration: none;
   font-size: 0.85rem;
   font-family: var(--font-sans);
@@ -131,7 +131,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   transform: translateX(2px);
 }
 .footer-bottom {
-  border-top: 1px solid rgba(245,240,232,0.12);
+  border-top: 1px solid color-mix(in srgb, var(--surface) 12%, transparent);
   padding-top: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -366,7 +366,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
   padding: 28px; text-align: center; cursor: pointer;
   transition: border-color 0.2s, background 0.2s; background: var(--sand);
 }
-.img-upload:hover { border-color: var(--forest); background: #f0ece3; }
+.img-upload:hover { border-color: var(--forest); background: var(--surface-2); }
 .upload-icon { font-size: 2rem; margin-bottom: 8px; }
 .img-upload p { font-size: 0.85rem; color: var(--muted); margin: 0; }
 .img-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
@@ -426,12 +426,12 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 }
 .crop-modal-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 18px; border-bottom: 1px solid var(--border, #DDD8CE);
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
 }
 .crop-modal-header h3 { margin: 0; font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem; color: var(--ink, var(--charcoal)); }
 .crop-modal-close {
   background: transparent; border: none; font-size: 1.2rem; cursor: pointer;
-  color: var(--muted, #8A8578); width: 32px; height: 32px; border-radius: 50%;
+  color: var(--muted, var(--muted)); width: 32px; height: 32px; border-radius: 50%;
 }
 .crop-modal-close:hover { background: var(--sand, var(--sand)); color: var(--ink); }
 .crop-modal-body { flex: 1; min-height: 0; padding: 14px; background: var(--charcoal); }
@@ -444,7 +444,7 @@ footer p { color: rgba(245,240,232,0.45); font-size: 0.82rem; }
 .crop-modal-footer {
   display: flex; flex-wrap: wrap; gap: var(--space-3);
   justify-content: space-between; align-items: center;
-  padding: 14px 18px; border-top: 1px solid var(--border, #DDD8CE);
+  padding: 14px 18px; border-top: 1px solid var(--border);
   background: var(--cream, var(--cream));
 }
 .crop-modal-hint {
@@ -1947,7 +1947,7 @@ body:has(.inbox-page) #chat-widget { display: none; }
    Nu samme streg-SVG som resten og samme versal-etiket som filtrene.
    Baggrundene var 135°-gradienter i Material Orange; nu flade, i husets okker. */
 .insight-card {
-  background: #FDFBF6;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 16px;

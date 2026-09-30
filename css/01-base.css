@@ -51,10 +51,10 @@
   --gold-bg:        #EFE0B4;
   --gold-border:    #D9C482;
 
-  /* Overflader. De 51 næsten ens off-whites var alle forsøg på en af
-     disse tre. --surface-sand er den varme, --surface-forest den kølige. */
-  --surface:        #FFFFFF;
-  --surface-sand:   #FDFBF6;
+  /* Overflader. --bg, --surface og --surface-2 står i tokens.css.
+     --surface-sand var den varme off-white; den er nu den neutrale
+     --surface. --surface-forest er den kølige grønne. */
+  --surface-sand:   var(--surface);
   --surface-forest: #F3F6F1;
 }
 
@@ -147,7 +147,7 @@ nav {
   font-size: var(--text-xl);                     /* 28 px i headeren på desktop */
 }
 .logo--light { color: #2A3D2E; --logo-accent: #C8502A; }
-.logo--dark  { color: #FEFAF3; --logo-accent: #F08A5D; }
+.logo--dark  { color: var(--bg); --logo-accent: #F08A5D; }
 .logo-oe { height: 0.89em; width: 0.515em; margin-left: 0.015em;
            transform: translateY(0.17em); overflow: visible; flex-shrink: 0; }
 .logo-r  { margin-left: 0.015em; }
@@ -197,16 +197,16 @@ footer .logo { font-size: 24px; }
   gap: var(--space-2);
   /* Lys flade på den mørke topbar, ikke en ramme: en ramme ville konkurrere
      med "+ Sæt til salg" om at være det tydeligste element i rækken. */
-  background: rgba(245,240,232,0.12);
-  border: 1px solid rgba(245,240,232,0.16);
+  background: color-mix(in srgb, var(--surface) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface) 16%, transparent);
   border-radius: 9px;
   padding: 0 4px 0 11px;
   transition: background 0.15s, border-color 0.15s;
 }
 body.nav-search-on .nav-search { display: flex; }
 .nav-search:focus-within {
-  background: rgba(245,240,232,0.18);
-  border-color: rgba(245,240,232,0.42);
+  background: color-mix(in srgb, var(--surface) 18%, transparent);
+  border-color: color-mix(in srgb, var(--surface) 42%, transparent);
 }
 .nav-search-icon { width: 16px; height: 16px; color: var(--sand); opacity: 0.65; flex-shrink: 0; }
 .nav-search input {
@@ -310,7 +310,7 @@ body.nav-search-on .nav-search { display: flex; }
     border-radius: 8px;
   }
   .nav-search-go:hover,
-  .nav-search-go:active { background: rgba(245,240,232,0.12); opacity: 1; }
+  .nav-search-go:active { background: color-mix(in srgb, var(--surface) 12%, transparent); opacity: 1; }
   .nav-search-go-icon  { display: block; }
   .nav-search-go-label { display: none; }
 }
@@ -336,8 +336,8 @@ body.nav-search-on .nav-search { display: flex; }
   .sell-label-full { display: none; }
   .sell-label-short { display: inline; }
 }
-.nav-hamburger:hover { background: rgba(245,240,232,0.10); }
-.nav-hamburger:focus-visible { outline: 2px solid rgba(245,240,232,0.7); outline-offset: 2px; }
+.nav-hamburger:hover { background: color-mix(in srgb, var(--surface) 10%, transparent); }
+.nav-hamburger:focus-visible { outline: 2px solid color-mix(in srgb, var(--surface) 70%, transparent); outline-offset: 2px; }
 .mobile-menu-panel {
   position: absolute; top: 100%; left: 0; right: 0;
   background: var(--forest-light);
@@ -353,7 +353,7 @@ body.nav-search-on .nav-search { display: flex; }
   padding: 14px 24px; font-size: var(--text-base); font-weight: 500;
   font-family: var(--font-sans); opacity: 0.92;
 }
-.mobile-menu-panel a:hover, .mobile-menu-panel a:focus { background: rgba(245,240,232,0.07); opacity: 1; }
+.mobile-menu-panel a:hover, .mobile-menu-panel a:focus { background: color-mix(in srgb, var(--surface) 7%, transparent); opacity: 1; }
 @media (max-width: 768px) {
   .nav-hamburger { display: inline-flex; }
 }
@@ -391,7 +391,7 @@ body.nav-search-on .nav-search { display: flex; }
 .nav-inbox-btn:hover { opacity: 1; }
 /* SVG-kuverten (var ✉️) arver farve fra nav'en, som emojien aldrig gjorde. */
 .nav-inbox-icon { display: inline-flex; color: var(--sand); }
-.nav-inbox-btn:focus-visible { outline-color: rgba(245,240,232,0.7); border-radius: 8px; }
+.nav-inbox-btn:focus-visible { outline-color: color-mix(in srgb, var(--surface) 70%, transparent); border-radius: 8px; }
 .nav-inbox-badge {
   position: absolute; top: -2px; right: -2px;
   background: var(--rust); color: #fff;
@@ -453,8 +453,8 @@ body.nav-search-on .nav-search { display: flex; }
   left: 0; right: 0; bottom: 0;
   height: 80px;
   background: linear-gradient(to bottom,
-    rgba(254,250,243,0) 0%,
-    rgba(254,250,243,0.4) 60%,
+    color-mix(in srgb, var(--bg) 0%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 40%, transparent) 60%,
     var(--cream) 100%);
   z-index: 2;
   pointer-events: none;
@@ -502,7 +502,7 @@ body.nav-search-on .nav-search { display: flex; }
   display: flex;
   align-items: center;
   gap: 0;
-  border-bottom: 1px solid rgba(245,240,232,0.08);
+  border-bottom: 1px solid color-mix(in srgb, var(--surface) 8%, transparent);
 }
 .stat-bar-item {
   display: flex;
@@ -523,7 +523,7 @@ body.nav-search-on .nav-search { display: flex; }
 .stat-bar-divider {
   width: 1px;
   height: 32px;
-  background: rgba(245,240,232,0.15);
+  background: color-mix(in srgb, var(--surface) 15%, transparent);
   margin: 0 40px 0 0;
   flex-shrink: 0;
 }
@@ -537,11 +537,11 @@ body.nav-search-on .nav-search { display: flex; }
 .btn-outline {
   background: transparent; color: var(--sand);
   padding: 14px 28px; border-radius: 4px;
-  font-weight: 500; border: 1.5px solid rgba(245,240,232,0.35);
+  font-weight: 500; border: 1.5px solid color-mix(in srgb, var(--surface) 35%, transparent);
   cursor: pointer; font-size: 0.95rem;
   transition: border-color 0.2s, background 0.2s;
 }
-.btn-outline:hover { border-color: var(--sand); background: rgba(245,240,232,0.07); }
+.btn-outline:hover { border-color: var(--sand); background: color-mix(in srgb, var(--surface) 7%, transparent); }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -651,10 +651,10 @@ body.nav-search-on .nav-search { display: flex; }
 .search-hero-text { text-align: center; margin-bottom: 12px; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; }
 .search-hero-pill {
   display: inline-flex; align-items: center; gap: 7px;
-  background: rgba(245,240,232,0.08);
-  border: 1px solid rgba(245,240,232,0.16);
+  background: color-mix(in srgb, var(--surface) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface) 16%, transparent);
   padding: 5px 14px; border-radius: var(--radius-full);
-  color: rgba(245,240,232,0.88);
+  color: color-mix(in srgb, var(--surface) 88%, transparent);
   font-size: var(--text-xs); font-weight: 500; letter-spacing: 0.2px;
   margin-bottom: 16px;
 }
@@ -875,15 +875,15 @@ body.nav-search-on .nav-search { display: flex; }
 .filters-row {
   display: none;
 }
-.filters-label { font-size: 0.8rem; color: rgba(245,240,232,0.55); font-weight: 500; margin-right: 4px; }
+.filters-label { font-size: 0.8rem; color: color-mix(in srgb, var(--surface) 55%, transparent); font-weight: 500; margin-right: 4px; }
 .pill {
   padding: 7px 14px; border-radius: var(--radius-full);
-  border: 1.5px solid rgba(245,240,232,0.18);
+  border: 1.5px solid color-mix(in srgb, var(--surface) 18%, transparent);
   font-size: 0.8rem; cursor: pointer;
-  background: rgba(245,240,232,0.06); color: var(--sand);
+  background: color-mix(in srgb, var(--surface) 6%, transparent); color: var(--sand);
   font-weight: 500; transition: all 0.15s; user-select: none;
 }
-.pill:hover { background: rgba(245,240,232,0.14); border-color: rgba(245,240,232,0.28); }
+.pill:hover { background: color-mix(in srgb, var(--surface) 14%, transparent); border-color: color-mix(in srgb, var(--surface) 28%, transparent); }
 .pill.active { background: var(--cream); color: var(--charcoal); border-color: var(--cream); }
 
 /* ── MAIN LAYOUT ── */
@@ -952,7 +952,7 @@ body.nav-search-on .nav-search { display: flex; }
    fordi alle .sidebar-box ligger samlet i markuppen. Quiz-boksen er ikke en
    .sidebar-box og beholder sin egen kortramme — den er et tilbud, ikke et
    filter, og må gerne skille sig ud. */
-.sidebar-box + .sidebar-box { border-top: 1px solid #efebe2; }
+.sidebar-box + .sidebar-box { border-top: 1px solid var(--surface-2); }
 /* Filtrenes rækkefølge styres med flex-order frem for at flytte markup.
    .sidebar er display:flex;flex-direction:column, så order virker direkte —
    og en omrokering er dermed ren CSS og triviel at rulle tilbage.
@@ -1033,7 +1033,7 @@ body.nav-search-on .nav-search { display: flex; }
   color: var(--cream);margin-bottom: 6px;
 }
 .sidebar-save-card p {
-  font-size: 0.78rem; color: rgba(245,240,232,0.62);
+  font-size: 0.78rem; color: color-mix(in srgb, var(--surface) 62%, transparent);
   line-height: 1.5; margin-bottom: 14px;
 }
 .sidebar-save-card button {

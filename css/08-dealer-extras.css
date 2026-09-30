@@ -47,7 +47,7 @@
   color: var(--charcoal);
   font-family: inherit;
 }
-.oh-time:disabled { background: #f0ebe3; color: var(--muted); cursor: not-allowed; }
+.oh-time:disabled { background: var(--surface-2); color: var(--muted); cursor: not-allowed; }
 .oh-dash { color: var(--muted); text-align: center; }
 
 @media (max-width: 600px) {
@@ -241,7 +241,7 @@
   width: fit-content;
 }
 .dealer-open-status.is-open   { background: #e0f2e0; color: #2a6f3a; }
-.dealer-open-status.is-closed { background: #f3eee5; color: var(--muted); }
+.dealer-open-status.is-closed { background: var(--surface); color: var(--muted); }
 .dealer-open-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: currentColor;

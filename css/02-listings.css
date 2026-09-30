@@ -181,16 +181,15 @@
   contain-intrinsic-block-size: 1200px;
 }
 .bike-card {
-  /* Hvid flade på den lyse side, uden kant og uden skygge (26. sep.). Kant +
-     skygge + runde hjørner på hvert kort var det mest "genererede" ved
-     forsiden. Kortet skilles fra baggrunden af farven alene. */
-  background: var(--surface); border-radius: var(--radius-md);
-  border: none; overflow: hidden;
+  /* Hvidt kort på hvid side med en 1px kant, ingen skygge (30. sep.).
+     Før var siden creme og kortet hvidt, så farven alene skilte dem ad. */
+  background: var(--bg); border-radius: var(--radius-md);
+  border: 1px solid var(--border); overflow: hidden;
   cursor: pointer; transition: background 0.15s;
   animation: fadeUp 0.5s ease both;
   display: flex; flex-direction: column; height: 100%;
 }
-.bike-card:hover { background: var(--surface-sand); }
+.bike-card:hover { background: var(--surface); }
 .bike-card:hover .bike-title { color: var(--forest); }
 .bike-card-img {
   aspect-ratio: 3/2; width: 100%; background: var(--sand);
@@ -252,18 +251,18 @@
      --text-2xs, den eneste undtagelse fra 12 px-gulvet (mærkater på billeder). */
   padding: 2px 7px; font-size: var(--text-2xs); font-weight: 700;
   letter-spacing: 0.04em; text-transform: uppercase;
-  background: rgba(254,250,243,0.94); color: var(--forest);
+  background: color-mix(in srgb, var(--bg) 94%, transparent); color: var(--forest);
   border: 1px solid rgba(42,61,46,0.16);
   white-space: nowrap;
 }
 .condition-tag--ny      { background: var(--forest); border-color: var(--forest); color: var(--cream); }
 .condition-tag--som-ny  { background: #DFE7DD; border-color: #BFCEBC; color: #223226; }
 .condition-tag--god     { background: var(--cream); border-color: var(--border); color: #4A453C; }
-.condition-tag--brugt   { background: #EFEAE0; border-color: #D7D1C5; color: #5A544A; }
+.condition-tag--brugt   { background: var(--surface-2); border-color: #D7D1C5; color: #5A544A; }
 /* Garanti hørte til den samme grønne Material-familie. Nu samme dæmpede sprog
    som stelnummer-tagget på annoncesiden — begge er tillidssignaler, ikke reklame. */
 .warranty-card-badge {
-  background: rgba(254,250,243,0.94); color: var(--forest);
+  background: color-mix(in srgb, var(--bg) 94%, transparent); color: var(--forest);
   border: 1px solid rgba(42,61,46,0.18);
   border-radius: 4px; padding: 3px 7px;
   font-size: var(--text-2xs); font-weight: 700; letter-spacing: 0.3px;
@@ -308,7 +307,7 @@
 }
 .save-btn {
   position: absolute; top: 10px; right: 10px;
-  background: rgba(254,250,243,0.92);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   border: none;
   border-radius: 50%; width: 34px; height: 34px;
@@ -562,14 +561,14 @@ margin: 0 0 8px; line-height: 1.15; color: var(--sand);
 .skeleton-card { pointer-events: none; }
 .skeleton-img {
   width: 100%; aspect-ratio: 4/3; border-radius: 10px;
-  background: linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%);
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-2) 50%, var(--surface-2) 75%);
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.4s infinite linear;
 }
 .skeleton-body { padding: 12px 4px 4px; display: flex; flex-direction: column; gap: var(--space-2); }
 .skeleton-line {
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%);
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-2) 50%, var(--surface-2) 75%);
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.4s infinite linear;
 }

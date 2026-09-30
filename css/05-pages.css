@@ -339,7 +339,7 @@
 /* Bud-bobler — tydeligt visuelt skel fra almindelige beskeder (rene labels, intet emoji) */
 .message-bubble.bid-bubble {
   position: relative;
-  background: #fffaf2;
+  background: var(--bg);
   border: 1.5px solid var(--rust);
   border-radius: 14px;
   padding: 22px 16px 12px;
@@ -719,7 +719,7 @@
     width: 18px !important;
     height: 18px !important;
     flex-shrink: 0 !important;
-    color: #8A8578 !important;
+    color: var(--muted) !important;
     transition: transform 0.2s !important;
   }
 
@@ -863,15 +863,15 @@
 
 /* ── ADMIN ── */
 .nav-admin-btn {
-  background: rgba(245,240,232,0.12);
-  border: 1.5px solid rgba(245,240,232,0.2);
+  background: color-mix(in srgb, var(--surface) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--surface) 20%, transparent);
   border-radius: 8px;
   width: 36px; height: 36px;
   cursor: pointer; font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
   transition: background 0.2s; margin-right: 4px;
 }
-.nav-admin-btn:hover { background: rgba(245,240,232,0.25); }
+.nav-admin-btn:hover { background: color-mix(in srgb, var(--surface) 25%, transparent); }
 
 .admin-row {
   display: flex; align-items: center; gap: 14px;
@@ -967,7 +967,7 @@
 .sell-acting-as-title strong { color: #fff; font-weight: 700; }
 .sell-acting-as-sub {
   font-size: 0.78rem;
-  color: rgba(245,240,232,0.8);
+  color: color-mix(in srgb, var(--surface) 80%, transparent);
   line-height: 1.4;
 }
 .sell-acting-as-stop {
@@ -1329,7 +1329,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   position: fixed;
   z-index: 11000;
   background: var(--cream, var(--cream));
-  border: 1.5px solid var(--border, #DDD8CE);
+  border: 1.5px solid var(--border);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.12);
   max-height: 280px;
@@ -1353,7 +1353,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .dawa-autocomplete-empty,
 .dawa-autocomplete-loading {
   padding: 12px 14px;
-  color: var(--muted, #8A8578);
+  color: var(--muted, var(--muted));
   font-size: 0.85rem;
   font-style: italic;
 }
@@ -1456,7 +1456,7 @@ body:has(.map-page) #chat-widget {
 .mp-wrap {
   margin: 0;
   padding: 28px 24px 72px;
-  background: var(--sand);
+  background: var(--bg);   /* hvid side; kortene skilles ud af deres kant */
   min-height: calc(100vh - 64px);
   width: 100%;
   max-width: 100%;

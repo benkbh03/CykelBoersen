@@ -1452,7 +1452,7 @@ export function createMapPage({
               var popupHtml = '<div class="map-popup">'
                 + '<div class="map-popup-title">' + esc(displayName)
                 + ' <span style="background:#2A7D4F;color:white;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;margin-left:4px;">✓</span></div>'
-                + '<div class="map-popup-meta" style="color:#8A8578;">Ingen aktive annoncer</div>'
+                + '<div class="map-popup-meta" style="color:var(--muted);">Ingen aktive annoncer</div>'
                 + '<button class="map-popup-btn" onclick="navigateToDealer(\'' + d.id + '\')">Se forhandler</button>'
                 + '</div>';
               marker.bindPopup(popupHtml, { maxWidth: 280, closeButton: false });
