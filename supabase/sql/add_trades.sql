@@ -80,44 +80,28 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $create_trade$
-DECLARE
-  bike_owner uuid;
 BEGIN
-  -- chr(9989) er flueben-emojien. Skrevet som tegnkode, ikke som emoji,
-  -- fordi Supabase SQL Editor ikke kunne koere filen med emojien i.
-  IF NEW.bike_id IS NULL OR NEW.content NOT ILIKE chr(9989) || '%accepteret%' THEN
-    RETURN NEW;
-  END IF;
-
-  -- En fejl her må ALDRIG stoppe selve beskeden.
-  BEGIN
-    -- Tildeling frem for SELECT ... INTO: editoren tolkede SELECT INTO som
-    -- oprettelse af en ny tabel og brød forespoergslen op.
-    bike_owner := (SELECT user_id FROM bikes WHERE id = NEW.bike_id);
-
-    -- Kun annoncens sælger kan oprette en handel, og ikke med sig selv.
-    IF bike_owner IS NULL OR bike_owner <> NEW.sender_id OR NEW.receiver_id = NEW.sender_id THEN
-      RETURN NEW;
-    END IF;
-
-    -- Køberen skal have skrevet til sælgeren om annoncen. Ellers kunne en
-    -- sælger sælge til en tilfældig konto og få en vurdering den vej.
-    IF NOT EXISTS (
-      SELECT 1 FROM messages m
-       WHERE m.bike_id = NEW.bike_id
-         AND m.sender_id = NEW.receiver_id
-         AND m.receiver_id = NEW.sender_id
-    ) THEN
-      RETURN NEW;
-    END IF;
-
+  -- chr(9989) er flueben-emojien, skrevet som tegnkode.
+  -- Kun annoncens saelger kan oprette en handel, ikke med sig selv, og
+  -- kun med en bruger der har skrevet til saelgeren om annoncen.
+  IF NEW.bike_id IS NOT NULL
+     AND NEW.content ILIKE chr(9989) || '%accepteret%'
+     AND NEW.receiver_id <> NEW.sender_id
+     AND EXISTS (SELECT 1 FROM bikes b
+                  WHERE b.id = NEW.bike_id AND b.user_id = NEW.sender_id)
+     AND EXISTS (SELECT 1 FROM messages m
+                  WHERE m.bike_id = NEW.bike_id
+                    AND m.sender_id = NEW.receiver_id
+                    AND m.receiver_id = NEW.sender_id)
+  THEN
     INSERT INTO trades (bike_id, seller_id, buyer_id)
     VALUES (NEW.bike_id, NEW.sender_id, NEW.receiver_id)
-    ON CONFLICT DO NOTHING;   -- der er allerede en gennemført handel
-  EXCEPTION WHEN OTHERS THEN
-    RAISE WARNING 'create_trade_from_message: %', SQLERRM;
-  END;
-
+    ON CONFLICT DO NOTHING;
+  END IF;
+  RETURN NEW;
+-- En fejl her maa ALDRIG stoppe selve beskeden.
+EXCEPTION WHEN OTHERS THEN
+  RAISE WARNING 'create_trade_from_message: %', SQLERRM;
   RETURN NEW;
 END;
 $create_trade$;
@@ -170,36 +154,29 @@ SET search_path = public
 AS $require_trade$
 DECLARE
   v_trade uuid;
-  v_bike  uuid;
-  rec     record;
 BEGIN
   IF auth.uid() IS NULL THEN
-    RETURN NEW;   -- service-role
+    RETURN NEW;
   END IF;
 
-  -- FOR-loekke frem for SELECT ... INTO (se create_trade_from_message).
-  FOR rec IN
-  SELECT t.id, t.bike_id
-    FROM trades t
-   WHERE t.status = 'gennemført'
-     AND ((t.seller_id = NEW.reviewer_id AND t.buyer_id  = NEW.reviewed_user_id)
-       OR (t.buyer_id  = NEW.reviewer_id AND t.seller_id = NEW.reviewed_user_id))
-     AND (NEW.bike_id IS NULL OR t.bike_id = NEW.bike_id)
-     AND NOT EXISTS (SELECT 1 FROM reviews r
-                      WHERE r.trade_id = t.id AND r.reviewer_id = NEW.reviewer_id)
-   ORDER BY t.created_at DESC
-   LIMIT 1
-  LOOP
-    v_trade := rec.id;
-    v_bike  := rec.bike_id;
-  END LOOP;
+  v_trade := (
+    SELECT t.id
+      FROM trades t
+     WHERE t.status = 'gennemført'
+       AND ((t.seller_id = NEW.reviewer_id AND t.buyer_id  = NEW.reviewed_user_id)
+         OR (t.buyer_id  = NEW.reviewer_id AND t.seller_id = NEW.reviewed_user_id))
+       AND (NEW.bike_id IS NULL OR t.bike_id = NEW.bike_id)
+       AND NOT EXISTS (SELECT 1 FROM reviews rv
+                        WHERE rv.trade_id = t.id AND rv.reviewer_id = NEW.reviewer_id)
+     ORDER BY t.created_at DESC
+     LIMIT 1);
 
   IF v_trade IS NULL THEN
     RAISE EXCEPTION 'Du kan kun vurdere brugere du har handlet med via Cykelbørsen';
   END IF;
 
   NEW.trade_id := v_trade;
-  NEW.bike_id  := v_bike;
+  NEW.bike_id  := (SELECT bike_id FROM trades WHERE id = v_trade);
   RETURN NEW;
 END;
 $require_trade$;
