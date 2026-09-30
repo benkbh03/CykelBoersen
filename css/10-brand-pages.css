@@ -117,6 +117,21 @@
   font-size: 0.85rem; text-decoration: none;
 }
 .prerender-bike-links a:hover { border-color: var(--forest); }
+/* Links i de forhåndsrenderede sider (/forhandlere/, /dealer/…/, statiske
+   ruter). Siden har ingen global a-regel, så de stod i browserens blå med
+   understregning, indtil JS havde tegnet den rigtige side. */
+.dealers-prerender a,
+.dealer-prerender a,
+.static-prerender-page a,
+.bike-prerender a {
+  color: var(--forest);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+.dealers-prerender a:hover,
+.dealer-prerender a:hover,
+.static-prerender-page a:hover,
+.bike-prerender a:hover { text-decoration: underline; }
 /* Initielt kollapset: kun de første 4 cykler/forhandlere — resten åbnes
    med en "Vis alle"-knap nedenfor. Holder mærkesiden kompakt selv for
    store mærker som Trek, Specialized osv. */

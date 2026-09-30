@@ -128,6 +128,15 @@ SELECT * FROM (
                                 WHERE t.status = ''gennemført'' AND b.is_active = true',
                               false, true, '')))[1]::text::int AS n) x) END
 
+  -- ── add_frontpage_indexes.sql ──────────────────────────────────────
+  UNION ALL SELECT 49, 'hastighed', 'indeks paa bike_images, bikes og saved_bikes (3)',
+         (SELECT CASE WHEN count(*) = 3 THEN 'OK' ELSE 'MANGLER (' || count(*) || ' af 3)' END
+            FROM pg_indexes
+           WHERE schemaname = 'public'
+             AND indexname IN ('idx_bike_images_bike_id',
+                               'idx_bikes_active_category_created',
+                               'idx_saved_bikes_user_bike'))
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville
