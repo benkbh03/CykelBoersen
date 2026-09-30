@@ -29,24 +29,6 @@
 }
 
 /* Favorit-tæller badge */
-.fav-count-badge {
-  position: absolute; bottom: 8px; left: 8px;
-  background: rgba(0,0,0,0.65); color: #fff;
-  font-size: 0.72rem; font-weight: var(--weight-semibold);
-  padding: 2px 8px; border-radius: var(--radius-md);
-  pointer-events: none;
-  /* Tælleren bruger nu samme SVG-hjerte som knappen ovenover, ikke ❤. */
-  display: inline-flex; align-items: center; gap: var(--space-1);
-}
-.fav-count-badge svg { fill: currentColor; stroke: none; }
-
-/* Handelshistorik */
-.trade-row {
-  display: flex; align-items: center; gap: var(--space-3);
-  padding: 12px; border-radius: 10px;
-  border: 1px solid var(--border); margin-bottom: 10px;
-  background: var(--sand);
-}
 .trade-img {
   width: 52px; height: 52px; border-radius: 8px;
   overflow: hidden; background: #eee; flex-shrink: 0;

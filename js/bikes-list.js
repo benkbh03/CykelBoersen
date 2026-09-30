@@ -168,42 +168,57 @@ export function createBikesList({
     // FREMHÆVEDE (boostede) annoncer der stadig er aktive løftes øverst — kun på
     // initial load (ikke ved "Vis flere"). featured_until > NOW() sikrer at udløbne
     // boosts IKKE forurener rækkefølgen. Nyeste boost først.
-    let featuredData = [];
-    if (!append) {
-      const { data: fd } = await applyListFilters(
+    //
+    // Fremhævede og normale hentes SAMTIDIG. Før ventede hoved-listen på de
+    // fremhævede (for at kunne ekskludere dem i forespørgslen), og kortene på
+    // gemte hjerter: tre rundture i træk før første kort. Nu henter hoved-
+    // listen en hel side og fjerner de fremhævede bagefter. Resultatet er det
+    // samme: de første k ikke-fremhævede efter created_at, altså præcis det
+    // interval .not('id','in',…).range(0, k-1) ville have givet, så "Vis
+    // flere" fortsætter fra det rigtige sted.
+    const mainQuery = (count, excludeIds) => {
+      let q = applyListFilters(
         supabase
           .from('bikes')
           .select(SELECT_FIELDS)
           .eq('is_active', true)
-          .gt('featured_until', new Date().toISOString())
-          .order('featured_until', { ascending: false })
-          .limit(24)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + count - 1)
       );
+      // Ekskludér fremhævede fra hoved-listen så de ikke vises dobbelt (de er
+      // allerede prepended øverst). _featuredIds persisterer over pagination.
+      if (excludeIds.length) q = q.not('id', 'in', `(${excludeIds.join(',')})`);
+      return q;
+    };
+
+    let featuredData = [];
+    let rawData, error, mainFetchCount;
+    if (!append) {
+      const [featuredRes, mainRes] = await Promise.all([
+        applyListFilters(
+          supabase
+            .from('bikes')
+            .select(SELECT_FIELDS)
+            .eq('is_active', true)
+            .gt('featured_until', new Date().toISOString())
+            .order('featured_until', { ascending: false })
+            .limit(24)
+        ),
+        mainQuery(fetchCount, []),
+      ]);
       // Sælgertype håndteres DB-side via !inner-join i applyListFilters.
-      featuredData = fd || [];
+      featuredData = featuredRes.data || [];
       _featuredIds = featuredData.map(b => b.id);
+      // Træk de prependede fremhævede fra den normale batch, så total-antallet
+      // (fremhævet + normal) rammer en hel side og fylder alle grid-rækker ud.
+      mainFetchCount = Math.max(fetchCount - featuredData.length, 0);
+      const featuredSet = new Set(_featuredIds);
+      error   = mainRes.error;
+      rawData = (mainRes.data || []).filter(b => !featuredSet.has(b.id)).slice(0, mainFetchCount);
+    } else {
+      mainFetchCount = fetchCount;
+      ({ data: rawData, error } = await mainQuery(fetchCount, _featuredIds));
     }
-
-    // Træk de prependede fremhævede fra den normale batch, så total-antallet
-    // (fremhævet + normal) rammer en hel side og fylder alle grid-rækker ud.
-    // Kun relevant på initial load — ved "Vis flere" er featuredData tom.
-    const mainFetchCount = append
-      ? fetchCount
-      : Math.max(fetchCount - featuredData.length, 0);
-
-    let query = applyListFilters(
-      supabase
-        .from('bikes')
-        .select(SELECT_FIELDS)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + mainFetchCount - 1)
-    );
-    // Ekskludér fremhævede fra hoved-listen så de ikke vises dobbelt (de er
-    // allerede prepended øverst). _featuredIds persisterer over pagination.
-    if (_featuredIds.length) query = query.not('id', 'in', `(${_featuredIds.join(',')})`);
-
-    const { data: rawData, error } = await query;
 
     if (error) {
       console.error('loadBikes fejl:', error);
@@ -221,27 +236,10 @@ export function createBikesList({
 
     if (!append && filters.search) logSearch(filters.search, filters.type, filters.city, data.length);
 
-    const bikeIds = data.map(b => b.id);
-    let saveCounts = {};
-    let localUserSavedSet = new Set();
-    if (bikeIds.length > 0) {
-      const { data: countData } = await supabase
-        .from('saved_bikes')
-        .select('bike_id, user_id')
-        .in('bike_id', bikeIds);
-      if (countData) {
-        const currentUser = getCurrentUser();
-        countData.forEach(row => {
-          saveCounts[row.bike_id] = (saveCounts[row.bike_id] || 0) + 1;
-          if (currentUser && row.user_id === currentUser.id) {
-            localUserSavedSet.add(row.bike_id);
-            userSavedSet.add(row.bike_id);
-          }
-        });
-      }
-    }
-
-    renderBikes(data, append, saveCounts, localUserSavedSet);
+    renderBikes(data, append);
+    // Hjerterne markeres EFTER kortene står der, ikke før: forespørgslen
+    // afhænger af annonce-id'erne og kostede ellers en hel rundtur ekstra.
+    markSavedHearts(data.map(b => b.id));
     updateActiveFiltersBar();
     updateCykelagentCta();
 
@@ -298,7 +296,31 @@ export function createBikesList({
       </div>`;
   }
 
-  function renderBikes(bikes, append = false, saveCounts = {}, localUserSavedSet = new Set()) {
+  /* Markér de viste kort, brugeren selv har gemt. Kører efter render, så
+     kortene ikke venter på den. RLS giver kun egne gemte rækker (og gemte på
+     egne annoncer, derfor filteret på user_id), så en anonym besøgende
+     springer kaldet helt over. getSession() læser den lokale session og
+     rammer ikke netværket. */
+  async function markSavedHearts(bikeIds) {
+    if (!bikeIds.length) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    const uid = session?.user?.id;
+    if (!uid) return;
+    const { data } = await supabase
+      .from('saved_bikes')
+      .select('bike_id')
+      .eq('user_id', uid)
+      .in('bike_id', bikeIds);
+    (data || []).forEach(({ bike_id }) => {
+      userSavedSet.add(bike_id);
+      document.querySelectorAll(`.save-btn[data-bike-id="${bike_id}"]`).forEach(btn => {
+        btn.classList.add('is-saved');
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+  }
+
+  function renderBikes(bikes, append = false) {
     const grid = document.getElementById('listings-grid');
 
     if (!append && (!bikes || bikes.length === 0)) {
@@ -346,7 +368,7 @@ export function createBikesList({
 
       var isSold = !b.is_active;
       var isFeatured = !isSold && b.featured_until && new Date(b.featured_until).getTime() > Date.now();
-      var saveCount = saveCounts[b.id] || 0;
+      var isSaved = userSavedSet.has(b.id);
       var cityAttr     = b.city ? ` data-city="${esc(b.city)}"` : '';
       var addrAttr     = (sellerType === 'dealer' && profile.address) ? ` data-address="${esc(profile.address)}"` : '';
       var sellerAttr   = ` data-seller-type="${sellerType || 'private'}"`;
@@ -374,8 +396,7 @@ export function createBikesList({
                 : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
               ${b.warranty && !isSold && !isDemo ? `<span class="warranty-card-badge">${iconShield()}Garanti</span>` : ''}
             </div>
-            ${saveCount > 0 && !isDemo ? `<span class="fav-count-badge">${iconHeart(11)} ${saveCount}</span>` : ''}
-            ${!isSold && !isDemo ? `<button class="save-btn${localUserSavedSet.has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${localUserSavedSet.has(b.id)}">${iconHeart(16)}</button>` : ''}
+            ${!isSold && !isDemo ? `<button class="save-btn${isSaved ? ' is-saved' : ''}" data-bike-id="${b.id}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${isSaved}">${iconHeart(16)}</button>` : ''}
             ${!isSold && !isDemo ? `<label class="compare-checkbox-wrap" onclick="event.stopPropagation()" title="Vælg til sammenligning"><input type="checkbox" class="compare-checkbox" data-bike-id="${b.id}" onchange="toggleCompareBike(this,'${b.id}')"><span class="compare-checkbox-label">Sammenlign</span></label>` : ''}
           </div>
           <div class="bike-card-body">
@@ -553,6 +574,7 @@ export function createBikesList({
     }
 
     renderBikes(data || [], append);
+    markSavedHearts((data || []).map(b => b.id));
     updateActiveFiltersBar();
     // Send result-count til CTA — skifter copy til "Kun X matcher" når resultater er få
     if (!append) updateCykelagentCta((data || []).length);
