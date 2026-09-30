@@ -48,13 +48,21 @@
   --forest:       #2A3D2E;
   --forest-light: #3D5942;
   --forest-2:     #1F2E22;
-  --cream:        #FEFAF3;
-  --sand:         #F5F0E8;
-  --sand-2:       #EDE8DF;
+  /* Neutrale flader (30. sep.): baggrunden er hvid, ikke creme. De gamle
+     navne (--cream, --sand, --sand-2, --muted) peger på de nye, så de
+     hundredvis af steder der bruger dem, følger med. Brug de nye navne i ny kode.
+     Grøn og orange er uændrede. */
+  --bg:           #FFFFFF;   /* sidens baggrund */
+  --surface:      #F4F4F2;   /* inputfelter, filterpaneler, sektioner der skal skilles ud */
+  --surface-2:    #EBEBE8;   /* hover og skeletter oven på --surface */
+  --cream:        var(--bg);
+  --sand:         var(--surface);
+  --sand-2:       var(--surface-2);
   --rust:         #C8502A;
   --rust-light:   #E8694A;
   --green:        #2A7D4F; /* = --success; brandnavnet til ikke-tilstands-brug */
   --charcoal:     #1A1A18;
-  --muted:        #6B6557; /* WCAG AA på hvid baggrund (≥4.5:1) — tidligere #8A8578 fejlede */
-  --border:       #DDD8CE;
+  --text-muted:   #5F6360; /* neutral grå. 6,10:1 på hvid, 5,54:1 på --surface, 5,11:1 på --surface-2 (WCAG AA ≥4,5) */
+  --muted:        var(--text-muted);
+  --border:       #E4E4E0;
 }

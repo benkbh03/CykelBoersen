@@ -45,12 +45,12 @@ function ageDays(b) {
 
 function rowHtml(b) {
   return `
-    <div class="dfn-row" data-id="${esc(b.id)}" style="border:1px solid var(--border,#e5e0d8);border-radius:8px;padding:8px 10px;">
+    <div class="dfn-row" data-id="${esc(b.id)}" style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;">
       <div style="font-size:0.84rem;font-weight:600;color:var(--charcoal,#1a1a18);">${esc(b.brand || '')} ${esc(b.model || '')}</div>
       <div style="font-size:0.76rem;color:var(--muted,#6b6760);margin-bottom:6px;">${b.price ? Number(b.price).toLocaleString('da-DK') + ' kr' : ''} · ${ageDays(b)} dage siden</div>
       <div style="display:flex;gap:6px;">
         <button data-row-act="confirm" style="flex:1;background:none;border:1px solid var(--forest,#1f3d2b);color:var(--forest,#1f3d2b);padding:5px;border-radius:6px;cursor:pointer;font-size:0.76rem;">✓ Aktuel</button>
-        <button data-row-act="edit" style="flex:1;background:none;border:1px solid var(--border,#e5e0d8);padding:5px;border-radius:6px;cursor:pointer;font-size:0.76rem;">Ret pris</button>
+        <button data-row-act="edit" style="flex:1;background:none;border:1px solid var(--border);padding:5px;border-radius:6px;cursor:pointer;font-size:0.76rem;">Ret pris</button>
         <button data-row-act="deactivate" title="Deaktivér annonce" style="background:none;border:1px solid var(--error);color:var(--error);padding:5px 8px;border-radius:6px;cursor:pointer;font-size:0.76rem;">Fjern</button>
       </div>
     </div>`;
@@ -65,7 +65,7 @@ function renderNudge(stale) {
   if (document.getElementById('dealer-freshness-nudge')) return;
   const card = document.createElement('div');
   card.id = 'dealer-freshness-nudge';
-  card.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:4000;width:344px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border,#e5e0d8);border-radius:14px;box-shadow:0 12px 40px rgba(26,26,24,0.22);font-family:var(--font-sans);overflow:hidden;animation:dfnIn .25s ease;";
+  card.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:4000;width:344px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 40px rgba(26,26,24,0.22);font-family:var(--font-sans);overflow:hidden;animation:dfnIn .25s ease;";
   card.innerHTML = `
     <style>@keyframes dfnIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}</style>
     <div style="padding:13px 16px;background:linear-gradient(135deg,#1f3d2b,#a8521f);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;">
@@ -81,7 +81,7 @@ function renderNudge(stale) {
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
         <button data-act="confirm-all" style="flex:1;background:var(--forest,#1f3d2b);color:#fff;border:none;padding:9px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.82rem;">✓ Alle er aktuelle</button>
-        <button data-act="close" style="background:none;border:1px solid var(--border,#e5e0d8);padding:9px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;">Senere</button>
+        <button data-act="close" style="background:none;border:1px solid var(--border);padding:9px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;">Senere</button>
       </div>
     </div>`;
   document.body.appendChild(card);

@@ -291,9 +291,9 @@
   margin-top: 8px;
 }
 .category-faq-item {
-  border: 1px solid var(--border, #e2ded5);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: var(--card, #fff);
+  background: var(--bg);
   overflow: hidden;
 }
 .category-faq-item > summary {

@@ -68,18 +68,18 @@
 .trade-row--cancelled .trade-price { opacity: 0.55; }
 
 .up-stats {
-  display: flex; gap: 0; border: 1px solid rgba(245,240,232,0.12);
+  display: flex; gap: 0; border: 1px solid color-mix(in srgb, var(--surface) 12%, transparent);
   border-radius: 10px; overflow: hidden; margin-bottom: 28px;
 }
 .up-stat {
   flex: 1; padding: 16px; text-align: center;
-  border-right: 1px solid rgba(245,240,232,0.12);
+  border-right: 1px solid color-mix(in srgb, var(--surface) 12%, transparent);
 }
 .up-stat:last-child { border-right: none; }
 .up-stat-val { font-size: 1.4rem;color: var(--charcoal); font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; }
 .up-stat-label { font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
 
-.up-divider { border: none; border-top: 1px solid rgba(245,240,232,0.12); margin: 24px 0; }
+.up-divider { border: none; border-top: 1px solid color-mix(in srgb, var(--surface) 12%, transparent); margin: 24px 0; }
 .up-section-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.05rem; color: var(--charcoal); margin: 0 0 16px; }
 .up-empty { color: var(--muted); font-size: 0.88rem; padding: 8px 0; }
 
@@ -89,13 +89,13 @@
   margin-bottom: 4px;
 }
 .up-bike-card {
-  background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.1);
+  background: color-mix(in srgb, var(--surface) 5%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 10%, transparent);
   border-radius: 10px; overflow: hidden; cursor: pointer;
   transition: transform 0.15s, border-color 0.15s;
 }
-.up-bike-card:hover {border-color: rgba(245,240,232,0.25); }
+.up-bike-card:hover {border-color: color-mix(in srgb, var(--surface) 25%, transparent); }
 .up-bike-img {
-  height: 130px; background: rgba(245,240,232,0.08);
+  height: 130px; background: color-mix(in srgb, var(--surface) 8%, transparent);
   display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 .up-bike-info { padding: 10px 12px 12px; }
@@ -108,7 +108,7 @@
 .up-sold-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 14px; border-radius: 8px;
-  background: rgba(245,240,232,0.04); border: 1px solid rgba(245,240,232,0.08);
+  background: color-mix(in srgb, var(--surface) 4%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 8%, transparent);
   gap: var(--space-3);
 }
 .up-sold-info { display: flex; flex-direction: column; gap: 2px; }
@@ -124,7 +124,7 @@
 .up-reviews-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
 .up-review-card {
   padding: 14px 16px; border-radius: 10px;
-  background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.1);
+  background: color-mix(in srgb, var(--surface) 5%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 10%, transparent);
 }
 .up-review-top { display: flex; align-items: flex-start; gap: var(--space-3); margin-bottom: 8px; }
 .up-review-avatar {
@@ -138,18 +138,18 @@
 .up-review-comment { font-size: 0.85rem; color: var(--charcoal); opacity: 0.85; line-height: 1.55; margin: 0; }
 
 /* Stjerner */
-.star, .up-review-stars .star { color: rgba(245,240,232,0.2); font-size: var(--text-base); }
+.star, .up-review-stars .star { color: color-mix(in srgb, var(--surface) 20%, transparent); font-size: var(--text-base); }
 .star.filled { color: #f5a623; }
 .up-review-stars { display: flex; gap: 2px; margin-top: 2px; }
 
 /* Stjerne-vælger */
 .up-write-review { margin-top: 8px; }
 .up-star-picker { display: flex; gap: 6px; margin-bottom: 12px; }
-.star-pick { font-size: 1.8rem; color: rgba(245,240,232,0.2); cursor: pointer; transition: color 0.1s; }
+.star-pick { font-size: 1.8rem; color: color-mix(in srgb, var(--surface) 20%, transparent); cursor: pointer; transition: color 0.1s; }
 .star-pick.active { color: #f5a623; }
 .up-review-textarea {
   width: 100%; min-height: 80px; resize: vertical;
-  background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.2);
+  background: color-mix(in srgb, var(--surface) 7%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 20%, transparent);
   border-radius: 8px; padding: 10px 14px; color: var(--charcoal);
   font-family: var(--font-sans); font-size: 0.88rem;
   margin-bottom: 12px; box-sizing: border-box;
@@ -165,7 +165,7 @@
 
 /* ── Profil tabs ── */
 .up-tabs {
-  display: flex; gap: 0; border-bottom: 2px solid rgba(245,240,232,0.12);
+  display: flex; gap: 0; border-bottom: 2px solid color-mix(in srgb, var(--surface) 12%, transparent);
   margin-bottom: 20px;
 }
 .up-tab {
@@ -180,7 +180,7 @@
 
 /* Klikbare stat-blokke */
 .up-stat-clickable { cursor: pointer; transition: background 0.15s; }
-.up-stat-clickable:hover { background: rgba(245,240,232,0.06); }
+.up-stat-clickable:hover { background: color-mix(in srgb, var(--surface) 6%, transparent); }
 
 /* ── Kontakt formular på profil ── */
 .up-contact-section { margin-top: 14px; }
@@ -194,7 +194,7 @@
 .up-contact-form { margin-top: 12px; }
 .up-contact-bike-select {
   width: 100%; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px;
-  background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.2);
+  background: color-mix(in srgb, var(--surface) 7%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 20%, transparent);
   color: var(--charcoal); font-family: var(--font-sans); font-size: 0.85rem;
 }
 .up-contact-send-btn {
@@ -206,7 +206,7 @@
 .up-contact-send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Klikbar sælger-boks i cykelmodal */
-.bike-detail-seller:hover { background: rgba(245,240,232,0.07); }
+.bike-detail-seller:hover { background: color-mix(in srgb, var(--surface) 7%, transparent); }
 
 @media (max-width: 600px) {
   .user-profile-modal-inner { padding: 24px 16px 20px; }
@@ -239,7 +239,7 @@
 .dealer-profile-city { color: var(--muted); font-size: 0.9rem; margin-bottom: 4px; }
 .dealer-profile-count { color: var(--rust); font-size: 0.88rem; font-weight: var(--weight-semibold); }
 .dealer-profile-divider {
-  border: none; border-top: 1px solid rgba(245,240,232,0.12);
+  border: none; border-top: 1px solid color-mix(in srgb, var(--surface) 12%, transparent);
   margin: 20px 0 16px;
 }
 .dealer-profile-section-title {
@@ -459,22 +459,22 @@
 
 .btn-see-all-dealers {
   background: transparent; color: var(--sand);
-  border: 1.5px solid rgba(245,240,232,0.3);
+  border: 1.5px solid color-mix(in srgb, var(--surface) 30%, transparent);
   padding: 11px 28px; border-radius: 8px;
   font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans);
   transition: all 0.2s;
 }
 .btn-see-all-dealers:hover {
-  background: rgba(245,240,232,0.08);
-  border-color: rgba(245,240,232,0.6);
+  background: color-mix(in srgb, var(--surface) 8%, transparent);
+  border-color: color-mix(in srgb, var(--surface) 60%, transparent);
 }
 
 /* Tom forhandler state */
 .dealer-empty-state { grid-template-columns: 1fr !important; }
 .dealer-empty-card {
   background: var(--cream, var(--cream));
-  border: 2px dashed var(--border, #DDD8CE);
+  border: 2px dashed var(--border);
   border-radius: 14px; padding: 48px 32px;
   text-align: center; color: var(--ink, var(--charcoal));
 }
@@ -608,7 +608,7 @@
 }
 .mp-dealer-banner-divider {
   width: 1px; height: 32px;
-  background: rgba(245,240,232,0.18);
+  background: color-mix(in srgb, var(--surface) 18%, transparent);
 }
 @media (max-width: 560px) {
   .mp-dealer-banner { padding: 14px; gap: 6px; }

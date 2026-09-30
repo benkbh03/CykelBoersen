@@ -389,7 +389,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: rgba(254, 250, 243, 0.94);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
   border: none;
   display: flex;
   align-items: center;

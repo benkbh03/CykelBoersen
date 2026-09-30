@@ -238,7 +238,7 @@
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: rgba(245,240,232,0.14);
+  background: color-mix(in srgb, var(--surface) 14%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1041,7 +1041,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   margin-bottom: 0;
 }
 .pp-header-dealer {
-  background: linear-gradient(135deg, var(--cream), #f7f4ec);
+  background: linear-gradient(135deg, var(--cream), var(--surface));
   border: 1.5px solid var(--forest);
 }
 .pp-header-skeleton {
@@ -1359,7 +1359,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .sell-ai-btn:hover { background: var(--forest-light); }
 .sell-ai-btn-icon {
   width: 34px; height: 34px; border-radius: 9px;
-  background: rgba(245,240,232,0.12);
+  background: color-mix(in srgb, var(--surface) 12%, transparent);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: var(--text-base);
 }
 .sell-ai-btn-title {
@@ -1458,7 +1458,7 @@ color: var(--cream); margin-bottom: 2px;
   text-align: left; transition: background 0.15s, border-color 0.15s;
 }
 .sell-advanced-toggle:hover {
-  background: #ebe6da;
+  background: var(--surface-2);
   border-color: var(--forest);
 }
 .sell-advanced-icon {
@@ -1561,7 +1561,7 @@ color: var(--cream); margin-bottom: 2px;
 .sell-summary-top { display: flex; gap: var(--space-3); margin-bottom: 12px; }
 .sell-summary-thumb {
   width: 68px; height: 68px; border-radius: 11px; overflow: hidden;
-  flex-shrink: 0; background: rgba(245,240,232,0.1);
+  flex-shrink: 0; background: color-mix(in srgb, var(--surface) 10%, transparent);
 }
 .sell-summary-thumb-img { width: 100%; height: 100%; object-fit: cover; }
 .sell-summary-title {
@@ -1570,7 +1570,7 @@ line-height: 1.2; margin-bottom: 3px;
 }
 .sell-summary-sub { font-family: var(--font-sans); font-size: var(--text-xs); opacity: 0.65; line-height: 1.4; }
 .sell-summary-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 19px; color: #f5d5a8; margin-top: 5px;}
-.sell-summary-rows { border-top: 1px solid rgba(245,240,232,0.1); padding-top: 10px; display: grid; gap: 6px; }
+.sell-summary-rows { border-top: 1px solid color-mix(in srgb, var(--surface) 10%, transparent); padding-top: 10px; display: grid; gap: 6px; }
 .sell-summary-row { display: flex; justify-content: space-between; gap: var(--space-2); font-family: var(--font-sans); font-size: var(--text-xs); }
 .sell-summary-row-key { opacity: 0.55; }
 .sell-summary-row-val { font-weight: 500; text-align: right; max-width: 60%; }
@@ -2565,9 +2565,9 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   flex-wrap: wrap;
 }
 .blog-article-cta-btns button {
-  background: rgba(245,240,232,0.15);
+  background: color-mix(in srgb, var(--surface) 15%, transparent);
   color: var(--sand);
-  border: 1px solid rgba(245,240,232,0.3);
+  border: 1px solid color-mix(in srgb, var(--surface) 30%, transparent);
   border-radius: 8px;
   padding: 12px 24px;
   font-family: var(--font-sans);
@@ -2579,7 +2579,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   border-color: var(--rust);
 }
 .blog-article-cta-btns button:hover {
-  background: rgba(245,240,232,0.25);
+  background: color-mix(in srgb, var(--surface) 25%, transparent);
 }
 .blog-article-cta-btns button.primary:hover {
   background: var(--rust-light);
@@ -2783,7 +2783,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 }
 .valuation-range-fill {
   position: absolute; inset: 0;
-  background: linear-gradient(to right, #DDD8CE, var(--rust), #DDD8CE);
+  background: linear-gradient(to right, var(--border), var(--rust), var(--border));
   border-radius: 4px;
 }
 .valuation-range-marker {
@@ -3636,8 +3636,8 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .ai-suggest-wrap {
   margin-top: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, #f5efe4 0%, #fef7ec 100%);
-  border: 1.5px solid #e8dcc5;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   text-align: center;
 }
