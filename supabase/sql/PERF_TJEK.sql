@@ -68,9 +68,12 @@ END $top$;
 -- Forsidens forespørgsler, skrevet som PostgREST skriver dem (lateral
 -- join for sælger og billeder). Tidspunktet er fast, så de to kørsler
 -- er ens.
-DROP TABLE IF EXISTS pg_temp.perf_q;
-CREATE TEMP TABLE perf_q (nr int, navn text, q text);
-INSERT INTO perf_q VALUES
+
+SELECT afsnit, punkt, vaerdi FROM (
+  -- 1. Forespørgsler som anon
+  SELECT 1 AS o, nr AS n, '1 forespoergsel'::text AS afsnit, navn AS punkt,
+         pg_temp.perf_ms(q) || ' ms · derefter ' || pg_temp.perf_ms(q) || ' ms' AS vaerdi
+    FROM (VALUES
 (1, 'Forside: 24 nyeste annoncer med sælger og billeder', $q$
 SELECT b.id, b.brand, b.model, b.price, b.city, b.created_at, p.j AS profile, i.j AS images
   FROM bikes b
@@ -103,13 +106,8 @@ SELECT id, shop_name, city, address, name, count(*) OVER ()
 SELECT * FROM profiles WHERE id = (SELECT user_id FROM bikes WHERE is_active LIMIT 1) $q$),
 (6, 'Én annonce med billeder', $q$
 SELECT b.*, (SELECT json_agg(bi) FROM bike_images bi WHERE bi.bike_id = b.id)
-  FROM bikes b WHERE b.id = (SELECT id FROM bikes WHERE is_active ORDER BY created_at DESC LIMIT 1) $q$);
-
-SELECT afsnit, punkt, vaerdi FROM (
-  -- 1. Forespørgsler som anon
-  SELECT 1 AS o, nr AS n, '1 forespoergsel'::text AS afsnit, navn AS punkt,
-         pg_temp.perf_ms(q) || ' ms · derefter ' || pg_temp.perf_ms(q) || ' ms' AS vaerdi
-    FROM perf_q
+  FROM bikes b WHERE b.id = (SELECT id FROM bikes WHERE is_active ORDER BY created_at DESC LIMIT 1) $q$)
+    ) AS perf_q (nr, navn, q)
 
   -- 2. Produktionens egne tal
   UNION ALL
