@@ -105,8 +105,16 @@ Deploy-tjeklisten skal altid have fire dele (udelad dem der ikke er relevante):
 
    Er tjekket forældet (ny migration siden sidst), så udvid det i samme ombæring.
 
+   **Kopiér ALTID fra rå-visningen:** `github.com/benkbh03/CykelBoersen/raw/main/<sti>`
+   → Ctrl+A → Ctrl+C. GitHubs almindelige kodevisning tegner kun de linjer der
+   er på skærmen, så Ctrl+A der kopierer ca. de første 100 linjer. Det kostede
+   fire forsøg 30. sep. (`add_trades.sql` ×3 med "unterminated dollar-quoted
+   string", `import-dealer-feed` med "Expected '}', got '<eof>'"). Fejlen ligner
+   en fejl i filen, men er en afkortet kopi. Skriv rå-linket i hver tjekliste,
+   og bed brugeren tjekke at sidste linje i editoren passer med filens længde.
+
 1. **SQL** (hvis `supabase/sql/` rørt): "Kopiér indholdet af `supabase/sql/<fil>.sql`
-   → Supabase Dashboard → SQL Editor → Run." Indsæt SQL'en inline i svaret så den er
+   (rå-linket ovenfor) → Supabase Dashboard → SQL Editor → Run." Indsæt SQL'en inline i svaret så den er
    nem at kopiere. Alle migrationer er idempotente (`IF NOT EXISTS`) = sikre at køre igen.
 
    **En migration skal kunne opgradere fra sin egen tidligere version.** Ændrer
