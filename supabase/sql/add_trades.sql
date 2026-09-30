@@ -1,26 +1,26 @@
 -- ============================================================
 -- add_trades.sql — en handel er en række, ikke en besked
 --
--- Før: en "handel" var en besked der starter med ✅ og indeholder
+-- Før: en "handel" var en besked der starter med flueben og indeholder
 -- "accepteret". "Handler afsluttet", fanen Handler, profilerne og retten
 -- til at vurdere talte alle den besked. En besked har ingen status, så en
 -- handel kunne aldrig annulleres: blev en solgt annonce sat aktiv igen,
 -- talte handlen stadig, og vurderingen blev stående. Og enhver kunne selv
--- skrive en ✅-besked til en anden bruger og få ret til at vurdere dem
+-- skrive en flueben-besked til en anden bruger og få ret til at vurdere dem
 -- (forbeholdet i harden_profile_insert_and_reviews.sql).
 --
 -- Nu:
 --   · trades-tabellen med status 'gennemført' | 'annulleret'.
 --   · En handel oprettes af databasen, når annoncens SÆLGER sender
---     ✅-beskeden til en bruger, der har skrevet om annoncen. En
---     selvskrevet ✅-besked fra en anden bruger opretter ingenting.
+--     flueben-beskeden til en bruger, der har skrevet om annoncen. En
+--     selvskrevet flueben-besked fra en anden bruger opretter ingenting.
 --   · Sættes en solgt annonce aktiv igen, annulleres handlen (rækken
 --     bliver stående), og sold_via nulstilles. Sælges den igen, oprettes
 --     en ny handel.
 --   · En vurdering bindes til en gennemført handel (reviews.trade_id).
 --     Vurderinger på en annulleret handel er skjult for alle via RLS.
 --
--- Backfill: handler oprettes fra de eksisterende ✅-beskeder, alle som
+-- Backfill: handler oprettes fra de eksisterende flueben-beskeder, alle som
 -- 'gennemført'. Handler hvor annoncen i dag er aktiv igen, annulleres
 -- IKKE her. Det gør cancel_reactivated_trades.sql, efter godkendelse af
 -- listen fra LIST_REACTIVATED_TRADES.sql.
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS trades (
 );
 
 -- Højst én gennemført handel pr. annonce ad gangen. Beskytter også mod to
--- ✅-beskeder for samme salg (bud accepteret og derefter "Sæt solgt").
+-- flueben-beskeder for samme salg (bud accepteret og derefter "Sæt solgt").
 CREATE UNIQUE INDEX IF NOT EXISTS trades_one_completed_per_bike
   ON trades (bike_id) WHERE status = 'gennemført';
 CREATE INDEX IF NOT EXISTS idx_trades_seller ON trades (seller_id);
@@ -70,7 +70,7 @@ CREATE POLICY trades_select_parties ON trades
   FOR SELECT USING (auth.uid() = seller_id OR auth.uid() = buyer_id);
 
 
--- ── 2. Handel oprettes fra sælgerens ✅-besked ──────────────────
+-- ── 2. Handel oprettes fra sælgerens flueben-besked ──────────────────
 -- Begge handelsveje (acceptBid i js/inbox.js og "Sæt solgt" i
 -- js/sold-actions.js) indsætter allerede beskeden. Frontenden skal
 -- derfor ikke ændres for at oprette handlen.
@@ -83,13 +83,17 @@ AS $create_trade$
 DECLARE
   bike_owner uuid;
 BEGIN
-  IF NEW.bike_id IS NULL OR NEW.content NOT ILIKE '✅%accepteret%' THEN
+  -- chr(9989) er flueben-emojien. Skrevet som tegnkode, ikke som emoji,
+  -- fordi Supabase SQL Editor ikke kunne koere filen med emojien i.
+  IF NEW.bike_id IS NULL OR NEW.content NOT ILIKE chr(9989) || '%accepteret%' THEN
     RETURN NEW;
   END IF;
 
   -- En fejl her må ALDRIG stoppe selve beskeden.
   BEGIN
-    SELECT user_id INTO bike_owner FROM bikes WHERE id = NEW.bike_id;
+    -- Tildeling frem for SELECT ... INTO: editoren tolkede SELECT INTO som
+    -- oprettelse af en ny tabel og brød forespoergslen op.
+    bike_owner := (SELECT user_id FROM bikes WHERE id = NEW.bike_id);
 
     -- Kun annoncens sælger kan oprette en handel, og ikke med sig selv.
     IF bike_owner IS NULL OR bike_owner <> NEW.sender_id OR NEW.receiver_id = NEW.sender_id THEN
@@ -167,12 +171,15 @@ AS $require_trade$
 DECLARE
   v_trade uuid;
   v_bike  uuid;
+  rec     record;
 BEGIN
   IF auth.uid() IS NULL THEN
     RETURN NEW;   -- service-role
   END IF;
 
-  SELECT t.id, t.bike_id INTO v_trade, v_bike
+  -- FOR-loekke frem for SELECT ... INTO (se create_trade_from_message).
+  FOR rec IN
+  SELECT t.id, t.bike_id
     FROM trades t
    WHERE t.status = 'gennemført'
      AND ((t.seller_id = NEW.reviewer_id AND t.buyer_id  = NEW.reviewed_user_id)
@@ -181,7 +188,11 @@ BEGIN
      AND NOT EXISTS (SELECT 1 FROM reviews r
                       WHERE r.trade_id = t.id AND r.reviewer_id = NEW.reviewer_id)
    ORDER BY t.created_at DESC
-   LIMIT 1;
+   LIMIT 1
+  LOOP
+    v_trade := rec.id;
+    v_bike  := rec.bike_id;
+  END LOOP;
 
   IF v_trade IS NULL THEN
     RAISE EXCEPTION 'Du kan kun vurdere brugere du har handlet med via Cykelbørsen';
@@ -222,7 +233,7 @@ CREATE POLICY "Alle kan se vurderinger" ON reviews
 
 
 -- ── 5. Backfill ────────────────────────────────────────────────
--- Én handel pr. annonce fra den seneste ✅-besked sendt af annoncens
+-- Én handel pr. annonce fra den seneste flueben-besked sendt af annoncens
 -- sælger. Beskeder fra andre end sælgeren bliver ikke til handler.
 INSERT INTO trades (bike_id, seller_id, buyer_id, status, created_at)
 SELECT DISTINCT ON (m.bike_id)
@@ -230,7 +241,7 @@ SELECT DISTINCT ON (m.bike_id)
   FROM messages m
   JOIN bikes b    ON b.id = m.bike_id AND b.user_id = m.sender_id
   JOIN profiles p ON p.id = m.receiver_id
- WHERE m.content ILIKE '✅%accepteret%'
+ WHERE m.content ILIKE chr(9989) || '%accepteret%'
    AND m.receiver_id <> m.sender_id
    AND NOT EXISTS (SELECT 1 FROM trades t WHERE t.bike_id = m.bike_id)
  ORDER BY m.bike_id, m.created_at DESC;
