@@ -79,7 +79,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $create_trade$
 DECLARE
   bike_owner uuid;
 BEGIN
@@ -97,7 +97,7 @@ BEGIN
     END IF;
 
     -- Køberen skal have skrevet til sælgeren om annoncen. Ellers kunne en
-    -- sælger "sælge" til en tilfældig konto og få en vurdering den vej.
+    -- sælger sælge til en tilfældig konto og få en vurdering den vej.
     IF NOT EXISTS (
       SELECT 1 FROM messages m
        WHERE m.bike_id = NEW.bike_id
@@ -116,7 +116,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$$;
+$create_trade$;
 
 DROP TRIGGER IF EXISTS trg_create_trade_from_message ON messages;
 CREATE TRIGGER trg_create_trade_from_message
@@ -130,7 +130,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $cancel_trade$
 BEGIN
   IF OLD.is_active = false AND NEW.is_active = true THEN
     UPDATE trades
@@ -142,7 +142,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$;
+$cancel_trade$;
 
 DROP TRIGGER IF EXISTS trg_cancel_trade_on_reactivate ON bikes;
 CREATE TRIGGER trg_cancel_trade_on_reactivate
@@ -163,7 +163,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $require_trade$
 DECLARE
   v_trade uuid;
   v_bike  uuid;
@@ -191,7 +191,7 @@ BEGIN
   NEW.bike_id  := v_bike;
   RETURN NEW;
 END;
-$$;
+$require_trade$;
 
 DROP TRIGGER IF EXISTS require_trade_before_review ON reviews;
 CREATE TRIGGER require_trade_before_review
@@ -209,10 +209,10 @@ LANGUAGE sql
 STABLE
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $review_visible$
   SELECT p_trade IS NULL
       OR EXISTS (SELECT 1 FROM trades WHERE id = p_trade AND status = 'gennemført');
-$$;
+$review_visible$;
 
 DROP POLICY IF EXISTS "Alle kan se vurderinger" ON reviews;
 CREATE POLICY "Alle kan se vurderinger" ON reviews
@@ -252,10 +252,10 @@ UPDATE reviews r
 -- Oprettes efter backfill, så eventuelle gamle dubletter ikke vælter
 -- hele migrationen; så springes indekset over med en besked.
 DROP INDEX IF EXISTS reviews_unique_per_trade;
-DO $$
+DO $idx$
 BEGIN
   CREATE UNIQUE INDEX IF NOT EXISTS reviews_one_per_trade
     ON reviews (reviewer_id, trade_id) WHERE trade_id IS NOT NULL;
 EXCEPTION WHEN unique_violation THEN
   RAISE NOTICE 'Kunne ikke oprette reviews_one_per_trade: der findes dubletter. STATUS_TJEK viser det.';
-END $$;
+END $idx$;
