@@ -28,6 +28,9 @@ setImageTransformsEnabled(IMAGE_TRANSFORMS_ENABLED);
 import { CATEGORY_META } from './js/category-data.js';
 import { sortTypeFilterByCount } from './js/type-sort.js';
 import { setHeroType, syncTypeControls } from './js/type-sync.js';
+import { hideUnavailableFilterValues, AVAILABILITY_COLS } from './js/filter-availability.js';
+import { recordActiveFilters, lastActiveFilter } from './js/filter-history.js';
+import { writeFilterUrl, hasFilterParams, applyUrlToControls, filterArgsToQuery, currentUrlFilterQuery, readUrlFilterArgs } from './js/filter-url.js';
 import { rentalAllowed, applyFeatureFlags } from './js/feature-flags.js';
 import { initErrorLog } from './js/error-log.js';
 import { initNavSearch, toggleNavSearch, submitNavSearch as _submitNavSearch } from './js/nav-search.js';
@@ -194,6 +197,7 @@ const {
   getActiveRadius:      () => activeRadius,
   setActiveRadius:      v => { activeRadius = v; },
   getBrowseCategory:    () => _browseCategory,
+  onActivePills:        recordActiveFilters,
 });
 
 const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory: () => _browseCategory });
@@ -233,10 +237,27 @@ const {
    har nogen version-query. Efter et deploy kan browseren derfor stadig køre
    en cached filters.js et stykke tid — og så ville sorteringen udeblive uden
    at noget så i stykker ud. Sortering er idempotent, så det gør ikke noget
-   at filters.js også kalder den når den er frisk. */
-async function updateFilterCounts(...args) {
-  await updateFilterCountsBase(...args);
+   at filters.js også kalder den når den er frisk.
+
+   Samme wrapper henter også selv data, når kalderen ikke giver nogen (fx
+   ved kategoriskift), så hideUnavailableFilterValues() får mærke og de
+   tekniske felter med. filters.js' egen forespørgsel har dem ikke. */
+const FILTER_COUNT_COLS = `category, type, condition, size, wheel_size, colors, user_id, ${AVAILABILITY_COLS}, profiles!user_id(seller_type)`;
+async function updateFilterCounts(data, dealerCount) {
+  if (!data) {
+    const [bikesRes, dealerRes] = await Promise.all([
+      supabase.from('bikes').select(FILTER_COUNT_COLS).eq('is_active', true),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('seller_type', 'dealer').eq('verified', true),
+    ]);
+    data = bikesRes.data || null;
+    dealerCount = dealerRes?.count ?? null;
+  }
+  await updateFilterCountsBase(data, dealerCount);
   sortTypeFilterByCount();
+  if (data) {
+    const cat = _browseCategory || 'cykel';
+    hideUnavailableFilterValues(data.filter(b => (b.category || 'cykel') === cat), KNOWN_BRANDS);
+  }
 }
 
 // Aktiv browse-kategori for forside-toggle "Cykler | Tilbehør". Hård top-level
@@ -1108,7 +1129,10 @@ async function init() {
 
   // Start offentlig data med det samme – venter ikke på auth
   const sessionPromise = supabase.auth.getSession();
-  loadBikes();
+  // Deles et link med filtre (/?type=racer&maxPrice=10000), vises de filtre
+  // direkte i stedet for den ufiltrerede liste.
+  if (urlFiltersRestorable()) { restoreFiltersFromUrl(); _filtersRestoredAtInit = true; }
+  else loadBikes();
   loadInitialData(); // Erstatter loadDealers() + updateFilterCounts() med 2 parallelle queries
 
   // Render "Sidst set"-sektion på forsiden (lazy import — kun hvis bruger har localStorage-data)
@@ -1395,7 +1419,11 @@ async function init() {
 
      URL'en beholdes (ingen replaceState): den ER søgningen, og brugeren skal
      kunne dele eller bogmærke den. */
-  {
+  // Er adressens filtre allerede sat af restoreFiltersFromUrl() (se init),
+  // skal den ældre vej herunder ikke køre oven i: to forespørgsler, og den
+  // sidste der svarer vinder. Den bruges nu kun til tilbehørstyper, som
+  // filter-url.js ikke kender.
+  if (!_filtersRestoredAtInit) {
     const sp = new URLSearchParams(window.location.search);
     const q = (sp.get('q') || '').trim();
     if (q && !q.includes('{')) {                 // ignorér Googles rå skabelon
@@ -1756,7 +1784,7 @@ async function loadInitialData() {
       // den talte initial-load på tværs af begge kategorier, mens hver
       // senere opdatering scopede til én — en forskel der er usynlig med
       // nul tilbehør og bliver til forkerte tal den dag der er noget.
-      .select('category, type, condition, size, wheel_size, colors, user_id, profiles!user_id(seller_type)')
+      .select(FILTER_COUNT_COLS)
       .eq('is_active', true)
   ]);
   applyAccessoryVisibility(bikesData);
@@ -2662,14 +2690,75 @@ function applyFilters() {
   // sidebarens type-checkboxes, ikke selvstændige filtre.
   syncTypeControls();
 
-  debouncedLoadFilters({
+  const filterArgs = {
     types, conditions, minPrice, maxPrice, sellerType,
     wheelSizes, sizes, colors, brands,
     frameMaterials, brakeTypes, groupsets, electronicShifting,
     motors, motorPositions, batteryMin, batteryMax,
     suspensions, geartypes, stepTypes,
     maxWeight, city, search, giveaway,
-  });
+  };
+  // Filtrene i adressen (js/filter-url.js). Kun på forsiden og kun for
+  // cykler: tilbehør har sin egen typeliste, og en delt adresse skal ikke
+  // pege på en kategori den ikke nævner.
+  if (normalizePath(window.location.pathname) === '/') {
+    writeFilterUrl(_browseCategory === 'cykel' ? filterArgs : null, { replace: _restoringFiltersFromUrl });
+  }
+  debouncedLoadFilters(filterArgs);
+}
+
+/* ── Filtre i adressen og tilbage-knappen ─────────────────────────────── */
+let _restoringFiltersFromUrl = false;
+let _filtersRestoredAtInit  = false;
+
+/* Kan adressen genskabes af filter-url.js? Ikke hvis den nævner en type
+   der ikke er en cykeltype (forsidens tilbehørs-chips linker til
+   /?type=Tasker%20%26%20kurve og håndteres af den ældre vej i init), eller
+   hvis q er Googles rå skabelon. */
+function urlFiltersRestorable() {
+  if (normalizePath(window.location.pathname) !== '/' || !hasFilterParams()) return false;
+  const a = readUrlFilterArgs();
+  if ((a.types || []).some(t => !BIKE_TYPES.includes(t))) return false;
+  if (a.search && a.search.includes('{')) return false;
+  return true;
+}
+
+/** Sæt sidebaren ud fra adressen og filtrér. Skriver ikke en ny historik-post. */
+function restoreFiltersFromUrl() {
+  _restoringFiltersFromUrl = true;
+  try {
+    clearAllFilters({ reload: false });
+    applyUrlToControls();
+    applyFilters();
+  } finally {
+    _restoringFiltersFromUrl = false;
+  }
+}
+
+/* Tilbage/frem på forsiden: er adressens filtre andre end dem der er vist,
+   så vis adressens. handleRoute (registreret før denne lytter) har allerede
+   skiftet til listevisningen og genindlæser ikke selv annoncerne. */
+window.addEventListener('popstate', () => {
+  if (normalizePath(window.location.pathname) !== '/') return;
+  if (_browseCategory !== 'cykel') return;
+  const shown = filterArgsToQuery(currentFilterArgs);
+  const wanted = currentUrlFilterQuery();
+  if (shown === wanted) return;
+  if (wanted) restoreFiltersFromUrl();
+  else { clearAllFilters({ reload: false }); loadBikes(); }
+});
+
+/* "Fjern sidste filter" i tom-tilstanden. Uden husket rækkefølge (fx en
+   cachet filters.js efter deploy) rydder den alt i stedet. */
+function removeLastFilter() {
+  const last = lastActiveFilter();
+  if (last) removeFilterPill(last.type, last.value);
+  else clearAllFiltersAndUrl();
+}
+
+function clearAllFiltersAndUrl(opts) {
+  clearAllFilters(opts);
+  if (normalizePath(window.location.pathname) === '/') writeFilterUrl(null);
 }
 
 
@@ -3158,7 +3247,8 @@ window.suggestChildBikeSize   = suggestChildBikeSize;
 window.toggleSidebarSection   = toggleSidebarSection;
 window.openMobileFilters      = openMobileFilters;
 window.closeMobileFilters     = closeMobileFilters;
-window.clearAllFilters        = clearAllFilters;
+window.clearAllFilters        = clearAllFiltersAndUrl;
+window.removeLastFilter       = removeLastFilter;
 window.removeFilterPill       = removeFilterPill;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 // Guard mod dobbelt-klik: hvis knappen allerede er disabled (loader), ignorér klikket.
