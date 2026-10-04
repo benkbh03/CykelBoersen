@@ -587,15 +587,14 @@ margin: 0 0 8px; line-height: 1.15; color: var(--sand);
   border-radius: var(--radius-sm); transition: color 0.15s, background 0.15s;
 }
 .rv-clear:hover { color: var(--charcoal); background: var(--sand-2); }
+/* Scrollbaren er skjult (4. okt.): rækken scrolles med finger, trackpad
+   eller shift+hjul, og den tynde bjælke under kortene lignede en fejl. */
 .rv-scroll {
   display: flex; gap: 9px; overflow-x: auto; padding-bottom: 6px;
-  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  scrollbar-width: none;
   scroll-snap-type: x proximity; scroll-behavior: smooth;
 }
-.rv-scroll::-webkit-scrollbar { height: 7px; }
-.rv-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: 4px; }
-.rv-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-.rv-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.rv-scroll::-webkit-scrollbar { display: none; }
 .rv-card {
   flex: 0 0 auto;
   scroll-snap-align: start;
