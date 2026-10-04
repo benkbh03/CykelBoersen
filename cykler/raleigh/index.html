@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20260930f">
+<html lang="da" data-asset-v="20261004a">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,23 +117,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20260930f">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20261004a">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20260930f">
-  <link rel="stylesheet" href="/css/01-base.css?v=20260930f">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20260930f">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20260930f">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20260930f">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20260930f">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20260930f">
-  <link rel="stylesheet" href="/css/07-map.css?v=20260930f">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20260930f">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20260930f">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20260930f">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20260930f">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20260930f">
+  <link rel="stylesheet" href="/css/tokens.css?v=20261004a">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261004a">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261004a">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261004a">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261004a">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261004a">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261004a">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261004a">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261004a">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261004a">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261004a">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261004a">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20261004a">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -188,7 +188,7 @@
        forsiden, og markup for indhold brugeren ikke kan se, er imod Googles
        retningslinjer for struktureret data. -->
   <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"CollectionPage","name":"Brugte og nye Raleigh cykler","description":"Raleigh er et engelsk cykelmærke grundlagt i Nottingham i 1887. Var i flere årtier verdens største cykelproducent og ikonisk britisk brand. I dag fokuserer mærket på pendlercykler, foldbike og e-cykler.","url":"https://cykelbørsen.dk/cykler/raleigh/","about":{"@type":"Brand","name":"Raleigh","foundingLocation":"UK","foundingDate":"1887"}}</script>
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Forside","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Cykelmærker","item":"https://cykelbørsen.dk/maerker/"},{"@type":"ListItem","position":3,"name":"Raleigh","item":"https://cykelbørsen.dk/cykler/raleigh/"}]}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Alle cykler","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Raleigh","item":"https://cykelbørsen.dk/cykler/raleigh/"}]}</script>
 </head>
 <!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
      kun kunne ses af admin. js/feature-flags.js fjerner klassen igen hvis
@@ -1108,7 +1108,7 @@
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
       <div class="brand-page">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        <div class="crumbs" role="navigation" aria-label="Brødkrummer"><ol class="crumbs-list"><li><a href="/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/')}">Alle cykler</a></li><li class="crumbs-current" aria-current="page">Raleigh</li></ol><a class="crumbs-back" href="/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/')}">‹ Alle cykler</a></div>
         <div class="brand-page-hero">
           <h1 class="brand-page-title">Raleigh</h1>
           <p class="brand-page-tagline">Britisk cykelarv siden 1887</p>
