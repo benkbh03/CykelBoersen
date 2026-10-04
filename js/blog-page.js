@@ -4,6 +4,7 @@
 
 import { BLOG_ARTICLES, getAllArticlesSorted, getArticleBySlug } from './blog-data-v2.js';
 import { BLOG_TITLE, BLOG_DESC } from './seo-text.js';
+import { breadcrumbsHtml, blogCrumbs } from './breadcrumbs.js';
 
 export function createBlogPage({
   esc,
@@ -109,7 +110,7 @@ export function createBlogPage({
 
     detailView.innerHTML = `
       <article class="blog-article">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/blog')">← Tilbage</button>
+        ${breadcrumbsHtml(blogCrumbs(article.title))}
 
         <header class="blog-article-header">
           <span class="blog-article-category">${esc(article.category)}</span>

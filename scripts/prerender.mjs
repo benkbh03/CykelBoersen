@@ -40,6 +40,7 @@ import {
   getAllArticlesSorted,
 } from '../js/blog-data-v2.js';
 import { CATEGORY_META } from '../js/category-data.js';
+import { breadcrumbsHtml, breadcrumbsJsonLd, bikeCrumbs, brandCrumbs, categoryCrumbs, blogCrumbs } from '../js/breadcrumbs.js';
 /* Delt med klienten. bikeTitle laa som en kopi her og drev derfor risiko
    for at sige noget andet end appen; bikePageTitle SKAL vaere den samme
    funktion begge steder, ellers modsiger raa HTML og DOM hinanden. */
@@ -309,7 +310,7 @@ function brandPage(slug, meta) {
 
   const contentHtml = `
       <div class="brand-page">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        ${breadcrumbsHtml(brandCrumbs(name))}
         <div class="brand-page-hero">
           <h1 class="brand-page-title">${escHtml(name)}</h1>
           ${meta.tagline ? `<p class="brand-page-tagline">${escHtml(meta.tagline)}</p>` : ''}
@@ -343,11 +344,7 @@ function brandPage(slug, meta) {
         ...(meta.founded && { foundingDate: String(meta.founded) }),
       },
     },
-    breadcrumb([
-      ['Forside', '/'],
-      ['Cykelmærker', '/maerker'],
-      [name, canonicalPath],
-    ]),
+    breadcrumbsJsonLd(brandCrumbs(name), canonicalPath, canonicalUrl),
   ];
 
   /* Ingen aktive annoncer = ingenting at rangere for. Se noten i buildPage. */
@@ -370,7 +367,7 @@ function blogArticlePage(article) {
 
   const contentHtml = `
       <article class="blog-article">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/blog')">← Tilbage</button>
+        ${breadcrumbsHtml(blogCrumbs(article.title))}
         <header class="blog-article-header">
           <span class="blog-article-category">${escHtml(article.category)}</span>
           <h1 class="blog-article-title">${escHtml(article.title)}</h1>
@@ -413,11 +410,7 @@ function blogArticlePage(article) {
       publisher: { '@type': 'Organization', name: 'Cykelbørsen', url: BASE_URL },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl(canonicalPath) },
     },
-    breadcrumb([
-      ['Forside', '/'],
-      ['Blog', '/blog'],
-      [article.title, canonicalPath],
-    ]),
+    breadcrumbsJsonLd(blogCrumbs(article.title), canonicalPath, canonicalUrl),
   ];
 
   return { title, description, canonicalPath, jsonldBlocks, contentHtml };
@@ -529,7 +522,7 @@ function categoryPage(slug, meta) {
 
   const contentHtml = `
       <div class="brand-page category-page">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        ${breadcrumbsHtml(categoryCrumbs(meta.name))}
         <div class="brand-page-hero">
           <h1 class="brand-page-title">${escHtml(meta.h1)}</h1>
         </div>
@@ -555,7 +548,7 @@ function categoryPage(slug, meta) {
       description: meta.metaDesc,
       url: canonicalUrl(canonicalPath),
     },
-    breadcrumb([['Forside', '/'], [meta.name, canonicalPath]]),
+    breadcrumbsJsonLd(categoryCrumbs(meta.name), canonicalPath, canonicalUrl),
   ];
   if (meta.faq && meta.faq.length) {
     jsonldBlocks.push({
@@ -596,7 +589,7 @@ function bikePage(b) {
 
   const contentHtml = `
       <div class="bike-page bike-prerender">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        ${breadcrumbsHtml(bikeCrumbs(b, name))}
         ${primary ? `<img class="bike-prerender-img" src="${escHtml(primary)}" alt="${escHtml(name)} – ${escHtml(b.type || 'cykel')} i ${escHtml(city)}" width="600" height="450">` : ''}
         <h1 class="bike-prerender-title">${escHtml(name)}</h1>
         <p class="bike-prerender-price">${priceStr} kr.</p>
@@ -633,7 +626,7 @@ function bikePage(b) {
         },
       },
     },
-    breadcrumb([['Forside', '/'], [name, canonicalPath]]),
+    breadcrumbsJsonLd(bikeCrumbs(b, name), canonicalPath, canonicalUrl),
   ];
 
   /* INGEN noindex her. Annoncerne ER markedspladsen.
@@ -956,7 +949,7 @@ async function main() {
   let bikes = null;
   try {
     bikes = await fetchSupabase(
-      'bikes?is_active=eq.true&select=id,user_id,brand,model,price,type,city,condition,year,size,size_cm,description,' +
+      'bikes?is_active=eq.true&select=id,user_id,category,brand,model,price,type,city,condition,year,size,size_cm,description,' +
       'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
     );
   } catch (err) {

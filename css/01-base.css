@@ -1621,3 +1621,22 @@ body.nav-search-on .nav-search { display: flex; }
   body { padding-bottom: 68px; }
 }
 
+
+/* ── Brødkrummer (js/breadcrumbs.js) ──
+   Desktop: Alle cykler › Racercykler › Trek › Titel. Mobil: kun
+   "‹ Forælder", som erstatter "← Tilbage". */
+.crumbs { margin: 0 0 var(--space-4); font-size: var(--text-sm); color: var(--text-muted); }
+.crumbs-list { display: flex; flex-wrap: wrap; align-items: center; list-style: none; margin: 0; padding: 0; }
+.crumbs-list li { display: inline-flex; align-items: center; min-width: 0; }
+.crumbs-list li + li::before { content: '›'; margin: 0 var(--space-2); color: var(--text-muted); }
+.crumbs a { color: inherit; text-decoration: none; }
+.crumbs a:hover { color: var(--forest); text-decoration: underline; }
+.crumbs-current { color: var(--charcoal); font-weight: var(--weight-semibold); }
+.crumbs-back { display: none; }
+@media (max-width: 768px) {
+  .crumbs-list { display: none; }
+  .crumbs-back {
+    display: inline-flex; align-items: center; min-height: 44px;
+    color: var(--charcoal) !important; font-weight: var(--weight-semibold);
+  }
+}

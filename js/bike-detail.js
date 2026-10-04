@@ -5,6 +5,7 @@
 
 import { beskedFejl, bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
 import { brandToSlug } from './brand-data-v2.js';
+import { breadcrumbsHtml, bikeCrumbs } from './breadcrumbs.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
 import { createBikeDetailLightbox } from './bike-detail-lightbox.js';
@@ -886,10 +887,9 @@ export function createBikeDetail({
 
     // Kun den fulde annonceside får sticky-kolonnen — se noten på buildBikeBodyHTML.
     const { html, profile } = buildBikeBodyHTML(b, { sticky: true });
-    const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
     detailView.innerHTML = `
       <div style="max-width:1200px;margin:0 auto;padding:20px 16px;">
-        <button onclick="${backAction}" style="margin-bottom:20px;background:none;border:1px solid var(--border);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-size:0.9rem;color:var(--charcoal);">← Tilbage</button>
+        ${breadcrumbsHtml(bikeCrumbs(b, bikeTitle(b.brand, b.model)))}
         <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.8rem;margin-bottom:6px;color:var(--charcoal);">${esc(bikeTitle(b.brand, b.model))}</h1>
         ${b.brand ? `<a href="/cykler/${brandToSlug(b.brand)}/" onclick="event.preventDefault();navigateTo('/cykler/${brandToSlug(b.brand)}')" style="display:inline-block;margin-bottom:18px;font-family:var(--font-sans);font-size:0.85rem;color:var(--rust);text-decoration:none;">Se alle ${esc(b.brand)}-cykler</a>` : ''}
         ${html}
