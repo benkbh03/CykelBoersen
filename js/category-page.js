@@ -11,6 +11,7 @@ import { CATEGORY_META } from './category-data.js';
 import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
+import { breadcrumbsHtml, breadcrumbsJsonLd, categoryCrumbs } from './breadcrumbs.js';
 
 const CATEGORY_INITIAL_BIKES = 8;
 
@@ -52,7 +53,7 @@ export function createCategoryPage({
 
     detailView.innerHTML = `
       <div class="brand-page category-page">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        ${breadcrumbsHtml(categoryCrumbs(meta.name))}
         <div class="brand-page-hero">
           <h1 class="brand-page-title">${esc(meta.h1)}</h1>
         </div>
@@ -199,14 +200,9 @@ export function createCategoryPage({
         // Afsluttende skråstreg: samme adresse som canonical (canonicalUrl i utils.js)
         'url': `${BASE_URL}/${slug}/`,
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        'itemListElement': [
-          { '@type': 'ListItem', position: 1, name: 'Forside', item: `${BASE_URL}/` },
-          { '@type': 'ListItem', position: 2, name: meta.name, item: `${BASE_URL}/${slug}/` },
-        ],
-      },
+      // Samme led som krummerne på skærmen (js/breadcrumbs.js).
+      breadcrumbsJsonLd(categoryCrumbs(meta.name), `/${slug}`,
+        (path) => (path === '/' ? `${BASE_URL}/` : `${BASE_URL}${path}/`)),
     ];
     if (meta.faq && meta.faq.length) {
       blocks.push({

@@ -7,6 +7,7 @@ import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, iconPin } from './u
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { brandTitle, brandDescription, BRANDS_DESC } from './seo-text.js';
+import { breadcrumbsHtml, brandCrumbs } from './breadcrumbs.js';
 
 // Initielle visningsgrænser før "Vis alle"-knap — holder mærkesiden kompakt
 // for mærker med mange annoncer/forhandlere så den ikke vokser eksplosivt.
@@ -62,7 +63,7 @@ export function createBrandPage({
     // Render skelet med loading-state
     detailView.innerHTML = `
       <div class="brand-page">
-        <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
+        ${breadcrumbsHtml(brandCrumbs(brandName))}
         <div class="brand-page-hero">
           <h1 class="brand-page-title">${esc(brandName)}</h1>
           ${meta.tagline ? `<p class="brand-page-tagline">${esc(meta.tagline)}</p>` : ''}
