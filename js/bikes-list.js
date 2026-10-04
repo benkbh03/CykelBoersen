@@ -280,18 +280,21 @@ export function createBikesList({
 
     const filterDesc = describeActiveFilters();
     const filterText = filterDesc.length > 0
-      ? `<p style="color:var(--muted);font-size:0.85rem;margin:0 auto 18px;max-width:380px;">Filtre: <strong style="color:var(--charcoal)">${esc(filterDesc.join(' · '))}</strong></p>`
+      ? `<p class="empty-filters-desc">Filtre: <strong>${esc(filterDesc.join(' · '))}</strong></p>`
       : '';
 
+    /* Tom liste med filtre: to veje videre. Fjern det filter der sidst
+       blev sat (det er som regel det der tømte listen), eller lad en
+       Cykelagent holde øje, så man får besked når en cykel dukker op.
+       "Fjern sidste filter" falder tilbage til at rydde alt, hvis
+       rækkefølgen ikke er kendt. */
     return `
-      <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
-        <div style="margin-bottom:14px;color:var(--muted);">${iconSearch(48)}</div>
-        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør matcher dine filtre' : 'Ingen cykler matcher dine filtre'}</h3>
-        <p style="color:var(--muted);font-size:0.92rem;max-width:380px;margin:0 auto 14px;line-height:1.55;">Prøv at fjerne et filter eller udvid dit søgekriterium.</p>
+      <div class="empty-filters">
+        <h3 class="empty-filters-title">${_isAcc ? 'Intet tilbehør matcher lige nu' : 'Ingen cykler matcher lige nu'}</h3>
         ${filterText}
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;">
-          <button onclick="clearAllFilters()" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">↺ Nulstil filtre</button>
-          <button onclick="saveCurrentSearch()" style="background:var(--sand);color:var(--charcoal);border:1.5px solid var(--border);padding:12px 24px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Få besked når der dukker en op</button>
+        <div class="empty-filters-actions">
+          <button type="button" class="empty-filters-btn empty-filters-btn--primary" onclick="(window.removeLastFilter || window.clearAllFilters)()">Fjern sidste filter</button>
+          <button type="button" class="empty-filters-btn" onclick="saveCurrentSearch()">Opret Cykelagent med disse filtre</button>
         </div>
       </div>`;
   }

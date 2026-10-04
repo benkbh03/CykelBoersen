@@ -22,6 +22,7 @@ export function createFilters({
   getActiveRadius,
   setActiveRadius,
   getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
+  onActivePills,       // (pills) => void — husker rækkefølgen til "Fjern sidste filter"
 }) {
   function hasActiveFilters() {
     const cf = getCurrentFilters();
@@ -154,7 +155,7 @@ export function createFilters({
   function updateActiveFiltersBar() {
     const bar = document.getElementById('active-filters-bar');
     if (!bar) return;
-    if (!hasActiveFilters()) { bar.style.display = 'none'; updateMobileFilterCount(0); return; }
+    if (!hasActiveFilters()) { bar.style.display = 'none'; updateMobileFilterCount(0); onActivePills?.([]); return; }
 
     const cf = getCurrentFilters();
     const args = getCurrentFilterArgs();
@@ -202,6 +203,7 @@ export function createFilters({
     if (args?.sellerType === 'dealer')  pills.push({ label: 'Forhandlere', type: 'seller', value: 'dealer' });
     if (args?.sellerType === 'private') pills.push({ label: 'Private', type: 'seller', value: 'private' });
 
+    onActivePills?.(pills);
     bar.style.display = 'flex';
     bar.innerHTML = `
       <div class="afb-pills">

@@ -724,3 +724,34 @@ border-color: rgba(42,61,46,0.18);
   .sell-giveaway { min-height: 44px; font-size: 0.95rem; }
   .sell-giveaway input[type="checkbox"] { width: 20px; height: 20px; }
 }
+
+/* ── Filterværdier uden annoncer (js/filter-availability.js) ──
+   Klasser frem for style.display, så mærkesøgningen (som bruger
+   style.display) ikke kommer til at vise en tom værdi igen. !important
+   fordi .filter-option og .sidebar-box har egen display. */
+.filter-option--empty,
+.sidebar-box--empty,
+.hero-cat-chip[hidden] { display: none !important; }
+
+/* ── Tom liste med filtre ── */
+.empty-filters { grid-column: 1 / -1; text-align: center; padding: var(--space-12) var(--space-4); }
+.empty-filters-title {
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-size: var(--text-lg); color: var(--charcoal); margin: 0 0 var(--space-3);
+}
+.empty-filters-desc { color: var(--text-muted); font-size: var(--text-sm); margin: 0 auto var(--space-6); max-width: 420px; }
+.empty-filters-desc strong { color: var(--charcoal); font-weight: var(--weight-semibold); }
+.empty-filters-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
+.empty-filters-btn {
+  min-height: 44px; padding: 0 var(--space-6); border-radius: var(--radius-sm);
+  font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans); cursor: pointer;
+  background: var(--bg); color: var(--charcoal); border: 1px solid var(--border);
+  transition: background 0.15s, border-color 0.15s;
+}
+.empty-filters-btn:hover { background: var(--surface); border-color: var(--forest); }
+.empty-filters-btn--primary { background: var(--forest); color: var(--bg); border-color: var(--forest); }
+.empty-filters-btn--primary:hover { background: var(--charcoal); border-color: var(--charcoal); }
+@media (max-width: 480px) {
+  .empty-filters-actions { flex-direction: column; }
+  .empty-filters-btn { width: 100%; }
+}
