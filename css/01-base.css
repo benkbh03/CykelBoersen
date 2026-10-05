@@ -596,17 +596,17 @@ body.nav-search-on .nav-search { display: flex; }
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
-  /* Ét fladt mørkt slør over fotoet, så den hvide tekst kan læses uden
-     glød bag bogstaverne. Tidligere: fire gradient-lag (lyst slør, to
-     farvetoner, en ellipse) plus tung text-shadow på titel og undertekst.
-     Det var dét der fik heroen til at ligne en skabelon (5. okt.). */
+  /* Ét svagt slør over fotoet; billedet skal stå lyst (brugerens ønske 5. okt.,
+     0.42 var for mørkt). Læsbarheden bæres af en tæt skygge på selve
+     bogstaverne, ikke af den brede glød (36px) der lignede en skabelon.
+     Tidligere: fire gradient-lag (lyst slør, to farvetoner, en ellipse). */
   background-image:
-    linear-gradient(rgba(16,22,18,0.42), rgba(16,22,18,0.42)),
+    linear-gradient(rgba(16,22,18,0.16), rgba(16,22,18,0.16)),
     url('/hero.jpg?v=hero1');
   /* Samme foto som WebP i fuld opløsning: 224 KB mod 484 KB. Browsere der
      forstår image-set (alle nyere) tager denne; resten bruger linjen ovenfor. */
   background-image:
-    linear-gradient(rgba(16,22,18,0.42), rgba(16,22,18,0.42)),
+    linear-gradient(rgba(16,22,18,0.16), rgba(16,22,18,0.16)),
     image-set(url('/hero-v2.webp') type('image/webp'), url('/hero.jpg?v=hero1') type('image/jpeg'));
   background-size: auto, cover;
   background-position: center, center 40%;
@@ -662,6 +662,7 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .search-hero-title {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.55);
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
@@ -673,6 +674,7 @@ body.nav-search-on .nav-search { display: flex; }
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
      centreret. Den skal kunne stå på én linje på desktop. */
   line-height: 1.5; max-width: 620px; margin: 0 auto;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
 }
 
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
