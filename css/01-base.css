@@ -596,20 +596,23 @@ body.nav-search-on .nav-search { display: flex; }
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
-  /* Ét svagt slør over fotoet; billedet skal stå lyst (brugerens ønske 5. okt.,
-     0.42 var for mørkt). Læsbarheden bæres af en tæt skygge på selve
-     bogstaverne, ikke af den brede glød (36px) der lignede en skabelon.
-     Tidligere: fire gradient-lag (lyst slør, to farvetoner, en ellipse). */
+  /* Fotoet er mørkt, så det får et LYST slør (hvid 0.11) og en svag mørk
+     ellipse bag titlen. Det er sådan brugeren vil have det: et mørkt slør
+     (0.42, også 0.16) blev afvist 5. okt. som "alt for mørkt". Rør det ikke
+     uden at sammenligne med et skærmbillede af den live side.
+     Læsbarheden bæres af en tæt skygge på bogstaverne, ikke en bred glød. */
   background-image:
-    linear-gradient(rgba(16,22,18,0.16), rgba(16,22,18,0.16)),
+    linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
+    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
     url('/hero.jpg?v=hero1');
   /* Samme foto som WebP i fuld opløsning: 224 KB mod 484 KB. Browsere der
      forstår image-set (alle nyere) tager denne; resten bruger linjen ovenfor. */
   background-image:
-    linear-gradient(rgba(16,22,18,0.16), rgba(16,22,18,0.16)),
+    linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
+    radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
     image-set(url('/hero-v2.webp') type('image/webp'), url('/hero.jpg?v=hero1') type('image/jpeg'));
-  background-size: auto, cover;
-  background-position: center, center 40%;
+  background-size: auto, auto, cover;
+  background-position: center, center, center 40%;
   background-repeat: no-repeat;
   padding: 16px 48px 14px;
   height: clamp(240px, 17vw, 280px) !important;
@@ -674,7 +677,7 @@ body.nav-search-on .nav-search { display: flex; }
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
      centreret. Den skal kunne stå på én linje på desktop. */
   line-height: 1.5; max-width: 620px; margin: 0 auto;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.35);
 }
 
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
