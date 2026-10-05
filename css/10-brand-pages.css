@@ -45,14 +45,14 @@
   display: flex; flex-direction: column;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
 }
 .brand-tile:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-sm);
   border-color: var(--rust);
 }
 .brand-tile-name {
@@ -112,7 +112,7 @@
 }
 .prerender-bike-links a {
   display: inline-block;
-  padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   background: var(--sand); color: var(--charcoal);
   font-size: 0.85rem; text-decoration: none;
 }
@@ -184,7 +184,7 @@
   color: var(--charcoal);
   font-size: 0.85rem; font-weight: 500;
   padding: 5px 12px;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   font-family: var(--font-sans);
 }
 .brand-page-body {
@@ -210,7 +210,7 @@
 .brand-models-group {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 14px 18px;
 }
 .brand-models-group-title {
@@ -218,8 +218,6 @@
   font-size: 0.92rem; font-weight: 700;
   color: var(--forest);
   margin: 0 0 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 .brand-models-list {
   list-style: none; padding: 0; margin: 0;
@@ -239,14 +237,14 @@
   display: flex; align-items: center; gap: var(--space-3);
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s, box-shadow 0.1s;
 }
 .brand-dealer-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-sm);
 }
 .brand-dealer-logo {
   width: 44px; height: 44px;
@@ -274,7 +272,7 @@
   background: var(--sand);
   color: var(--charcoal);
   padding: 8px 16px;
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   font-family: var(--font-sans);
   font-size: 0.9rem; font-weight: 500;
   text-decoration: none;
@@ -291,7 +289,7 @@
 }
 .brand-cta-btn {
   background: var(--rust); color: #fff;
-  border: none; border-radius: 8px;
+  border: none; border-radius: var(--radius-sm);
   padding: 12px 24px;
   font-family: var(--font-sans);
   font-weight: var(--weight-semibold); cursor: pointer;
@@ -307,7 +305,7 @@
 }
 .category-faq-item {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--bg);
   overflow: hidden;
 }
@@ -371,7 +369,7 @@
   font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   font-size: 1.4rem;
-  color: var(--rust);
+  color: var(--charcoal);
   margin: 0 0 10px;
 }
 .bike-prerender-meta {
