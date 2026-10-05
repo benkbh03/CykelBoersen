@@ -699,7 +699,7 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    font-family: var(--font-sans) !important; font-weight: var(--weight-heavy) !important; letter-spacing: -0.02em !important;
+    font-family: var(--font-sans) !important; font-weight: var(--weight-semibold) !important; !important;
     font-size: var(--text-base) !important;
     /* Nulstil desktoppens versal-mikroetiket. Den er rigtig i et smalt
        sidepanel hvor overskriften skal træde tilbage, men her er den
@@ -748,7 +748,7 @@
     z-index: 2;
   }
   .sidebar-mobile-header h3 {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+    font-family: var(--font-sans); font-weight: var(--weight-semibold);
     font-size: var(--text-lg);
     color: var(--charcoal);
     margin: 0;
@@ -793,9 +793,10 @@
      fik et stort hul ned til prisen. Nu står prisen altid 2 px under titlen,
      og kortene i samme række flugter stadig i bunden (.card-footer har
      margin-top:auto). */
-  .bike-title { font-size: 0.9rem; min-height: 0; max-height: calc(2 * 1.35em); }
-  .bike-price { font-size: 1.05rem; margin-left: 0; }
-  .bike-meta { font-size: 0.72rem; margin-bottom: 8px; }
+  /* Smalle kort: to linjer i stedet for ellipsis, ellers står kun mærket tilbage. */
+  .bike-title { font-size: var(--text-sm); white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .bike-price { font-size: var(--text-base); }
+  .bike-meta { font-size: var(--text-xs); margin-bottom: var(--space-2); }
   .card-footer { padding-top: 8px; }
   /* Var skjult. DET var grunden til at saelgertype-pillen dominerede kortet
      paa mobil: den stod alene som eneste tekst paa linjen. Med variant F er
@@ -1119,7 +1120,7 @@
 }
 .sold-tag span {
   background: var(--charcoal); color: #fff;
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.1rem;
 padding: 8px 20px; border-radius: var(--radius-sm);
   transform: rotate(-5deg);
 }
@@ -1182,7 +1183,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 }
 .how-icon { font-size: 2.2rem; margin-bottom: 12px; }
 .how-step h3 {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-base);  margin-bottom: 8px; color: var(--charcoal);
 }
 .how-step p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
@@ -1226,7 +1227,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   padding: 14px 16px;
 }
 .map-popup-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   margin-bottom: 4px;
 }
@@ -1273,7 +1274,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   margin: 10px 0;
 }
 .verify-box-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.9rem;
   margin-bottom: 2px;
 }
@@ -1374,7 +1375,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   margin-bottom: 16px;
 }
 .mp-verify-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.9rem;  margin-bottom: 8px;
 }
 .mp-verify-items { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: 0; }

@@ -197,7 +197,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-bike-remove:hover { background: var(--rust); transform: scale(1.06); }
 .cmp-bike-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.1rem;  margin: 0;
   color: var(--charcoal);
   line-height: 1.2;
@@ -224,7 +224,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-section { border-bottom: 1px solid var(--border); }
 .cmp-section:last-child { border-bottom: none; }
 .cmp-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.78rem;
   color: var(--muted);
   margin: 0;

@@ -114,7 +114,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 }
 .footer-col-title {
   color: var(--sand);
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   margin: 0 0 8px;
 }
@@ -428,7 +428,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   display: flex; justify-content: space-between; align-items: center;
   padding: 14px 18px; border-bottom: 1px solid var(--border);
 }
-.crop-modal-header h3 { margin: 0; font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem; color: var(--ink, var(--charcoal)); }
+.crop-modal-header h3 { margin: 0; font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.1rem; color: var(--ink, var(--charcoal)); }
 .crop-modal-close {
   background: transparent; border: none; font-size: 1.2rem; cursor: pointer;
   color: var(--muted, var(--muted)); width: 32px; height: 32px; border-radius: 50%;
@@ -532,7 +532,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   font-family: var(--font-sans);
 }
 .scam-rules strong {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-base);
   color: var(--charcoal);
 }
@@ -686,7 +686,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .profile-avatar-wrap:hover .avatar-upload-overlay { opacity: 1; }
 .avatar-upload-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.45); color: #fff; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
 .profile-big-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--forest); color: var(--sand); font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.profile-name { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.2rem;margin-bottom: 3px; }
+.profile-name { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.2rem;margin-bottom: 3px; }
 .profile-email { font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; }
 .profile-tabs { display: flex; gap: var(--space-1); border-bottom: 2px solid var(--border); margin-bottom: 22px; overflow-x: auto; }
 .profile-tab { background: none; border: none; padding: 10px 14px; font-family: var(--font-sans); font-size: 0.88rem; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.2s, border-color 0.2s; flex-shrink: 0; }
@@ -704,7 +704,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .my-listings-grid { display: flex; flex-direction: column; gap: var(--space-3); max-height: 380px; overflow-y: auto; padding-right: 4px; }
 .my-listing-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--sand); border-radius: var(--radius-sm); border: 1px solid var(--border); gap: var(--space-3); }
 .my-listing-info { flex: 1; }
-.my-listing-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 0.95rem;margin-bottom: 3px; }
+.my-listing-title { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 0.95rem;margin-bottom: 3px; }
 .my-listing-meta { font-size: 0.78rem; color: var(--muted); }
 .my-listing-views { font-size: var(--text-xs); color: var(--muted); margin-top: 3px; }
 .my-listing-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;color: var(--charcoal); font-size: var(--text-base); white-space: nowrap; }
@@ -729,7 +729,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 }
 .demo-banner-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
 .demo-banner-text { display: flex; flex-direction: column; gap: 2px; }
-.demo-banner-text strong { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: var(--text-base); }
+.demo-banner-text strong { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-base); }
 .demo-banner-text span { font-size: 0.85rem; line-height: 1.4; opacity: 0.85; }
 .demo-detail-notice {
   background: #fff3e0; border: 1px solid #ffb380;
@@ -1054,7 +1054,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 }
 .trust-card-badge-text { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
 .trust-card-badge-text strong {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.05rem;
   color: var(--forest);
 }
@@ -1189,7 +1189,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 
 /* ── Sælgerens andre / Lignende annoncer ── */
 .related-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-base);
   color: var(--charcoal);
   margin: 0 0 14px;
@@ -1314,7 +1314,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   line-height: 1;
 }
 .bike-location-place {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   color: var(--charcoal);
   margin-top: 2px;
@@ -1926,7 +1926,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .insight-card-sub   { font-size: 0.78rem; color: var(--muted); }
 
 .insights-h3 {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.05rem;
   color: var(--charcoal);
   margin: 28px 0 12px;

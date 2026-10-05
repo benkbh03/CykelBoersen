@@ -1009,7 +1009,7 @@ body.nav-search-on .nav-search { display: flex; }
 .sidebar-box-header h3 {
   /* Var 11,5 px versaler med sperring. Nu almindelig tekst. */
   font-family: var(--font-sans); font-size: var(--text-sm);
-  font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-weight: var(--weight-semibold);
   color: var(--forest); margin: 0; transition: color 0.12s;
 }
 .sidebar-chevron {
@@ -1028,7 +1028,7 @@ body.nav-search-on .nav-search { display: flex; }
   padding: 20px; text-align: center; margin-top: 4px;
 }
 .sidebar-save-card h4 {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 0.95rem;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 0.95rem;
   color: var(--cream);margin-bottom: 6px;
 }
 .sidebar-save-card p {
@@ -1474,7 +1474,7 @@ body.nav-search-on .nav-search { display: flex; }
   margin-top: 20px;
 }
 .fit-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-base);
   margin: 0 0 10px;
   color: var(--charcoal);

@@ -655,7 +655,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 18px;
 }
-.map-filter-sheet-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 1.3rem; color: var(--charcoal); }
+.map-filter-sheet-title { font-family: var(--font-sans); font-weight: var(--weight-semibold);font-size: 1.3rem; color: var(--charcoal); }
 .map-filter-sheet-close {
   width: 34px; height: 34px; border-radius: 50%; background: var(--sand);
   border: none; color: var(--muted); cursor: pointer;
@@ -1066,7 +1066,7 @@ body.map-page-view { padding-bottom: 0 !important; }
 .split-popup-badge--dealer { background: var(--forest); color: #fff; }
 .split-popup-badge--private { background: var(--sand); color: var(--muted); }
 .split-popup-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.05rem;
   color: var(--charcoal);
   margin-bottom: 3px;
@@ -1200,7 +1200,7 @@ body.map-page-view { padding-bottom: 0 !important; }
     gap: 10px;
   }
   .map-mobile-title {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+    font-family: var(--font-sans); font-weight: var(--weight-semibold);
     font-size: 1.35rem;
     color: var(--charcoal);
     margin: 0;
@@ -1348,7 +1348,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   }
   .split-list-count-big { display: none; }
   .split-list-count-label {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+    font-family: var(--font-sans); font-weight: var(--weight-semibold);
     font-size: var(--text-base);
     color: var(--charcoal);
     margin-top: 0;
@@ -1464,7 +1464,7 @@ body.map-page-view { padding-bottom: 0 !important; }
     margin-bottom: 14px;
   }
   .map-filter-sheet-title {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+    font-family: var(--font-sans); font-weight: var(--weight-semibold);
     font-size: 1.2rem;
     color: var(--charcoal);
   }

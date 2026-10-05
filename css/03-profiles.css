@@ -62,7 +62,7 @@
 .up-stat-label { font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
 
 .up-divider { border: none; border-top: 1px solid color-mix(in srgb, var(--surface) 12%, transparent); margin: 24px 0; }
-.up-section-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.05rem; color: var(--charcoal); margin: 0 0 16px; }
+.up-section-title { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.05rem; color: var(--charcoal); margin: 0 0 16px; }
 .up-empty { color: var(--muted); font-size: 0.88rem; padding: 8px 0; }
 
 /* Aktive cykler grid */
@@ -225,7 +225,7 @@
   margin: 20px 0 16px;
 }
 .dealer-profile-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.1rem;
   color: var(--charcoal); margin: 0 0 20px;
 }
 .dealer-profile-bikes-grid {
@@ -259,7 +259,7 @@
   margin-bottom: 14px;
 }
 .promoted-dealers-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-lg);
   margin: 0;
   color: #6e4e00;
@@ -297,7 +297,7 @@
   background: var(--gold-bg);
   color: var(--gold-dark);
   font-size: 0.68rem;
-  font-weight: var(--weight-heavy);
+  font-weight: var(--weight-semibold);
   padding: 4px 14px;
   border-radius: var(--radius-md);
   white-space: nowrap;
@@ -318,7 +318,7 @@
 .promoted-dealer-card-logo--img { background: var(--sand); }
 .promoted-dealer-card-logo img { width: 100%; height: 100%; object-fit: cover; }
 .promoted-dealer-card-name {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.05rem;
   color: var(--charcoal);
   margin-top: 6px;
@@ -408,7 +408,7 @@
   background: var(--gold-bg);
   color: var(--gold-dark);
   font-size: 0.66rem;
-  font-weight: var(--weight-heavy);
+  font-weight: var(--weight-semibold);
   padding: 4px 11px;
   border-radius: var(--radius-full);
   font-family: var(--font-sans);
@@ -454,7 +454,7 @@
   border-radius: var(--radius-md); padding: 48px 32px;
   text-align: center; color: var(--ink, var(--charcoal));
 }
-.dealer-empty-card h3 { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.3rem; margin-bottom: 10px; color: var(--ink, var(--charcoal)); }
+.dealer-empty-card h3 { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.3rem; margin-bottom: 10px; color: var(--ink, var(--charcoal)); }
 .dealer-empty-card p { color: var(--muted, #6b6b63); font-size: 0.95rem; max-width: 360px; margin: 0 auto 20px; line-height: 1.5; }
 .btn-become-dealer-small {
   background: transparent; color: var(--rust-light);
@@ -483,7 +483,7 @@
 }
 .dealer-perks-icon { font-size: var(--text-base); line-height: 1; }
 .dealer-perks-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.9rem;
   color: #2e6e32;
 }
@@ -504,7 +504,7 @@
 }
 .dp-check {
   color: #2e7d32;
-  font-weight: var(--weight-heavy);
+  font-weight: var(--weight-semibold);
   font-size: 0.72rem;
   flex-shrink: 0;
   line-height: 1.4;
