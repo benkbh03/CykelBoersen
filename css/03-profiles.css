@@ -14,7 +14,7 @@
 .up-name { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.5rem; color: var(--charcoal); margin: 0 0 4px; }
 .up-city { color: var(--muted); font-size: 0.88rem; margin-bottom: 4px; }
 .up-last-seen { color: var(--muted); font-size: 0.82rem; margin-bottom: 8px; opacity: 0.85; }
-.up-bio { color: var(--charcoal); font-size: 0.88rem; line-height: 1.55; margin: 10px 0 0; padding: 10px 14px; background: var(--sand); border-radius: 8px; border: 1px solid var(--border); white-space: pre-wrap; }
+.up-bio { color: var(--charcoal); font-size: 0.88rem; line-height: 1.55; margin: 10px 0 0; padding: 10px 14px; background: var(--sand); border-radius: var(--radius-sm); border: 1px solid var(--border); white-space: pre-wrap; }
 .up-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .up-member-since { color: var(--muted); font-size: 0.78rem; }
 
@@ -22,7 +22,7 @@
 .up-achievements { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: 10px; }
 .achievement-badge {
   display: inline-flex; align-items: center; gap: var(--space-1);
-  padding: 4px 10px; border-radius: 20px;
+  padding: 4px 10px; border-radius: var(--radius-md);
   font-size: var(--text-xs); font-weight: var(--weight-semibold);
   background: var(--sand); border: 1px solid var(--border);
   color: var(--charcoal); cursor: default;
@@ -30,7 +30,7 @@
 
 /* Favorit-tæller badge */
 .trade-img {
-  width: 52px; height: 52px; border-radius: 8px;
+  width: 52px; height: 52px; border-radius: var(--radius-sm);
   overflow: hidden; background: #eee; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
@@ -51,7 +51,7 @@
 
 .up-stats {
   display: flex; gap: 0; border: 1px solid color-mix(in srgb, var(--surface) 12%, transparent);
-  border-radius: 10px; overflow: hidden; margin-bottom: 28px;
+  border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 28px;
 }
 .up-stat {
   flex: 1; padding: 16px; text-align: center;
@@ -62,7 +62,7 @@
 .up-stat-label { font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
 
 .up-divider { border: none; border-top: 1px solid color-mix(in srgb, var(--surface) 12%, transparent); margin: 24px 0; }
-.up-section-title { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.05rem; color: var(--charcoal); margin: 0 0 16px; }
+.up-section-title { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.05rem; color: var(--charcoal); margin: 0 0 16px; }
 .up-empty { color: var(--muted); font-size: 0.88rem; padding: 8px 0; }
 
 /* Aktive cykler grid */
@@ -72,7 +72,7 @@
 }
 .up-bike-card {
   background: color-mix(in srgb, var(--surface) 5%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 10%, transparent);
-  border-radius: 10px; overflow: hidden; cursor: pointer;
+  border-radius: var(--radius-sm); overflow: hidden; cursor: pointer;
   transition: transform 0.15s, border-color 0.15s;
 }
 .up-bike-card:hover {border-color: color-mix(in srgb, var(--surface) 25%, transparent); }
@@ -82,14 +82,14 @@
 }
 .up-bike-info { padding: 10px 12px 12px; }
 .up-bike-title { font-weight: var(--weight-semibold); font-size: 0.88rem; color: var(--charcoal); margin-bottom: 2px; }
-.up-bike-price { color: var(--rust); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.up-bike-price { color: var(--charcoal); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
 .up-bike-meta { font-size: var(--text-xs); color: var(--muted); }
 
 /* Solgte cykler liste */
 .up-sold-list { display: flex; flex-direction: column; gap: var(--space-2); }
 .up-sold-row {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; border-radius: 8px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface) 4%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 8%, transparent);
   gap: var(--space-3);
 }
@@ -99,13 +99,13 @@
 .up-sold-price { font-size: 0.85rem; color: var(--muted); text-align: right; white-space: nowrap; display: flex; align-items: center; gap: var(--space-2); }
 .sold-chip {
   background: rgba(200,200,200,0.15); color: var(--muted);
-  font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; font-weight: var(--weight-semibold);
+  font-size: 0.7rem; padding: 2px 8px; border-radius: var(--radius-md); font-weight: var(--weight-semibold);
 }
 
 /* Anmeldelser */
 .up-reviews-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
 .up-review-card {
-  padding: 14px 16px; border-radius: 10px;
+  padding: 14px 16px; border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface) 5%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 10%, transparent);
 }
 .up-review-top { display: flex; align-items: flex-start; gap: var(--space-3); margin-bottom: 8px; }
@@ -132,14 +132,14 @@
 .up-review-textarea {
   width: 100%; min-height: 80px; resize: vertical;
   background: color-mix(in srgb, var(--surface) 7%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 20%, transparent);
-  border-radius: 8px; padding: 10px 14px; color: var(--charcoal);
+  border-radius: var(--radius-sm); padding: 10px 14px; color: var(--charcoal);
   font-family: var(--font-sans); font-size: 0.88rem;
   margin-bottom: 12px; box-sizing: border-box;
 }
 .up-review-textarea:focus { outline: none; border-color: var(--rust); }
 .btn-submit-review {
   background: var(--rust); color: #fff; border: none;
-  padding: 11px 28px; border-radius: 8px; font-size: 0.88rem;
+  padding: 11px 28px; border-radius: var(--radius-sm); font-size: 0.88rem;
   font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans);
   transition: opacity 0.15s;
 }
@@ -168,20 +168,20 @@
 .up-contact-section { margin-top: 14px; }
 .up-contact-btn {
   background: var(--rust); border: none;
-  color: #fff; padding: 8px 18px; border-radius: 8px;
+  color: #fff; padding: 8px 18px; border-radius: var(--radius-sm);
   font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); transition: opacity 0.15s;
 }
 .up-contact-btn:hover { opacity: 0.88; }
 .up-contact-form { margin-top: 12px; }
 .up-contact-bike-select {
-  width: 100%; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px;
+  width: 100%; padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 10px;
   background: color-mix(in srgb, var(--surface) 7%, transparent); border: 1px solid color-mix(in srgb, var(--surface) 20%, transparent);
   color: var(--charcoal); font-family: var(--font-sans); font-size: 0.85rem;
 }
 .up-contact-send-btn {
   background: var(--rust); color: #fff; border: none;
-  border-radius: 8px; padding: 9px 20px; font-size: 0.88rem; font-weight: var(--weight-semibold);
+  border-radius: var(--radius-sm); padding: 9px 20px; font-size: 0.88rem; font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans); transition: opacity 0.15s;
 }
 .up-contact-send-btn:hover { opacity: 0.88; }
@@ -225,7 +225,7 @@
   margin: 20px 0 16px;
 }
 .dealer-profile-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.1rem;
   color: var(--charcoal); margin: 0 0 20px;
 }
 .dealer-profile-bikes-grid {
@@ -250,7 +250,7 @@
   padding: 22px 24px 24px;
   background: var(--surface-sand);
   border: 1px solid var(--gold-border);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   position: relative;
 }
 .promoted-dealers-header {
@@ -259,7 +259,7 @@
   margin-bottom: 14px;
 }
 .promoted-dealers-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-lg);
   margin: 0;
   color: #6e4e00;
@@ -268,8 +268,6 @@
   font-size: var(--text-xs);
   color: #8a6817;
   font-weight: var(--weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 .promoted-dealers-grid {
   display: grid;
@@ -299,11 +297,9 @@
   background: var(--gold-bg);
   color: var(--gold-dark);
   font-size: 0.68rem;
-  font-weight: var(--weight-heavy);
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
+  font-weight: var(--weight-semibold);
   padding: 4px 14px;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   white-space: nowrap;
   font-family: var(--font-sans);
 }
@@ -322,7 +318,7 @@
 .promoted-dealer-card-logo--img { background: var(--sand); }
 .promoted-dealer-card-logo img { width: 100%; height: 100%; object-fit: cover; }
 .promoted-dealer-card-name {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.05rem;
   color: var(--charcoal);
   margin-top: 6px;
@@ -412,9 +408,7 @@
   background: var(--gold-bg);
   color: var(--gold-dark);
   font-size: 0.66rem;
-  font-weight: var(--weight-heavy);
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
+  font-weight: var(--weight-semibold);
   padding: 4px 11px;
   border-radius: var(--radius-full);
   font-family: var(--font-sans);
@@ -442,7 +436,7 @@
 .btn-see-all-dealers {
   background: transparent; color: var(--sand);
   border: 1.5px solid color-mix(in srgb, var(--surface) 30%, transparent);
-  padding: 11px 28px; border-radius: 8px;
+  padding: 11px 28px; border-radius: var(--radius-sm);
   font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans);
   transition: all 0.2s;
@@ -457,15 +451,15 @@
 .dealer-empty-card {
   background: var(--cream, var(--cream));
   border: 2px dashed var(--border);
-  border-radius: 14px; padding: 48px 32px;
+  border-radius: var(--radius-md); padding: 48px 32px;
   text-align: center; color: var(--ink, var(--charcoal));
 }
-.dealer-empty-card h3 { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.3rem; margin-bottom: 10px; color: var(--ink, var(--charcoal)); }
+.dealer-empty-card h3 { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.3rem; margin-bottom: 10px; color: var(--ink, var(--charcoal)); }
 .dealer-empty-card p { color: var(--muted, #6b6b63); font-size: 0.95rem; max-width: 360px; margin: 0 auto 20px; line-height: 1.5; }
 .btn-become-dealer-small {
   background: transparent; color: var(--rust-light);
   border: 1.5px solid var(--rust-light);
-  padding: 10px 20px; border-radius: 8px;
+  padding: 10px 20px; border-radius: var(--radius-sm);
   font-size: 0.85rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); transition: all 0.2s;
 }
@@ -489,7 +483,7 @@
 }
 .dealer-perks-icon { font-size: var(--text-base); line-height: 1; }
 .dealer-perks-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.9rem;
   color: #2e6e32;
 }
@@ -510,7 +504,7 @@
 }
 .dp-check {
   color: #2e7d32;
-  font-weight: var(--weight-heavy);
+  font-weight: var(--weight-semibold);
   font-size: 0.72rem;
   flex-shrink: 0;
   line-height: 1.4;
@@ -530,7 +524,7 @@
   padding: 10px 12px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.86rem;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
@@ -567,9 +561,9 @@
   grid-template-columns: 1fr auto 1fr auto 1fr;
   gap: var(--space-2);
   align-items: center;
-  background: linear-gradient(135deg, var(--forest), var(--forest-light));
+  background: var(--forest);
   color: var(--sand);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 16px 18px;
 }
 .mp-dealer-banner-stat {
@@ -601,9 +595,9 @@
 
 /* ── GRATIS PRØVEPERIODE BANNER ── */
 .dealer-trial-banner {
-  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  background: var(--surface);
   border: 1.5px solid #a5d6a7;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 16px;
   font-size: 0.86rem;
   color: #2e7d32;
@@ -635,7 +629,7 @@
   background: #fff8f5;
   box-shadow: 0 0 0 3px rgba(42,61,46,0.14); /* valgt-ring i skovgrøn, ikke rust */
 }
-.plan-name { font-size: 0.82rem; font-weight: var(--weight-semibold); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.plan-name { font-size: 0.82rem; font-weight: var(--weight-semibold); color: var(--muted); margin-bottom: 6px; }
 .plan-price { font-size: 1.4rem;color: var(--charcoal); font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; line-height: 1.1; }
 .plan-unit { font-size: 0.8rem; font-weight: var(--weight-regular); color: var(--muted); }
 .plan-note { font-size: var(--text-xs); color: var(--muted); margin-top: 5px; }
@@ -647,7 +641,7 @@
   font-size: 0.68rem;
   font-weight: 700;
   padding: 3px 9px;
-  border-radius: 0 10px 0 8px;
+  border-radius: 0 var(--radius-sm) 0 var(--radius-sm);
   letter-spacing: 0.03em;
 }
 
@@ -700,7 +694,7 @@
   background: var(--forest);
   color: var(--cream);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   font-size: 0.9rem;
@@ -715,7 +709,7 @@
   gap: var(--space-3);
   padding: 12px 14px;
   background: #e8f5e9;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   margin-bottom: 12px;
 }
 .onboarding-service-status-icon {
@@ -740,7 +734,7 @@
   background: none;
   color: var(--muted);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   font-size: 0.86rem;
@@ -766,17 +760,17 @@
 }
 .subscription-title { font-weight: var(--weight-semibold); font-size: 0.92rem; margin-bottom: 3px; }
 .subscription-sub   { font-size: 0.78rem; color: var(--muted); }
-.sub-status-active   { background: #e8f5e9; color: #2e7d32; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
-.sub-status-trial    { background: #e3f2fd; color: #1565c0; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
-.sub-status-past-due { background: #fff3e0; color: #e65100; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
-.sub-status-canceled { background: #fce4ec; color: var(--error); font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.sub-status-active   { background: #e8f5e9; color: #2e7d32; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-trial    { background: #e3f2fd; color: #1565c0; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-past-due { background: #fff3e0; color: #e65100; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-canceled { background: #fce4ec; color: var(--error); font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
 .btn-manage-subscription {
   width: 100%;
   padding: 10px 16px;
   background: var(--charcoal);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.86rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;

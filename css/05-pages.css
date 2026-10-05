@@ -22,7 +22,7 @@
   grid-template-columns: 380px 1fr;
   gap: 0;
   background: #fff;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   overflow: hidden;
   min-height: 520px;
@@ -79,7 +79,7 @@
 .inbox-page-bike-thumb {
   width: 18px;
   height: 18px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   object-fit: cover;
 }
 .inbox-page-preview {
@@ -95,10 +95,10 @@
 
 /* Interest-række (en bruger har gemt din annonce — ingen tråd endnu) */
 .inbox-page-row--interest {
-  background: linear-gradient(90deg, rgba(200,80,42,0.06), transparent 60%);
+  background: var(--surface);
   border-left: 3px solid var(--rust);
 }
-.inbox-page-row--interest:hover { background: linear-gradient(90deg, rgba(200,80,42,0.1), var(--sand) 60%); }
+.inbox-page-row--interest:hover { background: var(--surface-2); }
 .inbox-interest-tag {
   display: inline-block;
   background: var(--rust);
@@ -129,7 +129,7 @@
   color: #8A4A20;
   font-size: 0.7rem;
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-weight: var(--weight-semibold);
 }
 
@@ -172,16 +172,16 @@
   padding: 8px 10px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s;
 }
 .inbox-chat-bike-preview:hover { background: var(--sand-2); }
-.inbox-chat-bike-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 7px; flex-shrink: 0; }
+.inbox-chat-bike-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: var(--radius-sm); flex-shrink: 0; }
 .inbox-chat-bike-icon { font-size: 1.5rem; }
 .inbox-chat-bike-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
 .inbox-chat-bike-name { font-weight: var(--weight-semibold); font-size: 0.82rem; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.inbox-chat-bike-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 0.88rem; color: var(--rust); }
+.inbox-chat-bike-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 0.88rem; color: var(--charcoal); }
 .inbox-chat-bike-sold { font-size: 0.72rem; font-weight: 700; background: var(--muted); color: #fff; padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap; }
 .inbox-chat-messages {
   flex: 1;
@@ -208,7 +208,7 @@
   flex: 1;
   padding: 11px 14px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   font-size: 0.88rem;
   resize: none;
@@ -224,7 +224,7 @@
   color: var(--sand);
   border: none;
   padding: 11px 24px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
@@ -315,7 +315,7 @@
 
 /* ── INDBAKKE (modal legacy) ── */
 .inbox-badge { background: var(--rust); color: #fff; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; margin-left: 4px; vertical-align: middle; }
-.inbox-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; background: var(--sand); border-radius: 10px; border: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.inbox-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; background: var(--sand); border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
 .inbox-row:hover { background: var(--border); }
 .inbox-row.unread { border-left: 3px solid var(--rust); }
 .inbox-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--forest); color: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
@@ -324,14 +324,14 @@
 .inbox-bike { font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
 .inbox-preview { font-size: 0.82rem; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .inbox-time { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
-.thread-header { background: var(--sand); border-radius: 10px; padding: 8px 14px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 0.85rem; }
+.thread-header { background: var(--sand); border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 0.85rem; }
 /* Beskeder er det primære indhold i tråden — giv dem mest mulig plads.
    min(viewport, fast loft) sikrer at de skalerer på små skærme uden at vokse
    uden grænser på store. */
 .thread-messages { display: flex; flex-direction: column; gap: var(--space-2); max-height: min(50vh, 440px); overflow-y: auto; padding: 4px 0; margin-bottom: 8px; }
 .message-bubble { max-width: 80%; padding: 10px 14px; border-radius: var(--radius-md); font-size: 0.85rem; line-height: 1.5; }
-.message-bubble.sent { background: var(--forest); color: var(--sand); align-self: flex-end; border-bottom-right-radius: 4px; }
-.message-bubble.received { background: var(--sand); color: var(--charcoal); align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.message-bubble.sent { background: var(--forest); color: var(--sand); align-self: flex-end; border-bottom-right-radius: var(--radius-sm); }
+.message-bubble.received { background: var(--sand); color: var(--charcoal); align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: var(--radius-sm); }
 .message-bubble .msg-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
 .message-bubble.sent .msg-time { justify-content: flex-end; }
 .read-receipt { font-size: 0.78rem; letter-spacing: -1px; opacity: 0.85; }
@@ -341,7 +341,7 @@
   position: relative;
   background: var(--bg);
   border: 1.5px solid var(--rust);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 22px 16px 12px;
   margin-top: 16px;
   font-family: var(--font-sans);
@@ -398,7 +398,7 @@
   background: var(--forest);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
@@ -412,9 +412,9 @@
   font-size: 0.7rem;
 }
 .thread-reply { display: flex; flex-direction: column; gap: var(--space-2); border-top: 1px solid var(--border); padding-top: 14px; }
-.thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: var(--font-sans); font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
+.thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .thread-reply textarea:focus { border-color: var(--forest); }
-.thread-reply button { background: var(--forest); color: var(--sand); border: none; padding: 11px; border-radius: 8px; font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
+.thread-reply button { background: var(--forest); color: var(--sand); border: none; padding: 11px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
 .thread-reply button:hover { background: var(--forest-light); }
 
 /* ── LOGIN / GLEMT ── */
@@ -425,12 +425,12 @@
 .oauth-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
 .oauth-btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 12px 16px; border-radius: 10px;
+  width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
   font-size: 0.92rem; font-weight: var(--weight-semibold); font-family: var(--font-sans);
   cursor: pointer; transition: box-shadow 0.15s, transform 0.1s;
   border: 1.5px solid var(--border);
 }
-.oauth-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+.oauth-btn:hover { box-shadow: var(--shadow-sm);}
 .oauth-btn:active { transform: translateY(0); }
 .oauth-google { background: #fff; color: #3c4043; }
 .oauth-divider {
@@ -460,44 +460,41 @@
     margin: 16px 0 4px;
     width: 100%;
     box-sizing: border-box;
-    background: linear-gradient(135deg, var(--forest) 0%, #3A5340 100%);
-    border-radius: var(--radius-md);
-    color: #fff;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    color: var(--charcoal);
     text-decoration: none;
-    box-shadow: 0 3px 10px rgba(42,61,46,0.22);
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: background 0.15s;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     cursor: pointer;
   }
-  .dealer-banner-mobile:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 6px rgba(42,61,46,0.25);
-  }
+  .dealer-banner-mobile:active { background: var(--surface-2); }
   .dealer-banner-icon {
     width: 36px; height: 36px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.14);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--forest);
     display: flex; align-items: center; justify-content: center;
   /* font-size fjernet: .dealer-banner-icon er nu inline-SVG (20px) */
     flex-shrink: 0;
   }
   .dealer-banner-text { flex: 1; min-width: 0; }
   .dealer-banner-title {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
-    font-size: 0.92rem;
-    color: #fff;
+    font-family: var(--font-sans); font-weight: var(--weight-semibold);
+    font-size: var(--text-sm);
+    color: var(--charcoal);
     line-height: 1.2;
     margin-bottom: 1px;
   }
   .dealer-banner-sub {
-    font-size: 0.72rem;
-    color: rgba(255,255,255,0.82);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
     line-height: 1.3;
     font-family: var(--font-sans);
   }
   .dealer-banner-arrow {
-    color: #FF8B60;
+    color: var(--text-muted);
     flex-shrink: 0;
     margin-left: auto;
   }
@@ -507,7 +504,7 @@
 /* "Filtre"-knappen vises kun på mobil (sidebar er synlig inline på desktop). */
 .btn-mobile-filter {
   display: none; background: var(--cream); border: 1.5px solid var(--border);
-  border-radius: 10px; padding: 12px 14px;
+  border-radius: var(--radius-sm); padding: 12px 14px;
   font-size: 0.92rem; font-weight: var(--weight-semibold); color: var(--charcoal);
   cursor: pointer; font-family: var(--font-sans);
   align-items: center; justify-content: center; gap: var(--space-2);
@@ -521,7 +518,7 @@
 .filter-count-badge {
   background: var(--rust); color: #fff;
   font-size: 0.72rem; font-weight: 700;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   min-width: 20px; height: 20px;
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0 6px;
@@ -613,17 +610,17 @@
        align-items, fordi #save-search-btn under baren MED vilje er en
        kompakt centreret pille og ikke skal strækkes med. */
     width: 100%;
-    border-radius: 14px; padding: 8px; gap: 6px;
+    border-radius: var(--radius-md); padding: 8px; gap: 6px;
     flex-direction: column; align-items: stretch;
-    box-shadow: 0 10px 28px -8px rgba(0,0,0,0.3);
+    box-shadow: var(--shadow-sm);
   }
-  .search-bar-field { background: var(--sand); border-radius: 10px; padding: 2px 10px; }
+  .search-bar-field { background: var(--sand); border-radius: var(--radius-sm); padding: 2px 10px; }
   .search-bar-query { padding: 2px 10px; flex: none; }
   .search-bar input, .search-bar select { width: 100%; padding: 8px 4px; font-size: var(--text-base); min-width: 0; }
   .search-bar select { padding-right: 30px; }
   .search-bar-chev { right: 12px; }
   .search-bar-sep { display: none; }
-  .search-pill-btn { width: 100%; border-radius: 10px; padding: 11px; justify-content: center; }
+  .search-pill-btn { width: 100%; border-radius: var(--radius-sm); padding: 11px; justify-content: center; }
   /* Mobil: kompakt centreret pill under søgebaren (ikke full-width — bevarer
      visuelt hierarki hvor Søg-knappen i baren er primær handling). */
   .search-bar-wrap { flex-wrap: wrap; justify-content: center; }
@@ -656,12 +653,12 @@
     bottom: 0; left: 0; right: 0;
     max-height: 88vh;
     background: #fff;
-    border-radius: 20px 20px 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
     padding: 0 14px 20px;
     z-index: 1500;
     overflow-y: auto;
     transform: translateY(0);
-    box-shadow: 0 -4px 30px rgba(0,0,0,0.18);
+    box-shadow: var(--shadow-up);
     -webkit-overflow-scrolling: touch;
     animation: sidebar-slide-up 0.3s ease;
   }
@@ -702,7 +699,7 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    font-family: var(--font-sans) !important; font-weight: var(--weight-heavy) !important; letter-spacing: -0.02em !important;
+    font-family: var(--font-sans) !important; font-weight: var(--weight-semibold) !important; !important;
     font-size: var(--text-base) !important;
     /* Nulstil desktoppens versal-mikroetiket. Den er rigtig i et smalt
        sidepanel hvor overskriften skal træde tilbage, men her er den
@@ -751,7 +748,7 @@
     z-index: 2;
   }
   .sidebar-mobile-header h3 {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+    font-family: var(--font-sans); font-weight: var(--weight-semibold);
     font-size: var(--text-lg);
     color: var(--charcoal);
     margin: 0;
@@ -767,11 +764,11 @@
     border: none;
     padding: 14px;
     font-size: var(--text-base); font-weight: 700;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     margin-top: 12px;
     cursor: pointer;
     font-family: var(--font-sans);
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-up);
   }
   .sidebar-mobile-apply:hover { background: var(--rust-light); }
 
@@ -796,9 +793,10 @@
      fik et stort hul ned til prisen. Nu står prisen altid 2 px under titlen,
      og kortene i samme række flugter stadig i bunden (.card-footer har
      margin-top:auto). */
-  .bike-title { font-size: 0.9rem; min-height: 0; max-height: calc(2 * 1.35em); }
-  .bike-price { font-size: 1.05rem; margin-left: 0; }
-  .bike-meta { font-size: 0.72rem; margin-bottom: 8px; }
+  /* Smalle kort: to linjer i stedet for ellipsis, ellers står kun mærket tilbage. */
+  .bike-title { font-size: var(--text-sm); white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .bike-price { font-size: var(--text-base); }
+  .bike-meta { font-size: var(--text-xs); margin-bottom: var(--space-2); }
   .card-footer { padding-top: 8px; }
   /* Var skjult. DET var grunden til at saelgertype-pillen dominerede kortet
      paa mobil: den stod alene som eneste tekst paa linjen. Med variant F er
@@ -811,7 +809,7 @@
   footer { padding: 28px 16px; gap: var(--space-3); }
   .footer-links { flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
   .modal-overlay { align-items: flex-end; padding: 0; }
-  .modal { border-radius: 20px 20px 0 0; max-height: 92vh; overflow-y: auto; width: 100%; max-width: 100%; }
+  .modal { border-radius: var(--radius-md) var(--radius-md) 0 0; max-height: 92vh; overflow-y: auto; width: 100%; max-width: 100%; }
   .modal-wide { max-width: 100%; }
   .modal-header { padding: 20px 20px 16px; }
   .modal-body { padding: 0 20px 40px; }
@@ -865,7 +863,7 @@
 .nav-admin-btn {
   background: color-mix(in srgb, var(--surface) 12%, transparent);
   border: 1.5px solid color-mix(in srgb, var(--surface) 20%, transparent);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   width: 36px; height: 36px;
   cursor: pointer; font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
@@ -876,7 +874,7 @@
 .admin-row {
   display: flex; align-items: center; gap: 14px;
   padding: 14px 16px;
-  background: var(--sand); border-radius: 10px;
+  background: var(--sand); border-radius: var(--radius-sm);
   border: 1px solid var(--border); margin-bottom: 10px;
 }
 .admin-row-info { flex: 1; }
@@ -946,9 +944,9 @@
 
 /* Banner på sell-page når admin opretter på vegne af forhandler */
 .sell-acting-as-banner {
-  background: linear-gradient(135deg, var(--forest) 0%, #1f3322 100%);
+  background: var(--forest);
   color: var(--cream);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 14px 18px;
   margin: 0 0 16px;
 }
@@ -974,7 +972,7 @@
   background: rgba(255,255,255,0.15);
   color: var(--cream);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 8px 14px;
   font-size: 0.82rem;
   font-weight: var(--weight-semibold);
@@ -1029,8 +1027,8 @@
   left: 0; right: 0;
   background: var(--cream);
   border: 1.5px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-float);
   z-index: 150;
   overflow: hidden;
   max-height: 260px;
@@ -1082,7 +1080,7 @@
   color: var(--charcoal);
   background: var(--sand);
 }
-.share-btn:hover {box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.share-btn:hover {box-shadow: var(--shadow-float); }
 .share-icon { font-size: 1.6rem; }
 .share-whatsapp:hover { border-color: #25D366; background: #f0fdf4; color: #16a34a; }
 .share-facebook:hover { border-color: #1877F2; background: #eff6ff; color: #1877F2; }
@@ -1095,7 +1093,7 @@
   align-items: center;
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 4px 4px 4px 14px;
 }
 .share-link-box input {
@@ -1122,7 +1120,7 @@
 }
 .sold-tag span {
   background: var(--charcoal); color: #fff;
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.1rem;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.1rem;
 padding: 8px 20px; border-radius: var(--radius-sm);
   transform: rotate(-5deg);
 }
@@ -1146,7 +1144,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 /* Køber-picker modal */
 .buyer-pick-btn {
   width: 100%; padding: 12px 16px; border: 1.5px solid var(--border);
-  border-radius: 10px; background: #fff; cursor: pointer; text-align: left;
+  border-radius: var(--radius-sm); background: #fff; cursor: pointer; text-align: left;
   font-family: var(--font-sans); font-size: 0.9rem;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -1180,12 +1178,12 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   flex: 1; min-width: 180px; max-width: 220px;
   padding: 24px 16px;
   background: var(--cream);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
 }
 .how-icon { font-size: 2.2rem; margin-bottom: 12px; }
 .how-step h3 {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-base);  margin-bottom: 8px; color: var(--charcoal);
 }
 .how-step p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
@@ -1205,7 +1203,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .view-toggle {
   background: var(--sand);
   border: 1.5px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   width: 38px; height: 38px;
   cursor: pointer; font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
@@ -1216,8 +1214,8 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 
 /* Leaflet popup override */
 .leaflet-popup-content-wrapper {
-  border-radius: 10px !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-float) !important;
   font-family: var(--font-sans) !important;
   padding: 0 !important;
 }
@@ -1229,12 +1227,12 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   padding: 14px 16px;
 }
 .map-popup-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   margin-bottom: 4px;
 }
 .map-popup-price {
-  color: var(--rust);
+  color: var(--charcoal);
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.1rem;
   margin-bottom: 6px;
@@ -1256,13 +1254,13 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   z-index: 1000;
   background: white;
   border: 2px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 8px 14px;
   font-size: 0.82rem;
   font-weight: var(--weight-semibold);
   cursor: pointer;
   font-family: var(--font-sans);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s;
 }
 .locate-btn:hover { border-color: var(--forest); }
@@ -1271,12 +1269,12 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .verify-box {
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   margin: 10px 0;
 }
 .verify-box-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.9rem;
   margin-bottom: 2px;
 }
@@ -1287,7 +1285,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   gap: 10px;
   padding: 8px 10px;
   background: var(--cream);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   margin-bottom: 0;
 }
@@ -1330,8 +1328,8 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   z-index: 11000;
   background: var(--cream, var(--cream));
   border: 1.5px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-float);
   max-height: 280px;
   overflow-y: auto;
   font-size: 0.9rem;
@@ -1362,7 +1360,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   display: flex; align-items: flex-start; gap: 14px;
   background: #FFF8E6;
   border: 1.5px solid #F0D98A;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 16px 18px;
   margin-bottom: 16px;
 }
@@ -1372,12 +1370,12 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .mp-verify-card {
   background: var(--sand);
   border: 1.5px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 12px 16px;
   margin-bottom: 16px;
 }
 .mp-verify-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.9rem;  margin-bottom: 8px;
 }
 .mp-verify-items { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: 0; }
@@ -1386,7 +1384,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   padding: 10px 16px;
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem; font-weight: 500;
   color: var(--muted);
   min-width: 140px;
@@ -1401,7 +1399,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .mp-verify-check { font-weight: 700; font-size: 0.9rem; }
 .mp-verify-cta {
   background: var(--forest); color: var(--sand);
-  border: none; border-radius: 8px;
+  border: none; border-radius: var(--radius-sm);
   padding: 10px 20px; font-size: 0.85rem;
   font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans);

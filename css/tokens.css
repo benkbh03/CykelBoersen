@@ -34,6 +34,14 @@
   --radius-md:   12px;
   --radius-full: 999px;
 
+  /* ── Skygger ── Neutrale, aldrig farvede. Kort har ingen skygge, kun kant.
+     --shadow-sm: små ting oven på et billede eller kort (knapper, mærkater).
+     --shadow-float: ting der svæver over siden (dropdown, popover, modal).
+     --shadow-up: ark og bjælker der sidder i bunden af skærmen. */
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08);
+  --shadow-float: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-up:    0 -4px 16px rgba(0,0,0,0.08);
+
   /* ── Afstande (4-px-skala) ── */
   --space-1:  4px;
   --space-2:  8px;

@@ -13,11 +13,10 @@
   border-radius: var(--radius-sm);
   padding: 3px 7px 3px 5px;
   align-items: center; gap: var(--space-1);
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
-  text-transform: uppercase;
+  font-size: 0.62rem; font-weight: 700;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-sm);
   transition: background 0.15s;
   color: var(--charcoal);
 }
@@ -52,9 +51,9 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   transform: translateX(-50%) translateY(120%);
   background: var(--forest);
   color: #fff;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 12px 18px;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.32);
+  box-shadow: var(--shadow-float);
   z-index: 9000;
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: calc(100vw - 32px);
@@ -70,7 +69,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .compare-bar-clear {
   background: transparent; color: rgba(255,255,255,0.78);
   border: 1px solid rgba(255,255,255,0.25);
-  padding: 8px 14px; border-radius: 8px;
+  padding: 8px 14px; border-radius: var(--radius-sm);
   font-size: 0.85rem; font-weight: 500;
   cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s;
@@ -78,7 +77,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .compare-bar-clear:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .compare-bar-go {
   background: var(--rust); color: #fff;
-  border: none; padding: 9px 18px; border-radius: 8px;
+  border: none; padding: 9px 18px; border-radius: var(--radius-sm);
   font-size: 0.9rem; font-weight: 700;
   cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
@@ -112,7 +111,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 
 .cmp-back-btn {
   background: none; border: 1px solid var(--border);
-  padding: 8px 18px; border-radius: 8px;
+  padding: 8px 18px; border-radius: var(--radius-sm);
   cursor: pointer; font-family: var(--font-sans);
   font-size: 0.88rem; color: var(--charcoal);
   margin-bottom: 22px;
@@ -137,7 +136,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   display: inline-block;
   width: 16px; height: 3px;
   background: #ff8b60;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   vertical-align: middle;
 }
 
@@ -145,15 +144,15 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-shell {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .cmp-header-row {
   display: grid;
   grid-template-columns: 180px repeat(var(--cmp-cols), 1fr);
-  background: linear-gradient(180deg, var(--sand) 0%, color-mix(in srgb, var(--surface-2) 60%, transparent) 100%);
+  background: var(--sand);
   border-bottom: 1px solid var(--border);
 }
 .cmp-header-spacer { padding: 24px; }
@@ -198,7 +197,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-bike-remove:hover { background: var(--rust); transform: scale(1.06); }
 .cmp-bike-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.1rem;  margin: 0;
   color: var(--charcoal);
   line-height: 1.2;
@@ -213,7 +212,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   color: #fff;
   border: none;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.82rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   font-family: var(--font-sans);
@@ -225,9 +224,8 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-section { border-bottom: 1px solid var(--border); }
 .cmp-section:last-child { border-bottom: none; }
 .cmp-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 0.78rem;
-  text-transform: uppercase;
   color: var(--muted);
   margin: 0;
   padding: 16px 24px 8px;
@@ -284,7 +282,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .cmp-price {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: 1.2rem;
-  color: var(--rust);
+  color: var(--charcoal);
   line-height: 1.1;
 }
 .cmp-price-orig {
@@ -302,7 +300,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   background: var(--sand);
   color: var(--charcoal);
   padding: 1px 7px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 0.72rem;
   font-weight: var(--weight-semibold);
   margin-left: 6px;
@@ -337,12 +335,12 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-footer-secondary, .cmp-footer-primary {
   padding: 12px 24px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   font-size: 0.92rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s, border-color 0.15s, box-shadow 0.15s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-sm);
 }
 .cmp-footer-secondary {
   background: #fff;

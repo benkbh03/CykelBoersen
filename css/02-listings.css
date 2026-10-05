@@ -1,7 +1,7 @@
 /* ── BADGES ── */
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border-radius: 4px;
+  padding: 3px 10px; border-radius: var(--radius-sm);
   font-size: 0.72rem; font-weight: var(--weight-semibold); letter-spacing: 0.02em;
 }
 /* Stod paa to pastelfarver der ikke findes i paletten (#E8F0E8 og #FBF0E8),
@@ -19,7 +19,7 @@
 .listings-header span { color: var(--muted); font-size: 0.88rem; }
 .sort-select {
   padding: 7px 12px; border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 0.85rem;
+  border-radius: var(--radius-sm); font-size: 0.85rem;
   background: var(--cream); font-family: var(--font-sans);
   cursor: pointer; color: var(--charcoal); outline: none;
   transition: border-color 0.15s;
@@ -33,23 +33,23 @@
   justify-content: space-between;
   gap: var(--space-3);
   flex-wrap: wrap;
-  background: var(--forest);
-  border-radius: 10px;
-  padding: 12px 16px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
   margin-bottom: 10px;
 }
 .cta-strip-text {
-  font-size: 0.88rem;
-  color: #e8ede9;
+  font-size: var(--text-sm);
+  color: var(--charcoal);
   line-height: 1.4;
 }
-.cta-strip-text strong { color: #fff; font-weight: 700; }
+.cta-strip-text strong { color: var(--charcoal); font-weight: var(--weight-semibold); }
 .cta-strip-btn {
   flex-shrink: 0;
   background: var(--rust);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 8px 16px;
   font-size: 0.85rem;
   font-weight: 700;
@@ -62,22 +62,14 @@
 .cta-strip-actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
 .cta-strip-dismiss {
   width: 28px; height: 28px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); border: none;
-  color: #e8ede9; font-size: 1.1rem; line-height: 1;
+  background: transparent; border: none;
+  color: var(--text-muted); font-size: 1.1rem; line-height: 1;
   cursor: pointer; padding: 0; transition: background 0.15s;
 }
-.cta-strip-dismiss:hover { background: rgba(255,255,255,0.22); color: #fff; }
-/* Stærkere visuel når resultater er få (≤5) */
-.cykelagent-cta-strip--accent {
-  background: linear-gradient(135deg, var(--rust) 0%, #B04524 100%);
-}
-.cykelagent-cta-strip--accent .cta-strip-text { color: #fff; }
-.cykelagent-cta-strip--accent .cta-strip-text strong { color: #fff; }
-.cykelagent-cta-strip--accent .cta-strip-btn {
-  background: #fff; color: var(--rust);
-}
-.cykelagent-cta-strip--accent .cta-strip-dismiss { background: rgba(255,255,255,0.2); color: #fff; }
-.cykelagent-cta-strip--accent .cta-strip-dismiss:hover { background: rgba(255,255,255,0.35); }
+.cta-strip-dismiss:hover { background: var(--surface-2); color: var(--charcoal); }
+/* Få resultater (≤5): samme flade, kant i handlingsfarven. Tidligere en
+   orange gradient, som var det eneste sted på forsiden med en gradient. */
+.cykelagent-cta-strip--accent { box-shadow: inset 3px 0 0 var(--rust); }
 
 /* Aktive filtre bar */
 #active-filters-bar {
@@ -87,7 +79,7 @@
   flex-wrap: wrap;
   background: var(--sand-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   margin-bottom: 16px;
 }
@@ -109,7 +101,7 @@
 .afb-pill-remove:hover { background: var(--border); color: var(--charcoal); }
 .afb-clear-all {
   flex-shrink: 0; background: none; border: 1.5px solid var(--border);
-  border-radius: 8px; padding: 5px 12px;
+  border-radius: var(--radius-sm); padding: 5px 12px;
   font-size: 0.78rem; font-weight: var(--weight-semibold); color: var(--muted);
   cursor: pointer; font-family: var(--font-sans);
   white-space: nowrap; transition: border-color 0.15s, color 0.15s;
@@ -118,7 +110,7 @@
 .afb-actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; flex-wrap: wrap; }
 .afb-save-agent {
   flex-shrink: 0; background: var(--rust); border: 1.5px solid var(--rust);
-  border-radius: 8px; padding: 6px 14px;
+  border-radius: var(--radius-sm); padding: 6px 14px;
   font-size: 0.78rem; font-weight: 700; color: #fff;
   cursor: pointer; font-family: var(--font-sans);
   white-space: nowrap; transition: background 0.15s, border-color 0.15s;
@@ -132,7 +124,7 @@
   padding: 0 24px;
 }
 .popular-searches-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.15rem;
   color: var(--charcoal);
   margin: 0 0 12px;
@@ -145,7 +137,7 @@
 .popular-chip {
   background: var(--cream);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   padding: 8px 14px;
   font-family: var(--font-sans);
   font-size: 0.85rem;
@@ -189,7 +181,6 @@
   display: flex; flex-direction: column; height: 100%;
 }
 .bike-card:hover { background: var(--surface); }
-.bike-card:hover .bike-title { color: var(--forest); }
 .bike-card-img {
   aspect-ratio: 3/2; width: 100%; background: var(--sand);
   display: flex; align-items: center; justify-content: center;
@@ -232,9 +223,8 @@
   background: #EFE0B4;
   color: #5A4407;
   border: 1px solid #D9C482;
-  font-size: var(--text-2xs); font-weight: 700; letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 2px 5px; border-radius: 4px;
+  font-size: var(--text-2xs); font-weight: 700;
+  padding: 2px 5px; border-radius: var(--radius-sm);
   font-family: var(--font-sans); white-space: nowrap;
 }
 .featured-card-img-placeholder { font-size: 4rem; }
@@ -244,12 +234,12 @@
    paletten. Nu ÉN familie, hvor mørkere = bedre stand. Det gør rækkefølgen
    Ny > Som ny > God stand > Brugt aflæselig på afstand uden at læse ordet. */
 .condition-tag {
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   /* Var 0,6 rem (9,6 px) og 0,52 rem (8,3 px) på mobil. Standen er en af de
      vigtigste oplysninger på kortet, så den skal kunne læses: 11 px er
      --text-2xs, den eneste undtagelse fra 12 px-gulvet (mærkater på billeder). */
   padding: 2px 7px; font-size: var(--text-2xs); font-weight: 700;
-  letter-spacing: 0.04em; text-transform: uppercase;
+
   background: color-mix(in srgb, var(--bg) 94%, transparent); color: var(--forest);
   border: 1px solid rgba(42,61,46,0.16);
   white-space: nowrap;
@@ -263,9 +253,8 @@
 .warranty-card-badge {
   background: color-mix(in srgb, var(--bg) 94%, transparent); color: var(--forest);
   border: 1px solid rgba(42,61,46,0.18);
-  border-radius: 4px; padding: 3px 7px;
-  font-size: var(--text-2xs); font-weight: 700; letter-spacing: 0.3px;
-  text-transform: uppercase;
+  border-radius: var(--radius-sm); padding: 3px 7px;
+  font-size: var(--text-2xs); font-weight: 700;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
 }
@@ -273,16 +262,16 @@
   background: #fff3e0; color: #bf360c;
   border: 1px solid #ff8b60;
   border-radius: var(--radius-sm); padding: 3px 7px;
-  font-size: var(--text-2xs); font-weight: var(--weight-heavy); letter-spacing: 0.4px;
+  font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: 0.4px;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 3px;
-  box-shadow: 0 2px 6px rgba(191,54,12,0.18);
+  box-shadow: var(--shadow-sm);
 }
 /* Stod paa #c8302a mens brandfarven er #C8502A — to roede en haarsbredde fra
    hinanden paa samme kort. Nu variablen, saa de ikke kan drive fra hinanden. */
 .price-reduced-card-badge {
   background: var(--rust); color: #fff;
-  border-radius: 4px; padding: 1px 5px;
+  border-radius: var(--radius-sm); padding: 1px 5px;
   /* Var 0,5 rem (8 px) og 0,46 rem (7,4 px) på mobil — for småt til at læse.
      12 px i vægt 800 blev derimod en klods der dominerede billedet. 11 px i
      halvfed er læseligt uden at stjæle opmærksomheden fra cyklen. */
@@ -307,13 +296,13 @@
 .save-btn {
   position: absolute; top: 10px; right: 10px;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+
   border: none;
   border-radius: 50%; width: 34px; height: 34px;
   cursor: pointer; font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
   z-index: 1; transition: background 0.15s, transform 0.15s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-sm);
 }
 .save-btn:hover { background: #fff; transform: scale(1.08); }
 .save-btn:focus-visible { outline-color: var(--rust-light); }
@@ -333,15 +322,17 @@
   .save-btn { width: 28px; height: 28px; font-size: 0.85rem; top: 8px; right: 8px; }
 }
 .bike-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
-.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: var(--space-2); }
+/* Titel over pris, ikke ved siden af (5. okt.). Side om side tvang titlen
+   ned på to-tre linjer, og to tunge elementer kæmpede om blikket. Nu er
+   prisen det ENESTE tunge element på kortet; titlen er halvfed. */
+.card-top { display: flex; flex-direction: column; align-items: stretch; margin-bottom: var(--space-2); gap: var(--space-1); }
 .bike-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.05rem;line-height: 1.35;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  overflow-wrap: break-word; /* lange ord ombrydes i stedet for at klippes af overflow:hidden */
-  min-height: calc(2 * 1.35 * 1.05rem); /* altid 2 linjer høj → sælger-navn altid alignet */
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-base); line-height: 1.35;
+  color: var(--charcoal);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.bike-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.3rem;color: var(--rust); white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
-.bike-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+.bike-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: var(--text-lg); color: var(--charcoal); white-space: nowrap; }
+.bike-meta { font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-3); }
 .bike-meta span::after { content: ' · '; }
 .bike-meta span:last-child::after { content: ''; }
 .card-footer {
@@ -441,7 +432,7 @@
 .dealer-strip p { color: var(--sand); opacity: 0.65; max-width: 540px; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; }
 .btn-become-dealer {
   background: var(--rust); color: #fff;
-  border: none; padding: 13px 24px; border-radius: 8px;
+  border: none; padding: 13px 24px; border-radius: var(--radius-sm);
   font-size: 0.9rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); white-space: nowrap;
   transition: background 0.2s; flex-shrink: 0;
@@ -453,7 +444,7 @@
 .dealer-card {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   /* Top-padding 38px (ikke 22) reserverer en vertikal "lane" øverst hvor
      fremhævet-badgen (absolut placeret) bor uden at skubbe logo/navn/adresse
      nedad. Konsekvensen: logo + navn + adresse starter på samme y-position
@@ -461,7 +452,7 @@
   padding: 38px 20px 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(42,61,46,0.06);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
   /* Kolonne + fuld hoejde, saa .dealer-card-foot kan skubbes til bunden. */
   display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
@@ -481,7 +472,7 @@
    forskelligt indhold. Ingen omrokering, kun justering. */
 .dealer-card-foot { margin-top: auto; }
 .dealer-card:hover {
-  box-shadow: 0 8px 24px rgba(42,61,46,0.12);
+  box-shadow: var(--shadow-float);
   border-color: var(--forest);
 }
 .dealer-logo { font-size: 2rem; margin-bottom: 10px; }
@@ -495,7 +486,7 @@
 }
 .dealer-logo-circle--img { background: var(--sand-2); }
 .dealer-logo-circle img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
-.dealer-name { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.05rem; color: var(--charcoal);margin-bottom: 4px; }
+.dealer-name { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 1.05rem; color: var(--charcoal);margin-bottom: 4px; }
 .dealer-verified-tick {
   display: inline-flex; align-items: center; justify-content: center;
   width: 16px; height: 16px; border-radius: 50%;
@@ -518,27 +509,27 @@
 }
 .sell-cta-inner {
   max-width: 1300px; margin: 0 auto;
-  background: var(--forest-light); color: var(--sand);
-  border-radius: 18px; padding: 36px 44px;
+  background: var(--surface); color: var(--charcoal);
+  border-radius: var(--radius-sm); padding: var(--space-8) var(--space-8);
   display: grid; grid-template-columns: 1fr auto;
   gap: var(--space-8); align-items: center;
   position: relative;
 }
-.sell-cta-label {
-  font-size: 0.7rem; font-weight: var(--weight-semibold); color: var(--rust-light);
-  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
-}
 .sell-cta-headline {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: var(--text-xl);
-margin: 0 0 8px; line-height: 1.15; color: var(--sand);
+margin: 0 0 var(--space-2); line-height: 1.15; color: var(--charcoal);
 }
-.sell-cta-headline em { font-style: italic; font-weight: 500; color: var(--rust-light); }
 .sell-cta-sub {
-  font-size: 0.9rem; opacity: 0.72; margin: 0; line-height: 1.5; max-width: 540px;
+  font-size: var(--text-sm); color: var(--text-muted); margin: 0; line-height: 1.5; max-width: 540px;
 }
+.sell-cta-link {
+  display: inline-block; margin-top: var(--space-3);
+  color: var(--charcoal); font-size: var(--text-sm); text-decoration: underline;
+}
+.sell-cta-link:hover { color: var(--forest); }
 .sell-cta-btn {
   background: var(--rust); color: #fff; border: none;
-  padding: 14px 24px; border-radius: 10px; font-size: 0.9rem;
+  padding: 14px 24px; border-radius: var(--radius-sm); font-size: 0.9rem;
   font-weight: var(--weight-semibold); font-family: var(--font-sans);
   display: inline-flex; align-items: center; gap: var(--space-2);
   cursor: pointer; transition: background 0.2s, transform 0.15s;
@@ -547,8 +538,8 @@ margin: 0 0 8px; line-height: 1.15; color: var(--sand);
 .sell-cta-btn:hover { background: var(--rust-light);}
 @media (max-width: 768px) {
   .sell-cta-section { padding: 16px 16px 48px; }
-  .sell-cta-inner { grid-template-columns: 1fr; padding: 28px 24px; gap: 20px; }
-  .sell-cta-headline { font-size: 1.45rem; }
+  .sell-cta-inner { grid-template-columns: 1fr; padding: var(--space-6); gap: var(--space-4); }
+  .sell-cta-headline { font-size: var(--text-lg); }
   .sell-cta-btn { width: 100%; justify-content: center; }
 }
 
@@ -576,7 +567,7 @@ margin: 0 0 8px; line-height: 1.15; color: var(--sand);
   margin-bottom: 8px;
 }
 .rv-heading {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: 1.05rem;color: var(--charcoal);
   margin: 0;
 }
@@ -600,14 +591,14 @@ margin: 0 0 8px; line-height: 1.15; color: var(--sand);
   scroll-snap-align: start;
   display: flex; flex-direction: row; align-items: center; gap: 9px;
   background: var(--cream); border: 1px solid var(--border);
-  border-radius: 9px; padding: 5px 13px 5px 5px; cursor: pointer;
+  border-radius: var(--radius-sm); padding: 5px 13px 5px 5px; cursor: pointer;
   text-align: left; font-family: inherit;
   transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s;
   overflow: hidden;
 }
 .rv-card:hover {
 border-color: rgba(42,61,46,0.18);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  box-shadow: var(--shadow-float);
 }
 .rv-card-img {
   width: 46px; height: 46px; flex-shrink: 0;
@@ -624,7 +615,7 @@ border-color: rgba(42,61,46,0.18);
 }
 .rv-card-price {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
-  font-size: 0.9rem;color: var(--rust);
+  font-size: 0.9rem;color: var(--charcoal);
 }
 @media (max-width: 768px) {
   .rv-heading { font-size: 0.98rem; }
@@ -646,7 +637,7 @@ border-color: rgba(42,61,46,0.18);
 }
 .boost-benefits li span { flex-shrink: 0; }
 .boost-cta-btn {
-  width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+  width: 100%; border: none; border-radius: var(--radius-sm); padding: 13px 16px;
   font-size: 0.95rem; font-weight: 700; cursor: pointer;
   font-family: var(--font-sans); color: #fff;
   /* Flad --gold-dark i stedet for guldgradienten: hvid tekst på #d4a017
@@ -668,7 +659,7 @@ border-color: rgba(42,61,46,0.18);
 .boost-badge-big {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--gold-bg); color: var(--gold-dark);
-  font-weight: var(--weight-heavy); font-size: 0.8rem; letter-spacing: 0.4px; text-transform: uppercase;
+  font-weight: var(--weight-semibold); font-size: 0.8rem;
   padding: 6px 16px; border-radius: var(--radius-full);  margin-bottom: 10px;
 }
 .boost-active-text { font-size: 0.95rem; color: var(--charcoal); margin: 0 0 14px; line-height: 1.5; }
@@ -735,7 +726,7 @@ border-color: rgba(42,61,46,0.18);
 /* ── Tom liste med filtre ── */
 .empty-filters { grid-column: 1 / -1; text-align: center; padding: var(--space-12) var(--space-4); }
 .empty-filters-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-lg); color: var(--charcoal); margin: 0 0 var(--space-3);
 }
 .empty-filters-desc { color: var(--text-muted); font-size: var(--text-sm); margin: 0 auto var(--space-6); max-width: 420px; }

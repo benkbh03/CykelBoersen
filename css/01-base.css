@@ -132,7 +132,6 @@ nav {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid rgba(0,0,0,0.18);
-  backdrop-filter: blur(4px);
 }
 /* ── LOGO: ordmærket "cykelbørsen", hvor ø'et er en kursgraf ──
    Markup: logoHtml() i js/logo.js (samme markup står statisk i index.html
@@ -169,7 +168,7 @@ footer .logo { font-size: 24px; }
   color: #fff !important;
   opacity: 1 !important;
   padding: 9px 18px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   font-weight: var(--weight-semibold) !important;
   font-size: 0.88rem !important;
   letter-spacing: 0.01em;
@@ -199,7 +198,7 @@ footer .logo { font-size: 24px; }
      med "+ Sæt til salg" om at være det tydeligste element i rækken. */
   background: color-mix(in srgb, var(--surface) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--surface) 16%, transparent);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   padding: 0 4px 0 11px;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -270,7 +269,7 @@ body.nav-search-on .nav-search { display: flex; }
     border-left: none; border-right: none;
     border-top: none;
     padding: 8px 16px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+    box-shadow: var(--shadow-float);
     z-index: 99;
   }
   /* :focus-within har to klasser og slår derfor en enkelt .nav-search inde i
@@ -307,7 +306,7 @@ body.nav-search-on .nav-search { display: flex; }
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
   }
   .nav-search-go:hover,
   .nav-search-go:active { background: color-mix(in srgb, var(--surface) 12%, transparent); opacity: 1; }
@@ -326,7 +325,7 @@ body.nav-search-on .nav-search { display: flex; }
   background: none; border: none; cursor: pointer;
   color: var(--sand); padding: 6px; margin-left: -2px;
   align-items: center; justify-content: center;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   -webkit-tap-highlight-color: transparent;
 }
 /* Kompakt sælg-label på mobil ("+ Sælg") for at give den tætte indloggede
@@ -353,7 +352,7 @@ body.nav-search-on .nav-search { display: flex; }
   border-bottom: 1px solid rgba(0,0,0,0.18);
   display: flex; flex-direction: column;
   padding: 6px 0 10px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+  box-shadow: var(--shadow-float);
   z-index: 99;
 }
 .mobile-menu-panel[hidden] { display: none; }
@@ -400,7 +399,7 @@ body.nav-search-on .nav-search { display: flex; }
 .nav-inbox-btn:hover { opacity: 1; }
 /* SVG-kuverten (var ✉️) arver farve fra nav'en, som emojien aldrig gjorde. */
 .nav-inbox-icon { display: inline-flex; color: var(--sand); }
-.nav-inbox-btn:focus-visible { outline-color: color-mix(in srgb, var(--surface) 70%, transparent); border-radius: 8px; }
+.nav-inbox-btn:focus-visible { outline-color: color-mix(in srgb, var(--surface) 70%, transparent); border-radius: var(--radius-sm); }
 .nav-inbox-badge {
   position: absolute; top: -2px; right: -2px;
   background: var(--rust); color: #fff;
@@ -478,8 +477,6 @@ body.nav-search-on .nav-search { display: flex; }
   font-size: var(--text-xs);
   color: var(--sand);
   opacity: 0.5;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   font-weight: 500;
   margin-bottom: 20px;
 }
@@ -538,14 +535,14 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .btn-primary {
   background: var(--rust); color: #fff;
-  padding: 14px 28px; border-radius: 4px;
+  padding: 14px 28px; border-radius: var(--radius-sm);
   font-weight: 500; border: none; cursor: pointer;
   font-size: 0.95rem; transition: background 0.2s, transform 0.15s;
 }
 .btn-primary:hover { background: var(--rust-light);}
 .btn-outline {
   background: transparent; color: var(--sand);
-  padding: 14px 28px; border-radius: 4px;
+  padding: 14px 28px; border-radius: var(--radius-sm);
   font-weight: 500; border: 1.5px solid color-mix(in srgb, var(--surface) 35%, transparent);
   cursor: pointer; font-size: 0.95rem;
   transition: border-color 0.2s, background 0.2s;
@@ -599,32 +596,23 @@ body.nav-search-on .nav-search { display: flex; }
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
-  /* Lagene ovenpå fotoet er skruet markant ned, så billedet er lyst.
-     Overskriften kan bære det, fordi den har sin egen text-shadow — den
-     mørkner kun bag bogstaverne i stedet for bag hele billedet.
-     Tilbage er en svag ellipse midt i, som holder titlen læsbar mod
-     himlen, og de to farvetoner der binder fotoet til paletten. */
+  /* Fotoet er mørkt, så det får et LYST slør (hvid 0.11) og en svag mørk
+     ellipse bag titlen. Det er sådan brugeren vil have det: et mørkt slør
+     (0.42, også 0.16) blev afvist 5. okt. som "alt for mørkt". Rør det ikke
+     uden at sammenligne med et skærmbillede af den live side.
+     Læsbarheden bæres af en tæt skygge på bogstaverne, ikke en bred glød. */
   background-image:
-    /* Lyst slør ØVERST i stakken (første lag = forrest). Selve fotoet er
-       mørkt, så det er ikke nok at fjerne de mørke lag — der skal lys på.
-       Titlen bærer det, fordi den har sin egen text-shadow: den mørkner
-       bag bogstaverne i stedet for bag hele billedet. */
     linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
-    radial-gradient(circle at 80% 90%, rgba(200,80,42,0.10) 0, transparent 48%),
-    radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.07) 0, transparent 45%),
-    /* Svag ellipse midt i, som holder overskriften læsbar mod himlen. */
     radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
     url('/hero.jpg?v=hero1');
   /* Samme foto som WebP i fuld opløsning: 224 KB mod 484 KB. Browsere der
      forstår image-set (alle nyere) tager denne; resten bruger linjen ovenfor. */
   background-image:
     linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
-    radial-gradient(circle at 80% 90%, rgba(200,80,42,0.10) 0, transparent 48%),
-    radial-gradient(circle at 15% 5%,  rgba(217,168,92,0.07) 0, transparent 45%),
     radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
     image-set(url('/hero-v2.webp') type('image/webp'), url('/hero.jpg?v=hero1') type('image/jpeg'));
-  background-size: auto, auto, auto, auto, cover;
-  background-position: center, center, center, center, center 40%;
+  background-size: auto, auto, cover;
+  background-position: center, center, center 40%;
   background-repeat: no-repeat;
   padding: 16px 48px 14px;
   height: clamp(240px, 17vw, 280px) !important;
@@ -673,11 +661,11 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .search-hero-dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: #7ac97a; box-shadow: 0 0 8px #7ac97a;
+  background: var(--green);
 }
 .search-hero-title {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
-  text-shadow: 0 2px 36px rgba(0,0,0,0.65), 0 1px 3px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.55);
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
@@ -689,9 +677,7 @@ body.nav-search-on .nav-search { display: flex; }
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
      centreret. Den skal kunne stå på én linje på desktop. */
   line-height: 1.5; max-width: 620px; margin: 0 auto;
-  /* Kraftigere end titlens behøver at være: den er mindre og tyndere, og
-     står direkte mod himlen, som er den lyseste del af fotoet. */
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(0,0,0,0.75);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.35);
 }
 
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
@@ -771,7 +757,7 @@ body.nav-search-on .nav-search { display: flex; }
   /* Skyggen var 50 % sort med 48 px blur, altså en stor mørk sky under baren.
      Halveret og trukket tættere på, så baren stadig løfter sig fra fotoet
      uden at male det mørkt. */
-  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.35), 0 0 0 1px rgba(26,26,24,0.08);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(26,26,24,0.08);
   /* Var overflow:hidden, som klippede autoforslags-listen væk: den ligger
      absolut under feltet, altså uden for barens kant. Ingen af børnene har
      en baggrund der kan stikke ud over de runde hjørner. */
@@ -779,7 +765,7 @@ body.nav-search-on .nav-search { display: flex; }
   transition: box-shadow 0.2s;
 }
 .search-bar:focus-within {
-  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.35), 0 0 0 2px var(--forest);
+  box-shadow: var(--shadow-sm), 0 0 0 2px var(--forest);
 }
 .search-bar-field {
   position: relative; display: flex; align-items: center;
@@ -832,7 +818,7 @@ body.nav-search-on .nav-search { display: flex; }
 .search-city-clear:hover { background: var(--sand-2); color: var(--charcoal); }
 .search-city-radius {
   flex-shrink: 0; border: none; background: var(--sand-2);
-  padding: 6px 24px 6px 10px; border-radius: 14px;
+  padding: 6px 24px 6px 10px; border-radius: var(--radius-md);
   font-family: var(--font-sans); font-size: 0.78rem; font-weight: 500;
   color: var(--forest); cursor: pointer; outline: none;
   appearance: none; -webkit-appearance: none;
@@ -873,14 +859,14 @@ body.nav-search-on .nav-search { display: flex; }
   font-size: 0.92rem; font-weight: var(--weight-semibold);
   color: var(--charcoal) !important;
   white-space: nowrap; flex-shrink: 0;
-  box-shadow: 0 10px 28px -10px rgba(0,0,0,0.45);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.15s, box-shadow 0.2s, background 0.15s;
 }
 #save-search-btn .save-search-icon { font-size: 1.05rem; line-height: 1; }
 #save-search-btn .save-search-text { letter-spacing: -0.005em; }
 #save-search-btn:hover {
   background: #fff !important;
-  box-shadow: 0 14px 32px -10px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-sm);
 }
 #save-search-btn:focus-visible { outline: 2px solid rgba(232,105,74,0.7); outline-offset: 3px; }
 
@@ -1006,9 +992,9 @@ body.nav-search-on .nav-search { display: flex; }
 .sidebar-box[data-fsec="farve"]          { order: 6; }
 /* Quizzen er ikke en .sidebar-box og fik derfor order 0 — altså øverst, over
    samtlige filtre. Filtrene er differentieringen mod DBA og skal stå først;
-   quizzen er et supplement. Order 7 = lige efter de seks prioriterede filtre,
-   før de tekniske (order 10). */
-.bike-quiz-box { order: 7; }
+   quizzen er et supplement. Order 20 = efter alle filtre (5. okt.: midt i
+   filterlisten lignede den et indskudt reklamekort). */
+.bike-quiz-box { order: 20; }
 
 .sidebar-box-header {
   display: flex; justify-content: space-between; align-items: center;
@@ -1023,7 +1009,7 @@ body.nav-search-on .nav-search { display: flex; }
 .sidebar-box-header h3 {
   /* Var 11,5 px versaler med sperring. Nu almindelig tekst. */
   font-family: var(--font-sans); font-size: var(--text-sm);
-  font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-weight: var(--weight-semibold);
   color: var(--forest); margin: 0; transition: color 0.12s;
 }
 .sidebar-chevron {
@@ -1042,7 +1028,7 @@ body.nav-search-on .nav-search { display: flex; }
   padding: 20px; text-align: center; margin-top: 4px;
 }
 .sidebar-save-card h4 {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 0.95rem;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: 0.95rem;
   color: var(--cream);margin-bottom: 6px;
 }
 .sidebar-save-card p {
@@ -1071,7 +1057,7 @@ body.nav-search-on .nav-search { display: flex; }
 .filter-option::before {
   content: ''; flex-shrink: 0; box-sizing: border-box;
   width: 17px; height: 17px;
-  border: 1.5px solid #C6BFAF; border-radius: 4px; background: #fff;
+  border: 1.5px solid #C6BFAF; border-radius: var(--radius-sm); background: #fff;
   transition: background-color 0.12s, border-color 0.12s;
 }
 .filter-option:hover::before { border-color: var(--forest); }
@@ -1097,7 +1083,7 @@ body.nav-search-on .nav-search { display: flex; }
 .brand-search-input {
   width: 100%; box-sizing: border-box;
   padding: 7px 10px; border: 1px solid var(--border);
-  border-radius: 8px; font-size: 0.85rem; font-family: var(--font-sans);
+  border-radius: var(--radius-sm); font-size: 0.85rem; font-family: var(--font-sans);
   background: #fff; color: var(--charcoal); margin-bottom: 8px;
   outline: none;
 }
@@ -1106,8 +1092,8 @@ body.nav-search-on .nav-search { display: flex; }
 .brand-autocomplete-wrap { position: relative; }
 .brand-autocomplete-list {
   position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
-  background: #fff; border: 1px solid var(--border); border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; margin-top: 2px;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-float); overflow: hidden; margin-top: 2px;
 }
 .brand-autocomplete-item {
   padding: 10px 14px; font-size: 0.88rem; cursor: pointer;
@@ -1126,7 +1112,7 @@ body.nav-search-on .nav-search { display: flex; }
   align-items: center;
   gap: var(--space-2);
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1.5px solid var(--border);
   background: #fff;
   cursor: pointer;
@@ -1168,7 +1154,7 @@ body.nav-search-on .nav-search { display: flex; }
   justify-content: center;
   gap: var(--space-1);
   padding: 12px 6px 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 2.5px solid transparent;
   cursor: pointer;
   transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
@@ -1176,7 +1162,7 @@ body.nav-search-on .nav-search { display: flex; }
   position: relative;
   overflow: hidden;
 }
-.color-tile:hover {box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+.color-tile:hover {box-shadow: var(--shadow-sm); }
 .color-tile[data-dark="true"]  { color: #fff; }
 .color-tile[data-dark="false"] { color: var(--charcoal); }
 .color-tile input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
@@ -1211,7 +1197,7 @@ body.nav-search-on .nav-search { display: flex; }
   width: 80px;
   padding: 7px 10px;
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-family: inherit;
   background: #fff;
@@ -1298,7 +1284,7 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .condition-guide--form {
   margin: 10px 0 0;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1.5px solid var(--border);
   padding: 6px 14px 10px;
 }
@@ -1318,7 +1304,7 @@ body.nav-search-on .nav-search { display: flex; }
   font-weight: 700;
   min-width: 68px;
   padding: 3px 8px;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   text-align: center;
   flex-shrink: 0;
   margin-top: 1px;
@@ -1337,9 +1323,9 @@ body.nav-search-on .nav-search { display: flex; }
 
 /* Højde-finder */
 .height-finder { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-.height-finder-label { display: block; font-size: 0.78rem; font-weight: var(--weight-semibold); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+.height-finder-label { display: block; font-size: 0.78rem; font-weight: var(--weight-semibold); color: var(--muted); margin-bottom: 8px; }
 .height-finder-row { display: flex; align-items: center; gap: var(--space-2); }
-.height-finder-row input { flex: 1; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.84rem; font-family: var(--font-sans); background: var(--cream); color: var(--charcoal); outline: none; }
+.height-finder-row input { flex: 1; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.84rem; font-family: var(--font-sans); background: var(--cream); color: var(--charcoal); outline: none; }
 .height-finder-row input:focus { border-color: var(--forest); }
 .height-finder-row input::-webkit-inner-spin-button { -webkit-appearance: none; }
 #height-result { font-size: 0.88rem; font-weight: 700; color: var(--forest); white-space: nowrap; min-width: 32px; }
@@ -1352,7 +1338,7 @@ body.nav-search-on .nav-search { display: flex; }
   align-items: center;
   background: var(--cream);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 4px 10px;
   transition: border-color 0.2s;
 }
@@ -1366,13 +1352,13 @@ body.nav-search-on .nav-search { display: flex; }
 .price-inputs input::placeholder { color: var(--muted); }
 .price-inputs span { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 0 4px; }
 .btn-apply {
-  background: var(--forest); color: var(--sand);
-  border: none; padding: 10px; border-radius: 8px;
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); padding: 10px; border-radius: var(--radius-sm);
   cursor: pointer; font-size: 0.85rem; font-weight: var(--weight-semibold);
   font-family: var(--font-sans);
   transition: background 0.2s; width: 100%;
 }
-.btn-apply:hover { background: var(--forest-light); }
+.btn-apply:hover { background: var(--surface); }
 
 .weight-preset {
   background: var(--cream); color: var(--charcoal);
@@ -1385,9 +1371,9 @@ body.nav-search-on .nav-search { display: flex; }
 
 /* ── Quiz box ────────────────────────────────────── */
 .bike-quiz-box {
-  background: var(--cream);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-sm);
   padding: 16px;
   /* Luft i begge ender: boksen ligger nu inde i filter-panelet, mellem to
      afsnit, og skal ikke klistre op ad skillelinjen ovenover. */
@@ -1396,11 +1382,11 @@ body.nav-search-on .nav-search { display: flex; }
 .bike-quiz-intro {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
+  align-items: flex-start;
+  gap: var(--space-1);
+  text-align: left;
 }
-.bike-quiz-icon { display: flex; justify-content: center; color: var(--forest); }
+.bike-quiz-icon { display: none; }
 .bike-quiz-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -1412,10 +1398,10 @@ body.nav-search-on .nav-search { display: flex; }
   line-height: 1.4;
 }
 .bike-quiz-start-btn {
-  background: var(--forest);
-  color: var(--sand);
-  border: none;
-  border-radius: 9px;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
+  border-radius: var(--radius-sm);
   padding: 9px 20px;
   font-size: 0.85rem;
   font-weight: var(--weight-semibold);
@@ -1425,7 +1411,7 @@ body.nav-search-on .nav-search { display: flex; }
   margin-top: 4px;
   width: 100%;
 }
-.bike-quiz-start-btn:hover { background: var(--forest-light); }
+.bike-quiz-start-btn:hover { background: var(--surface-2); }
 .bike-quiz-q {
   font-size: 0.88rem;
   font-weight: 700;
@@ -1440,7 +1426,7 @@ body.nav-search-on .nav-search { display: flex; }
 .bike-quiz-opt {
   background: #fff;
   border: 1.5px solid var(--border);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   padding: 9px 12px;
   font-size: 0.83rem;
   font-family: var(--font-sans);
@@ -1488,7 +1474,7 @@ body.nav-search-on .nav-search { display: flex; }
   margin-top: 20px;
 }
 .fit-section-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-base);
   margin: 0 0 10px;
   color: var(--charcoal);
@@ -1501,7 +1487,7 @@ body.nav-search-on .nav-search { display: flex; }
 .fit-card {
   background: var(--cream);
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -1557,7 +1543,7 @@ body.nav-search-on .nav-search { display: flex; }
   padding: 14px 16px;
   background: var(--sand);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
   line-height: 1.55;
   color: var(--charcoal);
