@@ -19,9 +19,14 @@
 
 SELECT * FROM (
 
+  -- Versionen af DENNE fil. Står der en ældre dato end den i rå-linket på
+  -- GitHub, er det en gammel kopi der er kørt (det skete 30. sep.).
+  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-05' AS status
+
   -- ── add_moderation_log_and_suspension.sql (15. september) ──────────
-  SELECT 1 AS sort, 'moderation'  AS migration, 'tabel moderation_log'        AS tjek,
-         CASE WHEN to_regclass('public.moderation_log')   IS NOT NULL THEN 'OK' ELSE 'MANGLER' END AS status
+  UNION ALL
+  SELECT 1, 'moderation', 'tabel moderation_log',
+         CASE WHEN to_regclass('public.moderation_log')   IS NOT NULL THEN 'OK' ELSE 'MANGLER' END
   UNION ALL SELECT 2, 'moderation', 'tabel user_suspensions',
          CASE WHEN to_regclass('public.user_suspensions') IS NOT NULL THEN 'OK' ELSE 'MANGLER' END
   -- "Findes" er IKKE nok. Den 15. september stod der OK her, mens funktionen
@@ -169,6 +174,17 @@ SELECT * FROM (
                  WHERE table_name = 'messages' AND column_name = 'created_at'
                    AND grantee IN ('anon','authenticated') AND privilege_type = 'INSERT')
               THEN 'JA (triggeren lukker det)' ELSE 'nej' END
+
+  -- ── Edge functions: kan IKKE tjekkes herfra ────────────────────────
+  -- Rækkerne er en huskeliste. Hver skal være deployet SAMME DAG ELLER
+  -- SENERE end datoen i status (seneste commit der rørte filen). Se
+  -- Dashboard → Edge Functions → kolonnen med seneste deploy.
+  -- Opdatér datoen her, når en function ændres.
+  UNION ALL SELECT 90, 'edge function', 'import-dealer-feed',    'TJEK: deployet efter 2026-09-29'
+  UNION ALL SELECT 91, 'edge function', 'suggest-listing',       'TJEK: deployet efter 2026-09-26'
+  UNION ALL SELECT 92, 'edge function', 'notify-message',        'TJEK: deployet efter 2026-09-26'
+  UNION ALL SELECT 93, 'edge function', 'notify-followers',      'TJEK: deployet efter 2026-09-26'
+  UNION ALL SELECT 94, 'edge function', 'notify-saved-searches', 'TJEK: deployet efter 2026-09-26'
 
 ) AS t
 ORDER BY sort;
