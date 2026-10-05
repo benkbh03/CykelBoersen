@@ -1,10 +1,16 @@
 /* ────────────────────────────────────────────────────────────────
    breadcrumbs.js — én komponent til brødkrummer
 
-   Annonce:  Alle cykler › {Kategori} › {Mærke} › {Titel}
+   Annonce:  Alle cykler › {Kategori} › {Titel}
    Mærke:    Alle cykler › {Mærke}
    Kategori: Alle cykler › {Kategori}
    Blog:     Blog › {Titel}
+
+   Mærket er ikke et led på annoncen. Sitet har ingen side for "Centurion
+   blandt citybikes", så "Citybikes › Centurion" lovede et hierarki der ikke
+   findes: klik på mærket førte til alle Centurion-cykler, og krummen til
+   Citybikes forsvandt. Hvert led skal være forælder til det næste.
+   Mærkesiden nås via "Se alle {Mærke}-cykler" under titlen.
 
    Kun led med en side bag sig bliver links. Har en cykeltype ingen
    kategoriside (fx Senior cykel), springes leddet over i stedet for at stå
@@ -22,7 +28,6 @@
 ──────────────────────────────────────────────────────────────── */
 
 import { CATEGORY_META } from './category-data.js';
-import { brandToSlug } from './brand-data-v2.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -32,7 +37,7 @@ const hrefOf = (path) => (path === '/' ? '/' : `${path.replace(/\/+$/, '')}/`);
 
 // SPA-navigation når appen er indlæst; ellers et almindeligt link (fx i den
 // forhåndsrenderede HTML, før main.js har kørt).
-// Stierne kommer fra slugs (kategori, brandToSlug) og indeholder aldrig ',
+// Stierne kommer fra slugs (kategori) og indeholder aldrig ',
 // men esc() sikrer attributten alligevel.
 const linkHtml = (label, path, cls = '') =>
   `<a${cls ? ` class="${cls}"` : ''} href="${esc(hrefOf(path))}" onclick="if(window.navigateTo){event.preventDefault();navigateTo('${esc(path)}')}">${label}</a>`;
@@ -53,17 +58,7 @@ export function bikeCrumbs(bike, title) {
   if ((bike?.category || 'cykel') === 'tilbehoer') {
     return [{ label: 'Forside', path: '/' }, { label: title }];
   }
-  // Mærkesider med accent i stien (fx cervélo) forhåndsrenderes ikke og
-  // svarer 404 til en crawler. Kun ASCII-slugs bliver led, samme regel som
-  // scripts/prerender.mjs bruger når den skriver /cykler/-siderne.
-  const raw  = bike?.brand ? brandToSlug(bike.brand) : '';
-  const slug = /^[a-z0-9-]+$/.test(raw) ? raw : '';
-  return [
-    ALL_BIKES,
-    categoryForType(bike?.type),
-    slug ? { label: bike.brand, path: `/cykler/${slug}` } : null,
-    { label: title },
-  ].filter(Boolean);
+  return [ALL_BIKES, categoryForType(bike?.type), { label: title }].filter(Boolean);
 }
 
 export const brandCrumbs    = (brandName) => [ALL_BIKES, { label: brandName }];
