@@ -689,7 +689,7 @@ export function createSellPage({
         ? `<div class="sell-progress-line" style="background:${done ? 'var(--forest)' : 'var(--border)'}"></div>`
         : '';
       return `
-        <button class="sell-progress-step" onclick="step > ${s.n} ? setSellStep(${s.n}) : null" style="cursor:${step > s.n ? 'pointer' : 'default'}">
+        <button class="sell-progress-step" ${done ? `onclick="setSellStep(${s.n})" style="cursor:pointer"` : 'style="cursor:default"'}>
           <div class="sell-progress-dot ${dotClass}">${done ? '✓' : s.n}</div>
           <span class="sell-progress-label ${labelClass}">${s.label}</span>
         </button>${connector}`;
