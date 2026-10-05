@@ -243,6 +243,9 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
 
   // Vis detalje-layout, skjul forside — matcher showDetailView()
   html = html.replace('<main id="landing-layout">', '<main id="landing-layout" style="display:none;">');
+  // Hero'en ligger i #landing-layout, som er skjult her. Uden denne linje
+  // henter hver mærke-, blog- og annonceside et hero-foto den ikke viser.
+  html = html.replace(/\s*<link rel="preload" href="\/hero[^"]*" as="image"[^>]*>/, '');
   html = html.replace(
     '<div id="page-layout" style="display:none;">',
     '<div id="page-layout" style="display:block;">'
