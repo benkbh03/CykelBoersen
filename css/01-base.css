@@ -665,7 +665,7 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .search-hero-title {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.55);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
@@ -677,7 +677,7 @@ body.nav-search-on .nav-search { display: flex; }
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
      centreret. Den skal kunne stå på én linje på desktop. */
   line-height: 1.5; max-width: 620px; margin: 0 auto;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.35);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */

@@ -509,7 +509,13 @@ export function createFilters({
     const statTotal = document.getElementById('stat-total');
     const _isAccCat = (getBrowseCategory ? getBrowseCategory() : 'cykel') === 'tilbehoer';
     if (countEl)   countEl.textContent   = _isAccCat ? `${total.toLocaleString('da-DK')} ${total === 1 ? 'stykke' : 'stykker'} tilbehør` : `${total.toLocaleString('da-DK')} ${total === 1 ? 'cykel' : 'cykler'} til salg`;
-    if (statTotal) statTotal.textContent = total > 0 ? total.toLocaleString('da-DK') : '0';
+    // Hero-linjen viser antallet af cykler. Den står skjult til tallet findes,
+    // så siden aldrig siger "– annoncer". Tilbehør-fanen rører den ikke.
+    if (statTotal && !_isAccCat && total > 0) {
+      statTotal.textContent = total.toLocaleString('da-DK');
+      document.querySelector('[data-hero-count]')?.removeAttribute('hidden');
+      document.querySelector('[data-hero-count-fallback]')?.setAttribute('hidden', '');
+    }
 
     const statDealers = document.getElementById('stat-dealers');
     if (statDealers && dealerCount != null) statDealers.textContent = dealerCount > 0 ? dealerCount.toLocaleString('da-DK') : '0';
