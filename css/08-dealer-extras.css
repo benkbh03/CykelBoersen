@@ -280,34 +280,24 @@
   gap: var(--space-2);
   align-items: center;
 }
+/* Neutral, så "Kontakt forhandler" er den eneste orange knap på siden. */
 .pp-follow-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 10px 18px;
-  background: #fff;
-  border: 1.5px solid var(--rust);
+  background: var(--bg);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
-  color: var(--rust);
-  font-size: 0.9rem;
+  color: var(--charcoal);
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
+  transition: background 0.15s, color 0.15s;
 }
-.pp-follow-btn:hover {
-  background: var(--rust);
-  color: #fff;
-}
-.pp-follow-btn.following {
-  background: var(--forest);
-  border-color: var(--forest);
-  color: #fff;
-}
-.pp-follow-btn.following:hover {
-  background: var(--error);
-  border-color: var(--error);
-}
+.pp-follow-btn:hover { background: var(--surface); }
+.pp-follow-btn.following { background: var(--surface); }
 .pp-follow-btn .follow-icon { font-size: var(--text-base); }
 /* Følg-knap i bruger-profil-modal (privat sælger) */
 .up-follow-row { margin: 12px 0 4px; }
