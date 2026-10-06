@@ -1,4 +1,4 @@
-export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes, loadErrorLog }) {
+export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes, loadErrorLog, loadPriceReview }) {
   function openAdminPanel() {
     document.getElementById('admin-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -11,7 +11,7 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadB
   }
 
   function switchAdminTab(tab) {
-    const panels = ['applications', 'users', 'bulk-import', 'feed-import', 'invite', 'traction', 'outcomes', 'errors', 'stats'];
+    const panels = ['applications', 'price-review', 'users', 'bulk-import', 'feed-import', 'invite', 'traction', 'outcomes', 'errors', 'stats'];
 
     /* Ukendt fane -> fald tilbage til den første i stedet for at skjule ALT.
 
@@ -33,6 +33,7 @@ export function createAdminPanelUI({ loadDealerApplications, loadAllUsers, loadB
     }
 
     if (tab === 'applications') loadDealerApplications();
+    if (tab === 'price-review' && loadPriceReview) loadPriceReview();
     if (tab === 'users') loadAllUsers();
     if (tab === 'bulk-import' && loadBulkImport) loadBulkImport();
     if (tab === 'feed-import' && loadFeedImport) loadFeedImport();

@@ -482,6 +482,7 @@ export function createListingEdit({
       .eq('id', id)
       .single();
     const oldPrice = oldBike?.price ?? null;
+    let held = false;
 
     if (editIsAdminOther) {
       // Admin retter en forhandlers annonce → SECURITY DEFINER-RPC (omgår RLS,
@@ -494,8 +495,10 @@ export function createListingEdit({
         console.error(error); return;
       }
     } else {
-      const { error } = await supabase.from('bikes').update(updates).eq('id', id);
+      const { data: saved, error } = await supabase.from('bikes').update(updates).eq('id', id).select('*').maybeSingle();
       if (error) { showToast('Kunne ikke gemme ændringer', 'fejl'); console.error(error); return; }
+      // Under 200 kr. holder databasen annoncen tilbage (add_low_price_review.sql).
+      held = !!saved?.held_for_review;
     }
 
     // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret).
@@ -510,7 +513,7 @@ export function createListingEdit({
 
     // Prisfald-trigger: hvis sælgeren har sat prisen ned, send notifikation til
     // alle der watcher annoncen ved en pris HØJERE end den nye pris.
-    if (oldPrice != null && updates.price < oldPrice) {
+    if (!held && oldPrice != null && updates.price < oldPrice) {
       supabase.functions.invoke('notify-message', {
         body: {
           type: 'price_drop',
@@ -587,7 +590,8 @@ export function createListingEdit({
     bikeCache.delete(Number(id));
 
     closeEditModal();
-    showToast('Annonce opdateret!', 'ok');
+    if (held) showToast('Gemt. Prisen er under 200 kr., så annoncen vises, når vi har set den', 'advarsel');
+    else showToast('Annonce opdateret!', 'ok');
     reloadMyListings();
     loadBikes();
     updateFilterCounts();

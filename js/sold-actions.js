@@ -91,9 +91,11 @@ export function createSoldActions({ supabase, getCurrentUser, showToast, reloadM
   async function toggleSold(bikeId, currentlySold) {
     const currentUser = getCurrentUser();
     if (currentlySold) {
-      const err = (await supabase.from('bikes').update({ is_active: true }).eq('id', bikeId)).error;
+      const { data: row, error: err } = await supabase.from('bikes').update({ is_active: true }).eq('id', bikeId).select('*').maybeSingle();
       if (err) { showToast('Kunne ikke opdatere status', 'fejl'); return; }
-      showToast('Annonce aktiv igen', 'ok');
+      // Under 200 kr. holder databasen annoncen tilbage (add_low_price_review.sql).
+      if (row?.held_for_review) showToast('Prisen er under 200 kr., så annoncen vises, når vi har set den', 'advarsel');
+      else showToast('Annonce aktiv igen', 'ok');
       reloadMyListings(); loadBikes(); updateFilterCounts();
       return;
     }

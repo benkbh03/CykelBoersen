@@ -304,6 +304,8 @@ export function createBikeDetail({
             <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt. Så låses annoncen, og natlig sync opdaterer herefter kun pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
             <button class="btn-save-listing" onclick="openEditModal('${b.id}')">${iconPencil(14)} Redigér som admin</button>
           </div>` : ''}
+          ${b.held_for_review ? `
+          <p style="margin:var(--space-3) 0 0;padding:var(--space-3) var(--space-4);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--text-sm);line-height:1.5;">Annoncen er ikke offentlig endnu. Prisen er under 200 kr., så vi kigger på den først. ${isOwner ? 'Er prisen en fejl, så ret den, og annoncen går live med det samme.' : ''}</p>` : ''}
           ${isDemo && !isOwner ? `
           <div class="action-buttons">
             <div class="demo-detail-notice">
@@ -311,7 +313,7 @@ export function createBikeDetail({
             </div>
             <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">${iconShare(14)} Del annonce</button>
           </div>
-          ` : (!isOwner && isSold) ? `
+          ` : (!isOwner && isSold && !b.held_for_review) ? `
           <div class="action-buttons">
             <div class="sold-detail-notice">
               <span class="sold-detail-badge">SOLGT</span>
