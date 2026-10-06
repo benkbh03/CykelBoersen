@@ -1139,12 +1139,33 @@ body.nav-search-on .nav-search { display: flex; }
 .color-swatch-label { flex: 1; }
 .color-swatch .filter-count { font-size: 0.72rem; }
 
-/* Form-versions: tile-grid */
+/* Formularer (sælg + rediger): små runde prikker med navnet ved siden af,
+   som en række chips. De store farvede fliser (.color-tile) bruges ikke
+   længere her, men reglerne bliver stående for cachede moduler. */
 .form-group .color-swatch-grid,
 .sell-field .color-swatch-grid {
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 6px;
+  display: flex; flex-wrap: wrap;
+  gap: var(--space-2);
 }
+.form-group .color-swatch:not(.color-tile),
+.sell-field .color-swatch:not(.color-tile) {
+  /* .sell-field label er display:block med semibold; swatchen er en label. */
+  display: inline-flex; position: relative; margin: 0;
+  font-weight: var(--weight-regular);
+  padding: 6px 12px 6px 8px;
+  border: 1px solid var(--border); border-radius: var(--radius-full);
+  background: var(--bg); font-size: var(--text-sm);
+}
+.form-group .color-swatch:not(.color-tile):hover,
+.sell-field .color-swatch:not(.color-tile):hover { border-color: var(--charcoal); }
+.form-group .color-swatch.is-on:not(.color-tile),
+.sell-field .color-swatch.is-on:not(.color-tile) {
+  border-color: var(--charcoal); background: var(--surface);
+  font-weight: var(--weight-semibold);
+}
+.color-swatch.is-maxed:not(.color-tile) { opacity: 0.4; cursor: not-allowed; }
+.sell-field .color-swatch input[type="checkbox"],
+.form-group .color-swatch input[type="checkbox"] { width: 1px; height: 1px; padding: 0; }
 
 /* ── Farve-tile (sælgerflow) ─────────────────────── */
 .color-tile {
