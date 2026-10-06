@@ -498,6 +498,9 @@ export function createBikeDetail({
           </div>
         </div>`;
       })()}
+      ${/* Stelnummer-tippet hører til brugte cykler. En ny cykel fra en
+            forhandler kommer med kvittering, og her så tippet malplaceret ud. */''}
+      ${(sellerType === 'dealer' && b.condition === 'Ny') ? '' : `
       <a href="https://politi.dk/service-og-tilladelser/cykler-og-koeretoejer/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" class="theft-check-tip">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div>
@@ -505,7 +508,7 @@ export function createBikeDetail({
           <span>Slå stelnummeret op hos politiet, før du køber. Det er gratis.</span>
         </div>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
+      </a>`}
         ${sticky ? '</div>' : ''}
       ${sticky ? '</div>' : ''}
       <div id="seller-other-listings" style="margin-top:28px;"></div>
@@ -1142,7 +1145,7 @@ export function createBikeDetail({
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
               <div class="related-card-price">${priceLabel(bike)}</div>
-              <div class="related-card-meta">${esc(bike.condition || '')}</div>
+              <div class="related-card-meta">${[bike.type, bike.condition].filter(Boolean).map(esc).join(' · ')}</div>
             </div>
           </div>`;
       }).join('');
@@ -1196,7 +1199,7 @@ export function createBikeDetail({
             <div class="related-card-info">
               <div class="related-card-title">${esc(bike.brand)} ${esc(bike.model)}</div>
               <div class="related-card-price">${priceLabel(bike)}</div>
-              <div class="related-card-meta">${esc(bike.condition || '')}</div>
+              <div class="related-card-meta">${[bike.type, bike.condition].filter(Boolean).map(esc).join(' · ')}</div>
             </div>
           </div>`;
       }).join('');

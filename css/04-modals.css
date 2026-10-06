@@ -958,14 +958,15 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   .price-history-item { grid-template-columns: 54px 1fr auto; gap: 6px; font-size: 0.77rem; }
 }
 .bike-detail-tags { display: flex; gap: var(--space-2); flex-wrap: wrap; }
-.detail-tag { background: var(--sand); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 12px; font-size: 0.8rem; font-weight: 500; color: var(--charcoal); }
+.bike-detail-tags { column-gap: var(--space-2); row-gap: var(--space-1); }
+/* Almindelig tekst adskilt af prikker, ikke kasser. */
+.detail-tag { background: none; border: none; border-radius: 0; padding: 0; font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--charcoal); }
+.bike-detail-tags > .detail-tag + .detail-tag::before { content: "·"; color: var(--text-muted); margin-right: var(--space-2); text-decoration: none; display: inline-block; }
 /* Garanti stod tidligere med style="background:#e8f5e9;color:#2e7d32" direkte i
    js/bike-detail.js — samme Material-groenne familie som resten er ryddet for.
    Nu en klasse med samme daempede sprog som .detail-tag--frame ved siden af, saa
    de to tillidssignaler ligner hinanden. */
 .detail-tag--garanti {
-  background: rgba(42,61,46,0.06);
-  border-color: rgba(42,61,46,0.22);
   color: var(--forest);
   display: inline-flex; align-items: center; gap: 5px;
 }
@@ -978,11 +979,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   font-family: var(--font-sans);
   transition: background 0.15s, border-color 0.15s;
 }
-.detail-tag--link:hover {
-  background: var(--sand-2);
-  border-color: var(--forest);
-  color: var(--forest);
-}
+.detail-tag--link:hover { color: var(--rust); }
 .detail-tag--link:focus-visible {
   outline: 2px solid var(--forest);
   outline-offset: 2px;
@@ -992,8 +989,6 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
    en reklame — og resten af siden er netop ryddet for grønne bokse. Ikonet og
    den lidt mørkere ramme gør det tydeligt nok uden at råbe. */
 .detail-tag--frame {
-  background: rgba(42,61,46,0.06);
-  border-color: rgba(42,61,46,0.22);
   color: var(--forest);
   display: inline-flex; align-items: center; gap: 5px;
   cursor: help;
@@ -1207,20 +1202,20 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   }
 }
 .related-card {
+  /* Samme kort som forsiden (.bike-card): hvid flade, 1 px kant, ingen skygge,
+     billede i 3:2 uden beskæring. Hover er et farveskift på kanten. */
   cursor: pointer;
   border-radius: var(--radius-sm);
   overflow: hidden;
   border: 1px solid var(--border);
-  background: var(--sand);
-  transition: transform 0.15s, box-shadow 0.15s;
+  background: var(--bg);
+  transition: border-color 0.15s;
 }
-.related-card:hover {
-  box-shadow: var(--shadow-float);
-}
+.related-card:hover { border-color: var(--charcoal); }
 .related-card-img {
   width: 100%;
-  aspect-ratio: 1;
-  background: #eee;
+  aspect-ratio: 3/2;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1229,13 +1224,13 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .related-card-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .related-card-info {
-  padding: 8px 10px 10px;
+  padding: var(--space-3);
 }
 .related-card-title {
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--charcoal);
   white-space: nowrap;
@@ -1243,14 +1238,15 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   text-overflow: ellipsis;
 }
 .related-card-price {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: var(--text-base);
+  font-weight: var(--weight-heavy);
+  letter-spacing: -0.02em;
   color: var(--charcoal);
-  margin-top: 2px;
+  margin-top: var(--space-1);
 }
 .related-card-meta {
-  font-size: 0.72rem;
-  color: var(--muted);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
@@ -1496,8 +1492,9 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   .lightbox-close { top: 10px; right: 10px; width: 40px; height: 40px; }
 }
 .action-buttons { display: flex; flex-direction: column; gap: var(--space-2); margin-top: 0; }
-.btn-contact { background: var(--forest); color: var(--sand); border: none; padding: 12px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; text-align: center; }
-.btn-contact:hover { background: var(--forest-light); }
+/* Neutral: orange er den eneste fyldte knap på siden. */
+.btn-contact { background: var(--bg); color: var(--charcoal); border: 1px solid var(--charcoal); padding: 12px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; text-align: center; }
+.btn-contact:hover { background: var(--surface); }
 .btn-bid { background: var(--rust); color: #fff; border: none; padding: 13px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; text-align: center; }
 .btn-bid:hover { background: var(--rust-light); }
 .btn-external-cta {
@@ -1578,50 +1575,9 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 /* ── Sticky mobil bund-bar på annonce-detalje ── */
 .bike-sticky-bar { display: none; }
 
-/* ── Desktop: prisen må ikke forsvinde ──────────────────────────────
-   Den sticky info-kolonne slipper når venstre kolonne er scrollet igennem,
-   og derefter er pris og CTA væk mens man ser "Sælgerens andre annoncer" og
-   "Lignende annoncer". Her genbruges den samme bar som på mobil, men som en
-   flydende pille — og KUN når den store pris er ude af billedet, så vi ikke
-   viser prisen to gange samtidig. Klassen sættes af en IntersectionObserver
-   i renderBikePage (js/bike-detail.js). */
-@media (min-width: 701px) {
-  .bike-sticky-bar.is-visible {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2600;
-    width: max-content;
-    max-width: calc(100vw - 40px);
-    padding: 10px 12px 10px 20px;
-    background: rgba(255,255,255,0.97);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-full);
-    box-shadow: var(--shadow-float);
-    align-items: center;
-    gap: var(--space-4);
-    animation: bike-sticky-rise 0.18s ease-out;
-  }
-  .bike-sticky-bar.is-visible .bike-sticky-price {
-    font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: 1.15rem;
-    color: var(--charcoal); flex-shrink: 0;
-  }
-  .bike-sticky-bar.is-visible .bike-sticky-actions { display: flex; gap: var(--space-2); }
-  .bike-sticky-bar.is-visible .bike-sticky-contact,
-  .bike-sticky-bar.is-visible .bike-sticky-bid {
-    border: none; border-radius: var(--radius-full); padding: 10px 20px;
-    font-size: 0.88rem; font-weight: var(--weight-semibold); font-family: var(--font-sans);
-    cursor: pointer; white-space: nowrap; text-decoration: none;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: opacity 0.15s;
-  }
-  .bike-sticky-bar.is-visible .bike-sticky-contact { background: var(--forest); color: var(--sand); }
-  .bike-sticky-bar.is-visible .bike-sticky-bid     { background: var(--rust);   color: #fff; }
-  .bike-sticky-bar.is-visible .bike-sticky-contact:hover,
-  .bike-sticky-bar.is-visible .bike-sticky-bid:hover { opacity: 0.88; }
-}
+/* Desktop-pillen er fjernet (6. okt.): den flød midt over specifikationerne og
+   footeren. På desktop er pris og knapper i den sticky højrekolonne
+   (.bd-col-info), så de står allerede på skærmen. Baren vises kun på mobil. */
 @keyframes bike-sticky-rise {
   from { opacity: 0; transform: translate(-50%, 10px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
@@ -1682,7 +1638,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
     align-items: center;
     justify-content: center;
   }
-  .bike-sticky-contact { background: var(--forest); color: var(--sand); }
+  .bike-sticky-contact { background: var(--bg); color: var(--charcoal); border: 1px solid var(--charcoal) !important; }
   .bike-sticky-bid { background: var(--rust); color: #fff; }
   @media (max-width: 380px) {
     .bike-sticky-price { font-size: 0.95rem; }
