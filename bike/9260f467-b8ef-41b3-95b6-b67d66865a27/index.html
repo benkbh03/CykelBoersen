@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20261005a">
+<html lang="da" data-asset-v="20261005f">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,23 +125,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20261005a">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20261005f">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20261005a">
-  <link rel="stylesheet" href="/css/01-base.css?v=20261005a">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261005a">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261005a">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261005a">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261005a">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261005a">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261005a">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261005a">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261005a">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261005a">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261005a">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20261005a">
+  <link rel="stylesheet" href="/css/tokens.css?v=20261005f">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261005f">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261005f">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261005f">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261005f">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261005f">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261005f">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261005f">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261005f">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261005f">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261005f">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261005f">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20261005f">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -195,8 +195,8 @@
   <!-- FAQPage-schemaet er fjernet: de tre spørgsmål stod ikke synligt på
        forsiden, og markup for indhold brugeren ikke kan se, er imod Googles
        retningslinjer for struktureret data. -->
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Brabus Bike Dame Mørkeblå 3G","sku":"9260f467-b8ef-41b3-95b6-b67d66865a27","productID":"9260f467-b8ef-41b3-95b6-b67d66865a27","description":"Citybike – Ny","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/3325B12D-FC14-41D6-A32F-50CB2244E1F8.jpg?v=1780432018"],"brand":{"@type":"Brand","name":"Brabus"},"category":"Citybike","url":"https://cykelbørsen.dk/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/","offers":{"@type":"Offer","price":2499,"priceCurrency":"DKK","priceValidUntil":"2027-01-03","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
-  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Alle cykler","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Citybikes","item":"https://cykelbørsen.dk/citybikes/"},{"@type":"ListItem","position":3,"name":"Brabus","item":"https://cykelbørsen.dk/cykler/brabus/"},{"@type":"ListItem","position":4,"name":"Brabus Bike Dame Mørkeblå 3G","item":"https://cykelbørsen.dk/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/"}]}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"Product","name":"Brabus Bike Dame Mørkeblå 3G","sku":"9260f467-b8ef-41b3-95b6-b67d66865a27","productID":"9260f467-b8ef-41b3-95b6-b67d66865a27","description":"Citybike – Ny","image":["https://cdn.shopify.com/s/files/1/0986/1506/6968/files/3325B12D-FC14-41D6-A32F-50CB2244E1F8.jpg?v=1780432018"],"brand":{"@type":"Brand","name":"Brabus"},"category":"Citybike","url":"https://cykelbørsen.dk/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/","offers":{"@type":"Offer","price":2499,"priceCurrency":"DKK","priceValidUntil":"2027-01-04","availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition","url":"https://cykelbørsen.dk/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/","seller":{"@type":"Organization","name":"Forum cykler"}}}</script>
+  <script type="application/ld+json" class="prerender-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Alle cykler","item":"https://cykelbørsen.dk/"},{"@type":"ListItem","position":2,"name":"Citybikes","item":"https://cykelbørsen.dk/citybikes/"},{"@type":"ListItem","position":3,"name":"Brabus Bike Dame Mørkeblå 3G","item":"https://cykelbørsen.dk/bike/9260f467-b8ef-41b3-95b6-b67d66865a27/"}]}</script>
 </head>
 <!-- rental-hidden fra start: udlejning er bygget men ikke testet, og skal
      kun kunne ses af admin. js/feature-flags.js fjerner klassen igen hvis
@@ -967,9 +967,9 @@
       <div class="listings-header">
         <div>
           <h2>Seneste annoncer</h2>
-          <span id="listings-count">– cykler til salg</span>
+          <span id="listings-count">&nbsp;</span>
         </div>
-        <div class="browse-cat-wrap">
+        <div class="browse-cat-wrap" hidden>
           <div class="browse-cat-toggle" role="group" aria-label="Vælg kategori">
             <button class="browse-cat-btn active" data-cat="cykel" aria-pressed="true" onclick="setBrowseCategory('cykel')">Cykler</button>
             <button class="browse-cat-btn" data-cat="tilbehoer" aria-pressed="false" onclick="setBrowseCategory('tilbehoer')">Tilbehør &amp; udstyr</button>
@@ -1037,14 +1037,14 @@
       <div id="cykelagent-cta-strip" style="display:none;" class="cykelagent-cta-strip"></div>
       <div id="active-filters-bar" style="display:none;" role="group" aria-label="Aktive filtre"></div>
       <div class="listings-grid" id="listings-grid"></div>
-      <div id="listings-map" style="display:none;height:600px;border-radius:14px;overflow:hidden;border:1px solid var(--border);"></div>
+      <div id="listings-map" style="display:none;height:600px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);"></div>
 
       <!-- Forhandler-banner — vises mellem annoncer og "Vis flere"-knap på mobil -->
       <a class="dealer-banner-mobile" href="/forhandlere/" onclick="event.preventDefault(); navigateTo('/forhandlere')" aria-label="Se alle verificerede forhandlere">
         <div class="dealer-banner-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg></div>
         <div class="dealer-banner-text">
-          <div class="dealer-banner-title">Køb hos verificeret forhandler</div>
-          <div class="dealer-banner-sub">Garanti og professionel rådgivning</div>
+          <div class="dealer-banner-title">Køb hos en cykelhandler</div>
+          <div class="dealer-banner-sub">Se hvad forhandlerne har til salg</div>
         </div>
         <svg class="dealer-banner-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
       </a>
@@ -1096,10 +1096,9 @@
   <section class="sell-cta-section">
     <div class="sell-cta-inner">
       <div>
-        <div class="sell-cta-label">Sælg din cykel</div>
-        <h2 class="sell-cta-headline">Sæt din cykel til salg – det er gratis.</h2>
-        <p class="sell-cta-sub">Tag tre billeder, sæt en pris, så er du live på få minutter.</p>
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')" style="display:inline-block;margin-top:10px;color:#fff;font-size:0.88rem;text-decoration:underline;font-family:var(--font-sans);opacity:0.9;"><svg class="ui-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Ikke sikker på pris? Få gratis vurdering</a>
+        <h2 class="sell-cta-headline">Sæt din cykel til salg</h2>
+        <p class="sell-cta-sub">Det er gratis. Du skal bruge billeder, en pris og cyklens stand.</p>
+        <a class="sell-cta-link" href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Hvad er min cykel værd?</a>
       </div>
       <div>
         <button class="sell-cta-btn" onclick="openModal()">+ Sæt til salg</button>
@@ -1116,7 +1115,7 @@
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
       <div class="bike-page bike-prerender">
-        <div class="crumbs" role="navigation" aria-label="Brødkrummer"><ol class="crumbs-list"><li><a href="/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/')}">Alle cykler</a></li><li><a href="/citybikes/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/citybikes')}">Citybikes</a></li><li><a href="/cykler/brabus/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/cykler/brabus')}">Brabus</a></li><li class="crumbs-current" aria-current="page">Brabus Bike Dame Mørkeblå 3G</li></ol><a class="crumbs-back" href="/cykler/brabus/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/cykler/brabus')}">‹ Brabus</a></div>
+        <div class="crumbs" role="navigation" aria-label="Brødkrummer"><ol class="crumbs-list"><li><a href="/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/')}">Alle cykler</a></li><li><a href="/citybikes/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/citybikes')}">Citybikes</a></li><li class="crumbs-current" aria-current="page">Brabus Bike Dame Mørkeblå 3G</li></ol><a class="crumbs-back" href="/citybikes/" onclick="if(window.navigateTo){event.preventDefault();navigateTo('/citybikes')}">‹ Citybikes</a></div>
         <img class="bike-prerender-img" src="https://cdn.shopify.com/s/files/1/0986/1506/6968/files/3325B12D-FC14-41D6-A32F-50CB2244E1F8.jpg?v=1780432018" alt="Brabus Bike Dame Mørkeblå 3G – Citybike i Frederiksberg C" width="600" height="450">
         <h1 class="bike-prerender-title">Brabus Bike Dame Mørkeblå 3G</h1>
         <p class="bike-prerender-price">2.499 kr.</p>
