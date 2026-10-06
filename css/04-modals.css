@@ -1955,3 +1955,80 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   transition: background 0.15s, border-color 0.15s;
 }
 .btn-full-specs:hover { background: var(--sand); border-color: var(--forest); }
+
+/* ── Opgraderinger (js/bike-upgrades.js) ──────────────────────────
+   Editoren bruges både i sælg-flowet (.sell-field) og i redigér-modalen
+   (.form-group), så felterne har egne regler og ser ens ud begge steder.
+   Visningen på annoncesiden er en rubrik med kant, ingen skygge. */
+.upg-editor .upg-title { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--charcoal); }
+.upg-editor .upg-title .hint { font-weight: var(--weight-regular); color: var(--text-muted); font-size: var(--text-xs); margin-left: var(--space-1); }
+.upg-editor .upg-why { margin: var(--space-1) 0 var(--space-3); font-size: var(--text-xs); line-height: 1.5; color: var(--text-muted); }
+.upg-rows { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-2); }
+.upg-row {
+  display: grid; align-items: center; gap: var(--space-2);
+  grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) 7.5rem 44px;
+}
+.upg-editor .upg-row input {
+  width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 12px;
+  font-family: var(--font-sans); font-size: var(--text-base); color: var(--charcoal);
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  outline: none; transition: border-color 0.15s;
+}
+.upg-editor .upg-row input:focus { border-color: var(--forest); }
+.upg-price-wrap { position: relative; }
+.upg-editor .upg-price-wrap input { padding-right: 36px; text-align: right; }
+.upg-suffix {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: var(--text-xs); color: var(--text-muted); pointer-events: none;
+}
+.upg-remove {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; border-radius: var(--radius-sm);
+  color: var(--text-muted); cursor: pointer; transition: color 0.15s, background 0.15s;
+}
+.upg-remove:hover { color: var(--charcoal); background: var(--surface); }
+.upg-add {
+  min-height: 44px; padding: 10px 14px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-semibold);
+  color: var(--charcoal); cursor: pointer; transition: border-color 0.15s;
+}
+.upg-add:hover { border-color: var(--charcoal); }
+.upg-total { margin: var(--space-2) 0 0; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--charcoal); font-variant-numeric: tabular-nums; }
+.upg-total[hidden], .sell-upgrades-nudge[hidden] { display: none !important; }
+.sell-upgrades-nudge { margin: var(--space-2) 0 0; font-size: var(--text-xs); line-height: 1.5; color: var(--text-muted); }
+
+/* Under 480 px: del og pris på første linje, mærke/model i fuld bredde under. */
+@media (max-width: 480px) {
+  .upg-row {
+    grid-template-columns: minmax(0, 1fr) 7.5rem 44px;
+    grid-template-areas: "part price remove" "name name name";
+    padding-bottom: var(--space-2); border-bottom: 1px solid var(--border);
+  }
+  .upg-row .upg-part { grid-area: part; }
+  .upg-row .upg-name { grid-area: name; }
+  .upg-row .upg-price-wrap { grid-area: price; }
+  .upg-row .upg-remove { grid-area: remove; }
+  .upg-add { width: 100%; }
+}
+
+.bike-upgrades {
+  margin: var(--space-3) 0; padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg);
+}
+.bike-upgrades-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-2); }
+.bike-upgrades-title { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--charcoal); }
+.bike-upgrades-total { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--charcoal); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bike-upgrades-list { list-style: none; margin: 0; padding: 0; }
+.bike-upgrades-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3);
+  padding: var(--space-1) 0; font-size: var(--text-sm); color: var(--charcoal);
+}
+.bike-upgrades-row + .bike-upgrades-row { border-top: 1px solid var(--border); }
+.bike-upgrades-what { min-width: 0; overflow-wrap: anywhere; }
+.bike-upgrades-part { color: var(--text-muted); margin-right: var(--space-2); }
+.bike-upgrades-price { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--charcoal); }
+.bike-upgrades-note { margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--text-muted); }
+@media (max-width: 480px) {
+  .bike-upgrades { padding: var(--space-3); }
+}

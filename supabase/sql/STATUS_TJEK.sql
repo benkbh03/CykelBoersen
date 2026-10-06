@@ -21,7 +21,7 @@ SELECT * FROM (
 
   -- Versionen af DENNE fil. Står der en ældre dato end den i rå-linket på
   -- GitHub, er det en gammel kopi der er kørt (det skete 30. sep.).
-  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-05' AS status
+  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-06' AS status
 
   -- ── add_moderation_log_and_suspension.sql (15. september) ──────────
   UNION ALL
@@ -170,6 +170,15 @@ SELECT * FROM (
               ELSE (xpath('/row/n/text()', query_to_xml(
                      'SELECT count(*) AS n FROM bikes WHERE held_for_review AND deleted_at IS NULL',
                      false, true, '')))[1]::text END
+
+  -- ── add_bike_upgrades.sql (6. oktober) ─────────────────────────────
+  UNION ALL SELECT 58, 'opgraderinger', 'kolonne bikes.upgrades',
+         CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns
+                            WHERE table_name = 'bikes' AND column_name = 'upgrades')
+              THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 59, 'opgraderinger', 'constraint bikes_upgrades_valid',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'bikes_upgrades_valid')
+              THEN 'OK' ELSE 'MANGLER' END
 
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --

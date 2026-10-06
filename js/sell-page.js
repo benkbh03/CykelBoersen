@@ -10,6 +10,7 @@ import { parseImportedListing } from './import-parse.js';
 import { startSellFlow, trackSellStep } from './sell-funnel.js';
 import { enableDragReorder } from './drag-reorder.js';
 import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
+import { mountUpgradesEditor, normalizeUpgrades, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 
 /**
  * @param {object} deps
@@ -172,7 +173,20 @@ export function createSellPage({
     'sell-geartype',
     // Stel-type (indstigning) — relevant for alle typer
     'sell-step-type',
+    // Opgraderinger: ligger i cachen som JSON-tekst (intet DOM-felt med dette
+    // id), så kladden kan gemme dem som de andre felter.
+    'sell-upgrades',
   ];
+
+  function _cachedUpgrades() {
+    try { return normalizeUpgrades(JSON.parse(_sellFormCache['sell-upgrades'] || '[]')); }
+    catch { return []; }
+  }
+  // Admin på vegne af en forhandler går gennem admin-create-bike, der ikke
+  // kender feltet. Sektionen vises derfor ikke i det flow.
+  function _isActingAs() {
+    try { return !!JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch { return false; }
+  }
 
   // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
   const _PERF_TYPES = ['Racercykel', 'Mountainbike', 'Gravel'];
@@ -363,6 +377,8 @@ export function createSellPage({
       // Stel-type: lav/høj indstigning — alle typer
       const stepType       = getVal('sell-step-type') || null;
 
+      const upgrades       = _isActingAs() ? [] : _cachedUpgrades();
+
       // !price ville også afvise en gave, fordi 0 er falsy. Derfor tjekkes
       // prisen kun når annoncen ikke er en gave.
       if (!brand || !city || !type || !condition || (!giveaway && !price)) {
@@ -416,6 +432,9 @@ export function createSellPage({
         geartype,
         step_type: stepType,
       };
+      // Kun med når der er noget: så virker oprettelse uden opgraderinger
+      // også før add_bike_upgrades.sql er kørt.
+      if (upgrades.length) bikeData.upgrades = upgrades;
 
       let newBike;
       if (actingAs) {
@@ -916,6 +935,7 @@ export function createSellPage({
         </div>
         ${giveawayToggleHtml(c, isDealer)}
         <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:var(--font-sans);">Ikke sikker på pris? Få gratis vurdering</a>
+        <p id="sell-upgrades-nudge" class="sell-upgrades-nudge"${UPGRADE_PROMINENT_TYPES.includes(c['sell-type']) && !_isActingAs() ? '' : ' hidden'}>Har du skiftet dele siden købet? I næste trin kan du skrive dem op med priser, så køberen kan se hvad prisen dækker over.</p>
       </div>
 
       ${isDealer ? `
@@ -1073,6 +1093,8 @@ export function createSellPage({
     return `
       <h1 class="sell-step-heading">Tjek og opret</h1>
       <p class="sell-step-subtitle">Beskriv cyklen med dine egne ord.</p>
+
+      ${_isActingAs() ? '' : '<div id="sell-upgrades-editor" class="sell-field upg-editor"></div>'}
 
       <div class="sell-field">
         <label>Beskrivelse <span class="req">*</span> <span class="hint">min. 10 tegn</span></label>
@@ -1408,6 +1430,14 @@ export function createSellPage({
         ['sell-desc','sell-city'].forEach(id => {
           document.getElementById(id)?.addEventListener('input', debouncedSave);
         });
+        mountUpgradesEditor(document.getElementById('sell-upgrades-editor'), {
+          initial: _cachedUpgrades(),
+          prominent: UPGRADE_PROMINENT_TYPES.includes(_sellFormCache['sell-type']),
+          onChange: list => {
+            _sellFormCache['sell-upgrades'] = list.length ? JSON.stringify(list) : '';
+            debouncedSave();
+          },
+        });
       }
     }
 
@@ -1431,6 +1461,9 @@ export function createSellPage({
   function updatePerfFieldsVisibility(currentType) {
     const isPerf  = !currentType || _PERF_TYPES.includes(currentType);
     const isEbike = currentType === 'El-cykel';
+
+    const nudge = document.getElementById('sell-upgrades-nudge');
+    if (nudge) nudge.hidden = !UPGRADE_PROMINENT_TYPES.includes(currentType) || _isActingAs();
 
     document.querySelectorAll('#sell-advanced-section [data-perf-only]').forEach(el => {
       el.style.display = isPerf ? '' : 'none';
