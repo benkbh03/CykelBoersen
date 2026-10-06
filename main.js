@@ -3435,10 +3435,18 @@ const _ensureErrorLog = lazyCtrl(
 );
 const loadErrorLog = lazyMethod(_ensureErrorLog, 'loadErrorLog');
 
+const _ensurePriceReview = lazyCtrl(
+  () => import(`./js/admin-price-review.js?v=${ASSET_VERSION}`),
+  'createAdminPriceReview',
+  () => ({ supabase, esc, retryHTML, showToast, notifySavedSearches: (...args) => notifySavedSearches(...args) }),
+);
+const loadPriceReview    = lazyMethod(_ensurePriceReview, 'loadPriceReview');
+const reviewLowPriceBike = lazyMethod(_ensurePriceReview, 'reviewLowPriceBike');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
-  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes, loadErrorLog }),
+  () => ({ loadDealerApplications, loadAllUsers, loadBulkImport, loadFeedImport, initInviteForm, loadAdminStats, loadDealerTraction, loadListingOutcomes, loadErrorLog, loadPriceReview }),
 );
 const openAdminPanel  = lazyMethod(_ensureAdminPanel, 'openAdminPanel');
 const closeAdminPanel = lazyMethod(_ensureAdminPanel, 'closeAdminPanel');
@@ -4051,6 +4059,8 @@ window.submitDealerInvite   = submitDealerInvite;
 window.loadAdminStats       = loadAdminStats;
 window.loadDealerTraction   = loadDealerTraction;
 window.loadListingOutcomes  = loadListingOutcomes;
+window.loadPriceReview      = loadPriceReview;
+window.reviewLowPriceBike   = reviewLowPriceBike;
 window.loadErrorLog         = loadErrorLog;
 window.updateVerifyUI       = updateVerifyUI;
 window.openUserProfile       = openUserProfile;

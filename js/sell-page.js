@@ -477,8 +477,12 @@ export function createSellPage({
       loadBikes();
       updateFilterCounts();
 
-      notifySavedSearches(newBike);
-      notifyDealerFollowers(newBike);
+      // Under 200 kr. holder databasen annoncen tilbage til admin har set den
+      // (add_low_price_review.sql). Så må ingen få besked om den endnu.
+      if (!newBike?.held_for_review) {
+        notifySavedSearches(newBike);
+        notifyDealerFollowers(newBike);
+      }
 
       // Tragtens slutpunkt. Ligger efter at annoncen er gemt, så 'complete'
       // kun tælles når der faktisk kom en annonce ud af det.
@@ -2359,7 +2363,13 @@ export function createSellPage({
     if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); navigateTo(`/bike/${bike.id}`); };
     // "Opret en ny annonce" → kategori-vælgeren, så man kan vælge cykel/tilbehør.
     if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellChooser(); };
+    const held = !!bike.held_for_review;
+    const titleH = modal.querySelector('.success-title');
+    if (titleH) titleH.textContent = held ? 'Din annonce venter på godkendelse' : 'Din annonce er oprettet';
+    const heldNote = document.getElementById('success-held-note');
+    if (heldNote) heldNote.style.display = held ? '' : 'none';
     const boostBtn = document.getElementById('success-boost-btn');
+    if (boostBtn) boostBtn.style.display = held ? 'none' : '';
     if (boostBtn) boostBtn.onclick = () => { closeListingSuccessModal(); if (window.openBoostModal) window.openBoostModal(bike.id); };
 
     // Cross-sell: efter en CYKEL-annonce, nudg til også at sælge tilbehør

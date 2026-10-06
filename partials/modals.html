@@ -739,6 +739,7 @@
       <div class="modal-body">
         <div class="profile-tabs" style="margin-bottom:20px;">
           <button class="profile-tab active" id="atab-applications" onclick="switchAdminTab('applications')">Forhandler ansøgninger</button>
+          <button class="profile-tab" id="atab-price-review" onclick="switchAdminTab('price-review')">Til godkendelse</button>
           <button class="profile-tab" id="atab-users" onclick="switchAdminTab('users')">Alle brugere</button>
           <button class="profile-tab" id="atab-bulk-import" onclick="switchAdminTab('bulk-import')">📦 Bulk import</button>
           <button class="profile-tab" id="atab-feed-import" onclick="switchAdminTab('feed-import')">🔗 Feed-sync</button>
@@ -747,6 +748,9 @@
           <button class="profile-tab" id="atab-outcomes" onclick="switchAdminTab('outcomes')">Solgt eller opgivet</button>
           <button class="profile-tab" id="atab-errors" onclick="switchAdminTab('errors')">Fejl</button>
           <button class="profile-tab" id="atab-stats" onclick="switchAdminTab('stats')">📊 Statistik</button>
+        </div>
+        <div id="admin-price-review" style="display:none;">
+          <p style="color:var(--muted)">Indlæser…</p>
         </div>
         <div id="admin-traction" style="display:none;">
           <p style="color:var(--muted)">Indlæser…</p>
@@ -844,6 +848,7 @@
         <div class="success-bike-name" id="success-bike-title"></div>
         <div class="success-bike-price" id="success-bike-price"></div>
       </div>
+      <p id="success-held-note" style="display:none;margin:var(--space-3) 0 0;font-size:var(--text-sm);color:var(--muted);line-height:1.5;">Prisen er under 200 kr., så vi kigger på annoncen, før den bliver vist. Er prisen en fejl, kan du rette den under Mine annoncer, så går den live med det samme.</p>
       <div class="success-actions">
         <button class="btn-primary success-btn-view" id="success-view-btn">Se din annonce</button>
         <button class="success-btn-new" id="success-new-btn">Opret en ny annonce</button>
