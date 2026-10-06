@@ -267,25 +267,19 @@
   display: inline-flex; align-items: center; gap: 3px;
   box-shadow: var(--shadow-sm);
 }
-/* Stod paa #c8302a mens brandfarven er #C8502A — to roede en haarsbredde fra
-   hinanden paa samme kort. Nu variablen, saa de ikke kan drive fra hinanden. */
-.price-reduced-card-badge {
-  background: var(--rust); color: #fff;
-  border-radius: var(--radius-sm); padding: 1px 5px;
-  /* Var 0,5 rem (8 px) og 0,46 rem (7,4 px) på mobil — for småt til at læse.
-     12 px i vægt 800 blev derimod en klods der dominerede billedet. 11 px i
-     halvfed er læseligt uden at stjæle opmærksomheden fra cyklen. */
-  font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: 0;
-  line-height: 1.4;
-  white-space: nowrap;
-  display: inline-flex; align-items: center; gap: 2px;
+/* Førprisen står ved prisen som almindelig tekst, ligesom på annoncesiden
+   (.bike-price-was). Den var et orange "↓ -1.000 kr."-mærke oven på
+   billedet; tre ens mærker i træk fik forsiden til at ligne en webshop. */
+.bike-price-before {
+  font-size: var(--text-sm); font-weight: var(--weight-regular); letter-spacing: 0;
+  color: var(--text-muted); text-decoration: line-through; text-decoration-thickness: 1px;
+  margin-left: var(--space-1);
 }
 @media (max-width: 560px) {
   /* Kompakte badges på mobil — de må ikke dække cyklen. Mindre tekst/padding,
      tættere i hjørnet, ingen skygge, og kun ÉT ord-mellemrum så de wrapper mindre. */
   .bike-card-badges { gap: 3px; top: 6px; left: 6px; max-width: calc(100% - 38px); }
   .featured-card-badge { padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
-  .price-reduced-card-badge { padding: 2px 4px; letter-spacing: 0; box-shadow: none; }
   .warranty-card-badge { padding: 2px 5px; letter-spacing: 0; }
   .demo-badge { padding: 2px 5px; box-shadow: none; }
   /* Versaler + sperring bliver trange under 0.55rem, saa sperringen skrues ned

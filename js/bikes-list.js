@@ -393,9 +393,7 @@ export function createBikesList({
             <div class="bike-card-badges">
               ${isFeatured ? '<span class="featured-card-badge">Betalt promovering</span>' : ''}
               ${isDemo ? '<span class="demo-badge">EKSEMPEL</span>' : ''}
-              ${!isSold && !isDemo && saving > 0
-                ? `<span class="price-reduced-card-badge" title="Reduceret fra ${b.original_price.toLocaleString('da-DK')} kr.">↓ -${saving.toLocaleString('da-DK')} kr.</span>`
-                : `<span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>`}
+              <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
               ${b.warranty && !isSold && !isDemo ? `<span class="warranty-card-badge">${iconShield()}Garanti</span>` : ''}
             </div>
             ${!isSold && !isDemo ? `<button class="save-btn${isSaved ? ' is-saved' : ''}" data-bike-id="${b.id}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${isSaved}">${iconHeart(16)}</button>` : ''}
@@ -404,7 +402,9 @@ export function createBikesList({
           <div class="bike-card-body">
             <div class="card-top">
               <div class="bike-title">${esc(bikeTitle(b.brand, b.model))}</div>
-              <div class="bike-price">${priceLabel(b)}</div>
+              <div class="bike-price">${priceLabel(b)}${!isSold && !isDemo && saving > 0
+                ? ` <span class="bike-price-before" aria-label="Førpris ${b.original_price.toLocaleString('da-DK')} kroner">${b.original_price.toLocaleString('da-DK')} kr.</span>`
+                : ''}</div>
             </div>
             ${(() => {
               const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
