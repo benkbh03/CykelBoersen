@@ -1277,6 +1277,78 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   }
 }
 
+/* ── Forhandlerside (/dealer/:id) ──
+   To kolonner: annoncerne til venstre fra toppen, kontakt og fakta i en smal
+   kolonne til højre. Fakta er linjer med ikon, ikke kasser; kun knapper har
+   kant. Under 768 px ligger kolonnerne under hinanden: navn, kontakt, annoncer. */
+.dp-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-areas: "head side" "body side";
+  column-gap: var(--space-8);
+  align-items: start;
+}
+.dp-head {
+  grid-area: head;
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.dp-head .pp-bio { flex-basis: 100%; margin: 0; }
+.dp-head-text { flex: 1; min-width: 0; }
+.pp-wrap--dealer .pp-name { margin: 0 0 var(--space-1); justify-content: flex-start; }
+.dp-avatar {
+  width: 56px; height: 56px; flex-shrink: 0;
+  border-radius: var(--radius-full); overflow: hidden;
+  background: var(--forest); color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--text-base); font-weight: var(--weight-semibold);
+}
+.dp-avatar.has-logo { background: var(--bg); border: 1px solid var(--border); }
+.dp-meta { margin: 0; font-size: var(--text-sm); color: var(--text-muted); }
+
+.dp-side {
+  grid-area: side;
+  position: sticky; top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.dp-side .pp-cta-section { display: block; margin: 0 0 var(--space-4); }
+.dp-side .pp-cta-row { flex-direction: column; align-items: stretch; }
+.dp-side .pp-cta-btn,
+.dp-side .pp-follow-btn { justify-content: center; width: 100%; }
+.dp-facts {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: var(--space-3);
+  font-size: var(--text-sm); color: var(--charcoal); line-height: 1.45;
+}
+.dp-facts li { display: flex; gap: var(--space-2); align-items: flex-start; }
+.dp-facts li > svg { flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
+.dp-facts a { color: var(--charcoal); text-decoration: underline; text-underline-offset: 2px; }
+.dp-facts a:hover { color: var(--rust); }
+/* Åbningstiden var en farvet pille; her er den en linje med en prik. */
+.dp-fact-hours .oh-display { margin: 0; }
+.dp-fact-hours .oh-status { padding: 0; background: none; font-size: var(--text-sm); }
+.dp-fact-hours .oh-status.oh-open   { color: var(--green); background: none; }
+.dp-fact-hours .oh-status.oh-closed { color: var(--text-muted); background: none; }
+.dp-fact-hours .oh-status-dot { box-shadow: none; }
+.dp-fact-hours .oh-details { margin-top: var(--space-1); font-size: var(--text-sm); }
+.dp-fact-hours .oh-details summary { color: var(--charcoal); font-size: var(--text-sm); text-decoration: underline; text-underline-offset: 2px; }
+.dp-fact-hours .oh-list { background: none; border: none; padding: var(--space-2) 0 0; }
+
+.dp-body { grid-area: body; min-width: 0; }
+
+@media (max-width: 768px) {
+  .dp-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "side" "body";
+  }
+  .dp-head { margin-bottom: var(--space-4); gap: var(--space-3); }
+  .dp-side { position: static; margin-bottom: var(--space-6); }
+}
+
 @keyframes skeleton-shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }

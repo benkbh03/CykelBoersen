@@ -4,7 +4,7 @@
 
 import { findCompletedTradeWith } from './trades.js';
 import {
-  buildOpeningHoursDisplay, buildSocialLinksDisplay, buildServicesDisplay,
+  buildOpeningHoursDisplay, SERVICES,
 } from './dealer-extras.js';
 import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, iconBike } from './utils.js';
 import { noImagePlaceholder } from './ui-icons.js';
@@ -396,92 +396,96 @@ export function createProfilePages({
         </div>
       </div>` : (!isOwnProfile && followBtnHtml) ? `<div class="pp-cta-section"><div class="pp-cta-row">${followBtnHtml}</div></div>` : '';
 
+    // Kontaktoplysninger står som almindelige linjer i en smal kolonne til
+    // højre. De var små kasser med kant (pille-suppe), og kortet fyldte hele
+    // skærmen, så cyklerne stod under folden. Kun knapper er kasser nu.
     const openingHtml = buildOpeningHoursDisplay(dealer.opening_hours);
-    const socialHtml  = buildSocialLinksDisplay({
-      website:   dealer.website,
-      facebook:  dealer.facebook,
-      instagram: dealer.instagram,
+    const addressText = (dealer.address ? dealer.address + ', ' : '') + (dealer.city || '');
+    const serviceLabels = (Array.isArray(dealer.services) ? dealer.services : [])
+      .map(key => SERVICES.find(x => x.key === key)?.label).filter(Boolean);
+    const links = [
+      ['Website',   dealer.website],
+      ['Facebook',  dealer.facebook],
+      ['Instagram', dealer.instagram],
+    ].filter(([, url]) => url).map(([label, url]) => {
+      const href = /^https?:\/\//i.test(url.trim()) ? url.trim() : 'https://' + url.trim();
+      return `<a href="${escAttr(href)}" target="_blank" rel="noopener noreferrer nofollow">${label}</a>`;
     });
-    const servicesHtml = buildServicesDisplay(dealer.services);
-    const followerHtml = followerCount > 0
-      ? `<span class="pp-follower-count">${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}</span>`
-      : '';
+    const iconPhone = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>`;
+    const iconGlobe = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+    const iconTool = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.1 2.1 0 0 1-3-3l8.4-8.4a4 4 0 0 0-2-2Z"/><path d="M14.7 6.3 18 3"/></svg>`;
+
+    const factsHtml = [
+      dealer.city ? `<li>${iconPin(16)}<span>${esc(addressText)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressText)}" target="_blank" rel="noopener noreferrer">Vis på kort</a></span></li>` : '',
+      dealer.phone ? `<li>${iconPhone}<a href="tel:${escAttr(dealer.phone.replace(/\s+/g, ''))}">${esc(formatPhoneDK(dealer.phone))}</a></li>` : '',
+      openingHtml ? `<li class="dp-fact-hours">${openingHtml}</li>` : '',
+      serviceLabels.length ? `<li>${iconTool}<span>${serviceLabels.map(esc).join(' · ')}</span></li>` : '',
+      links.length ? `<li>${iconGlobe}<span>${links.join(' · ')}</span></li>` : '',
+    ].filter(Boolean).join('');
+
+    const metaParts = [
+      'Forhandler',
+      memberSince ? `medlem siden ${memberSince}` : '',
+      followerCount > 0 ? `${followerCount} ${followerCount === 1 ? 'følger' : 'følgere'}` : '',
+      nReviews > 0 ? `${avgRating.toFixed(1).replace('.', ',')} ★ (${nReviews} ${nReviews === 1 ? 'vurdering' : 'vurderinger'})` : '',
+    ].filter(Boolean);
 
     const backAction = history.length > 1 ? 'history.back()' : "navigateTo('/')";
 
     return `
-      <div class="pp-wrap">
+      <div class="pp-wrap pp-wrap--dealer">
         <button class="pp-back-btn" onclick="${backAction}">← Tilbage</button>
 
-        <div class="pp-header">
-          <div class="pp-avatar">${avatarContent}</div>
-          <div class="pp-info">
-            <h1 class="pp-name">
-              ${esc(displayName)}
-              ${dealer.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
-              ${dealer.email_verified ? `<span class="email-badge" title="E-mail verificeret" aria-label="E-mail verificeret">${iconMail(13)}</span>` : ''}
-            </h1>
-            <div class="pp-badges">
-              <span class="badge badge-dealer">${iconDealer()} Forhandler</span>
-              ${memberSince ? `<span class="pp-member-since">Medlem siden ${memberSince}</span>` : ''}
-              ${followerHtml}
+        <div class="dp-layout">
+          <div class="dp-head">
+            <div class="dp-avatar${safeAvatarUrl(dealer.avatar_url) ? ' has-logo' : ''}">${avatarContent}</div>
+            <div class="dp-head-text">
+              <h1 class="pp-name">
+                ${esc(displayName)}
+                ${dealer.verified    ? '<span class="verified-badge-large" title="Verificeret forhandler">✓</span>' : ''}
+                ${dealer.email_verified ? `<span class="email-badge" title="E-mail verificeret" aria-label="E-mail verificeret">${iconMail(13)}</span>` : ''}
+              </h1>
+              <p class="dp-meta">${metaParts.map(esc).join(' · ')}</p>
             </div>
-            ${dealer.city ? `
-              <div class="pp-location">
-                ${iconPin(14)}<span>${esc(dealer.address ? dealer.address + ', ' : '')}${esc(dealer.city)}</span>
-                <a class="pp-maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((dealer.address ? dealer.address + ', ' : '') + dealer.city)}" target="_blank" rel="noopener noreferrer" title="Åbn i Google Maps">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  Åbn i Google Maps
-                </a>
-              </div>` : ''}
-            ${dealer.phone ? `
-              <div class="pp-location">
-                <a class="pp-maps-link" href="tel:${escAttr(dealer.phone.replace(/\s+/g, ''))}" title="Ring til ${escAttr(displayName)}">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
-                  ${esc(dealer.phone)}
-                </a>
-              </div>` : ''}
-            ${openingHtml}
             ${dealer.bio ? `<p class="pp-bio">${esc(dealer.bio)}</p>` : ''}
-            ${servicesHtml}
-            ${socialHtml}
+          </div>
+
+          <aside class="dp-side">
             ${contactHtml}
-          </div>
-        </div>
+            ${factsHtml ? `<ul class="dp-facts">${factsHtml}</ul>` : ''}
+          </aside>
 
-        <div class="pp-trust-bar">
-          <div class="pp-trust-item" onclick="switchDealerProfileTab('listings')">
-            <div class="pp-trust-val">${nActive}</div>
-            <div class="pp-trust-label">Til salg</div>
-          </div>
-          <div class="pp-trust-item" onclick="switchDealerProfileTab('reviews')">
-            <div class="pp-trust-val">${avgRating !== null ? avgRating.toFixed(1) + ' ★' : '–'}</div>
-            <div class="pp-trust-label">${nReviews} ${nReviews === 1 ? 'vurdering' : 'vurderinger'}</div>
-          </div>
-        </div>
+          <div class="dp-body">
+            <div class="pp-achievements" id="dealer-achievements"></div>
 
-        <div class="pp-achievements" id="dealer-achievements"></div>
+            <div class="up-tabs pp-tabs">
+              <button class="dp-tab up-tab active" data-tab="listings" onclick="switchDealerProfileTab('listings')">Til salg (${nActive})</button>
+              <button class="dp-tab up-tab" data-tab="reviews" onclick="switchDealerProfileTab('reviews')">Vurderinger (${nReviews})</button>
+            </div>
 
-        <div class="up-tabs pp-tabs">
-          <button class="dp-tab up-tab active" data-tab="listings" onclick="switchDealerProfileTab('listings')">Til salg (${nActive})</button>
-          <button class="dp-tab up-tab" data-tab="reviews" onclick="switchDealerProfileTab('reviews')">Vurderinger${avgRating !== null ? ` ${avgRating.toFixed(1)} ★` : ` (${nReviews})`}</button>
-        </div>
-
-        <div id="dp-tab-listings" class="up-tab-panel">
-          <div class="pp-bikes-grid">${bikeCards}</div>
-        </div>
-        <div id="dp-tab-reviews" class="up-tab-panel" style="display:none;">
-          <div class="pp-trust-breakdown-wrap">
-            ${(() => {
-              const stats = computeTrustStatsFromReviews(dealer.id, reviewList);
-              const score = calculateTrustScore(dealer, stats);
-              return buildTrustBreakdownHTML(dealer, stats, score);
-            })()}
+            <div id="dp-tab-listings" class="up-tab-panel">
+              <div class="pp-bikes-grid">${bikeCards}</div>
+            </div>
+            <div id="dp-tab-reviews" class="up-tab-panel" style="display:none;">
+              <div class="pp-trust-breakdown-wrap">
+                ${(() => {
+                  const stats = computeTrustStatsFromReviews(dealer.id, reviewList);
+                  const score = calculateTrustScore(dealer, stats);
+                  return buildTrustBreakdownHTML(dealer, stats, score);
+                })()}
+              </div>
+              <div class="up-reviews-list">${reviewCards}</div>
+              ${writeReviewHtml}
+            </div>
           </div>
-          <div class="up-reviews-list">${reviewCards}</div>
-          ${writeReviewHtml}
         </div>
       </div>`;
+  }
+
+  // Danske numre skrives i par: "27 11 97 55". Alt andet vises som indtastet.
+  function formatPhoneDK(phone) {
+    const digits = String(phone).replace(/[^\d+]/g, '').replace(/^(\+45|0045)/, '');
+    return /^\d{8}$/.test(digits) ? digits.replace(/(\d{2})(?=\d)/g, '$1 ') : String(phone).trim();
   }
 
   async function renderUserProfilePage(userId) {
