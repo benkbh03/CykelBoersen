@@ -113,10 +113,6 @@ export function createMyProfilePage({
     const hasSidebarContent = pct < 100 || (isDealer && !p.verified);
 
     const svgBike    = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    const svgEye     = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
-    const svgHeart   = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20.8s-7.5-4.6-7.5-11A4.5 4.5 0 0112 6a4.5 4.5 0 017.5 3.8c0 6.4-7.5 11-7.5 11z" stroke="currentColor" stroke-width="1.8"/></svg>`;
-    const svgShake   = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 13l5-5 3 3-5 5-3-3zM9 11l4-4 3 3-4 4-3-3zM13 7l3-3 4 4-3 3M5 16l3 3M13 17l2 2 2-1 1-2-3-3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
-    const svgPlus    = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`;
     const svgEdit    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
     const svgLogout  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const svgBack    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
@@ -127,7 +123,6 @@ export function createMyProfilePage({
       <div class="mp-top">
         <button class="mp-back-btn" onclick="navigateTo('/')">${svgBack} Forside</button>
         <h1 class="mp-title">Min konto</h1>
-        <p class="mp-subtitle">Administrér dine annoncer, cykelagenter og kontooplysninger</p>
       </div>
 
       <div class="mp-layout${hasSidebarContent ? '' : ' mp-no-sidebar'}">
@@ -158,59 +153,32 @@ export function createMyProfilePage({
               </div>
             </div>
             <div class="mp-header-actions">
-              <button class="mp-action-primary" onclick="navigateTo('/sell')">${svgPlus} <span>Opret annonce</span></button>
+              <!-- "Opret annonce" er fjernet: "Sæt til salg" står allerede i
+                   headeren, og siden skal kun have én orange knap. -->
               <div class="mp-action-secondary-row">
-                <button class="mp-action-secondary" onclick="openProfileModal()" aria-label="Redigér profil">${svgEdit} <span class="mp-action-label">Redigér</span></button>
+                <button class="mp-action-secondary" onclick="openProfileModal()" aria-label="Redigér profil">${svgEdit} <span class="mp-action-label">Redigér profil</span></button>
                 <button class="mp-action-secondary mp-action-logout" onclick="logout()" aria-label="Log ud">${svgLogout} <span class="mp-action-label">Log ud</span></button>
               </div>
             </div>
           </div>
 
-          <!-- Stats-grid -->
-          <div class="mp-stats-grid">
-            <div class="mp-stat-card" onclick="switchMyProfileTab('listings')" title="Mine annoncer">
-              <div class="mp-stat-icon" style="color:var(--forest)">${svgBike}</div>
-              <div class="mp-stat-num" id="mp-stat-active">–</div>
-              <div class="mp-stat-label">Aktive annoncer</div>
-            </div>
-            <div class="mp-stat-card" title="Visninger">
-              <div class="mp-stat-icon" style="color:var(--rust)">${svgEye}</div>
-              <div class="mp-stat-num" id="mp-stat-views">–</div>
-              <div class="mp-stat-label">Visninger i alt</div>
-            </div>
-            <div class="mp-stat-card" onclick="switchMyProfileTab('saved')" title="Gemte annoncer">
-              <div class="mp-stat-icon" style="color:var(--forest)">${svgHeart}</div>
-              <div class="mp-stat-num" id="mp-stat-saved">–</div>
-              <div class="mp-stat-label">Gemte cykler</div>
-            </div>
-            <div class="mp-stat-card" onclick="switchMyProfileTab('trades')" title="Handler">
-              <div class="mp-stat-icon" style="color:var(--forest-light)">${svgShake}</div>
-              <div class="mp-stat-num" id="mp-stat-trades">–</div>
-              <div class="mp-stat-label">Handler afsluttet</div>
-            </div>
-          </div>
-
-          <!-- Forhandler leads-banner (vises kun for dealers) -->
+          <!-- Tal: én linje frem for fire kort med ikon. Id'erne er de samme
+               som før, fordi my-profile.js (statisk importeret) også skriver dem. -->
+          <p class="mp-summary">
+            <button class="mp-summary-item" onclick="switchMyProfileTab('listings')">Aktive annoncer <b id="mp-stat-active">–</b></button>
+            <span class="mp-summary-item">Visninger <b id="mp-stat-views">–</b></span>
+            <button class="mp-summary-item" onclick="switchMyProfileTab('saved')">Gemte <b id="mp-stat-saved">–</b></button>
+            <button class="mp-summary-item" onclick="switchMyProfileTab('trades')">Handler <b id="mp-stat-trades">–</b></button>
+          </p>
           ${isDealer ? `
-          <div class="mp-dealer-banner" id="mp-dealer-banner">
-            <div class="mp-dealer-banner-stat">
-              <div class="mp-dealer-banner-num" id="mp-dealer-leads">–</div>
-              <div class="mp-dealer-banner-label">Nye leads (7 dage)</div>
-            </div>
-            <div class="mp-dealer-banner-divider"></div>
-            <div class="mp-dealer-banner-stat">
-              <div class="mp-dealer-banner-num" id="mp-dealer-topviews">–</div>
-              <div class="mp-dealer-banner-label">Visninger på topcykel</div>
-            </div>
-            <div class="mp-dealer-banner-divider"></div>
-            <div class="mp-dealer-banner-stat">
-              <div class="mp-dealer-banner-num" id="mp-dealer-respond">–</div>
-              <div class="mp-dealer-banner-label">Ubesvarede tråde</div>
-            </div>
-          </div>` : ''}
+          <p class="mp-summary" id="mp-dealer-banner">
+            <span class="mp-summary-item">Nye henvendelser, 7 dage <b id="mp-dealer-leads">–</b></span>
+            <span class="mp-summary-item">Visninger på mest sete cykel <b id="mp-dealer-topviews">–</b></span>
+            <span class="mp-summary-item">Ubesvarede tråde <b id="mp-dealer-respond">–</b></span>
+          </p>` : ''}
 
-          <!-- Insight-banner (vises kun når vi har data) -->
-          <div class="mp-insight" id="mp-insight" style="display:none"></div>
+          <!-- Tip om den mest sete annonce: en almindelig tekstlinje (ingen grøn boks) -->
+          <div class="mp-tip" id="mp-insight" style="display:none"></div>
 
           <!-- Forhandler attention-banner (stale bikes der trænger handling) -->
           ${isDealer ? `<div class="mp-attention" id="mp-attention" style="display:none"></div>` : ''}
@@ -314,9 +282,6 @@ export function createMyProfilePage({
     const currentUser    = getCurrentUser();
     const currentProfile = getCurrentProfile();
     if (!currentUser) return;
-    const svgTrend = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 8-8M15 7h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    const svgBulb  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5V15a1 1 0 001 1h6a1 1 0 001-1v-1.5A6 6 0 0012 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
-    const svgChev  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
     try {
       const [bikesRes, savedRes, searchesRes, tradesRes] = await Promise.all([
@@ -397,23 +362,16 @@ export function createMyProfilePage({
         let tip;
         if (imgCount < MAX_IMGS) {
           const missing = MAX_IMGS - imgCount;
-          tip = `Tilføj ${missing} ${missing === 1 ? 'billede mere' : 'billeder mere'} for at øge synligheden`;
+          tip = `Med ${missing} ${missing === 1 ? 'billede mere' : 'billeder mere'} kan købere se mere af den`;
         } else if (daysOld >= 21) {
-          tip = `Annoncen er ${daysOld} dage gammel. Overvej at justere prisen`;
+          tip = `Den har været til salg i ${daysOld} dage, så prisen kan være for høj`;
         } else {
-          tip = `Del annoncen med venner for at nå flere potentielle købers`;
+          tip = `Del linket, så flere ser den`;
         }
 
         insightEl.innerHTML = `
-        <div class="mp-insight-icon">${svgTrend}</div>
-        <div class="mp-insight-body">
-          <div class="mp-insight-title">
-            ${esc(topBike.brand)} ${esc(topBike.model)} har fået
-            <span style="color:var(--rust-light)">${(topBike.views || 0).toLocaleString('da-DK')} visninger</span>
-          </div>
-          <div class="mp-insight-sub">${svgBulb} ${tip}</div>
-        </div>
-        <button class="mp-insight-cta" onclick="openEditModal('${topBike.id}')">Redigér ${svgChev}</button>
+        <span><b>${esc(topBike.brand)} ${esc(topBike.model)}</b> er set ${(topBike.views || 0).toLocaleString('da-DK')} gange. ${tip}.</span>
+        <button class="mp-insight-link" onclick="openEditModal('${topBike.id}')">Redigér annoncen</button>
       `;
         insightEl.style.display = '';
       }

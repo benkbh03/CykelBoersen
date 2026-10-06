@@ -176,107 +176,36 @@
   transition: background 0.15s, border-color 0.15s;
 }
 .mp-action-secondary:hover { background: var(--sand); border-color: #c8c0b4; }
+.mp-action-secondary { white-space: nowrap; }
 .mp-action-secondary.mp-action-logout { color: var(--muted); }
 .mp-action-secondary.mp-action-logout:hover { color: var(--charcoal); }
 
-/* ── Stats-grid: 4 kort ── */
-.mp-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3);
+/* ── Tal som én linje (okt.) ──────────────────────────────
+   Erstatter fire statistik-kort med ikon og den grønne indsigts-banner.
+   (.mp-stats-grid/.mp-insight skrives ikke længere; my-profile-page.js
+   lazy-loades med ?v=, så ingen cachet udgave kan skrive dem.) */
+.mp-summary {
+  display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6);
+  margin: 0; padding: 0 2px;
+  font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-muted);
 }
-.mp-stat-card {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 18px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  cursor: default;
-  transition: border-color 0.15s;
-  min-height: 120px;
+.mp-summary-item {
+  background: none; border: none; padding: 0; margin: 0;
+  font: inherit; color: inherit; display: inline-flex; gap: var(--space-1);
 }
-.mp-stat-card[onclick] { cursor: pointer; }
-.mp-stat-card:hover { border-color: #c0b9b0; }
-.mp-stat-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: var(--sand);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+button.mp-summary-item { cursor: pointer; }
+button.mp-summary-item:hover { color: var(--charcoal); text-decoration: underline; }
+.mp-summary-item b { color: var(--charcoal); font-weight: var(--weight-semibold); }
+.mp-tip {
+  font-family: var(--font-sans); font-size: var(--text-sm); color: var(--charcoal);
+  line-height: 1.5; padding: 0 2px;
 }
-.mp-stat-num {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
-  font-size: 2rem;
-  color: var(--charcoal);
-  line-height: 1;
+.mp-tip b { font-weight: var(--weight-semibold); }
+.mp-insight-link {
+  background: none; border: none; padding: 0; margin-left: var(--space-1);
+  font: inherit; color: var(--charcoal); text-decoration: underline; cursor: pointer;
 }
-.mp-stat-label {
-  font-size: 0.73rem;
-  color: var(--muted);
-  font-family: var(--font-sans);
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-/* ── Insight-banner ── */
-.mp-insight {
-  background: var(--forest);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  display: grid;
-  grid-template-columns: 44px 1fr auto;
-  gap: 14px;
-  align-items: center;
-  color: var(--sand);
-}
-.mp-insight-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--surface) 14%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--rust-light);
-  flex-shrink: 0;
-}
-.mp-insight-body { min-width: 0; }
-.mp-insight-title {
-  font-family: var(--font-sans); font-weight: var(--weight-semibold);
-  font-size: var(--text-base);
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-.mp-insight-sub {
-  font-size: 0.78rem;
-  opacity: 0.82;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.mp-insight-cta {
-  background: var(--rust);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  font-size: 0.82rem;
-  font-weight: var(--weight-semibold);
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-sans);
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-.mp-insight-cta:hover { background: var(--rust-light); }
+.mp-insight-link:hover { color: var(--rust); }
 
 /* ── Tabs + panel ── */
 .mp-tabs-panel {
@@ -361,10 +290,7 @@
   padding: 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.mp-listing-card:hover {
-  border-color: #b8b2a8;
-  box-shadow: var(--shadow-sm);
-}
+.mp-listing-card:hover { border-color: var(--charcoal); }
 .mp-listing-card--sold { opacity: 0.7; }
 .mp-listing-img-wrap {
   position: relative;
@@ -401,9 +327,11 @@
   font-family: var(--font-sans);
   z-index: 2;
 }
-.mp-status--active { background: rgba(61,89,66,0.14); color: var(--forest); }
+/* Mærket ligger oven på et foto: altid en fast, næsten hvid baggrund, så det
+   kan læses på ethvert billede (en gennemsigtig rust-tone kunne ikke). */
+.mp-status--active,
+.mp-status--old    { background: rgba(255,255,255,0.94); color: var(--charcoal); }
 .mp-status--sold   { background: var(--charcoal); color: #fff; }
-.mp-status--old    { background: rgba(200,80,42,0.15); color: var(--rust); }
 .mp-listing-body {
   display: flex;
   flex-direction: column;
@@ -418,7 +346,6 @@
   line-height: 1.1;
   transition: color 0.15s;
 }
-.mp-listing-card:hover .mp-listing-title { color: var(--rust); }
 .mp-listing-meta { font-size: 0.78rem; color: var(--muted); }
 .mp-listing-stats-row {
   display: flex;
@@ -455,8 +382,11 @@
   align-items: stretch;
   width: 100%;
 }
+/* To klasser i selektoren: rækken har både .mp-listing-links og
+   --mobile, og .mp-listing-links { display:flex } længere nede vandt ellers,
+   så "Se annonce · Sæt solgt · Slet" stod to gange på desktop. */
 .mp-listing-actions-mobile,
-.mp-listing-links--mobile { display: none; }
+.mp-listing-links.mp-listing-links--mobile { display: none; }
 .mp-btn-view {
   background: var(--cream);
   border: 1px solid var(--border);
@@ -475,9 +405,9 @@
 }
 .mp-btn-view:hover { background: var(--sand); }
 .mp-btn-edit {
-  background: var(--forest);
-  color: var(--sand);
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   padding: 7px 12px;
   font-size: 0.78rem;
@@ -490,20 +420,18 @@
   gap: 5px;
   transition: background 0.15s;
 }
-.mp-btn-edit:hover { background: var(--forest-light); }
-/* Fremhæv er et TILVALG, ikke kortets hovedhandling. Som fyldt guld-gradient
-   råbte den højere end både prisen og sælgerens egen cykel — dit mersalg må
-   ikke være det mest iøjnefaldende på sælgerens egen side. Nu er den en
-   kontur med guld-accent: tydeligt til stede, men underordnet Redigér. */
+.mp-btn-edit:hover { background: var(--surface); }
+/* Fremhæv er et tilvalg, ikke kortets hovedhandling: neutral som Redigér.
+   Siden har kun én orange knap ("Sæt til salg" i headeren). */
 .mp-btn-boost {
-  background: var(--cream);
-  color: var(--gold-dark); border: 1px solid var(--gold-border); border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--charcoal); border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 7px 12px; font-size: 0.78rem; font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans);
   display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   transition: background 0.15s, border-color 0.15s;
 }
-.mp-btn-boost:hover { background: var(--gold-bg); border-color: var(--gold); }
+.mp-btn-boost:hover { background: var(--surface); border-color: var(--charcoal); }
 
 /* Sjældne og uoprettelige handlinger hører ikke til som fyldte knapper.
    "Se annonce" er oveni redundant — hele kortet er klikbart — men beholdes
@@ -521,8 +449,8 @@
 .mp-link--danger:hover { color: var(--error); }
 .mp-link-sep { color: var(--border); font-size: 0.76rem; }
 .mp-btn-boost--active {
-  background: #fff; color: #8a6817;
-  border: 1px solid var(--gold-border);
+  background: var(--surface); color: var(--charcoal);
+  border: 1px solid var(--border);
 }
 .mp-btn-sold, .mp-btn-unsold {
   background: none;
@@ -740,7 +668,7 @@
     line-height: 1;
     margin-top: 6px;
   }
-  .mp-listing-links--mobile { display: flex; }
+  .mp-listing-links.mp-listing-links--mobile { display: flex; grid-column: 1 / -1; justify-content: flex-start; margin-top: 0; }
   .mp-listing-actions-mobile {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -973,7 +901,7 @@ body.is-mp-mobile .mp-price-mobile {
   line-height: 1;
   margin-top: 6px;
 }
-body.is-mp-mobile .mp-listing-links--mobile { display: flex; }
+body.is-mp-mobile .mp-listing-links.mp-listing-links--mobile { display: flex; grid-column: 1 / -1; justify-content: flex-start; margin-top: 0; }
 body.is-mp-mobile .mp-listing-actions-mobile {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1590,7 +1518,7 @@ color: var(--cream); margin-bottom: 2px;
 
 /* DBA-import: en almindelig sektion med en streg over, ingen grå boks. */
 .sell-import-link {
-  margin-top: var(--space-6); padding-top: var(--space-5);
+  margin-top: var(--space-6); padding-top: var(--space-4);
   border-top: 1px solid var(--border);
 }
 .sell-import-title { font-weight: var(--weight-semibold); font-size: var(--text-base); color: var(--charcoal); }
