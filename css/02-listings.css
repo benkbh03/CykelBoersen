@@ -267,6 +267,11 @@
   display: inline-flex; align-items: center; gap: 3px;
   box-shadow: var(--shadow-sm);
 }
+/* Gammel klasse, beholdt med vilje. bikes-list.js importeres statisk uden ?v=,
+   så en browser kan køre den gamle udgave (der stadig laver det orange mærke)
+   sammen med ny CSS i timevis efter deploy. Uden en regel blev mærket
+   ustylet og fyldte hele billedet (6. okt.). Kan fjernes om nogle uger. */
+.price-reduced-card-badge { display: none !important; }
 /* Førprisen står ved prisen som almindelig tekst, ligesom på annoncesiden
    (.bike-price-was). Den var et orange "↓ -1.000 kr."-mærke oven på
    billedet; tre ens mærker i træk fik forsiden til at ligne en webshop. */
