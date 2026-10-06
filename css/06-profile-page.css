@@ -1309,7 +1309,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 
 .dp-side {
   grid-area: side;
-  position: sticky; top: var(--space-4);
+  position: sticky; top: calc(var(--nav-h) + var(--space-4)); /* under den faste topbar, som annoncesiden */
   padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
