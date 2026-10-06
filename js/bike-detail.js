@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { beskedFejl, bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
+import { upgradesDisplayHTML } from './bike-upgrades.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { breadcrumbsHtml, bikeCrumbs } from './breadcrumbs.js';
 import { maybeShowScamWarning } from './scam-warning.js';
@@ -258,6 +259,7 @@ export function createBikeDetail({
                 + `${iconShield()} Stelnummer oplyst</span>`;
             })()}
           </div>
+          ${isGiveaway(b) ? '' : upgradesDisplayHTML(b.upgrades)}
           <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             ${/* Forhandler: logoet hvis det findes, ellers kun butiksnavnet.
                   En initial-cirkel ligner en privat profil og siger intet om butikken. */''}

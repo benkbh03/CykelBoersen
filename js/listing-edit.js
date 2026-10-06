@@ -4,6 +4,7 @@
 
 import { renderColorSwatches, getSelectedColors } from './color-swatches.js';
 import { bikeTitle } from './utils.js';
+import { mountUpgradesEditor, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 
 const normalizeImageId = (id) => String(id ?? '').trim();
 
@@ -50,6 +51,9 @@ export function createListingEdit({
   // (de er stadig RLS-beskyttede — admin retter felter, ikke feed-billeder).
   let editBikeOwnerId  = null;
   let editIsAdminOther = false;
+  // Opgraderings-editoren. null = feltet sendes ikke med ved gem (tilbehør,
+  // admin på anden forhandler, eller kolonnen findes ikke endnu).
+  let editUpgradesCtl  = null;
 
   // ── State accessors ────────────────────────────────────────
 
@@ -237,6 +241,20 @@ export function createListingEdit({
     document.getElementById('edit-condition').value     = b.condition || '';
     if (typeof window.updateConditionGuide === 'function') window.updateConditionGuide('edit-condition', 'cg-edit');
     document.getElementById('edit-is-active').checked   = b.is_active;
+
+    // select('*') har kun nøglen, når add_bike_upgrades.sql er kørt. Uden den
+    // ville et gem med feltet fejle, så editoren vises slet ikke.
+    // admin_update_bike kender ikke feltet, så den skjules også dér.
+    const showUpg = Object.prototype.hasOwnProperty.call(b, 'upgrades')
+      && editCategory !== 'tilbehoer' && !editIsAdminOther;
+    const upgGroup = document.getElementById('edit-upgrades-group');
+    if (upgGroup) upgGroup.style.display = showUpg ? '' : 'none';
+    editUpgradesCtl = showUpg
+      ? mountUpgradesEditor(document.getElementById('edit-upgrades-editor'), {
+          initial: Array.isArray(b.upgrades) ? b.upgrades : [],
+          prominent: UPGRADE_PROMINENT_TYPES.includes(b.type),
+        })
+      : null;
 
     document.getElementById('edit-wheel-size').value         = b.wheel_size || '';
     document.getElementById('edit-frame-material').value     = b.frame_material || '';
@@ -447,6 +465,10 @@ export function createListingEdit({
       // overskriver dine rettelser (kun pris opdateres for låste cykler).
       feed_locked:        true,
     };
+    if (editUpgradesCtl) {
+      const upg = editUpgradesCtl.get();
+      updates.upgrades = upg.length ? upg : null;
+    }
 
     if (!updates.brand || !updates.price || !updates.city) {
       showToast('Udfyld alle påkrævede felter', 'advarsel'); return;
