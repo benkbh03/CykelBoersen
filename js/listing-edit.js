@@ -4,6 +4,7 @@
 
 import { renderColorSwatches, getSelectedColors } from './color-swatches.js';
 import { bikeTitle } from './utils.js';
+import { pathIsBike } from './bike-url.js';
 import { mountUpgradesEditor, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 
 const normalizeImageId = (id) => String(id ?? '').trim();
@@ -625,7 +626,7 @@ export function createListingEdit({
     const bikeModalOpen = document.getElementById('bike-modal')?.classList.contains('open');
     const profileMatch  = currentPath.match(/^\/profile\/([^/]+)$/);
     const dealerMatch   = currentPath.match(/^\/dealer\/([^/]+)$/);
-    const onBikePage    = currentPath === `/bike/${id}`;
+    const onBikePage    = pathIsBike(currentPath, id);
 
     if (onBikePage) renderBikePage(id);
     if (bikeModalOpen) openBikeModal(id);

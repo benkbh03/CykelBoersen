@@ -9,6 +9,7 @@
 import { BIKE_COLORS } from './config.js';
 import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
 import { iconDealer, iconPrivate, iconShield, priceText, iconBell, iconBike } from './utils.js';
+import { bikePath } from './bike-url.js';
 
 const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
@@ -223,7 +224,7 @@ export function createCykelagentPage({
     const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
     const price = priceText(bike);
     return `
-      <a class="cykelagent-match-card" href="/bike/${bike.id}/" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
+      <a class="cykelagent-match-card" href="${bikePath(bike)}/" onclick="event.preventDefault();navigateTo('${bikePath(bike)}')" aria-label="${esc(title)}">
         ${img
           ? `<img class="cykelagent-match-img" src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">`
           : `<div class="cykelagent-match-img cykelagent-match-img--empty">${iconBike(28)}</div>`}

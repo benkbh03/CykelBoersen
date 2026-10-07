@@ -45,6 +45,7 @@ import { breadcrumbsHtml, breadcrumbsJsonLd, bikeCrumbs, brandCrumbs, categoryCr
    for at sige noget andet end appen; bikePageTitle SKAL vaere den samme
    funktion begge steder, ellers modsiger raa HTML og DOM hinanden. */
 import { bikeTitle, bikePageTitle } from '../js/utils.js';
+import { bikePath } from '../js/bike-url.js';
 import { BLOG_TITLE, BLOG_DESC, BRANDS_DESC, DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC, brandTitle, brandDescription } from '../js/seo-text.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -109,7 +110,7 @@ function bikeLinkList(bikes) {
       ? ` – ${Number(b.price).toLocaleString('da-DK')} kr.`
       : '';
     const where = b.city ? ` i ${b.city}` : '';
-    return `<li><a href="/bike/${escHtml(b.id)}/">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
+    return `<li><a href="${escHtml(bikePath(b))}/">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
   }).join('');
   return `<ul class="prerender-bike-links">${items}</ul>`;
 }
@@ -256,6 +257,26 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
   );
 
   return html;
+}
+
+/* Videresendelse fra en gammel adresse. GitHub Pages kan ikke sende en 301,
+   så det her er det nærmeste: canonical til den nye adresse + meta refresh
+   med 0 sekunder, som Google behandler som en permanent videresendelse.
+   location.replace bevarer ?ask=1 o.l. for besøgende med JS. */
+function redirectPage(path) {
+  const url = canonicalUrl(path);
+  return `<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Cykelbørsen</title>
+<link rel="canonical" href="${escHtml(url)}">
+<meta http-equiv="refresh" content="0; url=${escHtml(url)}">
+<script>location.replace(${JSON.stringify(path + '/')} + location.search + location.hash);</script>
+</head>
+<body><p><a href="${escHtml(url)}">Gå til annoncen</a></p></body>
+</html>
+`;
 }
 
 function writePage(canonicalPath, html) {
@@ -573,7 +594,7 @@ function bikePage(b) {
   const price = Number(b.price) || 0;
   const priceStr = price.toLocaleString('da-DK');
   const city = b.city || 'Danmark';
-  const canonicalPath = `/bike/${b.id}`;
+  const canonicalPath = bikePath(b);
 
   const title = bikePageTitle(name, `${priceStr} kr.`);
   const description = [
@@ -1062,7 +1083,10 @@ async function main() {
     const bikeRoot = join(ROOT, 'bike');
     if (existsSync(bikeRoot)) rmSync(bikeRoot, { recursive: true, force: true });
     for (const b of bikes) {
-      writePage(`/bike/${b.id}`, buildPage(bikePage(b)));
+      writePage(bikePath(b), buildPage(bikePage(b)));
+      // Den gamle adresse (/bike/<uuid>) står i e-mails, delte links og
+      // Googles indeks. Den får en videresendelse til den nye.
+      writePage(`/bike/${b.id}`, redirectPage(bikePath(b)));
     }
     console.log(`Prerendered ${bikes.length} annonce-sider (med dynamiske OG-billeder).`);
 

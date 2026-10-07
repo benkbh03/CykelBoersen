@@ -4,7 +4,7 @@
  *   1. Statiske ruter (forside, om, vilkår osv.) — hardcodet her
  *   2. Mærke-landingssider (/cykler/<slug>) — hardcodet liste
  *   3. Blog-artikler (/blog/<slug>) — hardcodet liste
- *   4. Aktive annoncer (/bike/<id>) — hentes live fra Supabase
+ *   4. Aktive annoncer (/bike/<mærke-model>-<id8>, se js/bike-url.js) — hentes live fra Supabase
  *   5. Verificerede forhandlere (/dealer/<id>) — hentes live fra Supabase
  *
  * Køres af .github/workflows/sitemap.yml dagligt + ved push til main.
@@ -15,6 +15,7 @@
 
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { brandToSlug } from '../js/brand-data-v2.js';
+import { bikePath } from '../js/bike-url.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ktufgncydxhkhfttojkh.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
@@ -134,7 +135,7 @@ async function main() {
 
   try {
     // brand hentes med, så mærkesider uden aktive annoncer kan udelades nedenfor.
-    bikes = await fetchSupabase('bikes?is_active=eq.true&select=id,brand,user_id');
+    bikes = await fetchSupabase('bikes?is_active=eq.true&select=id,brand,model,user_id');
   } catch (err) {
     console.warn('Kunne ikke hente bikes:', err.message);
     dynamicFailed = true;
@@ -206,7 +207,7 @@ async function main() {
     ...CATEGORY_SLUGS.map(slug => ({ loc: `/${slug}`, changefreq: 'daily', priority: '0.9' })),
     ...BLOG_SLUGS.map(slug => ({ loc: `/blog/${slug}`, changefreq: 'monthly', priority: '0.7' })),
     ...brandSlugsWithBikes.map(([slug, priority]) => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority })),
-    ...bikes.map(b => ({ loc: `/bike/${b.id}`, changefreq: 'weekly', priority: '0.6' })),
+    ...bikes.map(b => ({ loc: bikePath(b), changefreq: 'weekly', priority: '0.6' })),
     ...uncuratedSlugs.map(slug => ({ loc: `/cykler/${slug}`, changefreq: 'daily', priority: '0.5' })),
     ...dealersInSitemap.map(d => ({ loc: `/dealer/${d.id}`, changefreq: 'weekly', priority: '0.6' })),
     // Udlejnings-items udelades ligeledes mens funktionen er skjult.

@@ -280,6 +280,7 @@ De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map
 ### Routing (pathname-baseret)
 - `navigateTo(path)` → `history.pushState`, derefter `handleRoute()`
 - `handleRoute()` læser `location.pathname` og ruter til `renderBikePage`, `renderUserProfilePage`, `renderDealerProfilePage`, `renderMyProfilePage`, `renderSellPage`, `renderBecomeDealerPage`, `renderDealersPage` m.fl.
+- Annonceadresser er `/bike/<mærke-model>-<første 8 tegn af id>` og bygges KUN af `bikePath(b)` i `js/bike-url.js` (bruges også af prerender og sitemap). Byg aldrig `/bike/${id}` i hånden. Den gamle `/bike/<uuid>` virker stadig: routeren slår begge former op, `renderBikePage` retter adresselinjen til den pæne, og prerender skriver en videresendelsesside på den gamle adresse (e-mails fra edge functions bruger den stadig)
 - Backward-compat: gamle hash-URLs `#/bike/123` konverteres til `/bike/123`
 - `?bike=ID` i query → auto-åbner bike-modal
 - `?inbox=true` → auto-åbner indbakke
