@@ -11,6 +11,7 @@ import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
 import { createBikeDetailLightbox } from './bike-detail-lightbox.js';
 import { HOME_TITLE, HOME_DESC } from './seo-text.js';
+import { bikePath, parseBikeParam, prefixRange } from './bike-url.js';
 
 /* Stabil "viewer key" til visningstælling:
    - Logget ind → brugerens eget id (så samme person ikke tæller fra flere browsere).
@@ -85,22 +86,33 @@ export function createBikeDetail({
 
   async function fetchBikeById(bikeId) {
     let result;
+    /* bikeId kan være et fuldt uuid eller /bike/<slug>-<8 tegn>-delen af en
+       adresse (se js/bike-url.js). Den korte form slås op som et interval. */
+    const ref = parseBikeParam(bikeId);
+    if (ref?.id) bikeId = ref.id;
     if (bikeCache.has(bikeId)) {
       result = { data: bikeCache.get(bikeId), error: null };
+    } else if (!ref) {
+      result = { data: null, error: new Error('Ugyldig annonceadresse') };
     } else {
-      const fetchPromise = supabase
+      let query = supabase
         .from('bikes')
         // phone hentes IKKE. Feltet blev aldrig vist nogen steder på siden, men
         // fulgte med ned i hver besøgendes browser hver gang en annonce blev
         // åbnet — altså sælgerens mobilnummer udleveret til enhver der klikkede.
-        .select('*, profiles!user_id(id, name, seller_type, shop_name, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at, admin_can_create_listings, admin_authorized_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)')
-        .eq('id', bikeId)
-        .single();
+        .select('*, profiles!user_id(id, name, seller_type, shop_name, city, address, verified, id_verified, email_verified, offers_financing, offers_tradein, avatar_url, last_seen, bio, created_at, admin_can_create_listings, admin_authorized_at), bike_images(url, is_primary), bike_price_history(old_price, new_price, changed_at)');
+      if (ref.id) {
+        query = query.eq('id', ref.id);
+      } else {
+        const { lo, hi } = prefixRange(ref.prefix);
+        query = query.gte('id', lo).lte('id', hi).order('created_at', { ascending: true }).limit(1);
+      }
+      const fetchPromise = query.single();
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Timeout: annonceforespørgsel tog for lang tid')), 15000));
       result = await Promise.race([fetchPromise, timeoutPromise]);
       if (result.data && !result.error) {
-        bikeCache.set(bikeId, result.data);
+        bikeCache.set(result.data.id, result.data);
       }
     }
     // Track som "sidst set" hver gang — fire-and-forget
@@ -313,7 +325,7 @@ export function createBikeDetail({
             <div class="demo-detail-notice">
               Cyklen er ikke til salg. Det er en eksempel-annonce der viser hvordan rigtige annoncer fungerer på Cykelbørsen.
             </div>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">${iconShare(14)} Del annonce</button>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}', '${bikePath(b)}')">${iconShare(14)} Del annonce</button>
           </div>
           ` : (!isOwner && isSold && !b.held_for_review) ? `
           <div class="action-buttons">
@@ -321,7 +333,7 @@ export function createBikeDetail({
               <span class="sold-detail-badge">SOLGT</span>
               Denne cykel er solgt og er ikke længere til salg.
             </div>
-            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">${iconShare(14)} Del annonce</button>
+            <button class="btn-save-listing" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}', '${bikePath(b)}')">${iconShare(14)} Del annonce</button>
           </div>
           ` : !isOwner ? `
           <div class="action-buttons">
@@ -363,7 +375,7 @@ export function createBikeDetail({
             <div class="bike-util-row">
               <button class="btn-util" data-saved="0" onclick="toggleSaveFromModal(this, '${b.id}')" title="Gem annonce">${iconHeart(15)}<span class="btn-icon-label">Gem</span></button>
               ${isGiveaway(b) ? '' : `<button class="btn-util" id="price-drop-btn-${b.id}" onclick="togglePriceDropWatch(this, '${b.id}', ${b.price})" title="Få besked ved prisfald">${iconBell(15)}<span class="btn-icon-label">Prisfald</span></button>`}
-              <button class="btn-util" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')" title="Del annonce">${iconShare(15)}<span class="btn-icon-label">Del</span></button>
+              <button class="btn-util" onclick="event.stopPropagation();openShareModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}', '${bikePath(b)}')" title="Del annonce">${iconShare(15)}<span class="btn-icon-label">Del</span></button>
             </div>
             <button class="btn-report-link" onclick="openReportModal('${b.id}', '${esc(bikeTitle(b.brand, b.model))}')">Rapporter annonce</button>
             ${/* "Køb hos forhandler"-fordelene er fjernet fra annoncen — de stod
@@ -806,6 +818,15 @@ export function createBikeDetail({
       return;
     }
 
+    /* Adressen kan være den gamle /bike/<uuid> eller en slug der ikke længere
+       passer (mærke/model rettet). Skriv den kanoniske i adresselinjen uden
+       en ny historik-post, så delte og kopierede links er de pæne. */
+    bikeId = b.id;
+    const prettyPath = bikePath(b);
+    if (window.location.pathname.replace(/\/+$/, '') !== prettyPath) {
+      history.replaceState(history.state, '', prettyPath + window.location.search + window.location.hash);
+    }
+
     const currentUser = getCurrentUser();
     if (!currentUser || currentUser.id !== b.user_id) {
       const vk = getViewerKey(currentUser);
@@ -819,7 +840,7 @@ export function createBikeDetail({
     document.title = bikePageTitle(bikeTitle(b.brand, b.model), priceText(b));
     updateSEOMeta(
       `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${priceText(b)} Køb på Cykelbørsen.`,
-      `/bike/${bikeId}`,
+      prettyPath,
       {
         title: `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`,
         image: primaryImg || undefined,
@@ -842,7 +863,7 @@ export function createBikeDetail({
       'category': b.type,
       // Afsluttende skråstreg: samme adresse som canonical og den prerendrede
       // JSON-LD (canonicalUrl i utils.js). Uden den peger den på en 301.
-      'url': `${BASE_URL}/bike/${bikeId}/`,
+      'url': `${BASE_URL}${prettyPath}/`,
       'offers': {
         '@type': 'Offer',
         'price': b.price,
@@ -850,7 +871,7 @@ export function createBikeDetail({
         'priceValidUntil': priceValidUntil,
         'availability': 'https://schema.org/InStock',
         'itemCondition': b.condition === 'Ny' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
-        'url': `${BASE_URL}/bike/${bikeId}/`,
+        'url': `${BASE_URL}${prettyPath}/`,
         'seller': {
           '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
           'name': b.profiles?.shop_name || b.profiles?.name || 'Sælger',

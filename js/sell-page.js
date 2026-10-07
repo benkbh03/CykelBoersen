@@ -11,6 +11,7 @@ import { startSellFlow, trackSellStep } from './sell-funnel.js';
 import { enableDragReorder } from './drag-reorder.js';
 import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
 import { mountUpgradesEditor, normalizeUpgrades, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
+import { bikePath } from './bike-url.js';
 
 /**
  * @param {object} deps
@@ -2333,7 +2334,7 @@ export function createSellPage({
     const newBtn  = document.getElementById('success-new-btn');
     if (titleEl) titleEl.textContent = `${bike.brand} ${bike.model}`;
     if (priceEl) priceEl.textContent = bike.price ? `${bike.price.toLocaleString('da-DK')} kr.` : '';
-    if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); navigateTo(`/bike/${bike.id}`); };
+    if (viewBtn) viewBtn.onclick = () => { closeListingSuccessModal(); navigateTo(bikePath(bike)); };
     // "Opret en ny annonce" → kategori-vælgeren, så man kan vælge cykel/tilbehør.
     if (newBtn)  newBtn.onclick  = () => { closeListingSuccessModal(); renderSellChooser(); };
     const held = !!bike.held_for_review;

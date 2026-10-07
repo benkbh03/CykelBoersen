@@ -1,5 +1,6 @@
 import { iconBike, iconEye, iconPencil, iconHeart } from './utils.js';
 import { fetchTradesFor, completedTrades } from './trades.js';
+import { bikePath } from './bike-url.js';
 export function createMyProfile({
   supabase,
   esc,
@@ -79,13 +80,13 @@ export function createMyProfile({
           const svgStar   = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
           return `
             <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
-              <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
+              <div class="mp-listing-img-wrap" onclick="navigateTo('${bikePath(b)}')" title="Se annonce">
                 ${imgUrl
                   ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
                   : `<div class="mp-listing-thumb--empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`}
                 <span class="mp-status-badge ${statusClass}">${statusLabel}</span>
               </div>
-              <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
+              <div class="mp-listing-body" onclick="navigateTo('${bikePath(b)}')" title="Se annonce">
                 <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}</div>
                 <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
                 <div class="mp-listing-stats-row">
@@ -102,7 +103,7 @@ export function createMyProfile({
                     : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                 </div>
                 <div class="mp-listing-links">
-                  <button class="mp-link" onclick="navigateTo('/bike/${b.id}')">Se annonce</button>
+                  <button class="mp-link" onclick="navigateTo('${bikePath(b)}')">Se annonce</button>
                   ${!isSold && !isHeld ? `<span class="mp-link-sep">·</span>
                   <button class="mp-link" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : ''}
                   <span class="mp-link-sep">·</span>
@@ -116,7 +117,7 @@ export function createMyProfile({
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
               </div>
               <div class="mp-listing-links mp-listing-links--mobile">
-                <button class="mp-link" onclick="navigateTo('/bike/${b.id}')">Se annonce</button>
+                <button class="mp-link" onclick="navigateTo('${bikePath(b)}')">Se annonce</button>
                 ${!isSold && !isHeld ? `<span class="mp-link-sep">·</span>
                 <button class="mp-link" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : ''}
                 <span class="mp-link-sep">·</span>

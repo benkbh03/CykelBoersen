@@ -12,6 +12,8 @@
    Begge skrives i moderation_log af admin_review_bike().
 ──────────────────────────────────────────────────────────────── */
 
+import { bikePath } from './bike-url.js';
+
 export function createAdminPriceReview({ supabase, esc, retryHTML, showToast, notifySavedSearches }) {
   async function loadPriceReview() {
     const el = document.getElementById('admin-price-review');
@@ -42,7 +44,7 @@ export function createAdminPriceReview({ supabase, esc, retryHTML, showToast, no
         return '<div class="admin-row">'
           + (img ? `<img src="${esc(img)}" alt="" loading="lazy" style="width:64px;height:48px;object-fit:cover;border-radius:var(--radius-sm);flex-shrink:0">` : '')
           + '<div class="admin-row-info">'
-          + `<div class="admin-row-name"><a href="/bike/${b.id}" target="_blank" rel="noopener">${esc(b.brand)} ${esc(b.model)}</a> · ${Number(b.price).toLocaleString('da-DK')} kr.</div>`
+          + `<div class="admin-row-name"><a href="${bikePath(b)}" target="_blank" rel="noopener">${esc(b.brand)} ${esc(b.model)}</a> · ${Number(b.price).toLocaleString('da-DK')} kr.</div>`
           + `<div class="admin-row-meta">${esc(seller)}${b.city ? ' · ' + esc(b.city) : ''}${b.type ? ' · ' + esc(b.type) : ''}${b.year ? ' · ' + esc(String(b.year)) : ''} · oprettet ${date}</div>`
           + '</div>'
           + '<div class="admin-row-actions">'

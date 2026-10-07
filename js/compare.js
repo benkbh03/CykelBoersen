@@ -8,6 +8,7 @@
    ============================================================ */
 
 import { esc, bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, isGiveaway, iconBike } from './utils.js';
+import { bikePath } from './bike-url.js';
 
 const STORAGE_KEY = 'cb_compare_ids';
 const MAX_COMPARE = 3;
@@ -274,7 +275,7 @@ function renderCompareTable(bikes, _navigateTo) {
         </div>
         <h2 class="cmp-bike-title">${esc(bikeTitle(b.brand, b.model))}</h2>
         <div class="cmp-bike-subtitle">${esc(b.type || '')}${b.year ? ` · ${b.year}` : ''}</div>
-        <button onclick="navigateTo('/bike/${b.id}')" class="cmp-bike-cta">Se annonce</button>
+        <button onclick="navigateTo('${bikePath(b)}')" class="cmp-bike-cta">Se annonce</button>
       </div>`;
   }).join('');
 
