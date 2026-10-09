@@ -74,10 +74,16 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
     const isFew = typeof resultCount === 'number' && resultCount <= 5;
     const isZero = resultCount === 0;
 
-    let leadText;
+    /* Nul resultater: tom-tilstanden i listen har selv en Cykelagent-knap
+       og siger "Ingen cykler matcher". Strippen sagde det samme ovenover,
+       med endnu en orange knap. */
     if (isZero) {
-      leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Ingen cykler matcher <strong>${label}</strong> lige nu. Gem søgningen og få besked når en dukker op`;
-    } else if (isFew) {
+      strip.style.display = 'none';
+      return;
+    }
+
+    let leadText;
+    if (isFew) {
       leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Kun ${resultCount} ${resultCount === 1 ? 'cykel' : 'cykler'} matcher <strong>${label}</strong>. Få besked når der kommer flere`;
     } else {
       leadText = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Få besked når der dukker op: <strong>${label}</strong>`;
@@ -85,7 +91,7 @@ export function createCykelagentCta({ hasActiveFilters, describeActiveFilters, g
 
     strip.style.display = 'flex';
     placeStrip(strip, 'before');
-    strip.classList.toggle('cykelagent-cta-strip--accent', isFew || isZero);
+    strip.classList.toggle('cykelagent-cta-strip--accent', isFew);
     strip.innerHTML = `
       <span class="cta-strip-text">${leadText}</span>
       <div class="cta-strip-actions">

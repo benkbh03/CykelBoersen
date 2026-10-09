@@ -35,6 +35,7 @@ export function createBikesList({
   userSavedSet,        // Set reference (mutated)
   askedAvailableSet,   // Set reference (read)
   getBrowseCategory,   // () => aktiv browse-kategori ('cykel' | 'tilbehoer')
+  getFilterGroupOrder, // () => pille-typer i den rækkefølge de blev sat
 }) {
   // Læs ?vist=N fra URL'en — kun gyldigt på initial load, og kun til at hente
   // en større førstesats så delelig/bookmarkbar position kan genskabes.
@@ -453,7 +454,7 @@ export function createBikesList({
     const category = args.category || (getBrowseCategory ? getBrowseCategory() : 'cykel');
     let match = null;
     try {
-      match = await findNearMatch({ supabase, args, category, selectCols: filterSelect });
+      match = await findNearMatch({ supabase, args, category, selectCols: filterSelect, order: getFilterGroupOrder?.() });
     } catch { return; }
     if (!match || seq !== _nearSeq) return;
     const grid = document.getElementById('listings-grid');
