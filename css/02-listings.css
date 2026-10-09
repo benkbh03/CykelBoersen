@@ -738,8 +738,21 @@ border-color: rgba(42,61,46,0.18);
   transition: background 0.15s, border-color 0.15s;
 }
 .empty-filters-btn:hover { background: var(--surface); border-color: var(--forest); }
-.empty-filters-btn--primary { background: var(--forest); color: var(--bg); border-color: var(--forest); }
-.empty-filters-btn--primary:hover { background: var(--charcoal); border-color: var(--charcoal); }
+.empty-filters-btn--primary { background: var(--rust); color: #fff; border-color: var(--rust); }
+.empty-filters-btn--primary:hover { background: var(--rust-light); border-color: var(--rust-light); }
+
+/* Nærmeste match under tom-beskeden (js/near-matches.js). Kortene står i
+   samme gitter som listen; overskriften fylder en hel række. */
+.empty-filters--with-near { padding-bottom: var(--space-8); }
+.near-matches-head {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-6);
+}
+.near-matches-title {
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
+  font-size: var(--text-base); color: var(--charcoal); margin: 0;
+}
 @media (max-width: 480px) {
   .empty-filters-actions { flex-direction: column; }
   .empty-filters-btn { width: 100%; }

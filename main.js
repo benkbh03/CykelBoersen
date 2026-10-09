@@ -175,6 +175,7 @@ const {
   clearAllFilters,
   updateActiveFiltersBar,
   removeFilterPill,
+  removeFilterGroup,
   toggleNearMe,
   updateNearMeRadius,
   applyNearMeFilter,
@@ -3250,6 +3251,7 @@ window.closeMobileFilters     = closeMobileFilters;
 window.clearAllFilters        = clearAllFiltersAndUrl;
 window.removeLastFilter       = removeLastFilter;
 window.removeFilterPill       = removeFilterPill;
+window.removeFilterGroup      = removeFilterGroup;
 window.loadBikesWithFilters   = loadBikesWithFilters;
 // Guard mod dobbelt-klik: hvis knappen allerede er disabled (loader), ignorér klikket.
 // Knappens disabled-tilstand sættes synkront af loadBikes/loadBikesWithFilters når
