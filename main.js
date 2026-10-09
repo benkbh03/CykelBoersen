@@ -3443,6 +3443,13 @@ const _ensurePriceReview = lazyCtrl(
 const loadPriceReview    = lazyMethod(_ensurePriceReview, 'loadPriceReview');
 const reviewLowPriceBike = lazyMethod(_ensurePriceReview, 'reviewLowPriceBike');
 
+const _ensureAdminUsers = lazyCtrl(
+  () => import(`./js/admin-users.js?v=${ASSET_VERSION}`),
+  'createAdminUsers',
+  () => ({ supabase, esc, retryHTML, formatLastSeen }),
+);
+const setAdminUsers = lazyMethod(_ensureAdminUsers, 'setUsers');
+
 const _ensureAdminPanel = lazyCtrl(
   () => import(`./js/admin-panel-ui.js?v=${ASSET_VERSION}`),
   'createAdminPanelUI',
@@ -3523,7 +3530,12 @@ async function loadAllUsers() {
     return;
   }
 
-  list.innerHTML = result.data.map(function(p) {
+  await setAdminUsers(result.data, adminUserRowHTML);
+}
+
+/* Én række i fanen Brugere. Navnet er en knap der folder detaljerne ud
+   (js/admin-users.js); handlingsknapperne bliver her, fordi de er onclick. */
+function adminUserRowHTML(p) {
     var isVerified = p.verified;
     var isDealer   = p.seller_type === 'dealer';
     var canOnboard = isDealer && !!p.admin_can_create_listings;
@@ -3539,7 +3551,7 @@ async function loadAllUsers() {
     return '<div class="admin-row">'
       + '<div class="admin-row-info">'
       + '<div class="admin-row-name">'
-      + esc(p.name || 'Ukendt')
+      + '<button type="button" class="admin-user-toggle" aria-expanded="false" title="Vis detaljer">' + esc(p.name || 'Ukendt') + '</button>'
       + (isVerified ? ' <span class="verified-badge">✓</span>' : '')
       + (canOnboard ? ' <span class="onboard-indicator" title="Forhandler har givet tilladelse til at admin opretter annoncer på deres vegne">🛠️</span>' : '')
       + '</div>'
@@ -3557,7 +3569,6 @@ async function loadAllUsers() {
           : '<button class="btn-suspend" onclick="suspendUser(\'' + p.id + '\', \'' + safeName + '\')" title="Stop brugeren midlertidigt uden at slette noget">Suspendér</button>')
       + '<button class="btn-delete-user" onclick="deleteUserAsAdmin(\'' + p.id + '\', \'' + escAttr(p.name || 'Ukendt') + '\')" title="Slet bruger permanent">🗑️ Slet</button>'
       + '</div></div>';
-  }).join('');
 }
 
 function startActingAsDealer(dealerId, dealerName, dealerCity) {
