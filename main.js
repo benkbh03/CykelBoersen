@@ -166,6 +166,17 @@ let userGeoCoords     = null; // [lat, lng] fra GPS
 let activeRadius      = null; // km radius filter
 const askedAvailableSet = new Set(); // Track sent "er den stadig til salg?" per bike
 
+/* Rækkefølgen filtergrupperne blev sat i (pille-typer, ældste først).
+   "Nærmeste match" i tom-tilstanden dropper den ældste gruppe og beholder
+   brugerens seneste valg: vælger man Centurion via søgningen og bagefter
+   fanen Racer, er det racercykler man vil se. */
+let _filterGroupOrder = [];
+function recordFilterGroupOrder(pills) {
+  const active = new Set((pills || []).map(p => p.type));
+  _filterGroupOrder = _filterGroupOrder.filter(t => active.has(t));
+  for (const t of active) if (!_filterGroupOrder.includes(t)) _filterGroupOrder.push(t);
+}
+
 // Filter actions (createFilters bruger getter/setter for cross-module state).
 // currentFilterArgs deklareres længere nede men er hoistet via let-binding;
 // closures over for-getterne læser bindingen lazy ved kald (efter init).
@@ -198,7 +209,7 @@ const {
   getActiveRadius:      () => activeRadius,
   setActiveRadius:      v => { activeRadius = v; },
   getBrowseCategory:    () => _browseCategory,
-  onActivePills:        recordActiveFilters,
+  onActivePills:        pills => { recordActiveFilters(pills); recordFilterGroupOrder(pills); },
 });
 
 const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory: () => _browseCategory });
@@ -230,6 +241,7 @@ const {
   userSavedSet:         _userSavedSet,
   askedAvailableSet,
   getBrowseCategory: () => _browseCategory,
+  getFilterGroupOrder: () => _filterGroupOrder,
 });
 
 /* Tællerne er sorteringens input, så cykeltype-rækkefølgen opdateres lige

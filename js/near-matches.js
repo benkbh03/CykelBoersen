@@ -5,8 +5,10 @@
    søgeforslag og bagefter fanen Racer), kan sammen give en tom liste.
    Brugeren konkluderer så at der ikke er noget, selvom der er mange
    racercykler. Her prøver vi at fjerne én filtergruppe ad gangen (kun
-   tællinger, head-forespørgsler), vælger den der giver flest annoncer og
-   viser de første af dem under tom-beskeden.
+   tællinger, head-forespørgsler) og viser de første annoncer under
+   tom-beskeden. Kendes rækkefølgen filtrene blev sat i, droppes den
+   ældste gruppe der giver annoncer: brugerens seneste valg er det de vil
+   se. Ellers den gruppe der giver flest.
 
    Ny fil med vilje: se cache-reglen i CLAUDE.md.
 ──────────────────────────────────────────────────────────────── */
@@ -86,11 +88,18 @@ const joinFor = a => (a.sellerType && !a.dealerId) ? 'profiles!user_id!inner' : 
  * @param {object} p.args      samme argumenter som loadBikesWithFilters fik
  * @param {string} p.category  'cykel' | 'tilbehoer'
  * @param {(join:string)=>string} p.selectCols  kolonnerne til kortene
+ * @param {string[]} [p.order]  pille-typer, ældste først
  * @param {number} [p.limit]
  * @returns {Promise<null | { group:string, label:string, count:number, bikes:object[] }>}
  */
-export async function findNearMatch({ supabase, args, category, selectCols, limit = 8 }) {
-  const active = GROUPS.filter(g => g.isSet(args));
+export async function findNearMatch({ supabase, args, category, selectCols, order = null, limit = 8 }) {
+  let active = GROUPS.filter(g => g.isSet(args));
+  const known = Array.isArray(order) && order.length > 0;
+  if (known) {
+    // Ældste først; grupper uden kendt plads til sidst i fast rækkefølge.
+    const rank = g => { const i = order.indexOf(g.group); return i < 0 ? Infinity : i; };
+    active = active.slice().sort((a, b) => rank(a) - rank(b));
+  }
   if (active.length < 2) return null;
 
   const candidates = active.slice(0, MAX_CANDIDATES).map(g => ({ g, relaxed: g.clear(args) }));
@@ -107,7 +116,8 @@ export async function findNearMatch({ supabase, args, category, selectCols, limi
   }));
 
   let best = -1;
-  counts.forEach((n, i) => { if (n > 0 && (best < 0 || n > counts[best])) best = i; });
+  if (known) best = counts.findIndex(n => n > 0);
+  else counts.forEach((n, i) => { if (n > 0 && (best < 0 || n > counts[best])) best = i; });
   if (best < 0) return null;
 
   const { g, relaxed } = candidates[best];
