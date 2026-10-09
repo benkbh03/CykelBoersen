@@ -1031,13 +1031,20 @@
   box-shadow: var(--shadow-float);
   z-index: 150;
   overflow: hidden;
-  max-height: 260px;
+  max-height: 360px;
   overflow-y: auto;
+}
+.autocomplete-heading {
+  padding: var(--space-2) var(--space-4) var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--muted);
+  background: var(--cream);
 }
 .autocomplete-item {
   padding: 11px 16px;
   cursor: pointer;
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1047,7 +1054,12 @@
 .autocomplete-item:last-child { border-bottom: none; }
 .autocomplete-item:hover, .autocomplete-item.active { background: var(--sand); }
 .autocomplete-item strong { color: var(--rust); }
-.autocomplete-meta { font-size: var(--text-xs); color: var(--muted); margin-left: auto; }
+.autocomplete-meta { font-size: var(--text-xs); color: var(--muted); margin-left: auto; white-space: nowrap; }
+/* Telefon: tastaturet tager den nederste halvdel. Listen må ikke løbe ind under det. */
+@media (max-width: 768px) {
+  .autocomplete-list { max-height: min(320px, 45vh); }
+  .autocomplete-item { min-height: 44px; }
+}
 .autocomplete-no-results {
   padding: 14px 16px;
   font-size: 0.86rem;
