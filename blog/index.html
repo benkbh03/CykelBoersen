@@ -346,6 +346,17 @@
         <h3>Filtre</h3>
         <button class="sidebar-mobile-close" onclick="closeMobileFilters()" aria-label="Luk filtre">✕</button>
       </div>
+      <!-- Smart filter (js/smart-filter.js): fritekst der sætter de almindelige
+           filtre herunder. Øverst, fordi den er en måde at udfylde filtrene
+           på, ikke et tilbud ved siden af dem. -->
+      <div class="smart-filter" id="smart-filter">
+        <label for="smart-filter-input" class="smart-filter-label">Beskriv cyklen du leder efter</label>
+        <textarea id="smart-filter-input" class="smart-filter-input" rows="2" maxlength="300" placeholder="Fx carbon gravel i str. M under 15.000 kr." autocomplete="off"></textarea>
+        <div class="smart-filter-foot">
+          <button type="button" class="smart-filter-btn" id="smart-filter-btn">Find cykler</button>
+          <span class="smart-filter-status" id="smart-filter-status" aria-live="polite"></span>
+        </div>
+      </div>
       <div class="bike-quiz-box" id="bike-quiz-box">
         <div class="bike-quiz-intro" id="bike-quiz-intro">
           <div class="bike-quiz-icon"><svg class="ui-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/></svg></div>
