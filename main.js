@@ -60,6 +60,7 @@ import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
 import { applyAccessoryVisibility } from './js/accessory-visibility.js';
+import { initSmartFilter } from './js/smart-filter.js';
 import { HOME_TITLE, HOME_DESC } from './js/seo-text.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
@@ -1146,6 +1147,7 @@ async function init() {
   // direkte i stedet for den ufiltrerede liste.
   if (urlFiltersRestorable()) { restoreFiltersFromUrl(); _filtersRestoredAtInit = true; }
   else loadBikes();
+  initSmartFilter({ onApply: applySmartFilter });
   loadInitialData(); // Erstatter loadDealers() + updateFilterCounts() med 2 parallelle queries
 
   // Render "Sidst set"-sektion på forsiden (lazy import — kun hvis bruger har localStorage-data)
@@ -2746,6 +2748,18 @@ function restoreFiltersFromUrl() {
   } finally {
     _restoringFiltersFromUrl = false;
   }
+}
+
+/* Smart filter (js/smart-filter.js): edge-funktionen har oversat en fritekst
+   til filter-args. Skriv dem i adressen som en ny historik-post og sæt
+   sidebaren ud fra adressen, præcis som et delt link. Ukendte værdier
+   falder fra af sig selv, fordi applyFilters() kun læser afkrydsninger
+   der findes. */
+function applySmartFilter(args) {
+  if (_browseCategory !== 'cykel') setBrowseCategory('cykel');
+  writeFilterUrl(args);
+  restoreFiltersFromUrl();
+  if (document.getElementById('sidebar-filters')?.classList.contains('mobile-open')) closeMobileFilters();
 }
 
 /* Tilbage/frem på forsiden: er adressens filtre andre end dem der er vist,

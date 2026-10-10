@@ -1390,6 +1390,50 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .weight-preset:hover { background: var(--sand); border-color: var(--forest); }
 
+/* ── Smart filter ─────────────────────────────────
+   Et felt, ikke et kort: ingen baggrund, ingen ikon, ingen glimmer. Den
+   udfylder filtrene herunder og står derfor over dem, adskilt med samme
+   streg som filterafsnittene. */
+.smart-filter {
+  order: 0;
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-1) 0 var(--space-4);
+  margin-bottom: var(--space-2);
+  border-bottom: 1px solid var(--surface-2);
+}
+.smart-filter-label {
+  font: var(--weight-semibold) var(--text-sm)/1.3 var(--font-sans);
+  color: var(--charcoal);
+}
+.smart-filter-input {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  /* 16 px: mindre får iOS til at zoome ind ved fokus. */
+  font: var(--weight-regular) var(--text-base)/1.4 var(--font-sans);
+}
+.smart-filter-input::placeholder { color: var(--muted); }
+.smart-filter-input:focus { outline: none; border-color: var(--charcoal); }
+.smart-filter-foot { display: flex; flex-direction: column; gap: var(--space-2); }
+.smart-filter-btn {
+  width: 100%; min-height: 44px;
+  background: var(--rust); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans);
+  cursor: pointer; transition: background 0.15s;
+}
+.smart-filter-btn:hover { background: var(--rust-light); }
+.smart-filter-btn:disabled { opacity: 0.6; cursor: progress; }
+.smart-filter-status {
+  font: var(--weight-regular) var(--text-xs)/1.4 var(--font-sans);
+  color: var(--muted);
+}
+.smart-filter-status:empty { display: none; }
+.smart-filter-status.is-error { color: var(--error); }
+/* Tilbehør har sin egen typeliste; smart filter kender kun cykler. */
+body.browse-tilbehoer .smart-filter { display: none; }
+
 /* ── Quiz box ────────────────────────────────────── */
 .bike-quiz-box {
   background: var(--surface);

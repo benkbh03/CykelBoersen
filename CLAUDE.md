@@ -132,9 +132,9 @@ Deploy-tjeklisten skal altid have fire dele (udelad dem der ikke er relevante):
    ikke et svar; en række med `OK` er.
 
 **Edge functions der findes (alle kræver manuel deploy):** `notify-message`,
-`notify-saved-searches`, `notify-followers`, `delete-account`, `chat-support`, `suggest-listing`,
+`notify-saved-searches`, `notify-followers`, `delete-account`, `chat-support`, `smart-filter`, `suggest-listing`,
 `admin-create-bike`, `admin-invite-dealer`, samt DORMANT Stripe-functions.
-`notify-message` skal have "Verify JWT" **slået fra** (anonyme kontaktformularer).
+`notify-message` og `smart-filter` skal have "Verify JWT" **slået fra** (anonyme besøgende).
 
 **SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
 (fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
@@ -448,7 +448,9 @@ spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs 
 11. **Admin-oprettelse**: `js/admin-bulk-import.js OPTIONAL_FIELDS`, `supabase/functions/admin-create-bike ALLOWED_BIKE_FIELDS`
 12. Bump versionen i `index.html`: én søg-og-erstat af den gamle streng rammer både `<html data-asset-v>` (kilden til alle JS-imports) og CSS-`?v=`-linkene. `ASSET_VERSION` i `config.js` læser attributten og skal IKKE ændres. Tæl bagefter med `grep -c '<ny streng>' index.html` — bumpen er fejlet tavst før
 
-Bemærk: edge functions (#7) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
+13. **Smart filter** (`supabase/functions/smart-filter/index.ts`): den kanoniske liste og en linje i `SYSTEM_PROMPT`. Mangler værdien, kan fritekst ikke ramme den, men den sorteres fra i stedet for at give et forkert filter — **manuel deploy**
+
+Bemærk: edge functions (#7, #13) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
 
 ## Database-tabeller (Supabase)
 
@@ -476,6 +478,7 @@ Storage buckets: `avatars` (profilbilleder), bike-images (annonce-billeder).
 | `create-portal-session` | **DORMANT** — Stripe billing portal for aktive abonnementer |
 | `stripe-webhook` | **DORMANT** — Aktiver/deaktiver forhandler-status baseret på Stripe events |
 | `chat-support` | Claude Haiku-baseret support-bot (dansk, FAQ om annoncer, konto, beskeder, forhandler) |
+| `smart-filter` | Fritekst ("carbon gravel under 15.000") → forsidens almindelige filtre. Haiku 5.5, max 20 kald/IP/time og 2.000/døgn via `rate_limits_anon`. Nye værdier i et filter skal også i funktionens lister |
 
 Alle edge functions bruger Deno runtime, inkluderer CORS headers og bruger Supabase service-role key hvor nødvendigt.
 
