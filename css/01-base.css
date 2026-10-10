@@ -1381,6 +1381,23 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .btn-apply:hover { background: var(--surface); }
 
+/* "Vis flere cykler" under annoncelisten (js/bikes-list.js). Omridset som
+   "Anvend": orange er kun til primærhandlinger, og fyldte grønne knapper
+   hører ikke til i designet. */
+.btn-load-more {
+  display: block; margin: var(--space-6) auto;
+  min-height: 44px; padding: var(--space-3) var(--space-8);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
+  font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans);
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-load-more:hover { background: var(--surface); }
+.btn-load-more:disabled { opacity: 0.6; cursor: progress; }
+@media (max-width: 480px) {
+  .btn-load-more { width: 100%; }
+}
+
 .weight-preset {
   background: var(--cream); color: var(--charcoal);
   border: 1px solid var(--border); border-radius: var(--radius-full);
@@ -1416,14 +1433,17 @@ body.nav-search-on .nav-search { display: flex; }
 .smart-filter-input::placeholder { color: var(--muted); }
 .smart-filter-input:focus { outline: none; border-color: var(--charcoal); }
 .smart-filter-foot { display: flex; flex-direction: column; gap: var(--space-2); }
+/* Stille knap, ikke orange: hero-søgningen lige over har allerede den
+   orange "Søg". To orange knapper over folden lod brugeren gætte hvilken
+   søgning der var den rigtige. Samme form som "Anvend". */
 .smart-filter-btn {
   width: 100%; min-height: 44px;
-  background: var(--rust); color: #fff;
-  border: none; border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
   font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans);
   cursor: pointer; transition: background 0.15s;
 }
-.smart-filter-btn:hover { background: var(--rust-light); }
+.smart-filter-btn:hover { background: var(--surface); }
 .smart-filter-btn:disabled { opacity: 0.6; cursor: progress; }
 .smart-filter-status {
   font: var(--weight-regular) var(--text-xs)/1.4 var(--font-sans);

@@ -3,6 +3,7 @@ import { iconSearch, noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
 import { findNearMatch, nearMatchHeadHTML } from './near-matches.js';
+import { mixSellers } from './seller-mix.js';
 
 
 export function createBikesList({
@@ -213,7 +214,8 @@ export function createBikesList({
     // Sælgertype er allerede filtreret DB-side (!inner-join) — ingen klient-
     // filtrering her: den fik offset/pagination til at tælle forkert (offset
     // steg med det filtrerede antal, mens .range() var rykket det rå antal).
-    const normalData = rawData || [];
+    // Højst 2 af hver 6 kort fra samme sælger (js/seller-mix.js).
+    const normalData = mixSellers(rawData || []);
 
     // Render-rækkefølge: fremhævede øverst (kun initial load), derefter normale.
     const data = append ? normalData : [...featuredData, ...normalData];
@@ -239,7 +241,7 @@ export function createBikesList({
     footer.id = 'load-more-btn';
     // Fuld batch → der kan være flere → vis "Vis flere"-knap
     if (normalData.length === mainFetchCount && mainFetchCount > 0) {
-      footer.innerHTML = `<button onclick="loadMoreBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">Vis flere cykler</button>`;
+      footer.innerHTML = `<button class="btn-load-more" onclick="loadMoreBikes()">Vis flere cykler</button>`;
     } else if (append && getBikesOffset() > BIKES_PAGE_SIZE) {
       footer.innerHTML = `<p style="text-align:center;color:var(--muted);padding:16px 0 24px;font-size:0.9rem;">Ingen flere cykler at vise</p>`;
     } else {
@@ -540,8 +542,9 @@ export function createBikesList({
       return;
     }
 
-    renderBikes(data || [], append);
-    markSavedHearts((data || []).map(b => b.id));
+    const mixed = mixSellers(data || []);
+    renderBikes(mixed, append);
+    markSavedHearts(mixed.map(b => b.id));
     updateActiveFiltersBar();
     if (!append && !(data || []).length) {
       showNearMatch({
@@ -566,7 +569,7 @@ export function createBikesList({
     if ((data || []).length === filterFetchCount) {
       const btn = document.createElement('div');
       btn.id = 'load-more-btn';
-      btn.innerHTML = `<button onclick="loadMoreFilteredBikes()" style="display:block;margin:24px auto;padding:12px 32px;background:var(--forest);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;">Vis flere cykler</button>`;
+      btn.innerHTML = `<button class="btn-load-more" onclick="loadMoreFilteredBikes()">Vis flere cykler</button>`;
       anchor.after(btn);
     } else if (append && getFilterOffset() > BIKES_PAGE_SIZE) {
       const msg = document.createElement('div');
