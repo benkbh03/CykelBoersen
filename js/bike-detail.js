@@ -426,7 +426,20 @@ export function createBikeDetail({
           'L (57–60 cm)':  '179–188 cm',
           'XL (61+ cm)':   '189+ cm',
         };
-        const heightRange = b.size ? (heightMap[b.size] || null) : null;
+        /* Kun cm oplyst (fx fra forhandler-feedet): slå højden op ud fra de
+           samme intervaller som størrelsesvalget i salgsflowet. Gælder ikke
+           mountainbikes, hvis stel måles kortere (en M er ca. 43 cm), og ikke
+           børne- og ladcykler, hvor stelmålet ikke siger noget om højden. */
+        const cmHeight = (cm) => {
+          if (!cm || ['Mountainbike', 'Børnecykel', 'Ladcykel'].includes(b.type)) return null;
+          if (cm < 44 || cm > 66) return null;
+          if (cm <= 48) return heightMap['XS (44–48 cm)'];
+          if (cm <= 52) return heightMap['S (49–52 cm)'];
+          if (cm <= 56) return heightMap['M (53–56 cm)'];
+          if (cm <= 60) return heightMap['L (57–60 cm)'];
+          return heightMap['XL (61+ cm)'];
+        };
+        const heightRange = (b.size && heightMap[b.size]) || cmHeight(Number(b.size_cm)) || null;
         return `
         <div class="fit-section">
           <h3 class="fit-section-title">Størrelse og pasform <button class="fit-info-btn" onclick="toggleSizeFitInfo()" aria-label="Hvad betyder anbefalet højde?" type="button">?</button></h3>
