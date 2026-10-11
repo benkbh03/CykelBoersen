@@ -54,7 +54,7 @@ import { createFilters } from './js/filters.js';
 import { createBikesList } from './js/bikes-list.js';
 import { createMyProfile } from './js/my-profile.js';
 import { createReviews } from './js/reviews.js';
-import { createProfilePage } from './js/profile-page.js';
+import { createProfileEditPage } from './js/profile-edit-page.js';
 import { createImageUpload } from './js/image-upload.js';
 import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
@@ -390,7 +390,9 @@ const {
   loadBikes:           (...args) => loadBikes(...args),
   updateFilterCounts:  (...args) => updateFilterCounts(...args),
   searchBikes:         (...args) => searchBikes(...args),
-  closeProfileModal:   (...args) => closeProfileModal(...args),
+  // Profil-modalen er nu siden /me/rediger. En cachet my-profile.js kalder
+  // stadig closeProfileModal(), så den får en tom funktion frem for undefined.
+  closeProfileModal:   () => {},
   openLoginModal:      (...args) => openLoginModal(...args),
 });
 
@@ -434,22 +436,22 @@ const sendProfileMessage       = lazyMethod(_ensureProfileModals, 'sendProfileMe
 const loadUserAchievements     = lazyMethod(_ensureProfileModals, 'loadUserAchievements');
 const closeUserProfileModal    = lazyMethod(_ensureProfileModals, 'closeUserProfileModal');
 
-// Profile page (profile modal, settings, logout, delete account).
+// Rediger profil (/me/rediger), logout, slet konto.
 const {
-  openProfileModal, closeProfileModal, showProfileData, switchProfileTab,
+  openProfileModal, renderProfileEditPage, showProfileData,
   saveProfile, uploadAvatar, logout, deleteAccount, closeDeleteAccountModal,
   onDeleteConfirmInput, confirmDeleteAccount, onSellerTypeChange,
   grantAdminOnboarding, revokeAdminOnboarding,
-} = createProfilePage({
-  supabase, showToast, btnLoading, enableFocusTrap, disableFocusTrap,
+} = createProfileEditPage({
+  supabase, showToast, btnLoading,
   safeAvatarUrl, getInitials, invalidateGeocodeEntry,
   attachAddressAutocomplete, attachCityAutocomplete, readDawaData,
   navigateTo:      (...args) => navigateTo(...args),
+  showDetailView:  (...args) => showDetailView(...args),
+  showListingView: (...args) => showListingView(...args),
+  openLoginModal:  (...args) => openLoginModal(...args),
   updateNavAvatar: (...args) => updateNavAvatar(...args),
   updateVerifyUI:  (...args) => updateVerifyUI(...args),
-  updateNav:       (...args) => updateNav(...args),
-  loadMyListings, loadSavedListings, loadSavedSearches, loadTradeHistory,
-  loadInbox:       (...args) => loadInbox(...args),
   getCurrentUser:    () => currentUser,
   getCurrentProfile: () => currentProfile,
   setCurrentProfile: v => { currentProfile = v; },
@@ -1362,7 +1364,7 @@ async function init() {
       if (el && el.style.display === 'flex') return true;
     }
     // ClassList: 'open' modals — disse bruger classList.add('open'), ikke style.display
-    for (const id of ['bike-modal', 'map-bike-modal', 'login-modal', 'reset-modal', 'edit-modal', 'profile-modal', 'admin-modal', 'inbox-modal', 'share-modal']) {
+    for (const id of ['bike-modal', 'map-bike-modal', 'login-modal', 'reset-modal', 'edit-modal', 'admin-modal', 'inbox-modal', 'share-modal']) {
       const el = document.getElementById(id);
       if (el && el.classList.contains('open')) return true;
     }
@@ -1605,7 +1607,6 @@ async function init() {
     if (document.getElementById('bike-modal')?.classList.contains('open'))       { closeBikeModal(); return; }
     if (document.getElementById('map-bike-modal')?.classList.contains('open'))   { closeMapBikeModal(); return; }
     if (document.getElementById('inbox-modal')?.classList.contains('open'))      { closeInboxModal(); return; }
-    if (document.getElementById('profile-modal')?.classList.contains('open'))    { closeProfileModal(); return; }
     if (document.getElementById('login-modal')?.classList.contains('open'))      { closeLoginModal(); return; }
     // display:flex-baserede modaler
     if (document.getElementById('valuation-modal')?.style.display === 'flex')       { closeValuationModal(); return; }
@@ -1883,7 +1884,7 @@ function closeAllModals() {
   });
   // Modaler der bruger .open-klasse
   ['bike-modal','map-bike-modal','edit-modal','login-modal',
-   'profile-modal','inbox-modal','share-modal','report-modal',
+   'inbox-modal','share-modal','report-modal',
    'admin-modal','reset-modal','listing-success-modal',
    'rate-now-modal','delete-account-modal'].forEach(id => {
     const el = document.getElementById(id);
@@ -2283,6 +2284,7 @@ function handleRoute() {
   // /min-profil og /saelg bruges af navigateTo() flere steder; uden aliasset
   // landede de på forsiden, og nu ville de ramme 404-visningen.
   const meMatch      = path === '/me' || path === '/min-profil';
+  const meEditMatch  = path === '/me/rediger';
   const sellMatch    = path === '/sell' || path === '/saelg';
   const inboxMatch   = path === '/inbox';
   const dealerApply  = path === '/bliv-forhandler';
@@ -2304,7 +2306,7 @@ function handleRoute() {
   // ikke "glipper" mens den nye (typisk lazy-loadede) side hentes og renderes.
   // Hver render-gren overskriver straks denne placeholder med sit eget skelet/indhold.
   const _isPageRoute = staticMatch || dealerApply || becomeRenter || dealersMatch || mapPageMatch ||
-    inboxMatch || meMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
+    inboxMatch || meMatch || meEditMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
     brandMatch || brandsOverviewMatch || categoryMatch || cykelagentMatch || valuationMatch ||
     sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch ||
     rentalBrowse || rentalCreate || rentalMine || rentalMyBookings || rentalDealerBookings ||
@@ -2413,6 +2415,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderMyProfilePage();
+  } else if (meEditMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    renderProfileEditPage();
   } else if (sellMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -3164,17 +3171,16 @@ window.handleLogin       = handleLogin;
 window.handleRegister    = handleRegister;
 window.handleForgotPassword = handleForgotPassword;
 window.openProfileModal  = openProfileModal;
-window.closeProfileModal = closeProfileModal;
 
-// Genvej fra "Profil X% komplet"-checklisten: åbn profil-modal +
+// Genvej fra "Profil X% komplet"-checklisten: åbn /me/rediger +
 // scroll til det relevante felt + giv det visuel fokus
 window.openProfileCompletion = function(action) {
   openProfileModal();
-  // Vent på modal-render før vi scroller
-  setTimeout(() => {
+  // Siden henter den fulde profil før formularen tegnes, så vent på feltet.
+  const focusField = () => {
     const targetMap = {
       email:    null,                            // håndteres via e-mail-confirm CTA
-      avatar:   '#avatar-upload-input',
+      avatar:   '#edit-avatar-wrap',
       city:     '#edit-city',
       bio:      '#edit-bio',
       phone:    '#edit-phone',
@@ -3196,9 +3202,14 @@ window.openProfileCompletion = function(action) {
     if (focusable && typeof focusable.focus === 'function') {
       try { focusable.focus({ preventScroll: true }); } catch {}
     }
-  }, 250);
+  };
+  let tries = 0;
+  const waitForForm = () => {
+    if (!document.getElementById('save-profile-btn') && ++tries < 40) { setTimeout(waitForForm, 100); return; }
+    focusField();
+  };
+  setTimeout(waitForForm, 100);
 };
-window.switchProfileTab     = switchProfileTab;
 window.switchUserProfileTab  = switchUserProfileTab;
 window.dismissOnboarding    = lazyExport(() => import(`./js/onboarding.js?v=${ASSET_VERSION}`), 'dismissOnboarding');
 window.useQuickReply        = useQuickReply;

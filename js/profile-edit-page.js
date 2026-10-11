@@ -1,5 +1,10 @@
 /* ============================================================
-   PROFIL MODAL + LOGOUT + SLET KONTO
+   REDIGER PROFIL (/me/rediger) + LOGOUT + SLET KONTO
+
+   Hed før profile-page.js og var en modal med seks faner, hvoraf fem
+   gentog fanerne på /me. Nu er det en side med kun selve formularen.
+   Nyt filnavn med vilje: statiske imports har ingen ?v=, så en cachet
+   profile-page.js ville ellers møde en ny main.js.
    ============================================================ */
 
 import {
@@ -9,13 +14,12 @@ import {
 import { PROFILE_SESSION_FIELDS } from './supabase-client.js';
 import { iconDealer, iconPrivate } from './utils.js';
 import { toStrippedBlob, isGif } from './image-strip.js';
+import { buildProfileEditHTML } from './profile-edit-markup.js';
 
-export function createProfilePage({
+export function createProfileEditPage({
   supabase,
   showToast,
   btnLoading,
-  enableFocusTrap,
-  disableFocusTrap,
   safeAvatarUrl,
   getInitials,
   invalidateGeocodeEntry,
@@ -23,48 +27,44 @@ export function createProfilePage({
   attachCityAutocomplete,
   readDawaData,
   navigateTo,
+  showDetailView,
+  showListingView,
+  openLoginModal,
   updateNavAvatar,
   updateVerifyUI,
-  loadMyListings,
-  loadSavedListings,
-  loadSavedSearches,
-  loadTradeHistory,
-  loadInbox,
-  updateNav,
   getCurrentUser,
   getCurrentProfile,
   setCurrentProfile,
   setCurrentUser,
 }) {
-  // Backdrop click → luk modal
-  document.getElementById('profile-modal').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeProfileModal();
-  });
-
-  async function openProfileModal() {
-    if (!getCurrentUser()) return;
-    document.getElementById('profile-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    showProfileData();
-    switchProfileTab('info');
-    enableFocusTrap('profile-modal');
-    // Session-cachen (PROFILE_SESSION_FIELDS) er slank og mangler felter som
-    // phone/address/bio + forhandler-extras (services, åbningstider, sociale links).
-    // Hent den fulde profil og re-render, så edit-formularen viser ALT korrekt.
-    try {
-      const cu = getCurrentUser();
-      const { data: full } = await supabase.from('profiles').select('*').eq('id', cu.id).single();
-      if (full && document.getElementById('profile-modal').classList.contains('open')) {
-        setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
-        showProfileData();
-      }
-    } catch (e) { /* behold cache-render ved fejl */ }
+  // Gamle links og knapper kalder stadig openProfileModal(); de lander nu på siden.
+  function openProfileModal() {
+    navigateTo('/me/rediger');
   }
 
-  function closeProfileModal() {
-    document.getElementById('profile-modal').classList.remove('open');
-    document.body.style.overflow = '';
-    disableFocusTrap('profile-modal');
+  async function renderProfileEditPage() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      showListingView();
+      openLoginModal();
+      return;
+    }
+    showDetailView();
+    document.title = 'Rediger profil | Cykelbørsen';
+
+    // Session-cachen (PROFILE_SESSION_FIELDS) mangler phone/address/bio og
+    // forhandler-felterne. Hent den fulde profil FØR formularen tegnes, så et
+    // sent svar ikke overskriver noget brugeren allerede er begyndt at skrive.
+    try {
+      const { data: full } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      if (full) setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
+    } catch (e) { /* tegn med cachen ved fejl */ }
+
+    // Brugeren kan have navigeret videre mens profilen blev hentet.
+    if (location.pathname.replace(/\/$/, '') !== '/me/rediger') return;
+    const detailView = document.getElementById('detail-view');
+    detailView.innerHTML = buildProfileEditHTML();
+    showProfileData();
   }
 
   function onSellerTypeChange(select) {
@@ -72,7 +72,6 @@ export function createProfilePage({
     if (select.value === 'dealer' && currentProfile?.seller_type !== 'dealer') {
       // Nulstil dropdown — forhandleransøgning sker via det officielle flow
       select.value = currentProfile?.seller_type || 'private';
-      closeProfileModal();
       navigateTo('/bliv-forhandler');
     }
   }
@@ -214,18 +213,6 @@ export function createProfilePage({
     updateVerifyUI();
   }
 
-  function switchProfileTab(tab) {
-    ['info', 'listings', 'saved', 'searches', 'trades', 'inbox'].forEach(t => {
-      document.getElementById(`profile-${t}`).style.display = t === tab ? 'block' : 'none';
-      document.getElementById(`ptab-${t}`).classList.toggle('active', t === tab);
-    });
-    if (tab === 'listings') loadMyListings();
-    if (tab === 'saved')    loadSavedListings();
-    if (tab === 'searches') loadSavedSearches();
-    if (tab === 'trades')   loadTradeHistory();
-    if (tab === 'inbox')    loadInbox();
-  }
-
   async function saveProfile() {
     const currentUser = getCurrentUser();
     if (!currentUser) return;
@@ -306,12 +293,7 @@ export function createProfilePage({
       setCurrentProfile({ ...currentProfile, ...updates });
       showProfileData();
       updateNavAvatar(updates.name, getCurrentProfile().avatar_url);
-      showToast('Profil opdateret!', 'ok');
-      // Er brugeren på "Min konto"-siden, så gen-render den, så profil-
-      // komplethedskortet ("Om mig udfyldt" osv.) opdateres/forsvinder straks.
-      if (location.pathname === '/me' && typeof window.renderMyProfilePage === 'function') {
-        window.renderMyProfilePage();
-      }
+      showToast('Profil opdateret', 'ok');
     } finally { restore(); }
   }
 
@@ -600,9 +582,8 @@ export function createProfilePage({
 
   return {
     openProfileModal,
-    closeProfileModal,
+    renderProfileEditPage,
     showProfileData,
-    switchProfileTab,
     saveProfile,
     uploadAvatar,
     logout,

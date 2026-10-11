@@ -50,6 +50,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/profile-modals.js`: user/dealer profile views (open/close/tabs), contact form, message send, achievements, filterByDealerCard.
 - `js/admin-bulk-import.js`: admin bulk-import af forhandler-lager via CSV — type-specifikke templates, preview/validering, sequential import via `admin-create-bike`.
 - `js/my-profile-page.js`: Min konto-side (`/me`) — stat-kort, profil-komplethed (med opt-outs), forhandler-attention-card + `loadDealerInsights` (📊 Indsigt-tab).
+- `js/profile-edit-page.js` + `js/profile-edit-markup.js`: Rediger profil-siden (`/me/rediger`): formular, profilbillede, forhandler-felter og slet konto. Afløste profil-modalen 11. okt.
 - `js/dealer-extras.js`: åbningstider-editor, services-chips, sociale links, følg-forhandler — alle med opt-out-støtte for completion-tracking.
 
 ## Edge Functions (Supabase, Deno)

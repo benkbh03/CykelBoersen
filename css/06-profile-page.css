@@ -3811,3 +3811,44 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   background: rgba(200,80,42,0.07); border: 1px solid rgba(200,80,42,0.25);
   font-size: var(--text-xs); line-height: 1.5; color: var(--charcoal);
 }
+
+/* ── Rediger profil (/me/rediger, 11. okt.) ──────────────────
+   Afløser profil-modalen. Én smal kolonne, sektioner skilt af en streg,
+   ingen kort. Formular-klasserne (.form-group, .form-submit, .verify-box,
+   .onboarding-service-box …) er de globale fra modalen og står urørt. */
+.mp-inner.pe-inner { max-width: 640px; }
+.pe-header {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: 0 0 var(--space-6); margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+.pe-header-text { flex: 1; min-width: 0; }
+.pe-header .profile-name { font-size: var(--text-lg); }
+.pe-header .profile-email { font-size: var(--text-sm); overflow-wrap: anywhere; }
+.pe-avatar-btn { flex: 0 0 auto; }
+.pe-section { padding: var(--space-6) 0; border-bottom: 1px solid var(--border); }
+.pe-section:last-child { border-bottom: none; }
+.pe-section-title {
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
+  font-size: var(--text-lg); color: var(--charcoal); margin: 0 0 var(--space-4);
+}
+.pe-section-sub {
+  font-family: var(--font-sans); font-size: var(--text-sm); color: var(--muted);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4); line-height: 1.5;
+}
+.pe-section .form-group label { font-size: var(--text-sm); }
+.pe-section .form-group input,
+.pe-section .form-group textarea { font-size: var(--text-base); }
+.pe-section .form-group textarea { min-height: 96px; }
+.pe-static-value {
+  margin: 0; font-family: var(--font-sans); font-size: var(--text-base);
+  color: var(--charcoal); display: inline-flex; align-items: center; gap: var(--space-2);
+}
+.pe-section .form-submit { margin-top: var(--space-6); }
+.pe-section .verify-box,
+.pe-section .subscription-box,
+.pe-section .onboarding-service-box { margin-top: 0; }
+@media (max-width: 480px) {
+  .pe-header { flex-wrap: wrap; }
+  .pe-avatar-btn { width: 100%; }
+}
