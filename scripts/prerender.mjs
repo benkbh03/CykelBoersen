@@ -352,7 +352,7 @@ function brandPage(slug, meta) {
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
-        <div id="brand-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_BRAND.get(slug))}</div>
+        <div id="brand-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_BRAND.get(slug), { one: `en ${name}`, many: `${name}-cykler` })}</div>
         ${models}${relatedHtml}
       </div>`;
 
@@ -563,7 +563,7 @@ function categoryPage(slug, meta) {
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
-        <div id="category-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_TYPE.get(meta.type), { withBrands: true })}</div>
+        <div id="category-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_TYPE.get(meta.type), { one: `en ${(meta.singular || meta.name).toLowerCase()}`, many: meta.name.toLowerCase(), withBrands: true })}</div>
         ${faqHtml}${relatedHtml}
       </div>`;
 

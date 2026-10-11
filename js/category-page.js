@@ -132,7 +132,7 @@ export function createCategoryPage({
     grid.innerHTML = bikes.map(b => buildBikeCard(b)).join('');
 
     const factsEl = document.getElementById('category-market-facts');
-    if (factsEl) factsEl.innerHTML = marketFactsHtml(bikes, { withBrands: true });
+    if (factsEl) factsEl.innerHTML = marketFactsHtml(bikes, { one: `en ${(meta.singular || meta.name).toLowerCase()}`, many: meta.name.toLowerCase(), withBrands: true });
 
     if (bikes.length > CATEGORY_INITIAL_BIKES) {
       grid.classList.add('brand-bikes-grid--collapsed');

@@ -387,23 +387,17 @@
 
 
 
-/* Markedsdata (js/market-facts.js): fakta som linjer og en enkel tabel.
-   Tom indtil der er nok annoncer; så må sektionen ikke tage plads. */
+/* "Hvad koster en …?" (js/market-facts.js): svaret i almindelige sætninger,
+   og på kategorisider en enkel tabel. Tom indtil der er nok annoncer; så må
+   sektionen ikke tage plads. */
 .market-facts:empty { display: none; }
-.market-facts-list {
-  list-style: none; margin: 0 0 var(--space-6); padding: 0;
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4);
+.market-facts-summary {
+  max-width: 640px; margin: 0 0 var(--space-6);
+  font-size: var(--text-base); line-height: 1.6; color: var(--charcoal);
 }
-.market-facts-list li {
-  display: flex; flex-direction: column; gap: var(--space-1);
-  border-top: 1px solid var(--border); padding-top: var(--space-3);
-}
-.market-facts-list span { font-size: var(--text-sm); color: var(--muted); }
-.market-facts-list strong {
-  font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--charcoal);
-}
+.market-facts-summary strong { font-weight: var(--weight-semibold); }
 .market-facts-table {
-  width: 100%; border-collapse: collapse;
+  width: 100%; max-width: 640px; border-collapse: collapse;
   font-size: var(--text-sm); color: var(--charcoal);
   font-variant-numeric: tabular-nums;
 }
@@ -416,12 +410,12 @@
   padding: var(--space-3) var(--space-3) var(--space-3) 0;
   border-bottom: 1px solid var(--border);
 }
+.market-facts-table th:not(:first-child),
+.market-facts-table td:not(:first-child) { text-align: right; }
 .market-facts-table a { color: var(--charcoal); }
 .market-facts-table a:hover { color: var(--rust); }
-.market-facts-note { margin: var(--space-3) 0 0; font-size: var(--text-xs); color: var(--muted); }
-@media (max-width: 768px) {
-  .market-facts-list { grid-template-columns: repeat(2, 1fr); }
+.market-facts-note {
+  max-width: 640px; margin: var(--space-4) 0 0;
+  font-size: var(--text-sm); line-height: 1.5; color: var(--muted);
 }
-@media (max-width: 480px) {
-  .market-facts-table th, .market-facts-table td { padding-right: var(--space-2); }
-}
+.market-facts-note a { color: var(--rust); }
