@@ -50,7 +50,7 @@ import { BLOG_TITLE, BLOG_DESC, BRANDS_DESC, DEALERS_DESC, BECOME_DEALER_TITLE, 
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE_URL = 'https://cykelbørsen.dk'; // matcher BASE_URL i js/utils.js (canonical)
-const TEMPLATE = readFileSync(join(ROOT, 'index.html'), 'utf8');
+let TEMPLATE = readFileSync(join(ROOT, 'index.html'), 'utf8');
 
 // Supabase — samme publishable key som resten af appen (sikker at eksponere).
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ktufgncydxhkhfttojkh.supabase.co';
@@ -1009,6 +1009,31 @@ async function main() {
       }
     }
     console.log(`Indekserede ${bikes.length} annoncer til interne links (${BIKES_BY_BRAND.size} mærker, ${BIKES_BY_TYPE.size} typer).`);
+  }
+
+  /* "Populære mærker" i footeren: de otte mærker med flest aktive annoncer.
+     Skrives både i TEMPLATE (alle prerendrede sider) og i index.html (forsiden),
+     så listen aldrig peger på en mærkeside der er gået noindex. Mindst tre
+     annoncer: ét spam-opslag skal ikke kunne købe sig et link på hver side.
+     Fejler hentningen, står den sidst skrevne liste urørt. */
+  if (bikes) {
+    const top = [...BIKES_BY_BRAND.entries()]
+      .filter(([, list]) => list.length >= 3)
+      .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+      .slice(0, 8);
+    if (top.length) {
+      const links = top.map(([slug, list]) => {
+        const name = BRANDS_META[slug]?.name || list[0].brand.trim();
+        return `        <a href="/cykler/${slug}/" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">${escHtml(name)}</a>\n`;
+      }).join('');
+      const re = /(<!-- footer-brands:[^\n]*-->\n)[\s\S]*?(\s*<!-- \/footer-brands -->)/;
+      const swap = html => html.replace(re, (_, open, close) => open + links.replace(/\n$/, '') + close);
+      TEMPLATE = swap(TEMPLATE);
+      const indexPath = join(ROOT, 'index.html');
+      const current = readFileSync(indexPath, 'utf8');
+      const updated = swap(current);
+      if (updated !== current) writeFileSync(indexPath, updated);
+    }
   }
 
   // Mærke-sider — kun ASCII-slugs (accenttegn undgås pga. URL-encoding i filstier;

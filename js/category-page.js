@@ -8,7 +8,8 @@
    ============================================================ */
 
 import { CATEGORY_META } from './category-data.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel } from './utils.js';
+import { iconDealer, iconPrivate, priceLabel } from './utils.js';
+import { cardFacts } from './card-spec.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { breadcrumbsHtml, breadcrumbsJsonLd, categoryCrumbs } from './breadcrumbs.js';
@@ -175,7 +176,7 @@ export function createCategoryPage({
             <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {
-            const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+            const facts = cardFacts(b);
             return facts.length
               ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
               : '';
