@@ -1,4 +1,5 @@
-import { bikeTitle, bikeMetaFacts, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
+import { bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
+import { cardFacts } from './card-spec.js';
 import { iconSearch, noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
@@ -385,7 +386,7 @@ export function createBikesList({
                 : ''}</div>
             </div>
             ${(() => {
-              const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+              const facts = cardFacts(b);
               return facts.length
                 ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
                 : '';

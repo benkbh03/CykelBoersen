@@ -1,4 +1,5 @@
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, beskedFejl, iconPin, iconMail, iconBike } from './utils.js';
+import { iconDealer, iconPrivate, priceLabel, priceText, iconHeart, beskedFejl, iconPin, iconMail, iconBike } from './utils.js';
+import { cardFacts } from './card-spec.js';
 import { findCompletedTradeWith } from './trades.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
@@ -137,7 +138,7 @@ export function createProfileModals({
               <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
-              const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+              const facts = cardFacts(b);
               return facts.length
                 ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
                 : '';

@@ -3,7 +3,8 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, iconPin } from './utils.js';
+import { iconDealer, iconPrivate, priceLabel, iconPin } from './utils.js';
+import { cardFacts } from './card-spec.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { brandTitle, brandDescription, BRANDS_DESC } from './seo-text.js';
@@ -202,7 +203,7 @@ export function createBrandPage({
             <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {
-            const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+            const facts = cardFacts(b);
             return facts.length
               ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
               : '';
