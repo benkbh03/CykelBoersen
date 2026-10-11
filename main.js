@@ -602,7 +602,6 @@ const toggleSellGiveaway         = lazyMethod(_ensureSellPage, 'toggleSellGiveaw
 let _rentalGuardWaits = 0;
 const saveSellDraft              = lazyMethod(_ensureSellPage, 'saveSellDraft');
 const clearSellDraft             = lazyMethod(_ensureSellPage, 'clearSellDraft');
-const initSellDraft              = lazyMethod(_ensureSellPage, 'initSellDraft');
 const updateSellPriceSuggestion  = lazyMethod(_ensureSellPage, 'updateSellPriceSuggestion');
 const showListingSuccessModal    = lazyMethod(_ensureSellPage, 'showListingSuccessModal');
 const closeListingSuccessModal   = lazyMethod(_ensureSellPage, 'closeListingSuccessModal');
