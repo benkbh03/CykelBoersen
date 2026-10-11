@@ -2004,7 +2004,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   padding: 24px 24px 80px;
 }
 .size-finder-hero {
-  text-align: center;
+  text-align: left;
   margin: 16px 0 32px;
 }
 .size-finder-title {
@@ -2016,7 +2016,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   font-family: var(--font-sans);
   font-size: var(--text-base); line-height: 1.6;
   color: var(--muted);
-  max-width: 520px; margin: 0 auto;
+  max-width: 520px; margin: 0;
 }
 .size-finder-form {
   background: var(--cream);
@@ -2243,7 +2243,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   font-size: var(--text-xl);
   color: var(--charcoal);
   margin: 0 0 18px;
-  text-align: center;
+  text-align: left;
 }
 .size-finder-info-grid {
   display: grid;
@@ -2295,7 +2295,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .size-finder-faq-item summary::before {
   content: '▸ ';
   margin-right: 4px;
-  color: var(--rust);
+  color: var(--muted);
   display: inline-block;
   transition: transform 0.15s;
 }
@@ -2320,7 +2320,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   padding: 24px 24px 80px;
 }
 .blog-hero {
-  text-align: center;
+  text-align: left;
   margin: 16px 0 32px;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--border);
@@ -2334,12 +2334,12 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   font-family: var(--font-sans);
   font-size: var(--text-base); line-height: 1.6;
   color: var(--muted);
-  max-width: 540px; margin: 0 auto;
+  max-width: 540px; margin: 0;
 }
 .blog-categories {
   display: flex; gap: var(--space-2); flex-wrap: wrap;
   margin-bottom: 24px;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .blog-cat-btn {
   background: var(--cream);
@@ -2586,7 +2586,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   padding: 24px 24px 80px;
 }
 .valuation-hero {
-  text-align: center;
+  text-align: left;
   margin: 16px 0 32px;
 }
 .valuation-title {
@@ -2598,7 +2598,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   font-family: var(--font-sans);
   font-size: var(--text-base); line-height: 1.6;
   color: var(--muted);
-  max-width: 540px; margin: 0 auto;
+  max-width: 540px; margin: 0;
 }
 .valuation-form {
   background: var(--cream);
@@ -2822,7 +2822,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
   font-size: var(--text-xl);  color: var(--charcoal);
   margin: 0 0 18px;
-  text-align: center;
+  text-align: left;
 }
 .valuation-info-grid {
   display: grid;
@@ -2874,7 +2874,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   content: '▸ ';
   display: inline-block;
   margin-right: 4px;
-  color: var(--rust);
+  color: var(--muted);
   transition: transform 0.15s;
 }
 .valuation-faq-item[open] summary::before {
@@ -2917,7 +2917,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   color: var(--charcoal);
   margin: 0 0 4px;
   line-height: 1.2;
-  text-align: center;
+  text-align: left;
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
 }
 
@@ -2925,7 +2925,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   color: var(--muted);
   font-size: var(--text-sm);
   margin: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .bd-trial-banner {
@@ -3155,13 +3155,12 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 }
 .dealers-page-header {
   margin-bottom: 32px;
-  text-align: center;
+  text-align: left;
   position: relative;
 }
 .dealers-page-header .sell-back-btn {
-  position: absolute;
-  left: 0;
-  top: 6px;
+  display: block;
+  margin-bottom: var(--space-4);
 }
 .dealers-page-title {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
@@ -3174,11 +3173,13 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   color: var(--muted);
   font-size: var(--text-base);
   max-width: 560px;
-  margin: 0 auto 18px;
+  margin: 0 0 18px;
   line-height: 1.55;
 }
 .dealers-page .btn-become-dealer {
   display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 .dealers-page .dealer-cards {
   /* Låst til præcis 3 kolonner på desktop — undgår at flere forhandlere
@@ -3290,8 +3291,6 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .dealer-maps-link:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
 @media (max-width: 600px) {
   .dealers-page { padding: 20px 16px 60px; }
-  .dealers-page-header { text-align: left; padding-top: 40px; }
-  .dealers-page-header .sell-back-btn { top: 0; }
   .dealers-page-title { font-size: var(--text-xl); }
   .dealers-page-subtitle { margin-left: 0; margin-right: 0; }
   .dealers-page .dealer-cards { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
