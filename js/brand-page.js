@@ -159,7 +159,7 @@ export function createBrandPage({
     grid.innerHTML = bikes.map(b => buildBikeCard(b)).join('');
 
     const factsEl = document.getElementById('brand-market-facts');
-    if (factsEl) factsEl.innerHTML = marketFactsHtml(bikes);
+    if (factsEl) factsEl.innerHTML = marketFactsHtml(bikes, { one: `en ${brandName}`, many: `${brandName}-cykler` });
 
     // Collapse-knap når der er flere end den initielle visning
     if (bikes.length > BRAND_INITIAL_BIKES) {
