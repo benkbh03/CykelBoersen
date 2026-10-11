@@ -3155,12 +3155,13 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 }
 .dealers-page-header {
   margin-bottom: 32px;
-  text-align: left;
+  text-align: center;
   position: relative;
 }
 .dealers-page-header .sell-back-btn {
-  display: block;
-  margin-bottom: var(--space-4);
+  position: absolute;
+  left: 0;
+  top: 6px;
 }
 .dealers-page-title {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
@@ -3173,7 +3174,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   color: var(--muted);
   font-size: var(--text-base);
   max-width: 560px;
-  margin: 0 0 18px;
+  margin: 0 auto 18px;
   line-height: 1.55;
 }
 .dealers-page .btn-become-dealer {
@@ -3291,6 +3292,8 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .dealer-maps-link:hover { background: var(--forest); color: #fff; border-color: var(--forest); }
 @media (max-width: 600px) {
   .dealers-page { padding: 20px 16px 60px; }
+  .dealers-page-header { text-align: left; padding-top: 40px; }
+  .dealers-page-header .sell-back-btn { top: 0; }
   .dealers-page-title { font-size: var(--text-xl); }
   .dealers-page-subtitle { margin-left: 0; margin-right: 0; }
   .dealers-page .dealer-cards { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
