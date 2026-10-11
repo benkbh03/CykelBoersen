@@ -568,10 +568,10 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 }
 .scam-cancel:hover { background: var(--sand-2); color: var(--charcoal); }
 .scam-confirm {
-  background: var(--forest);
+  background: var(--rust);
   color: #fff;
 }
-.scam-confirm:hover { background: var(--forest-light);}
+.scam-confirm:hover { background: var(--rust-light);}
 @media (max-width: 480px) {
   .scam-card { padding: 22px 18px 18px; }
   .scam-title { font-size: var(--text-lg); }
@@ -710,8 +710,8 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .my-listing-price { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;color: var(--charcoal); font-size: var(--text-base); white-space: nowrap; }
 .btn-delete { background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.78rem; color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
 .btn-delete:hover { border-color: var(--rust); color: var(--rust); }
-.btn-edit { background: var(--forest); color: var(--sand); border: none; border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.78rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.15s; white-space: nowrap; }
-.btn-edit:hover { background: var(--forest-light); }
+.btn-edit { background: var(--surface); color: var(--charcoal); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.78rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.15s; white-space: nowrap; }
+.btn-edit:hover { background: var(--bg); }
 .toggle-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 500; }
 .toggle-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--forest); cursor: pointer; }
 #edit-seller-type { cursor: pointer; }
@@ -1174,13 +1174,13 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .interested-name { font-weight: var(--weight-semibold); font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .interested-time { font-size: var(--text-xs); color: var(--muted); }
 .interested-msg-btn {
-  background: var(--forest); color: #fff;
+  background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-sm);
   padding: 6px 12px; font-size: 0.8rem; font-weight: var(--weight-semibold);
   cursor: pointer; white-space: nowrap; font-family: var(--font-sans);
   transition: background 0.15s;
 }
-.interested-msg-btn:hover { background: var(--forest-light); }
+.interested-msg-btn:hover { background: var(--rust-light); }
 
 /* ── Sælgerens andre / Lignende annoncer ── */
 .related-section-title {
@@ -1682,8 +1682,8 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 }
 .message-box textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.88rem; resize: vertical; min-height: 90px; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .message-box textarea:focus { border-color: var(--forest); }
-.message-box button { margin-top: 8px; background: var(--forest); color: var(--sand); border: none; padding: 11px 20px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; width: 100%; }
-.message-box button:hover { background: var(--forest-light); }
+.message-box button { margin-top: 8px; background: var(--rust); color: #fff; border: none; padding: 11px 20px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; width: 100%; }
+.message-box button:hover { background: var(--rust-light); }
 .antiscam-tip {
   display: flex; align-items: flex-start; gap: var(--space-2);
   background: rgba(46,125,50,0.07); border: 1px solid rgba(46,125,50,0.18);

@@ -539,8 +539,8 @@ button.mp-summary-item:hover { color: var(--charcoal); text-decoration: underlin
 }
 .mp-completion-cta {
   margin-top: 10px;
-  background: var(--forest);
-  color: var(--sand);
+  background: var(--rust);
+  color: #fff;
   border: none;
   border-radius: var(--radius-sm);
   padding: 9px 14px;
@@ -551,7 +551,7 @@ button.mp-summary-item:hover { color: var(--charcoal); text-decoration: underlin
   transition: background 0.15s;
   width: 100%;
 }
-.mp-completion-cta:hover { background: var(--forest-light); }
+.mp-completion-cta:hover { background: var(--rust-light); }
 .mp-logout-link {
   display: inline-flex;
   align-items: center;
@@ -1352,21 +1352,21 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 /* AI button */
 .sell-ai-btn {
   width: 100%; margin-top: 12px; padding: 13px 14px;
-  background: var(--forest); border: none; border-radius: var(--radius-md); color: var(--cream);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--charcoal);
   display: flex; align-items: center; gap: 11px; cursor: pointer; text-align: left;
   transition: background 0.2s; font-family: var(--font-sans);
 }
-.sell-ai-btn:hover { background: var(--forest-light); }
+.sell-ai-btn:hover { background: var(--bg); }
 .sell-ai-btn-icon {
   width: 34px; height: 34px; border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--surface) 12%, transparent);
+  background: var(--bg);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: var(--text-base);
 }
 .sell-ai-btn-title {
   font-family: var(--font-sans); font-weight: var(--weight-semibold);font-size: var(--text-base);
-color: var(--cream); margin-bottom: 2px;
+color: var(--charcoal); margin-bottom: 2px;
 }
-.sell-ai-btn-sub { font-size: var(--text-xs); opacity: 0.75; line-height: 1.3; color: var(--cream); }
+.sell-ai-btn-sub { font-size: var(--text-xs); line-height: 1.3; color: var(--muted); }
 .sell-ai-applied {
   margin-top: 12px; padding: 11px 13px;
   background: rgba(42,61,46,0.07); border-radius: var(--radius-md); border: 1px solid rgba(42,61,46,0.14);
@@ -1838,7 +1838,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.sell-draft-restore { background: var(--forest); color: var(--sand); }
+.sell-draft-restore { background: var(--rust); color: #fff; }
 .sell-draft-discard { background: transparent; border-color: var(--border); color: var(--muted); }
 .sell-draft-restore:hover,
 .sell-draft-discard:hover { opacity: 0.85; }
@@ -2493,30 +2493,26 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   border: 1px solid var(--border);
 }
 .blog-article-cta {
-  background: var(--forest);
-  color: var(--sand);
-  border-radius: var(--radius-md);
-  padding: 28px;
-  text-align: center;
-  margin: 40px 0;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-6);
+  margin: var(--space-12) 0;
 }
 .blog-article-cta h3 {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
   font-size: var(--text-lg);
-  margin: 0 0 16px;
-  color: var(--sand);
+  margin: 0 0 var(--space-4);
+  color: var(--charcoal);
 }
 .blog-article-cta-btns {
-  display: flex; gap: 10px;
-  justify-content: center;
+  display: flex; gap: var(--space-3);
   flex-wrap: wrap;
 }
 .blog-article-cta-btns button {
-  background: color-mix(in srgb, var(--surface) 15%, transparent);
-  color: var(--sand);
-  border: 1px solid color-mix(in srgb, var(--surface) 30%, transparent);
+  background: var(--surface);
+  color: var(--charcoal);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 12px 24px;
+  padding: var(--space-3) var(--space-6);
   font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   cursor: pointer;
@@ -2524,9 +2520,10 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .blog-article-cta-btns button.primary {
   background: var(--rust);
   border-color: var(--rust);
+  color: #fff;
 }
 .blog-article-cta-btns button:hover {
-  background: color-mix(in srgb, var(--surface) 25%, transparent);
+  background: var(--bg);
 }
 .blog-article-cta-btns button.primary:hover {
   background: var(--rust-light);
@@ -3193,7 +3190,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   display: block;
   margin: 28px auto 0;
   padding: 13px 32px;
-  background: var(--forest);
+  background: var(--rust);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
@@ -3201,10 +3198,9 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   cursor: pointer;
   font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-  box-shadow: var(--shadow-sm);
 }
 .see-all-dealers-cta:hover {
-  background: var(--forest-light);
+  background: var(--rust-light);
   box-shadow: var(--shadow-float);
 }
 .dealers-toolbar {
@@ -3495,8 +3491,8 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   cursor: pointer; font-family: var(--font-sans); transition: all 0.2s;
   border: 1.5px solid var(--border); background: var(--sand); color: var(--charcoal);
 }
-.onboarding-btn--primary { background: var(--forest); color: var(--sand); border-color: var(--forest); }
-.onboarding-btn--primary:hover { background: var(--forest-light); }
+.onboarding-btn--primary { background: var(--rust); color: #fff; border-color: var(--rust); }
+.onboarding-btn--primary:hover { background: var(--rust-light); }
 .onboarding-btn:not(.onboarding-btn--primary):hover { border-color: var(--forest); }
 
 /* Skeleton-loading flyttet til 02-listings.css så den er tilgængelig på forsiden */
@@ -3510,11 +3506,11 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .empty-state-title { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-base); color: var(--charcoal); margin: 0 0 8px; }
 .empty-state-sub { color: var(--muted); font-size: var(--text-sm); margin: 0 0 20px; line-height: 1.5; }
 .empty-state-cta {
-  background: var(--forest); color: var(--sand); border: none;
+  background: var(--rust); color: #fff; border: none;
   padding: 11px 24px; border-radius: var(--radius-sm); font-size: var(--text-sm); font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans); transition: background 0.2s;
 }
-.empty-state-cta:hover { background: var(--forest-light); }
+.empty-state-cta:hover { background: var(--rust-light); }
 
 /* ── MOBIL BOTTOM NAV ── */
 #mobile-bottom-nav {
@@ -3540,7 +3536,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .mbn-icon { font-size: var(--text-lg); line-height: 1; }
 .mbn-label { font-size: var(--text-xs); font-weight: 500; }
 .mbn-btn--sell {
-  background: var(--forest); color: var(--sand) !important;
+  background: var(--rust); color: #fff !important;
   border-radius: 50%; width: 52px; height: 52px;
   padding: 0; margin-top: -16px;
   box-shadow: var(--shadow-float);
@@ -3645,12 +3641,12 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   padding: 8px 12px; margin-top: 8px; font-size: var(--text-sm); color: var(--charcoal);
 }
 .meet-middle-btn {
-  background: var(--forest); color: var(--sand); border: none;
+  background: var(--surface); color: var(--charcoal); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 5px 12px; font-size: var(--text-xs); font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans); transition: background 0.2s;
   white-space: nowrap;
 }
-.meet-middle-btn:hover { background: var(--forest-light); }
+.meet-middle-btn:hover { background: var(--bg); }
 
 /* ── GAMMEL ANNONCE TAG ── */
 .mp-old-tag {

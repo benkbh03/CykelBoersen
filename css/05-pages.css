@@ -220,8 +220,8 @@
 }
 .inbox-chat-reply textarea:focus { border-color: var(--forest); }
 .inbox-chat-reply button {
-  background: var(--forest);
-  color: var(--sand);
+  background: var(--rust);
+  color: #fff;
   border: none;
   padding: 11px 24px;
   border-radius: var(--radius-sm);
@@ -232,7 +232,7 @@
   transition: background 0.2s;
   white-space: nowrap;
 }
-.inbox-chat-reply button:hover { background: var(--forest-light); }
+.inbox-chat-reply button:hover { background: var(--rust-light); }
 
 /* Inbox empty states */
 .inbox-page-empty-state {
@@ -395,7 +395,7 @@
   gap: 7px;
   width: 100%;
   padding: 11px 0;
-  background: var(--forest);
+  background: var(--rust);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
@@ -414,8 +414,8 @@
 .thread-reply { display: flex; flex-direction: column; gap: var(--space-2); border-top: 1px solid var(--border); padding-top: 14px; }
 .thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .thread-reply textarea:focus { border-color: var(--forest); }
-.thread-reply button { background: var(--forest); color: var(--sand); border: none; padding: 11px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
-.thread-reply button:hover { background: var(--forest-light); }
+.thread-reply button { background: var(--rust); color: #fff; border: none; padding: 11px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
+.thread-reply button:hover { background: var(--rust-light); }
 
 /* ── LOGIN / GLEMT ── */
 .btn-back-login { background: none; border: none; color: var(--muted); font-size: 0.85rem; cursor: pointer; font-family: var(--font-sans); margin-top: 12px; padding: 0; display: block; width: 100%; text-align: center; transition: color 0.15s; }
@@ -961,14 +961,14 @@
    med admin_can_create_listings=true. Forest-grøn for at signalere konstruktiv
    handling (i kontrast til den røde Slet-knap). */
 .btn-onboard-create {
-  background: var(--forest); color: var(--cream);
+  background: var(--rust); color: #fff;
   border: none;
   border-radius: var(--radius-sm); padding: 7px 14px;
   font-size: 0.78rem; cursor: pointer;
   font-family: var(--font-sans); transition: background 0.15s;
   margin-left: 4px;
 }
-.btn-onboard-create:hover { background: var(--forest-light); }
+.btn-onboard-create:hover { background: var(--rust-light); }
 .admin-row-no-onboard {
   font-size: 0.72rem; color: var(--muted);
   padding: 5px 10px;
@@ -1156,13 +1156,13 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .share-link-box button {
-  background: var(--forest); color: var(--sand);
-  border: none; border-radius: var(--radius-sm); padding: 8px 16px;
+  background: var(--surface); color: var(--charcoal);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 16px;
   font-size: 0.82rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); transition: background 0.15s;
   white-space: nowrap;
 }
-.share-link-box button:hover { background: var(--forest-light); }
+.share-link-box button:hover { background: var(--bg); }
 
 /* ── SÆT SOM SOLGT ── */
 .sold-tag {
@@ -1186,13 +1186,13 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 }
 .btn-sold:hover { background: #333; }
 .btn-unsold {
-  background: var(--forest); color: var(--sand);
-  border: none; border-radius: var(--radius-sm); padding: 6px 12px;
+  background: var(--surface); color: var(--charcoal);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px;
   font-size: 0.78rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); transition: background 0.15s;
   white-space: nowrap;
 }
-.btn-unsold:hover { background: var(--forest-light); }
+.btn-unsold:hover { background: var(--bg); }
 
 /* Køber-picker modal */
 .buyer-pick-btn {
@@ -1292,13 +1292,13 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 }
 .map-popup-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
 .map-popup-btn {
-  background: var(--forest); color: var(--sand);
+  background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-sm); padding: 8px 14px;
   font-size: 0.82rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); width: 100%;
   transition: background 0.15s;
 }
-.map-popup-btn:hover { background: var(--forest-light); }
+.map-popup-btn:hover { background: var(--rust-light); }
 
 /* Bruger lokation knap */
 .locate-btn {
@@ -1354,14 +1354,14 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   white-space: nowrap;
 }
 .verify-action-btn {
-  background: var(--forest); color: var(--sand);
+  background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-full);
   padding: 5px 14px; font-size: 0.78rem;
   font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans);
   transition: background 0.15s;
 }
-.verify-action-btn:hover { background: var(--forest-light); }
+.verify-action-btn:hover { background: var(--rust-light); }
 
 /* Email badge (inline).
    Var en konvolut-emoji, som paa Windows tegnes som et lille lilla-blaat
@@ -1451,14 +1451,14 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .mp-verify-label { flex: 1; }
 .mp-verify-check { font-weight: 700; font-size: 0.9rem; }
 .mp-verify-cta {
-  background: var(--forest); color: var(--sand);
+  background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-sm);
   padding: 10px 20px; font-size: 0.85rem;
   font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans);
   transition: background 0.15s;
 }
-.mp-verify-cta:hover { background: var(--forest-light); }
+.mp-verify-cta:hover { background: var(--rust-light); }
 
 /* Admin ID liste */
 .admin-id-img {

@@ -208,7 +208,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   margin: -4px 0 0;
 }
 .cmp-bike-cta {
-  background: var(--forest);
+  background: var(--rust);
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -218,7 +218,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
-.cmp-bike-cta:hover { background: var(--forest-light);}
+.cmp-bike-cta:hover { background: var(--rust-light);}
 
 /* Section */
 .cmp-section { border-bottom: 1px solid var(--border); }

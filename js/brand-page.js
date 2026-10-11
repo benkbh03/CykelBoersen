@@ -375,20 +375,19 @@ export function createBrandPage({
         <header class="brands-overview-hero">
           <h1 class="brands-overview-title">Alle cykelmærker</h1>
           <p class="brands-overview-subtitle">
-            Browse cykler fra over ${KNOWN_BRANDS.length} mærker,
-            ${totalActive.toLocaleString('da-DK')} aktive annoncer i alt.
+            ${totalActive.toLocaleString('da-DK')} aktive annoncer fordelt på ${KNOWN_BRANDS.length} mærker.
           </p>
         </header>
 
         <section class="brands-overview-section">
-          <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
+          <h2 class="brands-overview-section-title">Mærker med egen side</h2>
           <div class="brands-overview-grid">
             ${curated.map(({ brand, slug, count }) => `
               <a class="brand-tile" href="/cykler/${slug}/" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
                 <div class="brand-tile-name">${esc(brand)}</div>
                 ${count > 0
                   ? `<div class="brand-tile-count">${count} ${count === 1 ? 'cykel' : 'cykler'}</div>`
-                  : `<div class="brand-tile-count brand-tile-count-empty">Ingen aktuelle</div>`}
+                  : `<div class="brand-tile-count brand-tile-count-empty">Ingen til salg</div>`}
               </a>
             `).join('')}
           </div>

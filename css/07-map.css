@@ -1145,8 +1145,8 @@ body.map-page-view { padding-bottom: 0 !important; }
 .split-popup-btn {
   display: block;
   width: 100%;
-  background: var(--forest);
-  color: var(--cream);
+  background: var(--rust);
+  color: #fff;
   border: none;
   border-radius: var(--radius-sm);
   padding: 12px;

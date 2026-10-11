@@ -40,8 +40,7 @@ export function createBlogPage({
         <header class="blog-hero">
           <h1 class="blog-title">Blog</h1>
           <p class="blog-subtitle">
-            Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.
-            Skrevet af os, brugt af dig.
+            Guides til at købe, sælge og vedligeholde en brugt cykel.
           </p>
         </header>
 
@@ -129,7 +128,7 @@ export function createBlogPage({
         </div>
 
         <div class="blog-article-cta">
-          <h3>Klar til at handle?</h3>
+          <h3>Find eller sælg en cykel</h3>
           <div class="blog-article-cta-btns">
             <button onclick="navigateTo('/')">Se annoncer</button>
             <button onclick="navigateTo('/sell')" class="primary">Opret annonce</button>

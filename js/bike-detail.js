@@ -826,7 +826,7 @@ export function createBikeDetail({
       detailView.innerHTML = `
         <div style="padding:60px 24px;text-align:center;">
           <p style="color:var(--rust);margin-bottom:16px;">Kunne ikke hente annonce.</p>
-          <button onclick="${errBackAction}" style="background:var(--forest);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);">← Tilbage</button>
+          <button onclick="${errBackAction}" style="background:var(--surface);color:var(--charcoal);border:1px solid var(--border);padding:10px 24px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-sans);">← Tilbage</button>
         </div>`;
       return;
     }

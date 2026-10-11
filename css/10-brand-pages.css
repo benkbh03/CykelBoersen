@@ -63,14 +63,11 @@
   margin-bottom: 2px;
 }
 .brand-tile-count {
-  font-size: 0.78rem;
-  color: var(--rust);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  color: var(--charcoal);
 }
 .brand-tile-count-empty {
   color: var(--muted);
-  font-weight: var(--weight-regular);
-  font-style: italic;
 }
 .brand-tile-compact {
   padding: 10px 14px;

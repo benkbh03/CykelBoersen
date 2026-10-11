@@ -529,7 +529,7 @@
   margin-top: 8px;
 }
 .cykelagent-save-btn {
-  background: var(--forest); color: var(--cream);
+  background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-sm);
   padding: 12px 24px;
   font-family: var(--font-sans);
@@ -539,7 +539,7 @@
   min-width: 200px;
   transition: background 0.15s;
 }
-.cykelagent-save-btn:hover { background: var(--forest-light); }
+.cykelagent-save-btn:hover { background: var(--rust-light); }
 .cykelagent-cancel-btn {
   background: none;
   border: 1.5px solid var(--border);

@@ -47,11 +47,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Sammenlign prisen med lignende annoncer på Cykelbørsen for at vurdere om niveauet er rimeligt. Finder du slid eller småfejl under gennemgangen, er det helt fair at byde under sælgers pris. En slidt drivlinje koster måske 800 kr at udskifte, og det kan med rette trækkes fra prisen.</p>
       <p style="margin-bottom:24px;">På elcykler er batteriet det vigtigste enkeltparameter. Bed sælger om at fremvise batteriets kapacitet i den medfølgende app, hvis cyklen har en. Ligger kapaciteten under cirka 70 procent af original, bør prisen være 1.000-3.000 kr lavere end en tilsvarende cykel med sundt batteri.</p>
 
-      <div style="background:var(--sand);border-radius:12px;padding:20px 24px;margin-top:32px;border:1px solid var(--border);">
-        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Klar til at finde en cykel?</h3>
-        <p style="margin-bottom:12px;font-size:0.95rem;">Find din næste cykel på Cykelbørsen.</p>
-        <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">Se alle cykler</button>
-      </div>
+      <p style="margin-top:32px;"><button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:var(--space-3) var(--space-6);border-radius:var(--radius-sm);font-size:var(--text-sm);font-weight:var(--weight-semibold);cursor:pointer;font-family:var(--font-sans);">Se brugte cykler til salg</button></p>
     `
   },
   about: {
@@ -515,7 +511,7 @@ export const footerContent = {
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Tjek om cyklen er stjålet</h2>
       <p style="margin-bottom:16px;">Inden du betaler, eller for den sags skyld inden I mødes, så bed altid om stelnummeret. Det sidder på stellet, typisk under krankboksen, og ellers på sadelrøret eller styrrøret. Slå det op mod politiets gratis register over efterlyste cykler. Det tager under et minut.</p>
-      <a href="https://politi.dk/service-og-tilladelser/cykler-og-koeretoejer/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--forest);color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:24px;font-family:var(--font-sans);">${iconShield()} Åbn politiets register</a>
+      <a href="https://politi.dk/service-og-tilladelser/cykler-og-koeretoejer/tjek-om-en-cykel-er-efterlyst" target="_blank" rel="noopener" style="display:inline-block;background:var(--rust);color:#fff;padding:12px 22px;border-radius:var(--radius-sm);text-decoration:none;font-weight:600;margin-bottom:24px;font-family:var(--font-sans);">${iconShield()} Åbn politiets register</a>
       <p style="margin-bottom:24px;">Hvis sælger nægter at oplyse stelnummeret eller forklarer at det er slidt af, så er det det største advarselstegn der findes. Gå videre uden tøven.</p>
 
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Mød offentligt og i dagslys</h2>
@@ -544,9 +540,9 @@ export const footerContent = {
       <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.5rem;margin:32px 0 12px;color:var(--charcoal);">Hvis du er blevet snydt</h2>
       <p style="margin-bottom:16px;">Anmeld det først til politiet via <a href="https://politi.dk/anmeld-kriminalitet" target="_blank" rel="noopener" style="color:var(--rust);">politi.dk/anmeld-kriminalitet</a>. Rapportér derefter annoncen til Cykelbørsen via "Rapporter annonce" nederst på selve annoncen, så vi kan fjerne den med det samme. Hvis du har overført penge, kontakt din bank med det samme. Chargeback er muligt op til 30 dage hvis du har betalt med kort. Endelig kan du skrive til os via <a href="/kontakt/" onclick="event.preventDefault();navigateTo('/kontakt')" style="color:var(--rust);">kontaktsiden</a>, og vi hjælper med dokumentation hvis det bliver nødvendigt.</p>
 
-      <div style="background:var(--forest);color:var(--sand);border-radius:12px;padding:24px 28px;margin-top:32px;">
-        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin:0 0 12px;color:var(--sand);">Cykelbørsens fem-punkts sikkerhedstjek</h3>
-        <p style="margin:0;line-height:1.8;color:color-mix(in srgb, var(--surface) 92%, transparent);">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant, aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-6);margin-top:32px;">
+        <h3 style="font-family:var(--font-sans);font-weight:var(--weight-semibold);font-size:var(--text-lg);margin:0 0 12px;color:var(--charcoal);">Fem ting at tjekke før du handler</h3>
+        <p style="margin:0;line-height:1.8;">Tjek stelnummeret mod politiets register inden du mødes. Mød op offentligt og aldrig i sælgers hjem. Betal med MobilePay eller kontant, aldrig gavekort eller udenlandsk konto. Tag en prøvetur og test gear, bremser og hjul. Og dokumentér handlen med billeder og et simpelt overdragelsesbevis ved køb over 5.000 kr.</p>
       </div>
     `
   },
