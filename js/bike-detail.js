@@ -272,7 +272,7 @@ export function createBikeDetail({
             })()}
           </div>
           ${isGiveaway(b) ? '' : upgradesDisplayHTML(b.upgrades)}
-          <div class="bike-detail-seller" onclick="navigateToProfile('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
+          <div class="bike-detail-seller" onclick="${sellerType === 'dealer' ? 'navigateToDealer' : 'navigateToProfile'}('${profile.id}')" style="cursor:pointer;" title="Se sælgers profil">
             ${/* Forhandler: logoet hvis det findes, ellers kun butiksnavnet.
                   En initial-cirkel ligner en privat profil og siger intet om butikken. */''}
             ${sellerType === 'dealer'
