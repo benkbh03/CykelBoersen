@@ -213,8 +213,11 @@ const {
   onActivePills:        pills => { recordActiveFilters(pills); recordFilterGroupOrder(pills); },
 });
 
-const { updateCykelagentCta, dismissCykelagentCta } = createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory: () => _browseCategory });
+const { updateCykelagentCta, dismissCykelagentCta, cykelagentSave } = createCykelagentCta({ hasActiveFilters, describeActiveFilters, getBrowseCategory: () => _browseCategory });
 window.dismissCykelagentCta = dismissCykelagentCta;
+// Kan være undefined hvis en cachet, ældre cykelagent-cta.js svarer; knappen
+// i index.html falder så tilbage til at åbne /cykelagenter.
+window.cykelagentSave = cykelagentSave;
 
 // Bike list (loadBikes/renderBikes/searchBikes/loadBikesWithFilters).
 // filterOffset deklareres længere nede; closures over for-getterne læser
