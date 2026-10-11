@@ -10,6 +10,7 @@
 import { CATEGORY_META } from './category-data.js';
 import { iconDealer, iconPrivate, priceLabel } from './utils.js';
 import { cardFacts } from './card-spec.js';
+import { marketFactsHtml } from './market-facts.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { breadcrumbsHtml, breadcrumbsJsonLd, categoryCrumbs } from './breadcrumbs.js';
@@ -70,6 +71,7 @@ export function createCategoryPage({
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="category-market-facts" class="brand-page-section market-facts"></div>
 
         ${meta.faq && meta.faq.length ? `
         <div class="brand-page-section category-faq">
@@ -110,7 +112,7 @@ export function createCategoryPage({
       .eq('category', 'cykel')
       .eq('type', meta.type)
       .order('created_at', { ascending: false })
-      .limit(60);
+      .limit(200);  // alle, så markedsdata regnes på hele udbuddet
 
     if (error) {
       grid.innerHTML = `<p style="color:var(--muted);padding:20px;">Kunne ikke hente cykler. <button onclick="renderCategoryPage('${slug}')" style="background:var(--rust);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">Prøv igen</button></p>`;
@@ -128,6 +130,9 @@ export function createCategoryPage({
     }
 
     grid.innerHTML = bikes.map(b => buildBikeCard(b)).join('');
+
+    const factsEl = document.getElementById('category-market-facts');
+    if (factsEl) factsEl.innerHTML = marketFactsHtml(bikes, { withBrands: true });
 
     if (bikes.length > CATEGORY_INITIAL_BIKES) {
       grid.classList.add('brand-bikes-grid--collapsed');

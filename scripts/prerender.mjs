@@ -46,6 +46,7 @@ import { breadcrumbsHtml, breadcrumbsJsonLd, bikeCrumbs, brandCrumbs, categoryCr
    funktion begge steder, ellers modsiger raa HTML og DOM hinanden. */
 import { bikeTitle, bikePageTitle } from '../js/utils.js';
 import { bikePath } from '../js/bike-url.js';
+import { marketFactsHtml } from '../js/market-facts.js';
 import { BLOG_TITLE, BLOG_DESC, BRANDS_DESC, DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC, brandTitle, brandDescription } from '../js/seo-text.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -351,6 +352,7 @@ function brandPage(slug, meta) {
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="brand-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_BRAND.get(slug))}</div>
         ${models}${relatedHtml}
       </div>`;
 
@@ -561,6 +563,7 @@ function categoryPage(slug, meta) {
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="category-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_TYPE.get(meta.type), { withBrands: true })}</div>
         ${faqHtml}${relatedHtml}
       </div>`;
 
@@ -973,7 +976,7 @@ async function main() {
   let bikes = null;
   try {
     bikes = await fetchSupabase(
-      'bikes?is_active=eq.true&select=id,user_id,category,brand,model,price,type,city,condition,year,size,size_cm,description,' +
+      'bikes?is_active=eq.true&select=id,user_id,category,brand,model,price,is_giveaway,type,city,condition,year,size,size_cm,description,' +
       'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
     );
   } catch (err) {

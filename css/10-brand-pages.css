@@ -386,3 +386,42 @@
 }
 
 
+
+/* Markedsdata (js/market-facts.js): fakta som linjer og en enkel tabel.
+   Tom indtil der er nok annoncer; så må sektionen ikke tage plads. */
+.market-facts:empty { display: none; }
+.market-facts-list {
+  list-style: none; margin: 0 0 var(--space-6); padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4);
+}
+.market-facts-list li {
+  display: flex; flex-direction: column; gap: var(--space-1);
+  border-top: 1px solid var(--border); padding-top: var(--space-3);
+}
+.market-facts-list span { font-size: var(--text-sm); color: var(--muted); }
+.market-facts-list strong {
+  font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--charcoal);
+}
+.market-facts-table {
+  width: 100%; border-collapse: collapse;
+  font-size: var(--text-sm); color: var(--charcoal);
+  font-variant-numeric: tabular-nums;
+}
+.market-facts-table th {
+  text-align: left; font-weight: var(--weight-semibold); color: var(--muted);
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+.market-facts-table td {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.market-facts-table a { color: var(--charcoal); }
+.market-facts-table a:hover { color: var(--rust); }
+.market-facts-note { margin: var(--space-3) 0 0; font-size: var(--text-xs); color: var(--muted); }
+@media (max-width: 768px) {
+  .market-facts-list { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .market-facts-table th, .market-facts-table td { padding-right: var(--space-2); }
+}
