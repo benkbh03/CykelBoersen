@@ -43,10 +43,9 @@
   font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s;
 }
-.cykelagent-new-btn:hover { background: var(--rust-light);}
-.cykelagent-new-btn:active { transform: translateY(0); }
+.cykelagent-new-btn:hover { background: var(--rust-light); }
 .cykelagent-new-icon {
   display: inline-flex; align-items: center; justify-content: center;
   font-size: var(--text-base); line-height: 1;
@@ -61,7 +60,6 @@
   border-radius: var(--radius-md);
   padding: 18px 20px 16px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
 }
 .cykelagent-matches-loading {
   color: var(--muted);
@@ -84,7 +82,6 @@
   font-family: var(--font-sans);
   font-size: 0.78rem; font-weight: 700;
   padding: 2px 10px; border-radius: var(--radius-full);
-  letter-spacing: 0.3px;
 }
 .cykelagent-matches-mark-read {
   background: none; border: 1px solid var(--border);
@@ -111,12 +108,9 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   text-decoration: none; color: inherit;
-  transition: transform 0.15s, box-shadow 0.18s, border-color 0.15s;
+  transition: border-color 0.15s;
 }
-.cykelagent-match-card:hover {
-  border-color: var(--forest);
-  box-shadow: var(--shadow-float);
-}
+.cykelagent-match-card:hover { border-color: var(--forest); }
 .cykelagent-match-img {
   width: 100%; aspect-ratio: 4/3;
   object-fit: cover; display: block;
@@ -130,10 +124,8 @@
   position: absolute; top: 8px; left: 8px;
   background: var(--rust); color: #fff;
   font-family: var(--font-sans);
-  font-size: 0.62rem; font-weight: var(--weight-semibold);
-  letter-spacing: 0.5px;
+  font-size: var(--text-2xs); font-weight: var(--weight-semibold);
   padding: 3px 8px; border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
 }
 .cykelagent-match-info {
   padding: 8px 10px 10px;
@@ -175,13 +167,9 @@
   border-radius: var(--radius-md);
   padding: 18px 20px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.18s, border-color 0.15s;
-  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s;
 }
-.cykelagent-card:hover {
-  border-color: var(--forest);
-  box-shadow: var(--shadow-float);
-}
+.cykelagent-card:hover { border-color: var(--forest); }
 .cykelagent-card-top {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 8px;
@@ -216,6 +204,16 @@
   font-size: 0.78rem;
   color: var(--charcoal);
   white-space: nowrap;
+}
+.cykelagent-card-matches {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  margin-bottom: var(--space-3);
+}
+.cykelagent-card-matches:empty { display: none; }
+.cykelagent-card-matches.has-matches {
+  color: var(--charcoal);
+  font-weight: var(--weight-semibold);
 }
 .cykelagent-card-cta {
   color: var(--rust);
@@ -257,7 +255,6 @@
   border-radius: var(--radius-md);
   padding: 26px 26px 22px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
 }
 .cykelagent-editor-header {
   display: flex; justify-content: space-between; align-items: center;
@@ -514,11 +511,7 @@
   font-size: 0.92rem;
   color: var(--charcoal);
 }
-.cykelagent-toggle input[type="checkbox"] {
-  width: 18px; height: 18px;
-  cursor: pointer;
-  accent-color: var(--forest);
-}
+.cykelagent-toggle input[type="checkbox"] { cursor: pointer; }
 
 /* ── ACTIONS ── */
 .cykelagent-editor-actions {

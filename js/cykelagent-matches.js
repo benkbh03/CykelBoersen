@@ -201,14 +201,20 @@ export async function fetchAgentMatches(supabase, agents) {
   const seen = new Set();
   const all = [];
   let newCount = 0;
+  /* Pr. agent: antal match og nyeste matchdato, til linjen på agentkortet.
+     En cykel tælles hos HVER agent den matcher; listen ovenfor viser den
+     kun én gang, under den første. */
+  const perAgent = {};
 
   for (const bike of data) {
     if (seen.has(bike.id)) continue;
     let agentMatch = null;
     for (const agent of agents) {
       if (bikeMatchesAgent(bike, agent.filters)) {
-        agentMatch = agent;
-        break;
+        if (!agentMatch) agentMatch = agent;
+        const pa = perAgent[agent.id] || (perAgent[agent.id] = { count: 0, latest: null });
+        pa.count++;
+        if (!pa.latest || bike.created_at > pa.latest) pa.latest = bike.created_at;
       }
     }
     if (!agentMatch) continue;
@@ -223,5 +229,8 @@ export async function fetchAgentMatches(supabase, agents) {
     matches: all.slice(0, DISPLAY_LIMIT),
     newCount,
     totalMatches: all.length,
+    perAgent,
+    // Ramte hentningen loftet, er tallene en nedre grænse.
+    capped: data.length >= FETCH_LIMIT,
   };
 }
