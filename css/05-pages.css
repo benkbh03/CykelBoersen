@@ -138,6 +138,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* Uden min-width:0 gør hurtigsvar-rækken (nowrap) kolonnen bredere end
+     boksen, og overflow:hidden klipper egne beskeder og Send-knappen væk. */
+  min-width: 0;
   max-height: 600px;
 }
 .inbox-chat-header {
@@ -219,7 +222,7 @@
   max-height: 120px;
 }
 .inbox-chat-reply textarea:focus { border-color: var(--forest); }
-.inbox-chat-reply button {
+.inbox-chat-reply-row button {
   background: var(--rust);
   color: #fff;
   border: none;
@@ -232,7 +235,7 @@
   transition: background 0.2s;
   white-space: nowrap;
 }
-.inbox-chat-reply button:hover { background: var(--rust-light); }
+.inbox-chat-reply-row button:hover { background: var(--rust-light); }
 
 /* Inbox empty states */
 .inbox-page-empty-state {
