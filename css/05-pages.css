@@ -782,6 +782,12 @@
   #btn-list-view { display: none; }
   #btn-map-page { order: 3; flex: 0 0 auto; width: 44px; height: 44px; }
   #btn-compare-mode { display: flex; order: 4; flex: 0 0 auto; width: 44px; height: 44px; }
+  .listings-save-btn { order: 5; flex: 0 0 auto; width: 44px; height: 44px; padding: 0; justify-content: center; }
+  /* Fem kontroller i rækken: lidt mindre luft, så "Nyeste først" kan læses. */
+  .btn-mobile-filter { flex: 0 0 auto; padding: 0 10px; }
+  .listings-controls { gap: 6px; }
+  .listings-controls .sort-select { padding-left: 8px; padding-right: 4px; }
+  .listings-save-label { display: none; }
   .bike-card-body { padding: 10px 12px 12px; }
   /* Titel + pris stables lodret på mobil: på smalle 2-kolonne-kort klemte
      prisen (nowrap + flex-shrink:0) titlen, så lange mærkenavne som
@@ -1263,6 +1269,21 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   transition: all 0.15s;
 }
 .view-toggle:hover      { background: var(--sand-2); }
+
+/* "Få besked om nye" (js/cykelagent-cta.js): sekundær knap, hvid med kant,
+   samme højde som visningsknapperne. Ikon alene på mobil. */
+.listings-save-btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  height: 38px; padding: 0 var(--space-3);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-semibold);
+  cursor: pointer; white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.listings-save-btn:hover { border-color: var(--charcoal); }
+.listings-save-btn:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+.listings-save-btn[hidden] { display: none !important; }
 .view-toggle.active     { background: var(--forest); border-color: var(--forest); color: white; }
 
 /* Leaflet popup override */
