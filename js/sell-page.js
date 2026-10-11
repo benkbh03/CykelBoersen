@@ -12,6 +12,7 @@ import { enableDragReorder } from './drag-reorder.js';
 import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
 import { mountUpgradesEditor, normalizeUpgrades, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 import { bikePath } from './bike-url.js';
+import { readDraftFields, writeDraftFields, clearDraft, readDraftImages, writeDraftImages } from './sell-draft-store.js';
 
 /**
  * @param {object} deps
@@ -158,7 +159,6 @@ export function createSellPage({
     saveSellDraft();
   }
 
-  const SELL_DRAFT_KEY = 'cb_sell_draft_v1';
   const SELL_DRAFT_FIELDS = [
     'sell-brand', 'sell-model', 'sell-type', 'sell-size', 'sell-size-cm', 'sell-wheel-size',
     'sell-year', 'sell-condition', 'sell-city', 'sell-colors', 'sell-desc',
@@ -285,7 +285,6 @@ export function createSellPage({
       const newBike = res.data;
       await uploadImages(newBike.id, () => {});
       loadBikes();
-      clearSellDraft();
       // brand=fullTitle/model='' → ren titel i success-modalen
       showListingSuccessModal({ id: newBike.id, brand: fullTitle, model: '', price });
     } finally {
@@ -580,6 +579,7 @@ export function createSellPage({
         <div class="sell-wizard-body">
           <h1 class="sell-step-heading">Hvad vil du sælge?</h1>
           <p class="sell-step-subtitle">Vælg kategori, så tilpasser vi formularen.</p>
+          ${draftChooserHTML()}
           <div class="acc-chooser">
             <button class="acc-choice" onclick="renderSellPage()">
               <div class="acc-choice-ic">${BIKE}</div>
@@ -593,6 +593,20 @@ export function createSellPage({
             </button>
           </div>
         </div>
+      </div>`;
+  }
+
+  // Påbegyndt cykelannonce: vis den over kategorivalget, så man ikke skal
+  // vide at "Cykel" fører tilbage til kladden.
+  function draftChooserHTML() {
+    if (_isActingAs()) return '';
+    const draft = readDraftFields(getCurrentUser()?.id);
+    if (!draft) return '';
+    const title = [draft['sell-brand'], draft['sell-model']].filter(Boolean).join(' ') || 'Cykel uden titel';
+    return `
+      <div class="sell-draft-notice sell-draft-notice--chooser">
+        <span>Du har en annonce i gang: <strong>${esc(title)}</strong>, gemt ${esc(draftAgeText(draft._savedAt))}.</span>
+        <button type="button" class="btn-primary" onclick="renderSellPage()">Fortsæt</button>
       </div>`;
   }
 
@@ -694,6 +708,7 @@ export function createSellPage({
     `;
 
     setSellStep(1);
+    restoreSellDraft();
   }
 
   function renderSellProgressHTML(step) {
@@ -1278,6 +1293,8 @@ export function createSellPage({
 
   function updateSellFooter() {
     const can = canAdvanceSell();
+    // Kaldes ved stort set hver ændring i flowet, så kladden gemmes herfra.
+    scheduleDraftSave();
 
     const el = document.getElementById('sell-wizard-footer');
     if (el) {
@@ -1389,7 +1406,6 @@ export function createSellPage({
         // Apply visibility for whatever is already cached
         updatePerfFieldsVisibility(typeEl.value);
       }
-      initSellDraft();
       if (_aiSuggestionPending) {
         // Værdierne ligger allerede i _sellFormCache (og er dermed renderet ind
         // ovenfor) — her mangler kun DOM-bivirkningerne.
@@ -1425,18 +1441,13 @@ export function createSellPage({
       // By-autocomplete for private sælgere (grov bymidte, ikke præcis adresse)
       const sellCity = document.getElementById('sell-city');
       if (sellCity) attachCityAutocomplete(sellCity);
-      // Draft gemmes kun for cykel-flowet (tilbehør deler ikke draft-felter).
       if (!_isAcc()) {
-        const debouncedSave = debounce(() => saveSellDraft(), 600);
-        ['sell-desc','sell-city'].forEach(id => {
-          document.getElementById(id)?.addEventListener('input', debouncedSave);
-        });
         mountUpgradesEditor(document.getElementById('sell-upgrades-editor'), {
           initial: _cachedUpgrades(),
           prominent: UPGRADE_PROMINENT_TYPES.includes(_sellFormCache['sell-type']),
           onChange: list => {
             _sellFormCache['sell-upgrades'] = list.length ? JSON.stringify(list) : '';
-            debouncedSave();
+            scheduleDraftSave();
           },
         });
       }
@@ -1531,115 +1542,140 @@ export function createSellPage({
 
   /* ------ Draft ------------------------------------------------ */
 
+  /* Kladden gemmes løbende (felter, farver, billeder og hvilket trin man står
+     på), så den der kommer til at lukke fanen eller trykke væk, kan gå ind
+     igen og fortsætte. Kun cykel-flowet og ikke når admin opretter på vegne
+     af en forhandler. Gemmes først når restoreSellDraft() har afgjort om der
+     var en kladde, ellers ville trin 1's tomme start overskrive den. */
+  let _draftReady = false;
+  let _draftToken = 0;
+  let _draftSavedFiles = [];
+
+  const _draftEnabled = () => !_isAcc() && !_isActingAs() && !!getCurrentUser()?.id;
+
   function saveSellDraft() {
-    try {
-      const draft = {};
-      let hasAny = false;
-      SELL_DRAFT_FIELDS.forEach(id => {
-        // Wizard'en renderer ét trin ad gangen, så felter fra de andre trin er
-        // ikke i DOM'en. Fald tilbage til _sellFormCache, ellers taber kladden
-        // fx AI-beskrivelsen når brugeren står på trin 1.
-        const el = document.getElementById(id);
-        const value = (el && el.value != null && el.value !== '')
-          ? el.value
-          : _sellFormCache[id];
-        if (value != null && value !== '' && !Array.isArray(value)) {
-          draft[id] = value;
-          hasAny = true;
-        }
-      });
-      if (hasAny) {
-        draft._savedAt = Date.now();
-        localStorage.setItem(SELL_DRAFT_KEY, JSON.stringify(draft));
-      } else {
-        localStorage.removeItem(SELL_DRAFT_KEY);
+    if (!_draftReady || !_draftEnabled()) return;
+    const userId = getCurrentUser().id;
+    const draft = {};
+    let hasAny = false;
+    SELL_DRAFT_FIELDS.forEach(id => {
+      if (id === 'sell-colors') {
+        const colors = _sellFormCache['sell-colors'];
+        if (Array.isArray(colors) && colors.length) { draft[id] = colors; hasAny = true; }
+        return;
       }
-    } catch (_) {}
+      // Wizard'en renderer ét trin ad gangen, så felter fra de andre trin er
+      // ikke i DOM'en. Fald tilbage til _sellFormCache.
+      const el = document.getElementById(id);
+      const value = (el && el.value != null && el.value !== '') ? el.value : _sellFormCache[id];
+      if (value != null && value !== '' && typeof value !== 'object') {
+        draft[id] = value;
+        // Byen er forudfyldt fra profilen og gør alene ikke siden til en kladde.
+        if (id !== 'sell-city') hasAny = true;
+      }
+    });
+    const images = getSelectedFiles().length;
+    if (!hasAny && !images) { clearDraft(userId); return; }
+    draft._step = _sellStep;
+    draft._images = images;
+    draft._import = _importApplied ? (_importHost || true) : null;
+    draft._ai = _aiApplied;
+    draft._savedAt = Date.now();
+    writeDraftFields(userId, draft);
   }
+
+  const scheduleDraftSave = debounce(() => saveSellDraft(), 400);
+
+  // Billederne skrives kun når listen faktisk har ændret sig (tilføjet,
+  // fjernet, flyttet eller beskåret) og ikke ved hver gentegning.
+  const scheduleDraftImageSave = debounce(() => {
+    if (!_draftReady || !_draftEnabled()) return;
+    const files = getSelectedFiles().map(f => f.file).filter(Boolean);
+    const same = files.length === _draftSavedFiles.length && files.every((f, i) => f === _draftSavedFiles[i]);
+    if (same) return;
+    _draftSavedFiles = files;
+    writeDraftImages(getCurrentUser().id, files);
+    saveSellDraft();
+  }, 300);
 
   function clearSellDraft() {
-    try { localStorage.removeItem(SELL_DRAFT_KEY); } catch (_) {}
-    const banner = document.getElementById('sell-draft-banner');
-    if (banner) banner.remove();
+    clearDraft(getCurrentUser()?.id);
+    _draftSavedFiles = [];
+    document.getElementById('sell-draft-notice')?.remove();
   }
 
-  function applySellDraft(draft) {
+  function draftAgeText(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const time = d.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
+    const dayDiff = Math.round((new Date(now.toDateString()) - new Date(d.toDateString())) / 86400000);
+    if (dayDiff === 0) return `i dag kl. ${time}`;
+    if (dayDiff === 1) return `i går kl. ${time}`;
+    return d.toLocaleDateString('da-DK', { day: 'numeric', month: 'short' });
+  }
+
+  function draftStep2Complete() {
+    const c = _sellFormCache;
+    return !!(c['sell-brand'] && c['sell-type'] && c['sell-condition'] && (c['sell-giveaway'] === '1' || c['sell-price']));
+  }
+
+  async function restoreSellDraft() {
+    const token = ++_draftToken;
+    _draftReady = false;
+    _draftSavedFiles = [];
+    if (!_draftEnabled()) return;
+    const userId = getCurrentUser().id;
+    const draft = readDraftFields(userId);
+    if (!draft) { _draftReady = true; return; }
+
+    const files = draft._images ? await readDraftImages(userId) : [];
+    // Brugeren kan have forladt siden eller lagt egne billeder ind imens.
+    if (token !== _draftToken || !document.getElementById('sell-step-body')) return;
+    if (getSelectedFiles().length) { _draftReady = true; return; }
+
     SELL_DRAFT_FIELDS.forEach(id => {
-      if (draft[id] != null) {
-        // Cachen først, så felter fra trin der ikke er renderet også gendannes.
-        if (id !== 'sell-colors') _sellFormCache[id] = draft[id];
-        const el = document.getElementById(id);
-        if (el) el.value = draft[id];
-      }
+      if (draft[id] != null) _sellFormCache[id] = draft[id];
     });
-    const typeSelect = document.getElementById('sell-type');
-    if (typeSelect && typeSelect.value) updateSellPriceSuggestion(typeSelect.value);
-    showDraftSavedIndicator('Kladde gendannet');
-  }
-
-  function showDraftSavedIndicator(text) {
-    const ind = document.getElementById('sell-draft-indicator');
-    if (!ind) return;
-    ind.textContent = text || '✓ Kladde gemt';
-    ind.classList.add('show');
-    clearTimeout(ind._hideTimer);
-    ind._hideTimer = setTimeout(() => ind.classList.remove('show'), 1600);
-  }
-
-  function initSellDraft() {
-    let existing = null;
-    try {
-      const raw = localStorage.getItem(SELL_DRAFT_KEY);
-      if (raw) existing = JSON.parse(raw);
-    } catch (_) {}
-
-    // Tilføj kladde-indikator
-    const actions = document.querySelector('.sell-page-actions');
-    if (actions && !document.getElementById('sell-draft-indicator')) {
-      const ind = document.createElement('div');
-      ind.id = 'sell-draft-indicator';
-      ind.className = 'sell-draft-indicator';
-      ind.textContent = '✓ Kladde gemt';
-      actions.prepend(ind);
+    if (draft._import) {
+      _importApplied = true;
+      _importHost = typeof draft._import === 'string' ? draft._import : null;
+      _aiState = 'imported';
     }
+    _aiApplied = !!draft._ai;
 
-    // Vis "gendan kladde"-banner hvis der er en gemt kladde
-    if (existing && existing._savedAt) {
-      const body = document.querySelector('.sell-page-body');
-      if (body && !document.getElementById('sell-draft-banner')) {
-        const minsAgo = Math.max(1, Math.round((Date.now() - existing._savedAt) / 60000));
-        const banner = document.createElement('div');
-        banner.id = 'sell-draft-banner';
-        banner.className = 'sell-draft-banner';
-        banner.innerHTML = `
-          <span>Du har en gemt kladde fra ${minsAgo} min. siden.</span>
-          <div class="sell-draft-banner-actions">
-            <button type="button" class="sell-draft-restore">Gendan</button>
-            <button type="button" class="sell-draft-discard">Kassér</button>
-          </div>`;
-        body.prepend(banner);
-        banner.querySelector('.sell-draft-restore').onclick = () => {
-          applySellDraft(existing);
-          banner.remove();
-        };
-        banner.querySelector('.sell-draft-discard').onclick = () => {
-          clearSellDraft();
-        };
-      }
+    const sf = getSelectedFiles();
+    files.forEach((file, i) => sf.push({ file, url: URL.createObjectURL(file), isPrimary: i === 0 }));
+    _draftSavedFiles = files;
+    // Billederne er allerede analyseret (eller udfyldt fra et link) første
+    // gang. En ny analyse ville koste et kald og kunne overskrive rettelser.
+    if (files.length) _aiAutoFired = true;
+
+    let step = Math.min(Math.max(Number(draft._step) || 1, 1), 3);
+    if (!files.length) step = 1;
+    else if (step === 3 && !draftStep2Complete()) step = 2;
+    setSellStep(step);
+    _draftReady = true;
+
+    const main = document.querySelector('.sell-wizard-main');
+    if (main && !document.getElementById('sell-draft-notice')) {
+      const lost = draft._images && !files.length;
+      const notice = document.createElement('div');
+      notice.id = 'sell-draft-notice';
+      notice.className = 'sell-draft-notice';
+      notice.setAttribute('role', 'status');
+      notice.innerHTML = `
+        <span>Du fortsætter din kladde fra ${esc(draftAgeText(draft._savedAt))}.${lost ? ' Billederne kunne ikke hentes, så læg dem ind igen.' : ''}</span>
+        <button type="button" class="sell-draft-reset">Start forfra</button>`;
+      notice.querySelector('.sell-draft-reset').onclick = () => {
+        clearSellDraft();
+        renderSellPage('cykel');
+      };
+      main.prepend(notice);
     }
-
-    // Lyt på ændringer → debounce-gem
-    const debouncedSave = debounce(() => {
-      saveSellDraft();
-      showDraftSavedIndicator('✓ Kladde gemt');
-    }, 600);
-    SELL_DRAFT_FIELDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('input', debouncedSave);
-      el.addEventListener('change', debouncedSave);
-    });
   }
+
+  // Lukkes fanen inden debounce'en har nået at gemme, gemmes der her.
+  window.addEventListener('pagehide', () => saveSellDraft());
 
   /* ------ Price suggestion ------------------------------------- */
 
@@ -1713,6 +1749,7 @@ export function createSellPage({
     }
 
     ensureSellDragReorder(grid);
+    scheduleDraftImageSave();
     updateSellDesktopPreview();
     updateSellFooter();
   }
@@ -2450,7 +2487,6 @@ export function createSellPage({
     toggleSellGiveaway,
     saveSellDraft,
     clearSellDraft,
-    initSellDraft,
     updateSellPriceSuggestion,
     showListingSuccessModal,
     closeListingSuccessModal,
