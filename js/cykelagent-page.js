@@ -294,12 +294,12 @@ export function createCykelagentPage({
 
     // Toggle: hvis allerede åben for samme id → luk
     if (_editingId === idOrNew) {
-      _editingId = null;
-      mount.innerHTML = '';
+      closeCykelagentEditor();
       return;
     }
 
     _editingId = idOrNew;
+    _setEditingMode(true);
     _form = _emptyForm();
     _originalFilters = {};
 
@@ -345,7 +345,7 @@ export function createCykelagentPage({
     }
 
     mount.innerHTML = _buildEditorHTML(idOrNew === 'new');
-    window.scrollTo({ top: mount.offsetTop - 20, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function _buildEditorHTML(isNew) {
@@ -558,22 +558,26 @@ export function createCykelagentPage({
           </div>
         </details>
 
-        <div class="cykelagent-strict-notice">
-          
-          <span>Jo flere filtre du sætter, jo mere præcist matcher vi. Vi sender <strong>kun</strong> notifikation om cykler der opfylder ALLE dine kriterier, så du aldrig spilder tid på "tæt-på"-matches.</span>
-        </div>
+        <p class="cykelagent-match-note">Du får kun besked om cykler der opfylder alle dine kriterier.</p>
 
         <div class="cykelagent-editor-actions">
           <button class="cykelagent-save-btn" onclick="saveCykelagentForm()">${isNew ? 'Opret Cykelagent' : 'Gem ændringer'}</button>
           <button class="cykelagent-cancel-btn" onclick="closeCykelagentEditor()">Annuller</button>
-          ${!isNew ? `<button class="cykelagent-delete-btn" onclick="deleteCykelagentFromEditor('${_editingId}')">Slet agent</button>` : ''}
         </div>
+        ${!isNew ? `<button type="button" class="cykelagent-delete-link" onclick="deleteCykelagentFromEditor('${_editingId}')">Slet denne agent</button>` : ''}
       </div>
     `;
   }
 
+  /* Mens editoren er åben, skjules listen, match-boksen og "Ny cykelagent".
+     Ellers står agenten to gange på skærmen: i formularen og som kort nedenunder. */
+  function _setEditingMode(on) {
+    document.querySelector('.cykelagent-page')?.classList.toggle('cykelagent-page--editing', on);
+  }
+
   function closeCykelagentEditor() {
     _editingId = null;
+    _setEditingMode(false);
     const mount = document.getElementById('cykelagent-editor-mount');
     if (mount) mount.innerHTML = '';
   }
