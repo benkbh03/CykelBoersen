@@ -1,5 +1,6 @@
 import { esc } from './utils.js';
 import { KNOWN_CITY_CENTERS } from './geocode.js';
+import { searchCities, isKnownCity } from './dk-postnumre.js';
 
 const _dawaDebounce = new WeakMap();
 let _dawaActive = null; // { input, dropdown }
@@ -209,53 +210,31 @@ export function attachCityAutocomplete(input, onSelect) {
     const q = (input.value || '').trim();
     if (q.length < 2) { _closeDawaDropdown(); return; }
 
-    clearTimeout(_dawaDebounce.get(input));
-    _setDawaLoading(input);
-    _dawaDebounce.set(input, setTimeout(async () => {
-      try {
-        const url = `https://api.dataforsyningen.dk/postnumre?q=${encodeURIComponent(q)}&per_side=12&format=json`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (!Array.isArray(data)) { _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet'); return; }
+    // Byerne slås op i en lokal postnummerliste. DAWA, som feltet tidligere
+    // spurgte, er lukket ned, og så fik alle "Ingen byer fundet". Findes byen
+    // ikke på listen, kan brugeren stadig vælge præcis det de har skrevet.
+    const items = searchCities(q).map(({ postcode, city }) => {
+      const known = KNOWN_CITY_CENTERS[city.toLowerCase()];
+      return {
+        label: `${postcode} ${city}`, city, postcode,
+        lat: known ? known[0] : null,
+        lng: known ? known[1] : null,
+      };
+    });
+    if (!isKnownCity(q)) {
+      items.push({ label: `Brug "${q}"`, city: q, postcode: null, lat: null, lng: null });
+    }
 
-        const seen = new Set();
-        const items = [];
-        for (const r of data) {
-          const cityName = (r.navn || '').trim();
-          const postnr   = String(r.nr || '').trim();
-          if (!cityName || !postnr) continue;
-          const key = postnr + '|' + cityName.toLowerCase();
-          if (seen.has(key)) continue;
-          seen.add(key);
-          const vc  = r.visueltcenter; // [lng, lat]
-          let lat = Array.isArray(vc) ? vc[1] : null;
-          let lng = Array.isArray(vc) ? vc[0] : null;
-          // Override DAWA's postnummer-polygon center med hardcoded by-centrum
-          // for kendte byer. Polygon-centeret for kystbyer (Hvidovre 2650,
-          // Greve 2670, København S 2300 mfl.) lander i havet — hardcoded
-          // centrum peger på den faktiske by hvor folk bor.
-          const known = KNOWN_CITY_CENTERS[cityName.toLowerCase().trim()];
-          if (known) {
-            lat = known[0];
-            lng = known[1];
-          }
-          items.push({ label: `${postnr} ${cityName}`, city: cityName, postcode: postnr, lat, lng });
-        }
-
-        _renderDawaDropdown(input, items, (picked) => {
-          input._dawaPicking = true;
-          input.value = picked.city;
-          if (picked.lat)      input.dataset.dawaLat      = String(picked.lat);
-          if (picked.lng)      input.dataset.dawaLng      = String(picked.lng);
-          if (picked.postcode) input.dataset.dawaPostcode = picked.postcode;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          input._dawaPicking = false;
-          if (typeof onSelect === 'function') onSelect(picked);
-        }, 'Ingen byer fundet');
-      } catch (e) {
-        _renderDawaDropdown(input, [], () => {}, 'Ingen byer fundet');
-      }
-    }, 220));
+    _renderDawaDropdown(input, items, (picked) => {
+      input._dawaPicking = true;
+      input.value = picked.city;
+      if (picked.lat)      input.dataset.dawaLat      = String(picked.lat);
+      if (picked.lng)      input.dataset.dawaLng      = String(picked.lng);
+      if (picked.postcode) input.dataset.dawaPostcode = picked.postcode;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input._dawaPicking = false;
+      if (typeof onSelect === 'function') onSelect(picked);
+    });
   };
 
   input.addEventListener('input', handleInput);
