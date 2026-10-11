@@ -258,7 +258,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - `user-profile-modal`, `dealer-profile-modal`, `all-dealers-modal` — profil-visninger
 - `edit-modal` — rediger annonce (opret annonce sker på `/sell`; den gamle `#modal` er fjernet 27. sep.)
 - `login-modal`, `reset-modal` — auth
-- `profile-modal` — mine indstillinger
+- Mine indstillinger er en side, `/me/rediger` (`js/profile-edit-page.js`), ikke en modal (11. okt.)
 - `bike-modal`, `map-bike-modal` — annonce-detaljer
 - `inbox-modal` — indbakke med tråde
 - `share-modal`, `report-modal` — deling og rapportering
@@ -275,7 +275,7 @@ Z-index hierarki (stigende prioritet):
 - `#buyer-picker-modal`: 5000
 - `.toast`: 10000
 
-De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map-bike-modal`, `admin-modal`, `edit-modal`, `profile-modal`, `login-modal`, `inbox-modal`, `share-modal` bruger `classList.add/remove('open')`. `document.body.style.overflow = 'hidden'` ved åbning, `''` ved lukning. Global `Escape`-lytter lukker den øverste åbne modal.
+De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map-bike-modal`, `admin-modal`, `edit-modal`, `login-modal`, `inbox-modal`, `share-modal` bruger `classList.add/remove('open')`. `document.body.style.overflow = 'hidden'` ved åbning, `''` ved lukning. Global `Escape`-lytter lukker den øverste åbne modal.
 
 ### Routing (pathname-baseret)
 - `navigateTo(path)` → `history.pushState`, derefter `handleRoute()`
