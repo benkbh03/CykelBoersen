@@ -35,7 +35,7 @@ import { rentalAllowed, applyFeatureFlags } from './js/feature-flags.js';
 import { initErrorLog } from './js/error-log.js';
 import { initNavSearch, toggleNavSearch, submitNavSearch as _submitNavSearch } from './js/nav-search.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
-import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/dawa-autocomplete.js';
+import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/by-autocomplete.js';
 import { createSearchAutocompleteHandlers } from './js/search-autocomplete.js';
 import { createRealtimeNotifications } from './js/realtime-notifications.js';
 import { createShareActions } from './js/share-actions.js';
