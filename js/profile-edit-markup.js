@@ -26,7 +26,7 @@ export function buildProfileEditHTML() {
         <div class="profile-big-avatar" id="profile-big-avatar">?</div>
         <div class="avatar-upload-overlay">${svgCamera}</div>
       </div>
-      <input type="file" id="avatar-file-input" accept="image/*" capture="user" style="display:none" onchange="uploadAvatar(this.files[0])">
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="uploadAvatar(this.files[0])">
       <div class="pe-header-text">
         <div class="profile-name" id="profile-display-name">Indlæser...</div>
         <div class="profile-email" id="profile-display-email"></div>
