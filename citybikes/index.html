@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20261011c">
+<html lang="da" data-asset-v="20261011d">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,23 +127,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20261011c">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20261011d">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20261011c">
-  <link rel="stylesheet" href="/css/01-base.css?v=20261011c">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261011c">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261011c">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261011c">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261011c">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261011c">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261011c">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261011c">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261011c">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261011c">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261011c">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20261011c">
+  <link rel="stylesheet" href="/css/tokens.css?v=20261011d">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261011d">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261011d">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261011d">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261011d">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261011d">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261011d">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261011d">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261011d">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261011d">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261011d">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261011d">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20261011d">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1141,14 +1141,18 @@
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
         <div id="category-market-facts" class="brand-page-section market-facts">
-    <h2 class="brand-page-section-title">Markedsdata</h2>
-    <ul class="market-facts-list"><li><span>Annoncer med pris</span><strong>72</strong></li><li><span>Prisinterval</span><strong>1.700 kr. – 6.999 kr.</strong></li><li><span>Medianpris</span><strong>4.899 kr.</strong></li><li><span>Fra forhandlere</span><strong>71 af 72</strong></li></ul>
+    <h2 class="brand-page-section-title">Hvad koster en citybike?</h2>
+    <p class="market-facts-summary">Lige nu er der 72 citybikes til salg med en pris.
+    Halvdelen koster under <strong>4.900 kr.</strong>
+    Den billigste koster 1.700 kr., den dyreste 7.000 kr.
+    71 af dem sælges af en forhandler.</p>
     
         <table class="market-facts-table">
-          <thead><tr><th scope="col">Mærke</th><th scope="col">Annoncer</th><th scope="col">Fra</th><th scope="col">Median</th></tr></thead>
-          <tbody><tr><td><a href="/cykler/raleigh/" onclick="event.preventDefault();navigateTo('/cykler/raleigh')">Raleigh</a></td><td>14</td><td>3.999 kr.</td><td>6.499 kr.</td></tr><tr><td><a href="/cykler/centurion/" onclick="event.preventDefault();navigateTo('/cykler/centurion')">Centurion</a></td><td>12</td><td>1.700 kr.</td><td>4.499 kr.</td></tr><tr><td><a href="/cykler/van-de-falk/" onclick="event.preventDefault();navigateTo('/cykler/van-de-falk')">Van De Falk</a></td><td>9</td><td>4.899 kr.</td><td>4.899 kr.</td></tr><tr><td><a href="/cykler/velo-lux/" onclick="event.preventDefault();navigateTo('/cykler/velo-lux')">Velo Lux</a></td><td>8</td><td>2.499 kr.</td><td>2.499 kr.</td></tr><tr><td><a href="/cykler/remington/" onclick="event.preventDefault();navigateTo('/cykler/remington')">Remington</a></td><td>6</td><td>4.899 kr.</td><td>5.249 kr.</td></tr><tr><td><a href="/cykler/norden/" onclick="event.preventDefault();navigateTo('/cykler/norden')">Norden</a></td><td>5</td><td>4.999 kr.</td><td>5.399 kr.</td></tr><tr><td><a href="/cykler/brabus/" onclick="event.preventDefault();navigateTo('/cykler/brabus')">Brabus</a></td><td>3</td><td>2.499 kr.</td><td>2.499 kr.</td></tr><tr><td><a href="/cykler/falcon/" onclick="event.preventDefault();navigateTo('/cykler/falcon')">Falcon</a></td><td>3</td><td>3.199 kr.</td><td>3.199 kr.</td></tr></tbody>
+          <thead><tr><th scope="col">Mærke</th><th scope="col">Til salg</th><th scope="col">Typisk pris</th></tr></thead>
+          <tbody><tr><td><a href="/cykler/raleigh/" onclick="event.preventDefault();navigateTo('/cykler/raleigh')">Raleigh</a></td><td>14</td><td>6.500 kr.</td></tr><tr><td><a href="/cykler/centurion/" onclick="event.preventDefault();navigateTo('/cykler/centurion')">Centurion</a></td><td>12</td><td>4.500 kr.</td></tr><tr><td><a href="/cykler/van-de-falk/" onclick="event.preventDefault();navigateTo('/cykler/van-de-falk')">Van De Falk</a></td><td>9</td><td>4.900 kr.</td></tr><tr><td><a href="/cykler/velo-lux/" onclick="event.preventDefault();navigateTo('/cykler/velo-lux')">Velo Lux</a></td><td>8</td><td>2.500 kr.</td></tr><tr><td><a href="/cykler/remington/" onclick="event.preventDefault();navigateTo('/cykler/remington')">Remington</a></td><td>6</td><td>5.200 kr.</td></tr><tr><td><a href="/cykler/norden/" onclick="event.preventDefault();navigateTo('/cykler/norden')">Norden</a></td><td>5</td><td>5.400 kr.</td></tr><tr><td><a href="/cykler/brabus/" onclick="event.preventDefault();navigateTo('/cykler/brabus')">Brabus</a></td><td>3</td><td>2.500 kr.</td></tr><tr><td><a href="/cykler/falcon/" onclick="event.preventDefault();navigateTo('/cykler/falcon')">Falcon</a></td><td>3</td><td>3.200 kr.</td></tr></tbody>
         </table>
-    <p class="market-facts-note">Ud fra de aktive annoncer på Cykelbørsen lige nu. Gratis cykler tælles ikke med.</p></div>
+    <p class="market-facts-note">Tallene er fra de aktive annoncer, og gratis cykler er ikke talt med. Typisk pris er midten: halvdelen koster mindre.
+      Skal du selv sælge? <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Se hvad din cykel er værd</a>.</p></div>
         
         <div class="brand-page-section category-faq">
           <h2 class="brand-page-section-title">Ofte stillede spørgsmål om citybikes</h2>
