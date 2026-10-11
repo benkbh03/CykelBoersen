@@ -5,6 +5,7 @@ import { cardSellerLine } from './card-seller.js';
 import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
 import { findNearMatch, nearMatchHeadHTML } from './near-matches.js';
 import { mixSellers } from './seller-mix.js';
+import { setFilterApplyCount } from './filter-apply-count.js';
 
 
 export function createBikesList({
@@ -229,6 +230,7 @@ export function createBikesList({
     markSavedHearts(data.map(b => b.id));
     updateActiveFiltersBar();
     updateCykelagentCta();
+    if (!append) setFilterApplyCount(null);
 
     // Offset/pagination tæller KUN normale rækker — fremhævede er prepended
     // separat og ekskluderet fra hoved-query'en, så de må ikke tælle med.
@@ -522,7 +524,7 @@ export function createBikesList({
     const fProfilesJoin = (sellerType && !dealerId) ? 'profiles!user_id!inner' : 'profiles!user_id';
     let query = supabase
       .from('bikes')
-      .select(filterSelect(fProfilesJoin))
+      .select(filterSelect(fProfilesJoin), { count: 'exact' })
       .eq('is_active', true)
       .eq('category', category)
       .order('created_at', { ascending: false })
@@ -537,7 +539,7 @@ export function createBikesList({
       maxWeight, city, search, giveaway,
     });
 
-    const { data, error } = await query;
+    const { data, error, count } = await query;
     if (error) {
       grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'applyFilters');
       return;
@@ -559,6 +561,7 @@ export function createBikesList({
     }
     // Send result-count til CTA — skifter copy til "Kun X matcher" når resultater er få
     if (!append) updateCykelagentCta((data || []).length);
+    if (!append) setFilterApplyCount(typeof count === 'number' ? count : null, category);
     else updateCykelagentCta();
     setFilterOffset(getFilterOffset() + (data || []).length);
 
