@@ -38,7 +38,7 @@
 .cykelagent-new-btn {
   display: inline-flex; align-items: center; gap: var(--space-2);
   background: var(--rust); color: #fff;
-  border: none; border-radius: var(--radius-full);
+  border: none; border-radius: var(--radius-sm);
   padding: 12px 22px;
   font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
@@ -49,11 +49,7 @@
 .cykelagent-new-btn:active { transform: translateY(0); }
 .cykelagent-new-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px;
-  background: rgba(255,255,255,0.22);
-  border-radius: 50%;
-  font-size: 1.1rem; line-height: 1;
-  font-weight: 700;
+  font-size: var(--text-base); line-height: 1;
 }
 
 /* ── NYE MATCH FRA AGENTER ──
@@ -529,7 +525,7 @@
   margin-top: 8px;
 }
 .cykelagent-save-btn {
-  background: var(--forest); color: var(--cream);
+  background: var(--rust); color: #fff;
   border: none; border-radius: var(--radius-sm);
   padding: 12px 24px;
   font-family: var(--font-sans);
@@ -539,7 +535,7 @@
   min-width: 200px;
   transition: background 0.15s;
 }
-.cykelagent-save-btn:hover { background: var(--forest-light); }
+.cykelagent-save-btn:hover { background: var(--rust-light); }
 .cykelagent-cancel-btn {
   background: none;
   border: 1.5px solid var(--border);

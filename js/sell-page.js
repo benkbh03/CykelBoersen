@@ -2414,7 +2414,7 @@ export function createSellPage({
           ${TERMS_BODY}
         </div>
         <div style="padding:16px 24px;border-top:1px solid var(--border);flex-shrink:0;background:var(--cream)">
-          <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:100%;padding:14px;background:var(--forest);color:var(--sand);border:none;border-radius:12px;font-family:var(--font-sans);font-size:0.92rem;font-weight:600;cursor:pointer">
+          <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:100%;padding:14px;background:var(--rust);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:0.92rem;font-weight:600;cursor:pointer">
             Forstået, fortsæt
           </button>
         </div>

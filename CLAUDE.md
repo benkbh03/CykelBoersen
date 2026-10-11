@@ -228,7 +228,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - Farver: `--forest`, `--cream`, `--sand`, `--rust`, `--green`, `--charcoal`, `--muted` m.fl. i `tokens.css`; tilstandsfarver (`--success`, `--error`, `--gold` …) i `01-base.css`.
 - Ikoner: inline SVG via `iconX()` i `js/utils.js` og `js/ui-icons.js` (Lucide-stil, `currentColor`); i statisk HTML en `<svg class="ui-icon">`. Annoncekort uden billede bruger `noImagePlaceholder()` fra `js/ui-icons.js`.
 - Admin-panelets ⚙️ er den eneste tilladte emoji. Besked-konventionerne (💰/✅/✉️ i beskedindhold) er data, ikke UI, og er undtaget.
-- **Status:** Ældre CSS har stadig værdier uden for skalaen (ca. 100 forskellige tekststørrelser). Reglen gælder al ny og ændret kode; ryd op i den blok du alligevel rører.
+- **Status:** Ældre CSS har stadig værdier uden for skalaen. Reglen gælder al ny og ændret kode; ryd op i den blok du alligevel rører. Tekststørrelser er ryddet i `06-profile-page.css` og `08-dealer-extras.css` (9. okt., snappet til nærmeste token; alt over 42 px er ikoner og står urørt). Tilbage: ca. 650 i de øvrige filer. `--space-5` (20 px) blev tilføjet 9. okt.; før det gav `var(--space-5)` tavst ingen afstand.
 
 **Udtryk (gælder ny og ændret kode; ældre kode er IKKE ryddet op, se status):**
 - Ingen pile (→ ← ↓) i linktekster. Eneste undtagelse er "← Tilbage".

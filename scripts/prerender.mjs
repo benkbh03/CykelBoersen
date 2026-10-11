@@ -402,7 +402,7 @@ function blogArticlePage(article) {
         </header>
         <div class="blog-article-body">${article.body}</div>
         <div class="blog-article-cta">
-          <h3>Klar til at handle?</h3>
+          <h3>Find eller sælg en cykel</h3>
           <div class="blog-article-cta-btns">
             <button onclick="navigateTo('/')">Se annoncer</button>
             <button onclick="navigateTo('/sell')" class="primary">Opret annonce</button>
@@ -448,7 +448,7 @@ function blogOverviewPage() {
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="blog-hero">
           <h1 class="blog-title">Blog</h1>
-          <p class="blog-subtitle">Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.</p>
+          <p class="blog-subtitle">Guides til at købe, sælge og vedligeholde en brugt cykel.</p>
         </header>
         <div class="blog-categories">
           <button class="blog-cat-btn active" data-cat="all">Alle</button>
@@ -501,10 +501,10 @@ function brandsOverviewPage() {
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="brands-overview-hero">
           <h1 class="brands-overview-title">Alle cykelmærker</h1>
-          <p class="brands-overview-subtitle">Browse brugte og nye cykler fra alle de store cykelmærker.</p>
+          <p class="brands-overview-subtitle">Brugte og nye cykler sorteret efter mærke.</p>
         </header>
         <section class="brands-overview-section">
-          <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
+          <h2 class="brands-overview-section-title">Mærker med egen side</h2>
           <div class="brands-overview-grid">
             ${brands.map(({ slug, name }) => `
               <a class="brand-tile" href="/cykler/${slug}/"><div class="brand-tile-name">${escHtml(name)}</div></a>`).join('')}

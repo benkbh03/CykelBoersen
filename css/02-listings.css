@@ -459,13 +459,6 @@
 /* Striben var tidligere en gradient fra skovgroen til rust. De to farver ligger
    langt fra hinanden i kuloercirklen, saa overgangen loeb gennem en oliven-brun
    midte der ikke findes i paletten. Nu ensfarvet. */
-.dealer-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: var(--forest);
-}
 /* Kun margin-top:auto — indholdet staar som foer, men foden skubbes til
    bunden saa Google Maps-knapperne staar paa linje paa tvaers af kort med
    forskelligt indhold. Ingen omrokering, kun justering. */
