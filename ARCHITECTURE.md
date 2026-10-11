@@ -24,7 +24,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/ui-feedback.js`: generic UI feedback (`showToast`, `retryHTML`).
 
 ## Feature modules extracted from `main.js`
-- `js/dawa-autocomplete.js`: address/city autocomplete and DAWA data extraction.
+- `js/by-autocomplete.js`: address/city autocomplete (cities from the local list in `js/dk-postnumre.js`; DAWA is shut down). `js/dawa-autocomplete.js` is a temporary re-export for cached copies of main.js.
 - `js/search-autocomplete.js`: search-box autocomplete handlers.
 - `js/realtime-notifications.js`: Supabase realtime channel lifecycle.
 - `js/inbox-badge.js`: unread message count + badge rendering.
