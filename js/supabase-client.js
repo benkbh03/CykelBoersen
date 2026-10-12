@@ -1,7 +1,9 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { SUPABASE_ENV } from './env.js';
 
-export const SUPABASE_URL = 'https://ktufgncydxhkhfttojkh.supabase.co';
-export const SUPABASE_KEY = 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B';
+// Produktion eller staging, afgjort af domænet. Se js/env.js.
+export const SUPABASE_URL = SUPABASE_ENV.url;
+export const SUPABASE_KEY = SUPABASE_ENV.key;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 

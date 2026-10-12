@@ -3,8 +3,11 @@
    Claude Haiku-baseret support chat widget.
    ============================================================ */
 
-const CHAT_FUNCTION_URL  = 'https://ktufgncydxhkhfttojkh.supabase.co/functions/v1/chat-support';
-const SUPABASE_ANON_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0dWZnbmN5ZHhoa2hmdHRvamtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU3NjAzNjksImV4cCI6MjA2MTMzNjM2OX0.CJkFaJfAcOPPcSIBo45HVmP-LCwPp8wz9GSwEMr80Xk';
+import { IS_STAGING, SUPABASE_ENV } from './env.js';
+
+const PROD_ANON_KEY      = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0dWZnbmN5ZHhoa2hmdHRvamtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU3NjAzNjksImV4cCI6MjA2MTMzNjM2OX0.CJkFaJfAcOPPcSIBo45HVmP-LCwPp8wz9GSwEMr80Xk';
+const CHAT_FUNCTION_URL  = `${IS_STAGING ? SUPABASE_ENV.url : 'https://ktufgncydxhkhfttojkh.supabase.co'}/functions/v1/chat-support`;
+const SUPABASE_ANON_KEY  = IS_STAGING ? SUPABASE_ENV.key : PROD_ANON_KEY;
 
 let chatHistory = [];
 let chatOpen    = false;
