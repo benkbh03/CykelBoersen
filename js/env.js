@@ -21,11 +21,11 @@ const PRODUCTION = {
   key: 'sb_publishable_bxJ_gRDrsJ-XCWWUD6NiQA_1nlPDA2B',
 };
 
-// Udfyldes når staging-projektet er oprettet i Supabase. Husk også at
-// tilføje staging-adressen til connect-src i CSP'en i index.html.
+// Supabase-projektet "CykelBørsen staging" (gratis, oprettet 12. okt. 2026).
+// Adressen står også i connect-src i CSP'en i index.html.
 const STAGING = {
-  url: '',
-  key: '',
+  url: 'https://mbbfaqdxywueikowqyfk.supabase.co',
+  key: 'sb_publishable_tdKk0T6mozhWRoTy7ngq-A_GdLB2Hsx',
 };
 
 const host = typeof location !== 'undefined' ? location.hostname : '';
