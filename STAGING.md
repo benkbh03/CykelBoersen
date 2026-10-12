@@ -26,9 +26,9 @@ ikke udfyldt, bruger alt produktion, som før.
 1. **Staging-database:** et ekstra gratis Supabase-projekt ("CykelBørsen staging", eu-west-1).
    Skemaet kopieres fra produktion, uden brugerdata. Udfyld `STAGING` i `js/env.js`
    og tilføj adressen til `connect-src` i CSP'en i `index.html`.
-2. **Preview-links:** Cloudflare Dashboard → Workers & Pages → Create → Pages →
-   Connect to Git → vælg `CykelBoersen`. Build command: tom. Output directory: `/`.
-   Hver pull request får derefter sit eget link. Produktion bliver på GitHub Pages.
+2. **Preview-links:** findes allerede. Cloudflare Pages-projektet `cykelboersen` bygger hver
+   gren og skriver linket som kommentar på pull requesten
+   (`https://<gren>.cykelboersen.pages.dev`).
 3. **Login på staging:** Supabase (staging) → Authentication → URL Configuration →
    tilføj `https://*.pages.dev/**` og `http://localhost:8080/**` som redirect URLs.
 
