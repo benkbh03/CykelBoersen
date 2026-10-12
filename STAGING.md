@@ -21,16 +21,28 @@ ikke udfyldt, bruger alt produktion, som før.
 3. SQL-migrationer og edge functions køres på **staging først**, derefter produktion.
 4. Ser det rigtigt ud på preview-linket: merge. Så er frontenden live.
 
-## Opsætning (én gang)
+## Opsætning
 
-1. **Staging-database:** et ekstra gratis Supabase-projekt ("CykelBørsen staging", eu-west-1).
-   Skemaet kopieres fra produktion, uden brugerdata. Udfyld `STAGING` i `js/env.js`
-   og tilføj adressen til `connect-src` i CSP'en i `index.html`.
-2. **Preview-links:** findes allerede. Cloudflare Pages-projektet `cykelboersen` bygger hver
-   gren og skriver linket som kommentar på pull requesten
-   (`https://<gren>.cykelboersen.pages.dev`).
-3. **Login på staging:** Supabase (staging) → Authentication → URL Configuration →
-   tilføj `https://*.pages.dev/**` og `http://localhost:8080/**` som redirect URLs.
+**Gjort 12. okt. 2026:**
+- Supabase-projektet "CykelBørsen staging" (`mbbfaqdxywueikowqyfk`, eu-west-1, gratis).
+- Skemaet er kopieret fra produktion: 26 tabeller, 28 funktioner, 14 triggere, 71 RLS-politikker,
+  90 indeks, rettigheder og de tre storage-buckets. Ingen data. Kontrolleret med fingeraftryk af
+  kolonner, politikker, constraints og rettigheder: identiske.
+- `notify_message_email()` peger på staging-projektets egen adresse, aldrig produktionens.
+- `STAGING` i `js/env.js` og `connect-src` i CSP'en er udfyldt.
+
+**Mangler (Dashboard, staging-projektet):**
+1. Authentication → Sign In / Providers → Email → slå **Confirm email** fra. Supabases indbyggede
+   mail sender kun til projektets egne medlemmer, så testbrugere ellers aldrig får bekræftelsen.
+2. Authentication → URL Configuration → tilføj `https://*.cykelboersen.pages.dev/**` og
+   `http://localhost:8080/**` som redirect URLs.
+
+**Ikke kopieret, med vilje:**
+- Edge functions (e-mail, support-chat, smart-filter m.fl.). Deploy dem til staging når en
+  ændring i dem skal testes.
+- Secrets (Resend, Stripe, Anthropic) og cron-jobs. Staging sender ingen mails og trækker ingen penge.
+
+**Hold staging i takt:** hver SQL-migration køres på staging først, derefter produktion.
 
 ## Lokalt (kun for udviklere med terminal)
 
