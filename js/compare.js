@@ -8,6 +8,7 @@
    ============================================================ */
 
 import { esc, bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, isGiveaway, iconBike } from './utils.js';
+import { bikePath } from './bike-url.js';
 
 const STORAGE_KEY = 'cb_compare_ids';
 const MAX_COMPARE = 3;
@@ -143,7 +144,7 @@ export function createComparePage({ supabase, navigateTo, showToast }) {
           
           <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.6rem;margin-bottom:10px;">Vælg cykler at sammenligne</h1>
           <p style="color:var(--muted);margin-bottom:24px;">Klik "Sammenlign"-checkboksen på 2-3 cykler i søgeresultaterne, så viser vi dem her side-om-side.</p>
-          <button onclick="navigateTo('/')" style="background:var(--forest);color:#fff;border:none;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:var(--font-sans);font-weight:600;">Find cykler</button>
+          <button onclick="navigateTo('/')" style="background:var(--rust);color:#fff;border:none;padding:var(--space-3) var(--space-6);border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-sans);font-weight:var(--weight-semibold);">Find cykler</button>
         </div>
       `;
       return;
@@ -274,7 +275,7 @@ function renderCompareTable(bikes, _navigateTo) {
         </div>
         <h2 class="cmp-bike-title">${esc(bikeTitle(b.brand, b.model))}</h2>
         <div class="cmp-bike-subtitle">${esc(b.type || '')}${b.year ? ` · ${b.year}` : ''}</div>
-        <button onclick="navigateTo('/bike/${b.id}')" class="cmp-bike-cta">Se annonce</button>
+        <button onclick="navigateTo('${bikePath(b)}')" class="cmp-bike-cta">Se annonce</button>
       </div>`;
   }).join('');
 

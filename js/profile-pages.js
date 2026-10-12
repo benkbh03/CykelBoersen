@@ -6,7 +6,8 @@ import { findCompletedTradeWith } from './trades.js';
 import {
   buildOpeningHoursDisplay, SERVICES,
 } from './dealer-extras.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, iconBike } from './utils.js';
+import { iconDealer, iconPrivate, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, iconBike } from './utils.js';
+import { cardFacts } from './card-spec.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
@@ -166,7 +167,7 @@ export function createProfilePages({
               <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
-              const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+              const facts = cardFacts(b);
               return facts.length
                 ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
                 : '';
@@ -507,7 +508,15 @@ export function createProfilePages({
       return;
     }
 
-    const displayName = data.profile.seller_type === 'dealer' ? (data.profile.shop_name || data.profile.name) : data.profile.name;
+    /* En forhandler har én side: /dealer/<id>. Gamle links og links fra
+       steder der ikke kender sælgertypen lander her, så send dem videre i
+       stedet for at vise den gamle profilvisning. */
+    if (data.profile.seller_type === 'dealer') {
+      history.replaceState(history.state, '', `/dealer/${userId}`);
+      return renderDealerProfilePage(userId);
+    }
+
+    const displayName = data.profile.name;
     document.title = `${displayName} – Profil | Cykelbørsen`;
     updateSEOMeta(`Se ${displayName}s profil og cykler til salg på Cykelbørsen.`, `/profile/${userId}`);
     detailView.innerHTML = buildUserProfilePageHTML(data);

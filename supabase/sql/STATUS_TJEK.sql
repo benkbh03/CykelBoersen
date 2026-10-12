@@ -21,7 +21,7 @@ SELECT * FROM (
 
   -- Versionen af DENNE fil. Står der en ældre dato end den i rå-linket på
   -- GitHub, er det en gammel kopi der er kørt (det skete 30. sep.).
-  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-05' AS status
+  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-06' AS status
 
   -- ── add_moderation_log_and_suspension.sql (15. september) ──────────
   UNION ALL
@@ -149,6 +149,36 @@ SELECT * FROM (
            WHERE p.id = 'afc48c21-f3fd-45e3-ab6f-afff22ba9cf9'
              AND (p.verified
                   OR EXISTS (SELECT 1 FROM bikes b WHERE b.user_id = p.id AND b.is_active)))
+
+  -- ── add_low_price_review.sql ───────────────────────────────────────
+  UNION ALL SELECT 54, 'moderation', 'trigger: cykler under 200 kr. venter paa godkendelse',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_hold_low_price_bikes')
+              THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 55, 'moderation', 'funktion: admin_review_bike',
+         CASE WHEN to_regprocedure('public.admin_review_bike(uuid,boolean,text)') IS NOT NULL
+              THEN 'OK' ELSE 'MANGLER' END
+  -- Den gamle udgave af laasen blokerede sælgeren i at rette prisen.
+  UNION ALL SELECT 56, 'moderation', 'laasen paa solgte annoncer undtager tilbageholdte',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'prevent_sold_bike_edits'
+                             AND prosrc LIKE '%held_for_review%')
+              THEN 'OK' ELSE 'MANGLER' END
+  -- Ikke en fejl, en koe: saa mange venter paa dig i admin-panelet.
+  UNION ALL SELECT 57, 'moderation', 'annoncer der venter paa godkendelse',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                WHERE table_name = 'bikes' AND column_name = 'held_for_review')
+              THEN 'MANGLER'
+              ELSE (xpath('/row/n/text()', query_to_xml(
+                     'SELECT count(*) AS n FROM bikes WHERE held_for_review AND deleted_at IS NULL',
+                     false, true, '')))[1]::text END
+
+  -- ── add_bike_upgrades.sql (6. oktober) ─────────────────────────────
+  UNION ALL SELECT 58, 'opgraderinger', 'kolonne bikes.upgrades',
+         CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns
+                            WHERE table_name = 'bikes' AND column_name = 'upgrades')
+              THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 59, 'opgraderinger', 'constraint bikes_upgrades_valid',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'bikes_upgrades_valid')
+              THEN 'OK' ELSE 'MANGLER' END
 
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --

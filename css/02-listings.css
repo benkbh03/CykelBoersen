@@ -267,6 +267,11 @@
   display: inline-flex; align-items: center; gap: 3px;
   box-shadow: var(--shadow-sm);
 }
+/* Gammel klasse, beholdt med vilje. bikes-list.js importeres statisk uden ?v=,
+   så en browser kan køre den gamle udgave (der stadig laver det orange mærke)
+   sammen med ny CSS i timevis efter deploy. Uden en regel blev mærket
+   ustylet og fyldte hele billedet (6. okt.). Kan fjernes om nogle uger. */
+.price-reduced-card-badge { display: none !important; }
 /* Førprisen står ved prisen som almindelig tekst, ligesom på annoncesiden
    (.bike-price-was). Den var et orange "↓ -1.000 kr."-mærke oven på
    billedet; tre ens mærker i træk fik forsiden til at ligne en webshop. */
@@ -454,13 +459,6 @@
 /* Striben var tidligere en gradient fra skovgroen til rust. De to farver ligger
    langt fra hinanden i kuloercirklen, saa overgangen loeb gennem en oliven-brun
    midte der ikke findes i paletten. Nu ensfarvet. */
-.dealer-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: var(--forest);
-}
 /* Kun margin-top:auto — indholdet staar som foer, men foden skubbes til
    bunden saa Google Maps-knapperne staar paa linje paa tvaers af kort med
    forskelligt indhold. Ingen omrokering, kun justering. */
@@ -733,8 +731,21 @@ border-color: rgba(42,61,46,0.18);
   transition: background 0.15s, border-color 0.15s;
 }
 .empty-filters-btn:hover { background: var(--surface); border-color: var(--forest); }
-.empty-filters-btn--primary { background: var(--forest); color: var(--bg); border-color: var(--forest); }
-.empty-filters-btn--primary:hover { background: var(--charcoal); border-color: var(--charcoal); }
+.empty-filters-btn--primary { background: var(--rust); color: #fff; border-color: var(--rust); }
+.empty-filters-btn--primary:hover { background: var(--rust-light); border-color: var(--rust-light); }
+
+/* Nærmeste match under tom-beskeden (js/near-matches.js). Kortene står i
+   samme gitter som listen; overskriften fylder en hel række. */
+.empty-filters--with-near { padding-bottom: var(--space-8); }
+.near-matches-head {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-6);
+}
+.near-matches-title {
+  font-family: var(--font-sans); font-weight: var(--weight-semibold);
+  font-size: var(--text-base); color: var(--charcoal); margin: 0;
+}
 @media (max-width: 480px) {
   .empty-filters-actions { flex-direction: column; }
   .empty-filters-btn { width: 100%; }

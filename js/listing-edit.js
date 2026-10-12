@@ -4,6 +4,8 @@
 
 import { renderColorSwatches, getSelectedColors } from './color-swatches.js';
 import { bikeTitle } from './utils.js';
+import { pathIsBike } from './bike-url.js';
+import { mountUpgradesEditor, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 
 const normalizeImageId = (id) => String(id ?? '').trim();
 
@@ -50,6 +52,9 @@ export function createListingEdit({
   // (de er stadig RLS-beskyttede — admin retter felter, ikke feed-billeder).
   let editBikeOwnerId  = null;
   let editIsAdminOther = false;
+  // Opgraderings-editoren. null = feltet sendes ikke med ved gem (tilbehør,
+  // admin på anden forhandler, eller kolonnen findes ikke endnu).
+  let editUpgradesCtl  = null;
 
   // ── State accessors ────────────────────────────────────────
 
@@ -229,7 +234,7 @@ export function createListingEdit({
     document.getElementById('edit-bike-city').value          = b.city || '';
     const editColorGrid = document.getElementById('edit-color-grid');
     const initialEditColors = Array.isArray(b.colors) ? b.colors : (b.color ? b.color.split(/[,/]\s*/).map(s => s.trim()).filter(Boolean) : []);
-    renderColorSwatches(editColorGrid, { selected: initialEditColors, variant: 'tile', max: 3 });
+    renderColorSwatches(editColorGrid, { selected: initialEditColors, max: 3 });
     document.getElementById('edit-description').value   = b.description || '';
     document.getElementById('edit-type').value          = b.type || '';
     document.getElementById('edit-size').value          = b.size || '';
@@ -237,6 +242,20 @@ export function createListingEdit({
     document.getElementById('edit-condition').value     = b.condition || '';
     if (typeof window.updateConditionGuide === 'function') window.updateConditionGuide('edit-condition', 'cg-edit');
     document.getElementById('edit-is-active').checked   = b.is_active;
+
+    // select('*') har kun nøglen, når add_bike_upgrades.sql er kørt. Uden den
+    // ville et gem med feltet fejle, så editoren vises slet ikke.
+    // admin_update_bike kender ikke feltet, så den skjules også dér.
+    const showUpg = Object.prototype.hasOwnProperty.call(b, 'upgrades')
+      && editCategory !== 'tilbehoer' && !editIsAdminOther;
+    const upgGroup = document.getElementById('edit-upgrades-group');
+    if (upgGroup) upgGroup.style.display = showUpg ? '' : 'none';
+    editUpgradesCtl = showUpg
+      ? mountUpgradesEditor(document.getElementById('edit-upgrades-editor'), {
+          initial: Array.isArray(b.upgrades) ? b.upgrades : [],
+          prominent: UPGRADE_PROMINENT_TYPES.includes(b.type),
+        })
+      : null;
 
     document.getElementById('edit-wheel-size').value         = b.wheel_size || '';
     document.getElementById('edit-frame-material').value     = b.frame_material || '';
@@ -447,6 +466,10 @@ export function createListingEdit({
       // overskriver dine rettelser (kun pris opdateres for låste cykler).
       feed_locked:        true,
     };
+    if (editUpgradesCtl) {
+      const upg = editUpgradesCtl.get();
+      updates.upgrades = upg.length ? upg : null;
+    }
 
     if (!updates.brand || !updates.price || !updates.city) {
       showToast('Udfyld alle påkrævede felter', 'advarsel'); return;
@@ -482,6 +505,7 @@ export function createListingEdit({
       .eq('id', id)
       .single();
     const oldPrice = oldBike?.price ?? null;
+    let held = false;
 
     if (editIsAdminOther) {
       // Admin retter en forhandlers annonce → SECURITY DEFINER-RPC (omgår RLS,
@@ -494,8 +518,10 @@ export function createListingEdit({
         console.error(error); return;
       }
     } else {
-      const { error } = await supabase.from('bikes').update(updates).eq('id', id);
+      const { data: saved, error } = await supabase.from('bikes').update(updates).eq('id', id).select('*').maybeSingle();
       if (error) { showToast('Kunne ikke gemme ændringer', 'fejl'); console.error(error); return; }
+      // Under 200 kr. holder databasen annoncen tilbage (add_low_price_review.sql).
+      held = !!saved?.held_for_review;
     }
 
     // Stelnummer: kun hvis brugeren har indtastet et (tomt = uændret).
@@ -510,7 +536,7 @@ export function createListingEdit({
 
     // Prisfald-trigger: hvis sælgeren har sat prisen ned, send notifikation til
     // alle der watcher annoncen ved en pris HØJERE end den nye pris.
-    if (oldPrice != null && updates.price < oldPrice) {
+    if (!held && oldPrice != null && updates.price < oldPrice) {
       supabase.functions.invoke('notify-message', {
         body: {
           type: 'price_drop',
@@ -587,7 +613,8 @@ export function createListingEdit({
     bikeCache.delete(Number(id));
 
     closeEditModal();
-    showToast('Annonce opdateret!', 'ok');
+    if (held) showToast('Gemt. Prisen er under 200 kr., så annoncen vises, når vi har set den', 'advarsel');
+    else showToast('Annonce opdateret!', 'ok');
     reloadMyListings();
     loadBikes();
     updateFilterCounts();
@@ -599,7 +626,7 @@ export function createListingEdit({
     const bikeModalOpen = document.getElementById('bike-modal')?.classList.contains('open');
     const profileMatch  = currentPath.match(/^\/profile\/([^/]+)$/);
     const dealerMatch   = currentPath.match(/^\/dealer\/([^/]+)$/);
-    const onBikePage    = currentPath === `/bike/${id}`;
+    const onBikePage    = pathIsBike(currentPath, id);
 
     if (onBikePage) renderBikePage(id);
     if (bikeModalOpen) openBikeModal(id);

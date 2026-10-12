@@ -34,7 +34,7 @@ export const BLOG_ARTICLES = {
       <p>Prisen er vægt, kroner og vedligehold. En fully er tungere, dyrere ved samme komponentniveau, og bagdæmper, lejer og pivotpunkter skal serviceres og slides over tid. Det er ikke afskrækkende, men det er en omkostning du skal regne med.</p>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;">
-        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Fuld affjedring (fully)'})" style="background:var(--forest);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se fuldaffjedrede mountainbikes</a>
+        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Fuld affjedring (fully)'})" style="background:var(--rust);color:#fff;padding:11px 18px;border-radius:var(--radius-sm);text-decoration:none;font-weight:var(--weight-semibold);display:inline-block;">Se fuldaffjedrede mountainbikes</a>
       </div>
 
       <h2>Sådan vælger du efter din kørsel</h2>

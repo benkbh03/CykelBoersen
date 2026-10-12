@@ -373,17 +373,18 @@ body.nav-search-on .nav-search { display: flex; }
 .nav-profile { margin-left: 4px; display: flex; align-items: center; gap: 6px; }
 .profile-avatar-btn {
   width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--rust);
+  border-radius: var(--radius-full);
+  /* Neutral (11. okt.): orange er forbeholdt knapper som "Sæt til salg". */
+  background: var(--surface);
   border: none; cursor: pointer;
-  font-size: 0.8rem; font-weight: 700;
-  color: #fff;
+  font-size: var(--text-xs); font-weight: var(--weight-semibold);
+  color: var(--forest);
   font-family: var(--font-sans);
   transition: background 0.2s;
   display: flex; align-items: center; justify-content: center;
 }
-.profile-avatar-btn:hover { background: var(--rust-light); }
-.profile-avatar-btn:focus-visible { outline-color: rgba(232,105,74,0.7); outline-offset: 3px; }
+.profile-avatar-btn:hover { background: var(--surface-2); }
+.profile-avatar-btn:focus-visible { outline-color: rgba(255,255,255,0.7); outline-offset: 3px; }
 
 /* Nav indbakke */
 .nav-inbox-btn {
@@ -1139,12 +1140,33 @@ body.nav-search-on .nav-search { display: flex; }
 .color-swatch-label { flex: 1; }
 .color-swatch .filter-count { font-size: 0.72rem; }
 
-/* Form-versions: tile-grid */
+/* Formularer (sælg + rediger): små runde prikker med navnet ved siden af,
+   som en række chips. De store farvede fliser (.color-tile) bruges ikke
+   længere her, men reglerne bliver stående for cachede moduler. */
 .form-group .color-swatch-grid,
 .sell-field .color-swatch-grid {
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 6px;
+  display: flex; flex-wrap: wrap;
+  gap: var(--space-2);
 }
+.form-group .color-swatch:not(.color-tile),
+.sell-field .color-swatch:not(.color-tile) {
+  /* .sell-field label er display:block med semibold; swatchen er en label. */
+  display: inline-flex; position: relative; margin: 0;
+  font-weight: var(--weight-regular);
+  padding: 6px 12px 6px 8px;
+  border: 1px solid var(--border); border-radius: var(--radius-full);
+  background: var(--bg); font-size: var(--text-sm);
+}
+.form-group .color-swatch:not(.color-tile):hover,
+.sell-field .color-swatch:not(.color-tile):hover { border-color: var(--charcoal); }
+.form-group .color-swatch.is-on:not(.color-tile),
+.sell-field .color-swatch.is-on:not(.color-tile) {
+  border-color: var(--charcoal); background: var(--surface);
+  font-weight: var(--weight-semibold);
+}
+.color-swatch.is-maxed:not(.color-tile) { opacity: 0.4; cursor: not-allowed; }
+.sell-field .color-swatch input[type="checkbox"],
+.form-group .color-swatch input[type="checkbox"] { width: 1px; height: 1px; padding: 0; }
 
 /* ── Farve-tile (sælgerflow) ─────────────────────── */
 .color-tile {
@@ -1360,6 +1382,23 @@ body.nav-search-on .nav-search { display: flex; }
 }
 .btn-apply:hover { background: var(--surface); }
 
+/* "Vis flere cykler" under annoncelisten (js/bikes-list.js). Omridset som
+   "Anvend": orange er kun til primærhandlinger, og fyldte grønne knapper
+   hører ikke til i designet. */
+.btn-load-more {
+  display: block; margin: var(--space-6) auto;
+  min-height: 44px; padding: var(--space-3) var(--space-8);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
+  font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans);
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-load-more:hover { background: var(--surface); }
+.btn-load-more:disabled { opacity: 0.6; cursor: progress; }
+@media (max-width: 480px) {
+  .btn-load-more { width: 100%; }
+}
+
 .weight-preset {
   background: var(--cream); color: var(--charcoal);
   border: 1px solid var(--border); border-radius: var(--radius-full);
@@ -1368,6 +1407,60 @@ body.nav-search-on .nav-search { display: flex; }
   transition: background 0.15s, border-color 0.15s;
 }
 .weight-preset:hover { background: var(--sand); border-color: var(--forest); }
+
+/* ── Smart filter ─────────────────────────────────
+   Står i en lys grå flade, så den ikke læses som endnu et filterafsnit
+   (10. okt.: brugeren kunne ikke se at feltet var en søgning med AI).
+   Overskrift og én linje om hvad den gør. Ingen ikon,
+   ingen glimmer, ingen gradient. */
+.smart-filter {
+  order: 0;
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+.smart-filter-label {
+  font: var(--weight-semibold) var(--text-base)/1.3 var(--font-sans);
+  color: var(--charcoal);
+}
+.smart-filter-help {
+  margin: 0;
+  font: var(--weight-regular) var(--text-sm)/1.4 var(--font-sans);
+  color: var(--muted);
+}
+.smart-filter-input {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  /* 16 px: mindre får iOS til at zoome ind ved fokus. */
+  font: var(--weight-regular) var(--text-base)/1.4 var(--font-sans);
+}
+.smart-filter-input::placeholder { color: var(--muted); }
+.smart-filter-input:focus { outline: none; border-color: var(--charcoal); }
+.smart-filter-foot { display: flex; flex-direction: column; gap: var(--space-2); }
+/* Stille knap, ikke orange: hero-søgningen lige over har allerede den
+   orange "Søg". To orange knapper over folden lod brugeren gætte hvilken
+   søgning der var den rigtige. Samme form som "Anvend". */
+.smart-filter-btn {
+  width: 100%; min-height: 44px;
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
+  font: var(--weight-semibold) var(--text-sm)/1 var(--font-sans);
+  cursor: pointer; transition: background 0.15s;
+}
+.smart-filter-btn:hover { background: var(--surface-2); }
+.smart-filter-btn:disabled { opacity: 0.6; cursor: progress; }
+.smart-filter-status {
+  font: var(--weight-regular) var(--text-xs)/1.4 var(--font-sans);
+  color: var(--muted);
+}
+.smart-filter-status:empty { display: none; }
+.smart-filter-status.is-error { color: var(--error); }
+/* Tilbehør har sin egen typeliste; smart filter kender kun cykler. */
+body.browse-tilbehoer .smart-filter { display: none; }
 
 /* ── Quiz box ────────────────────────────────────── */
 .bike-quiz-box {
@@ -1479,29 +1572,35 @@ body.nav-search-on .nav-search { display: flex; }
   margin: 0 0 10px;
   color: var(--charcoal);
 }
+/* Specifikationer er en liste i to kolonner (etiket til venstre, værdi til
+   højre, tynd linje imellem), ikke en kasse pr. felt. */
 .fit-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  column-gap: var(--space-8);
+  border-top: 1px solid var(--border);
 }
 .fit-card {
-  background: var(--cream);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
 }
 .fit-card-label {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  color: var(--text-muted);
 }
 .fit-card-value {
-  font-size: var(--text-base);
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--charcoal);
+  text-align: right;
+}
+@media (max-width: 480px) {
+  .fit-cards { grid-template-columns: 1fr; }
 }
 .fit-section-title {
   display: flex;
@@ -1568,22 +1667,19 @@ body.nav-search-on .nav-search { display: flex; }
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  background: #fff8e6;
-  border: 1.5px solid #f5c842;
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
   text-decoration: none;
   color: var(--charcoal);
-  margin-top: 14px;
-  transition: background 0.15s, border-color 0.15s;
+  margin-top: var(--space-4);
+  transition: border-color 0.15s;
 }
-.theft-check-tip:hover {
-  background: #fff3cc;
-  border-color: #e6b800;
-}
+.theft-check-tip:hover { border-color: var(--charcoal); }
 .theft-check-tip svg:first-child {
   flex-shrink: 0;
-  color: #c48a00;
+  color: var(--text-muted);
 }
 .theft-check-tip div {
   flex: 1;
@@ -1592,12 +1688,12 @@ body.nav-search-on .nav-search { display: flex; }
   gap: 2px;
 }
 .theft-check-tip strong {
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--charcoal);
 }
 .theft-check-tip span {
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   color: var(--muted);
   line-height: 1.4;
 }

@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20261006c">
+<html lang="da" data-asset-v="20261012fl1">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,7 +102,7 @@
     style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
     font-src 'self';
     img-src 'self' data: blob: https:;
-    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://mbbfaqdxywueikowqyfk.supabase.co wss://mbbfaqdxywueikowqyfk.supabase.co https://api.dataforsyningen.dk https://cloudflareinsights.com;
+    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://api.dataforsyningen.dk https://cloudflareinsights.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
@@ -127,23 +127,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20261006c">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20261012fl1">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20261006c">
-  <link rel="stylesheet" href="/css/01-base.css?v=20261006c">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261006c">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261006c">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261006c">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261006c">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261006c">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261006c">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261006c">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261006c">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261006c">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261006c">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20261006c">
+  <link rel="stylesheet" href="/css/tokens.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261012fl1">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20261012fl1">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -346,6 +346,18 @@
       <div class="sidebar-mobile-header">
         <h3>Filtre</h3>
         <button class="sidebar-mobile-close" onclick="closeMobileFilters()" aria-label="Luk filtre">✕</button>
+      </div>
+      <!-- Smart filter (js/smart-filter.js): fritekst der sætter de almindelige
+           filtre herunder. Øverst, fordi den er en måde at udfylde filtrene
+           på, ikke et tilbud ved siden af dem. -->
+      <div class="smart-filter" id="smart-filter">
+        <label for="smart-filter-input" class="smart-filter-label">Smart søgning</label>
+        <p class="smart-filter-help" id="smart-filter-help">Beskriv cyklen med dine egne ord. Så sætter vi filtrene herunder for dig, og du kan rette dem bagefter.</p>
+        <textarea id="smart-filter-input" class="smart-filter-input" rows="2" maxlength="300" placeholder="Fx carbon gravel i str. M under 15.000 kr." autocomplete="off" aria-describedby="smart-filter-help"></textarea>
+        <div class="smart-filter-foot">
+          <button type="button" class="smart-filter-btn" id="smart-filter-btn">Find cykler</button>
+          <span class="smart-filter-status" id="smart-filter-status" aria-live="polite"></span>
+        </div>
       </div>
       <div class="bike-quiz-box" id="bike-quiz-box">
         <div class="bike-quiz-intro" id="bike-quiz-intro">
@@ -986,6 +998,14 @@
           <button class="view-toggle" id="btn-compare-mode" onclick="toggleCompareMode()" aria-label="Slå sammenligning til" aria-pressed="false" title="Vælg cykler at sammenligne">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="6" height="12" rx="1"/><rect x="12" y="4" width="6" height="12" rx="1"/><path d="M9 10h2"/></svg>
           </button>
+          <!-- Cykelagent som et roligt værktøj i værktøjslinjen, ikke et banner.
+               js/cykelagent-cta.js sætter window.cykelagentSave: med filtre gemmes
+               søgningen, uden filtre åbnes Cykelagent-siden. Fallbacken dækker
+               en cachet, ældre cykelagent-cta.js. -->
+          <button type="button" class="listings-save-btn" id="btn-save-search" onclick="window.cykelagentSave ? cykelagentSave() : navigateTo('/cykelagenter')" title="Få en e-mail når en ny cykel matcher din søgning" aria-label="Få besked om nye cykler">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="listings-save-label">Få besked om nye</span>
+          </button>
           <label for="sort-select" class="sr-only">Sorter annoncer</label>
           <select class="sort-select" id="sort-select" onchange="sortBikes(this.value)" aria-label="Sorter annoncer">
             <option value="newest">Nyeste først</option>
@@ -1125,10 +1145,19 @@
         <div id="brand-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Cykler til salg</h2>
           <div id="brand-bikes-grid" class="brand-bikes-grid">
-            <ul class="prerender-bike-links"><li><a href="/bike/d8524964-7d83-4b52-a184-308ab23f6dc3/">Centurion HELIUM FODBR MATT BLACK HERRE – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/ad894225-a75d-409c-92ee-da2f901cc5ca/">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/ea7abe2d-fe13-436c-88e1-a5f6d0d6ea96/">Centurion Helium isblå – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/e925aad4-936f-4873-a8a6-6a738e7bbd8a/">Centurion AURA DAME – 6.399 kr. i Frederiksberg C</a></li><li><a href="/bike/0fe990b7-52a8-4614-bac0-dbff7ddc9f5c/">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/5bf0069e-cba4-451d-b91f-e416e904b26c/">Centurion 7 gears – 1.700 kr. i Viborg</a></li><li><a href="/bike/273d35c9-f56f-4c0f-a08b-e790a40189c6/">Centurion Violator 29 tommer Mountainbike - Str 17 tommer - Mat gul - 8 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/e5eb1326-c4b2-4886-910d-3e832f315d7b/">Centurion Basic Outback Dreng 7g – 4.399 kr. i Frederiksberg C</a></li><li><a href="/bike/57b906c4-c5a0-4c03-9434-b1e8e3a94030/">Centurion 24&quot; Basic Free. – 3.999 kr. i Frederiksberg C</a></li><li><a href="/bike/5d1a1f59-b696-4c44-b3ab-17011f9d7afe/">Centurion HELIUM FODBR. BLANK GRØN – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/df0ad27a-cc77-41a2-b591-bf45716f60af/">Centurion | Blå – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/c81d416c-2d16-42ef-a454-e1336b23557c/">Centurion 26&quot; Basic Free. – 5.699 kr. i Frederiksberg C</a></li><li><a href="/bike/177de188-b7ee-4747-9e7d-7e3a194e109b/">Centurion Zero Dame 8sp Hydr. disc 20.5in Grå sølv gul – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/5f41cc37-d88a-455b-baba-5a4ba4af68fd/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/6f5fc0af-1d50-4e24-8f6f-b3ed339c004c/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/382a4bdd-d613-4926-956c-040c8ee78acf/">Centurion helium – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/8daec511-c910-435e-8475-2bb8ad4eeca7/">Centurion helium sort – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/9fe0820b-172b-4387-ba31-889a800aa790/">Centurion HELIUM FODBR MATT BLACK – 4.299 kr. i Frederiksberg C</a></li></ul>
+            <ul class="prerender-bike-links"><li><a href="/bike/centurion-helium-fodbr-matt-black-herre-d8524964/">Centurion HELIUM FODBR MATT BLACK HERRE – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-violator-29-tommer-mountainbike-str-15-tommer-mat-ad894225/">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-isblaa-ea7abe2d/">Centurion Helium isblå – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-basic-urban-pigecykel-0fe990b7/">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-aura-dame-e925aad4/">Centurion AURA DAME – 6.399 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-7-gears-5bf0069e/">Centurion 7 gears – 1.700 kr. i Viborg</a></li><li><a href="/bike/centurion-violator-29-tommer-mountainbike-str-17-tommer-mat-273d35c9/">Centurion Violator 29 tommer Mountainbike - Str 17 tommer - Mat gul - 8 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-basic-outback-dreng-7g-e5eb1326/">Centurion Basic Outback Dreng 7g – 4.399 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-24-basic-free-57b906c4/">Centurion 24&quot; Basic Free. – 3.999 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-fodbr-blank-groen-5d1a1f59/">Centurion HELIUM FODBR. BLANK GRØN – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-blaa-df0ad27a/">Centurion | Blå – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-26-basic-free-c81d416c/">Centurion 26&quot; Basic Free. – 5.699 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-zero-dame-8sp-hydr-disc-20-5in-graa-soelv-gul-177de188/">Centurion Zero Dame 8sp Hydr. disc 20.5in Grå sølv gul – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-hydrogen-5f41cc37/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-hydrogen-6f5fc0af/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-382a4bdd/">Centurion helium – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-sort-8daec511/">Centurion helium sort – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-fodbr-matt-black-9fe0820b/">Centurion HELIUM FODBR MATT BLACK – 4.299 kr. i Frederiksberg C</a></li></ul>
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="brand-market-facts" class="brand-page-section market-facts">
+    <h2 class="brand-page-section-title">Hvad koster en Centurion?</h2>
+    <p class="market-facts-summary">Lige nu er der 18 Centurion-cykler til salg med en pris.
+    Halvdelen koster under <strong>4.500 kr.</strong>
+    Den billigste koster 1.700 kr., den dyreste 6.400 kr.
+    17 af dem sælges af en forhandler.</p>
+    
+    <p class="market-facts-note">Tallene er fra de aktive annoncer, og gratis cykler er ikke talt med.
+      Skal du selv sælge? <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Se hvad din cykel er værd</a>.</p></div>
         
         <div class="brand-page-section">
           <h2 class="brand-page-section-title">Populære Centurion-modeller</h2>
@@ -1168,7 +1197,7 @@
       <div class="footer-col">
         <h3 class="footer-col-title">Sælg cykel</h3>
         <a href="/sell/" onclick="event.preventDefault();openModal()">+ Sæt til salg</a>
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Cykel-vurdering</a>
+        <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Hvad er min cykel værd?</a>
         <a href="/blog/saelg-cykel-tips/" onclick="event.preventDefault();navigateTo('/blog/saelg-cykel-tips')">Salgsguide</a>
         <a href="/blog/bedre-cykel-billeder/" onclick="event.preventDefault();navigateTo('/blog/bedre-cykel-billeder')">Tag bedre billeder</a>
       </div>
@@ -1190,6 +1219,20 @@
         <a href="/citybikes/" onclick="event.preventDefault();navigateTo('/citybikes')">Citybikes</a>
         <a href="/ladcykler/" onclick="event.preventDefault();navigateTo('/ladcykler')">Ladcykler</a>
         <a href="/boernecykler/" onclick="event.preventDefault();navigateTo('/boernecykler')">Børnecykler</a>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-col-title">Populære mærker</h3>
+        <!-- footer-brands: scripts/prerender.mjs skriver listen om dagligt ud fra aktive annoncer -->
+        <a href="/cykler/centurion/" onclick="event.preventDefault();navigateTo('/cykler/centurion')">Centurion</a>
+        <a href="/cykler/raleigh/" onclick="event.preventDefault();navigateTo('/cykler/raleigh')">Raleigh</a>
+        <a href="/cykler/van-de-falk/" onclick="event.preventDefault();navigateTo('/cykler/van-de-falk')">Van De Falk</a>
+        <a href="/cykler/velo-lux/" onclick="event.preventDefault();navigateTo('/cykler/velo-lux')">Velo Lux</a>
+        <a href="/cykler/mbk/" onclick="event.preventDefault();navigateTo('/cykler/mbk')">MBK</a>
+        <a href="/cykler/norden/" onclick="event.preventDefault();navigateTo('/cykler/norden')">Norden</a>
+        <a href="/cykler/remington/" onclick="event.preventDefault();navigateTo('/cykler/remington')">Remington</a>
+        <a href="/cykler/winther/" onclick="event.preventDefault();navigateTo('/cykler/winther')">Winther</a>
+        <!-- /footer-brands -->
+        <a href="/maerker/" onclick="event.preventDefault();navigateTo('/maerker')">Alle mærker</a>
       </div>
       <div class="footer-col">
         <h3 class="footer-col-title">Forhandlere</h3>

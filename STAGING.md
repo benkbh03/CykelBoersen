@@ -29,7 +29,8 @@ ikke udfyldt, bruger alt produktion, som før.
   90 indeks, rettigheder og de tre storage-buckets. Ingen data. Kontrolleret med fingeraftryk af
   kolonner, politikker, constraints og rettigheder: identiske.
 - `notify_message_email()` peger på staging-projektets egen adresse, aldrig produktionens.
-- `STAGING` i `js/env.js` og `connect-src` i CSP'en er udfyldt.
+- `STAGING` i `js/env.js` og `connect-src` i CSP'en i `index.html` er udfyldt. De prerendrede sider
+  får samme CSP automatisk, når sitemap-workflowet kører efter merge (de genereres fra `index.html`).
 
 **Mangler (Dashboard, staging-projektet):**
 1. Authentication → Sign In / Providers → Email → slå **Confirm email** fra. Supabases indbyggede

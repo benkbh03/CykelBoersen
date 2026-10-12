@@ -1,9 +1,11 @@
 export function createShareActions({ showToast }) {
   let currentShareBikeId = null;
 
-  function openShareModal(bikeId, title) {
+  /* path: annoncens pæne adresse fra bikePath() i js/bike-url.js. Uden den
+     falder vi tilbage på den gamle /bike/<uuid>, som stadig videresender. */
+  function openShareModal(bikeId, title, path) {
     currentShareBikeId = bikeId;
-    var url  = 'https://cykelbørsen.dk/bike/' + bikeId;
+    var url  = 'https://cykelbørsen.dk' + (path ? path + '/' : '/bike/' + bikeId);
     var text = 'Tjek denne cykel på Cykelbørsen: ' + title;
 
     document.getElementById('share-link-input').value = url;

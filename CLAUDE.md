@@ -132,9 +132,9 @@ Deploy-tjeklisten skal altid have fire dele (udelad dem der ikke er relevante):
    ikke et svar; en række med `OK` er.
 
 **Edge functions der findes (alle kræver manuel deploy):** `notify-message`,
-`notify-saved-searches`, `notify-followers`, `delete-account`, `chat-support`, `suggest-listing`,
+`notify-saved-searches`, `notify-followers`, `delete-account`, `chat-support`, `smart-filter`, `suggest-listing`,
 `admin-create-bike`, `admin-invite-dealer`, samt DORMANT Stripe-functions.
-`notify-message` skal have "Verify JWT" **slået fra** (anonyme kontaktformularer).
+`notify-message` og `smart-filter` skal have "Verify JWT" **slået fra** (anonyme besøgende).
 
 **SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
 (fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
@@ -212,7 +212,7 @@ Føj til listen når et nyt dukker op, så tælleren overlever mellem sessioner.
 | `el.hidden = true` gør intet, fordi en forfatter-`display` slår browserens `[hidden]`-regel | 2 (`.browse-cat-wrap`, `.fb-arrow`) | Har en klasse en `display`-erklæring OG bliver skjult via `.hidden`, SKAL der være en `[hidden]{display:none !important}` ved siden af. Test på `getComputedStyle(el).display`, ikke på `el.hidden` — egenskaben er sand, mens elementet stadig står på skærmen |
 | Samme side under flere adresser, med og uden afsluttende skråstreg | 4 (canonical og sitemap i august · routeren 9. sep. · interne links 9. sep. · JSON-LD-`url` i syv filer 25. sep.) | Delvist lukket. Reglen er `canonicalUrl()` i `js/utils.js`, med kopier i `scripts/prerender.mjs` og `scripts/generate-sitemap.mjs`. Byg aldrig `${BASE_URL}/sti` i hånden, heller ikke i JSON-LD: kald `canonicalUrl` eller slut stien med `/`. Fejlen er tavs i ugevis og dukker først op i Search Console som "Alternate page with proper canonical tag" eller "Page with redirect" |
 | Cache-versionen bumpet ét sted, men ikke det andet | 3 (`sed` matchede ikke ×2; bootstrap-`V` stod på `20260830b` og `main.js`' config-import på `20260701t` mens CSS var nået til `w`) | **Lukket.** Versionen står nu KUN på `<html data-asset-v>` i `index.html`; bootstrap'en, `ASSET_VERSION` og `main.js`' config-import læser den derfra. CSS-linkene er stadig literaler (statiske `href`s skal blokere gengivelsen), men bruger samme streng, så én søg-og-erstat i `index.html` rammer alt. Tæl stadig med `grep -c` efter en bump |
-| Ny eksport i et EKSISTERENDE modul, som en ændret fil importerer statisk | 1 (25. sep.: `iconSearch` m.fl. lagt i `utils.js`; ny `main.js?v=…` mødte en cachet gammel `utils.js` → "does not provide an export named" → hele siden død) | **Regel:** statiske imports (`from './utils.js'`) har ingen `?v=` i URL'en, så browser og Cloudflare kan levere en gammel udgave i timevis efter deploy. Tilføj aldrig en eksport til et eksisterende modul og importér den i samme deploy. Læg nye eksporter i en **ny fil** (ingen gammel udgave kan ligge i en cache), eller gør importen dynamisk med `?v=${ASSET_VERSION}`. Fejlen ses ikke lokalt eller i en ren browser, kun hos besøgende med cache |
+| Ny eksport i et EKSISTERENDE modul, som en ændret fil importerer statisk — eller en CSS-klasse fjernet, som et cachet JS-modul stadig skriver | 3 (11. okt.: `dawa-autocomplete.js` skrevet om til en lokal byliste, men en cachet udgave spurgte stadig den lukkede DAWA, så /me/rediger viste "Ingen byer fundet" efter deploy; løst ved at omdøbe filen · 6. okt.: `.price-reduced-card-badge` fjernet fra CSS, men cachet `bikes-list.js` lavede stadig mærket, som blev ustylet og fyldte kortbilledet · 25. sep.: `iconSearch` m.fl. lagt i `utils.js`; ny `main.js?v=…` mødte en cachet gammel `utils.js` → "does not provide an export named" → hele siden død) | **Regel:** statiske imports (`from './utils.js'`) har ingen `?v=` i URL'en, så browser og Cloudflare kan levere en gammel udgave i timevis efter deploy. Tilføj aldrig en eksport til et eksisterende modul og importér den i samme deploy. Læg nye eksporter i en **ny fil** (ingen gammel udgave kan ligge i en cache), eller gør importen dynamisk med `?v=${ASSET_VERSION}`. Det gælder også en rettelse der KUN ændrer adfærd i et statisk importeret modul: brugeren får den gamle adfærd. Skal rettelsen nå ud med det samme, så giv modulet et nyt filnavn og lad det gamle re-eksportere et par uger. Fejlen ses ikke lokalt eller i en ren browser, kun hos besøgende med cache. **Samme regel modsat vej:** fjern aldrig CSS for en klasse som JS skriver i samme deploy som JS'en holder op med at skrive den; lad en `display:none`-regel stå et par uger |
 | UI-tekst lover noget koden ikke gør | 2 (26. sep.: "Prioriteret placering i søgning" på /bliv-forhandler/, men forhandlere sorteres som alle andre · "tyveri-tjekkes" ved stelnummer-feltet, men opslaget blev fjernet) | Begge rettet. Tavs fejl: ingen crash, men en løgn over for brugeren, og STRATEGI.md siger "vi skal ikke lade som om". Ikke en agent endnu: **én tjeklistelinje** i før-deploy-listen. Når en funktion fjernes eller ændres, så søg efter dens løfter i UI-teksten (`grep -rn` på funktionens navn i `js/`, `partials/`, `index.html`) |
 
 ## Kodestil og filstruktur
@@ -228,7 +228,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - Farver: `--forest`, `--cream`, `--sand`, `--rust`, `--green`, `--charcoal`, `--muted` m.fl. i `tokens.css`; tilstandsfarver (`--success`, `--error`, `--gold` …) i `01-base.css`.
 - Ikoner: inline SVG via `iconX()` i `js/utils.js` og `js/ui-icons.js` (Lucide-stil, `currentColor`); i statisk HTML en `<svg class="ui-icon">`. Annoncekort uden billede bruger `noImagePlaceholder()` fra `js/ui-icons.js`.
 - Admin-panelets ⚙️ er den eneste tilladte emoji. Besked-konventionerne (💰/✅/✉️ i beskedindhold) er data, ikke UI, og er undtaget.
-- **Status:** Ældre CSS har stadig værdier uden for skalaen (ca. 100 forskellige tekststørrelser). Reglen gælder al ny og ændret kode; ryd op i den blok du alligevel rører.
+- **Status:** Ældre CSS har stadig værdier uden for skalaen. Reglen gælder al ny og ændret kode; ryd op i den blok du alligevel rører. Tekststørrelser er ryddet i `06-profile-page.css` og `08-dealer-extras.css` (9. okt., snappet til nærmeste token; alt over 42 px er ikoner og står urørt). Tilbage: ca. 650 i de øvrige filer. `--space-5` (20 px) blev tilføjet 9. okt.; før det gav `var(--space-5)` tavst ingen afstand.
 
 **Udtryk (gælder ny og ændret kode; ældre kode er IKKE ryddet op, se status):**
 - Ingen pile (→ ← ↓) i linktekster. Eneste undtagelse er "← Tilbage".
@@ -258,7 +258,7 @@ Når ny funktionalitet tilføjes: **opret en ny fil** i `js/` frem for at udvide
 - `user-profile-modal`, `dealer-profile-modal`, `all-dealers-modal` — profil-visninger
 - `edit-modal` — rediger annonce (opret annonce sker på `/sell`; den gamle `#modal` er fjernet 27. sep.)
 - `login-modal`, `reset-modal` — auth
-- `profile-modal` — mine indstillinger
+- Mine indstillinger er en side, `/me/rediger` (`js/profile-edit-page.js`), ikke en modal (11. okt.)
 - `bike-modal`, `map-bike-modal` — annonce-detaljer
 - `inbox-modal` — indbakke med tråde
 - `share-modal`, `report-modal` — deling og rapportering
@@ -275,11 +275,12 @@ Z-index hierarki (stigende prioritet):
 - `#buyer-picker-modal`: 5000
 - `.toast`: 10000
 
-De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map-bike-modal`, `admin-modal`, `edit-modal`, `profile-modal`, `login-modal`, `inbox-modal`, `share-modal` bruger `classList.add/remove('open')`. `document.body.style.overflow = 'hidden'` ved åbning, `''` ved lukning. Global `Escape`-lytter lukker den øverste åbne modal.
+De fleste modaler bruger `style.display = 'flex'` / `'none'`. `bike-modal`, `map-bike-modal`, `admin-modal`, `edit-modal`, `login-modal`, `inbox-modal`, `share-modal` bruger `classList.add/remove('open')`. `document.body.style.overflow = 'hidden'` ved åbning, `''` ved lukning. Global `Escape`-lytter lukker den øverste åbne modal.
 
 ### Routing (pathname-baseret)
 - `navigateTo(path)` → `history.pushState`, derefter `handleRoute()`
 - `handleRoute()` læser `location.pathname` og ruter til `renderBikePage`, `renderUserProfilePage`, `renderDealerProfilePage`, `renderMyProfilePage`, `renderSellPage`, `renderBecomeDealerPage`, `renderDealersPage` m.fl.
+- Annonceadresser er `/bike/<mærke-model>-<første 8 tegn af id>` og bygges KUN af `bikePath(b)` i `js/bike-url.js` (bruges også af prerender og sitemap). Byg aldrig `/bike/${id}` i hånden. Den gamle `/bike/<uuid>` virker stadig: routeren slår begge former op, `renderBikePage` retter adresselinjen til den pæne, og prerender skriver en videresendelsesside på den gamle adresse (e-mails fra edge functions bruger den stadig)
 - Backward-compat: gamle hash-URLs `#/bike/123` konverteres til `/bike/123`
 - `?bike=ID` i query → auto-åbner bike-modal
 - `?inbox=true` → auto-åbner indbakke
@@ -447,7 +448,9 @@ spec), gennemgå HELE denne tjekliste. Brug ÉN kanonisk værdiliste på tværs 
 11. **Admin-oprettelse**: `js/admin-bulk-import.js OPTIONAL_FIELDS`, `supabase/functions/admin-create-bike ALLOWED_BIKE_FIELDS`
 12. Bump versionen i `index.html`: én søg-og-erstat af den gamle streng rammer både `<html data-asset-v>` (kilden til alle JS-imports) og CSS-`?v=`-linkene. `ASSET_VERSION` i `config.js` læser attributten og skal IKKE ændres. Tæl bagefter med `grep -c '<ny streng>' index.html` — bumpen er fejlet tavst før
 
-Bemærk: edge functions (#7) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
+13. **Smart filter** (`supabase/functions/smart-filter/index.ts`): den kanoniske liste og en linje i `SYSTEM_PROMPT`. Mangler værdien, kan fritekst ikke ramme den, men den sorteres fra i stedet for at give et forkert filter — **manuel deploy**
+
+Bemærk: edge functions (#7, #13) deployes MANUELT i Supabase Dashboard — git push deployer dem ikke.
 
 ## Database-tabeller (Supabase)
 
@@ -475,6 +478,7 @@ Storage buckets: `avatars` (profilbilleder), bike-images (annonce-billeder).
 | `create-portal-session` | **DORMANT** — Stripe billing portal for aktive abonnementer |
 | `stripe-webhook` | **DORMANT** — Aktiver/deaktiver forhandler-status baseret på Stripe events |
 | `chat-support` | Claude Haiku-baseret support-bot (dansk, FAQ om annoncer, konto, beskeder, forhandler) |
+| `smart-filter` | Fritekst ("carbon gravel under 15.000") → forsidens almindelige filtre. Haiku 5.5, max 20 kald/IP/time og 2.000/døgn via `rate_limits_anon`. Nye værdier i et filter skal også i funktionens lister |
 
 Alle edge functions bruger Deno runtime, inkluderer CORS headers og bruger Supabase service-role key hvor nødvendigt.
 

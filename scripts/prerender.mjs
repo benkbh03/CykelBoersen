@@ -45,11 +45,13 @@ import { breadcrumbsHtml, breadcrumbsJsonLd, bikeCrumbs, brandCrumbs, categoryCr
    for at sige noget andet end appen; bikePageTitle SKAL vaere den samme
    funktion begge steder, ellers modsiger raa HTML og DOM hinanden. */
 import { bikeTitle, bikePageTitle } from '../js/utils.js';
+import { bikePath } from '../js/bike-url.js';
+import { marketFactsHtml } from '../js/market-facts.js';
 import { BLOG_TITLE, BLOG_DESC, BRANDS_DESC, DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC, brandTitle, brandDescription } from '../js/seo-text.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE_URL = 'https://cykelbørsen.dk'; // matcher BASE_URL i js/utils.js (canonical)
-const TEMPLATE = readFileSync(join(ROOT, 'index.html'), 'utf8');
+let TEMPLATE = readFileSync(join(ROOT, 'index.html'), 'utf8');
 
 // Supabase — samme publishable key som resten af appen (sikker at eksponere).
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ktufgncydxhkhfttojkh.supabase.co';
@@ -109,7 +111,7 @@ function bikeLinkList(bikes) {
       ? ` – ${Number(b.price).toLocaleString('da-DK')} kr.`
       : '';
     const where = b.city ? ` i ${b.city}` : '';
-    return `<li><a href="/bike/${escHtml(b.id)}/">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
+    return `<li><a href="${escHtml(bikePath(b))}/">${escHtml(label)}${escHtml(price)}${escHtml(where)}</a></li>`;
   }).join('');
   return `<ul class="prerender-bike-links">${items}</ul>`;
 }
@@ -258,6 +260,26 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
   return html;
 }
 
+/* Videresendelse fra en gammel adresse. GitHub Pages kan ikke sende en 301,
+   så det her er det nærmeste: canonical til den nye adresse + meta refresh
+   med 0 sekunder, som Google behandler som en permanent videresendelse.
+   location.replace bevarer ?ask=1 o.l. for besøgende med JS. */
+function redirectPage(path) {
+  const url = canonicalUrl(path);
+  return `<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Cykelbørsen</title>
+<link rel="canonical" href="${escHtml(url)}">
+<meta http-equiv="refresh" content="0; url=${escHtml(url)}">
+<script>location.replace(${JSON.stringify(path + '/')} + location.search + location.hash);</script>
+</head>
+<body><p><a href="${escHtml(url)}">Gå til annoncen</a></p></body>
+</html>
+`;
+}
+
 function writePage(canonicalPath, html) {
   // "/cykler/trek" -> <root>/cykler/trek/index.html
   const dir = join(ROOT, canonicalPath.replace(/^\//, ''));
@@ -330,6 +352,7 @@ function brandPage(slug, meta) {
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="brand-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_BRAND.get(slug), { one: `en ${name}`, many: `${name}-cykler` })}</div>
         ${models}${relatedHtml}
       </div>`;
 
@@ -381,7 +404,7 @@ function blogArticlePage(article) {
         </header>
         <div class="blog-article-body">${article.body}</div>
         <div class="blog-article-cta">
-          <h3>Klar til at handle?</h3>
+          <h3>Find eller sælg en cykel</h3>
           <div class="blog-article-cta-btns">
             <button onclick="navigateTo('/')">Se annoncer</button>
             <button onclick="navigateTo('/sell')" class="primary">Opret annonce</button>
@@ -427,7 +450,7 @@ function blogOverviewPage() {
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="blog-hero">
           <h1 class="blog-title">Blog</h1>
-          <p class="blog-subtitle">Guides, tests og tips fra cykel-entusiaster, for cykel-entusiaster.</p>
+          <p class="blog-subtitle">Guides til at købe, sælge og vedligeholde en brugt cykel.</p>
         </header>
         <div class="blog-categories">
           <button class="blog-cat-btn active" data-cat="all">Alle</button>
@@ -480,10 +503,10 @@ function brandsOverviewPage() {
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
         <header class="brands-overview-hero">
           <h1 class="brands-overview-title">Alle cykelmærker</h1>
-          <p class="brands-overview-subtitle">Browse brugte og nye cykler fra alle de store cykelmærker.</p>
+          <p class="brands-overview-subtitle">Brugte og nye cykler sorteret efter mærke.</p>
         </header>
         <section class="brands-overview-section">
-          <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
+          <h2 class="brands-overview-section-title">Mærker med egen side</h2>
           <div class="brands-overview-grid">
             ${brands.map(({ slug, name }) => `
               <a class="brand-tile" href="/cykler/${slug}/"><div class="brand-tile-name">${escHtml(name)}</div></a>`).join('')}
@@ -540,6 +563,7 @@ function categoryPage(slug, meta) {
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="category-market-facts" class="brand-page-section market-facts">${marketFactsHtml(BIKES_BY_TYPE.get(meta.type), { one: `en ${(meta.singular || meta.name).toLowerCase()}`, many: meta.name.toLowerCase(), withBrands: true })}</div>
         ${faqHtml}${relatedHtml}
       </div>`;
 
@@ -573,7 +597,7 @@ function bikePage(b) {
   const price = Number(b.price) || 0;
   const priceStr = price.toLocaleString('da-DK');
   const city = b.city || 'Danmark';
-  const canonicalPath = `/bike/${b.id}`;
+  const canonicalPath = bikePath(b);
 
   const title = bikePageTitle(name, `${priceStr} kr.`);
   const description = [
@@ -952,7 +976,7 @@ async function main() {
   let bikes = null;
   try {
     bikes = await fetchSupabase(
-      'bikes?is_active=eq.true&select=id,user_id,category,brand,model,price,type,city,condition,year,size,size_cm,description,' +
+      'bikes?is_active=eq.true&select=id,user_id,category,brand,model,price,is_giveaway,type,city,condition,year,size,size_cm,description,' +
       'bike_images(url,is_primary),profiles!user_id(seller_type,shop_name,name)'
     );
   } catch (err) {
@@ -988,6 +1012,31 @@ async function main() {
       }
     }
     console.log(`Indekserede ${bikes.length} annoncer til interne links (${BIKES_BY_BRAND.size} mærker, ${BIKES_BY_TYPE.size} typer).`);
+  }
+
+  /* "Populære mærker" i footeren: de otte mærker med flest aktive annoncer.
+     Skrives både i TEMPLATE (alle prerendrede sider) og i index.html (forsiden),
+     så listen aldrig peger på en mærkeside der er gået noindex. Mindst tre
+     annoncer: ét spam-opslag skal ikke kunne købe sig et link på hver side.
+     Fejler hentningen, står den sidst skrevne liste urørt. */
+  if (bikes) {
+    const top = [...BIKES_BY_BRAND.entries()]
+      .filter(([, list]) => list.length >= 3)
+      .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+      .slice(0, 8);
+    if (top.length) {
+      const links = top.map(([slug, list]) => {
+        const name = BRANDS_META[slug]?.name || list[0].brand.trim();
+        return `        <a href="/cykler/${slug}/" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">${escHtml(name)}</a>\n`;
+      }).join('');
+      const re = /(<!-- footer-brands:[^\n]*-->\n)[\s\S]*?(\s*<!-- \/footer-brands -->)/;
+      const swap = html => html.replace(re, (_, open, close) => open + links.replace(/\n$/, '') + close);
+      TEMPLATE = swap(TEMPLATE);
+      const indexPath = join(ROOT, 'index.html');
+      const current = readFileSync(indexPath, 'utf8');
+      const updated = swap(current);
+      if (updated !== current) writeFileSync(indexPath, updated);
+    }
   }
 
   // Mærke-sider — kun ASCII-slugs (accenttegn undgås pga. URL-encoding i filstier;
@@ -1062,7 +1111,10 @@ async function main() {
     const bikeRoot = join(ROOT, 'bike');
     if (existsSync(bikeRoot)) rmSync(bikeRoot, { recursive: true, force: true });
     for (const b of bikes) {
-      writePage(`/bike/${b.id}`, buildPage(bikePage(b)));
+      writePage(bikePath(b), buildPage(bikePage(b)));
+      // Den gamle adresse (/bike/<uuid>) står i e-mails, delte links og
+      // Googles indeks. Den får en videresendelse til den nye.
+      writePage(`/bike/${b.id}`, redirectPage(bikePath(b)));
     }
     console.log(`Prerendered ${bikes.length} annonce-sider (med dynamiske OG-billeder).`);
 

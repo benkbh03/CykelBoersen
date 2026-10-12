@@ -1,5 +1,6 @@
 import { iconBike, iconEye, iconPencil, iconHeart } from './utils.js';
 import { fetchTradesFor, completedTrades } from './trades.js';
+import { bikePath } from './bike-url.js';
 export function createMyProfile({
   supabase,
   esc,
@@ -60,7 +61,10 @@ export function createMyProfile({
 
     try {
       grid.innerHTML = data.map(b => {
-        const isSold = !b.is_active;
+        // Tilbageholdt (pris under 200 kr., venter på admin) er ikke solgt:
+        // sælgeren skal kunne rette prisen, men ikke fremhæve eller sælge den.
+        const isHeld = !b.is_active && !!b.held_for_review;
+        const isSold = !b.is_active && !isHeld;
         const isFeatured = !isSold && b.featured_until && new Date(b.featured_until).getTime() > Date.now();
         const views  = b.views || 0;
         const daysOld = b.created_at ? Math.floor((Date.now() - new Date(b.created_at)) / 86400000) : 0;
@@ -68,21 +72,21 @@ export function createMyProfile({
 
         if (isPage) {
           const imgUrl = b.bike_images?.find(i => i.is_primary)?.url || b.bike_images?.[0]?.url || '';
-          const statusLabel = isSold ? 'Solgt' : isOld ? `${daysOld} dage` : 'Aktiv';
-          const statusClass = isSold ? 'mp-status--sold' : isOld ? 'mp-status--old' : 'mp-status--active';
+          const statusLabel = isHeld ? 'Afventer godkendelse' : isSold ? 'Solgt' : isOld ? `Aktiv i ${daysOld} dage` : 'Aktiv';
+          const statusClass = isHeld ? 'mp-status--old' : isSold ? 'mp-status--sold' : isOld ? 'mp-status--old' : 'mp-status--active';
           const priceStr = (b.price || 0).toLocaleString('da-DK') + ' kr.';
           const svgEye    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M1.5 12S6 4.5 12 4.5 22.5 12 22.5 12 18 19.5 12 19.5 1.5 12 1.5 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
           const svgEditSm = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 4l6 6-11 11H3v-6L14 4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
           const svgStar   = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
           return `
             <div class="mp-listing-card${isSold ? ' mp-listing-card--sold' : ''}">
-              <div class="mp-listing-img-wrap" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
+              <div class="mp-listing-img-wrap" onclick="navigateTo('${bikePath(b)}')" title="Se annonce">
                 ${imgUrl
                   ? `<img src="${imgUrl}" alt="" class="mp-listing-thumb" loading="lazy">`
                   : `<div class="mp-listing-thumb--empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="17" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 17l4-8h6l2 8m-8-8h-2m4 0l-2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`}
                 <span class="mp-status-badge ${statusClass}">${statusLabel}</span>
               </div>
-              <div class="mp-listing-body" onclick="navigateTo('/bike/${b.id}')" title="Se annonce">
+              <div class="mp-listing-body" onclick="navigateTo('${bikePath(b)}')" title="Se annonce">
                 <div class="mp-listing-title">${esc(b.brand)} ${esc(b.model)}</div>
                 <div class="mp-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
                 <div class="mp-listing-stats-row">
@@ -95,12 +99,12 @@ export function createMyProfile({
                 <div class="mp-listing-actions">
                   ${!isSold
                     ? `<button class="mp-btn-edit"  onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
-                       <button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">${svgStar} ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>`
+                       ${isHeld ? '' : `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">${svgStar} ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>`}`
                     : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
                 </div>
                 <div class="mp-listing-links">
-                  <button class="mp-link" onclick="navigateTo('/bike/${b.id}')">Se annonce</button>
-                  ${!isSold ? `<span class="mp-link-sep">·</span>
+                  <button class="mp-link" onclick="navigateTo('${bikePath(b)}')">Se annonce</button>
+                  ${!isSold && !isHeld ? `<span class="mp-link-sep">·</span>
                   <button class="mp-link" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : ''}
                   <span class="mp-link-sep">·</span>
                   <button class="mp-link mp-link--danger" onclick="deleteListing('${b.id}')">Slet</button>
@@ -109,12 +113,12 @@ export function createMyProfile({
               <div class="mp-listing-actions-mobile">
                 ${!isSold
                   ? `<button class="mp-btn-edit"  onclick="openEditModal('${b.id}')">${svgEditSm} Redigér</button>
-                     <button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">${svgStar} ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>`
+                     ${isHeld ? '' : `<button class="mp-btn-boost${isFeatured ? ' mp-btn-boost--active' : ''}" onclick="openBoostModal('${b.id}')">${svgStar} ${isFeatured ? 'Fremhævet' : 'Fremhæv'}</button>`}`
                   : `<button class="mp-btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
               </div>
               <div class="mp-listing-links mp-listing-links--mobile">
-                <button class="mp-link" onclick="navigateTo('/bike/${b.id}')">Se annonce</button>
-                ${!isSold ? `<span class="mp-link-sep">·</span>
+                <button class="mp-link" onclick="navigateTo('${bikePath(b)}')">Se annonce</button>
+                ${!isSold && !isHeld ? `<span class="mp-link-sep">·</span>
                 <button class="mp-link" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>` : ''}
                 <span class="mp-link-sep">·</span>
                 <button class="mp-link mp-link--danger" onclick="deleteListing('${b.id}')">Slet</button>
@@ -124,14 +128,14 @@ export function createMyProfile({
 
         return `<div class="my-listing-row" style="${isSold ? 'opacity:0.65' : ''}">
           <div class="my-listing-info">
-            <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}</div>
+            <div class="my-listing-title">${esc(b.brand)} ${esc(b.model)} ${isSold ? '<span style="background:var(--charcoal);color:#fff;font-size:.68rem;padding:2px 7px;border-radius:4px;vertical-align:middle;">SOLGT</span>' : ''}${isHeld ? ' <span style="color:var(--muted);font-size:var(--text-xs);vertical-align:middle;">Afventer godkendelse</span>' : ''}</div>
             <div class="my-listing-meta">${esc(b.type)} · ${esc(b.city)} · ${esc(b.condition)}</div>
             <div class="my-listing-views">${iconEye(13)} ${views.toLocaleString('da-DK')} visninger</div>
           </div>
           <div class="my-listing-price">${(b.price || 0).toLocaleString('da-DK')} kr.</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             ${!isSold
-              ? `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>
+              ? `${isHeld ? '' : `<button class="btn-sold" onclick="toggleSold('${b.id}', false)">Sæt solgt</button>`}
                  <button class="btn-edit" onclick="openEditModal('${b.id}')" aria-label="Rediger">${iconPencil(14)}</button>`
               : `<button class="btn-unsold" onclick="toggleSold('${b.id}', true)">Genaktiver</button>`}
             <button class="btn-delete" onclick="deleteListing('${b.id}')">Slet</button>

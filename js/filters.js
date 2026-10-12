@@ -170,7 +170,12 @@ export function createFilters({
     if (cf?.sellerType === 'dealer')  pills.push({ label: 'Kun forhandlere', type: 'quick-seller' });
     if (cf?.sellerType === 'private') pills.push({ label: 'Kun private', type: 'quick-seller' });
 
+    /* Mærke og stelstørrelse manglede her. Et mærke valgt via søgeforslag
+       blev derfor stående usynligt, når man bagefter trykkede på en type-fane,
+       og listen var tom uden at man kunne se hvorfor. */
+    for (const b of (args?.brands || []))     pills.push({ label: b, type: 'brand', value: b });
     for (const t of (args?.types || []))      pills.push({ label: t, type: 'type', value: t });
+    for (const sz of (args?.sizes || []))     pills.push({ label: `Str. ${sz.split(' ')[0]}`, type: 'size', value: sz });
     for (const c of (args?.conditions || [])) pills.push({ label: c, type: 'condition', value: c });
     for (const w of (args?.wheelSizes || [])) pills.push({ label: w, type: 'wheel', value: w });
     for (const c of (args?.colors || []))     pills.push({ label: c, type: 'color', value: c });
@@ -309,6 +314,8 @@ export function createFilters({
         document.querySelectorAll('[data-filter="seller"]:not([data-value="all"])').forEach(cb => cb.checked = false);
         applyFilters();
         break;
+      case 'brand':
+      case 'size':
       case 'frame_material':
       case 'brake_type':
       case 'groupset':
@@ -327,6 +334,33 @@ export function createFilters({
         applyFilters();
         break;
     }
+  }
+
+  /* Fjerner alle værdier i én filtergruppe på én gang (fx alle valgte
+     mærker). Bruges af "nærmeste match" i tom-tilstanden, hvor forslaget er
+     at droppe en hel gruppe. Én applyFilters, ikke én pr. værdi. */
+  function removeFilterGroup(type) {
+    switch (type) {
+      case 'price':
+      case 'weight':
+      case 'battery':
+      case 'seller':
+      case 'giveaway':
+        removeFilterPill(type, '');
+        return;
+      case 'search':
+      case 'city': {
+        const el = document.getElementById(type === 'search' ? 'search-input' : 'search-city');
+        if (el) el.value = '';
+        applyFilters();
+        return;
+      }
+    }
+    document.querySelectorAll(`[data-filter="${type}"]:not([data-value="all"])`).forEach(cb => {
+      cb.checked = false;
+      cb.closest('.color-swatch')?.classList.remove('is-on');
+    });
+    applyFilters();
   }
 
   function toggleNearMe(pill) {
@@ -564,6 +598,7 @@ export function createFilters({
     clearAllFilters,
     updateActiveFiltersBar,
     removeFilterPill,
+    removeFilterGroup,
     toggleNearMe,
     updateNearMeRadius,
     applyNearMeFilter,

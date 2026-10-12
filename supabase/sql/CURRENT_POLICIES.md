@@ -26,6 +26,7 @@ Denne fil er øjebliksbilledet af hvad databasen faktisk håndhæver.
 - `reviews` INSERT tjekker kun `reviewer_id`. `require_trade_before_review` (fra `add_trades.sql`) kræver en **gennemført** række i `trades` mellem parterne og sætter selv `trade_id` og `bike_id`. En handel oprettes kun af triggeren `trg_create_trade_from_message`, når annoncens sælger sender ✅-beskeden til en bruger, der har skrevet om annoncen. Hullet fra `harden_profile_insert_and_reviews.sql` (en selvskrevet ✅-besked gav ret til at vurdere) er dermed lukket.
 - `bikes` UPDATE: `trg_cancel_trade_on_reactivate` annullerer handlen og nulstiller `sold_via`, når en solgt annonce sættes aktiv igen.
 - `strip_private_phone` nulstiller `phone` på ikke-forhandlere.
+- `bikes` INSERT/UPDATE: `trg_hold_low_price_bikes` (fra `add_low_price_review.sql`, 6. okt.) holder cykelannoncer under 200 kr. tilbage (`is_active = false`, `held_for_review = true`) til en admin godkender via `admin_review_bike()`. Sælgeren kan ikke selv ændre `held_for_review` eller `review_approved_price`. Undtaget: tilbehør, gaver, verificerede forhandlere, admins og service-role.
 
 Bekræft dem med:
 

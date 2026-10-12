@@ -197,7 +197,7 @@ export function createMapPage({
           <div class="map-pill map-pill--price">
             <input type="number" id="map-price-min" placeholder="Min." min="0" aria-label="Min pris">
             <span class="map-pill-sep">–</span>
-            <input type="number" id="map-price-max" placeholder="Max." min="0" aria-label="Max pris">
+            <input type="number" id="map-price-max" placeholder="Maks." min="0" aria-label="Maks. pris">
             <span class="map-pill-unit">kr.</span>
           </div>
           <button class="map-pill map-pill--more" onclick="openMapFiltersSheet()" title="Flere filtre">
@@ -1129,7 +1129,7 @@ export function createMapPage({
 
     let html = singleGroups.map(g => {
       const current = cur[g.key];
-      return '<div class="msf-group"><div class="msf-group-title">' + g.title.toUpperCase() + '</div><div class="msf-opts">'
+      return '<div class="msf-group"><div class="msf-group-title">' + g.title + '</div><div class="msf-opts">'
         + g.opts.map(([val,label]) => {
             const selected = String(current) === String(val);
             return '<button type="button" class="msf-opt' + (selected ? ' active' : '') + '" data-g="' + g.key + '" data-v="' + esc(val) + '">' + esc(label) + '</button>';
@@ -1138,10 +1138,10 @@ export function createMapPage({
     }).join('');
 
     // Pris (altid synlig — primært filter)
-    html += '<div class="msf-group"><div class="msf-group-title">PRIS</div><div class="msf-price">'
-      + '<input type="number" id="msf-price-min" placeholder="Min kr" value="' + esc(cur.priceMin) + '">'
+    html += '<div class="msf-group"><div class="msf-group-title">Pris</div><div class="msf-price">'
+      + '<input type="number" id="msf-price-min" placeholder="Min." value="' + esc(cur.priceMin) + '">'
       + '<span class="msf-price-sep">–</span>'
-      + '<input type="number" id="msf-price-max" placeholder="Max kr" value="' + esc(cur.priceMax) + '">'
+      + '<input type="number" id="msf-price-max" placeholder="Maks." value="' + esc(cur.priceMax) + '">'
       + '<span class="msf-price-unit">kr.</span>'
       + '</div>'
       + '<label class="msf-check"><input type="checkbox" id="msf-giveaway"'
@@ -1155,7 +1155,7 @@ export function createMapPage({
     const acc = (title, inner, count) =>
       '<details class="msf-acc"' + (count ? ' open' : '') + '>'
       + '<summary class="msf-acc-head"><span class="msf-acc-title">' + esc(title) + '</span>'
-      + (count ? '<span class="msf-acc-count">' + count + '</span>' : '')
+      + (count ? '<span class="msf-acc-count">' + count + ' valgt</span>' : '')
       + '<svg class="msf-acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>'
       + '</summary><div class="msf-acc-body">' + inner + '</div></details>';
 
@@ -1208,13 +1208,13 @@ export function createMapPage({
     // Max vægt
     const weightInner = '<div class="msf-price"><input type="number" id="msf-weight-max" placeholder="fx 12" step="0.1" min="0" value="'
       + (_mapAdvFilters.weight_max != null ? _mapAdvFilters.weight_max : '') + '"><span class="msf-price-unit">kg</span></div>';
-    html += acc('Max vægt', weightInner, _mapAdvFilters.weight_max != null ? 1 : 0);
+    html += acc('Maks. vægt', weightInner, _mapAdvFilters.weight_max != null ? 1 : 0);
 
     // Batteri (Wh, el-cykel)
     const batteryInner = '<div class="msf-price">'
-      + '<input type="number" id="msf-battery-min" placeholder="Min Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_min != null ? _mapAdvFilters.battery_min : '') + '">'
+      + '<input type="number" id="msf-battery-min" placeholder="Min." step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_min != null ? _mapAdvFilters.battery_min : '') + '">'
       + '<span class="msf-price-sep">–</span>'
-      + '<input type="number" id="msf-battery-max" placeholder="Max Wh" step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_max != null ? _mapAdvFilters.battery_max : '') + '">'
+      + '<input type="number" id="msf-battery-max" placeholder="Maks." step="1" min="100" max="2000" value="' + (_mapAdvFilters.battery_max != null ? _mapAdvFilters.battery_max : '') + '">'
       + '<span class="msf-price-unit">Wh</span></div>';
     html += acc('Batteri (Wh)', batteryInner, (_mapAdvFilters.battery_min != null || _mapAdvFilters.battery_max != null) ? 1 : 0);
 

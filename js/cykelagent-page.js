@@ -9,6 +9,7 @@
 import { BIKE_COLORS } from './config.js';
 import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
 import { iconDealer, iconPrivate, iconShield, priceText, iconBell, iconBike } from './utils.js';
+import { bikePath } from './bike-url.js';
 
 const BIKE_TYPES = ['Racercykel', 'Mountainbike', 'El-cykel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Gravel', 'Senior cykel'];
 const CONDITIONS = ['Ny', 'Som ny', 'God stand', 'Brugt'];
@@ -108,7 +109,7 @@ export function createCykelagentPage({
         <button class="sell-back-btn" onclick="history.length > 1 ? history.back() : navigateTo('/')">← Tilbage</button>
 
         <header class="cykelagent-hero">
-          <h1 class="cykelagent-title">${isLoggedIn ? 'Mine Cykelagenter' : 'Opret en Cykelagent'}</h1>
+          <h1 class="cykelagent-title">${isLoggedIn ? 'Mine cykelagenter' : 'Opret en cykelagent'}</h1>
           <p class="cykelagent-sub">${isLoggedIn
             ? 'En Cykelagent holder øje med nye cykler der matcher dine kriterier og sender dem til din e-mail.'
             : 'Få besked på e-mail når en cykel der matcher dine ønsker dukker op. Udfyld dine kriterier først. Vi opretter din konto når du er færdig.'}</p>
@@ -117,7 +118,7 @@ export function createCykelagentPage({
         ${isLoggedIn ? `
           <div class="cykelagent-actions">
             <button class="cykelagent-new-btn" onclick="openCykelagentEditor('new')">
-              <span class="cykelagent-new-icon">+</span> Ny Cykelagent
+              <span class="cykelagent-new-icon">+</span> Ny cykelagent
             </button>
           </div>
         ` : ''}
@@ -127,7 +128,7 @@ export function createCykelagentPage({
         ${isLoggedIn ? `
           <div id="cykelagent-matches-mount"></div>
           <div id="cykelagent-list" class="cykelagent-list">
-            <p style="color:var(--muted);padding:20px 0;">Henter dine Cykelagenter…</p>
+            <p style="color:var(--muted);padding:20px 0;">Henter dine cykelagenter…</p>
           </div>
         ` : ''}
       </div>
@@ -183,6 +184,7 @@ export function createCykelagentPage({
       mount.innerHTML = '';
       return;
     }
+    _fillAgentCardMatches(agents, result);
     if (!result.matches.length) {
       mount.innerHTML = '';
       return;
@@ -196,6 +198,28 @@ export function createCykelagentPage({
         const r2 = { matches: result.matches.map(m => ({ ...m, isNew: false })), newCount: 0, totalMatches: result.totalMatches };
         mount.innerHTML = _buildMatchesSection(r2);
       });
+    }
+  }
+
+  /* Linjen på hvert agentkort: hvad agenten har fundet, ikke kun hvad den
+     leder efter. Tallet er det, der gør en agent værd at have. */
+  function _fillAgentCardMatches(agents, result) {
+    // En cachet ældre cykelagent-matches.js returnerer ikke perAgent.
+    if (!result || !result.perAgent) return;
+    for (const agent of agents) {
+      const el = document.querySelector(`[data-agent-matches="${CSS.escape(String(agent.id))}"]`);
+      if (!el) continue;
+      const pa = result.perAgent[agent.id];
+      if (!pa || !pa.count) {
+        el.textContent = 'Ingen nye cykler de sidste 30 dage';
+        continue;
+      }
+      const n = `${result.capped ? 'Mindst ' : ''}${pa.count}`;
+      const latest = pa.latest
+        ? new Date(pa.latest).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' })
+        : '';
+      el.textContent = `${n} ${pa.count === 1 ? 'cykel' : 'cykler'} de sidste 30 dage${latest ? ` · nyeste ${latest}` : ''}`;
+      el.classList.add('has-matches');
     }
   }
 
@@ -223,11 +247,11 @@ export function createCykelagentPage({
     const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
     const price = priceText(bike);
     return `
-      <a class="cykelagent-match-card" href="/bike/${bike.id}/" onclick="event.preventDefault();navigateTo('/bike/${bike.id}')" aria-label="${esc(title)}">
+      <a class="cykelagent-match-card" href="${bikePath(bike)}/" onclick="event.preventDefault();navigateTo('${bikePath(bike)}')" aria-label="${esc(title)}">
         ${img
           ? `<img class="cykelagent-match-img" src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">`
           : `<div class="cykelagent-match-img cykelagent-match-img--empty">${iconBike(28)}</div>`}
-        ${isNew ? '<span class="cykelagent-match-new">NY</span>' : ''}
+        ${isNew ? '<span class="cykelagent-match-new">Ny</span>' : ''}
         <div class="cykelagent-match-info">
           <div class="cykelagent-match-title">${esc(title)}</div>
           ${meta ? `<div class="cykelagent-match-meta">${esc(meta)}</div>` : ''}
@@ -273,15 +297,15 @@ export function createCykelagentPage({
     const dateStr = new Date(agent.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' });
 
     return `
-      <div class="cykelagent-card" onclick="openCykelagentEditor('${agent.id}')">
+      <div class="cykelagent-card" data-agent-id="${esc(agent.id)}" onclick="openCykelagentEditor('${agent.id}')">
         <div class="cykelagent-card-top">
-          <span class="cykelagent-card-status">● Aktiv</span>
           <span class="cykelagent-card-date">Oprettet ${dateStr}</span>
         </div>
         <div class="cykelagent-card-name">${esc(agent.name) || 'Min Cykelagent'}</div>
         ${chips.length
           ? `<div class="cykelagent-card-chips">${chips.map(c => `<span class="cykelagent-chip">${c}</span>`).join('')}</div>`
           : `<div class="cykelagent-card-warn">Denne agent har ingen filtre og kan derfor ikke matche præcist. Åbn den og vælg mindst ét kriterium.</div>`}
+        <div class="cykelagent-card-matches" data-agent-matches="${esc(agent.id)}"></div>
         <div class="cykelagent-card-cta">Rediger</div>
       </div>
     `;
@@ -293,12 +317,12 @@ export function createCykelagentPage({
 
     // Toggle: hvis allerede åben for samme id → luk
     if (_editingId === idOrNew) {
-      _editingId = null;
-      mount.innerHTML = '';
+      closeCykelagentEditor();
       return;
     }
 
     _editingId = idOrNew;
+    _setEditingMode(true);
     _form = _emptyForm();
     _originalFilters = {};
 
@@ -344,14 +368,14 @@ export function createCykelagentPage({
     }
 
     mount.innerHTML = _buildEditorHTML(idOrNew === 'new');
-    window.scrollTo({ top: mount.offsetTop - 20, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function _buildEditorHTML(isNew) {
     return `
       <div class="cykelagent-editor">
         <div class="cykelagent-editor-header">
-          <h2 class="cykelagent-editor-title">${isNew ? 'Ny Cykelagent' : 'Rediger Cykelagent'}</h2>
+          <h2 class="cykelagent-editor-title">${isNew ? 'Ny cykelagent' : 'Rediger cykelagent'}</h2>
           <button class="cykelagent-editor-close" onclick="closeCykelagentEditor()" aria-label="Luk">✕</button>
         </div>
 
@@ -381,7 +405,7 @@ export function createCykelagentPage({
         <div class="cykelagent-field-row">
           <div class="cykelagent-field">
             <label class="cykelagent-label">Min. pris (kr.)</label>
-            <input type="number" min="0" class="cykelagent-input" id="cyk-min-price" placeholder="fx 0" value="${_form.minPrice ?? ''}" oninput="updateCykelagentField('minPrice', this.value ? parseInt(this.value) : null)">
+            <input type="number" min="0" class="cykelagent-input" id="cyk-min-price" value="${_form.minPrice ?? ''}" oninput="updateCykelagentField('minPrice', this.value ? parseInt(this.value) : null)">
           </div>
           <div class="cykelagent-field">
             <label class="cykelagent-label">Maks. pris (kr.)</label>
@@ -422,14 +446,6 @@ export function createCykelagentPage({
           </div>
         </div>
 
-        <div class="cykelagent-field">
-          <label class="cykelagent-label">Hjulstørrelse</label>
-          <div class="cykelagent-chips-row">
-            ${WHEELS.map(w => `
-              <button type="button" class="cykelagent-chip-btn${_form.wheelSizes.includes(w) ? ' active' : ''}" onclick="toggleCykelagentArray('wheelSizes', '${esc(w)}')">${esc(w)}</button>
-            `).join('')}
-          </div>
-        </div>
 
         <div class="cykelagent-field">
           <label class="cykelagent-label">Sælgertype</label>
@@ -446,16 +462,25 @@ export function createCykelagentPage({
         <div class="cykelagent-field">
           <label class="cykelagent-toggle">
             <input type="checkbox" ${_form.warranty ? 'checked' : ''} onchange="updateCykelagentField('warranty', this.checked)">
-            <span>${iconShield()} Kun cykler med garanti</span>
+            <span>Kun cykler med garanti</span>
           </label>
           <label class="cykelagent-toggle">
             <input type="checkbox" ${_form.giveaway ? 'checked' : ''} onchange="updateCykelagentField('giveaway', this.checked)">
-            <span>Kun ting der gives væk</span>
+            <span>${_originalFilters.category && _originalFilters.category !== 'cykel' ? 'Kun ting der gives væk' : 'Kun cykler der gives væk'}</span>
           </label>
         </div>
 
-        <details class="cykelagent-advanced" ${_form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length ? 'open' : ''}>
-          <summary class="cykelagent-advanced-summary">Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt. Helt valgfrit, men giver dig mere præcise match</span></summary>
+        <details class="cykelagent-advanced" ${_form.wheelSizes.length || _form.frameMaterials.length || _form.brakeTypes.length || _form.groupsets.length || _form.electronicShifting || _form.maxWeightKg || _form.motors.length || _form.motorPositions.length || _form.batteryMin || _form.batteryMax || _form.suspensions.length || _form.geartypes.length || _form.stepTypes.length ? 'open' : ''}>
+          <summary class="cykelagent-advanced-summary">Tekniske specs<span class="cykelagent-advanced-preview">Filtrér også på hjulstørrelse, stelmateriale, bremser, gear, komponentgruppe, motor, batteri, affjedring og vægt. Helt valgfrit, men giver dig mere præcise match</span></summary>
+
+          <div class="cykelagent-field">
+            <label class="cykelagent-label">Hjulstørrelse</label>
+            <div class="cykelagent-chips-row">
+              ${WHEELS.map(w => `
+                <button type="button" class="cykelagent-chip-btn${_form.wheelSizes.includes(w) ? ' active' : ''}" onclick="toggleCykelagentArray('wheelSizes', '${esc(w)}')">${esc(w)}</button>
+              `).join('')}
+            </div>
+          </div>
 
           <div class="cykelagent-field">
             <label class="cykelagent-label">Stelmaterial</label>
@@ -557,22 +582,26 @@ export function createCykelagentPage({
           </div>
         </details>
 
-        <div class="cykelagent-strict-notice">
-          
-          <span>Jo flere filtre du sætter, jo mere præcist matcher vi. Vi sender <strong>kun</strong> notifikation om cykler der opfylder ALLE dine kriterier, så du aldrig spilder tid på "tæt-på"-matches.</span>
-        </div>
+        <p class="cykelagent-match-note">Du får kun besked om cykler der opfylder alle dine kriterier.</p>
 
         <div class="cykelagent-editor-actions">
-          <button class="cykelagent-save-btn" onclick="saveCykelagentForm()">${isNew ? 'Opret Cykelagent' : 'Gem ændringer'}</button>
+          <button class="cykelagent-save-btn" onclick="saveCykelagentForm()">${isNew ? 'Opret cykelagent' : 'Gem ændringer'}</button>
           <button class="cykelagent-cancel-btn" onclick="closeCykelagentEditor()">Annuller</button>
-          ${!isNew ? `<button class="cykelagent-delete-btn" onclick="deleteCykelagentFromEditor('${_editingId}')">Slet agent</button>` : ''}
         </div>
+        ${!isNew ? `<button type="button" class="cykelagent-delete-link" onclick="deleteCykelagentFromEditor('${_editingId}')">Slet denne agent</button>` : ''}
       </div>
     `;
   }
 
+  /* Mens editoren er åben, skjules listen, match-boksen og "Ny cykelagent".
+     Ellers står agenten to gange på skærmen: i formularen og som kort nedenunder. */
+  function _setEditingMode(on) {
+    document.querySelector('.cykelagent-page')?.classList.toggle('cykelagent-page--editing', on);
+  }
+
   function closeCykelagentEditor() {
     _editingId = null;
+    _setEditingMode(false);
     const mount = document.getElementById('cykelagent-editor-mount');
     if (mount) mount.innerHTML = '';
   }

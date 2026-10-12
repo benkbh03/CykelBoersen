@@ -3,7 +3,9 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
-import { iconDealer, iconPrivate, bikeMetaFacts, priceLabel, iconPin } from './utils.js';
+import { iconDealer, iconPrivate, priceLabel, iconPin } from './utils.js';
+import { cardFacts } from './card-spec.js';
+import { marketFactsHtml } from './market-facts.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { brandTitle, brandDescription, BRANDS_DESC } from './seo-text.js';
@@ -86,6 +88,7 @@ export function createBrandPage({
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
+        <div id="brand-market-facts" class="brand-page-section market-facts"></div>
 
         ${meta.popular_models ? `
         <div class="brand-page-section">
@@ -136,7 +139,7 @@ export function createBrandPage({
       .eq('category', 'cykel')  // mærke-sider er cykel-sider
       .ilike('brand', brandName)
       .order('created_at', { ascending: false })
-      .limit(60);
+      .limit(200);  // alle, så markedsdata regnes på hele udbuddet
 
     if (error) {
       grid.innerHTML = `<p style="color:var(--muted);padding:20px;">Kunne ikke hente cykler. <button onclick="renderBrandPage('${brandToSlug(brandName)}')" style="background:var(--rust);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">Prøv igen</button></p>`;
@@ -154,6 +157,9 @@ export function createBrandPage({
     }
 
     grid.innerHTML = bikes.map(b => buildBikeCard(b)).join('');
+
+    const factsEl = document.getElementById('brand-market-facts');
+    if (factsEl) factsEl.innerHTML = marketFactsHtml(bikes, { one: `en ${brandName}`, many: `${brandName}-cykler` });
 
     // Collapse-knap når der er flere end den initielle visning
     if (bikes.length > BRAND_INITIAL_BIKES) {
@@ -202,7 +208,7 @@ export function createBrandPage({
             <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {
-            const facts = [b.type, ...bikeMetaFacts(b)].filter(Boolean);
+            const facts = cardFacts(b);
             return facts.length
               ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
               : '';
@@ -375,20 +381,19 @@ export function createBrandPage({
         <header class="brands-overview-hero">
           <h1 class="brands-overview-title">Alle cykelmærker</h1>
           <p class="brands-overview-subtitle">
-            Browse cykler fra over ${KNOWN_BRANDS.length} mærker,
-            ${totalActive.toLocaleString('da-DK')} aktive annoncer i alt.
+            ${totalActive.toLocaleString('da-DK')} aktive annoncer fordelt på ${KNOWN_BRANDS.length} mærker.
           </p>
         </header>
 
         <section class="brands-overview-section">
-          <h2 class="brands-overview-section-title">Kuraterede mærker</h2>
+          <h2 class="brands-overview-section-title">Mærker med egen side</h2>
           <div class="brands-overview-grid">
             ${curated.map(({ brand, slug, count }) => `
               <a class="brand-tile" href="/cykler/${slug}/" onclick="event.preventDefault();navigateTo('/cykler/${slug}')">
                 <div class="brand-tile-name">${esc(brand)}</div>
                 ${count > 0
                   ? `<div class="brand-tile-count">${count} ${count === 1 ? 'cykel' : 'cykler'}</div>`
-                  : `<div class="brand-tile-count brand-tile-count-empty">Ingen aktuelle</div>`}
+                  : `<div class="brand-tile-count brand-tile-count-empty">Ingen til salg</div>`}
               </a>
             `).join('')}
           </div>
