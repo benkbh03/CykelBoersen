@@ -15,11 +15,11 @@
 --  "cykelboersen", "Cykelbørsen Support" osv.: små bogstaver, ø/ö/ó → o,
 --  "oe" → "o", alt andet end a-z fjernet.
 --
---  INSERT: navnet ryddes stille i stedet for at fejle. Profilen oprettes
---  af handle_new_user() under selve tilmeldingen, og en fejl dér giver
---  brugeren "Database error saving new user" uden forklaring.
---  UPDATE: afvises med en læsbar fejl, som /me/rediger viser.
---  Admins og service-role (auth.uid() er NULL) er undtaget.
+--  INSERT: navnet erstattes stille med "Ukendt" i stedet for at fejle.
+--  Profilen oprettes af handle_new_user() under selve tilmeldingen, og en
+--  fejl dér giver brugeren "Database error saving new user" uden forklaring.
+--  UPDATE: afvises med en læsbar fejl, som /me/rediger viser. Admins og
+--  service-role (auth.uid() er NULL) er undtaget ved UPDATE.
 
 CREATE OR REPLACE FUNCTION is_reserved_profile_name(n text)
 RETURNS boolean
@@ -39,17 +39,16 @@ LANGUAGE plpgsql
 SET search_path = public, pg_temp
 AS $$
 BEGIN
-  IF auth.uid() IS NULL THEN
-    RETURN NEW;
-  END IF;
-
-  IF TG_OP = 'UPDATE' AND COALESCE(OLD.is_admin, false) THEN
-    RETURN NEW;
-  END IF;
-
+  -- INSERT kommer fra handle_new_user() under tilmeldingen, hvor auth.uid()
+  -- er NULL. Derfor ingen undtagelse her: navnet fra tilmeldingsformularen
+  -- er netop den vej en svindler ville gå.
   IF TG_OP = 'INSERT' THEN
-    IF is_reserved_profile_name(NEW.name)      THEN NEW.name      := ''; END IF;
-    IF is_reserved_profile_name(NEW.shop_name) THEN NEW.shop_name := ''; END IF;
+    IF is_reserved_profile_name(NEW.name)      THEN NEW.name      := 'Ukendt'; END IF;
+    IF is_reserved_profile_name(NEW.shop_name) THEN NEW.shop_name := '';       END IF;
+    RETURN NEW;
+  END IF;
+
+  IF auth.uid() IS NULL OR COALESCE(OLD.is_admin, false) THEN
     RETURN NEW;
   END IF;
 
@@ -65,8 +64,7 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS reject_reserved_profile_name ON profiles;
-CREATE TRIGGER reject_reserved_profile_name
+CREATE OR REPLACE TRIGGER reject_reserved_profile_name
   BEFORE INSERT OR UPDATE OF name, shop_name ON profiles
   FOR EACH ROW EXECUTE FUNCTION reject_reserved_profile_name();
 
