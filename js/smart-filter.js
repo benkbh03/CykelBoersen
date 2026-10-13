@@ -12,6 +12,7 @@
 ──────────────────────────────────────────────────────────────── */
 
 import { supabase } from './supabase-client.js';
+import { setRankWords, clearRankWords } from './smart-rank.js';
 
 const MAX_CHARS = 300;
 
@@ -25,6 +26,12 @@ function countFilters(args) {
   // Min- og maxpris er ét filter for brugeren.
   if (args?.minPrice && args?.maxPrice) n -= 1;
   return n;
+}
+
+/** ["kurv", "lys"] → "kurv eller lys" */
+function listWords(words) {
+  const w = words.slice(0, 5);
+  return w.length < 2 ? w.join('') : `${w.slice(0, -1).join(', ')} eller ${w[w.length - 1]}`;
 }
 
 /**
@@ -65,13 +72,22 @@ export function initSmartFilter({ onApply }) {
         return;
       }
       const args = data?.filters || {};
+      // Ord der ikke er et filter (fx "kurv") sorterer listen i stedet,
+      // så en hverdagsbeskrivelse ikke ender i en tom liste.
+      const words = Array.isArray(data?.keywords) ? data.keywords : [];
       const n = countFilters(args);
-      if (!n) {
+      if (!n && !words.length) {
+        clearRankWords();
         say('Fandt ikke noget at filtrere på. Prøv fx med type, mærke, størrelse eller pris.', true);
         return;
       }
+      setRankWords(words);
       onApply(args);
-      say(n === 1 ? 'Satte 1 filter. Du kan fjerne det over annoncerne.' : `Satte ${n} filtre. Du kan fjerne dem enkeltvis over annoncerne.`);
+      const filtersMsg = !n ? 'Satte ingen filtre.'
+        : n === 1 ? 'Satte 1 filter. Du kan fjerne det over annoncerne.'
+        : `Satte ${n} filtre. Du kan fjerne dem enkeltvis over annoncerne.`;
+      const rankMsg = words.length ? ` Annoncer der nævner ${listWords(words)} står først.` : '';
+      say(filtersMsg + rankMsg);
     } catch (_) {
       say('Smart filter svarede ikke. Prøv igen, eller brug filtrene herunder.', true);
     } finally {
@@ -82,6 +98,8 @@ export function initSmartFilter({ onApply }) {
   }
 
   btn.addEventListener('click', run);
+  // Tømmes feltet, holder ordene op med at sortere ved næste indlæsning.
+  input.addEventListener('input', () => { if (!input.value.trim()) clearRankWords(); });
   input.addEventListener('keydown', (e) => {
     // Enter søger, Shift+Enter giver ny linje.
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); run(); }

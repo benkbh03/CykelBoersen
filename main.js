@@ -61,6 +61,7 @@ import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
 import { applyAccessoryVisibility } from './js/accessory-visibility.js';
 import { initSmartFilter } from './js/smart-filter.js';
+import { resetSmartRank } from './js/smart-rank.js';
 import { HOME_TITLE, HOME_DESC } from './js/seo-text.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
@@ -2793,6 +2794,7 @@ function removeLastFilter() {
 }
 
 function clearAllFiltersAndUrl(opts) {
+  resetSmartRank();
   clearAllFilters(opts);
   if (normalizePath(window.location.pathname) === '/') writeFilterUrl(null);
 }
