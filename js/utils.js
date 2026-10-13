@@ -282,6 +282,9 @@ export function beskedFejl(error, standardTekst) {
   if (m.includes('For mange nye samtaler')) {
     return { tekst: 'For mange nye samtaler på kort tid. Prøv igen om en time.', type: 'advarsel' };
   }
+  if (m.includes('Links kan først sendes')) {
+    return { tekst: 'Links kan først sendes i beskeder, når din konto er 7 dage gammel.', type: 'advarsel' };
+  }
   if (/row-level security|violates row-level/i.test(m)) {
     return { tekst: 'Din konto kan ikke sende beskeder lige nu. Skriv til os hvis det er en fejl.', type: 'advarsel' };
   }

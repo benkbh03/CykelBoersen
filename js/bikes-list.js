@@ -6,6 +6,7 @@ import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
 import { findNearMatch, nearMatchHeadHTML } from './near-matches.js';
 import { mixSellers } from './seller-mix.js';
 import { setFilterApplyCount } from './filter-apply-count.js';
+import { hasRankWords, rankBikes } from './smart-rank.js';
 
 
 export function createBikesList({
@@ -451,6 +452,8 @@ export function createBikesList({
      "nærmeste match", så kortene dér ser ens ud. */
   const filterSelect = join => `id, category, brand, model, price, is_giveaway, original_price, type, city, condition, year, size, size_cm, color, colors, warranty, external_url, is_active, created_at, user_id, featured_until, frame_material, brake_type, groupset, electronic_shifting, weight_kg, motor, motor_position, battery_wh, suspension, geartype, step_type, frame_last4, ${join}(name, seller_type, shop_name, verified, id_verified, email_verified, avatar_url, avatar_thumb_url, address, last_seen), bike_images(url, thumb_url, is_primary)`;
 
+  const RANK_FETCH_COUNT = 200;
+
   // Gør et sent svar fra "nærmeste match" uskadeligt, hvis filtrene er skiftet.
   let _nearSeq = 0;
 
@@ -517,14 +520,19 @@ export function createBikesList({
 
     const offset = getFilterOffset();
     // Samme asymmetriske pagination som loadBikes: kompakt initial, større append
-    const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : BIKES_PAGE_SIZE;
+    // Ord fra smart søgning (js/smart-rank.js) sorterer i browseren, så de
+    // skal se hele det filtrerede sæt, ikke kun første side. Med under 200
+    // annoncer er det én forespørgsel; bliver der flere, sorteres kun de
+    // første 200, og "Vis flere" henter resten i almindelig rækkefølge.
+    const ranking = !append && hasRankWords();
+    const filterFetchCount = append ? BIKES_LOAD_MORE_SIZE : (ranking ? RANK_FETCH_COUNT : BIKES_PAGE_SIZE);
     // Samme !inner-regel som i loadBikes: sælgertype-filter på et left join
     // fjerner ikke rækkerne — det nuller kun profiles-objektet. !inner gør
     // .eq('profiles.seller_type', …) til et rigtigt filter.
     const fProfilesJoin = (sellerType && !dealerId) ? 'profiles!user_id!inner' : 'profiles!user_id';
     let query = supabase
       .from('bikes')
-      .select(filterSelect(fProfilesJoin), { count: 'exact' })
+      .select(filterSelect(fProfilesJoin) + (ranking ? ', description' : ''), { count: 'exact' })
       .eq('is_active', true)
       .eq('category', category)
       .order('created_at', { ascending: false })
@@ -545,7 +553,7 @@ export function createBikesList({
       return;
     }
 
-    const mixed = mixSellers(data || []);
+    const mixed = ranking ? rankBikes(mixSellers(data || [])) : mixSellers(data || []);
     renderBikes(mixed, append);
     markSavedHearts(mixed.map(b => b.id));
     updateActiveFiltersBar();

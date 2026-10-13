@@ -4,6 +4,7 @@
 
 import { iconEye, iconHeart, iconAlert, iconCamera } from './utils.js';
 import { fetchTradesFor, completedTrades } from './trades.js';
+import { PROFILE_PUBLIC_FIELDS } from './own-profile.js';
 
 export function createMyProfilePage({
   supabase,
@@ -55,7 +56,7 @@ export function createMyProfilePage({
     // et page-reload (kun den cachede, slanke profil var i hukommelsen).
     if (typeof setCurrentProfile === 'function') {
       try {
-        const { data: full } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        const { data: full } = await supabase.from('profiles').select(PROFILE_PUBLIC_FIELDS).eq('id', currentUser.id).single();
         if (full) setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
       } catch { /* behold cache-render ved fejl */ }
     }

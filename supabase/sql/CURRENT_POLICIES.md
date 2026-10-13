@@ -12,10 +12,11 @@ Denne fil er øjebliksbilledet af hvad databasen faktisk håndhæver.
 
 ## To ting den IKKE dækker
 
-**1. Kolonne-rettigheder.** `pg_policies` viser kun rækkeadgang. To huller er lukket med `REVOKE`/`GRANT` på kolonneniveau i stedet for med politikker, fordi RLS ikke kan begrænse kolonner (se `harden_messages_and_reviews.sql`):
+**1. Kolonne-rettigheder.** `pg_policies` viser kun rækkeadgang. Tre huller er lukket med `REVOKE`/`GRANT` på kolonneniveau i stedet for med politikker, fordi RLS ikke kan begrænse kolonner (se `harden_messages_and_reviews.sql` og `hide_private_profile_columns.sql`):
 
 - `messages` UPDATE ser ud til at mangle `WITH CHECK`, men modtageren kan kun ændre kolonnen `read`
 - `reviews` UPDATE ser ud til at mangle `WITH CHECK`, men anmelderen kan kun ændre `rating` og `comment`
+- `profiles` SELECT er `USING (true)`, men når `hide_private_profile_columns.sql` er kørt (STATUS_TJEK række 64 = OK), kan anon og authenticated kun læse 35 af 45 kolonner. `email`, `cvr`, `id_doc_url`, `id_pending`, `dealer_application`, Stripe-id'erne og `admin_authorized_by` læses kun af service-role og gennem `get_my_private_profile()` (egen række) og `admin_list_profiles()` (admin). `select('*')` på profiles fejler derfor, og det samme gør en `upsert()` med en skjult kolonne (`ON CONFLICT DO UPDATE SET cvr = EXCLUDED.cvr` kræver læseret). **En ny kolonne på profiles er skjult, indtil den får `GRANT SELECT (kolonne) ON profiles TO anon, authenticated`.**
 
 **Uden den viden vil enhver gennemgang rapportere de to som huller.** De er det ikke. Kør forespørgslen under "Kolonne-rettigheder" nedenfor for at se det aktuelle billede.
 
@@ -178,7 +179,7 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 ### Noter
 
 1. **Ikke et hul.** For UPDATE genbruger Postgres `USING` som `WITH CHECK` når sidstnævnte mangler, så rækken kan ikke gives videre til en anden. Kolonneadgangen er begrænset med `GRANT` i stedet — se afsnittet om kolonne-rettigheder øverst.
-2. **Kendt og accepteret.** Hele tabellen er læsbar med den offentlige anon-nøgle. Den eneste følsomme kolonne, `phone`, er fjernet for private profiler og håndhæves af triggeren `strip_private_phone`. Ændres skemaet med en ny følsom kolonne, bliver den offentlig samme dag.
+2. Rækkerne er offentlige, kolonnerne er ikke: se "Kolonne-rettigheder" øverst (`hide_private_profile_columns.sql`, 12. okt. 2026). Indtil da var hele tabellen læsbar med anon-nøglen, inkl. e-mail på alle brugere. `phone`, `address`, `postcode` og præcise `lat`/`lng` er stadig offentlige, fordi kun forhandlere har dem: triggerne `strip_private_phone` og `strip_private_location` nulstiller dem på private profiler. "Forhandler" omfatter her også en ansøger der endnu ikke er godkendt (`seller_type = 'dealer'`, `verified = false`): butikkens telefon og adresse kan læses fra ansøgningen er sendt. Afvisning via admin rydder dem igen.
 3. Beskyttet af triggeren `protect_privileged_profile_columns`, ikke af politikken.
 4. Handelskravet ligger i triggeren `require_trade_before_review`, ikke i politikken (se "Triggere" øverst). Én vurdering pr. anmelder pr. handel: unik-indekset `reviews_one_per_trade` (erstatter `reviews_unique_per_trade`) og CHECK-constrainten `reviews_no_self_review`.
 5. Dublet af den foregående politik. Politikker OR'es sammen, så det er harmløst, men to migrationer har lavet den samme regel under forskellige navne.

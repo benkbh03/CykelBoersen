@@ -103,7 +103,9 @@ SELECT id, shop_name, city, address, name, count(*) OVER ()
  WHERE seller_type = 'dealer' AND verified
  ORDER BY created_at $q$),
 (5, 'Én profil efter id', $q$
-SELECT * FROM profiles WHERE id = (SELECT user_id FROM bikes WHERE is_active LIMIT 1) $q$),
+SELECT id, name, shop_name, seller_type, city, address, verified, id_verified, email_verified,
+       created_at, avatar_url, last_seen, bio
+  FROM profiles WHERE id = (SELECT user_id FROM bikes WHERE is_active LIMIT 1) $q$),
 (6, 'Én annonce med billeder', $q$
 SELECT b.*, (SELECT json_agg(bi) FROM bike_images bi WHERE bi.bike_id = b.id)
   FROM bikes b WHERE b.id = (SELECT id FROM bikes WHERE is_active ORDER BY created_at DESC LIMIT 1) $q$)
