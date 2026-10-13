@@ -235,6 +235,13 @@ SELECT * FROM (
                               AND tgrelid = 'public.profiles'::regclass)
               THEN 'OK' ELSE 'MANGLER' END
 
+  -- ── block_links_from_new_accounts.sql (13. oktober) ────────────────
+  UNION ALL SELECT 71, 'svindel', 'trigger block_links_from_new_accounts paa messages',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'block_links_from_new_accounts'
+                              AND tgrelid = 'public.messages'::regclass)
+              THEN 'OK' ELSE 'MANGLER' END
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville
