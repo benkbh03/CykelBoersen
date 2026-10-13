@@ -202,6 +202,13 @@
   border-top: 1px solid var(--border);
   background: #fff;
 }
+/* Fast advarsel over svarfeltet (13. okt., efter falske betalingslinks) */
+.msg-safety-note {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--muted);
+}
 .inbox-chat-reply-row {
   display: flex;
   gap: 10px;

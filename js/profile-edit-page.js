@@ -286,7 +286,10 @@ export function createProfileEditPage({
     const restore = btnLoading('save-profile-btn', 'Gemmer...');
     try {
       const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
-      if (error) { showToast('Kunne ikke gemme profil', 'fejl'); return; }
+      if (error) {
+        showToast(error.hint === 'reserved_name' ? 'Navnet Cykelbørsen er forbeholdt sitet selv' : 'Kunne ikke gemme profil', 'fejl');
+        return;
+      }
 
       if (updates.city && updates.city !== (currentProfile && currentProfile.city)) {
         await supabase.from('bikes').update({ city: updates.city }).eq('user_id', currentUser.id);

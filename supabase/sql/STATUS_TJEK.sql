@@ -228,6 +228,13 @@ SELECT * FROM (
             FROM pg_proc
            WHERE proname IN ('apply_paid_boost', 'confirm_rental_booking', 'create_rental_booking'))
 
+  -- ── reserve_cykelboersen_name.sql (13. oktober) ────────────────────
+  UNION ALL SELECT 70, 'svindel', 'trigger reject_reserved_profile_name paa profiles',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'reject_reserved_profile_name'
+                              AND tgrelid = 'public.profiles'::regclass)
+              THEN 'OK' ELSE 'MANGLER' END
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville
