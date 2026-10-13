@@ -65,6 +65,8 @@ const SYSTEM_PROMPT = `Du oversætter en dansk (eller engelsk) beskrivelse af en
 
 Svar KUN med ét JSON-objekt, uden forklaring og uden kodeblok. Brug kun de værdier der står herunder, stavet præcis sådan. Udelad et felt, eller giv en tom liste, når beskrivelsen ikke siger noget om det. Gæt ikke: et filter der ikke blev bedt om, skjuler cykler køberen gerne ville se.
 
+Køberne er både almindelige mennesker der skriver i hverdagssprog ("damecykel med kurv") og kendere der skriver præcise specifikationer ("Ultegra Di2 carbon 56 cm"). Oversæt hverdagsord til det filter de tydeligt betyder (se "Hjælp til tolkning"). Ord der ikke passer i et filter, men som siger noget om cyklen (udstyr som kurv, bagagebærer, lygter, barnestol, støttehjul, skærme), kommer i "keywords". De filtrerer ikke; de sætter de annoncer der nævner dem øverst.
+
 Felter (lister kan have flere værdier, som betyder "en af dem"):
 - "types": ${JSON.stringify(TYPES)}
 - "conditions": ${JSON.stringify(CONDITIONS)}. "Ny" kun når køberen vil have en ny cykel. "Brugt" alene betyder ikke at der skal filtreres; udelad så feltet.
@@ -86,14 +88,18 @@ Felter (lister kan have flere værdier, som betyder "en af dem"):
 - "sellerType": "dealer" (forhandler/butik) eller "private". Udelad hvis begge er fine.
 - "electronicShifting": true for Di2/AXS/elektronisk gear.
 - "city": én dansk by eller ét postnummer, kun når køberen nævner hvor.
-- "search": en model eller et ord der ikke passer i noget felt ovenfor, fx "Tarmac" eller "Domane". Højst tre ord. Ikke mærker, typer eller materialer, de har egne felter.
+- "search": KUN et modelnavn, fx "Tarmac" eller "Domane". Højst tre ord. Det filtrerer på mærke og model, så alt andet end et modelnavn giver en tom liste. Ikke mærker, typer, materialer eller udstyr.
+- "keywords": op til fem korte ord i grundform og ental, som annoncens tekst sandsynligvis indeholder, fx ["kurv"] for "med kurv foran" og ["bagagebærer", "lygte"] for "med bagagebærer og lys". Ikke ord der allerede er blevet til et filter, og ikke fyldord (god, pæn, billig, foran, med).
 
 Hjælp til tolkning:
 - Højde til stelstørrelse (voksen): under 160 cm XS, 160-170 S, 170-180 M, 180-190 L, over 190 XL. Giv højst to nabostørrelser.
 - Barn: types Børnecykel. Alder til hjul: 2-4 år 12", 3-5 år 14", 4-6 år 16", 5-7 år 18", 6-9 år 20", 8-12 år 24".
 - "racer", "landevej" = Racercykel. "MTB" = Mountainbike. "elcykel", "e-bike" = El-cykel. "ladcykel", "cargo", "christianiacykel" = Ladcykel. "bycykel", "pendlercykel" = Citybike, medmindre der står el.
 - "fully" = Fuld affjedring (fully). "hardtail" = Forgaffel (hardtail).
-- "billig" alene giver ingen pris.`;
+- "billig" alene giver ingen pris.
+- "dame", "damecykel", "damestel", "pigecykel" = stepTypes ["Lav indstigning"]. "herre", "herrecykel", "herrestel", "drengecykel" = stepTypes ["Høj indstigning"]. "lav indstigning", "nem at stige på", "svanehals" = ["Lav indstigning"]. En damecykel uden anden type er ikke automatisk en Citybike.
+- "city bike", "city-cykel", "bycykel" = Citybike.
+- "navgear", "nexus" = geartypes ["Indvendig"]. "kædeskifter" = ["Udvendig"]. "fodbremse", "contrabremse" = brakeTypes ["Rullebremser"].`;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -185,6 +191,32 @@ function sanitize(raw: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
+// Ord der står i næsten alle annoncer og derfor ikke kan sortere noget.
+const STOP_WORDS = new Set(["cykel", "cykler", "foran", "bagpå", "med", "uden", "god", "pæn", "fin", "billig", "sælges", "gerne", "stand"]);
+
+/** Sorteringsord: korte, rene ord. Ord der allerede er et filter, smides væk. */
+function sanitizeKeywords(raw: unknown, filters: Record<string, unknown>): string[] {
+  if (!Array.isArray(raw)) return [];
+  const used = JSON.stringify(filters).toLowerCase();
+  const words = raw
+    .filter((w): w is string => typeof w === "string")
+    .map((w) => w.toLowerCase().replace(/[^a-zæøåäöüé0-9 -]/g, "").trim().slice(0, 25))
+    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w) && !used.includes(w));
+  return [...new Set(words)].slice(0, 5);
+}
+
+/* Dame/herre er det mest almindelige hverdagsord og må ikke afhænge af om
+   modellen husker reglen. Står ordet i teksten og er indstigning ikke sat,
+   sættes den her. Gælder kun hele ord ("damecykel", ikke "madame"). */
+function addStepTypeFromWords(text: string, filters: Record<string, unknown>) {
+  if (filters.stepTypes) return;
+  const t = text.toLowerCase();
+  const dame  = /(^|[^a-zæøå])(dame|pige)/.test(t);
+  const herre = /(^|[^a-zæøå])(herre|dreng)/.test(t);
+  if (dame && !herre)  filters.stepTypes = ["Lav indstigning"];
+  if (herre && !dame)  filters.stepTypes = ["Høj indstigning"];
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -234,7 +266,9 @@ serve(async (req) => {
     const match = reply.match(/\{[\s\S]*\}/);
     let parsed: Record<string, unknown> = {};
     try { parsed = match ? JSON.parse(match[0]) : {}; } catch { parsed = {}; }
-    return json({ filters: sanitize(parsed) });
+    const filters = sanitize(parsed);
+    addStepTypeFromWords(text, filters);
+    return json({ filters, keywords: sanitizeKeywords(parsed.keywords, filters) });
   } catch (err) {
     console.error("smart-filter: uventet fejl", err);
     return json({ error: "Smart filter svarede ikke. Prøv igen, eller brug filtrene herunder." }, 500);
