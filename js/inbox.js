@@ -396,6 +396,7 @@ export function createInbox({
           <div class="inbox-chat-header" id="inbox-page-chat-header"></div>
           <div class="inbox-chat-messages" id="inbox-page-chat-messages"></div>
           <div class="inbox-chat-reply">
+            <p class="msg-safety-note">Cykelbørsen sender aldrig betalingslinks og beder aldrig om bank- eller kortoplysninger. Klik ikke på links om betaling.</p>
             <div class="quick-replies">${renderQuickRepliesHTML('inbox-modal-reply-text')}</div>
             <div class="inbox-chat-reply-row">
               <textarea id="inbox-modal-reply-text" placeholder="Skriv et svar..." rows="2"></textarea>
