@@ -242,6 +242,20 @@ SELECT * FROM (
                               AND tgrelid = 'public.messages'::regclass)
               THEN 'OK' ELSE 'MANGLER' END
 
+  -- ── add_official_account.sql (13. oktober) ─────────────────────────
+  UNION ALL SELECT 72, 'svindel', 'profiles.is_official + trigger protect_is_official',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                WHERE table_schema = 'public' AND table_name = 'profiles'
+                                  AND column_name = 'is_official') THEN 'MANGLER'
+              WHEN NOT has_column_privilege('anon', 'public.profiles', 'is_official', 'SELECT')
+                THEN 'FEJL: indbakken kan ikke laese den'
+              WHEN NOT EXISTS (SELECT 1 FROM pg_trigger
+                                WHERE tgname = 'protect_is_official'
+                                  AND tgrelid = 'public.profiles'::regclass) THEN 'AABEN: alle kan saette den'
+              ELSE 'OK' END
+  UNION ALL SELECT 73, 'svindel', 'officielle konti (forventet 1)',
+         (SELECT count(*)::text FROM profiles WHERE is_official)
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville
@@ -274,7 +288,7 @@ SELECT * FROM (
   -- Opdatér datoen her, når en function ændres.
   UNION ALL SELECT 90, 'edge function', 'import-dealer-feed',    'TJEK: deployet efter 2026-09-29'
   UNION ALL SELECT 91, 'edge function', 'suggest-listing',       'TJEK: deployet efter 2026-09-26'
-  UNION ALL SELECT 92, 'edge function', 'notify-message',        'TJEK: deployet efter 2026-09-26'
+  UNION ALL SELECT 92, 'edge function', 'notify-message',        'TJEK: deployet efter 2026-10-13'
   UNION ALL SELECT 93, 'edge function', 'notify-followers',      'TJEK: deployet efter 2026-09-26'
   UNION ALL SELECT 94, 'edge function', 'notify-saved-searches', 'TJEK: deployet efter 2026-09-26'
 

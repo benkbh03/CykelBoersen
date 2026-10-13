@@ -705,7 +705,7 @@ serve(async (req) => {
 
     const [{ data: receiverProfile }, { data: senderProfile }, { data: bike }] = await Promise.all([
       supabase.from("profiles").select("name").eq("id", message.receiver_id).single(),
-      supabase.from("profiles").select("name, shop_name, seller_type").eq("id", message.sender_id).single(),
+      supabase.from("profiles").select("name, shop_name, seller_type, is_official").eq("id", message.sender_id).single(),
       supabase.from("bikes").select("brand, model").eq("id", message.bike_id).single(),
     ]);
 
@@ -728,7 +728,12 @@ serve(async (req) => {
       </h2>
       <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
         Hej ${receiverName},<br><br>
-        <strong style="color:#1A1A18;">${esc(senderName ?? "En bruger")}</strong>
+        <strong style="color:#1A1A18;">${esc(senderName ?? "En bruger")}</strong>${
+          // Samme mærke som i indbakken (js/official-badge.js). Kun admin kan
+          // sætte is_official, så et navn alene kan ikke give det.
+          senderProfile?.is_official
+            ? ' <span style="border:1px solid #2A3D2E;color:#2A3D2E;border-radius:4px;padding:0 6px;font-size:12px;font-weight:600;white-space:nowrap;">&#10003; Officiel</span>'
+            : ""}
         ${isBid ? " har givet et bud" : " har sendt dig en besked"}
         om din annonce: <strong style="color:#1A1A18;">${esc(bikeName)}</strong>
       </p>
