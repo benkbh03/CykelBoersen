@@ -21,7 +21,7 @@ SELECT * FROM (
 
   -- Versionen af DENNE fil. Står der en ældre dato end den i rå-linket på
   -- GitHub, er det en gammel kopi der er kørt (det skete 30. sep.).
-  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-06' AS status
+  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-13' AS status
 
   -- ── add_moderation_log_and_suspension.sql (15. september) ──────────
   UNION ALL
@@ -178,6 +178,13 @@ SELECT * FROM (
               THEN 'OK' ELSE 'MANGLER' END
   UNION ALL SELECT 59, 'opgraderinger', 'constraint bikes_upgrades_valid',
          CASE WHEN EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'bikes_upgrades_valid')
+              THEN 'OK' ELSE 'MANGLER' END
+
+  -- ── reserve_cykelboersen_name.sql (13. oktober) ────────────────────
+  UNION ALL SELECT 70, 'svindel', 'trigger reject_reserved_profile_name paa profiles',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'reject_reserved_profile_name'
+                              AND tgrelid = 'public.profiles'::regclass)
               THEN 'OK' ELSE 'MANGLER' END
 
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
