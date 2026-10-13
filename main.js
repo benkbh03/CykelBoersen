@@ -1169,12 +1169,15 @@ async function init() {
   if (session) {
     currentUser = session.user;
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileReadErr } = await supabase
       .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
+    // PGRST116 = ingen række. Ved enhver anden fejl ved vi ikke hvad der står
+    // i profilen, så der må ikke skrives oven i den.
+    const profileKnown = !profileReadErr || profileReadErr.code === 'PGRST116';
 
     // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
     const meta = currentUser.user_metadata || {};
-    if (meta.pending_dealer && (!profile || profile.seller_type !== 'dealer')) {
+    if (meta.pending_dealer && profileKnown && (!profile || profile.seller_type !== 'dealer')) {
       // email_verified og verified sættes ikke her — håndteres af DB-triggers/admin-actions.
       // Ikke upsert(): cvr og email kan ikke læses med den offentlige nøgle, og
       // ON CONFLICT DO UPDATE SET cvr = EXCLUDED.cvr kræver læseret (se js/own-profile.js).
@@ -1192,25 +1195,28 @@ async function init() {
         location_precision: meta.lat && meta.lng ? 'exact' : null,
         seller_type:        'dealer',
       });
-      if (dealerUpsert.error) {
-        console.error('Dealer upsert fejl:', dealerUpsert.error);
-      }
       const { data: freshProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
-      supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
-      supabase.functions.invoke('notify-message', {
-        body: {
-          type:      'dealer_application',
-          shop_name: meta.shop_name,
-          cvr:       meta.cvr,
-          contact:   meta.name,
-          phone:     meta.phone,
-          address:   meta.address,
-          city:      meta.city,
-          email:     currentUser.email,
-          user_id:   currentUser.id,
-        },
-      }).catch(() => {});
+      // Fejlede skrivningen, bevares pending_dealer, så onAuthStateChange
+      // kan prøve igen, og admin får ikke en ansøgning der ikke findes.
+      if (dealerUpsert.error) {
+        console.error('Dealer upsert fejl:', dealerUpsert.error);
+      } else {
+        supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
+        supabase.functions.invoke('notify-message', {
+          body: {
+            type:      'dealer_application',
+            shop_name: meta.shop_name,
+            cvr:       meta.cvr,
+            contact:   meta.name,
+            phone:     meta.phone,
+            address:   meta.address,
+            city:      meta.city,
+            email:     currentUser.email,
+            user_id:   currentUser.id,
+          },
+        }).catch(() => {});
+      }
     } else {
       currentProfile = profile;
     }

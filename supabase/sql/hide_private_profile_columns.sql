@@ -48,8 +48,36 @@
 --    de tomme felter over profilen.
 -- 3. Denne fil.
 --
+-- Et døgn dækker HTTP-caches, ikke en fane der har stået åben siden før
+-- merge: den har den gamle kode i hukommelsen, til den genindlæses. Derfor
+-- tager punkt 1 nedenfor et øjebliksbillede af de felter brugeren selv kan
+-- rette, så en profil der bliver tømt på den måde, kan genskabes.
+--
 -- Kør i Supabase Dashboard → SQL Editor → Run. Idempotent.
 -- ============================================================
+
+
+-- ── 1. Øjebliksbillede af de felter brugeren selv retter ─────
+-- Kun service-role kan læse tabellen (RLS uden policies). Slettes igen
+-- efter vinduet (se "Oprydning").
+
+CREATE TABLE IF NOT EXISTS profiles_snapshot_20261013 (
+  id       uuid        PRIMARY KEY,
+  data     jsonb       NOT NULL,
+  taken_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE profiles_snapshot_20261013 ENABLE ROW LEVEL SECURITY;
+
+INSERT INTO profiles_snapshot_20261013 (id, data)
+SELECT p.id, to_jsonb(p) - ARRAY['email','cvr','dealer_application','id_pending','id_doc_url',
+       'stripe_customer_id','stripe_subscription_id','stripe_subscription_status',
+       'stripe_account_id','admin_authorized_by']
+FROM profiles p
+ON CONFLICT (id) DO NOTHING;
+
+
+-- ── 2. Skjul kolonnerne ──────────────────────────────────────
 
 
 -- REVOKE og GRANT i samme blok, så de lykkes eller fejler sammen. Står
@@ -68,7 +96,31 @@ BEGIN
     hours_optout, offers_optout, services_optout, social_optout,
     avatar_thumb_url, stripe_account_status
   ) ON public.profiles TO anon, authenticated;
+
+  -- REVOKE giver kun en advarsel, ikke en fejl, hvis rettigheden er givet af
+  -- en anden rolle end den der kører filen. Så ville blokken melde succes
+  -- uden at have skjult noget. Tjek det og rul tilbage i stedet.
+  IF has_column_privilege('anon', 'public.profiles', 'email', 'SELECT')
+     OR has_column_privilege('authenticated', 'public.profiles', 'email', 'SELECT') THEN
+    RAISE EXCEPTION 'REVOKE virkede ikke: profiles.email kan stadig læses med den offentlige nøgle';
+  END IF;
 END $$;
+
+
+-- ── Oprydning — kør denne linje efter 13. november 2026 ──────
+--
+--   DROP TABLE IF EXISTS profiles_snapshot_20261013;
+
+
+-- ── Er en profil blevet tømt af en gammel fane? ──────────────
+-- Forventet: 0 rækker. En række her er en profil hvor telefon, adresse
+-- eller bio var udfyldt før lukningen og er tom nu.
+--
+--   SELECT s.id, p.name
+--     FROM profiles_snapshot_20261013 s JOIN profiles p ON p.id = s.id
+--    WHERE (COALESCE(s.data->>'phone','')   <> '' AND COALESCE(p.phone,'')   = '')
+--       OR (COALESCE(s.data->>'address','') <> '' AND COALESCE(p.address,'') = '')
+--       OR (COALESCE(s.data->>'bio','')     <> '' AND COALESCE(p.bio,'')     = '');
 
 
 -- ── Fortryd ──────────────────────────────────────────────────

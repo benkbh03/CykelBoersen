@@ -21,7 +21,7 @@ SELECT * FROM (
 
   -- Versionen af DENNE fil. Står der en ældre dato end den i rå-linket på
   -- GitHub, er det en gammel kopi der er kørt (det skete 30. sep.).
-  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-12' AS status
+  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-13' AS status
 
   -- ── add_moderation_log_and_suspension.sql (15. september) ──────────
   UNION ALL
@@ -216,6 +216,17 @@ SELECT * FROM (
                       THEN 'OK' ELSE 'FEJL: annonce-forespoergsler fejler' END
             FROM unnest(ARRAY['anon','authenticated']) r,
                  unnest(ARRAY['id','is_admin','seller_type','verified']) c)
+
+  -- revoke_client_payment_rpcs.sql (13. oktober). Kan kaldes med den
+  -- offentlige noegle = gratis fremhaevning og ubetalte bookinger.
+  UNION ALL SELECT 66, 'betaling', 'apply_paid_boost m.fl. lukket for browseren',
+         (SELECT CASE WHEN count(*) FILTER (WHERE has_function_privilege('anon', oid, 'EXECUTE')
+                                               OR has_function_privilege('authenticated', oid, 'EXECUTE')) = 0
+                      THEN 'OK'
+                      ELSE 'AABEN (' || count(*) FILTER (WHERE has_function_privilege('anon', oid, 'EXECUTE')
+                                               OR has_function_privilege('authenticated', oid, 'EXECUTE')) || ' af 3)' END
+            FROM pg_proc
+           WHERE proname IN ('apply_paid_boost', 'confirm_rental_booking', 'create_rental_booking'))
 
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
