@@ -15,6 +15,8 @@ import { PROFILE_SESSION_FIELDS } from './supabase-client.js';
 import { iconDealer, iconPrivate } from './utils.js';
 import { toStrippedBlob, isGif } from './image-strip.js';
 import { buildProfileEditHTML } from './profile-edit-markup.js';
+import { loadOwnProfile } from './own-profile.js';
+import { retryHTML } from './ui-feedback.js';
 
 export function createProfileEditPage({
   supabase,
@@ -55,14 +57,20 @@ export function createProfileEditPage({
     // Session-cachen (PROFILE_SESSION_FIELDS) mangler phone/address/bio og
     // forhandler-felterne. Hent den fulde profil FØR formularen tegnes, så et
     // sent svar ikke overskriver noget brugeren allerede er begyndt at skrive.
-    try {
-      const { data: full } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-      if (full) setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
-    } catch (e) { /* tegn med cachen ved fejl */ }
+    let full = null;
+    try { full = await loadOwnProfile(supabase, currentUser.id); } catch (e) { /* full forbliver null */ }
 
     // Brugeren kan have navigeret videre mens profilen blev hentet.
     if (location.pathname.replace(/\/$/, '') !== '/me/rediger') return;
     const detailView = document.getElementById('detail-view');
+
+    // Ingen formular uden de rigtige værdier: tegnet fra den slanke cache
+    // ville felterne stå tomme, og et tryk på Gem skrive dem tomme i databasen.
+    if (!full) {
+      detailView.innerHTML = retryHTML('Kunne ikke hente din profil.', 'location.reload');
+      return;
+    }
+    setCurrentProfile({ ...(getCurrentProfile() || {}), ...full });
     detailView.innerHTML = buildProfileEditHTML();
     showProfileData();
   }

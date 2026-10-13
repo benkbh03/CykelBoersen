@@ -180,6 +180,54 @@ SELECT * FROM (
          CASE WHEN EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'bikes_upgrades_valid')
               THEN 'OK' ELSE 'MANGLER' END
 
+  -- ── Skjulte profilkolonner (12. oktober) ───────────────────────────
+  -- remove_private_address.sql
+  UNION ALL SELECT 60, 'skjult profil', 'trigger strip_private_location',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'strip_private_location' AND NOT tgisinternal)
+              THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 61, 'skjult profil', 'private profiler med gadeadresse (skal vaere 0)',
+         (SELECT CASE WHEN count(*) = 0 THEN 'OK' ELSE 'MANGLER (' || count(*) || ')' END
+            FROM profiles
+           WHERE COALESCE(seller_type, 'private') <> 'dealer'
+             AND (address IS NOT NULL OR postcode IS NOT NULL OR location_precision = 'exact'))
+  -- add_private_profile_rpcs.sql
+  UNION ALL SELECT 62, 'skjult profil', 'funktion get_my_private_profile()',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'get_my_private_profile')
+              THEN 'OK' ELSE 'MANGLER' END
+  UNION ALL SELECT 63, 'skjult profil', 'funktion admin_list_profiles(), lukket for anon',
+         COALESCE((SELECT CASE WHEN has_function_privilege('anon', oid, 'EXECUTE')
+                               THEN 'AABEN FOR ANON' ELSE 'OK' END
+                     FROM pg_proc WHERE proname = 'admin_list_profiles' LIMIT 1), 'MANGLER')
+  -- hide_private_profile_columns.sql. Taeller (rolle, kolonne)-par der
+  -- stadig kan laeses med den offentlige noegle. 20 = intet er skjult endnu.
+  UNION ALL SELECT 64, 'skjult profil', 'e-mail, CVR, ID-dokument, Stripe skjult for anon',
+         (SELECT CASE WHEN count(*) FILTER (WHERE has_column_privilege(r, 'public.profiles', c, 'SELECT')) = 0
+                      THEN 'OK'
+                      ELSE 'MANGLER (' || count(*) FILTER (WHERE has_column_privilege(r, 'public.profiles', c, 'SELECT')) || ' af 20 aabne)' END
+            FROM unnest(ARRAY['anon','authenticated']) r,
+                 unnest(ARRAY['email','cvr','dealer_application','id_pending','id_doc_url',
+                              'stripe_customer_id','stripe_subscription_id','stripe_subscription_status',
+                              'stripe_account_id','admin_authorized_by']) c)
+  -- Omvendt: RLS-politikkerne paa bikes m.fl. slaar op i disse fire med
+  -- kalderens rettigheder. Mangler én, kan forsiden ikke hente annoncer.
+  UNION ALL SELECT 65, 'skjult profil', 'id, is_admin, seller_type, verified laesbare (forsiden)',
+         (SELECT CASE WHEN bool_and(has_column_privilege(r, 'public.profiles', c, 'SELECT'))
+                      THEN 'OK' ELSE 'FEJL: annonce-forespoergsler fejler' END
+            FROM unnest(ARRAY['anon','authenticated']) r,
+                 unnest(ARRAY['id','is_admin','seller_type','verified']) c)
+
+  -- revoke_client_payment_rpcs.sql (13. oktober). Kan kaldes med den
+  -- offentlige noegle = gratis fremhaevning og ubetalte bookinger.
+  UNION ALL SELECT 66, 'betaling', 'apply_paid_boost m.fl. lukket for browseren',
+         (SELECT CASE WHEN count(*) FILTER (WHERE has_function_privilege('anon', oid, 'EXECUTE')
+                                               OR has_function_privilege('authenticated', oid, 'EXECUTE')) = 0
+                      THEN 'OK'
+                      ELSE 'AABEN (' || count(*) FILTER (WHERE has_function_privilege('anon', oid, 'EXECUTE')
+                                               OR has_function_privilege('authenticated', oid, 'EXECUTE')) || ' af 3)' END
+            FROM pg_proc
+           WHERE proname IN ('apply_paid_boost', 'confirm_rental_booking', 'create_rental_booking'))
+
   -- ── reserve_cykelboersen_name.sql (13. oktober) ────────────────────
   UNION ALL SELECT 70, 'svindel', 'trigger reject_reserved_profile_name paa profiles',
          CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
