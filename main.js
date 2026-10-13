@@ -63,6 +63,7 @@ import { applyAccessoryVisibility } from './js/accessory-visibility.js';
 import { initSmartFilter } from './js/smart-filter.js';
 import { resetSmartRank } from './js/smart-rank.js';
 import { HOME_TITLE, HOME_DESC } from './js/seo-text.js';
+import { saveOwnProfileFields } from './js/own-profile.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
 // supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
@@ -1169,15 +1170,19 @@ async function init() {
   if (session) {
     currentUser = session.user;
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileReadErr } = await supabase
       .from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
+    // PGRST116 = ingen række. Ved enhver anden fejl ved vi ikke hvad der står
+    // i profilen, så der må ikke skrives oven i den.
+    const profileKnown = !profileReadErr || profileReadErr.code === 'PGRST116';
 
     // Fuldfør forhandler-registrering hvis bruger signede op via bliv-forhandler siden
     const meta = currentUser.user_metadata || {};
-    if (meta.pending_dealer && (!profile || profile.seller_type !== 'dealer')) {
-      // email_verified og verified sættes ikke her — håndteres af DB-triggers/admin-actions
-      const dealerUpsert = await supabase.from('profiles').upsert({
-        id:                 currentUser.id,
+    if (meta.pending_dealer && profileKnown && (!profile || profile.seller_type !== 'dealer')) {
+      // email_verified og verified sættes ikke her — håndteres af DB-triggers/admin-actions.
+      // Ikke upsert(): cvr og email kan ikke læses med den offentlige nøgle, og
+      // ON CONFLICT DO UPDATE SET cvr = EXCLUDED.cvr kræver læseret (se js/own-profile.js).
+      const dealerUpsert = await saveOwnProfileFields(supabase, currentUser.id, {
         email:              currentUser.email,
         name:               meta.name || '',
         shop_name:          meta.shop_name || '',
@@ -1190,26 +1195,29 @@ async function init() {
         postcode:           meta.postcode || null,
         location_precision: meta.lat && meta.lng ? 'exact' : null,
         seller_type:        'dealer',
-      }, { onConflict: 'id' });
-      if (dealerUpsert.error) {
-        console.error('Dealer upsert fejl:', dealerUpsert.error);
-      }
+      });
       const { data: freshProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
       currentProfile = freshProfile;
-      supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
-      supabase.functions.invoke('notify-message', {
-        body: {
-          type:      'dealer_application',
-          shop_name: meta.shop_name,
-          cvr:       meta.cvr,
-          contact:   meta.name,
-          phone:     meta.phone,
-          address:   meta.address,
-          city:      meta.city,
-          email:     currentUser.email,
-          user_id:   currentUser.id,
-        },
-      }).catch(() => {});
+      // Fejlede skrivningen, bevares pending_dealer, så onAuthStateChange
+      // kan prøve igen, og admin får ikke en ansøgning der ikke findes.
+      if (dealerUpsert.error) {
+        console.error('Dealer upsert fejl:', dealerUpsert.error);
+      } else {
+        supabase.auth.updateUser({ data: { pending_dealer: null } }).catch(() => {});
+        supabase.functions.invoke('notify-message', {
+          body: {
+            type:      'dealer_application',
+            shop_name: meta.shop_name,
+            cvr:       meta.cvr,
+            contact:   meta.name,
+            phone:     meta.phone,
+            address:   meta.address,
+            city:      meta.city,
+            email:     currentUser.email,
+            user_id:   currentUser.id,
+          },
+        }).catch(() => {});
+      }
     } else {
       currentProfile = profile;
     }
@@ -1260,7 +1268,9 @@ async function init() {
       if (profileErr) console.warn('onAuthStateChange profile fetch FAIL:', profileErr.message);
 
       // Ny OAuth-bruger uden profil endnu — opret den automatisk
-      // email_verified synkroniseres automatisk via auth.users-trigger
+      // email_verified synkroniseres automatisk via auth.users-trigger.
+      // ignoreDuplicates (ON CONFLICT DO NOTHING): fejlede hentningen ovenfor
+      // på en bruger der HAR en profil, må den ikke overskrives med tomme felter.
       if (!profile && _event === 'SIGNED_IN') {
         const meta = currentUser.user_metadata || {};
         const name = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'Ny bruger';
@@ -1279,7 +1289,7 @@ async function init() {
           lng:            isPendingDealer ? (meta.lng || null) : null,
           postcode:       isPendingDealer ? (meta.postcode || null) : null,
           location_precision: isPendingDealer && meta.lat && meta.lng ? 'exact' : null,
-        }, { onConflict: 'id' });
+        }, { onConflict: 'id', ignoreDuplicates: true });
         const { data: newProfile } = await supabase.from('profiles').select(PROFILE_SESSION_FIELDS).eq('id', currentUser.id).single();
         profile = newProfile;
       }
@@ -1288,8 +1298,7 @@ async function init() {
       // (kører hvis init() missede det pga. timing med URL-hash session)
       if (profile && profile.seller_type !== 'dealer' && currentUser.user_metadata?.pending_dealer) {
         const meta = currentUser.user_metadata;
-        const upgradeRes = await supabase.from('profiles').upsert({
-          id:                 currentUser.id,
+        const upgradeRes = await saveOwnProfileFields(supabase, currentUser.id, {
           email:              currentUser.email,
           name:               meta.name || profile.name || '',
           shop_name:          meta.shop_name || profile.shop_name || '',
@@ -1302,7 +1311,7 @@ async function init() {
           postcode:           meta.postcode || profile.postcode || null,
           location_precision: meta.lat && meta.lng ? 'exact' : profile.location_precision,
           seller_type:        'dealer',
-        }, { onConflict: 'id' });
+        });
         if (upgradeRes.error) {
           console.error('Pending dealer upgrade fejl:', upgradeRes.error);
         } else {
@@ -3508,9 +3517,10 @@ async function loadDealerApplications() {
 
   var result;
   try {
+    // E-mail og CVR kan kun læses af admin, gennem funktionen
+    // (supabase/sql/add_private_profile_rpcs.sql).
     result = await supabase
-      .from('profiles')
-      .select('*')
+      .rpc('admin_list_profiles')
       .eq('seller_type', 'dealer')
       .eq('verified', false)
       .order('created_at', { ascending: false });
@@ -3519,7 +3529,11 @@ async function loadDealerApplications() {
     return;
   }
 
-  if (result.error || !result.data || result.data.length === 0) {
+  if (result.error) {
+    list.innerHTML = retryHTML('Kunne ikke hente ansøgninger.', 'loadDealerApplications');
+    return;
+  }
+  if (!result.data || result.data.length === 0) {
     list.innerHTML = '<p style="color:var(--muted)">Ingen ventende ansøgninger.</p>';
     return;
   }
@@ -3548,8 +3562,7 @@ async function loadAllUsers() {
   var result;
   try {
     result = await supabase
-      .from('profiles')
-      .select('*')
+      .rpc('admin_list_profiles')
       .order('created_at', { ascending: false });
     /* Suspenderinger ligger i user_suspensions, ikke paa profiles. Bevidst:
        profiles SELECT er USING (true), saa en begrundelse om en navngiven
@@ -3568,7 +3581,11 @@ async function loadAllUsers() {
     return;
   }
 
-  if (result.error || !result.data || result.data.length === 0) {
+  if (result.error) {
+    list.innerHTML = retryHTML('Kunne ikke hente brugere.', 'loadAllUsers');
+    return;
+  }
+  if (!result.data || result.data.length === 0) {
     list.innerHTML = '<p style="color:var(--muted)">Ingen brugere fundet.</p>';
     return;
   }
