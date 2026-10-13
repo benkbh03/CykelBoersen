@@ -605,13 +605,17 @@ body.nav-search-on .nav-search { display: flex; }
   background-image:
     linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
     radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
-    url('/hero.jpg?v=hero1');
-  /* Samme foto som WebP i fuld opløsning: 224 KB mod 484 KB. Browsere der
-     forstår image-set (alle nyere) tager denne; resten bruger linjen ovenfor. */
+    url('/hero-v3.jpg');
+  /* Samme foto som WebP. Browsere der forstår image-set (alle nyere) tager
+     denne; resten bruger linjen ovenfor. v3 (13. okt.) er skærpet med en
+     unsharp mask, fordi originalen kun er 2168 px bred og så blød ud på
+     desktop. Kommer der en skarpere original, så erstat filen med et nyt
+     navn (v4), ellers leverer caches den gamle. hero.jpg og hero-v2.webp
+     står tilbage et par uger til cachede udgaver af denne CSS. */
   background-image:
     linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
     radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
-    image-set(url('/hero-v2.webp') type('image/webp'), url('/hero.jpg?v=hero1') type('image/jpeg'));
+    image-set(url('/hero-v3.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
   background-size: auto, auto, cover;
   background-position: center, center, center 40%;
   background-repeat: no-repeat;
@@ -623,6 +627,16 @@ body.nav-search-on .nav-search { display: flex; }
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
+}
+/* Under 768 px vises kun midten af det brede foto (cover på en høj, smal
+   sektion), så telefoner henter en udskæring af midten: 201 KB mod 330 KB. */
+@media (max-width: 768px) {
+  .search-section {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
+      radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
+      image-set(url('/hero-v3-m.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
+  }
 }
 /* min-height'en var 220px og 200px, altså LAVERE end indholdet. Titel plus
    søgekort fylder 225px, og med top-polstringen der rydder nav'en blev
