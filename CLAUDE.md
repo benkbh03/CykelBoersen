@@ -45,7 +45,7 @@ CykelBoersen/
 ├── _redirects          # SPA routing: /* → /index.html 200
 ├── robots.txt          # Tillader alle crawlers + sitemap-link
 ├── sitemap.xml         # 6 URLs (homepage, om, vilkår, privacy, kontakt, bliv-forhandler)
-├── hero.jpg            # Hero-billede (forsiden)
+├── hero-v3.webp        # Hero-billede (forsiden); -m = mobil-udskæring, .jpg = fallback
 ├── img/brand/          # Logo (SVG + e-mail-PNG) og favicons
 ├── .claude/
 │   └── skills/
