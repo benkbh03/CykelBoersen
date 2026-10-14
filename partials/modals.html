@@ -10,11 +10,11 @@
      ============================================================ -->
 
 <!-- Rapporter annonce modal -->
-<div class="modal-overlay" id="report-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeReportModal()">
+<div class="modal-overlay" id="report-modal" role="dialog" aria-label="Rapporter annonce" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeReportModal()">
   <div class="modal" style="max-width:440px;">
     <div class="modal-header">
       <h2>Rapporter annonce</h2>
-      <button class="modal-close" onclick="closeReportModal()">✕</button>
+      <button class="modal-close" aria-label="Luk" onclick="closeReportModal()">✕</button>
     </div>
     <div class="modal-body" style="padding:24px;">
       <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">
@@ -44,11 +44,11 @@
 </div>
 
 <!-- Slet konto bekræftelsesmodal -->
-<div class="modal-overlay" id="delete-account-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
+<div class="modal-overlay" id="delete-account-modal" role="dialog" aria-label="Slet konto" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDeleteAccountModal()">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
       <h2>Slet konto</h2>
-      <button class="modal-close" onclick="closeDeleteAccountModal()">✕</button>
+      <button class="modal-close" aria-label="Luk" onclick="closeDeleteAccountModal()">✕</button>
     </div>
     <div class="modal-body" style="padding:24px;">
       <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;">
@@ -70,11 +70,11 @@
 </div>
 
 <!-- Rating modal - pops up after bid acceptance -->
-<div class="modal-overlay" id="rate-now-modal" role="dialog" aria-modal="true" style="display:none;z-index:5500;" onclick="if(event.target===this)closeRateModal()">
+<div class="modal-overlay" id="rate-now-modal" role="dialog" aria-label="Giv en vurdering" aria-modal="true" style="display:none;z-index:5500;" onclick="if(event.target===this)closeRateModal()">
   <div class="modal rate-modal" style="max-width:480px;">
     <div class="modal-header">
       <h2>Giv en vurdering</h2>
-      <button class="modal-close" onclick="closeRateModal()">✕</button>
+      <button class="modal-close" aria-label="Luk" onclick="closeRateModal()">✕</button>
     </div>
     <div class="modal-body" style="padding:24px;">
       <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">
@@ -96,7 +96,7 @@
 </div>
 
 <!-- Crop billede modal -->
-<div class="modal-overlay" id="crop-modal" role="dialog" aria-modal="true" style="display:none;z-index:6500;" onclick="if(event.target===this)closeCropModal()">
+<div class="modal-overlay" id="crop-modal" role="dialog" aria-label="Beskær billede" aria-modal="true" style="display:none;z-index:6500;" onclick="if(event.target===this)closeCropModal()">
   <div class="crop-modal-box">
     <div class="crop-modal-header">
       <h3>Beskær billede</h3>
@@ -116,28 +116,28 @@
 </div>
 
   <!-- ── BRUGER PROFIL MODAL ── -->
-  <div class="modal-overlay" id="user-profile-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeUserProfileModal()">
+  <div class="modal-overlay" id="user-profile-modal" role="dialog" aria-label="Brugerprofil" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeUserProfileModal()">
     <div class="modal user-profile-modal-inner">
-      <button class="modal-close" onclick="closeUserProfileModal()" style="position:absolute;top:16px;right:16px;z-index:2;">✕</button>
+      <button class="modal-close" aria-label="Luk" onclick="closeUserProfileModal()" style="position:absolute;top:16px;right:16px;z-index:2;">✕</button>
       <div id="user-profile-content"><p style="color:var(--muted);padding:40px 0;text-align:center;">Henter profil...</p></div>
     </div>
   </div>
 
   <!-- ── FORHANDLER PROFIL MODAL ── -->
-  <div class="modal-overlay" id="dealer-profile-modal" role="dialog" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDealerProfileModal()">
+  <div class="modal-overlay" id="dealer-profile-modal" role="dialog" aria-label="Forhandlerprofil" aria-modal="true" style="display:none;" onclick="if(event.target===this)closeDealerProfileModal()">
     <div class="modal dealer-profile-modal-inner">
-      <button class="modal-close" onclick="closeDealerProfileModal()" style="position:absolute;top:16px;right:16px;">✕</button>
+      <button class="modal-close" aria-label="Luk" onclick="closeDealerProfileModal()" style="position:absolute;top:16px;right:16px;">✕</button>
       <div id="dealer-profile-header"></div>
       <div id="dealer-profile-bikes" class="dealer-profile-bikes-grid"></div>
     </div>
   </div>
 
   <!-- ── LOGIN / REGISTRERING MODAL ── -->
-  <div class="modal-overlay" id="login-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="login-modal" role="dialog" aria-label="Log ind" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
         <h2>Log ind</h2>
-        <button class="modal-close" onclick="closeLoginModal()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeLoginModal()">✕</button>
       </div>
       <div class="modal-body">
         <div class="seller-toggle" style="margin-bottom:24px;">
@@ -219,11 +219,11 @@
 
 
   <!-- ── ANNONCE DETALJE MODAL ── -->
-  <div class="modal-overlay" id="bike-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="bike-modal" role="dialog" aria-label="Annonce" aria-modal="true">
     <div class="modal modal-wide">
       <div class="modal-header">
         <h2 id="bike-modal-title">Annonce</h2>
-        <button class="modal-close" onclick="closeBikeModal()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeBikeModal()">✕</button>
       </div>
       <div class="modal-body" id="bike-modal-body">
         <p style="color:var(--muted)">Indlæser...</p>
@@ -233,11 +233,11 @@
 
   <!-- ── NY ADGANGSKODE MODAL ── -->
   <!-- ── NULSTIL ADGANGSKODE MODAL ── -->
-  <div class="modal-overlay" id="reset-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="reset-modal" role="dialog" aria-label="Vælg ny adgangskode" aria-modal="true">
     <div class="modal" style="max-width:460px;">
       <div class="modal-header">
         <h2>Vælg ny adgangskode</h2>
-        <button class="modal-close" onclick="closeResetModal()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeResetModal()">✕</button>
       </div>
       <div class="modal-body">
         <p style="font-size:.85rem;color:var(--muted);margin-bottom:20px;">Vælg en ny adgangskode til din konto.</p>
@@ -266,11 +266,11 @@
   </div>
 
   <!-- ── REDIGER ANNONCE MODAL ── -->
-  <div class="modal-overlay" id="edit-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="edit-modal" role="dialog" aria-label="Rediger annonce" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
         <h2>Rediger annonce</h2>
-        <button class="modal-close" onclick="closeEditModal()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeEditModal()">✕</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="edit-bike-id">
@@ -457,11 +457,11 @@
   </div>
 
   <!-- ── INDBAKKE MODAL ── -->
-  <div class="modal-overlay" id="inbox-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="inbox-modal" role="dialog" aria-label="Indbakke" aria-modal="true">
     <div class="modal" style="max-width:520px;">
       <div class="modal-header">
         <h2>Indbakke</h2>
-        <button class="modal-close" onclick="closeInboxModal()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeInboxModal()">✕</button>
       </div>
       <div class="modal-body" style="padding-top:16px;">
 
@@ -495,11 +495,11 @@
 
 
   <!-- ── ADMIN PANEL ── -->
-  <div class="modal-overlay" id="admin-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="admin-modal" role="dialog" aria-label="Admin" aria-modal="true">
     <div class="modal" style="max-width:680px;">
       <div class="modal-header">
         <h2>⚙️ Admin panel</h2>
-        <button class="modal-close" onclick="closeAdminPanel()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeAdminPanel()">✕</button>
       </div>
       <div class="modal-body">
         <div class="profile-tabs" style="margin-bottom:20px;">
@@ -565,11 +565,11 @@
   </div>
 
   <!-- ── DEL ANNONCE MODAL ── -->
-  <div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="share-modal" role="dialog" aria-label="Del annonce" aria-modal="true">
     <div class="modal" style="max-width:420px;">
       <div class="modal-header">
         <h2>Del annonce</h2>
-        <button class="modal-close" onclick="closeShareModal()">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="closeShareModal()">✕</button>
       </div>
       <div class="modal-body">
         <div class="share-link-box" style="margin-bottom:16px;">
@@ -592,18 +592,18 @@
   </div>
 
   <!-- ── KORT ANNONCE POPUP ── -->
-  <div class="modal-overlay" id="map-bike-modal" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="map-bike-modal" role="dialog" aria-label="Annonce" aria-modal="true">
     <div class="modal" style="max-width:420px;">
       <div class="modal-header">
         <h2 id="map-bike-title">–</h2>
-        <button class="modal-close" onclick="document.getElementById('map-bike-modal').classList.remove('open');document.body.style.overflow=''">✕</button>
+        <button class="modal-close" aria-label="Luk" onclick="document.getElementById('map-bike-modal').classList.remove('open');document.body.style.overflow=''">✕</button>
       </div>
       <div class="modal-body" id="map-bike-body"></div>
     </div>
   </div>
 
   <!-- ── ANNONCE OPRETTET SUCCESS MODAL ── -->
-  <div class="modal-overlay" id="listing-success-modal" role="dialog" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeListingSuccessModal()">
+  <div class="modal-overlay" id="listing-success-modal" role="dialog" aria-label="Din annonce er oprettet" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeListingSuccessModal()">
     <div class="modal listing-success-inner">
       <div class="success-icon-wrap">
         <div class="success-icon">✓</div>
@@ -645,7 +645,7 @@
   </div>
 
   <!-- ── FREMHÆV ANNONCE (BOOST) MODAL — udfyldes dynamisk af js/listing-boost.js ── -->
-  <div class="modal-overlay" id="boost-modal" role="dialog" aria-modal="true" style="z-index:6000;" onclick="if(event.target===this)closeBoostModal()">
+  <div class="modal-overlay" id="boost-modal" role="dialog" aria-label="Fremhæv annonce" aria-modal="true" style="z-index:6000;" onclick="if(event.target===this)closeBoostModal()">
     <div class="modal boost-modal-inner" style="max-width:440px;">
       <div class="modal-header">
         <h2><svg class="ui-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9z"/></svg> Fremhæv annonce</h2>
@@ -656,7 +656,7 @@
   </div>
 
   <!-- ── CYKEL-VURDERING MODAL (åbnes fra sælg-flow så form-data ikke mistes) ── -->
-  <div class="modal-overlay" id="valuation-modal" role="dialog" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeValuationModal()">
+  <div class="modal-overlay" id="valuation-modal" role="dialog" aria-label="Prisvurdering" aria-modal="true" style="display:none;z-index:6000;" onclick="if(event.target===this)closeValuationModal()">
     <div class="modal modal-wide">
       <div class="modal-header">
         <h2><svg class="ui-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Gratis prisvurdering</h2>

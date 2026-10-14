@@ -242,7 +242,7 @@
   transition: background 0.2s;
   white-space: nowrap;
 }
-.inbox-chat-reply-row button:hover { background: var(--rust-light); }
+.inbox-chat-reply-row button:hover { background: var(--rust-hover); }
 
 /* Inbox empty states */
 .inbox-page-empty-state {
@@ -425,7 +425,7 @@
 .thread-reply textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.88rem; resize: none; min-height: 70px; box-sizing: border-box; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .thread-reply textarea:focus { border-color: var(--forest); }
 .thread-reply button { background: var(--rust); color: #fff; border: none; padding: 11px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
-.thread-reply button:hover { background: var(--rust-light); }
+.thread-reply button:hover { background: var(--rust-hover); }
 
 /* ── LOGIN / GLEMT ── */
 .btn-back-login { background: none; border: none; color: var(--muted); font-size: 0.85rem; cursor: pointer; font-family: var(--font-sans); margin-top: 12px; padding: 0; display: block; width: 100%; text-align: center; transition: color 0.15s; }
@@ -780,7 +780,7 @@
     font-family: var(--font-sans);
     box-shadow: var(--shadow-up);
   }
-  .sidebar-mobile-apply:hover { background: var(--rust-light); }
+  .sidebar-mobile-apply:hover { background: var(--rust-hover); }
 
   .listings-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .listings-header { flex-direction: column; gap: 10px; align-items: flex-start; }
@@ -984,7 +984,7 @@
   font-family: var(--font-sans); transition: background 0.15s;
   margin-left: 4px;
 }
-.btn-onboard-create:hover { background: var(--rust-light); }
+.btn-onboard-create:hover { background: var(--rust-hover); }
 .admin-row-no-onboard {
   font-size: 0.72rem; color: var(--muted);
   padding: 5px 10px;
@@ -1329,7 +1329,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   font-family: var(--font-sans); width: 100%;
   transition: background 0.15s;
 }
-.map-popup-btn:hover { background: var(--rust-light); }
+.map-popup-btn:hover { background: var(--rust-hover); }
 
 /* Bruger lokation knap */
 .locate-btn {
@@ -1392,7 +1392,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   transition: background 0.15s;
 }
-.verify-action-btn:hover { background: var(--rust-light); }
+.verify-action-btn:hover { background: var(--rust-hover); }
 
 /* Email badge (inline).
    Var en konvolut-emoji, som paa Windows tegnes som et lille lilla-blaat
@@ -1489,7 +1489,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   transition: background 0.15s;
 }
-.mp-verify-cta:hover { background: var(--rust-light); }
+.mp-verify-cta:hover { background: var(--rust-hover); }
 
 /* Admin ID liste */
 .admin-id-img {

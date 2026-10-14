@@ -82,7 +82,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
-.compare-bar-go:hover:not(:disabled) { background: var(--rust-light);}
+.compare-bar-go:hover:not(:disabled) { background: var(--rust-hover);}
 .compare-bar-go:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (max-width: 560px) {
@@ -218,7 +218,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
-.cmp-bike-cta:hover { background: var(--rust-light);}
+.cmp-bike-cta:hover { background: var(--rust-hover);}
 
 /* Section */
 .cmp-section { border-bottom: 1px solid var(--border); }
@@ -353,7 +353,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   color: #fff;
   border: none;
 }
-.cmp-footer-primary:hover { background: var(--rust-light);}
+.cmp-footer-primary:hover { background: var(--rust-hover);}
 
 /* Responsivt: under 768px omdannes header til vandret-scrollbar layout */
 @media (max-width: 768px) {

@@ -5,6 +5,7 @@
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
 import { iconDealer, iconPrivate, priceLabel, iconPin } from './utils.js';
 import { cardFacts } from './card-spec.js';
+import { bikePath } from './bike-url.js';
 import { marketFactsHtml } from './market-facts.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
@@ -193,7 +194,7 @@ export function createBrandPage({
     const sellerType = profile.seller_type || 'private';
     const sellerName = profile.shop_name || profile.name || 'Sælger';
     return `
-      <div class="bike-card" onclick="navigateToBike('${b.id}')">
+      <div class="bike-card" onclick="if(!event.target.closest('a'))navigateToBike('${b.id}')">
         <div class="bike-card-img">
           ${primaryImg
             ? `<img src="${thumb}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
@@ -204,7 +205,7 @@ export function createBrandPage({
         </div>
         <div class="bike-card-body">
           <div class="card-top">
-            <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
+            <div class="bike-title"><a class="bike-card-link" href="${bikePath(b)}">${esc(b.brand)} ${esc(b.model)}</a></div>
             <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {

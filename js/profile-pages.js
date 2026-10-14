@@ -8,6 +8,7 @@ import {
 } from './dealer-extras.js';
 import { iconDealer, iconPrivate, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, iconBike } from './utils.js';
 import { cardFacts } from './card-spec.js';
+import { bikePath } from './bike-url.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import {
   computeTrustStatsFromReviews, calculateTrustScore, buildTrustBreakdownHTML,
@@ -153,7 +154,7 @@ export function createProfilePages({
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
         : noImagePlaceholder();
       return `
-        <div class="bike-card" onclick="navigateToBike('${b.id}')">
+        <div class="bike-card" onclick="if(!event.target.closest('a'))navigateToBike('${b.id}')">
           <div class="bike-card-img">
             ${imgContent}
             <div class="bike-card-badges">
@@ -163,7 +164,7 @@ export function createProfilePages({
           </div>
           <div class="bike-card-body">
             <div class="card-top">
-              <div class="bike-title">${esc(b.brand)} ${esc(b.model)}</div>
+              <div class="bike-title"><a class="bike-card-link" href="${bikePath(b)}">${esc(b.brand)} ${esc(b.model)}</a></div>
               <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
