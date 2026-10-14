@@ -83,7 +83,7 @@
   color: #fff;
 }
 .cookie-banner-btn-accept:hover {
-  background: var(--rust-light);
+  background: var(--rust-hover);
 }
 @media (max-width: 720px) {
   .cookie-banner-inner {
@@ -99,7 +99,7 @@
 /* ── FOOTER ── */
 footer { background: var(--forest-2); padding: 48px 48px 24px; display: block; }
 @media (max-width: 999px) { body.on-sell-page footer { display: none !important; } }
-footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size: 0.82rem; }
+footer p { color: color-mix(in srgb, var(--surface) 65%, transparent); /* 45 % gav 3,85:1 på --forest-2; WCAG AA kræver 4,5 */ font-size: 0.82rem; }
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -349,7 +349,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   font-weight: var(--weight-semibold); cursor: pointer; width: 100%; margin-top: 20px;
   font-family: var(--font-sans); transition: background 0.2s, transform 0.15s;
 }
-.form-submit:hover { background: var(--rust-light);}
+.form-submit:hover { background: var(--rust-hover);}
 .form-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -571,7 +571,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   background: var(--rust);
   color: #fff;
 }
-.scam-confirm:hover { background: var(--rust-light);}
+.scam-confirm:hover { background: var(--rust-hover);}
 @media (max-width: 480px) {
   .scam-card { padding: 22px 18px 18px; }
   .scam-title { font-size: var(--text-lg); }
@@ -592,6 +592,8 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   pointer-events: none;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
+/* Skjult toast skal også være skjult for skærmlæsere, ellers læses gammel tekst op */
+.toast:not(.show) { visibility: hidden; }
 /* Typen bærer betydningen i stedet for et emoji foran teksten. Farverne
    kommer fra tilstands-tokens i 01-base.css. Alle tre er målt med hvid
    tekst: ok 5,07:1 · fejl 6,54:1 · advarsel 5,93:1, altså WCAG AA.
@@ -668,7 +670,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   display: flex; align-items: center; justify-content: center;
   transition: background 0.2s;
 }
-#chat-send-btn:hover { background: var(--rust-light); }
+#chat-send-btn:hover { background: var(--rust-hover); }
 #chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 #chat-send-btn svg { width: 16px; height: 16px; }
 
@@ -1180,7 +1182,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   cursor: pointer; white-space: nowrap; font-family: var(--font-sans);
   transition: background 0.15s;
 }
-.interested-msg-btn:hover { background: var(--rust-light); }
+.interested-msg-btn:hover { background: var(--rust-hover); }
 
 /* ── Sælgerens andre / Lignende annoncer ── */
 .related-section-title {
@@ -1386,7 +1388,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   color: #fff;
   border: 1px solid var(--rust);
 }
-.bike-location-btn--locate:hover { background: var(--rust-light); border-color: var(--rust-light); }
+.bike-location-btn--locate:hover { background: var(--rust-hover); border-color: var(--rust-light); }
 .bike-location-btn--locate:disabled { opacity: 0.6; cursor: not-allowed; }
 .bike-location-btn--full {
   background: var(--cream);
@@ -1496,7 +1498,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .btn-contact { background: var(--bg); color: var(--charcoal); border: 1px solid var(--charcoal); padding: 12px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; text-align: center; }
 .btn-contact:hover { background: var(--surface); }
 .btn-bid { background: var(--rust); color: #fff; border: none; padding: 13px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; text-align: center; }
-.btn-bid:hover { background: var(--rust-light); }
+.btn-bid:hover { background: var(--rust-hover); }
 .btn-external-cta {
   display: flex; flex-direction: column; align-items: center; gap: var(--space-1);
   background: var(--rust); color: #fff; border: none;
@@ -1506,7 +1508,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   text-align: center; text-decoration: none;
   transition: background 0.2s, transform 0.1s;
 }
-.btn-external-cta:hover { background: var(--rust-light);}
+.btn-external-cta:hover { background: var(--rust-hover);}
 .btn-external-cta-sub {
   font-size: 0.78rem; font-weight: var(--weight-regular); opacity: 0.92;
 }
@@ -1683,7 +1685,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .message-box textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.88rem; resize: vertical; min-height: 90px; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .message-box textarea:focus { border-color: var(--forest); }
 .message-box button { margin-top: 8px; background: var(--rust); color: #fff; border: none; padding: 11px 20px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; width: 100%; }
-.message-box button:hover { background: var(--rust-light); }
+.message-box button:hover { background: var(--rust-hover); }
 .antiscam-tip {
   display: flex; align-items: flex-start; gap: var(--space-2);
   background: rgba(46,125,50,0.07); border: 1px solid rgba(46,125,50,0.18);
@@ -1696,7 +1698,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
 .bid-box input { flex: 1; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 0.9rem; outline: none; background: var(--cream); transition: border-color 0.2s; }
 .bid-box input:focus { border-color: var(--rust); }
 .bid-box button { background: var(--rust); color: #fff; border: none; padding: 11px 18px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; transition: background 0.2s; }
-.bid-box button:hover { background: var(--rust-light); }
+.bid-box button:hover { background: var(--rust-hover); }
 
 
 /* ── BULK IMPORT (admin-panel) ─────────────────────────────── */
@@ -1847,7 +1849,7 @@ footer p { color: color-mix(in srgb, var(--surface) 45%, transparent); font-size
   font-family: var(--font-sans); font-size: 0.85rem; font-weight: var(--weight-semibold);
   cursor: pointer; flex-shrink: 0;
 }
-.mp-attention-cta:hover { background: var(--rust-light); }
+.mp-attention-cta:hover { background: var(--rust-hover); }
 @media (max-width: 600px) {
   .mp-attention { flex-direction: column; align-items: flex-start; }
   .mp-attention-cta { width: 100%; }

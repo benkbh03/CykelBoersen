@@ -1,5 +1,6 @@
 import { bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
 import { cardFacts } from './card-spec.js';
+import { bikePath } from './bike-url.js';
 import { iconSearch, noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
@@ -368,7 +369,7 @@ export function createBikesList({
       // linjen flugter ens og ikke ser ujævnt ud.
       const lastSeenCard = sellerType === 'dealer' ? null : formatLastSeen(profile.last_seen, 72);
       return `
-        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr} ${isSold ? ' style="opacity:0.7"' : ''} onclick="${isSold ? '' : "navigateToBike('" + b.id + "')"}">
+        <div class="bike-card${isFeatured ? ' bike-card--featured' : ''}"${cityAttr}${addrAttr}${sellerAttr}${savingAttr} ${isSold ? ' style="opacity:0.7"' : ''} onclick="${isSold ? '' : "if(!event.target.closest('a'))navigateToBike('" + b.id + "')"}">
           <div class="bike-card-img"${dataImgs}>
             ${imgContent}
             ${isSold ? '<div class="sold-tag"><span>SOLGT</span></div>' : ''}
@@ -383,7 +384,7 @@ export function createBikesList({
           </div>
           <div class="bike-card-body">
             <div class="card-top">
-              <div class="bike-title">${esc(bikeTitle(b.brand, b.model))}</div>
+              <div class="bike-title">${isSold ? esc(bikeTitle(b.brand, b.model)) : `<a class="bike-card-link" href="${bikePath(b)}">${esc(bikeTitle(b.brand, b.model))}</a>`}</div>
               <div class="bike-price">${priceLabel(b)}${!isSold && !isDemo && saving > 0
                 ? ` <span class="bike-price-before" aria-label="Førpris ${b.original_price.toLocaleString('da-DK')} kroner">${b.original_price.toLocaleString('da-DK')} kr.</span>`
                 : ''}</div>

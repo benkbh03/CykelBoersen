@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="20261013hero">
+<html lang="da" data-asset-v="20261015a11y">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,23 +128,23 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=20261013hero">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=20261015a11y">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/01-base.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/02-listings.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/04-modals.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/05-pages.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/07-map.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/09-compare.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261013hero">
-  <link rel="stylesheet" href="/css/12-rental.css?v=20261013hero">
+  <link rel="stylesheet" href="/css/tokens.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/01-base.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/02-listings.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/04-modals.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/05-pages.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/07-map.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/09-compare.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=20261015a11y">
+  <link rel="stylesheet" href="/css/12-rental.css?v=20261015a11y">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -206,6 +206,8 @@
      den indloggede er admin. Sættes her og ikke af JS, så linkene ikke når
      at blive tegnet før auth er afklaret. -->
 <body class="rental-hidden">
+
+  <a href="#" class="skip-link" onclick="event.preventDefault();skipToContent()">Spring til indhold</a>
 
   <!-- ── NAVIGATION ── -->
   <nav role="navigation" aria-label="Hovednavigation">
@@ -1130,7 +1132,7 @@
   <!-- ══════════════════════════════════════════════════
        PAGE LAYOUT – kun synlig på /bike, /profile, /dealer, /me, /bliv-forhandler
        ══════════════════════════════════════════════════ -->
-  <div id="page-layout" style="display:block;">
+  <div id="page-layout" role="main" style="display:none;">
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
       <div class="brand-page">
@@ -1146,16 +1148,16 @@
         <div id="brand-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Cykler til salg</h2>
           <div id="brand-bikes-grid" class="brand-bikes-grid">
-            <ul class="prerender-bike-links"><li><a href="/bike/centurion-helium-fodbr-matt-black-herre-d8524964/">Centurion HELIUM FODBR MATT BLACK HERRE – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-violator-29-tommer-mountainbike-str-15-tommer-mat-ad894225/">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-isblaa-ea7abe2d/">Centurion Helium isblå – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-basic-urban-pigecykel-0fe990b7/">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-aura-dame-e925aad4/">Centurion AURA DAME – 6.399 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-7-gears-5bf0069e/">Centurion 7 gears – 1.700 kr. i Viborg</a></li><li><a href="/bike/centurion-violator-29-tommer-mountainbike-str-17-tommer-mat-273d35c9/">Centurion Violator 29 tommer Mountainbike - Str 17 tommer - Mat gul - 8 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-basic-outback-dreng-7g-e5eb1326/">Centurion Basic Outback Dreng 7g – 4.399 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-24-basic-free-57b906c4/">Centurion 24&quot; Basic Free. – 3.999 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-blaa-df0ad27a/">Centurion | Blå – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-fodbr-blank-groen-5d1a1f59/">Centurion HELIUM FODBR. BLANK GRØN – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-26-basic-free-c81d416c/">Centurion 26&quot; Basic Free. – 5.699 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-zero-dame-8sp-hydr-disc-20-5in-graa-soelv-gul-177de188/">Centurion Zero Dame 8sp Hydr. disc 20.5in Grå sølv gul – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-hydrogen-5f41cc37/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-hydrogen-6f5fc0af/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-382a4bdd/">Centurion helium – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-sort-8daec511/">Centurion helium sort – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-fodbr-matt-black-9fe0820b/">Centurion HELIUM FODBR MATT BLACK – 4.299 kr. i Frederiksberg C</a></li></ul>
+            <ul class="prerender-bike-links"><li><a href="/bike/centurion-helium-fodbr-matt-black-herre-d8524964/">Centurion HELIUM FODBR MATT BLACK HERRE – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-violator-29-tommer-mountainbike-str-15-tommer-mat-ad894225/">Centurion Violator 29 tommer Mountainbike - Str. 15 tommer - Mat kobber - 21 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-isblaa-ea7abe2d/">Centurion Helium isblå – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-basic-urban-pigecykel-0fe990b7/">Centurion Basic Urban Pigecykel – 4.899 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-aura-dame-e925aad4/">Centurion AURA DAME – 6.399 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-violator-29-tommer-mountainbike-str-17-tommer-mat-273d35c9/">Centurion Violator 29 tommer Mountainbike - Str 17 tommer - Mat gul - 8 Gear – 4.799 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-basic-outback-dreng-7g-e5eb1326/">Centurion Basic Outback Dreng 7g – 4.399 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-24-basic-free-57b906c4/">Centurion 24&quot; Basic Free. – 3.999 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-blaa-df0ad27a/">Centurion | Blå – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-fodbr-blank-groen-5d1a1f59/">Centurion HELIUM FODBR. BLANK GRØN – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-26-basic-free-c81d416c/">Centurion 26&quot; Basic Free. – 5.699 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-zero-dame-8sp-hydr-disc-20-5in-graa-soelv-gul-177de188/">Centurion Zero Dame 8sp Hydr. disc 20.5in Grå sølv gul – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-hydrogen-5f41cc37/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-hydrogen-6f5fc0af/">Centurion Hydrogen. – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-382a4bdd/">Centurion helium – 4.499 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-sort-8daec511/">Centurion helium sort – 4.299 kr. i Frederiksberg C</a></li><li><a href="/bike/centurion-helium-fodbr-matt-black-9fe0820b/">Centurion HELIUM FODBR MATT BLACK – 4.299 kr. i Frederiksberg C</a></li></ul>
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
         <div id="brand-market-facts" class="brand-page-section market-facts">
     <h2 class="brand-page-section-title">Hvad koster en Centurion?</h2>
-    <p class="market-facts-summary">Lige nu er der 18 Centurion-cykler til salg med en pris.
+    <p class="market-facts-summary">Lige nu er der 17 Centurion-cykler til salg med en pris.
     Halvdelen koster under <strong>4.500 kr.</strong>
-    Den billigste koster 1.700 kr., den dyreste 6.400 kr.
-    17 af dem sælges af en forhandler.</p>
+    Den billigste koster 4.000 kr., den dyreste 6.400 kr.
+    Alle sælges af forhandlere.</p>
     
     <p class="market-facts-note">Tallene er fra de aktive annoncer, og gratis cykler er ikke talt med.
       Skal du selv sælge? <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Se hvad din cykel er værd</a>.</p></div>
@@ -1270,7 +1272,7 @@
 
 
   <!-- ── TOAST BESKED ── -->
-  <div class="toast" id="toast">Din annonce er oprettet!</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 
   <!-- ── HJÆLP (support-chat) ── -->

@@ -69,6 +69,7 @@
   --sand-2:       var(--surface-2);
   --rust:         #C8502A;
   --rust-light:   #E8694A;
+  --rust-hover:   #A8421F; /* hover på orange knapper: hvid tekst 6,06:1. --rust-light gav 3,21:1 og dumpede WCAG AA */
   --green:        #2A7D4F; /* = --success; brandnavnet til ikke-tilstands-brug */
   --charcoal:     #1A1A18;
   --text-muted:   #5F6360; /* neutral grå. 6,10:1 på hvid, 5,54:1 på --surface, 5,11:1 på --surface-2 (WCAG AA ≥4,5) */

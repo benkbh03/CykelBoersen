@@ -153,7 +153,7 @@
   font-family: var(--font-sans);
   transition: background 0.15s, box-shadow 0.15s;
 }
-.mp-action-primary:hover { background: var(--rust-light); }
+.mp-action-primary:hover { background: var(--rust-hover); }
 .mp-action-secondary-row {
   display: flex;
   gap: var(--space-2);
@@ -551,7 +551,7 @@ button.mp-summary-item:hover { color: var(--charcoal); text-decoration: underlin
   transition: background 0.15s;
   width: 100%;
 }
-.mp-completion-cta:hover { background: var(--rust-light); }
+.mp-completion-cta:hover { background: var(--rust-hover); }
 .mp-logout-link {
   display: inline-flex;
   align-items: center;
@@ -1116,7 +1116,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
-.pp-cta-btn:hover { background: var(--rust-light);}
+.pp-cta-btn:hover { background: var(--rust-hover);}
 
 /* Tabs (re-uses existing up-tab styling) */
 .pp-tabs {
@@ -2166,7 +2166,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   transition: background 0.15s, transform 0.1s;
 }
 .size-finder-submit:hover {
-  background: var(--rust-light);
+  background: var(--rust-hover);
 }
 .size-finder-result {
   margin-top: 32px;
@@ -2244,7 +2244,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   cursor: pointer;
   width: 100%;
 }
-.size-finder-cta-primary:hover { background: var(--rust-light); }
+.size-finder-cta-primary:hover { background: var(--rust-hover); }
 .size-finder-result-tips {
   background: rgba(42,61,46,0.04);
   border-left: 3px solid var(--forest);
@@ -2559,7 +2559,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   background: var(--bg);
 }
 .blog-article-cta-btns button.primary:hover {
-  background: var(--rust-light);
+  background: var(--rust-hover);
 }
 .blog-related {
   margin-top: 48px;
@@ -2692,7 +2692,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   transition: background 0.15s, transform 0.1s;
 }
 .valuation-submit:hover {
-  background: var(--rust-light);
+  background: var(--rust-hover);
 }
 .valuation-submit:disabled {
   opacity: 0.6;
@@ -2838,7 +2838,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   color: #fff;
 }
 .valuation-cta-primary:hover {
-  background: var(--rust-light);
+  background: var(--rust-hover);
 }
 .valuation-cta-secondary {
   background: transparent;
@@ -3235,7 +3235,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 .see-all-dealers-cta:hover {
-  background: var(--rust-light);
+  background: var(--rust-hover);
   box-shadow: var(--shadow-float);
 }
 .dealers-toolbar {
@@ -3527,7 +3527,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   border: 1.5px solid var(--border); background: var(--sand); color: var(--charcoal);
 }
 .onboarding-btn--primary { background: var(--rust); color: #fff; border-color: var(--rust); }
-.onboarding-btn--primary:hover { background: var(--rust-light); }
+.onboarding-btn--primary:hover { background: var(--rust-hover); }
 .onboarding-btn:not(.onboarding-btn--primary):hover { border-color: var(--forest); }
 
 /* Skeleton-loading flyttet til 02-listings.css så den er tilgængelig på forsiden */
@@ -3545,7 +3545,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   padding: 11px 24px; border-radius: var(--radius-sm); font-size: var(--text-sm); font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans); transition: background 0.2s;
 }
-.empty-state-cta:hover { background: var(--rust-light); }
+.empty-state-cta:hover { background: var(--rust-hover); }
 
 /* ── MOBIL BOTTOM NAV ── */
 #mobile-bottom-nav {

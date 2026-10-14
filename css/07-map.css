@@ -688,7 +688,7 @@ body.map-page-view { padding-bottom: 0 !important; }
   font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-sm);
   transition: background-color 0.12s;
 }
-.map-filter-apply:hover { background: var(--rust-light); }
+.map-filter-apply:hover { background: var(--rust-hover); }
 
 /* Hver gruppe er en række adskilt af en hårlinje, som i filterkolonnen.
    Før stod de fire første grupper uden streg og resten med, så arket så ud
