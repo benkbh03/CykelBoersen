@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { escAttr, beskedFejl, iconMail, iconBike } from './utils.js';
+import { officialBadgeHTML } from './official-badge.js';
 
 export function createInbox({
   supabase,
@@ -107,8 +108,8 @@ export function createInbox({
         .select(`
           *,
           bikes(brand, model),
-          sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type),
-          receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type)
+          sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, is_official),
+          receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, is_official)
         `)
         .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
         .order('created_at', { ascending: false }));
@@ -141,6 +142,7 @@ export function createInbox({
           bike:      msg.bikes,
           otherId,
           otherName: otherProf?.seller_type === 'dealer' ? otherProf?.shop_name : otherProf?.name,
+          otherOfficial: otherProf?.is_official === true,
           messages:  [],
           hasUnread: false,
         };
@@ -179,7 +181,7 @@ export function createInbox({
            onclick="openThread('${escAttr(t.bikeId)}', '${escAttr(t.otherId)}', '${escAttr(t.otherName||'Ukendt')}')">
         <div class="inbox-avatar">${initials}</div>
         <div class="inbox-content">
-          <div class="inbox-from">${esc(t.otherName || 'Ukendt')}</div>
+          <div class="inbox-from">${esc(t.otherName || 'Ukendt')}${t.otherOfficial ? officialBadgeHTML() : ''}</div>
           <div class="inbox-bike">Re: ${bikeName}</div>
           <div class="inbox-preview">${preview}</div>
         </div>
@@ -208,7 +210,7 @@ export function createInbox({
         .eq('id', bikeId)
         .single(),
       supabase.from('profiles')
-        .select('seller_type')
+        .select('seller_type, is_official')
         .eq('id', otherId)
         .single()
     ]);
@@ -224,7 +226,7 @@ export function createInbox({
 
     const openProfileFn = otherProf?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`;
     document.getElementById('thread-header').innerHTML =
-      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button> · <span style="color:var(--muted)">${esc(bikeName)}</span>`;
+      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>${otherProf?.is_official ? officialBadgeHTML() : ''} · <span style="color:var(--muted)">${esc(bikeName)}</span>`;
 
     const threadEl = document.getElementById('thread-messages');
     if (error || !data) {
@@ -440,7 +442,7 @@ export function createInbox({
       [msgRes, saveRes] = await Promise.all([
         supabase
           .from('messages')
-          .select('*, bikes(brand, model, bike_images(url, is_primary)), sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, avatar_url), receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, avatar_url)')
+          .select('*, bikes(brand, model, bike_images(url, is_primary)), sender:profiles!messages_sender_id_fkey(id, name, shop_name, seller_type, avatar_url, is_official), receiver:profiles!messages_receiver_id_fkey(id, name, shop_name, seller_type, avatar_url, is_official)')
           .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
           .order('created_at', { ascending: false }),
         supabase
@@ -474,6 +476,7 @@ export function createInbox({
           otherId,
           otherName:   otherProf && otherProf.seller_type === 'dealer' ? otherProf.shop_name : (otherProf ? otherProf.name : 'Ukendt'),
           otherAvatar: otherProf ? otherProf.avatar_url : null,
+          otherOfficial: !!(otherProf && otherProf.is_official === true),
           messages:    [],
           hasUnread:   false,
           unreadCount: 0,
@@ -548,7 +551,7 @@ export function createInbox({
         + '<div class="inbox-page-avatar">' + avatarHTML + '</div>'
         + '<div class="inbox-page-row-body">'
         + '<div class="inbox-page-row-top">'
-        + '<span class="inbox-page-name">' + esc(t.otherName || 'Ukendt') + '</span>'
+        + '<span class="inbox-page-name">' + esc(t.otherName || 'Ukendt') + (t.otherOfficial ? officialBadgeHTML() : '') + '</span>'
         + '<span class="inbox-page-time">' + time + '</span>'
         + '</div>'
         + '<div class="inbox-page-bike">' + (bikeImg ? '<img src="' + bikeImg + '" class="inbox-page-bike-thumb">' : iconBike(14)) + ' ' + bikeName + '</div>'
@@ -582,7 +585,7 @@ export function createInbox({
 
     const [{ data: bikeData }, { data: otherProfile }] = await Promise.all([
       supabase.from('bikes').select('user_id, is_active, brand, model, price, bike_images(url, is_primary)').eq('id', bikeId).single(),
-      supabase.from('profiles').select('seller_type').eq('id', otherId).single(),
+      supabase.from('profiles').select('seller_type, is_official').eq('id', otherId).single(),
     ]);
 
     const isSeller   = bikeData && bikeData.user_id === currentUser.id;
@@ -600,7 +603,7 @@ export function createInbox({
       headerEl.innerHTML = `
       <div class="inbox-chat-header-info">
         <button class="inbox-chat-back" onclick="closeInboxThread()" aria-label="Tilbage">←</button>
-        <button onclick="${otherProfile?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>
+        <button onclick="${otherProfile?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>${otherProfile?.is_official ? officialBadgeHTML() : ''}
       </div>
       <div class="inbox-chat-bike-preview" onclick="navigateTo('/bike/${bikeId}')" role="button" tabindex="0">
         ${bikeThumb ? `<img src="${bikeThumb}" alt="" class="inbox-chat-bike-thumb">` : '<span class="inbox-chat-bike-icon">🚲</span>'}
