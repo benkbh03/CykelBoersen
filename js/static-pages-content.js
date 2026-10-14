@@ -68,7 +68,7 @@ export const footerContent = {
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
-      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman<br>CVR: 46403568<br>Sydvestvej 61, st. 4, 2600 Glostrup<br>E-mail: hej@cykelbørsen.dk</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for:</p>
@@ -167,7 +167,7 @@ export const footerContent = {
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
-      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>E-mail: hej@cykelbørsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Sydvestvej 61, st. 4, 2600 Glostrup<br>E-mail: hej@cykelbørsen.dk</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
       <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
@@ -631,7 +631,7 @@ export const footerContent = {
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">9. Kontakt</h3>
       <p style="margin-bottom:8px;">Cykelbørsen v/ Benjamin Vojdeman<br>
       CVR: 46403568<br>
-      Bentzonsvej 46, 2. tv, 2000 Frederiksberg<br>
+      Sydvestvej 61, st. 4, 2600 Glostrup<br>
       E-mail: <strong>hej@cykelbørsen.dk</strong><br>
       For udtræk af audit-log eller spørgsmål om denne aftale, kontakt os på ovenstående e-mail.</p>
 
