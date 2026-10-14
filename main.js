@@ -64,6 +64,7 @@ import { initSmartFilter } from './js/smart-filter.js';
 import { resetSmartRank } from './js/smart-rank.js';
 import { HOME_TITLE, HOME_DESC } from './js/seo-text.js';
 import { saveOwnProfileFields } from './js/own-profile.js';
+import { skipToContent } from './js/a11y-keys.js';
 
 // Fang auth-type fra URL-hash MED DET SAMME (synkront ved modul-load), FØR
 // supabase-js opdager sessionen og fjerner #...type=... fra URL'en asynkront.
@@ -4141,6 +4142,7 @@ window.submitReview          = submitReview;
 window.openRateModal         = openRateModal;
 window.closeRateModal        = closeRateModal;
 window.submitRatingFromModal = submitRatingFromModal;
+window.skipToContent = skipToContent;
 window.toggleProfileContact  = toggleProfileContact;
 window.sendProfileMessage    = sendProfileMessage;
 window.toggleRestDealers     = toggleRestDealers;

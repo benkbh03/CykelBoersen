@@ -45,7 +45,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.cykelagent-new-btn:hover { background: var(--rust-light); }
+.cykelagent-new-btn:hover { background: var(--rust-hover); }
 .cykelagent-new-icon {
   display: inline-flex; align-items: center; justify-content: center;
   font-size: var(--text-base); line-height: 1;
@@ -531,7 +531,7 @@
   min-width: 200px;
   transition: background 0.15s;
 }
-.cykelagent-save-btn:hover { background: var(--rust-light); }
+.cykelagent-save-btn:hover { background: var(--rust-hover); }
 .cykelagent-cancel-btn {
   background: none;
   border: 1.5px solid var(--border);
