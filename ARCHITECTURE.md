@@ -14,7 +14,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
   kategori-chips, sidebar-filtre, annonce-grid, sælg-CTA, `#detail-view`
   (routing-target), footer, toast, chat-widget, `#modals-root`.
 - `partials/modals.html` (~870 linjer): ALLE 19 modaler. Hentes + injiceres
-  af `main.js` ved app-start. Rediger som normal HTML; husk cache-bump.
+  af `main.js` ved app-start. Rediger som normal HTML; cache-versionen sættes automatisk efter merge.
   Ingen build-step — bare en runtime `fetch()` af en statisk fil.
 
 ## Core shared modules
@@ -62,8 +62,10 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `chat-support`: support-bot (Claude Haiku).
 
 ## Cache-busting
-- `js/config.js` → `ASSET_VERSION`. Bumpes ved HVER kode-ændring. Alle dynamiske
-  imports + CSS-links + `partials/modals.html`-fetch bruger `?v=${ASSET_VERSION}`.
+- `js/config.js` → `ASSET_VERSION`, læst fra `<html data-asset-v>` i `index.html`.
+  Alle dynamiske imports + CSS-links + `partials/modals.html`-fetch bruger
+  `?v=${ASSET_VERSION}`. Versionen sættes automatisk efter merge af
+  `scripts/stamp-asset-version.mjs` (via `sitemap.yml`). Bump den ikke i en PR.
 
 ## Practical rule of thumb
 When adding/changing functionality:

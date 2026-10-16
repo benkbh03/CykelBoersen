@@ -1,8 +1,10 @@
 name: Generate sitemap + prerender
 
-# Kører dagligt + manuelt + ved push der ændrer indhold/scripts.
-# 1) Genererer en frisk sitemap.xml (aktive annoncer + verificerede forhandlere).
-# 2) Prerenderer statiske SEO-sider (mærker + blog + oversigter) fra data-moduler.
+# Kører dagligt + manuelt + ved push der ændrer kode, indhold eller scripts.
+# 1) Sætter cache-versionen i index.html ud fra indholdet af css/, js/, main.js
+#    og partials/ (scripts/stamp-asset-version.mjs). PR'er bumper den ikke selv.
+# 2) Genererer en frisk sitemap.xml (aktive annoncer + verificerede forhandlere).
+# 3) Prerenderer statiske SEO-sider (mærker + blog + oversigter) fra data-moduler.
 # Committer kun hvis noget faktisk ændrede sig.
 on:
   schedule:
@@ -11,16 +13,21 @@ on:
   push:
     branches: [main]
     paths:
-      - 'scripts/generate-sitemap.mjs'
-      - 'scripts/prerender.mjs'
-      - 'scripts/check-blog-dates.mjs'
+      - 'scripts/**'
       - '.github/workflows/sitemap.yml'
-      # Prerendret indhold afhænger af disse — regenerér når de ændrer sig,
-      # så de statiske sider ikke peger på gamle asset-versioner eller tekst.
+      # Cache-versionen hashes af disse, og prerendret indhold afhænger af
+      # index.html og data-modulerne i js/.
       - 'index.html'
-      - 'js/brand-data-v2.js'
-      - 'js/blog-data-v2.js'
-      - 'js/category-data.js'
+      - 'main.js'
+      - 'js/**'
+      - 'css/**'
+      - 'partials/**'
+
+# Én kørsel ad gangen: to merges lige efter hinanden må ikke skrive hver sin
+# version oven i hinanden.
+concurrency:
+  group: sitemap-prerender
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -31,11 +38,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Nyeste main, ikke den commit der startede kørslen: en kørsel der
+          # stod i kø, skal hashe det der faktisk ligger på main nu.
+          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Sæt cache-version
+        run: node scripts/stamp-asset-version.mjs
 
       - name: Generate sitemap.xml
         run: node scripts/generate-sitemap.mjs
@@ -55,7 +69,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "chore(seo): regenerér sitemap + prerendrede sider"
+            git commit -m "chore: cache-version, sitemap og prerendrede sider"
             git push
           else
             echo "Sitemap + prerender uændret — ingen commit."

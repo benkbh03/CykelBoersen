@@ -1,91 +1,64 @@
 ---
 name: cache-bump
-description: Bumper cache-versionen på CykelBørsen. Versionen står ÉT sted, på <html data-asset-v> i index.html, og CSS-linkene i samme fil bruger samme streng. Brug AUTOMATISK når der er ændringer i CSS-filer, js/-moduler, main.js, partials/modals.html eller hero.jpg, og brugeren beder om at committe/pushe. Brug også når brugeren nævner "bump cache", "cache version", "ASSET_VERSION" eller "cache-bust".
+description: Forklarer CykelBørsens cache-version, som sættes AUTOMATISK efter merge og aldrig må bumpes i en PR. Brug når nogen nævner "bump cache", "cache version", "ASSET_VERSION", "data-asset-v" eller "cache-bust", eller når en ændring i css/, js/, main.js eller partials/ skal committes, så versionen IKKE røres i hånden.
 ---
 
-# Cache-bump (CykelBørsen)
+# Cache-version (CykelBørsen)
 
-## Formål
-Sikre at browsere altid henter den nyeste CSS og JS efter en deploy.
+## Kort sagt: bump den ikke
 
-## Vigtigst at vide først
+Siden 14. okt. 2026 sættes cache-versionen automatisk. **En PR må ikke ændre
+`data-asset-v` eller CSS-linkenes `?v=` i `index.html`.**
 
-**Versionen står ét sted: `<html data-asset-v="...">` øverst i `index.html`.**
+Før blev versionen bumpet i hånden i hver PR. To åbne PR'er rørte dermed
+altid samme linje, og den der blev merget sidst, fik en merge-konflikt.
+Det skete næsten hver gang.
 
-Sådan har det ikke altid været. Den stod som fem literaler der skulle holdes
-i sync i hånden, og tre af dem drev fra hinanden — bootstrap-`V` stod på
-`20260830b` og `main.js`' config-import på `20260701t`, mens CSS var nået til
-`w`. Resultatet var ikke et nedbrud, men skævhed: ny HTML og ny CSS serveret
-sammen med en `main.js` browseren hentede fra sit eget cache.
+## Sådan virker det nu
 
-Disse tre læser nu attributten og må **ikke** redigeres ved en bump:
+1. PR'en ændrer kode i `css/`, `js/`, `main.js` eller `partials/`. Den rører
+   ikke versionen.
+2. Efter merge kører `.github/workflows/sitemap.yml`. Første trin er
+   `node scripts/stamp-asset-version.mjs`, som hasher indholdet af de fire
+   stier og skriver de første 10 tegn i `<html data-asset-v>` og i hvert
+   CSS-links `?v=`.
+3. Prerender kører bagefter og kopierer `index.html`, så de statiske sider
+   får samme version. Workflowet committer og pusher til main.
+
+Samme indhold giver samme version, så den daglige kørsel ikke laver tomme
+commits.
+
+`check-content.yml` fejler en PR der fjerner en linje med `data-asset-v=`
+eller `.css?v=` fra `index.html`. Ret linjerne tilbage til mains værdi.
+
+## Det der stadig læser attributten
 
 | Fil | Hvad den gør |
 |---|---|
 | `index.html`, bootstrap-scriptet nederst | `const V = document.documentElement.dataset.assetV` |
 | `js/config.js` | `export const ASSET_VERSION = document.documentElement.dataset.assetV` |
-| `main.js` (øverst) | `await import(\`./js/config.js?v=${ASSET_VERSION}\`)` — dynamisk, fordi en statisk import-sti er en literal der ikke kan læse DOM'en |
+| `main.js` (øverst) | `await import(\`./js/config.js?v=${ASSET_VERSION}\`)` |
 
-**Rører du ASSET_VERSION i `config.js` for at sætte et tal, laver du fejlen om
-igen.** Den skal blive ved med at læse fra DOM'en.
+Rør ikke nogen af dem. De skal blive ved med at læse fra DOM'en.
 
-CSS-linkene i `<head>` er stadig literaler. De er statiske `href`s der skal
-blokere gengivelsen, og lod man JavaScript skrive dem om, ville siden blinke
-ustylet først. De bruger med vilje samme streng som attributten, så én
-søg-og-erstat rammer det hele.
+## Ny CSS-fil
 
-## Hvornår
+Tilføj `<link rel="stylesheet" href="/css/<fil>.css?v=<samme som de andre>">`
+i `index.html`. Scriptet retter versionen ved merge. Det er en ny linje, så
+PR-tjekket brokker sig ikke.
 
-Bump når noget af dette er ændret: `css/*`, `js/*`, `main.js`,
-`partials/modals.html`, `hero.jpg`.
+## Det automatikken ikke dækker
 
-## Procedure
+- **Statiske imports** (`from './utils.js'`) har ingen `?v=`. En ny eksport i
+  et eksisterende modul kan stadig møde en cachet gammel udgave. Reglen i
+  CLAUDE.md gælder uændret: læg den i en ny fil, eller importér dynamisk.
+- I minuttet mellem merge og workflowets commit står den gamle version på
+  main. Det er det samme som før, når en PR glemte at bumpe.
+- Preview-links fra Cloudflare Pages viser PR-grenens `index.html`, altså
+  mains seneste version. Hver preview har sin egen adresse, så cachen deles
+  ikke med produktion.
 
-### 1. Aflæs nuværende version
-```bash
-grep -o 'data-asset-v="[^"]*"' index.html
-```
-Format: `20260830<suffix>`, suffix `a-z`, derefter `aa-zz`.
+## Skal versionen tvinges op uden kodeændring
 
-### 2. Bestem næste suffix
-`a` → `b`, `z` → `aa`, `az` → `ba`, `bz` → `ca`. Kun små bogstaver.
-
-### 3. Erstat i index.html — og KUN der
-```bash
-sed -i 's/20260830<GAMMEL>/20260830<NY>/g' index.html
-```
-Uden `v=`-præfiks i mønstret, så attributten rammes sammen med CSS-linkene.
-
-### 4. Verificér — spring ALDRIG dette over
-```bash
-grep -c '20260830<NY>'     index.html   # forventet: 14 (1 attribut + 12 CSS + 1 hero)
-grep -c '20260830<GAMMEL>' index.html   # skal være 0
-```
-
-Bumpen er fejlet tavst tre gange: to gange matchede `sed` ikke det man troede
-(én gang fordi skallen døde før kommandoen kørte, én gang fordi mønstret
-allerede var forældet), og der blev committet uden at nogen så efter.
-**Læs tallene. Antag aldrig at `sed` ramte.**
-
-Ændrer tallet i trin 4 sig ikke som forventet, så find ud af hvorfor før du
-committer. Et nyt CSS-link hæver tallet med ét; det er den normale forklaring.
-
-### 5. Ved en ny CSS-fil
-Tilføj `<link>` i `index.html` med samme versionsstreng som resten.
-
-## VIGTIGT
-- Rør **ikke** `ASSET_VERSION` i `js/config.js`. Den læser fra DOM'en.
-- Rør **ikke** `const V` i bootstrap-scriptet. Samme grund.
-- De præ-renderede sider (`/om-os/`, `/vilkaar/` osv.) har deres egne gamle
-  kopier af bootstrap'en. De genskrives af `sitemap.yml`-actionen ud fra
-  `index.html` — redigér dem ikke i hånden. Uden attributten falder de
-  tilbage til `?v=` uden værdi, hvilket virker uden fejl.
-- Brug **aldrig** `--no-verify`.
-
-## Eksempel-output
-```
-Bumpet 20260830w → 20260830x:
-  ✓ index.html — 14 forekomster (1 data-asset-v + 12 CSS + 1 hero)
-  ✓ 0 forekomster af den gamle streng tilbage
-  · js/config.js og bootstrap-V rørt ikke — de læser attributten
-```
+GitHub → Actions → "Generate sitemap + prerender" → Run workflow. Ændres
+intet i de fire stier, bliver versionen den samme; det er meningen.
