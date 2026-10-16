@@ -1,6 +1,6 @@
 # Aktuelle RLS-politikker — facitliste
 
-**Øjebliksbillede: 4. september 2026.** Verificeret mod databasen, ikke udledt af migrationerne.
+**Øjebliksbillede: 16. oktober 2026** (efter `harden_uploads_and_cleanup.sql`). Verificeret mod databasen, ikke udledt af migrationerne.
 
 ## Hvorfor denne fil findes
 
@@ -139,6 +139,7 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | messages | INSERT | Indlogget bruger kan sende besked | public | – | `auth.uid() = sender_id` |
 | messages | SELECT | Kun afsender og modtager kan se beskeder | public | `auth.uid() = sender_id OR auth.uid() = receiver_id` | – |
 | messages | UPDATE | Modtager kan markere som læst | public | `auth.uid() = receiver_id` | – ¹ |
+| moderation_log | SELECT | moderation_log_admin_select | public | `ER_ADMIN` | – |
 | price_drop_watches | DELETE | Users can delete own price-drop watches | public | `auth.uid() = user_id` | – |
 | price_drop_watches | INSERT | Users can insert own price-drop watches | public | – | `auth.uid() = user_id` |
 | price_drop_watches | SELECT | Users can read own price-drop watches | public | `auth.uid() = user_id` | – |
@@ -147,8 +148,11 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | profiles | INSERT | Kun ejer kan indsætte profil | public | – | `auth.uid() = id` |
 | profiles | SELECT | Alle kan se profiler | public | `true` ² | – |
 | profiles | UPDATE | Ejer eller admin kan opdatere profil | public | `auth.uid() = id OR ER_ADMIN` | – ³ |
-| profiles_phone_removed_20260901 | – | *(ingen politikker — bevidst)* | – | – | – |
+| profiles_address_removed_20261012 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
+| profiles_phone_removed_20260901 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
+| profiles_snapshot_20261013 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
 | rate_limits | – | *(ingen politikker — bevidst)* | – | – | – |
+| rate_limits_anon | – | *(ingen politikker — bevidst)* | – | – | – |
 | rental_bookings | SELECT | rental_bookings_select | public | `renter_id = auth.uid() OR dealer_id = auth.uid()` | – |
 | rental_item_images | DELETE | rental_item_images_delete | public | `EXISTS (rental_items WHERE id = item_id AND dealer_id = auth.uid())` | – |
 | rental_item_images | INSERT | rental_item_images_insert | public | – | `EXISTS (rental_items WHERE id = item_id AND dealer_id = auth.uid())` |
@@ -162,17 +166,16 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | reviews | UPDATE | Bruger kan opdatere egne | public | `auth.uid() = reviewer_id` | – ¹ |
 | trades | SELECT | trades_select_parties | public | `auth.uid() = seller_id OR auth.uid() = buyer_id` | – ⁸ |
 | saved_bikes | DELETE | Bruger kan slette eget save | public | `auth.uid() = user_id` | – |
-| saved_bikes | DELETE | Kun ejer kan fjerne gemte annoncer ⁵ | public | `auth.uid() = user_id` | – |
 | saved_bikes | INSERT | Bruger kan indsætte eget save | public | – | `auth.uid() = user_id` |
-| saved_bikes | INSERT | Kun ejer kan gemme annoncer ⁵ | public | – | `auth.uid() = user_id` |
 | saved_bikes | SELECT | Bruger kan se egne saves | public | `auth.uid() = user_id` | – |
-| saved_bikes | SELECT | Kun ejer kan se gemte annoncer ⁵ | public | `auth.uid() = user_id` | – |
 | saved_bikes | SELECT | Ejer af bike kan se interesserede | public | `EXISTS (bikes WHERE id = bike_id AND user_id = auth.uid())` | – |
 | saved_searches | ALL | Users manage own saved searches | public | `auth.uid() = user_id` | – ⁶ |
 | search_logs | INSERT | search_logs_insert | public | – | `true` |
 | search_logs | SELECT | search_logs_select_admin | public | `ER_ADMIN` | – |
 | sell_funnel_events | INSERT | sell_funnel_insert | public | – | `true` |
 | sell_funnel_events | SELECT | sell_funnel_select_admin | public | `ER_ADMIN` | – |
+| user_suspensions | SELECT | user_suspensions_admin_select | public | `ER_ADMIN` | – |
+| user_suspensions | SELECT | user_suspensions_self_select | public | `user_id = auth.uid()` | – |
 
 **RLS er slået til på samtlige tabeller.**
 
@@ -182,10 +185,11 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 2. Rækkerne er offentlige, kolonnerne er ikke: se "Kolonne-rettigheder" øverst (`hide_private_profile_columns.sql`, 12. okt. 2026). Indtil da var hele tabellen læsbar med anon-nøglen, inkl. e-mail på alle brugere. `phone`, `address`, `postcode` og præcise `lat`/`lng` er stadig offentlige, fordi kun forhandlere har dem: triggerne `strip_private_phone` og `strip_private_location` nulstiller dem på private profiler. "Forhandler" omfatter her også en ansøger der endnu ikke er godkendt (`seller_type = 'dealer'`, `verified = false`): butikkens telefon og adresse kan læses fra ansøgningen er sendt. Afvisning via admin rydder dem igen.
 3. Beskyttet af triggeren `protect_privileged_profile_columns`, ikke af politikken.
 4. Handelskravet ligger i triggeren `require_trade_before_review`, ikke i politikken (se "Triggere" øverst). Én vurdering pr. anmelder pr. handel: unik-indekset `reviews_one_per_trade` (erstatter `reviews_unique_per_trade`) og CHECK-constrainten `reviews_no_self_review`.
-5. Dublet af den foregående politik. Politikker OR'es sammen, så det er harmløst, men to migrationer har lavet den samme regel under forskellige navne.
+5. (Udgået.) `saved_bikes` havde tre dubletter under andre navne ("Kun ejer kan …"). Fjernet med `harden_uploads_and_cleanup.sql` 16. okt. 2026; STATUS_TJEK række 76 tjekker at der er 4 tilbage.
 6. `FOR ALL` uden `WITH CHECK` er i orden: `USING` bruges også som check.
 7. `review_trade_visible` er `SECURITY DEFINER`: sand når `trade_id` er NULL (ældre vurdering uden handel) eller handlen er 'gennemført'. Vurderinger på en annulleret handel er skjult for alle. **Der må kun være denne ene SELECT-politik på `reviews`**; en ekstra ville OR'es ind og vise de skjulte igen. STATUS_TJEK række 47 tjekker det.
 8. Ingen INSERT-, UPDATE- eller DELETE-politik, og `authenticated`/`anon` har kun `SELECT`. Rækker skrives kun af triggerne i `add_trades.sql` og af service-role.
+9. Fortrydelses-kopier fra de migrationer der fjernede telefon, adresse og skjulte profilkolonner. Kun service-role kan læse dem. Hver har en slettedato i sin migration; STATUS_TJEK række 78-80 viser "SLET NU", når datoen er nået.
 
 ---
 
@@ -210,6 +214,8 @@ objektets sti.
 | id-documents | SELECT | Admins can view all id-documents | authenticated | `ER_ADMIN` |
 | id-documents | INSERT | Authenticated users can upload id-documents | authenticated | `MAPPE1 = auth.uid()` |
 | id-documents | DELETE | Users can delete their own id-documents | authenticated | `MAPPE1 = auth.uid()` |
+
+**Bucket-grænser** (`storage.buckets`, ikke politikker): bike-images 5 MB, jpeg/png/webp · avatars 2 MB, webp/jpeg/png · id-documents 10 MB, jpeg/png/webp/pdf. De to sidste sat med `harden_uploads_and_cleanup.sql`; STATUS_TJEK række 74-75. Ingen kode uploader til id-documents i dag.
 
 ### Tre ting værd at vide om bike-images
 

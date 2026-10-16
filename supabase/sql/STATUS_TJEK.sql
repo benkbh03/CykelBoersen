@@ -21,7 +21,7 @@ SELECT * FROM (
 
   -- Versionen af DENNE fil. Står der en ældre dato end den i rå-linket på
   -- GitHub, er det en gammel kopi der er kørt (det skete 30. sep.).
-  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-13' AS status
+  SELECT 0 AS sort, 'version' AS migration, 'STATUS_TJEK.sql udgave' AS tjek, '2026-10-16' AS status
 
   -- ── add_moderation_log_and_suspension.sql (15. september) ──────────
   UNION ALL
@@ -255,6 +255,52 @@ SELECT * FROM (
               ELSE 'OK' END
   UNION ALL SELECT 73, 'svindel', 'officielle konti (forventet 1)',
          (SELECT count(*)::text FROM profiles WHERE is_official)
+
+  -- ── harden_uploads_and_cleanup.sql (16. oktober) ───────────────────
+  UNION ALL SELECT 74, 'uploads', 'avatars: hoejst 2 MB, kun billeder',
+         COALESCE((SELECT CASE WHEN file_size_limit <= 2097152 AND allowed_mime_types IS NOT NULL
+                               THEN 'OK' ELSE 'MANGLER (ingen graense)' END
+                     FROM storage.buckets WHERE id = 'avatars'), 'MANGLER (bucket findes ikke)')
+  UNION ALL SELECT 75, 'uploads', 'id-documents: hoejst 10 MB, billeder og PDF',
+         COALESCE((SELECT CASE WHEN file_size_limit <= 10485760 AND allowed_mime_types IS NOT NULL
+                               THEN 'OK' ELSE 'MANGLER (ingen graense)' END
+                     FROM storage.buckets WHERE id = 'id-documents'), 'MANGLER (bucket findes ikke)')
+  -- Tre regler stod der to gange under hvert sit navn. 7 = ikke koert.
+  UNION ALL SELECT 76, 'politikker', 'saved_bikes uden dubletter (forventet 4)',
+         (SELECT CASE WHEN count(*) = 4 THEN 'OK'
+                      ELSE 'SE EFTER (' || count(*) || ', forventet 4)' END
+            FROM pg_policies WHERE schemaname = 'public' AND tablename = 'saved_bikes')
+  UNION ALL SELECT 77, 'funktioner', 'fast search_path paa 8 funktioner',
+         (SELECT CASE WHEN count(*) FILTER (WHERE array_to_string(proconfig, ',') LIKE '%search_path=%') = 8
+                      THEN 'OK'
+                      ELSE 'MANGLER (' || count(*) FILTER (WHERE array_to_string(proconfig, ',') LIKE '%search_path=%') || ' af 8)' END
+            FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+           WHERE n.nspname = 'public'
+             AND p.proname IN ('handle_new_user', 'notify_message_email',
+                               'protect_privileged_profile_columns', 'strip_phone_from_private_profiles',
+                               'strip_location_from_private_profiles', 'prevent_sold_bike_edits',
+                               'guard_bike_brand_model', 'bike_upgrades_valid'))
+
+  -- ── Gamle profil-kopier: slettedatoer ──────────────────────────────
+  -- Hver kopi blev lavet som fortrydelses-mulighed af den migration der
+  -- fjernede data, og hver har en slettedato i den fil. Datoen er
+  -- opbevaringsperioden. Efter den er der ikke laengere et formaal med at
+  -- gemme persondataene. Staar der SLET NU, saa koer DROP-linjen.
+  UNION ALL SELECT 78, 'oprydning', 'profiles_snapshot_20261013 (hide_private_profile_columns.sql)',
+         CASE WHEN to_regclass('public.profiles_snapshot_20261013') IS NULL THEN 'OK (slettet)'
+              WHEN current_date > DATE '2026-11-13'
+                THEN 'SLET NU: DROP TABLE profiles_snapshot_20261013'
+              ELSE 'OK (slettes efter 13. nov. 2026)' END
+  UNION ALL SELECT 79, 'oprydning', 'profiles_phone_removed_20260901 (remove_private_phone.sql)',
+         CASE WHEN to_regclass('public.profiles_phone_removed_20260901') IS NULL THEN 'OK (slettet)'
+              WHEN current_date > DATE '2026-12-01'
+                THEN 'SLET NU: DROP TABLE profiles_phone_removed_20260901'
+              ELSE 'OK (slettes efter 1. dec. 2026)' END
+  UNION ALL SELECT 80, 'oprydning', 'profiles_address_removed_20261012 (remove_private_address.sql)',
+         CASE WHEN to_regclass('public.profiles_address_removed_20261012') IS NULL THEN 'OK (slettet)'
+              WHEN current_date > DATE '2027-01-12'
+                THEN 'SLET NU: DROP TABLE profiles_address_removed_20261012'
+              ELSE 'OK (slettes efter 12. jan. 2027)' END
 
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
