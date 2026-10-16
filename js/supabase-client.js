@@ -1,4 +1,8 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm';
+/* Fast version (16. okt. 2026). Uden nummer fik alle besøgende den nyeste
+   udgave i det øjeblik Supabase udgav den, uden at nogen havde set den køre
+   her: en ny hovedversion kunne vælte siden, og en kompromitteret pakke ville
+   ramme alle. Opdatér bevidst, og test før merge. */
 import { SUPABASE_ENV } from './env.js';
 
 // Produktion eller staging, afgjort af domænet. Se js/env.js.

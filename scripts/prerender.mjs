@@ -248,6 +248,10 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
   // Hero'en ligger i #landing-layout, som er skjult her. Uden denne linje
   // henter hver mærke-, blog- og annonceside et hero-foto den ikke viser.
   html = html.replace(/\s*<link rel="preload" href="\/hero[^"]*" as="image"[^>]*>/, '');
+  // Forsidens H1 ligger i samme skjulte hero. Som H1 fik hver underside to,
+  // og den generiske kom først i den rå HTML, før sidens egen overskrift.
+  // Klassen bevares: CSS'en og main.js finder elementet via den, ikke via tagget.
+  html = html.replace(/<h1 class="search-hero-title">([\s\S]*?)<\/h1>/, '<p class="search-hero-title">$1</p>');
   html = html.replace(
     '<div id="page-layout" style="display:none;">',
     '<div id="page-layout" style="display:block;">'

@@ -1620,6 +1620,7 @@ export function createBikeDetail({
       await supabase.from('saved_bikes').insert({ user_id: currentUser.id, bike_id: bikeId });
       btn.dataset.saved = '1';
       btn.innerHTML = `${iconHeart(15)}<span class="btn-icon-label">Gemt</span>`;
+      showToast('Gemt. Sælgeren kan se, at du har gemt annoncen.');
 
       // Send email notification to bike owner (fire-and-forget)
       if (bike) {

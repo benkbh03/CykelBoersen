@@ -4,6 +4,10 @@ Disallow:
 
 # Bloker AI-træningsbots — de scraper alt indhold + alle billeder
 # (kan koste 100+ MB egress pr. crawl-runde)
+#
+# Kun TRÆNING blokeres. AI-søgemaskinernes egne bots (OAI-SearchBot,
+# Claude-SearchBot, PerplexityBot) er tilladt via * ovenfor: blokeres de,
+# kan siden ikke citeres når nogen spørger en AI om brugte cykler.
 User-agent: GPTBot
 Disallow: /
 
@@ -23,9 +27,6 @@ User-agent: Google-Extended
 Disallow: /
 
 User-agent: Applebot-Extended
-Disallow: /
-
-User-agent: PerplexityBot
 Disallow: /
 
 User-agent: Amazonbot
