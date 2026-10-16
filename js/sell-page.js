@@ -2420,7 +2420,7 @@ export function createSellPage({
       <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. april 2026</p>
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
-      <p style="margin-bottom:16px;font-size:0.85rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman · CVR: 46403568<br>Bentzonsvej 46, 2. tv, 2000 Frederiksberg · hej@cykelbørsen.dk</p>
+      <p style="margin-bottom:16px;font-size:0.85rem;"><strong>Virksomhedsoplysninger:</strong><br>Cykelbørsen v/ Benjamin Vojdeman · CVR: 46403568<br>Sydvestvej 61, st. 4, 2600 Glostrup · hej@cykelbørsen.dk</p>
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Brugeroprettelse og konto</h3>
       <p style="margin-bottom:8px;">For at oprette annoncer eller kontakte sælgere skal du oprette en konto med en gyldig e-mailadresse. Du er ansvarlig for at de oplysninger du angiver er korrekte, at holde dine loginoplysninger fortrolige og al aktivitet under din konto. Du skal være mindst 18 år.</p>
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;margin-top:16px;">3. Platformens rolle</h3>
