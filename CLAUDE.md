@@ -491,7 +491,7 @@ const SUPABASE_URL = 'https://ktufgncydxhkhfttojkh.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_…';  // anon/publishable — sikker at eksponere
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 ```
-Keys importeres fra `https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm`. Service-role keys eksisterer KUN i edge functions (env vars).
+Klienten importeres fra `https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm` i `js/supabase-client.js`, med fast versionsnummer (opdatér bevidst, aldrig uden nummer). Service-role keys eksisterer KUN i edge functions (env vars).
 
 ## Konstanter og grænser
 

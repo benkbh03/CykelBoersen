@@ -163,7 +163,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 14. august 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. oktober 2026</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -178,6 +178,7 @@ export const footerContent = {
         <li><strong>AI-analyse af annoncebilleder:</strong> Når du opretter en annonce, sendes de billeder du uploader automatisk til Anthropics API, så vi kan foreslå mærke, model, type, størrelse, stand, pris og en beskrivelse for dig. Formålet er alene at udfylde annoncefelterne, og du kan altid rette forslagene. Billederne bruges ikke til at træne AI-modeller.</li>
         <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
         <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
+        <li><strong>Gemte annoncer:</strong> Når du gemmer en annonce, gemmer vi annoncens ID og dit bruger-ID, så du kan finde den igen under Gemte. Sælgeren får en e-mail med dit navn, kan se dit navn og profilbillede på listen over interesserede og kan skrive til dig derfra. Fjerner du annoncen fra dine gemte, forsvinder du fra listen.</li>
         <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
         <li><strong>Smart filter:</strong> Når du beskriver en cykel i feltet "Beskriv cyklen du leder efter", sendes teksten til Anthropics API, som oversætter den til sidens almindelige filtre. Teksten gemmes ikke hos os og bruges ikke til at træne AI-modeller. For at ingen kan bruge funktionen i en løkke, gemmer vi din IP-adresse sammen med et antal kald.</li>
         <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>

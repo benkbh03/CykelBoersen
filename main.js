@@ -1951,7 +1951,7 @@ async function toggleSave(btn, bikeId) {
     if (error) { showToast('Kunne ikke gemme annonce', 'fejl'); return; }
     setSaved(true);
     _userSavedSet.add(bikeId);
-    showToast('Gemt! Find den under Gemte i din profil.');
+    showToast('Gemt under Gemte i din profil. Sælgeren kan se, at du har gemt den.');
 
     // Send email notification to bike owner (fire-and-forget)
     if (bike) {
