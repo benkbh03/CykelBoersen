@@ -1,6 +1,7 @@
 name: Tjek indhold
 
-# Fanger fejl i indholdet før merge: fx et blogindlæg dateret i fremtiden.
+# Fanger fejl i indholdet før merge: fx et blogindlæg dateret i fremtiden,
+# eller en PR der bumper cache-versionen i hånden.
 on:
   pull_request:
   push:
@@ -23,3 +24,25 @@ jobs:
           node-version: '20'
       - name: Ingen blogdatoer efter i dag
         run: node scripts/check-blog-dates.mjs
+
+  # Cache-versionen sættes af sitemap.yml efter merge (scripts/stamp-asset-version.mjs).
+  # En PR der selv ændrer den, giver merge-konflikt med hver anden åben PR.
+  no-manual-cache-bump:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: index.html's cache-version er uændret
+        run: |
+          # Kun PR'ens egne ændringer (fra merge-basen), ikke det main har fået siden.
+          # Fjernede linjer med versionen = en bump. Et nyt CSS-link tilføjer kun.
+          bumped=$(git diff "origin/${{ github.base_ref }}...HEAD" -- index.html \
+            | grep -E '^-[^-].*(data-asset-v=|\.css\?v=)' || true)
+          if [ -n "$bumped" ]; then
+            echo "::error file=index.html::Ret ikke cache-versionen i hånden. Den sættes automatisk efter merge. Fortryd ændringen af data-asset-v og CSS-linkenes ?v=."
+            echo "$bumped"
+            exit 1
+          fi
+          echo "Cache-versionen er ikke rørt."
