@@ -33,6 +33,7 @@ const STATIC_URLS = [
      sende folk ind i et flow der ikke er gennemtestet. Sæt dem tilbage her
      og fjern noindex i scripts/prerender.mjs når det åbnes. */
   { loc: '/vurder-min-cykel',          changefreq: 'weekly',  priority: '0.9' },
+  { loc: '/opkoeb',                    changefreq: 'weekly',  priority: '0.6' },
   { loc: '/sikkerhedsguide',           changefreq: 'monthly', priority: '0.7' },
   { loc: '/stelstoerrelse-guide',      changefreq: 'monthly', priority: '0.8' },
   { loc: '/guide/tjek-brugt-cykel',    changefreq: 'monthly', priority: '0.7' },

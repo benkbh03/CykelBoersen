@@ -126,6 +126,10 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | bikes | SELECT | bikes_admin_select_all | public | `ER_ADMIN` | – |
 | bikes | UPDATE | Kun ejer kan redigere annonce | public | `auth.uid() = user_id` | `auth.uid() = user_id` |
 | boost_orders | – | *(ingen politikker)* | – | – | – |
+| buy_requests | DELETE | buy_requests_delete | public | `dealer_id = auth.uid() OR ER_ADMIN` | – |
+| buy_requests | INSERT | buy_requests_insert | public | – | `dealer_id = auth.uid() AND is_verified_dealer(auth.uid()) AND NOT is_suspended(auth.uid())` ¹⁰ |
+| buy_requests | SELECT | buy_requests_select | public | `(is_active AND is_verified_dealer(dealer_id)) OR dealer_id = auth.uid() OR ER_ADMIN` | – |
+| buy_requests | UPDATE | buy_requests_update | public | `dealer_id = auth.uid() OR ER_ADMIN` | `(dealer_id = auth.uid() AND is_verified_dealer(auth.uid())) OR ER_ADMIN` ¹⁰ |
 | client_errors | INSERT | client_errors_insert | public | – | `true` |
 | client_errors | SELECT | client_errors_select_admin | public | `ER_ADMIN` | – |
 | contact_messages | INSERT | Alle kan sende kontaktbesked | public | – | `true` |
@@ -236,3 +240,5 @@ tillod enhver indlogget at skrive hvor som helst i bucket'en, og
 `"Owner delete"` krævede at første mappeled var brugerens id — hvad det aldrig
 er for et annoncebillede, så DELETE virkede for ingen. Rettet i
 `harden_bike_images_bucket.sql`, kørt og verificeret 4. september 2026.
+
+¹⁰ `buy_requests` (`add_buy_requests.sql`, 17. okt.): klienten har kun kolonne-GRANT på INSERT/UPDATE (title, description, types, brands, min_year, max_price, is_active), så `dealer_id` sættes af standardværdien `auth.uid()` og kan ikke flyttes. Triggeren `buy_requests_guard` tillader højst 10 aktive pr. forhandler. STATUS_TJEK række 67.

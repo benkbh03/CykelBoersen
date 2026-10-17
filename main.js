@@ -947,6 +947,28 @@ window.setCykelagentField      = setCykelagentField;
 window.saveCykelagentForm      = saveCykelagentForm;
 window.deleteCykelagentFromEditor = deleteCykelagentFromEditor;
 
+// Forhandlere der køber cykler — lazy-loaded (/opkoeb)
+const _ensureBuyRequests = lazyCtrl(
+  () => import(`./js/buy-requests-page.js?v=${ASSET_VERSION}`),
+  'createBuyRequestsPage',
+  () => ({
+    supabase, esc, showToast, updateSEOMeta, showDetailView,
+    navigateTo:        (...args) => navigateTo(...args),
+    getCurrentUser:    () => currentUser,
+    getCurrentProfile: () => currentProfile,
+    openLoginModal:    (...args) => openLoginModal(...args),
+  }),
+);
+window.renderBuyRequestsPage   = lazyMethod(_ensureBuyRequests, 'renderBuyRequestsPage');
+window.renderDealerBuyRequests = lazyMethod(_ensureBuyRequests, 'renderDealerBuyRequests');
+window.saveBuyRequest          = lazyMethod(_ensureBuyRequests, 'saveBuyRequest');
+window.editBuyRequest          = lazyMethod(_ensureBuyRequests, 'editBuyRequest');
+window.cancelBuyRequestEdit    = lazyMethod(_ensureBuyRequests, 'cancelBuyRequestEdit');
+window.toggleBuyRequest        = lazyMethod(_ensureBuyRequests, 'toggleBuyRequest');
+window.deleteBuyRequest        = lazyMethod(_ensureBuyRequests, 'deleteBuyRequest');
+window.openBuyOffer            = lazyMethod(_ensureBuyRequests, 'openBuyOffer');
+window.sendBuyOffer            = lazyMethod(_ensureBuyRequests, 'sendBuyOffer');
+
 // Cykel-vurdering — lazy-loaded (/vurder-min-cykel)
 const _ensureValuation = lazyCtrl(
   () => import(`./js/valuation.js?v=${ASSET_VERSION}`),
@@ -2288,6 +2310,7 @@ function handleRoute() {
   const categoryMatch = CATEGORY_META[categorySlug] ? categorySlug : null;
   const cykelagentMatch = path === '/cykelagenter' || path === '/cykelagent';
   const valuationMatch = path === '/vurder-min-cykel';
+  const buyRequestsMatch = path === '/opkoeb' || path === '/opkøb';
   const sizeFinderMatch = path === '/stelstoerrelse-guide' || path === '/stelstørrelse-guide';
   const compareMatch = path === '/sammenlign';
   const blogArticleMatch = path.match(/^\/blog\/([^/]+)$/);
@@ -2319,7 +2342,7 @@ function handleRoute() {
   const _isPageRoute = staticMatch || dealerApply || becomeRenter || dealersMatch || mapPageMatch ||
     inboxMatch || meMatch || meEditMatch || sellMatch || bikeMatch || profileMatch || dealerMatch ||
     brandMatch || brandsOverviewMatch || categoryMatch || cykelagentMatch || valuationMatch ||
-    sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch ||
+    sizeFinderMatch || compareMatch || blogArticleMatch || blogOverviewMatch || buyRequestsMatch ||
     rentalBrowse || rentalCreate || rentalMine || rentalMyBookings || rentalDealerBookings ||
     rentalEditMatch || rentalItemMatch;
   /* Udlejning er skjult under test. At fjerne links er ikke nok — adressen
@@ -2478,6 +2501,11 @@ function handleRoute() {
     window.scrollTo({ top: 0, behavior: 'auto' });
     showDetailView();
     renderCykelagentPage();
+  } else if (buyRequestsMatch) {
+    closeAllModals();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    showDetailView();
+    window.renderBuyRequestsPage();
   } else if (valuationMatch) {
     closeAllModals();
     window.scrollTo({ top: 0, behavior: 'auto' });

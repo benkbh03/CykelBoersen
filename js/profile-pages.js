@@ -459,6 +459,7 @@ export function createProfilePages({
 
           <div class="dp-body">
             <div class="pp-achievements" id="dealer-achievements"></div>
+            <div id="dp-buy-requests"></div>
 
             <div class="up-tabs pp-tabs">
               <button class="dp-tab up-tab active" data-tab="listings" onclick="switchDealerProfileTab('listings')">Til salg (${nActive})</button>
@@ -560,6 +561,8 @@ export function createProfilePages({
     });
     window._pickedStar = 0;
     loadUserAchievements(dealerId, data.bikes, [], data.reviews, data.dealer);
+    // Forhandlerens opkøbsønsker (/opkoeb). Tomt afsnit hvis der ingen er.
+    window.renderDealerBuyRequests?.(data.dealer.id);
   }
 
   function navigateToProfile(userId) {
