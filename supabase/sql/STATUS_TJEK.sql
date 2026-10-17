@@ -281,6 +281,17 @@ SELECT * FROM (
                                'strip_location_from_private_profiles', 'prevent_sold_bike_edits',
                                'guard_bike_brand_model', 'bike_upgrades_valid'))
 
+  -- ── add_buy_requests.sql (17. oktober) ─────────────────────────────
+  UNION ALL SELECT 67, 'opkoeb', 'tabel buy_requests med 4 politikker + graense paa 10',
+         CASE WHEN to_regclass('public.buy_requests') IS NULL THEN 'MANGLER'
+              WHEN (SELECT count(*) FROM pg_policies WHERE tablename = 'buy_requests') <> 4
+                THEN 'FEJL: forventet 4 politikker'
+              WHEN has_table_privilege('authenticated', 'public.buy_requests', 'INSERT')
+                THEN 'FEJL: REVOKE ALL mangler (klienten kan saette dealer_id)'
+              WHEN NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'buy_requests_guard')
+                THEN 'FEJL: trigger buy_requests_guard mangler'
+              ELSE 'OK' END
+
   -- ── Gamle profil-kopier: slettedatoer ──────────────────────────────
   -- Hver kopi blev lavet som fortrydelses-mulighed af den migration der
   -- fjernede data, og hver har en slettedato i den fil. Datoen er

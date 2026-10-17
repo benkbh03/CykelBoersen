@@ -108,6 +108,7 @@ export function createDealersPage({
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="dealers-page-title">Verificerede forhandlere</h1>
         <p class="dealers-page-subtitle">Cykelhandlere hvis CVR-nummer vi har tjekket.</p>
+        <p class="dealers-page-subtitle"><a href="/opkoeb/" onclick="event.preventDefault();navigateTo('/opkoeb')">Forhandlere der køber cykler</a></p>
         <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">${iconDealer()} Bliv forhandler</button>
       </div>
       <div class="dealers-toolbar">
