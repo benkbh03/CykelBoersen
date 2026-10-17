@@ -13,6 +13,7 @@ import {
 } from './dealer-extras.js';
 import { PROFILE_SESSION_FIELDS } from './supabase-client.js';
 import { iconDealer, iconPrivate } from './utils.js';
+import { displayEmail } from './email-display.js';
 import { toStrippedBlob, isGif } from './image-strip.js';
 import { buildProfileEditHTML } from './profile-edit-markup.js';
 import { loadOwnProfile } from './own-profile.js';
@@ -99,7 +100,7 @@ export function createProfileEditPage({
       avatarEl.textContent = initials;
     }
     document.getElementById('profile-display-name').textContent  = name;
-    document.getElementById('profile-display-email').textContent = currentUser?.email || '';
+    document.getElementById('profile-display-email').textContent = displayEmail(currentUser?.email || '');
 
     const badge = document.getElementById('profile-type-badge');
     // innerHTML (ikke textContent) fordi ikonerne er inline-SVG. Begge strenge

@@ -5,6 +5,7 @@
 import { iconEye, iconHeart, iconAlert, iconCamera } from './utils.js';
 import { fetchTradesFor, completedTrades } from './trades.js';
 import { PROFILE_PUBLIC_FIELDS } from './own-profile.js';
+import { displayEmail } from './email-display.js';
 
 export function createMyProfilePage({
   supabase,
@@ -149,7 +150,7 @@ export function createMyProfilePage({
                     ${p.city ? `<span class="mp-contact-item" style="color:var(--rust)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg> ${esc(p.city)}</span>` : ''}
                     ${memberSince ? `<span class="mp-member-since">Medlem siden ${memberSince}</span>` : ''}
                   </div>
-                  ${u?.email ? `<span class="mp-contact-item mp-contact-email-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 7l9 7 9-7" stroke="currentColor" stroke-width="1.6"/></svg> <span class="mp-email-text">${esc(u.email)}</span></span>` : ''}
+                  ${u?.email ? `<span class="mp-contact-item mp-contact-email-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 7l9 7 9-7" stroke="currentColor" stroke-width="1.6"/></svg> <span class="mp-email-text">${esc(displayEmail(u.email))}</span></span>` : ''}
                 </div>
               </div>
             </div>
@@ -163,20 +164,16 @@ export function createMyProfilePage({
             </div>
           </div>
 
-          <!-- Tal: én linje frem for fire kort med ikon. Id'erne er de samme
-               som før, fordi my-profile.js (statisk importeret) også skriver dem. -->
-          <p class="mp-summary">
-            <button class="mp-summary-item" onclick="switchMyProfileTab('listings')">Aktive annoncer <b id="mp-stat-active">–</b></button>
-            <span class="mp-summary-item">Visninger <b id="mp-stat-views">–</b></span>
-            <button class="mp-summary-item" onclick="switchMyProfileTab('saved')">Gemte <b id="mp-stat-saved">–</b></button>
-            <button class="mp-summary-item" onclick="switchMyProfileTab('trades')">Handler <b id="mp-stat-trades">–</b></button>
-          </p>
-          ${isDealer ? `
-          <p class="mp-summary" id="mp-dealer-banner">
+          <!-- Tal: kun det fanerne nedenfor ikke allerede viser. Aktive annoncer,
+               Gemte og Handler står som tal på fanerne og gentages ikke her.
+               my-profile.js skriver stadig mp-stat-*; den tjekker for null. -->
+          <p class="mp-summary"${isDealer ? ' id="mp-dealer-banner"' : ''}>
+            <span class="mp-summary-item">Visninger i alt <b id="mp-stat-views">–</b></span>
+            ${isDealer ? `
             <span class="mp-summary-item">Nye henvendelser, 7 dage <b id="mp-dealer-leads">–</b></span>
             <span class="mp-summary-item">Visninger på mest sete cykel <b id="mp-dealer-topviews">–</b></span>
-            <span class="mp-summary-item">Ubesvarede tråde <b id="mp-dealer-respond">–</b></span>
-          </p>` : ''}
+            <span class="mp-summary-item">Ubesvarede tråde <b id="mp-dealer-respond">–</b></span>` : ''}
+          </p>
 
           <!-- Tip om den mest sete annonce: en almindelig tekstlinje (ingen grøn boks) -->
           <div class="mp-tip" id="mp-insight" style="display:none"></div>
