@@ -216,6 +216,8 @@
 .br-own-actions { display: flex; gap: var(--space-4); flex-shrink: 0; }
 .br-dealer-note { font-size: var(--text-sm); color: var(--muted); margin: 0 0 var(--space-6); }
 .br-dealer-note a { color: var(--charcoal); }
+/* Under listen (sælgere ser den), ikke over den */
+#br-dealer-note .br-dealer-note { margin: var(--space-6) 0 0; }
 
 .br-how { margin-top: var(--space-12); }
 
