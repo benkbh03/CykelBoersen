@@ -79,7 +79,7 @@
 
        Det den KAN, og det er stadig meget værd: begrænse hvor data må
        sendes hen. connect-src låser fetch, XHR og WebSocket til Supabase og
-       DAWA. Et XSS kan altså stadig læse sessionen fra localStorage, men
+       adresseopslaget (js/adresse-api.js). Et XSS kan altså stadig læse sessionen fra localStorage, men
        ikke sende den videre til en angribers server ad den vej. Det er
        forskellen på et tyveri og et tyveri der lykkes.
 
@@ -102,7 +102,7 @@
     style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
     font-src 'self';
     img-src 'self' data: blob: https:;
-    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://mbbfaqdxywueikowqyfk.supabase.co wss://mbbfaqdxywueikowqyfk.supabase.co https://api.dataforsyningen.dk https://cloudflareinsights.com;
+    connect-src 'self' https://ktufgncydxhkhfttojkh.supabase.co wss://ktufgncydxhkhfttojkh.supabase.co https://mbbfaqdxywueikowqyfk.supabase.co wss://mbbfaqdxywueikowqyfk.supabase.co https://dawa.companydata.dk https://cloudflareinsights.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
