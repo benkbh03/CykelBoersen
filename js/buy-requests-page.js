@@ -22,6 +22,7 @@ export function createBuyRequestsPage({
   let _requests = [];     // offentlige ønsker vist på siden
   let _own = [];          // forhandlerens egne, også skjulte
   let _editingId = null;
+  let _formOpen = false;  // formularen til et nyt ønske er lukket, til forhandleren beder om den
   let _myBikes = null;    // sælgerens aktive annoncer, hentes ved første "Tilbyd"
 
   const isVerifiedDealer = (p) => !!p && p.seller_type === 'dealer' && p.verified === true;
@@ -138,7 +139,9 @@ export function createBuyRequestsPage({
               <button type="button" class="br-link-btn" onclick="deleteBuyRequest('${esc(r.id)}')">Slet</button>
             </span>
           </li>`).join('')}</ul>` : ''}
-        ${formHTML(editing)}
+        ${editing || _formOpen
+          ? formHTML(editing)
+          : `<button type="button" class="br-offer-btn" onclick="openBuyRequestForm()">Nyt opkøbsønske</button>`}
       </section>`;
   }
 
@@ -171,7 +174,7 @@ export function createBuyRequestsPage({
         </label>
         <div class="br-form-actions">
           <button type="submit" class="br-offer-btn" id="br-f-save">${r ? 'Gem ændringer' : 'Læg op'}</button>
-          ${r ? `<button type="button" class="br-link-btn" onclick="cancelBuyRequestEdit()">Annullér</button>` : ''}
+          <button type="button" class="br-link-btn" onclick="cancelBuyRequestEdit()">Annullér</button>
         </div>
       </form>`;
   }
@@ -210,7 +213,13 @@ export function createBuyRequestsPage({
     }
     showToast(_editingId ? 'Ændringerne er gemt' : 'Opkøbsønsket er lagt op', 'ok');
     _editingId = null;
+    _formOpen = false;
     renderBuyRequestsPage();
+  }
+
+  function openBuyRequestForm() {
+    _formOpen = true;
+    renderOwnSection().then(() => document.getElementById('br-f-title')?.focus());
   }
 
   function editBuyRequest(id) {
@@ -220,6 +229,7 @@ export function createBuyRequestsPage({
 
   function cancelBuyRequestEdit() {
     _editingId = null;
+    _formOpen = false;
     renderOwnSection();
   }
 
@@ -331,7 +341,7 @@ export function createBuyRequestsPage({
 
   return {
     renderBuyRequestsPage, renderDealerBuyRequests,
-    saveBuyRequest, editBuyRequest, cancelBuyRequestEdit, toggleBuyRequest, deleteBuyRequest,
+    saveBuyRequest, openBuyRequestForm, editBuyRequest, cancelBuyRequestEdit, toggleBuyRequest, deleteBuyRequest,
     openBuyOffer, sendBuyOffer,
   };
 }
