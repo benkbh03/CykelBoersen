@@ -7,6 +7,7 @@
    ============================================================ */
 
 import { BIKE_COLORS } from './config.js';
+import { cardImageUrl } from './image-size.js';
 import { fetchAgentMatches, markMatchesSeen } from './cykelagent-matches.js';
 import { iconDealer, iconPrivate, iconShield, priceText, iconBell, iconBike } from './utils.js';
 import { bikePath } from './bike-url.js';
@@ -242,7 +243,7 @@ export function createCykelagentPage({
 
   function _buildMatchCard({ bike, isNew }) {
     const _imgRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
-    const img = _imgRec?.thumb_url || _imgRec?.url || '';
+    const img = cardImageUrl(_imgRec) || '';
     const title = `${bike.brand || ''} ${bike.model || ''}`.trim() || 'Cykel';
     const meta  = [bike.type, bike.city].filter(Boolean).join(' · ');
     const price = priceText(bike);

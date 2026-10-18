@@ -1,4 +1,5 @@
 import { bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
+import { cardImageUrl } from './image-size.js';
 import { cardFacts } from './card-spec.js';
 import { bikePath } from './bike-url.js';
 import { iconSearch, noImagePlaceholder } from './ui-icons.js';
@@ -334,7 +335,7 @@ export function createBikesList({
       // Sortér med primary først; max 4 billeder i hover-cyklen (egress-hensyn).
       // Brug thumb_url (~800px) når den findes — fald tilbage til fuld url.
       const allImgs    = (b.bike_images || []).slice().sort((a, x) => (x.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
-      const imgUrls    = allImgs.slice(0, 4).map(i => i.thumb_url || i.url);
+      const imgUrls    = allImgs.slice(0, 4).map(cardImageUrl);
       const primaryImg = imgUrls[0];
       const thumbSrc   = primaryImg || '';
       const hasMulti   = imgUrls.length >= 2;

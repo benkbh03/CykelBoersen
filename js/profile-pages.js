@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { findCompletedTradeWith } from './trades.js';
+import { cardImageUrl } from './image-size.js';
 import {
   buildOpeningHoursDisplay, SERVICES,
 } from './dealer-extras.js';
@@ -149,7 +150,7 @@ export function createProfilePages({
     };
     return bikes.map((b, i) => {
       const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
-      const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
+      const primaryImg = cardImageUrl(primaryRec);
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300">`
         : noImagePlaceholder();

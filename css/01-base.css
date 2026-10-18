@@ -638,13 +638,17 @@ body.nav-search-on .nav-search { display: flex; }
   .search-section { height: auto !important; min-height: 240px; }
 }
 /* Under 768 px vises kun midten af det brede foto (cover på en høj, smal
-   sektion), så telefoner henter en udskæring af midten: 201 KB mod 330 KB. */
+   sektion), så telefoner henter en udskæring af midten. v4-m (18. okt.) er
+   1100 px i stedet for 1460 px: 106 KB mod 197 KB, og annoncerne kommer ca.
+   et halvt sekund før på en langsom forbindelse. Søgekortet dækker det meste
+   af fotoet, så forskellen i skarphed ses næsten ikke (godkendt efter
+   skærmbilleder). hero-v3-m.webp står tilbage til cachede udgaver af CSS'en. */
 @media (max-width: 768px) {
   .search-section {
     background-image:
       linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
       radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
-      image-set(url('/hero-v3-m.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
+      image-set(url('/hero-v4-m.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
   }
 }
 /* min-height'en var 220px og 200px, altså LAVERE end indholdet. Titel plus

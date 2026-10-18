@@ -1,4 +1,5 @@
 import { iconDealer, iconPrivate, priceLabel, priceText, iconHeart, beskedFejl, iconPin, iconMail, iconBike } from './utils.js';
+import { cardImageUrl } from './image-size.js';
 import { cardFacts } from './card-spec.js';
 import { findCompletedTradeWith } from './trades.js';
 import { noImagePlaceholder } from './ui-icons.js';
@@ -119,7 +120,7 @@ export function createProfileModals({
       const sellerName = profile.shop_name || profile.name || displayName;
       const avatarInit = getInitials(sellerName);
       const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
-      const primaryImg = primaryRec?.thumb_url || primaryRec?.url;
+      const primaryImg = cardImageUrl(primaryRec);
       const imgContent = primaryImg
         ? `<img src="${esc(primaryImg)}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : noImagePlaceholder();
@@ -257,7 +258,7 @@ export function createProfileModals({
 
     const activeBikeCards = (activeBikes || []).map((b, i) => {
       const _pRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
-      const primaryImg = _pRec?.thumb_url || _pRec?.url;
+      const primaryImg = cardImageUrl(_pRec);
       const imgContent = primaryImg
         ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" width="400" height="300" style="width:100%;height:100%;object-fit:cover;">`
         : `<span style="color:var(--muted)">${iconBike(32)}</span>`;
