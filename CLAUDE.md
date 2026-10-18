@@ -135,6 +135,11 @@ Deploy-tjeklisten skal altid have fire dele (udelad dem der ikke er relevante):
 `notify-saved-searches`, `notify-followers`, `delete-account`, `chat-support`, `smart-filter`, `suggest-listing`,
 `admin-create-bike`, `admin-invite-dealer`, samt DORMANT Stripe-functions.
 `notify-message` og `smart-filter` skal have "Verify JWT" **slået fra** (anonyme besøgende).
+**Mails** bygges KUN af `supabase/functions/_shared/email.ts` (layout, knap, annoncekort,
+afsender, tekstudgave). `notify-message`, `notify-saved-searches`, `notify-followers` og
+`import-dealer-feed` importerer den, så den skal med ved hver deploy af dem (i Dashboard:
+tilføj filen som `_shared/email.ts`). Skriv aldrig mail-HTML i hånden i en function, og
+escape al tekst fra brugere og annoncer med `esc()`. Ingen emoji eller pile i emne og knap.
 
 **SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
 (fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
