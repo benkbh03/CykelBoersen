@@ -137,25 +137,37 @@ export function createBuyRequestsPage({
   }
 
   /* Kommer sælgeren tilbage fra /sell (?tilbyd=<ønske>&cykel=<annonce>),
-     åbnes tilbuddet med den nye annonce valgt. */
+     sendes tilbuddet med det samme med den besked, sælgeren skrev før
+     annoncen blev oprettet. Ét skridt: opret og tilbyd. */
   async function resumeOfferAfterSell() {
     const q = new URLSearchParams(location.search);
     const reqId = q.get('tilbyd'), bikeId = q.get('cykel');
     if (!reqId) return;
     history.replaceState(history.state, '', location.pathname);
+    let saved = null;
+    try {
+      saved = JSON.parse(sessionStorage.getItem(RETURN_KEY) || 'null');
+      sessionStorage.removeItem(RETURN_KEY);
+    } catch {}
     if (!_requests.some(r => r.id === reqId)) return;
     _myBikes = null;
     await openBuyOffer(reqId);
     const sel = document.getElementById(`br-o-bike-${reqId}`);
-    if (sel && bikeId && [...sel.options].some(o => o.value === bikeId)) sel.value = bikeId;
+    const msg = document.getElementById(`br-o-msg-${reqId}`);
     document.getElementById(`br-card-${reqId}`)?.scrollIntoView({ block: 'start' });
-    if (sel) showToast('Annoncen er oprettet. Send den nu til forhandleren.', 'ok');
+    if (!sel || !bikeId || ![...sel.options].some(o => o.value === bikeId)) return;
+    sel.value = bikeId;
+    if (msg && saved?.reqId === reqId && saved.msg) msg.value = saved.msg;
+    await sendBuyOffer(reqId, { created: true });
   }
 
   function goSellForOffer(reqId) {
-    try { sessionStorage.setItem(RETURN_KEY, JSON.stringify({ reqId, at: Date.now() })); } catch {}
+    const msg = document.getElementById(`br-o-msg-${reqId}`)?.value?.trim() || '';
+    try { sessionStorage.setItem(RETURN_KEY, JSON.stringify({ reqId, msg, at: Date.now() })); } catch {}
     navigateTo('/sell');
   }
+
+  const defaultMsg = (r) => `Hej. Jeg har en cykel, som måske passer til jeres opkøb "${r.title}". Hvad kan I give for den?`;
 
   /* ── Forhandlerens egne ønsker ─────────────────────────── */
 
@@ -339,9 +351,12 @@ export function createBuyRequestsPage({
 
     if (!_myBikes.length) {
       box.innerHTML = `
-        <p>Forhandleren skal kunne se cyklen, så den skal oprettes som annonce med billeder og stand. Når annoncen er oprettet, kommer du tilbage hertil med cyklen valgt.</p>
+        <p>Forhandleren skal kunne se billeder og stand, så cyklen oprettes som annonce. Skriv din besked her. Den sendes til ${esc(dealerName(r.dealer))}, så snart annoncen er oprettet.</p>
+        <label class="br-field">Besked
+          <textarea id="br-o-msg-${esc(reqId)}" rows="3" maxlength="1000">${esc(defaultMsg(r))}</textarea>
+        </label>
         <div class="br-form-actions">
-          <a class="br-offer-btn" href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret annonce</a>
+          <a class="br-offer-btn" href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret annonce og send</a>
           ${cancel}
         </div>`;
       return;
@@ -355,16 +370,16 @@ export function createBuyRequestsPage({
         </select>
       </label>
       <label class="br-field">Besked
-        <textarea id="br-o-msg-${esc(reqId)}" rows="3" maxlength="1000">Hej. Jeg har en cykel, som måske passer til jeres opkøb "${esc(r.title)}". Hvad kan I give for den?</textarea>
+        <textarea id="br-o-msg-${esc(reqId)}" rows="3" maxlength="1000">${esc(defaultMsg(r))}</textarea>
       </label>
       <div class="br-form-actions">
         <button type="button" class="br-offer-btn" id="br-o-send-${esc(reqId)}" onclick="sendBuyOffer('${esc(reqId)}')">${iconMail(15)} Send til ${esc(dealerName(r.dealer))}</button>
         ${cancel}
       </div>
-      <p class="br-muted br-offer-new">Er cyklen ikke på listen? <a href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret en annonce</a>, så kommer du tilbage hertil bagefter.</p>`;
+      <p class="br-muted br-offer-new">Er cyklen ikke på listen? <a href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret en annonce</a>, så sendes den med beskeden ovenfor, når den er oprettet.</p>`;
   }
 
-  async function sendBuyOffer(reqId) {
+  async function sendBuyOffer(reqId, { created = false } = {}) {
     const user = getCurrentUser();
     const r = _requests.find(x => x.id === reqId);
     if (!user || !r) return;
@@ -385,7 +400,7 @@ export function createBuyRequestsPage({
       supabase.functions.invoke('notify-message', { body: { message_id: data.id } }).catch(() => {});
     }
     const box = document.getElementById(`br-offer-${reqId}`);
-    if (box) box.innerHTML = `<p>Sendt. Forhandleren får en e-mail, og svaret kommer i din <a href="/inbox/" onclick="event.preventDefault();navigateTo('/inbox')">indbakke</a>.</p>`;
+    if (box) box.innerHTML = `<p>${created ? 'Annoncen er oprettet og sendt' : 'Sendt'}. Forhandleren får en e-mail, og svaret kommer i din <a href="/inbox/" onclick="event.preventDefault();navigateTo('/inbox')">indbakke</a>.</p>`;
   }
 
   /* ── Afsnit på forhandlerens profilside ───────────────── */
