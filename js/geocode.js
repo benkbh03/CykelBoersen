@@ -1,7 +1,9 @@
 /* ============================================================
    CYKELBØRSEN – js/geocode.js
-   Danske by-koordinater + DAWA-fallback med localStorage-cache.
+   Danske by-koordinater + adresse-API-fallback med localStorage-cache.
    ============================================================ */
+
+import { ADRESSE_API } from './adresse-api.js';
 
 /* Hardcoded by-centre for kendte danske byer. Bruges som første lookup
    før DAWA — fordi DAWA's polygon-baserede 'visueltcenter' kan lande i
@@ -182,13 +184,13 @@ export function invalidateGeocodeEntry(key) {
   _saveGeocodeCache();
 }
 
-// Slå præcis dansk adresse op via DAWA (Danmarks Adressers Web API)
+// Slå præcis dansk adresse op via adressevask (se js/adresse-api.js)
 export function geocodeAddress(address, city) {
   var query = address.trim() + ', ' + city.trim();
   var key = 'dawa3:' + query.toLowerCase();
   if (_geocodeCache[key] !== undefined) return Promise.resolve(_geocodeCache[key]);
 
-  var datavaskUrl = 'https://api.dataforsyningen.dk/datavask/adresser?betegnelse='
+  var datavaskUrl = ADRESSE_API + '/datavask/adresser?betegnelse='
     + encodeURIComponent(query);
 
   return fetch(datavaskUrl)
@@ -196,7 +198,7 @@ export function geocodeAddress(address, city) {
     .then(function(data) {
       if (!data || !data.resultater || data.resultater.length === 0) return null;
       var id = data.resultater[0].adresse.id;
-      return fetch('https://api.dataforsyningen.dk/adresser/' + id)
+      return fetch(ADRESSE_API + '/adresser/' + id)
         .then(function(r) { return r.json(); })
         .then(function(adresse) {
           var koord = adresse.adgangsadresse.adgangspunkt.koordinater; // [lng, lat]
@@ -222,7 +224,7 @@ function _normalizeCity(city) {
     .trim();
 }
 
-// Slå dansk by op — hardcoded liste først, derefter DAWA /steder, så /postnumre
+// Slå dansk by op — hardcoded liste først, derefter /postnumre
 export function geocodeCity(city) {
   var nameLower = _normalizeCity(city);
   var key = nameLower;
@@ -236,51 +238,34 @@ export function geocodeCity(city) {
     return Promise.resolve(coords);
   }
 
-  // 2) DAWA /steder Bebyggelse — bebyggelses-center er på land
-  //    Foretrækker undertype 'By' eller 'Bydel' over andre typer (Strandby,
-  //    Sommerhusområde osv. kan have polygon-centre i kystvand).
-  return fetch('https://api.dataforsyningen.dk/steder?q='
-    + encodeURIComponent(city) + '&hovedtype=Bebyggelse&per_side=30&format=json')
+  // 2) Postnumre. DAWA's /steder (stednavne) gav før et bedre by-center,
+  //    men findes ikke hos den udbyder der afløste DAWA. ?q= er fuzzy, så
+  //    navnet skal ligne det brugeren skrev: hellere ingen placering end en
+  //    forkert (se _nameCloseEnough).
+  return fetch(ADRESSE_API + '/postnumre?q='
+    + encodeURIComponent(city) + '&per_side=10&format=json')
     .then(function(r) { return r.json(); })
-    .then(function(sdata) {
-      var candidates = Array.isArray(sdata) ? sdata.filter(function(p) { return p.visueltcenter; }) : [];
-      if (candidates.length > 0) {
-        var coords = _pickBestSted(candidates, nameLower);
-        if (coords) {
-          _geocodeCache[key] = coords;
-          _saveGeocodeCache();
-          return coords;
-        }
-      }
-      // 3) Fallback: /postnumre
-      return fetch('https://api.dataforsyningen.dk/postnumre?q='
-        + encodeURIComponent(city) + '&per_side=10&format=json')
-        .then(function(r) { return r.json(); })
-        .then(function(pdata) {
-          if (!Array.isArray(pdata) || pdata.length === 0) return null;
-          var withCenter = pdata.filter(function(p) { return p.visueltcenter; });
-          if (withCenter.length === 0) return null;
-          var exact = withCenter.filter(function(p) {
-            return (p.navn || '').toLowerCase() === nameLower;
-          });
-          var hit = exact.length > 0 ? exact[0] : withCenter[0];
-          var coords = [hit.visueltcenter[1], hit.visueltcenter[0]];
-          _geocodeCache[key] = coords;
-          _saveGeocodeCache();
-          return coords;
-        });
+    .then(function(pdata) {
+      if (!Array.isArray(pdata) || pdata.length === 0) return null;
+      var withCenter = pdata.filter(function(p) { return p.visueltcenter; });
+      var exact = withCenter.filter(function(p) {
+        return (p.navn || '').toLowerCase() === nameLower;
+      });
+      var close = withCenter.filter(function(p) {
+        return _nameCloseEnough((p.navn || '').toLowerCase(), nameLower);
+      });
+      var hit = exact[0] || close[0];
+      if (!hit) return null;
+      var coords = [hit.visueltcenter[1], hit.visueltcenter[0]];
+      _geocodeCache[key] = coords;
+      _saveGeocodeCache();
+      return coords;
     })
     .catch(function() { return null; });
 }
 
-/* Vælg det bedste /steder-resultat efter trinvis filtrering:
-   1. Eksakt navn + undertype 'By' (rigtig by)
-   2. Eksakt navn + undertype 'Bydel' (bydel som Valby)
-   3. Eksakt navn + anden Bebyggelse-undertype
-   4. Højeste indbyggerantal blandt resterende kandidater
-   Hver gruppe sorteres efter indbyggerantal faldende. */
 /* Er kandidatens navn tæt nok på det brugeren skrev?
-   DAWA's ?q= er en FUZZY søgning, så et fejlstavet bynavn returnerer bare det
+   Adresse-API'ets ?q= er en FUZZY søgning, så et fejlstavet bynavn returnerer bare det
    nærmeste gæt. Uden dette tjek accepterede de sidste to faldbacks hvad som
    helst — sorteret efter indbyggertal — og en annonce i "Charlottelund" (uden
    n) kunne havne i Jylland. Ingen placering er bedre end en forkert.
@@ -309,22 +294,3 @@ function _nameCloseEnough(candidate, query) {
   return prev[query.length] <= 2;
 }
 
-function _pickBestSted(candidates, nameLower) {
-  function name(p) { return (p.primærtnavn || p.navn || '').toLowerCase(); }
-  function byPop(a, b) { return (b.indbyggerantal || 0) - (a.indbyggerantal || 0); }
-
-  var exactBy     = candidates.filter(function(p) { return name(p) === nameLower && p.undertype === 'By'; }).sort(byPop);
-  var exactBydel  = candidates.filter(function(p) { return name(p) === nameLower && p.undertype === 'Bydel'; }).sort(byPop);
-  var exactOther  = candidates.filter(function(p) { return name(p) === nameLower && p.undertype !== 'By' && p.undertype !== 'Bydel'; }).sort(byPop);
-  // De to sidste faldbacks kræver nu navne-lighed. Uden det placerede en
-  // slåfejl annoncen i en tilfældig, større by.
-  var closeByOrBydel = candidates.filter(function(p) {
-    return (p.undertype === 'By' || p.undertype === 'Bydel') && _nameCloseEnough(name(p), nameLower);
-  }).sort(byPop);
-  var closeAny = candidates.filter(function(p) {
-    return _nameCloseEnough(name(p), nameLower);
-  }).sort(byPop);
-
-  var best = exactBy[0] || exactBydel[0] || exactOther[0] || closeByOrBydel[0] || closeAny[0];
-  return best ? [best.visueltcenter[1], best.visueltcenter[0]] : null;
-}
