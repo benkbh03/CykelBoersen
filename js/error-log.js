@@ -22,6 +22,12 @@ const MAX_PR_SESSION = 8;      // hårdt loft pr. sidevisning
 const MAX_STACK      = 900;    // tegn; resten er sjældent nyttigt
 const MAX_MESSAGE    = 300;
 
+/* Søgemaskinernes robotter kører siden i en rigtig Chrome, men afbryder
+   bevidst filer de ikke gider vente på. Det gav 107 af 124 fejl i oktober
+   (Googlebot og bingbot), alle "Failed to fetch dynamically imported module",
+   og druknede de få fejl rigtige besøgende fik. */
+const ROBOT = /(?<!cu)bot\b|bot\/|crawler|spider|googleother|headlesschrome|lighthouse|slurp/i;
+
 export function initErrorLog({ supabase }) {
   if (!supabase) return;
 
@@ -30,6 +36,7 @@ export function initErrorLog({ supabase }) {
 
   async function rapporter(kind, message, source, stack) {
     if (antal >= MAX_PR_SESSION) return;
+    if (ROBOT.test(navigator.userAgent || '')) return;
 
     const besked = String(message || 'Ukendt fejl').slice(0, MAX_MESSAGE);
 
@@ -94,7 +101,8 @@ export function createErrorLog({ supabase, esc, retryHTML }) {
         .limit(1000);
       if (error) throw error;
 
-      const rows = data || [];
+      // Rækker fra før robotterne blev sorteret fra ved kilden.
+      const rows = (data || []).filter(r => !ROBOT.test(r.user_agent || ''));
       if (!rows.length) {
         el.innerHTML = `
           <div style="padding:22px;background:var(--sand);border-radius:12px;">

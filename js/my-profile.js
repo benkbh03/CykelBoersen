@@ -26,7 +26,7 @@ export function createMyProfile({
   async function loadMyListings(containerId = 'my-listings-grid') {
     const currentUser = getCurrentUser();
     if (!currentUser) return;
-    const grid = document.getElementById(containerId);
+    let grid = document.getElementById(containerId);
     let data, error;
     try {
       ({ data, error } = await supabase
@@ -38,9 +38,15 @@ export function createMyProfile({
         .is('deleted_at', null)
         .order('created_at', { ascending: false }));
     } catch (e) {
-      grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'loadMyListings');
+      grid = document.getElementById(containerId);
+      if (grid) grid.innerHTML = retryHTML('Kunne ikke hente annoncer.', 'loadMyListings');
       return;
     }
+
+    // Brugeren kan have forladt siden mens annoncerne blev hentet. Så findes
+    // feltet ikke længere, og der er intet at tegne i (Safari-fejl 16. okt.).
+    grid = document.getElementById(containerId);
+    if (!grid) return;
 
     const statEl = document.getElementById('mp-stat-active');
     if (statEl) statEl.textContent = data ? data.filter(b => b.is_active).length : 0;
