@@ -963,6 +963,7 @@ window.renderBuyRequestsPage   = lazyMethod(_ensureBuyRequests, 'renderBuyReques
 window.renderDealerBuyRequests = lazyMethod(_ensureBuyRequests, 'renderDealerBuyRequests');
 window.saveBuyRequest          = lazyMethod(_ensureBuyRequests, 'saveBuyRequest');
 window.openBuyRequestForm      = lazyMethod(_ensureBuyRequests, 'openBuyRequestForm');
+window.goSellForOffer          = lazyMethod(_ensureBuyRequests, 'goSellForOffer');
 window.editBuyRequest          = lazyMethod(_ensureBuyRequests, 'editBuyRequest');
 window.cancelBuyRequestEdit    = lazyMethod(_ensureBuyRequests, 'cancelBuyRequestEdit');
 window.toggleBuyRequest        = lazyMethod(_ensureBuyRequests, 'toggleBuyRequest');

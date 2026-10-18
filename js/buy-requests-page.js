@@ -12,6 +12,10 @@
 import { iconDealer, iconPin, iconMail, iconShield, iconStar, priceText, beskedFejl } from './utils.js';
 
 const BIKE_TYPES = ['El-cykel', 'Racercykel', 'Mountainbike', 'Gravel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Senior cykel'];
+// Sælgeren uden annonce sendes til /sell og tilbage hertil med den nye cykel
+// valgt. Nøglen læses af js/sell-page.js efter oprettelse.
+const RETURN_KEY = 'buy_offer_return';
+
 const SELECT_FIELDS = 'id, dealer_id, title, description, types, brands, min_year, max_price, is_active, created_at, ' +
   'dealer:profiles!buy_requests_dealer_id_fkey(id, shop_name, name, city)';
 
@@ -129,6 +133,28 @@ export function createBuyRequestsPage({
     list.innerHTML = _requests.length
       ? _requests.map(r => requestCardHTML(r)).join('')
       : `<p class="br-muted">Ingen forhandlere søger cykler lige nu.</p>`;
+    resumeOfferAfterSell();
+  }
+
+  /* Kommer sælgeren tilbage fra /sell (?tilbyd=<ønske>&cykel=<annonce>),
+     åbnes tilbuddet med den nye annonce valgt. */
+  async function resumeOfferAfterSell() {
+    const q = new URLSearchParams(location.search);
+    const reqId = q.get('tilbyd'), bikeId = q.get('cykel');
+    if (!reqId) return;
+    history.replaceState(history.state, '', location.pathname);
+    if (!_requests.some(r => r.id === reqId)) return;
+    _myBikes = null;
+    await openBuyOffer(reqId);
+    const sel = document.getElementById(`br-o-bike-${reqId}`);
+    if (sel && bikeId && [...sel.options].some(o => o.value === bikeId)) sel.value = bikeId;
+    document.getElementById(`br-card-${reqId}`)?.scrollIntoView({ block: 'start' });
+    if (sel) showToast('Annoncen er oprettet. Send den nu til forhandleren.', 'ok');
+  }
+
+  function goSellForOffer(reqId) {
+    try { sessionStorage.setItem(RETURN_KEY, JSON.stringify({ reqId, at: Date.now() })); } catch {}
+    navigateTo('/sell');
   }
 
   /* ── Forhandlerens egne ønsker ─────────────────────────── */
@@ -313,9 +339,9 @@ export function createBuyRequestsPage({
 
     if (!_myBikes.length) {
       box.innerHTML = `
-        <p>Forhandleren skal kunne se cyklen. Opret en annonce først med billeder og stand, og kom så tilbage hertil.</p>
+        <p>Forhandleren skal kunne se cyklen, så den skal oprettes som annonce med billeder og stand. Når annoncen er oprettet, kommer du tilbage hertil med cyklen valgt.</p>
         <div class="br-form-actions">
-          <a class="br-offer-btn" href="/sell/" onclick="event.preventDefault();navigateTo('/sell')">Opret annonce</a>
+          <a class="br-offer-btn" href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret annonce</a>
           ${cancel}
         </div>`;
       return;
@@ -334,7 +360,8 @@ export function createBuyRequestsPage({
       <div class="br-form-actions">
         <button type="button" class="br-offer-btn" id="br-o-send-${esc(reqId)}" onclick="sendBuyOffer('${esc(reqId)}')">${iconMail(15)} Send til ${esc(dealerName(r.dealer))}</button>
         ${cancel}
-      </div>`;
+      </div>
+      <p class="br-muted br-offer-new">Er cyklen ikke på listen? <a href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret en annonce</a>, så kommer du tilbage hertil bagefter.</p>`;
   }
 
   async function sendBuyOffer(reqId) {
@@ -380,6 +407,6 @@ export function createBuyRequestsPage({
   return {
     renderBuyRequestsPage, renderDealerBuyRequests,
     saveBuyRequest, openBuyRequestForm, editBuyRequest, cancelBuyRequestEdit, toggleBuyRequest, deleteBuyRequest,
-    openBuyOffer, sendBuyOffer,
+    openBuyOffer, sendBuyOffer, goSellForOffer,
   };
 }

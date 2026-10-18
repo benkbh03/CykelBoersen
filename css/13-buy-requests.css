@@ -234,3 +234,7 @@
   .br-own-row { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
   .br-offer-btn { width: 100%; justify-content: center; }
 }
+
+/* "Er cyklen ikke på listen?" under send-knappen */
+.br-offer-new { font-size: var(--text-sm); margin: var(--space-3) 0 0; }
+.br-offer-new a { color: var(--charcoal); }

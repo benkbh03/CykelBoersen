@@ -511,6 +511,7 @@ export function createSellPage({
       });
 
       clearSellDraft();
+      if (returnToBuyOffer(newBike)) return;
       showListingSuccessModal(newBike);
     } finally {
       restore();
@@ -2358,6 +2359,23 @@ export function createSellPage({
       const grid = document.getElementById('sell-color-grid');
       if (grid) setSelectedColors(grid, colors);
     }
+  }
+
+  /* ------ Tilbage til et opkøbsønske ----------------------------
+     Satte sælgeren annoncen op fra "Tilbyd din cykel" på /opkoeb
+     (js/buy-requests-page.js), sendes de tilbage med cyklen valgt i
+     stedet for at se success-modalen. En annonce der venter på
+     godkendelse, er ikke aktiv og kan ikke tilbydes endnu. */
+  function returnToBuyOffer(bike) {
+    let ret = null;
+    try {
+      ret = JSON.parse(sessionStorage.getItem('buy_offer_return') || 'null');
+      sessionStorage.removeItem('buy_offer_return');
+    } catch {}
+    if (!ret?.reqId || Date.now() - (ret.at || 0) > 2 * 60 * 60 * 1000) return false;
+    if (bike.held_for_review) return false;
+    navigateTo(`/opkoeb?tilbyd=${encodeURIComponent(ret.reqId)}&cykel=${encodeURIComponent(bike.id)}`);
+    return true;
   }
 
   /* ------ Success modal --------------------------------------- */
