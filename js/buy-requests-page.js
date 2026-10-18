@@ -9,9 +9,13 @@
    databasen: supabase/sql/add_buy_requests.sql.
    ============================================================ */
 
-import { iconDealer, iconPin, iconMail, priceText, beskedFejl } from './utils.js';
+import { iconDealer, iconPin, iconMail, iconShield, iconStar, priceText, beskedFejl } from './utils.js';
 
 const BIKE_TYPES = ['El-cykel', 'Racercykel', 'Mountainbike', 'Gravel', 'Citybike', 'Ladcykel', 'Børnecykel', 'Senior cykel'];
+// Sælgeren uden annonce sendes til /sell og tilbage hertil med den nye cykel
+// valgt. Nøglen læses af js/sell-page.js efter oprettelse.
+const RETURN_KEY = 'buy_offer_return';
+
 const SELECT_FIELDS = 'id, dealer_id, title, description, types, brands, min_year, max_price, is_active, created_at, ' +
   'dealer:profiles!buy_requests_dealer_id_fkey(id, shop_name, name, city)';
 
@@ -22,7 +26,9 @@ export function createBuyRequestsPage({
   let _requests = [];     // offentlige ønsker vist på siden
   let _own = [];          // forhandlerens egne, også skjulte
   let _editingId = null;
+  let _formOpen = false;  // formularen til et nyt ønske er lukket, til forhandleren beder om den
   let _myBikes = null;    // sælgerens aktive annoncer, hentes ved første "Tilbyd"
+  let _ratings = {};      // dealer_id -> { sum, n }, så sælgeren kan bedømme forhandleren
 
   const isVerifiedDealer = (p) => !!p && p.seller_type === 'dealer' && p.verified === true;
   const dealerName = (d) => d?.shop_name || d?.name || 'Forhandler';
@@ -33,7 +39,7 @@ export function createBuyRequestsPage({
     if (r.types?.length)  facts.push(r.types.map(esc).join(', '));
     if (r.brands?.length) facts.push(r.brands.map(esc).join(', '));
     if (r.min_year)       facts.push(`Fra årgang ${esc(r.min_year)}`);
-    if (r.max_price)      facts.push(`Op til ${kr(r.max_price)}`);
+    if (r.max_price)      facts.push(`Cykler op til ${kr(r.max_price)}`);
     return facts;
   }
 
@@ -47,12 +53,34 @@ export function createBuyRequestsPage({
         ${showDealer && d ? `<p class="br-card-dealer">
           <a href="/dealer/${esc(d.id)}/" onclick="event.preventDefault();navigateTo('/dealer/${esc(d.id)}')">${iconDealer(14)} ${esc(dealerName(d))}</a>
           ${d.city ? `<span>${iconPin(13)} ${esc(d.city)}</span>` : ''}
+        </p>
+        <p class="br-card-trust">
+          <span>${iconShield(13)} Verificeret forhandler</span>
+          <span>${ratingText(r.dealer_id)}</span>
         </p>` : ''}
         ${facts.length ? `<ul class="br-card-facts">${facts.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${r.description ? `<p class="br-card-desc">${esc(r.description).replace(/\n/g, '<br>')}</p>` : ''}
-        ${own ? '' : `<button type="button" class="br-offer-btn" onclick="openBuyOffer('${esc(r.id)}')">Tilbyd din cykel</button>
+        ${own ? '' : `<button type="button" class="br-offer-btn" id="br-offer-open-${esc(r.id)}" onclick="openBuyOffer('${esc(r.id)}')">Tilbyd din cykel</button>
         <div class="br-offer" id="br-offer-${esc(r.id)}" hidden></div>`}
       </article>`;
+  }
+
+  function ratingText(dealerId) {
+    const x = _ratings[dealerId];
+    if (!x?.n) return 'Ingen anmeldelser endnu';
+    const avg = (x.sum / x.n).toLocaleString('da-DK', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    return `${iconStar(13)} ${avg} (${x.n} ${x.n === 1 ? 'anmeldelse' : 'anmeldelser'})`;
+  }
+
+  async function fetchRatings(dealerIds) {
+    _ratings = {};
+    if (!dealerIds.length) return;
+    const { data } = await supabase.from('reviews').select('reviewed_user_id, rating')
+      .in('reviewed_user_id', dealerIds);
+    for (const rv of data || []) {
+      const x = _ratings[rv.reviewed_user_id] ||= { sum: 0, n: 0 };
+      x.sum += rv.rating; x.n += 1;
+    }
   }
 
   async function fetchPublic(dealerId) {
@@ -80,6 +108,7 @@ export function createBuyRequestsPage({
         </header>
         <div id="br-own"></div>
         <div id="br-list" class="br-list"><p class="br-muted">Henter opkøbsønsker…</p></div>
+        <div id="br-dealer-note"></div>
         <section class="br-how">
           <h2 class="br-how-title">Sådan sælger du til en forhandler</h2>
           <ol class="num-steps">
@@ -95,6 +124,7 @@ export function createBuyRequestsPage({
     const list = document.getElementById('br-list');
     try {
       _requests = await fetchPublic();
+      await fetchRatings([...new Set(_requests.map(r => r.dealer_id))]);
     } catch (e) {
       if (list) list.innerHTML = `<p class="br-muted">Kunne ikke hente opkøbsønsker. <button type="button" class="br-link-btn" onclick="renderBuyRequestsPage()">Prøv igen</button></p>`;
       return;
@@ -103,7 +133,41 @@ export function createBuyRequestsPage({
     list.innerHTML = _requests.length
       ? _requests.map(r => requestCardHTML(r)).join('')
       : `<p class="br-muted">Ingen forhandlere søger cykler lige nu.</p>`;
+    resumeOfferAfterSell();
   }
+
+  /* Kommer sælgeren tilbage fra /sell (?tilbyd=<ønske>&cykel=<annonce>),
+     sendes tilbuddet med det samme med den besked, sælgeren skrev før
+     annoncen blev oprettet. Ét skridt: opret og tilbyd. */
+  async function resumeOfferAfterSell() {
+    const q = new URLSearchParams(location.search);
+    const reqId = q.get('tilbyd'), bikeId = q.get('cykel');
+    if (!reqId) return;
+    history.replaceState(history.state, '', location.pathname);
+    let saved = null;
+    try {
+      saved = JSON.parse(sessionStorage.getItem(RETURN_KEY) || 'null');
+      sessionStorage.removeItem(RETURN_KEY);
+    } catch {}
+    if (!_requests.some(r => r.id === reqId)) return;
+    _myBikes = null;
+    await openBuyOffer(reqId);
+    const sel = document.getElementById(`br-o-bike-${reqId}`);
+    const msg = document.getElementById(`br-o-msg-${reqId}`);
+    document.getElementById(`br-card-${reqId}`)?.scrollIntoView({ block: 'start' });
+    if (!sel || !bikeId || ![...sel.options].some(o => o.value === bikeId)) return;
+    sel.value = bikeId;
+    if (msg && saved?.reqId === reqId && saved.msg) msg.value = saved.msg;
+    await sendBuyOffer(reqId, { created: true });
+  }
+
+  function goSellForOffer(reqId) {
+    const msg = document.getElementById(`br-o-msg-${reqId}`)?.value?.trim() || '';
+    try { sessionStorage.setItem(RETURN_KEY, JSON.stringify({ reqId, msg, at: Date.now() })); } catch {}
+    navigateTo('/sell');
+  }
+
+  const defaultMsg = (r) => `Hej. Jeg har en cykel, som måske passer til jeres opkøb "${r.title}". Hvad kan I give for den?`;
 
   /* ── Forhandlerens egne ønsker ─────────────────────────── */
 
@@ -113,7 +177,10 @@ export function createBuyRequestsPage({
     const user = getCurrentUser();
     const profile = getCurrentProfile();
     if (!user || profile?.seller_type !== 'dealer') {
-      wrap.innerHTML = `<p class="br-dealer-note">Er du forhandler og vil købe cykler? <a href="/bliv-forhandler/" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Opret en forhandlerprofil</a>.</p>`;
+      // Står under listen: siden er først og fremmest til sælgere.
+      wrap.innerHTML = '';
+      const note = document.getElementById('br-dealer-note');
+      if (note) note.innerHTML = `<p class="br-dealer-note">Er du forhandler og vil købe cykler? <a href="/bliv-forhandler/" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Opret en forhandlerprofil</a>.</p>`;
       return;
     }
     if (!isVerifiedDealer(profile)) {
@@ -138,7 +205,9 @@ export function createBuyRequestsPage({
               <button type="button" class="br-link-btn" onclick="deleteBuyRequest('${esc(r.id)}')">Slet</button>
             </span>
           </li>`).join('')}</ul>` : ''}
-        ${formHTML(editing)}
+        ${editing || _formOpen
+          ? formHTML(editing)
+          : `<button type="button" class="br-offer-btn" onclick="openBuyRequestForm()">Nyt opkøbsønske</button>`}
       </section>`;
   }
 
@@ -171,7 +240,7 @@ export function createBuyRequestsPage({
         </label>
         <div class="br-form-actions">
           <button type="submit" class="br-offer-btn" id="br-f-save">${r ? 'Gem ændringer' : 'Læg op'}</button>
-          ${r ? `<button type="button" class="br-link-btn" onclick="cancelBuyRequestEdit()">Annullér</button>` : ''}
+          <button type="button" class="br-link-btn" onclick="cancelBuyRequestEdit()">Annullér</button>
         </div>
       </form>`;
   }
@@ -210,7 +279,13 @@ export function createBuyRequestsPage({
     }
     showToast(_editingId ? 'Ændringerne er gemt' : 'Opkøbsønsket er lagt op', 'ok');
     _editingId = null;
+    _formOpen = false;
     renderBuyRequestsPage();
+  }
+
+  function openBuyRequestForm() {
+    _formOpen = true;
+    renderOwnSection().then(() => document.getElementById('br-f-title')?.focus());
   }
 
   function editBuyRequest(id) {
@@ -220,6 +295,7 @@ export function createBuyRequestsPage({
 
   function cancelBuyRequestEdit() {
     _editingId = null;
+    _formOpen = false;
     renderOwnSection();
   }
 
@@ -252,27 +328,37 @@ export function createBuyRequestsPage({
   async function openBuyOffer(reqId) {
     const box = document.getElementById(`br-offer-${reqId}`);
     if (!box) return;
-    if (!box.hidden) { box.hidden = true; return; }
+    // Kun én orange knap ad gangen: "Tilbyd" skjules, mens panelet med "Send" er åbent.
+    const openBtn = document.getElementById(`br-offer-open-${reqId}`);
+    if (!box.hidden) { box.hidden = true; if (openBtn) openBtn.hidden = false; return; }
     const user = getCurrentUser();
     if (!user) { showToast('Log ind for at tilbyde din cykel', 'advarsel'); openLoginModal(); return; }
     const r = _requests.find(x => x.id === reqId);
     if (!r) return;
 
     box.hidden = false;
+    if (openBtn) openBtn.hidden = true;
+    const cancel = `<button type="button" class="br-link-btn" onclick="openBuyOffer('${esc(reqId)}')">Annullér</button>`;
     box.innerHTML = `<p class="br-muted">Henter dine annoncer…</p>`;
     if (!_myBikes) {
       const { data, error } = await supabase.from('bikes')
         .select('id, brand, model, type, year, price, is_giveaway')
         .eq('user_id', user.id).eq('is_active', true)
         .order('created_at', { ascending: false });
-      if (error) { box.innerHTML = `<p class="br-muted">Kunne ikke hente dine annoncer.</p>`; return; }
+      if (error) { box.innerHTML = `<p class="br-muted">Kunne ikke hente dine annoncer.</p>${cancel}`; return; }
       _myBikes = data || [];
     }
 
     if (!_myBikes.length) {
       box.innerHTML = `
-        <p>Forhandleren skal kunne se cyklen. Opret en annonce først med billeder og stand, og kom så tilbage hertil.</p>
-        <a class="br-offer-btn" href="/sell/" onclick="event.preventDefault();navigateTo('/sell')">Opret annonce</a>`;
+        <p>Forhandleren skal kunne se billeder og stand, så cyklen oprettes som annonce. Skriv din besked her. Den sendes til ${esc(dealerName(r.dealer))}, så snart annoncen er oprettet.</p>
+        <label class="br-field">Besked
+          <textarea id="br-o-msg-${esc(reqId)}" rows="3" maxlength="1000">${esc(defaultMsg(r))}</textarea>
+        </label>
+        <div class="br-form-actions">
+          <a class="br-offer-btn" href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret annonce og send</a>
+          ${cancel}
+        </div>`;
       return;
     }
 
@@ -284,12 +370,16 @@ export function createBuyRequestsPage({
         </select>
       </label>
       <label class="br-field">Besked
-        <textarea id="br-o-msg-${esc(reqId)}" rows="3" maxlength="1000">Hej. Jeg har en cykel, som måske passer til jeres opkøb "${esc(r.title)}". Hvad kan I give for den?</textarea>
+        <textarea id="br-o-msg-${esc(reqId)}" rows="3" maxlength="1000">${esc(defaultMsg(r))}</textarea>
       </label>
-      <button type="button" class="br-offer-btn" id="br-o-send-${esc(reqId)}" onclick="sendBuyOffer('${esc(reqId)}')">${iconMail(15)} Send til ${esc(dealerName(r.dealer))}</button>`;
+      <div class="br-form-actions">
+        <button type="button" class="br-offer-btn" id="br-o-send-${esc(reqId)}" onclick="sendBuyOffer('${esc(reqId)}')">${iconMail(15)} Send til ${esc(dealerName(r.dealer))}</button>
+        ${cancel}
+      </div>
+      <p class="br-muted br-offer-new">Er cyklen ikke på listen? <a href="/sell/" onclick="event.preventDefault();goSellForOffer('${esc(reqId)}')">Opret en annonce</a>, så sendes den med beskeden ovenfor, når den er oprettet.</p>`;
   }
 
-  async function sendBuyOffer(reqId) {
+  async function sendBuyOffer(reqId, { created = false } = {}) {
     const user = getCurrentUser();
     const r = _requests.find(x => x.id === reqId);
     if (!user || !r) return;
@@ -310,7 +400,7 @@ export function createBuyRequestsPage({
       supabase.functions.invoke('notify-message', { body: { message_id: data.id } }).catch(() => {});
     }
     const box = document.getElementById(`br-offer-${reqId}`);
-    if (box) box.innerHTML = `<p>Sendt. Forhandleren får en e-mail, og svaret kommer i din <a href="/inbox/" onclick="event.preventDefault();navigateTo('/inbox')">indbakke</a>.</p>`;
+    if (box) box.innerHTML = `<p>${created ? 'Annoncen er oprettet og sendt' : 'Sendt'}. Forhandleren får en e-mail, og svaret kommer i din <a href="/inbox/" onclick="event.preventDefault();navigateTo('/inbox')">indbakke</a>.</p>`;
   }
 
   /* ── Afsnit på forhandlerens profilside ───────────────── */
@@ -331,7 +421,7 @@ export function createBuyRequestsPage({
 
   return {
     renderBuyRequestsPage, renderDealerBuyRequests,
-    saveBuyRequest, editBuyRequest, cancelBuyRequestEdit, toggleBuyRequest, deleteBuyRequest,
-    openBuyOffer, sendBuyOffer,
+    saveBuyRequest, openBuyRequestForm, editBuyRequest, cancelBuyRequestEdit, toggleBuyRequest, deleteBuyRequest,
+    openBuyOffer, sendBuyOffer, goSellForOffer,
   };
 }
