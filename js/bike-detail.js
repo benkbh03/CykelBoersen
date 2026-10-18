@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { beskedFejl, bikeTitle, bikePageTitle, frameSizeLetter, iconDealer, iconPrivate, iconShield, iconBike, iconHeart, iconBell, iconShare, iconMail, iconCart, iconTag, iconWrench, iconPencil, iconPin, escAttr, priceLabel, priceText, isGiveaway } from './utils.js';
+import { cardImageUrl, sizedImageUrl, GALLERY_IMAGE_WIDTH } from './image-size.js';
 import { upgradesDisplayHTML } from './bike-upgrades.js';
 import { brandToSlug } from './brand-data-v2.js';
 import { breadcrumbsHtml, bikeCrumbs } from './breadcrumbs.js';
@@ -181,14 +182,14 @@ export function createBikeDetail({
 
     // Sorter billeder: primærbillede først
     const allImages = (b.bike_images || []).slice().sort((a, x) => (x.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
-    window._galleryImages = allImages.map(img => img.url);
+    window._galleryImages = allImages.map(img => sizedImageUrl(img.url, GALLERY_IMAGE_WIDTH));
     window._galleryIndex  = 0;
 
     let galleryHtml;
     if (allImages.length === 0) {
       galleryHtml = `<div class="bike-detail-img"><span style="color:var(--muted);">${iconBike(56)}</span></div>`;
     } else if (allImages.length === 1) {
-      galleryHtml = `<div class="bike-detail-img" style="cursor:zoom-in;" onclick="openLightbox(0)"><img src="${allImages[0].url}" alt="${esc(bikeTitle(b.brand, b.model))} – ${esc(b.type)}${b.city ? ' i ' + esc(b.city) : ''}" loading="lazy"></div>`;
+      galleryHtml = `<div class="bike-detail-img" style="cursor:zoom-in;" onclick="openLightbox(0)"><img src="${window._galleryImages[0]}" alt="${esc(bikeTitle(b.brand, b.model))} – ${esc(b.type)}${b.city ? ' i ' + esc(b.city) : ''}" loading="lazy"></div>`;
     } else {
       const maxThumbs = 5;
       const visibleImages = allImages.slice(0, maxThumbs);
@@ -198,15 +199,15 @@ export function createBikeDetail({
         const isLast = extraCount > 0 && i === maxThumbs - 1;
         const thumbAlt = i === 0 ? `${altBase} – hovedbillede` : `${altBase} – billede ${i + 1}`;
         return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="${esc(thumbAlt)}" style="position:relative;">
-          <img src="${img.url}" alt="${esc(thumbAlt)}" loading="lazy">
+          <img src="${cardImageUrl(img)}" alt="${esc(thumbAlt)}" loading="lazy">
           ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:var(--font-sans);border-radius:5px;">+${extraCount}</span>` : ''}
         </button>`;
       }).join('');
       galleryHtml = `
         <div class="bike-gallery">
           <div class="gallery-main">
-            <div class="gallery-main-bg" id="gallery-main-bg" style="background-image:url('${allImages[0].url}')"></div>
-            <img id="gallery-main-img" src="${allImages[0].url}" alt="${esc(altBase)} – hovedbillede" onclick="openLightbox(window._galleryIndex || 0)">
+            <div class="gallery-main-bg" id="gallery-main-bg" style="background-image:url('${cardImageUrl(allImages[0])}')"></div>
+            <img id="gallery-main-img" src="${window._galleryImages[0]}" alt="${esc(altBase)} – hovedbillede" onclick="openLightbox(window._galleryIndex || 0)">
             <button class="gallery-nav-btn gallery-prev" onclick="galleryNav(-1)" aria-label="Forrige billede">&#8249;</button>
             <button class="gallery-nav-btn gallery-next" onclick="galleryNav(1)" aria-label="Næste billede">&#8250;</button>
             <span class="gallery-counter" id="gallery-counter">1 / ${allImages.length}</span>
@@ -1171,7 +1172,7 @@ export function createBikeDetail({
 
       const cards = data.map(bike => {
         const _rRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
-        const rawImg = _rRec?.thumb_url || _rRec?.url;
+        const rawImg = cardImageUrl(_rRec);
         const img = rawImg || '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">
@@ -1225,7 +1226,7 @@ export function createBikeDetail({
 
       const cards = data.map(bike => {
         const _rRec = bike.bike_images?.find(i => i.is_primary) || bike.bike_images?.[0];
-        const rawImg = _rRec?.thumb_url || _rRec?.url;
+        const rawImg = cardImageUrl(_rRec);
         const img = rawImg || '';
         return `
           <div class="related-card" onclick="navigateToBike('${bike.id}')">

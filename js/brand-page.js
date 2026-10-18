@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { getBrandMeta, slugToBrand, brandToSlug, BRANDS_META, KNOWN_BRANDS } from './brand-data-v2.js';
+import { cardImageUrl } from './image-size.js';
 import { iconDealer, iconPrivate, priceLabel, iconPin } from './utils.js';
 import { cardFacts } from './card-spec.js';
 import { bikePath } from './bike-url.js';
@@ -188,7 +189,7 @@ export function createBrandPage({
 
   function buildBikeCard(b) {
     const _pRec = b.bike_images?.find(i => i.is_primary) || b.bike_images?.[0];
-    const primaryImg = _pRec?.thumb_url || _pRec?.url;
+    const primaryImg = cardImageUrl(_pRec);
     const thumb = primaryImg || '';
     const profile = b.profiles || {};
     const sellerType = profile.seller_type || 'private';

@@ -3,6 +3,7 @@
    ============================================================ */
 
 import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel, iconHeart, iconPin } from './utils.js';
+import { cardImageUrl } from './image-size.js';
 import { BIKE_COLORS } from './config.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
@@ -841,7 +842,7 @@ export function createMapPage({
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
         const cardsHtml = items.map(it => {
           const b = it.bike;
-          const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
+          const primaryImg = cardImageUrl((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0]);
           return '<button class="split-popup-list-item" onclick="navigateToBike(\'' + b.id + '\')">'
             + (primaryImg
                 ? '<img src="' + primaryImg + '" alt="' + esc(bikeTitle(b.brand, b.model)) + '" class="split-popup-list-img">'
@@ -871,7 +872,7 @@ export function createMapPage({
       } else {
         // Single-popup: som før
         const b = first.bike;
-        const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
+        const primaryImg = cardImageUrl((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0]);
         const sellerName = isDealer ? profile.shop_name : profile.name;
         const sellerLabel = isDealer ? 'Forhandler' : 'Privatperson';
         const imgCount = (b.bike_images || []).length || 0;
@@ -963,7 +964,7 @@ export function createMapPage({
     container.innerHTML = bikes.map(b => {
       const profile    = b.profiles || {};
       const isDealer   = profile.seller_type === 'dealer';
-      const primaryImg = ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.thumb_url || ((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0])?.url || null;
+      const primaryImg = cardImageUrl((b.bike_images || []).find(i => i.is_primary) || (b.bike_images || [])[0]);
       const sellerBadge = isDealer
         ? '<span class="split-card-badge split-card-badge--dealer">Forhandler</span>'
         : '<span class="split-card-badge split-card-badge--private">Privat</span>';
