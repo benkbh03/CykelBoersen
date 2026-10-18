@@ -163,7 +163,8 @@ export function createBuyRequestsPage({
 
   function goSellForOffer(reqId) {
     const msg = document.getElementById(`br-o-msg-${reqId}`)?.value?.trim() || '';
-    try { sessionStorage.setItem(RETURN_KEY, JSON.stringify({ reqId, msg, at: Date.now() })); } catch {}
+    const dealer = dealerName(_requests.find(x => x.id === reqId)?.dealer);
+    try { sessionStorage.setItem(RETURN_KEY, JSON.stringify({ reqId, msg, dealer, at: Date.now() })); } catch {}
     navigateTo('/sell');
   }
 
