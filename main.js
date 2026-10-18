@@ -88,6 +88,11 @@ function lazyCtrl(loader, factoryName, getDeps, onInit) {
         inst = mod[factoryName](typeof getDeps === 'function' ? getDeps() : getDeps);
         if (typeof onInit === 'function') onInit(inst);
         return inst;
+      }, err => {
+        // Glem den fejlede hentning, så næste klik prøver igen. Ellers står
+        // fx annoncesiden død resten af besøget efter ét netværksudfald.
+        promise = null;
+        throw err;
       });
     }
     return promise;
@@ -1064,6 +1069,10 @@ async function init() {
     window.handleCookieChoice = handleCookieChoice;
     window.showCookieBannerAgain = showCookieBannerAgain;
     initCookieBanner();
+  }).catch(() => {
+    // Cookie-blokkere (uBlock, "I don't care about cookies") stopper filen på
+    // navnet. Det er besøgendes eget valg, og uden banner sættes ingen
+    // ekstra cookies, så der er intet at gøre og intet at logge.
   });
 
   // Rullepile på cykeltype-fanerne når rækken er bredere end feltet
