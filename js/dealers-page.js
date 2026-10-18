@@ -108,9 +108,17 @@ export function createDealersPage({
         <button class="sell-back-btn" onclick="navigateTo('/')">← Tilbage</button>
         <h1 class="dealers-page-title">Verificerede forhandlere</h1>
         <p class="dealers-page-subtitle">Cykelhandlere hvis CVR-nummer vi har tjekket.</p>
-        <p class="dealers-page-subtitle"><a href="/opkoeb/" onclick="event.preventDefault();navigateTo('/opkoeb')">Forhandlere der køber cykler</a></p>
         <button class="btn-become-dealer" onclick="navigateTo('/bliv-forhandler')">${iconDealer()} Bliv forhandler</button>
       </div>
+      <!-- Vises kun når mindst én forhandler har et aktivt opkøbsønske. Ingen
+           orange knap: "Bliv forhandler" ovenfor er sidens eneste. -->
+      <a class="dealers-buying" id="dealers-buying" href="/opkoeb/" onclick="event.preventDefault();navigateTo('/opkoeb')" hidden>
+        <span class="dealers-buying-text">
+          <span class="dealers-buying-title" id="dealers-buying-title"></span>
+          <span class="dealers-buying-sub" id="dealers-buying-sub"></span>
+        </span>
+        <span class="dealers-buying-link">Se hvad de leder efter</span>
+      </a>
       <div class="dealers-toolbar">
         <!-- Teksten skiftes fire steder i koden. Laa ikonet i knappens
              textContent, ville det blive slettet foerste gang. Derfor et
@@ -132,10 +140,11 @@ export function createDealersPage({
       </div>
     </div>`;
 
-    const [dealerRes, bikeRes, reviewRes] = await Promise.all([
+    const [dealerRes, bikeRes, reviewRes, buyRes] = await Promise.all([
       supabase.from('profiles').select('id, shop_name, city, address, name, avatar_url, lat, lng, location_precision, services, opening_hours, featured_until').eq('seller_type', 'dealer').eq('verified', true).order('created_at', { ascending: true }),
       supabase.from('bikes').select('user_id').eq('is_active', true),
       supabase.from('reviews').select('reviewed_user_id, rating'),
+      supabase.from('buy_requests').select('dealer_id, types').eq('is_active', true),
     ]);
 
     const grid = document.getElementById('dealers-page-grid');
@@ -172,8 +181,20 @@ export function createDealersPage({
       }
     }
 
+    // Opkøbsønsker: kun fra forhandlere der også står på listen, så tallet
+    // passer med kortene nedenunder.
+    const buyingIds = new Set();
+    const buyingTypes = new Set();
+    for (const r of buyRes.data || []) {
+      if (!dealerIdSet.has(r.dealer_id)) continue;
+      buyingIds.add(r.dealer_id);
+      (r.types || []).forEach(t => buyingTypes.add(t));
+    }
+    renderBuyingRow(buyingIds.size, [...buyingTypes]);
+
     _dealersPageData = dealers.map(dealer => ({
       dealer,
+      buying:      buyingIds.has(dealer.id),
       bikeCount:   countMap[dealer.id]   || 0,
       avgRating:   ratingCnt[dealer.id] ? ratingSum[dealer.id] / ratingCnt[dealer.id] : null,
       ratingCount: ratingCnt[dealer.id]  || 0,
@@ -185,6 +206,18 @@ export function createDealersPage({
     const filtersEl = document.getElementById('dealer-service-filters');
     if (filtersEl) filtersEl.hidden = _dealersPageData.length < DEALER_FILTER_MIN;
     sortAndRenderDealers();
+  }
+
+  function renderBuyingRow(n, types) {
+    const row = document.getElementById('dealers-buying');
+    if (!row || !n) return;
+    document.getElementById('dealers-buying-title').textContent =
+      n === 1 ? '1 forhandler køber brugte cykler' : `${n} forhandlere køber brugte cykler`;
+    const shown = types.slice(0, 3).map(t => t.toLowerCase());
+    document.getElementById('dealers-buying-sub').textContent = shown.length
+      ? `Lige nu efterspørges ${shown.join(', ')}${types.length > 3 ? ' m.fl.' : ''}. Du kan tilbyde din cykel direkte.`
+      : 'Du kan tilbyde din cykel direkte.';
+    row.hidden = false;
   }
 
   async function toggleDealerGPS() {
@@ -284,8 +317,8 @@ export function createDealersPage({
 
     // Begræns til de første DEALERS_INITIAL_LIMIT indtil brugeren har klikket "Se alle"
     const visible = _dealersShowAll ? filtered : filtered.slice(0, DEALERS_INITIAL_LIMIT);
-    grid.innerHTML = visible.map(({ dealer, bikeCount, avgRating, ratingCount, distKm }) =>
-      buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm)
+    grid.innerHTML = visible.map(({ dealer, bikeCount, avgRating, ratingCount, distKm, buying }) =>
+      buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm, buying)
     ).join('');
 
     // Tilføj/opdater "Se alle forhandlere (X)"-knap hvis der er flere end limit
@@ -323,7 +356,7 @@ export function createDealersPage({
     if (el) el.textContent = tekst;
   }
 
-  function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm) {
+  function buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm, buying = false) {
     const displayName  = dealer.shop_name || dealer.name || 'Forhandler';
     const avatarUrl    = safeAvatarUrl ? safeAvatarUrl(dealer.avatar_url) : (dealer.avatar_url || null);
     const avatarThumb  = avatarUrl && transformImageUrl ? transformImageUrl(avatarUrl, { width: 120, quality: 80 }) : avatarUrl;
@@ -384,6 +417,7 @@ export function createDealersPage({
       ${openHtml}
       ${starsHtml}
       <div class="dealer-count${bikeCount ? '' : ' dealer-count--none'}">${bikeCount ? `${bikeCount} ${bikeCount === 1 ? 'cykel' : 'cykler'} til salg` : 'Ingen cykler lige nu'}</div>
+      ${buying ? '<div class="dealer-buying-line">Køber brugte cykler</div>' : ''}
       <!-- Foden skubbes ned med margin-top:auto, saa Google Maps-knappen staar
            i samme hoejde paa alle kort i raekken. Indholdet staar som foer;
            det er kun justeringen der er tilfoejet. -->

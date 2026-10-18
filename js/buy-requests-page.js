@@ -223,7 +223,7 @@ export function createBuyRequestsPage({
         </label>
         <fieldset class="br-field br-types">
           <legend>Cykeltyper <span class="br-muted">(tom = alle)</span></legend>
-          ${BIKE_TYPES.map(t => `<label class="br-chip"><input type="checkbox" name="br-f-type" value="${esc(t)}"${types.has(t) ? ' checked' : ''}> ${esc(t)}</label>`).join('')}
+          <div class="br-types-grid">${BIKE_TYPES.map(t => `<label class="br-chip"><input type="checkbox" name="br-f-type" value="${esc(t)}"${types.has(t) ? ' checked' : ''}> ${esc(t)}</label>`).join('')}</div>
         </fieldset>
         <label class="br-field">Mærker <span class="br-muted">(adskil med komma, tom = alle)</span>
           <input type="text" id="br-f-brands" maxlength="400" placeholder="Riese & Müller, Kalkhoff, Gazelle" value="${esc((v.brands || []).join(', '))}">

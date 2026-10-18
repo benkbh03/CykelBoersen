@@ -3852,3 +3852,42 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   .pe-header { flex-wrap: wrap; }
   .pe-avatar-btn { width: 100%; }
 }
+
+/* ── /forhandlere: række om forhandlere der køber cykler ──
+   Hvid flade med kant, ingen orange: sidens eneste orange knap er
+   "Bliv forhandler". Hele rækken er linket. */
+.dealers-buying {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--charcoal);
+  text-decoration: none;
+}
+.dealers-buying[hidden] { display: none !important; }
+.dealers-buying:hover { background: var(--surface); }
+.dealers-buying-text { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.dealers-buying-title { font-size: var(--text-base); font-weight: var(--weight-semibold); }
+.dealers-buying-sub { font-size: var(--text-sm); color: var(--muted); line-height: 1.5; }
+.dealers-buying-link {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .dealers-buying { flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-4); }
+}
+.dealer-buying-line {
+  font-size: var(--text-xs);
+  color: var(--forest);
+  font-weight: var(--weight-semibold);
+  margin-top: var(--space-1);
+}
