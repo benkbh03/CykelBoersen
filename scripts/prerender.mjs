@@ -47,6 +47,8 @@ import { breadcrumbsHtml, breadcrumbsJsonLd, bikeCrumbs, brandCrumbs, categoryCr
 import { bikeTitle, bikePageTitle } from '../js/utils.js';
 import { bikePath } from '../js/bike-url.js';
 import { marketFactsHtml } from '../js/market-facts.js';
+import { footerContent } from '../js/static-pages-content.js';
+import { STATIC_PAGE_ROUTES } from '../js/config.js';
 import { BLOG_TITLE, BLOG_DESC, BRANDS_DESC, DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC, brandTitle, brandDescription } from '../js/seo-text.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -956,8 +958,26 @@ const STATIC_APP_PAGES = [
 // noindex tages med fra STATIC_APP_PAGES og gives videre til buildPage. Uden
 // den i destrukturering-listen kastede retursætningen nedenfor
 // "ReferenceError: noindex is not defined" og væltede hele prerender-jobbet.
+/* Guides, Om os og de juridiske sider har deres fulde tekst i
+   js/static-pages-content.js. Tidligere fik den raa HTML kun overskriften og
+   een saetning (ca. 20 ord), og resten kom foerst med JavaScript. Google maatte
+   rendere siden for at se indholdet, og guiderne laa i "Discovered - currently
+   not indexed". Nu staar teksten i HTML'en, med samme markup som
+   renderStaticPageView() i js/static-pages.js, saa appen ikke flytter noget
+   naar den overtager. */
+const STATIC_CONTENT_BY_PATH = new Map(
+  Object.entries(STATIC_PAGE_ROUTES)
+    .filter(([key]) => footerContent[key]?.body)
+    .map(([key, path]) => [path, footerContent[key]]),
+);
+
 function staticAppPage({ path, h1, title, description, noindex }) {
-  const contentHtml = `
+  const full = STATIC_CONTENT_BY_PATH.get(path);
+  const contentHtml = full ? `
+    <div class="static-page">
+      <h1 class="static-page-title">${full.title}</h1>
+      <div class="static-page-body">${full.body.replace(/closeFooterModal\(\);openFooterModal\('contact'\)/g, "navigateTo('/kontakt')")}</div>
+    </div>` : `
       <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
         <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">${escHtml(h1)}</h1>
         <p>${escHtml(description)}</p>
