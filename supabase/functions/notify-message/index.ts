@@ -5,20 +5,22 @@
 //   RESEND_API_KEY  – din Resend API-nøgle fra resend.com/api-keys
 //
 // Valgfri secrets:
-//   EMAIL_FROM    – f.eks. "Cykelbørsen <no-reply@cykelborsen.dk>"
+//   EMAIL_FROM    – f.eks. "Cykelbørsen <hej@xn--cykelbrsen-5cb.dk>"
 //                   Skal være et verificeret Resend-afsenderdomain.
-//                   Standard: Resend sandbox-adresse (virker uden domain-verificering)
+//                   Standard: den officielle afsender (se ../_shared/email.ts)
 //   ADMIN_EMAIL   – email der modtager kontaktformular-notifikationer
-//                   Standard: samme som EMAIL_FROM
+//                   Standard: hej@xn--cykelbrsen-5cb.dk
+//
+// Layoutet ligger i ../_shared/email.ts og skal deployes sammen med denne fil.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SITE, esc, safeSubject, kr, heading, p, small, quote, facts, button, layout, sendEmail as send } from "../_shared/email.ts";
 
 const RESEND_API_KEY       = Deno.env.get("RESEND_API_KEY") ?? "";
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const EMAIL_FROM           = Deno.env.get("EMAIL_FROM") ?? "Cykelbørsen <onboarding@resend.dev>";
-const ADMIN_EMAIL          = Deno.env.get("ADMIN_EMAIL") ?? EMAIL_FROM;
+const ADMIN_EMAIL          = Deno.env.get("ADMIN_EMAIL") ?? "hej@xn--cykelbrsen-5cb.dk";
 
 /* ── Rate-limit for ANONYME kald ────────────────────────────────────────
    Denne function har med vilje "Verify JWT" slaaet fra, saa en besoegende
@@ -95,24 +97,8 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// HTML-escape af bruger-leveret indhold før indsættelse i e-mail-HTML (anti-injection).
-function esc(v: unknown): string {
-  return String(v ?? "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
-}
-
-async function sendEmail(to: string, subject: string, html: string) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({ from: EMAIL_FROM, to, subject, html }),
-  });
-  const body = await res.json();
-  if (!res.ok) throw new Error(`Resend fejl: ${JSON.stringify(body)}`);
-  return body;
+function sendEmail(to: string, subject: string, html: string) {
+  return send(RESEND_API_KEY, to, subject, html);
 }
 
 // Verificér caller-JWT og returnér brugeren (eller null). Bruges af de
@@ -125,46 +111,6 @@ async function getCaller(req: Request, supabase: ReturnType<typeof createClient>
   return user ?? null;
 }
 
-// Fjern CRLF + afgræns længde før user-input går i et e-mail Subject (header-injection-værn).
-function safeSubject(s: unknown, maxLen = 120): string {
-  return String(s ?? "").replace(/[\r\n]+/g, " ").trim().slice(0, maxLen);
-}
-
-function emailWrapper(content: string) {
-  return `<!DOCTYPE html>
-<html lang="da">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin:0;padding:0;background:#F5F0E8;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0E8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0"
-             style="background:#FEFAF3;border-radius:12px;overflow:hidden;border:1px solid #DDD8CE;max-width:600px;width:100%;">
-        <tr>
-          <td style="background:#2A3D2E;padding:24px 32px;">
-            <img src="https://xn--cykelbrsen-5cb.dk/img/brand/logo-dark-email.png" width="180" height="36" alt="Cykelbørsen" style="display:block;border:0;height:36px;width:180px;color:#F5F0E8;font-size:1.2rem;font-weight:bold;font-family:Arial,sans-serif;">
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:32px;">
-            ${content}
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:16px 32px;background:#F5F0E8;border-top:1px solid #DDD8CE;">
-            <p style="color:#8A8578;font-size:0.75rem;margin:0;">
-              <a href="https://cykelbørsen.dk" style="color:#C8502A;">Cykelbørsen</a>
-            </p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
-}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -233,20 +179,18 @@ serve(async (req) => {
       const renter = (b as any).profiles || {};
       const payout = (b.rental_amount || 0) - (b.platform_fee || 0);
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Ny udlejnings-booking! 🚲</h2>
-        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-          <strong style="color:#1A1A18;">${esc(item.title ?? "Din udlejningscykel")}</strong> er booket af ${esc(renter.name ?? "en kunde")}.<br><br>
-          📅 ${esc(b.start_date)} – ${esc(b.end_date)} (${b.days} dage)<br>
-          💰 Din udbetaling: <strong style="color:#1A1A18;">${payout.toLocaleString("da-DK")} kr.</strong> (efter kommission)
-        </p>
-        <a href="https://cykelbørsen.dk/udlejning/bookinger"
-           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Se dine bookinger →
-        </a>
-      `);
-      const result = await sendEmail(dealer.email, "🚲 Ny udlejnings-booking – Cykelbørsen", html);
-      console.log("Rental-booking email sendt til:", dealer.email, "| ID:", result.id);
+      const title = esc(item.title ?? "Din udlejningscykel");
+      const html = layout(
+        heading(`${title} er booket`) +
+        facts([
+          ["Lejer", esc(renter.name ?? "")],
+          ["Periode", `${esc(b.start_date)} til ${esc(b.end_date)} (${b.days} dage)`],
+          ["Udbetaling", `${kr(payout)} efter kommission`],
+        ]) +
+        button(`${SITE}/udlejning/bookinger/`, "Se bookingen"),
+        "Du får denne mail fordi du udlejer cykler på Cykelbørsen.",
+      );
+      const result = await sendEmail(dealer.email, `Ny booking: ${item.title ?? "udlejningscykel"}`, html);
       return new Response(JSON.stringify({ ok: true, id: result.id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -259,21 +203,13 @@ serve(async (req) => {
       const { data: profile } = await supabase.from("profiles").select("name").eq("id", payload.user_id).single();
       const name = esc(profile?.name ?? "bruger");
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Tillykke – dit ID er godkendt! 🪪</h2>
-        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-          Hej ${name},<br><br>
-          Vi har verificeret dit ID og du har nu et <strong style="color:#1A1A18;">verificeret badge</strong> på din profil.
-          Det øger tilliden hos potentielle købere.
-        </p>
-        <a href="https://cykelbørsen.dk"
-           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Se din profil →
-        </a>
-      `);
-
-      const result = await sendEmail(user.email, "✅ Dit ID er verificeret – Cykelbørsen", html);
-      console.log("ID-godkendelse email sendt til:", user.email, "| ID:", result.id);
+      const html = layout(
+        heading("Dit ID er godkendt") +
+        p(`Hej ${name}`) +
+        p("Din profil viser nu, at dit ID er tjekket. Købere ser mærket ved dine annoncer og i dine beskeder.") +
+        button(`${SITE}/me/`, "Se din profil"),
+      );
+      const result = await sendEmail(user.email, "Dit ID er godkendt", html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -286,21 +222,13 @@ serve(async (req) => {
       const { data: profile } = await supabase.from("profiles").select("name").eq("id", payload.user_id).single();
       const name = esc(profile?.name ?? "bruger");
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Din ID-ansøgning er afvist</h2>
-        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-          Hej ${name},<br><br>
-          Vi kunne desværre ikke godkende dit ID. Det kan skyldes at billedet var uklart eller ufuldstændigt.
-          Du er velkommen til at indsende dit ID igen via din profil.
-        </p>
-        <a href="https://cykelbørsen.dk"
-           style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Prøv igen →
-        </a>
-      `);
-
-      const result = await sendEmail(user.email, "Din ID-ansøgning er afvist – Cykelbørsen", html);
-      console.log("ID-afvisning email sendt til:", user.email, "| ID:", result.id);
+      const html = layout(
+        heading("Vi kunne ikke godkende dit ID") +
+        p(`Hej ${name}`) +
+        p("Billedet var uklart eller viste ikke hele dokumentet. Du kan sende et nyt billede fra din profil.") +
+        button(`${SITE}/me/`, "Send et nyt billede"),
+      );
+      const result = await sendEmail(user.email, "Dit ID blev ikke godkendt", html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -313,22 +241,14 @@ serve(async (req) => {
       const { data: profile } = await supabase.from("profiles").select("shop_name, name").eq("id", payload.user_id).single();
       const name = esc(profile?.shop_name ?? profile?.name ?? "");
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Din forhandler-ansøgning kunne ikke godkendes</h2>
-        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-          Hej ${name || "der"},<br><br>
-          Vi kunne desværre ikke godkende jeres ansøgning om en forhandlerprofil på Cykelbørsen lige nu.
-          Det kan fx skyldes at vi mangler dokumentation, eller at CVR-nummeret ikke kunne bekræftes.<br><br>
-          Har du spørgsmål eller vil du prøve igen, er du meget velkommen til at skrive til os — så hjælper vi dig videre.
-        </p>
-        <a href="mailto:hej@cykelbørsen.dk"
-           style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Kontakt os →
-        </a>
-      `);
-
-      const result = await sendEmail(user.email, "Din forhandler-ansøgning – Cykelbørsen", html);
-      console.log("Forhandler-afvisning email sendt til:", user.email, "| ID:", result.id);
+      const html = layout(
+        heading("Vi kunne ikke godkende jeres forhandlerprofil") +
+        p(`Hej ${name || "der"}`) +
+        p("Det skyldes som regel manglende dokumentation, eller at CVR-nummeret ikke kunne bekræftes.") +
+        p("Svar på denne mail eller skriv til hej@cykelbørsen.dk, så finder vi ud af det sammen.") +
+        button("mailto:hej@xn--cykelbrsen-5cb.dk", "Skriv til os"),
+      );
+      const result = await sendEmail(user.email, "Jeres forhandlerprofil på Cykelbørsen", html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -351,19 +271,14 @@ serve(async (req) => {
         );
       }
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">Ny henvendelse via kontaktformularen</h2>
-        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;"><strong style="color:#1A1A18;">Fra:</strong> ${esc(name)} (${esc(email)})</p>
-        <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
-          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${esc(message)}</p>
-        </div>
-        <a href="mailto:${esc(email)}"
-           style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Svar til ${esc(name)} →
-        </a>
-      `);
+      const html = layout(
+        heading("Ny henvendelse via kontaktformularen") +
+        facts([["Fra", `${esc(name)} (${esc(email)})`]]) +
+        quote(esc(message)) +
+        button(`mailto:${email}`, `Svar ${esc(name)}`),
+      );
 
-      const result = await sendEmail(ADMIN_EMAIL, `📬 Ny kontakthenvendelse fra ${safeSubject(name, 60)} – Cykelbørsen`, html);
+      const result = await sendEmail(ADMIN_EMAIL, `Kontaktformular: ${safeSubject(name, 60)}`, html);
       console.log("Kontaktformular email sendt til admin | ID:", result.id);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -384,39 +299,27 @@ serve(async (req) => {
         );
       }
 
-      const sourceRows = source && (source.utm_source || source.utm_campaign || source.referrer)
-        ? `
-          <strong>Kilde:</strong> ${esc(source.utm_source ?? "–")}<br>
-          ${source.utm_campaign ? `<strong>Kampagne:</strong> ${esc(source.utm_campaign)}<br>` : ""}
-          ${source.utm_medium   ? `<strong>Medium:</strong> ${esc(source.utm_medium)}<br>` : ""}
-          ${source.utm_content  ? `<strong>Variant:</strong> ${esc(source.utm_content)}<br>` : ""}
-          ${source.referrer     ? `<strong>Referrer:</strong> ${esc(source.referrer)}<br>` : ""}
-        `
-        : "";
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 16px;">🏪 Ny forhandleransøgning</h2>
-        <p style="color:#1A1A18;margin:0 0 16px;font-size:0.95rem;line-height:1.6;">
-          <strong>Butik:</strong> ${esc(shop_name ?? "–")}<br>
-          <strong>CVR:</strong> ${esc(cvr ?? "–")}<br>
-          <strong>Kontaktperson:</strong> ${esc(contact ?? "–")}<br>
-          ${phone ? `<strong>Telefon:</strong> ${esc(phone)}<br>` : ""}
-          ${address ? `<strong>Adresse:</strong> ${esc(address)}<br>` : ""}
-          <strong>By:</strong> ${esc(city ?? "–")}<br>
-          <strong>Email:</strong> ${esc(email ?? "–")}${sourceRows ? `<br><br>${sourceRows}` : ""}
-        </p>
-        <div style="background:#FEF3E7;border-left:4px solid #C8502A;padding:12px 16px;border-radius:0 8px 8px 0;margin:0 0 20px;">
-          <p style="color:#1A1A18;margin:0;font-size:0.9rem;">
-            Klik nedenfor for at åbne admin-panelet direkte på ansøgningerne. Her kan du godkende eller afvise.
-          </p>
-        </div>
-        <a href="https://cykelbørsen.dk/?admin=dealers"
-           style="background:#2A3D2E;color:white;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;font-size:0.95rem;">
-          ✓ Godkend forhandler →
-        </a>
-      `);
+      const html = layout(
+        heading("Ny forhandleransøgning") +
+        facts([
+          ["Butik", esc(shop_name ?? "")],
+          ["CVR", esc(cvr ?? "")],
+          ["Kontakt", esc(contact ?? "")],
+          ["Telefon", esc(phone ?? "")],
+          ["Adresse", esc(address ?? "")],
+          ["By", esc(city ?? "")],
+          ["E-mail", esc(email ?? "")],
+          ["Kilde", esc(source?.utm_source ?? "")],
+          ["Kampagne", esc(source?.utm_campaign ?? "")],
+          ["Medium", esc(source?.utm_medium ?? "")],
+          ["Variant", esc(source?.utm_content ?? "")],
+          ["Henvist fra", esc(source?.referrer ?? "")],
+        ]) +
+        button(`${SITE}/?admin=dealers`, "Åbn ansøgningerne"),
+      );
 
-      await sendEmail(ADMIN_EMAIL, `🏪 Ny forhandleransøgning: ${safeSubject(shop_name ?? email, 60)} – Cykelbørsen`, html);
+      await sendEmail(ADMIN_EMAIL, `Forhandleransøgning: ${safeSubject(shop_name ?? email, 60)}`, html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -427,24 +330,18 @@ serve(async (req) => {
         return new Response("Manglende felter", { status: 400, headers: corsHeaders });
       }
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🚩 Annonce rapporteret</h2>
-        <p style="color:#8A8578;margin:0 0 8px;font-size:0.9rem;">
-          <strong style="color:#1A1A18;">Annonce:</strong> ${esc(bike_title ?? bike_id)}<br>
-          <strong style="color:#1A1A18;">Årsag:</strong> ${esc(reason)}<br>
-          ${reporter_name ? `<strong style="color:#1A1A18;">Rapporteret af:</strong> ${esc(reporter_name)} (${esc(reporter_email ?? "ingen email")})` : "Rapporteret af: anonym"}
-        </p>
-        ${details ? `
-        <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0 24px;">
-          <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;white-space:pre-wrap;">${esc(details)}</p>
-        </div>` : ""}
-        <a href="https://cykelbørsen.dk?bike=${bike_id}"
-           style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Se annonce →
-        </a>
-      `);
+      const html = layout(
+        heading("Annonce rapporteret") +
+        facts([
+          ["Annonce", esc(bike_title ?? bike_id)],
+          ["Årsag", esc(reason)],
+          ["Rapporteret af", reporter_name ? `${esc(reporter_name)} (${esc(reporter_email ?? "ingen e-mail")})` : "anonym"],
+        ]) +
+        (details ? quote(esc(details)) : "") +
+        button(`${SITE}/bike/${encodeURIComponent(bike_id)}`, "Se annoncen"),
+      );
 
-      const result = await sendEmail(ADMIN_EMAIL, `🚩 Annonce rapporteret: ${safeSubject(bike_title ?? bike_id, 60)} – Cykelbørsen`, html);
+      const result = await sendEmail(ADMIN_EMAIL, `Rapporteret: ${safeSubject(bike_title ?? bike_id, 60)}`, html);
       console.log("Rapport email sendt til admin | ID:", result.id);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -496,21 +393,15 @@ serve(async (req) => {
       const ownerName = esc(ownerProfile?.name ?? "sælger");
       const bikeName = esc(`${likedBike.brand || "Din cykel"} ${likedBike.model || ""}`.trim());
 
-      const html = emailWrapper(`
-        <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">❤️ Din annonce er blevet gemt!</h2>
-        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-          Hej ${ownerName},<br><br>
-          <strong style="color:#1A1A18;">${esc(liker_name || "En bruger")}</strong> har gemt din annonce: <strong style="color:#1A1A18;">${bikeName}</strong><br>
-          Det er en god tegn – interesserede købere følger annoncerne tæt!
-        </p>
-        <a href="https://cykelbørsen.dk/#/bike/${bike_id}"
-           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Se din annonce →
-        </a>
-      `);
+      const html = layout(
+        heading(`${esc(liker_name || "En bruger")} har gemt din ${bikeName}`) +
+        p(`Hej ${ownerName}`) +
+        p("Annoncen står nu på personens liste over gemte cykler. Sætter du prisen ned, får de besked, hvis de har slået prisfald til.") +
+        button(`${SITE}/bike/${encodeURIComponent(bike_id)}`, "Se din annonce"),
+        "Du får denne mail når nogen gemmer en af dine annoncer.",
+      );
 
-      const result = await sendEmail(ownerUser.email, `❤️ ${liker_name || "En bruger"} har gemt din annonce – Cykelbørsen`, html);
-      console.log("Listing liked email sendt til:", ownerUser.email, "| ID:", result.id);
+      const result = await sendEmail(ownerUser.email, `${safeSubject(liker_name || "En bruger", 60)} har gemt din ${safeSubject(likedBike.brand ?? "", 40)} ${safeSubject(likedBike.model ?? "", 40)}`.trim(), html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -569,29 +460,16 @@ serve(async (req) => {
         const { data: watcherProfile } = await supabase.from("profiles").select("name").eq("id", w.user_id).single();
         const watcherName = esc(watcherProfile?.name ?? "der");
 
-        const html = emailWrapper(`
-          <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🔔 Prisen er faldet!</h2>
-          <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-            Hej ${watcherName},<br><br>
-            En cykel du følger har lige fået ny pris:<br><br>
-            <strong style="color:#1A1A18;font-size:1.05rem;">${esc(bikeName)}</strong><br>
-            <span style="text-decoration:line-through;color:#8A8578;">${old_price.toLocaleString("da-DK")} kr.</span>
-            →
-            <strong style="color:#C8302A;font-size:1.1rem;">${new_price.toLocaleString("da-DK")} kr.</strong>
-            <span style="color:#2e7d32;font-weight:bold;"> (spar ${savings.toLocaleString("da-DK")} kr.)</span>
-          </p>
-          <a href="https://cykelbørsen.dk/bike/${bike_id}"
-             style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-            Se annonce →
-          </a>
-          <p style="color:#8A8578;font-size:0.78rem;margin-top:20px;">
-            Du modtog denne mail fordi du klikkede "Få besked ved prisfald" på annoncen.
-            Du kan altid afmelde alarmen ved at klikke knappen igen på annoncen.
-          </p>
-        `);
+        const html = layout(
+          heading(`${esc(bikeName)} er sat ned til ${kr(new_price)}`) +
+          p(`Hej ${watcherName}`) +
+          p(`Prisen var ${kr(old_price)}. Den er sat ${kr(savings)} ned.`) +
+          button(`${SITE}/bike/${encodeURIComponent(bike_id)}`, "Se annoncen"),
+          "Du får denne mail fordi du har slået prisfald til på annoncen. Klik på knappen på annoncen igen for at slå det fra.",
+        );
 
         try {
-          await sendEmail(watcherUser.email, `🔔 Prisen på ${bikeName} er faldet ${savings.toLocaleString("da-DK")} kr.`, html);
+          await sendEmail(watcherUser.email, `${bikeName} er sat ned til ${kr(new_price)}`, html);
           notified++;
         } catch (e) {
           console.error("price_drop send fejl:", e);
@@ -644,22 +522,15 @@ serve(async (req) => {
       const bidderName = esc(bidderProfile?.name ?? "køber");
       const bikeName = `${bidBike.brand || "cykel"} ${bidBike.model || ""}`.trim();
 
-      const html = emailWrapper(`
-        <h2 style="color:#2A7D4F;font-size:1.1rem;margin:0 0 12px;">✅ Dit bud blev accepteret! 🎉</h2>
-        <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-          Hej ${bidderName},<br><br>
-          <strong style="color:#1A1A18;">${esc(seller_name || "Sælger")}</strong> har accepteret dit bud på
-          <strong style="color:#1A1A18;">${esc(bikeName)}</strong> for <strong style="color:#2A7D4F;">${esc(bid_amount)}</strong>!<br><br>
-          Nu er det tid til at kontakte hinanden og aftale overdragelsen.
-        </p>
-        <a href="https://cykelbørsen.dk/#/inbox"
-           style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-          Gå til din indbakke →
-        </a>
-      `);
+      const html = layout(
+        heading(`Dit bud på ${esc(bikeName)} er accepteret`) +
+        p(`Hej ${bidderName}`) +
+        p(`${esc(seller_name || "Sælgeren")} har accepteret dit bud (${esc(bid_amount)}). Aftal tid og sted for overdragelsen i jeres beskeder.`) +
+        p("Betal først, når du står med cyklen, og tjek stelnummeret mod annoncen.") +
+        button(`${SITE}/inbox/`, "Gå til beskeder"),
+      );
 
-      const result = await sendEmail(bidderUser.email, `✅ Dit bud blev accepteret – ${bikeName} – Cykelbørsen`, html);
-      console.log("Bud accepteret email sendt til:", bidderUser.email, "| ID:", result.id);
+      const result = await sendEmail(bidderUser.email, `Dit bud på ${bikeName} er accepteret`, html);
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -703,10 +574,9 @@ serve(async (req) => {
     }
     const receiverEmail = receiverUser.email;
 
-    const [{ data: receiverProfile }, { data: senderProfile }, { data: bike }] = await Promise.all([
-      supabase.from("profiles").select("name").eq("id", message.receiver_id).single(),
+    const [{ data: senderProfile }, { data: bike }] = await Promise.all([
       supabase.from("profiles").select("name, shop_name, seller_type, is_official").eq("id", message.sender_id).single(),
-      supabase.from("bikes").select("brand, model").eq("id", message.bike_id).single(),
+      supabase.from("bikes").select("user_id, brand, model").eq("id", message.bike_id).maybeSingle(),
     ]);
 
     const senderName =
@@ -714,40 +584,36 @@ serve(async (req) => {
         ? senderProfile?.shop_name
         : senderProfile?.name;
 
-    const isBid        = message.content?.startsWith("💰 Bud:");
-    const bikeName     = bike ? `${bike.brand} ${bike.model}` : "din cykel";
-    const receiverName = esc(receiverProfile?.name ?? "sælger");
+    const isBid = message.content?.startsWith("💰 Bud:");
+    const bikeName = bike ? `${bike.brand ?? ""} ${bike.model ?? ""}`.trim() : "";
+    /* Modtageren ejer ikke altid annoncen: sælgeren svarer køberen, og på
+       /opkoeb tilbyder en privat sin egen cykel til en forhandler. */
+    const prep = isBid ? "på" : "om";
+    const om = !bikeName ? ""
+      : bike?.user_id === message.receiver_id ? ` ${prep} din ${bikeName}` : ` ${prep} ${bikeName}`;
+    const from = esc(senderName ?? "En bruger");
+    // Samme mærke som i indbakken (js/official-badge.js). Kun admin kan
+    // sætte is_official, så et navn alene kan ikke give det.
+    const badge = senderProfile?.is_official
+      ? ' <span style="border:1px solid #2A3D2E;color:#2A3D2E;border-radius:6px;padding:0 6px;font-size:12px;white-space:nowrap;">&#10003; Officiel</span>'
+      : "";
+    // Beskedkoderne (💰 ✅ ✉️) er data, ikke tekst til læseren; indbakken fjerner dem også.
+    const content = String(message.content ?? "").replace(/^(💰|✅|✉️)\s*/u, "");
 
     const subject = isBid
-      ? `💰 Nyt bud på din ${bikeName} – Cykelbørsen`
-      : `✉️ Ny besked om din ${bikeName} – Cykelbørsen`;
+      ? `Bud${om} fra ${safeSubject(senderName ?? "en bruger", 60)}`
+      : `Ny besked${om} fra ${safeSubject(senderName ?? "en bruger", 60)}`;
 
-    const emailHtml = emailWrapper(`
-      <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">
-        ${isBid ? "Du har fået et bud! 💰" : "Du har fået en besked! ✉️"}
-      </h2>
-      <p style="color:#8A8578;margin:0 0 20px;font-size:0.9rem;line-height:1.6;">
-        Hej ${receiverName},<br><br>
-        <strong style="color:#1A1A18;">${esc(senderName ?? "En bruger")}</strong>${
-          // Samme mærke som i indbakken (js/official-badge.js). Kun admin kan
-          // sætte is_official, så et navn alene kan ikke give det.
-          senderProfile?.is_official
-            ? ' <span style="border:1px solid #2A3D2E;color:#2A3D2E;border-radius:4px;padding:0 6px;font-size:12px;font-weight:600;white-space:nowrap;">&#10003; Officiel</span>'
-            : ""}
-        ${isBid ? " har givet et bud" : " har sendt dig en besked"}
-        om din annonce: <strong style="color:#1A1A18;">${esc(bikeName)}</strong>
-      </p>
-      <div style="background:#F5F0E8;border-left:4px solid #C8502A;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
-        <p style="color:#1A1A18;margin:0;font-size:0.95rem;line-height:1.5;">${esc(message.content)}</p>
-      </div>
-      <a href="https://cykelbørsen.dk?inbox=true"
-         style="background:#C8502A;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">
-        Svar på Cykelbørsen →
-      </a>
-    `);
+    const emailHtml = layout(
+      heading(`${isBid ? "Nyt bud" : "Ny besked"}${esc(om)}`) +
+      p(`Fra ${from}${badge}`) +
+      quote(esc(content)) +
+      button(`${SITE}/inbox/`, "Svar i indbakken") +
+      small("Svar på Cykelbørsen, ikke på denne mail. Betal aldrig via et link i en besked."),
+      "Du får denne mail når nogen skriver til dig på Cykelbørsen.",
+    );
 
     const resendResult = await sendEmail(receiverEmail, subject, emailHtml);
-    console.log("Email sendt til:", receiverEmail, "| Resend ID:", resendResult.id);
     return new Response(
       JSON.stringify({ ok: true, id: resendResult.id }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }

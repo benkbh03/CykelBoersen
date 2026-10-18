@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SITE, esc, heading, p as para, button, bikeCard, layout, sendEmail as send } from "../_shared/email.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const EMAIL_FROM = Deno.env.get("EMAIL_FROM") ?? "Cykelbørsen <onboarding@resend.dev>";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,40 +12,8 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-async function sendEmail(to, subject, html) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({ from: EMAIL_FROM, to, subject, html }),
-  });
-  const body = await res.json();
-  if (!res.ok) throw new Error(`Resend fejl: ${JSON.stringify(body)}`);
-  return body;
-}
-
-function emailWrapper(content) {
-  return `<!DOCTYPE html>
-<html lang="da">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#F5F0E8;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0E8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#FEFAF3;border-radius:12px;overflow:hidden;border:1px solid #DDD8CE;max-width:600px;width:100%;">
-        <tr><td style="background:#2A3D2E;padding:24px 32px;"><img src="https://xn--cykelbrsen-5cb.dk/img/brand/logo-dark-email.png" width="180" height="36" alt="Cykelbørsen" style="display:block;border:0;height:36px;width:180px;color:#F5F0E8;font-size:1.2rem;font-weight:bold;font-family:Arial,sans-serif;"></td></tr>
-        <tr><td style="padding:32px;">${content}</td></tr>
-        <tr><td style="padding:16px 32px;background:#F5F0E8;border-top:1px solid #DDD8CE;">
-          <p style="color:#8A8578;font-size:0.75rem;margin:0;">
-            <a href="https://cykelbørsen.dk" style="color:#C8502A;">Cykelbørsen</a>
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+function sendEmail(to, subject, html) {
+  return send(RESEND_API_KEY, to, subject, html);
 }
 
 /* Har agenten overhovedet ét reelt søgekriterium?
@@ -346,8 +314,26 @@ serve(async (req) => {
     }
 
     // Send emails
-    const bikeName = `${bike.brand} ${bike.model}`;
-    const bikePrice = typeof bike.price === "number" ? bike.price.toLocaleString("da-DK") + " kr." : "";
+    /* Mærke, model, by og billede kommer fra sælgerens annonce og skrives
+       ind i en mail som Cykelbørsen sender til andre. Alt escapes (via
+       bikeCard/esc), ellers kunne en sælger lægge et link eller en knap ind
+       i mailen og gå uden om reglen om links fra nye konti. */
+    const bikeName = `${bike.brand ?? ""} ${bike.model ?? ""}`.trim();
+    const bikeUrl = `${SITE}/bike/${encodeURIComponent(bike.id)}`;
+    const isValidImageUrl = (u: string | null | undefined): boolean => {
+      if (!u || typeof u !== "string") return false;
+      if (!/^https:\/\//.test(u)) return false;
+      // Kendte placeholder/test-URLs fra bulk-import
+      if (/eksempel\.dk|placeholder|example\.(com|dk|org)|test\.dk/i.test(u)) return false;
+      return true;
+    };
+    const card = bikeCard({
+      href: bikeUrl,
+      title: bikeName,
+      price: typeof bike.price === "number" ? bike.price : null,
+      meta: [bike.type, bike.city, bike.condition].filter(Boolean).join(" · "),
+      image: isValidImageUrl(bike.image) ? bike.image : null,
+    });
     let sent = 0;
 
     for (const [userId, userSearches] of Object.entries(byUser)) {
@@ -356,49 +342,17 @@ serve(async (req) => {
         if (!user?.email) continue;
 
         const { data: profile } = await supabase.from("profiles").select("name").eq("id", userId).single();
-        const userName = profile?.name ?? "Hej";
+        const names = userSearches.map(s => esc(s.name)).join(", ");
 
-        const searchNames = userSearches.map(s => `<li style="margin-bottom:4px;">${s.name}</li>`).join("");
+        const html = layout(
+          heading(`Ny annonce til din cykelagent`) +
+          para(`${profile?.name ? `Hej ${esc(profile.name)}. ` : ""}Denne annonce passer til ${userSearches.length === 1 ? "cykelagenten" : "cykelagenterne"} ${names}.`) +
+          card +
+          button(bikeUrl, "Se annoncen"),
+          `Du får denne mail fordi du har en cykelagent, højst én pr. agent pr. døgn. <a href="${SITE}/cykelagenter/" style="color:inherit;">Ret eller slet dine cykelagenter</a>.`,
+        );
 
-        const bikeUrl  = `https://xn--cykelbrsen-5cb.dk/bike/${bike.id}`;
-        // Filter ud kendte placeholder/test-URLs (fake bulk-import data)
-        const isValidImageUrl = (u: string | null | undefined): boolean => {
-          if (!u || typeof u !== "string") return false;
-          if (!/^https:\/\//.test(u)) return false;
-          if (/eksempel\.dk|placeholder|example\.(com|dk|org)|test\.dk/i.test(u)) return false;
-          return true;
-        };
-        const placeholderHtml = `<a href="${bikeUrl}" style="text-decoration:none;display:block;">
-          <div style="width:100%;max-width:536px;height:200px;background:#F5F0E8;border:1px solid #E5DCC9;display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-radius:10px;margin:0 0 16px;text-align:center;line-height:200px;">🚲</div>
-        </a>`;
-        const imgHtml  = isValidImageUrl(bike.image)
-          ? `<a href="${bikeUrl}" style="text-decoration:none;"><img src="${bike.image}" alt="${bikeName}" style="width:100%;max-width:536px;height:auto;max-height:320px;object-fit:cover;border-radius:10px;display:block;margin:0 0 16px;"></a>`
-          : placeholderHtml;
-
-        const html = emailWrapper(`
-          <h2 style="color:#1A1A18;font-size:1.1rem;margin:0 0 12px;">🔔 Ny annonce matcher din søgning!</h2>
-          <p style="color:#8A8578;margin:0 0 16px;font-size:0.9rem;line-height:1.6;">
-            Hej ${userName},<br><br>
-            Der er netop oprettet en ny annonce, der matcher ${userSearches.length === 1 ? 'din gemte søgning' : 'dine gemte søgninger'}:
-          </p>
-          <ul style="color:#8A8578;font-size:0.9rem;margin:0 0 20px;padding-left:20px;">${searchNames}</ul>
-          ${imgHtml}
-          <div style="background:#F5F0E8;border-left:4px solid #2A3D2E;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
-            <p style="color:#1A1A18;margin:0 0 4px;font-weight:bold;font-size:1rem;">${bikeName}</p>
-            ${bikePrice ? `<p style="color:#C8502A;margin:0 0 4px;font-weight:bold;">${bikePrice}</p>` : ""}
-            ${bike.type ? `<p style="color:#8A8578;margin:0;font-size:0.85rem;">${bike.type}${bike.city ? " · " + bike.city : ""}${bike.condition ? " · " + bike.condition : ""}</p>` : ""}
-          </div>
-          <a href="${bikeUrl}"
-             style="background:#2A3D2E;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;margin-bottom:16px;">
-            Se annonce →
-          </a>
-          <p style="color:#8A8578;font-size:0.8rem;margin:16px 0 0;">
-            Du modtager denne besked fordi du har gemt en søgning på Cykelbørsen.
-            <br><a href="https://xn--cykelbrsen-5cb.dk/me" style="color:#8A8578;">Administrér dine gemte søgninger</a>
-          </p>
-        `);
-
-        await sendEmail(user.email, `🔔 Ny ${bikeName} matcher din søgning – Cykelbørsen`, html);
+        await sendEmail(user.email, `${bikeName} passer til din cykelagent`, html);
 
         // Markér som notificeret
         const ids = userSearches.map(s => s.id);
@@ -408,7 +362,6 @@ serve(async (req) => {
           .in("id", ids);
 
         sent++;
-        console.log(`Email sendt til ${user.email}`);
       } catch (userErr) {
         console.error(`Fejl ved user ${userId}:`, userErr);
       }

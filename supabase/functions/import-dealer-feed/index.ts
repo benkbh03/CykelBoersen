@@ -24,6 +24,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { XMLParser } from "https://esm.sh/fast-xml-parser@4";
+import { SITE, esc, heading, p as para, button, layout, sendEmail } from "../_shared/email.ts";
 // Bruger Denos indbyggede Deno.serve (ingen ekstern std-afhængighed at bundle).
 
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
@@ -560,36 +561,21 @@ function feedErr(status: number): string {
 // Bruger samme Resend-secrets som notify-message (project-wide i Supabase):
 // RESEND_API_KEY, EMAIL_FROM, ADMIN_EMAIL. Sender intet hvis de ikke er sat.
 const _RESEND_KEY  = Deno.env.get("RESEND_API_KEY") ?? "";
-const _EMAIL_FROM  = Deno.env.get("EMAIL_FROM") ?? "Cykelbørsen <onboarding@resend.dev>";
 const _ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "";
-
-function _escHtml(s: string): string {
-  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
-}
 
 async function notifyAdminNewBikes(dealer: string, count: number, titles: string[]): Promise<void> {
   if (!_RESEND_KEY || !_ADMIN_EMAIL) return;   // ingen mail konfigureret → skip
-  const plural = count === 1 ? "" : "er";
-  const list = titles.slice(0, 15).map((t) => `<li>${_escHtml(t)}</li>`).join("");
-  const more = count > 15 ? `<li>… og ${count - 15} flere</li>` : "";
-  const html = `
-    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1a1a18;">
-      <h2 style="color:#2a4d3a;">🚲 ${_escHtml(dealer)} har lagt ${count} ny${plural} cykel${plural} op</h2>
-      <p>De er importeret fra forhandlerens feed og afventer din gennemgang. Ret det der mangler, og lås dem (🔒) så de ikke ændrer sig igen.</p>
-      <ul>${list}${more}</ul>
-      <p><a href="https://xn--cykelbrsen-5cb.dk/?admin=feed" style="display:inline-block;background:#2a4d3a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Åbn Feed-sync → Gennemgå</a></p>
-      <p style="color:#888;font-size:0.85rem;">Du modtager denne mail fordi du er admin på Cykelbørsen.</p>
-    </div>`;
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${_RESEND_KEY}` },
-    body: JSON.stringify({
-      from: _EMAIL_FROM,
-      to: _ADMIN_EMAIL,
-      subject: `🚲 ${dealer} har lagt ${count} ny${plural} cykel${plural} op – gennemgå dem`,
-      html,
-    }),
-  });
+  const cykler = count === 1 ? "1 ny cykel" : `${count} nye cykler`;
+  const list = titles.slice(0, 15).map((t) => esc(t)).join("<br>");
+  const more = count > 15 ? `<br>og ${count - 15} flere` : "";
+  const html = layout(
+    heading(`${esc(dealer)}: ${cykler} fra feedet`) +
+    para("De er importeret og venter på gennemgang. Ret det der mangler, og lås dem, så næste import ikke ændrer dem.") +
+    para(list + more) +
+    button(`${SITE}/?admin=feed`, "Gennemgå i Feed-sync"),
+    "Du får denne mail fordi du er admin på Cykelbørsen.",
+  );
+  await sendEmail(_RESEND_KEY, _ADMIN_EMAIL, `${dealer}: ${cykler} fra feedet`, html);
 }
 
 // ── Hent + parse feed (håndterer Shopify-paginering) ────────
