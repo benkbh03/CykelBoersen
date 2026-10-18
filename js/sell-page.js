@@ -533,6 +533,8 @@ export function createSellPage({
   // "Hvad vil du sælge?"-vælgeren (/sell). Cykel → renderSellPage(),
   // Tilbehør → renderSellPage('tilbehoer'). Samme wizard, forskellige felter.
   function renderSellChooser() {
+    // Kommer sælgeren fra "Tilbyd din cykel" på /opkoeb, er det en cykel.
+    if (pendingBuyOffer()) { renderSellPage(); return; }
     const currentUser = getCurrentUser();
     if (!currentUser) {
       openLoginModal();
@@ -679,9 +681,17 @@ export function createSellPage({
       </div>
     ` : '';
 
+    const offer = !_isAcc() && !actingAs ? pendingBuyOffer() : null;
+    const offerBanner = offer ? `
+      <div class="sell-offer-banner">
+        <p>Når annoncen er oprettet, sendes den til <strong>${esc(offer.dealer || 'forhandleren')}</strong> med din besked. Annoncen ligger også til salg for alle andre.</p>
+        <button type="button" class="br-link-btn" onclick="try{sessionStorage.removeItem('buy_offer_return')}catch(e){};this.closest('.sell-offer-banner').remove()">Send den ikke</button>
+      </div>` : '';
+
     document.getElementById('detail-view').innerHTML = `
       <div class="sell-wizard">
         ${actingAsBanner}
+        ${offerBanner}
         <div class="sell-wizard-top">
           <button class="sell-wizard-back-btn" onclick="backSell()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2366,6 +2376,13 @@ export function createSellPage({
      (js/buy-requests-page.js), sendes de tilbage, og tilbuddet sendes
      automatisk i stedet for at vise success-modalen. En annonce der venter på
      godkendelse, er ikke aktiv og kan ikke tilbydes endnu. */
+  function pendingBuyOffer() {
+    try {
+      const ret = JSON.parse(sessionStorage.getItem('buy_offer_return') || 'null');
+      return ret?.reqId && Date.now() - (ret.at || 0) <= 45 * 60 * 1000 ? ret : null;
+    } catch { return null; }
+  }
+
   function returnToBuyOffer(bike) {
     // Nøglen fjernes af /opkoeb, når tilbuddet er sendt (beskeden ligger i den).
     // Kun en frisk nøgle tæles, så en opgivet tur ikke sender en senere annonce.
