@@ -1134,10 +1134,102 @@
   <div id="page-layout" role="main" style="display:none;">
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
-      <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
-        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">Cookiepolitik</h1>
-        <p>Cookies og lokal lagring på Cykelbørsen: hvad vi gemmer og hvorfor.</p>
-      </div></section>
+    <div class="static-page">
+      <h1 class="static-page-title">Cookiepolitik</h1>
+      <div class="static-page-body">
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 28. juli 2026</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Hvad er cookies?</h3>
+      <p style="margin-bottom:16px;">Cookies er små tekstfiler der gemmes i din browser, når du besøger en hjemmeside. På Cykelbørsen bruger vi også <strong>localStorage</strong> og <strong>sessionStorage</strong>, der fungerer på samme måde: små data-poster i din browser, vi bruger til at huske dig.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Hvilke kategorier bruger vi?</h3>
+      <p style="margin-bottom:8px;">Vi bruger primært <strong>teknisk nødvendige cookies</strong>. Vi viser en cookie-banner første gang du besøger sitet, hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen tracking eller markedsføringscookies uanset dit valg. Banneret er forberedt til når vi senere måtte tilføje analyse-værktøjer.</p>
+
+      <h4 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-top:16px;margin-bottom:8px;font-size:1rem;">Teknisk nødvendige (sættes altid)</h4>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;font-weight:600;">Navn</td>
+          <td style="padding:8px 8px 8px 0;font-weight:600;">Formål</td>
+          <td style="padding:8px 0;font-weight:600;">Levetid</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">sb-* (Supabase)</td>
+          <td style="padding:8px 8px 8px 0;">Holder dig logget ind</td>
+          <td style="padding:8px 0;">Session / 1 år</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_cookie_consent</td>
+          <td style="padding:8px 8px 8px 0;">Husker dit valg fra cookie-banneret</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_recently_viewed</td>
+          <td style="padding:8px 8px 8px 0;">Husker dine sidst sete annoncer (vises i "Sidst set"-rækken). Gemmer cykel-ID, mærke, model, pris, billede og tidspunkt. Maks 8 annoncer. Forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">30 dage</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_compare_ids</td>
+          <td style="padding:8px 8px 8px 0;">Husker hvilke annoncer du har valgt til sammenligning (kun cykel-ID'er). Gemmes i sessionStorage og forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">Slettes når du lukker browseren</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">cb_scam_warning_ack</td>
+          <td style="padding:8px 8px 8px 0;">Husker at du har set og bekræftet vores advarsel om svindel, så den ikke vises igen ved hver besked.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">onboarded</td>
+          <td style="padding:8px 8px 8px 0;">Husker at du har set velkomst-introduktionen, så den kun vises én gang.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">_pendingCykelagent</td>
+          <td style="padding:8px 8px 8px 0;">Hvis du opretter en Cykelagent uden at være logget ind, gemmes søgekriterierne og navnet midlertidigt, så de kan oprettes for dig lige efter login. Slettes når agenten er oprettet.</td>
+          <td style="padding:8px 0;">Indtil login gennemføres</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">bike_name_&lt;annonce-ID&gt;</td>
+          <td style="padding:8px 8px 8px 0;">Husker mærke og model på annoncer du har skrevet om, så din indbakke kan vise navnet med det samme, også hvis annoncen senere fjernes.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">ss_checked_*</td>
+          <td style="padding:8px 8px 8px 0;">Cursor til notifikationer om gemte søgninger (Cykelagent), så vi ikke sender dobbeltbeskeder. Forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">dealer_signup_source (sessionStorage)</td>
+          <td style="padding:8px 8px 8px 0;">Hvis du klikker på et link med UTM-parametre (fx fra en e-mail-kampagne) til "Bliv forhandler", husker vi kilden midlertidigt, så vi kan se hvilken kanal der har skabt ansøgningen. Slettes når du lukker browseren.</td>
+          <td style="padding:8px 0;">Session</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">_geocodeCache_* (localStorage)</td>
+          <td style="padding:8px 8px 8px 0;">Gemmer lokalt de adresser og byer du har slået op mod kortet (omsat til koordinater), så "Nær mig" og afstands-visning er hurtigere. Forlader aldrig din browser.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">cb_viewer_id</td>
+          <td style="padding:8px 8px 8px 0;">En tilfældig, anonym kode der bruges til at tælle annonce-visninger korrekt uden dobbelttælling, hvis du ikke er logget ind. Indeholder ingen oplysninger om dig.</td>
+          <td style="padding:8px 0;">Indtil du rydder browserdata</td>
+        </tr>
+      </table>
+
+      <h4 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-top:16px;margin-bottom:8px;font-size:1rem;">Statistik (kun hvis du accepterer)</h4>
+      <p style="margin-bottom:16px;">Vi har endnu ikke aktiveret analyse-værktøjer. Hvis vi senere tilføjer fx Plausible Analytics eller Google Analytics, vil de først loades efter du klikker "Accepter alle" i cookie-banneret, og denne tabel bliver opdateret med præcis information.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Kræves der samtykke?</h3>
+      <p style="margin-bottom:16px;">Teknisk nødvendige cookies kræver ikke samtykke jf. cookiebekendtgørelsens § 4, stk. 2 og må sættes uden dit valg. Hvis vi tilføjer statistik- eller markedsføringscookies, vil de først aktiveres efter dit aktive samtykke i cookie-banneret.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Tredjepartscookies</h3>
+      <p style="margin-bottom:16px;">Vi bruger i dag ingen tredjepartscookies til tracking eller annoncering. Vores fremtidige betalingspartner Stripe vil sætte egne cookies på betalingssider når forhandlerbetaling aktiveres. Disse er underlagt <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes cookiepolitik</a>.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Sådan ændrer eller sletter du</h3>
+      <p style="margin-bottom:16px;">Du kan til enhver tid slette cookies, localStorage og sessionStorage i din browsers indstillinger. Bemærk at sletning af session-cookies logger dig ud af Cykelbørsen. Du kan også få cookie-banneret vist igen ved at slette browserdata for cykelbørsen.dk og genindlæse siden.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">Kontakt</h3>
+      <p>Spørgsmål om vores brug af cookies rettes til <strong>hej@cykelbørsen.dk</strong>.</p>
+    </div>
+    </div></section>
   </div><!-- #page-layout -->
 
 

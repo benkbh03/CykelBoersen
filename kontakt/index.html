@@ -1134,10 +1134,44 @@
   <div id="page-layout" role="main" style="display:none;">
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
-      <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
-        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">Kontakt os</h1>
-        <p>Kontakt Cykelbørsen. Vi svarer typisk inden for 24 timer på hverdage.</p>
-      </div></section>
+    <div class="static-page">
+      <h1 class="static-page-title">Kontakt os</h1>
+      <div class="static-page-body">
+      <p style="margin-bottom:22px;color:var(--muted);">Har du spørgsmål, oplever du problemer eller vil du rapportere en annonce? Vi svarer inden for 1-2 hverdage.</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
+          
+          <div>
+            <div style="font-weight:600;font-size:0.88rem;">E-mail</div>
+            <div style="color:var(--muted);font-size:0.85rem;">hej@cykelbørsen.dk</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--sand);border-radius:10px;border:1px solid var(--border);">
+          <div>
+            <div style="font-weight:600;font-size:0.88rem;">Du hører fra os</div>
+            <div style="color:var(--muted);font-size:0.85rem;">Hverdage kl. 9–17</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:0.82rem;font-weight:600;">Dit navn</label>
+          <input type="text" id="contact-name" placeholder="Dit fulde navn" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:0.82rem;font-weight:600;">E-mail</label>
+          <input type="email" id="contact-email" placeholder="din@email.dk" onkeydown="if(event.key==='Enter')submitContactForm()" style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:0.82rem;font-weight:600;">Besked</label>
+          <textarea id="contact-message" placeholder="Beskriv dit spørgsmål eller problem..." style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;resize:vertical;min-height:100px;"></textarea>
+        </div>
+        <button onclick="submitContactForm()" style="background:var(--rust);color:#fff;border:none;padding:14px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);margin-top:4px;">Send besked</button>
+      </div>
+    </div>
+    </div></section>
   </div><!-- #page-layout -->
 
 

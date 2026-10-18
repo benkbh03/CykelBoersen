@@ -1134,10 +1134,163 @@
   <div id="page-layout" role="main" style="display:none;">
   <!-- ── DETAIL VIEW (hash routing) ── -->
   <section id="detail-view">
-      <div class="static-prerender-page" style="max-width:820px;margin:0 auto;padding:32px 24px;">
-        <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;">Privatlivspolitik</h1>
-        <p>Sådan behandler Cykelbørsen dine personoplysninger.</p>
-      </div></section>
+    <div class="static-page">
+      <h1 class="static-page-title">Privatlivspolitik</h1>
+      <div class="static-page-body">
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. oktober 2026</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Dataansvarlig</h3>
+      <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
+      <p style="margin-bottom:16px;font-size:0.88rem;"><strong>Cykelbørsen v/ Benjamin Vojdeman</strong><br>CVR: 46403568<br>Sydvestvej 61, st. 4, 2600 Glostrup<br>E-mail: hej@cykelbørsen.dk</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Hvilke personoplysninger indsamler vi?</h3>
+      <p style="margin-bottom:8px;">Vi indsamler følgende kategorier af personoplysninger:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Kontooplysninger:</strong> Navn, e-mailadresse, adgangskode (krypteret), profilbillede (valgfrit).</li>
+        <li><strong>Profiloplysninger:</strong> By, biografi, sælgertype (privat/forhandler), butiksnavn og CVR (kun forhandlere; CVR-nummeret verificeres via opslag i CVR-registret hos cvrapi.dk).</li>
+        <li><strong>Annoncedata:</strong> Cykelbeskrivelser, billeder, priser, kontaktoplysninger i annoncer.</li>
+        <li><strong>AI-analyse af annoncebilleder:</strong> Når du opretter en annonce, sendes de billeder du uploader automatisk til Anthropics API, så vi kan foreslå mærke, model, type, størrelse, stand, pris og en beskrivelse for dig. Formålet er alene at udfylde annoncefelterne, og du kan altid rette forslagene. Billederne bruges ikke til at træne AI-modeller.</li>
+        <li><strong>Kommunikation:</strong> Beskeder sendt via platformens beskedsystem.</li>
+        <li><strong>Følg-relationer:</strong> Hvis du følger en forhandler, gemmer vi den valgte forhandler-ID og din bruger-ID for at kunne sende dig e-mail, når forhandleren opretter nye annoncer. Du kan til enhver tid afmelde via forhandlerens profilside.</li>
+        <li><strong>Gemte annoncer:</strong> Når du gemmer en annonce, gemmer vi annoncens ID og dit bruger-ID, så du kan finde den igen under Gemte. Sælgeren får en e-mail med dit navn, kan se dit navn og profilbillede på listen over interesserede og kan skrive til dig derfra. Fjerner du annoncen fra dine gemte, forsvinder du fra listen.</li>
+        <li><strong>Gemte søgninger (Cykelagent):</strong> Hvis du opretter en gemt søgning, gemmes dine valgte søgekriterier (type, pris, by mv.) for at sende dig e-mail, når matchende annoncer oprettes.</li>
+        <li><strong>Smart filter:</strong> Når du beskriver en cykel i feltet "Beskriv cyklen du leder efter", sendes teksten til Anthropics API, som oversætter den til sidens almindelige filtre. Teksten gemmes ikke hos os og bruges ikke til at træne AI-modeller. For at ingen kan bruge funktionen i en løkke, gemmer vi din IP-adresse sammen med et antal kald.</li>
+        <li><strong>Tekniske data:</strong> IP-adresse, browsertype, besøgstidspunkt (logges af hosting-infrastrukturen).</li>
+        <li><strong>Anonym brugsstatistik:</strong> Vi logger hvad der søges efter i søgefeltet, og hvor langt folk når i flowet for at oprette en annonce (åbnet, udfyldt, oprettet). Begge dele bruges udelukkende til at forbedre siden, fx til at se hvilke cykler folk leder efter uden at finde, og hvor et oprettelsesforløb bliver for besværligt. Der gemmes <strong>intet bruger-ID og ingen IP-adresse</strong>, og der lægges intet i din browser. Registreringerne kan ikke føres tilbage til dig.</li>
+        <li><strong>Sidst sete annoncer:</strong> Vi gemmer lokalt i din browser (localStorage) de seneste 8 annoncer du har klikket på, så vi kan vise dem i "Sidst set"-rækken på forsiden. Data forlader aldrig din browser og slettes når du rydder browserdata.</li>
+        <li><strong>Kladde til en annonce:</strong> Mens du opretter en cykelannonce, gemmer vi det du har udfyldt og dine valgte billeder lokalt i din browser (localStorage og IndexedDB), så du kan fortsætte hvis du kommer til at lukke siden. Kladden er knyttet til din konto på den enkelte enhed, forlader ikke din browser og slettes når annoncen er oprettet, når du vælger "Start forfra", eller efter 30 dage.</li>
+        <li><strong>UTM-kildedata (kun forhandlere):</strong> Hvis du kommer til "Bliv forhandler"-formularen via et link med UTM-parametre (fx fra en e-mail-kampagne), gemmer vi midlertidigt kilde-, medie-, kampagne- og indholdsparametrene samt referrer i din browsers sessionStorage. Disse sendes med din ansøgning så vi internt kan se hvilken kanal der har skabt henvendelsen. Data slettes når du lukker browseren.</li>
+        <li><strong>Cookie-samtykke:</strong> Dit valg fra cookie-banneret gemmes i din browsers localStorage.</li>
+        <li><strong>Visningstæller på annoncer:</strong> Når du åbner en annonce, registrerer vi det som en "visning" for at vise sælger hvor mange der har set annoncen, og for at forhindre at tallet kan pustes kunstigt op (fx ved at genindlæse siden). Til dette bruger vi en "seer-nøgle", som enten er dit bruger-ID (hvis du er logget ind) eller en tilfældig, anonym kode der gemmes i din browsers localStorage, hvis du ikke er logget ind. Samme seer-nøgle tæller kun én visning pr. annonce pr. 24 timer. Annoncens egen ejer tæller ikke som en visning.</li>
+        <li><strong>Fremhævning af annoncer (boost):</strong> Hvis du fremhæver en annonce, gemmer vi hvilken annonce der er fremhævet og hvornår fremhævningen udløber, samt at du har brugt din gratis fremhævning (så intro-tilbuddet kun gælder én gang pr. bruger). Betalt fremhævning håndteres af Stripe, se betalingsdata.</li>
+        <li><strong>Betalingsdata:</strong> Betalt fremhævning (boost) af annoncer samt udlejnings-bookinger håndteres af Stripe. Forhandlerabonnementer er gratis under platformens lanceringsfase; når betaling for abonnementer senere aktiveres, håndteres den ligeledes af Stripe. Vi gemmer aldrig kortnumre eller betalingsoplysninger selv.</li>
+        <li><strong>Udlejningsdata:</strong> Hvis du udbyder cykler til udlejning som forhandler, gemmer vi dine udlejningsopslag (titel, type, priser, depositum, tilgængelighed, billeder). Hvis du booker en udlejningscykel som kunde, gemmer vi bookingen (den valgte cykel, forhandler, datoer, beløb og status) for at gennemføre lejeaftalen mellem dig og forhandleren.</li>
+        <li><strong>Udlejer-verifikation (Stripe Connect):</strong> For at en forhandler kan modtage udlejningsbetalinger opretter Stripe en konto til forhandleren, hvor forhandleren afgiver identitets-, virksomheds- og bankoplysninger direkte til Stripe (KYC-verifikation). Vi opbevarer kun en reference til Stripe-kontoen og dens status, ikke selve identitets- eller bankoplysningerne.</li>
+        <li><strong>ID-verificering:</strong> Hvis du vælger at ID-verificere, uploades et billede af dit ID, som slettes efter godkendelse/afvisning.</li>
+        <li><strong>Stelnummer (valgfrit):</strong> Hvis du oplyser cyklens stelnummer på en annonce, gemmer vi <strong>kun de sidste 4 cifre</strong>, aldrig hele nummeret. Resten kasseres med det samme og videregives ikke til nogen. Køberen får det fulde nummer af dig ved overleveringen.</li>
+      </ul>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Formål og retsgrundlag</h3>
+      <p style="margin-bottom:8px;">Vi behandler dine personoplysninger til følgende formål:</p>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:0.88rem;">
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;font-weight:600;">Formål</td>
+          <td style="padding:8px 0;">Retsgrundlag (GDPR)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Oprettelse og drift af din konto</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Visning af dine annoncer</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">AI-analyse af annoncebilleder for at udfylde annoncefelter</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Beskedsystem mellem brugere</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">E-mail-notifikationer (beskeder, bud, likes)</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Følg-forhandler-notifikationer og gemte søgninger</td>
+          <td style="padding:8px 0;">Art. 6(1)(a): samtykke (ved aktiv tilmelding)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Håndtering af forhandlerabonnement</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Forebyggelse af misbrug og svindel</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Henvendelser via kontaktformular</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Visningstæller på annoncer (troværdige, ikke-manipulerbare tal)</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Anonym brugsstatistik (søgninger og oprettelsesforløb) til forbedring af siden</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Fremhævning/boost af annoncer</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Visning af de sidste 4 cifre af et oplyst stelnummer på annoncen</td>
+          <td style="padding:8px 0;">Art. 6(1)(f): legitim interesse (bekæmpelse af tyverihæleri)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 8px 8px 0;">Udlejnings-booking, betaling og udbetaling til forhandler</td>
+          <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 8px 8px 0;">Bogføring af udlejningsbetalinger og kommission</td>
+          <td style="padding:8px 0;">Art. 6(1)(c): retlig forpligtelse (bogføringsloven)</td>
+        </tr>
+      </table>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Databehandlere og tredjeparter</h3>
+      <p style="margin-bottom:8px;">Vi deler dine data med følgende tredjeparter, udelukkende med henblik på at levere vores tjeneste:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Supabase (USA)</strong>: Database, autentificering og fil-hosting. Data overføres til USA under EU-US Data Privacy Framework.</li>
+        <li><strong>Stripe (USA)</strong>: Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
+        <li><strong>Resend (USA)</strong>: Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
+        <li><strong>GitHub Pages (USA)</strong>: Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
+        <li><strong>Anthropic (USA)</strong>: AI-chatassistent (support), smart filter på forsiden samt automatisk analyse af annoncebilleder ved oprettelse af en annonce. Chatbeskeder, søgebeskrivelser og annoncebilleder sendes til Anthropic's API for at generere svar, sætte filtre og foreslå annoncefelter. Hverken beskeder, søgebeskrivelser eller billeder logges permanent af os, og de behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten, og undgå at uploade billeder hvor personer kan identificeres.</li>
+        <li><strong>companydata.dk (Danmark)</strong>: Adresseopslag med data fra Danmarks Adresseregister (DAR), som afløser for den statslige DAWA, der lukkede 1. oktober 2026. Når du skriver en butiksadresse eller en by der ikke står på vores egen liste, sendes teksten fra din browser til companydata.dk for at finde adressen og dens koordinater. Se <a href="https://dawa.companydata.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">dawa.companydata.dk</a>.</li>
+        <li><strong>cvrapi.dk (Danmark)</strong>: CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
+      </ul>
+      <p style="margin-bottom:16px;">Vi sælger eller videregiver <strong>aldrig</strong> dine personoplysninger til tredjepart med henblik på markedsføring.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">5. Overførsel til tredjelande</h3>
+      <p style="margin-bottom:16px;">Dine data kan overføres til USA via vores databehandlere (Supabase, Stripe, Resend). Overførslen sker på baggrund af EU-US Data Privacy Framework eller EU-Kommissionens standardkontraktbestemmelser (SCC'er), jf. GDPR art. 46(2)(c).</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">6. Opbevaringsperiode</h3>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Kontodata:</strong> Opbevares så længe din konto er aktiv. Ved sletning af konto fjernes data permanent.</li>
+        <li><strong>Annoncer:</strong> Aktive annoncer vises på platformen. Solgte/slettede annoncer fjernes fra databasen.</li>
+        <li><strong>Beskeder:</strong> Opbevares så længe kontoen eksisterer og slettes ved kontosletning.</li>
+        <li><strong>ID-dokumenter:</strong> Slettes efter verificeringsprocessen er afsluttet.</li>
+        <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
+        <li><strong>Visningstæller-log:</strong> Bruges kun til at undgå dobbelttælling og slettes automatisk, når den tilhørende annonce slettes.</li>
+        <li><strong>Udlejnings-bookinger:</strong> Bookingoplysninger opbevares så længe kontoen eksisterer. Betalings- og regnskabsrelaterede oplysninger om gennemførte udlejningsbetalinger opbevares dog i op til 5 år efter udgangen af regnskabsåret, jf. bogføringslovens krav.</li>
+      </ul>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">7. Cookies og lokal lagring</h3>
+      <p style="margin-bottom:16px;">Vi bruger i dag udelukkende <strong>teknisk nødvendige cookies</strong> og lokal lagring (localStorage, sessionStorage) til autentificering, sessionshåndtering, dine sidst sete annoncer, dit cookie-samtykke samt valgfri Cykelagent-cursors. Vi viser en cookie-banner ved første besøg hvor du kan vælge "Kun nødvendige" eller "Accepter alle". I dag aktiveres ingen analyse- eller markedsføringscookies uanset valg, men banneret er forberedt til når vi senere måtte tilføje fx Plausible Analytics. Se den fulde <a href="/cookiepolitik/" onclick="event.preventDefault();navigateTo('/cookiepolitik')" style="color:var(--rust);text-decoration:underline;">cookiepolitik</a> for detaljer.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">8. Dine rettigheder</h3>
+      <p style="margin-bottom:8px;">I henhold til GDPR har du følgende rettigheder:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;line-height:1.8;">
+        <li><strong>Ret til indsigt</strong> (art. 15): Du kan anmode om at se hvilke data vi har om dig.</li>
+        <li><strong>Ret til berigtigelse</strong> (art. 16): Du kan rette forkerte oplysninger i din profil.</li>
+        <li><strong>Ret til sletning</strong> (art. 17): Du kan slette din konto og alle tilknyttede data via profilindstillingerne eller ved at kontakte os.</li>
+        <li><strong>Ret til begrænsning</strong> (art. 18): Du kan anmode om begrænsning af behandlingen.</li>
+        <li><strong>Ret til dataportabilitet</strong> (art. 20): Du kan anmode om at modtage dine data i et struktureret, maskinlæsbart format.</li>
+        <li><strong>Ret til indsigelse</strong> (art. 21): Du kan gøre indsigelse mod behandling baseret på legitim interesse.</li>
+      </ul>
+      <p style="margin-bottom:16px;">For at udøve dine rettigheder, kontakt os på <strong>hej@cykelbørsen.dk</strong>. Vi svarer inden for 30 dage.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">9. Klage til tilsynsmyndighed</h3>
+      <p style="margin-bottom:16px;">Hvis du mener at vi behandler dine personoplysninger i strid med GDPR, har du ret til at klage til <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Datatilsynet</a> (datatilsynet.dk), Carl Jacobsens Vej 35, 2500 Valby, tlf. 33 19 32 00.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">10. Ændringer</h3>
+      <p style="margin-bottom:16px;">Vi kan opdatere denne privatlivspolitik. Væsentlige ændringer meddeles via e-mail til registrerede brugere. Den gældende version er altid tilgængelig her på platformen.</p>
+
+      <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">11. Kontakt</h3>
+      <p>Spørgsmål om persondata rettes til <strong>hej@cykelbørsen.dk</strong>. Se fulde virksomhedsoplysninger i sektion 1.</p>
+    </div>
+    </div></section>
   </div><!-- #page-layout -->
 
 
