@@ -292,6 +292,19 @@ SELECT * FROM (
                 THEN 'FEJL: trigger buy_requests_guard mangler'
               ELSE 'OK' END
 
+  -- ── normalize_groupset.sql (18. oktober) ───────────────────────────
+  -- "105" skal staa som "Shimano 105", ellers finder filtret den ikke.
+  UNION ALL SELECT 68, 'annoncer', 'komponentgruppe skrives ens (trigger + ingen rester)',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_normalize_groupset')
+                THEN 'MANGLER'
+              -- Ingen kald til normalize_groupset() her: findes funktionen
+              -- ikke endnu, fejler hele tjekket allerede ved indlaesning.
+              WHEN EXISTS (SELECT 1 FROM bikes
+                            WHERE groupset ~* '^(105|ultegra|dura|grx|tiagra|sora|claris|deore|slx|xtr|xt|apex|rival|force|red|ekar)\y'
+                               OR groupset ~* '^shimano deore xt')
+                THEN 'FEJL: oprydningen er ikke koert'
+              ELSE 'OK' END
+
   -- ── Gamle profil-kopier: slettedatoer ──────────────────────────────
   -- Hver kopi blev lavet som fortrydelses-mulighed af den migration der
   -- fjernede data, og hver har en slettedato i den fil. Datoen er
