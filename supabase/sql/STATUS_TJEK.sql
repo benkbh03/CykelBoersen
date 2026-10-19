@@ -326,6 +326,13 @@ SELECT * FROM (
                 THEN 'SLET NU: DROP TABLE profiles_address_removed_20261012'
               ELSE 'OK (slettes efter 12. jan. 2027)' END
 
+  -- ── block_scam_listing_content.sql (19. oktober) ──────────────────
+  UNION ALL SELECT 81, 'svindel', 'trigger block_scam_listing_content paa bikes',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'block_scam_listing_content'
+                              AND tgrelid = 'public.bikes'::regclass)
+              THEN 'OK' ELSE 'MANGLER' END
+
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
   -- Flere INSERT-politikker paa samme tabel OR'es sammen. Én ekstra ville

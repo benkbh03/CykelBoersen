@@ -281,7 +281,7 @@ export function createSellPage({
         is_active: true,
       };
       const res = await supabase.from('bikes').insert(bikeData).select().single();
-      if (res.error) { showToast('Noget gik galt – prøv igen', 'fejl'); console.error('Tilbehør-insert fejl:', res.error); return; }
+      if (res.error) { showToast(res.error.hint === 'listing_blocked_content' ? res.error.message : 'Noget gik galt – prøv igen', 'fejl'); console.error('Tilbehør-insert fejl:', res.error); return; }
       const newBike = res.data;
       await uploadImages(newBike.id, () => {});
       loadBikes();
@@ -474,7 +474,7 @@ export function createSellPage({
         showToast(`Annonce oprettet på vegne af ${actingAs.name}`, 'ok');
       } else {
         const res = await supabase.from('bikes').insert(bikeData).select().single();
-        if (res.error) { showToast('Noget gik galt – prøv igen', 'fejl'); console.error(res.error); restore(); return; }
+        if (res.error) { showToast(res.error.hint === 'listing_blocked_content' ? res.error.message : 'Noget gik galt – prøv igen', 'fejl'); console.error(res.error); restore(); return; }
         newBike = res.data;
         if (getSelectedFiles().length > 0) {
           await uploadImages(newBike.id, (current, total) => {
