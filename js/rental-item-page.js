@@ -1,4 +1,5 @@
 import { noImagePlaceholder } from './ui-icons.js';
+import { rentalTermsHTML } from './rental-card.js';
 /* ============================================================
    UDLEJNING — item-detalje + booking (/udlejning/:id)
    ------------------------------------------------------------
@@ -84,7 +85,7 @@ export function createRentalItemPage({
 
             <div class="rental-item-pricebox">
               <div class="rental-item-price">${(it.daily_rate || 0).toLocaleString('da-DK')} kr. <span>/ dag</span></div>
-              ${it.weekly_rate ? `<div class="rental-item-weekly">${it.weekly_rate.toLocaleString('da-DK')} kr. / uge</div>` : ''}
+              ${rentalTermsHTML(it)}
 
               ${canBook ? `
               <div class="rental-book-form">
@@ -94,7 +95,7 @@ export function createRentalItemPage({
                 </div>
                 <div id="rental-price-summary" class="rental-price-summary"></div>
                 <button class="rental-book-btn-active" id="rental-book-btn" onclick="startRentalBooking()" disabled>Vælg datoer</button>
-                <p class="rental-book-note">Du betaler via Stripe.${it.deposit_amount ? ` Depositum på ${it.deposit_amount.toLocaleString('da-DK')} kr. betales tilbage, når cyklen er afleveret.` : ''}</p>
+                <p class="rental-book-note">Du betaler via Stripe.${it.deposit_amount ? ' Depositum betales tilbage, når cyklen er afleveret.' : ''}</p>
               </div>` : `
               <div class="rental-book-placeholder">
                 <button class="rental-book-btn" disabled>Booking ikke tilgængelig</button>

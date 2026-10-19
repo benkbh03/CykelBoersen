@@ -11,6 +11,7 @@
    ============================================================ */
 
 import { RENTAL_TYPES, RENTAL_MIN_DAYS, RENTAL_MAX_DAYS } from './rental-data.js';
+import { rentalCardHTML, rentalTermsHTML } from './rental-card.js';
 
 export function createRentalManage({
   supabase,
@@ -23,6 +24,8 @@ export function createRentalManage({
   showDetailView,
   showListingView,
   navigateTo,
+  attachAddressAutocomplete,
+  attachCityAutocomplete,
   BASE_URL,
 }) {
 
@@ -30,6 +33,10 @@ export function createRentalManage({
   let _files = [];
   let _existing = [];
   let _editId = null;
+  let _dealerName = 'Forhandler';
+  // Adressen skal være valgt fra opslaget (som på forhandlerprofilen), så
+  // kunden kan finde afhentningsstedet. Den gemte værdi tæller som valgt.
+  let _addressConfirmed = '';
 
   /* ---------- Guard: kun forhandlere ---------- */
   async function _requireDealer(dv) {
@@ -40,7 +47,7 @@ export function createRentalManage({
     }
     const { data: p } = await supabase
       .from('profiles')
-      .select('seller_type, stripe_account_status')
+      .select('seller_type, stripe_account_status, shop_name, name, city, address')
       .eq('id', user.id)
       .single();
     if (!p || p.seller_type !== 'dealer') {
@@ -100,8 +107,8 @@ export function createRentalManage({
         <div class="rental-mine-head">
           <h1>Mine udlejningscykler</h1>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="rental-onb-btn" onclick="navigateTo('/udlejning/bookinger')" style="background:var(--forest,#2a3d2e);">Bookinger</button>
-            <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">+ Ny udlejningscykel</button>
+            <button class="rental-secondary-btn" onclick="navigateTo('/udlejning/bookinger')">Bookinger</button>
+            <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">Ny udlejningscykel</button>
           </div>
         </div>
         <div class="rental-mine-list">
@@ -142,6 +149,10 @@ export function createRentalManage({
       _existing = (data.rental_item_images || []).map(i => ({ id: i.id, url: i.url, is_primary: i.is_primary, toDelete: false }));
     }
 
+    // En ny udlejningscykel starter med butikkens egen adresse.
+    if (!editId) it = { city: auth.profile.city || '', address: auth.profile.address || '' };
+    _dealerName = auth.profile.shop_name || auth.profile.name || 'Forhandler';
+    _addressConfirmed = it.address || '';
     const v = (x, d = '') => (it[x] != null ? it[x] : d);
 
     dv.innerHTML = `
@@ -149,7 +160,8 @@ export function createRentalManage({
         <button class="sell-back-btn" onclick="navigateTo('/udlejning/mine')">← Tilbage</button>
         ${connectBanner(auth.profile.stripe_account_status)}
         <h1 class="rental-form-title">${editId ? 'Rediger udlejningscykel' : 'Ny udlejningscykel'}</h1>
-        <form class="rental-form" onsubmit="event.preventDefault();submitRentalItem();">
+        <div class="rental-form-layout">
+        <form class="rental-form" oninput="updateRentalFormPreview()" onchange="updateRentalFormPreview()" onsubmit="event.preventDefault();submitRentalItem();">
           <label>Titel *<input type="text" id="rf-title" required maxlength="100" value="${esc(v('title'))}" placeholder="Fx Trek FX 2 – citybike"></label>
           <label>Type
             <select id="rf-type">
@@ -172,25 +184,64 @@ export function createRentalManage({
             <label>Maks. dage<input type="number" id="rf-max" min="1" max="${RENTAL_MAX_DAYS}" value="${v('max_days', 14)}"></label>
           </div>
           <div class="rental-form-row">
-            <label>By<input type="text" id="rf-city" value="${esc(v('city'))}" placeholder="Fx København"></label>
-            <label>Adresse (afhentning)<input type="text" id="rf-address" value="${esc(v('address'))}" placeholder="Fx Nørrebrogade 1"></label>
+            <label>Adresse (afhentning)<input type="text" id="rf-address" value="${esc(v('address'))}" placeholder="Begynd at skrive og vælg fra listen"></label>
+            <label>By<input type="text" id="rf-city" value="${esc(v('city'))}" placeholder="Udfyldes fra adressen"></label>
           </div>
 
           <div class="rental-img-section">
             <label class="rental-img-label">Billeder</label>
-            <div class="img-upload" onclick="document.getElementById('rental-file-input').click()">
-              <p>Klik for at vælge billeder</p>
-            </div>
-            <input type="file" id="rental-file-input" accept="image/*" multiple style="display:none" onchange="selectRentalImages(this)">
-            <div id="rental-preview-grid" class="img-preview-grid"></div>
+            <div id="rental-preview-grid" class="rental-thumbs"></div>
+            <button type="button" class="rental-add-img" onclick="document.getElementById('rental-file-input').click()">Vælg billeder</button>
+            <input type="file" id="rental-file-input" accept="image/*" multiple hidden onchange="selectRentalImages(this)">
           </div>
 
-          <button type="submit" class="rental-onb-btn" id="rf-submit" style="margin-top:16px;">${editId ? 'Gem ændringer' : 'Opret udlejningscykel'}</button>
+          <button type="submit" class="rental-onb-btn rental-submit" id="rf-submit">${editId ? 'Gem ændringer' : 'Opret udlejningscykel'}</button>
           ${editId ? `<button type="button" class="rental-delete-btn" onclick="deleteRentalItem('${editId}')">Slet udlejningscykel</button>` : ''}
         </form>
+        <aside class="rental-form-preview" aria-label="Forhåndsvisning">
+          <p class="rental-preview-label">Sådan ser den ud for kunderne</p>
+          <div id="rental-form-preview"></div>
+        </aside>
+        </div>
       </div>`;
 
+    const addr = document.getElementById('rf-address');
+    const city = document.getElementById('rf-city');
+    if (attachAddressAutocomplete && addr) {
+      attachAddressAutocomplete(addr, (picked) => {
+        _addressConfirmed = addr.value;
+        if (city && picked.city) city.value = picked.city;
+        updateRentalFormPreview();
+      });
+    }
+    if (attachCityAutocomplete && city) attachCityAutocomplete(city);
+
     renderRentalPreviews();
+  }
+
+  /* ---------- Forhåndsvisning (samme kort som /udlejning) ---------- */
+  function _formValues() {
+    const g = id => document.getElementById(id)?.value ?? '';
+    return {
+      title: g('rf-title').trim(), type: g('rf-type'), city: g('rf-city').trim(), address: g('rf-address').trim(),
+      daily_rate: parseInt(g('rf-daily'), 10) || 0, weekly_rate: parseInt(g('rf-weekly'), 10) || null,
+      deposit_amount: parseInt(g('rf-deposit'), 10) || 0,
+      min_days: parseInt(g('rf-min'), 10) || 1, max_days: parseInt(g('rf-max'), 10) || 14,
+    };
+  }
+
+  function _primaryUrl() {
+    const ex = _existing.filter(e => !e.toDelete);
+    const p = _files.find(f => f.isPrimary) || ex.find(e => e.is_primary) || _files[0] || ex[0];
+    return p ? p.url : '';
+  }
+
+  function updateRentalFormPreview() {
+    const el = document.getElementById('rental-form-preview');
+    if (!el) return;
+    const it = _formValues();
+    el.innerHTML = rentalCardHTML(it, { imgUrl: _primaryUrl(), dealerName: _dealerName, preview: true })
+      + rentalTermsHTML(it);
   }
 
   /* ---------- Billede-håndtering ---------- */
@@ -233,19 +284,18 @@ export function createRentalManage({
   function renderRentalPreviews() {
     const grid = document.getElementById('rental-preview-grid');
     if (!grid) return;
-    const ex = _existing.filter(e => !e.toDelete).map((e, i) =>
-      `<div class="img-preview ${e.is_primary ? 'is-primary' : ''}">
-        <img src="${esc(e.url)}" alt="">
-        <button type="button" class="img-primary-btn" onclick="setRentalPrimary('ex',${i})">${e.is_primary ? 'Primær' : 'Sæt primær'}</button>
-        <button type="button" class="img-remove-btn" onclick="removeRentalImage('ex',${i})">✕</button>
-      </div>`).join('');
-    const nw = _files.map((f, i) =>
-      `<div class="img-preview ${f.isPrimary ? 'is-primary' : ''}">
-        <img src="${esc(f.url)}" alt="">
-        <button type="button" class="img-primary-btn" onclick="setRentalPrimary('new',${i})">${f.isPrimary ? 'Primær' : 'Sæt primær'}</button>
-        <button type="button" class="img-remove-btn" onclick="removeRentalImage('new',${i})">✕</button>
-      </div>`).join('');
-    grid.innerHTML = ex + nw;
+    const thumb = (url, primary, kind, i) => `
+      <div class="rental-thumb${primary ? ' is-primary' : ''}">
+        <img src="${esc(url)}" alt="">
+        <div class="rental-thumb-actions">
+          ${primary ? '<span class="rental-thumb-primary">Forsidebillede</span>'
+                    : `<button type="button" onclick="setRentalPrimary('${kind}',${i})">Brug som forsidebillede</button>`}
+          <button type="button" onclick="removeRentalImage('${kind}',${i})">Fjern</button>
+        </div>
+      </div>`;
+    grid.innerHTML = _existing.filter(e => !e.toDelete).map((e, i) => thumb(e.url, e.is_primary, 'ex', i)).join('')
+                   + _files.map((f, i) => thumb(f.url, f.isPrimary, 'new', i)).join('');
+    updateRentalFormPreview();
   }
 
   function setRentalPrimary(kind, idx) {
@@ -291,6 +341,9 @@ export function createRentalManage({
     const daily = parseInt(get('rf-daily')?.value, 10);
     if (!title) { showToast('Titel mangler'); return; }
     if (!daily || daily < 1) { showToast('Angiv en dagspris'); return; }
+    const addrVal = get('rf-address')?.value.trim() || '';
+    if (!addrVal) { showToast('Angiv adressen hvor cyklen hentes'); return; }
+    if (addrVal !== _addressConfirmed) { showToast('Vælg adressen fra listen, så kunden kan finde den'); get('rf-address')?.focus(); return; }
 
     const payload = {
       dealer_id:      user.id,
@@ -369,5 +422,6 @@ export function createRentalManage({
     submitRentalItem,
     toggleRentalActive,
     deleteRentalItem,
+    updateRentalFormPreview,
   };
 }

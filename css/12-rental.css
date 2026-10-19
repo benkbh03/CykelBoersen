@@ -124,6 +124,47 @@
   .rental-form-row { grid-template-columns: 1fr; }
 }
 
+/* ── Opret/rediger: formular til venstre, forhåndsvisning til højre ──
+   Forhåndsvisningen bruger rentalCardHTML(), samme kort som /udlejning. */
+.rental-manage:has(.rental-form-layout) { max-width: 1040px; }
+.rental-form-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-8); align-items: start; }
+.rental-form-preview { position: sticky; top: var(--space-6); }
+.rental-preview-label { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--muted); margin: 0 0 var(--space-2); }
+.rental-card--preview { cursor: default; }
+.rental-card--preview:hover { border-color: var(--border); }
+.rental-preview-terms { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-3); margin: var(--space-3) 0 0; font-size: var(--text-sm); }
+.rental-preview-terms dt { color: var(--muted); }
+.rental-preview-terms dd { margin: 0; color: var(--charcoal); }
+.rental-item-pricebox .rental-preview-terms { margin-top: var(--space-4); }
+.rental-submit { margin-top: var(--space-4); width: 100%; }
+.rental-secondary-btn {
+  background: var(--bg); color: var(--charcoal); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: var(--space-3) var(--space-5);
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-base); cursor: pointer;
+}
+.rental-secondary-btn:hover, .rental-add-img:hover { background: var(--surface); }
+
+/* Billeder: små miniaturer med tekstknapper, ikke billedet i fuld bredde. */
+.rental-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--space-3); }
+.rental-thumbs:not(:empty) { margin-bottom: var(--space-3); }
+.rental-thumb { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg); }
+.rental-thumb.is-primary { border-color: var(--charcoal); }
+.rental-thumb img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.rental-thumb-actions { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-2); font-size: var(--text-xs); }
+.rental-thumb-actions button { background: none; border: none; padding: 0; text-align: left; font-family: var(--font-sans); font-size: var(--text-xs); color: var(--charcoal); text-decoration: underline; cursor: pointer; }
+.rental-thumb-primary { font-weight: var(--weight-semibold); color: var(--charcoal); }
+.rental-add-img {
+  background: var(--bg); color: var(--charcoal); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); min-height: 44px; padding: 0 var(--space-4);
+  font-family: var(--font-sans); font-size: var(--text-base); font-weight: var(--weight-semibold); cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .rental-form-layout { grid-template-columns: 1fr; }
+  /* På telefonen står forhåndsvisningen under formularen. */
+  .rental-form-preview { position: static; max-width: 360px; }
+}
+
 /* ── Udlejning: booking-boks ── */
 .rental-book-form { margin-top: var(--space-4); border-top: 1px solid var(--border); padding-top: var(--space-4); }
 .rental-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }

@@ -6,7 +6,7 @@
    ============================================================ */
 
 import { RENTAL_TYPES } from './rental-data.js';
-import { noImagePlaceholder } from './ui-icons.js';
+import { rentalCardHTML } from './rental-card.js';
 
 export function createRentalBrowse({
   supabase,
@@ -91,23 +91,8 @@ export function createRentalBrowse({
 
   function buildRentalCard(it) {
     const imgRec = (it.rental_item_images || []).find(i => i.is_primary) || (it.rental_item_images || [])[0];
-    const img = imgRec?.url;
     const dealer = it.profiles || {};
-    const dealerName = dealer.shop_name || dealer.name || 'Forhandler';
-    return `
-      <div class="rental-card" onclick="navigateTo('/udlejning/${it.id}')">
-        <div class="rental-card-img">
-          ${img
-            ? `<img src="${esc(img)}" alt="${esc(it.title)}" loading="lazy" decoding="async" width="400" height="300">`
-            : noImagePlaceholder()}
-        </div>
-        <div class="rental-card-body">
-          <div class="rental-card-title">${esc(it.title)}</div>
-          <div class="rental-card-price">${(it.daily_rate || 0).toLocaleString('da-DK')} kr. <span>pr. dag</span></div>
-          <div class="rental-card-meta">${[it.type, it.city].filter(Boolean).map(esc).join(' · ')}</div>
-          <div class="rental-card-dealer">${esc(dealerName)}</div>
-        </div>
-      </div>`;
+    return rentalCardHTML(it, { imgUrl: imgRec?.url, dealerName: dealer.shop_name || dealer.name || 'Forhandler' });
   }
 
   function filterRentalType(type, btn) {
