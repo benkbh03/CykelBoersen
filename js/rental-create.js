@@ -12,6 +12,7 @@
 
 import { RENTAL_TYPES, RENTAL_MIN_DAYS, RENTAL_MAX_DAYS } from './rental-data.js';
 import { rentalCardHTML, rentalTermsHTML } from './rental-card.js';
+import { iconBike } from './utils.js';
 
 export function createRentalManage({
   supabase,
