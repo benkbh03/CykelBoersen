@@ -351,6 +351,15 @@ SELECT * FROM (
                    AND grantee IN ('anon','authenticated') AND privilege_type = 'INSERT')
               THEN 'JA (triggeren lukker det)' ELSE 'nej' END
 
+  -- Natlig backup (add_backup_reader.sql). OK = login findes, kan kun læse.
+  UNION ALL SELECT 82, 'backup', 'backup_reader-login (read-only)',
+         CASE WHEN EXISTS (
+                SELECT 1 FROM pg_roles r
+                 WHERE r.rolname = 'backup_reader' AND r.rolcanlogin AND r.rolbypassrls
+                   AND 'default_transaction_read_only=on' = ANY (r.rolconfig)
+                   AND pg_has_role(r.oid, 'pg_read_all_data', 'MEMBER'))
+              THEN 'OK' ELSE 'MANGLER' END
+
   -- ── Edge functions: kan IKKE tjekkes herfra ────────────────────────
   -- Rækkerne er en huskeliste. Hver skal være deployet SAMME DAG ELLER
   -- SENERE end datoen i status (seneste commit der rørte filen). Se
