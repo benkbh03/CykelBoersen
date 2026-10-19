@@ -175,6 +175,14 @@ export function createMyProfilePage({
             <span class="mp-summary-item">Ubesvarede tråde <b id="mp-dealer-respond">–</b></span>` : ''}
           </p>
 
+          <!-- Udlejning: forhandlerens vej til egne udlejningscykler. Skjules
+               af body.rental-hidden så længe udlejning er admin-only. -->
+          ${isDealer ? `<p class="mp-summary" data-feature="rental">
+            <span class="mp-summary-item">Udlejning</span>
+            <button class="mp-summary-item" onclick="navigateTo('/udlejning/mine')"><b>Mine udlejningscykler</b></button>
+            <button class="mp-summary-item" onclick="navigateTo('/udlejning/bookinger')"><b>Bookinger</b></button>
+          </p>` : ''}
+
           <!-- Tip om den mest sete annonce: en almindelig tekstlinje (ingen grøn boks) -->
           <div class="mp-tip" id="mp-insight" style="display:none"></div>
 
