@@ -7,6 +7,8 @@
    udlejnings-flowet bag stripe_account_status='enabled'.
    ============================================================ */
 
+import { PLATFORM_FEE_PCT } from './rental-data.js';
+
 export function createRentalOnboarding({
   supabase,
   esc,
@@ -46,7 +48,7 @@ export function createRentalOnboarding({
         <button class="rental-onb-btn" onclick="openLoginModal()">Log ind som forhandler</button>
         <p class="rental-onb-fineprint" style="margin-top:14px;">
           Er du ikke forhandler endnu?
-          <a href="/bliv-forhandler/" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler gratis →</a>
+          <a href="/bliv-forhandler/" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler gratis</a>
         </p>
       `);
       return;
@@ -81,9 +83,9 @@ export function createRentalOnboarding({
   function dealerBody(status, shopName) {
     if (status === 'enabled') {
       return `
-        <div class="rental-onb-badge rental-onb-badge--ok">✓ Udlejnings-konto aktiv</div>
-        <h1 class="rental-onb-title">Du er klar til at udleje${shopName ? `, ${esc(shopName)}` : ''}!</h1>
-        <p class="rental-onb-lead">Din Stripe-konto er sat op og klar til at modtage betalinger. Opret nu dine udlejningscykler med priser og tilgængelighed.</p>
+        <h1 class="rental-onb-title">Udlejning${shopName ? ` for ${esc(shopName)}` : ''}</h1>
+        <p class="rental-onb-status">Din Stripe-konto er aktiv og kan modtage betalinger.</p>
+        <p class="rental-onb-lead">Opret dine udlejningscykler med pris pr. dag, depositum og antal.</p>
         <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">Opret udlejningscykel</button>
         <p class="rental-onb-fineprint">Se og administrer dine udlejningscykler under <a href="/udlejning/mine/" onclick="event.preventDefault();navigateTo('/udlejning/mine')">Mine udlejningscykler</a>.</p>
       `;
@@ -91,13 +93,13 @@ export function createRentalOnboarding({
 
     const started = status === 'pending';
     return `
-      <h1 class="rental-onb-title">Tjen penge på at udleje dine cykler</h1>
-      <p class="rental-onb-lead">Du sætter priser og tilgængelighed. Kunder booker og betaler her på sitet, og du får pengene udbetalt direkte til din konto. CykelBørsen tager en lille kommission per booking.</p>
-      <ul class="rental-onb-list">
-        <li>💳 Sikker betaling og depositum håndteres automatisk</li>
-        <li>📅 Du styrer selv kalender og tilgængelighed</li>
-        <li>🚲 Nå kunder der allerede leder efter cykler</li>
-      </ul>
+      <h1 class="rental-onb-title">Udlej dine cykler gennem Cykelbørsen</h1>
+      <p class="rental-onb-lead">Du sætter pris, depositum og antal. Kunder booker og betaler her, og pengene udbetales til din konto. Cykelbørsen tager ${PLATFORM_FEE_PCT} % af lejen.</p>
+      <ol class="num-steps">
+        <li>Opsæt en konto hos Stripe med virksomhedens oplysninger og bankkonto.</li>
+        <li>Opret dine udlejningscykler med billeder og priser.</li>
+        <li>Når en kunde booker, er lejen og depositum betalt på forhånd.</li>
+      </ol>
       <button class="rental-onb-btn" id="connect-onboard-btn" onclick="startConnectOnboarding()">
         ${started ? 'Fortsæt opsætning' : 'Kom i gang med udlejning'}
       </button>

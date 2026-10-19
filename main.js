@@ -898,6 +898,7 @@ const _ensureRentalManage = lazyCtrl(
     getCurrentProfile: () => currentProfile,
     showDetailView, showListingView,
     navigateTo: (...args) => navigateTo(...args),
+    attachAddressAutocomplete, attachCityAutocomplete,
     BASE_URL,
   }),
 );
@@ -910,7 +911,9 @@ const removeRentalImage  = lazyMethod(_ensureRentalManage, 'removeRentalImage');
 const submitRentalItem   = lazyMethod(_ensureRentalManage, 'submitRentalItem');
 const toggleRentalActive = lazyMethod(_ensureRentalManage, 'toggleRentalActive');
 const deleteRentalItem   = lazyMethod(_ensureRentalManage, 'deleteRentalItem');
+const updateRentalFormPreview = lazyMethod(_ensureRentalManage, 'updateRentalFormPreview');
 window.renderRentalMine   = renderRentalMine;
+window.updateRentalFormPreview = updateRentalFormPreview;
 window.renderRentalCreate = renderRentalCreate;
 window.renderRentalEdit   = renderRentalEdit;
 window.selectRentalImages = selectRentalImages;

@@ -7,6 +7,8 @@
    frigiv depositum) kommer i Fase 3.
    ============================================================ */
 
+import { iconBike } from './utils.js';
+
 const STATUS_LABELS = {
   pending_payment: { t: 'Afventer betaling', c: 'pend' },
   confirmed:       { t: 'Bekræftet',         c: 'ok' },
@@ -33,7 +35,7 @@ export function createRentalBooking({
   function dealerActions(b) {
     if (!['confirmed', 'active'].includes(b.status)) return '';
     return `
-      <button class="rental-act-btn rental-act-ok" onclick="rentalBookingAction('${b.id}','return_ok')">Afleveret – OK</button>
+      <button class="rental-act-btn rental-act-ok" onclick="rentalBookingAction('${b.id}','return_ok')">Afleveret uden skade</button>
       <button class="rental-act-btn rental-act-warn" onclick="rentalBookingAction('${b.id}','return_damage')">Skade</button>
       <button class="rental-act-btn rental-act-cancel" onclick="rentalBookingAction('${b.id}','cancel')">Afbestil</button>`;
   }
@@ -76,7 +78,7 @@ export function createRentalBooking({
 
   function itemThumb(item) {
     const img = (item?.rental_item_images || []).find(i => i.is_primary) || (item?.rental_item_images || [])[0];
-    return img ? `<img src="${esc(img.url)}" alt="">` : '🚲';
+    return img ? `<img src="${esc(img.url)}" alt="">` : iconBike(24);
   }
 
   async function renderMyRentals() {
@@ -113,10 +115,10 @@ export function createRentalBooking({
 
     dv.innerHTML = `
       <div class="rental-manage">
-        <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button>
+        <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Tilbage</button>
         <h1 class="rental-form-title">Mine lejeaftaler</h1>
         <div class="rental-booking-list">
-          ${rows || '<p style="color:var(--muted);padding:24px;text-align:center;">Du har ingen lejeaftaler endnu. <a href="/udlejning/" onclick="event.preventDefault();navigateTo(\'/udlejning\')" style="color:var(--rust);">Find en cykel at leje →</a></p>'}
+          ${rows || '<p style="color:var(--muted);padding:24px;text-align:center;">Du har ingen lejeaftaler endnu. <a href="/udlejning/" onclick="event.preventDefault();navigateTo(\'/udlejning\')" style="color:var(--rust);">Find en cykel at leje</a></p>'}
         </div>
       </div>`;
   }
@@ -156,7 +158,7 @@ export function createRentalBooking({
 
     dv.innerHTML = `
       <div class="rental-manage">
-        <button class="sell-back-btn" onclick="navigateTo('/me')">← Min profil</button>
+        <button class="sell-back-btn" onclick="navigateTo('/me')">← Tilbage</button>
         <div class="rental-mine-head">
           <h1>Bookinger</h1>
           <button class="rental-onb-btn" onclick="navigateTo('/udlejning/mine')">Mine udlejningscykler</button>
@@ -168,7 +170,7 @@ export function createRentalBooking({
   }
 
   function _shell(msg, onclick, btn) {
-    return `<div class="rental-manage"><button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button><div class="rental-onb-card" style="text-align:center;"><p>${esc(msg)}</p><button class="rental-onb-btn" onclick="${onclick}">${esc(btn)}</button></div></div>`;
+    return `<div class="rental-manage"><button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Tilbage</button><div class="rental-onb-card" style="text-align:center;"><p>${esc(msg)}</p><button class="rental-onb-btn" onclick="${onclick}">${esc(btn)}</button></div></div>`;
   }
 
   return { renderMyRentals, renderDealerBookings, rentalBookingAction };

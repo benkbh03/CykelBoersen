@@ -1,4 +1,5 @@
-import { iconDealer } from './utils.js';
+import { noImagePlaceholder } from './ui-icons.js';
+import { rentalTermsHTML } from './rental-card.js';
 /* ============================================================
    UDLEJNING — item-detalje + booking (/udlejning/:id)
    ------------------------------------------------------------
@@ -41,7 +42,7 @@ export function createRentalItemPage({
     if (error || !it) {
       dv.innerHTML = `
         <div class="rental-item-page">
-          <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button>
+          <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Tilbage</button>
           <div class="rental-empty"><p>Denne udlejningscykel findes ikke længere.</p></div>
         </div>`;
       return;
@@ -66,11 +67,11 @@ export function createRentalItemPage({
 
     dv.innerHTML = `
       <div class="rental-item-page">
-        <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Til udlejning</button>
+        <button class="sell-back-btn" onclick="navigateTo('/udlejning')">← Tilbage</button>
         <div class="rental-item-grid">
           <div class="rental-item-gallery">
             <div class="rental-item-main-img">
-              ${primary ? `<img id="rental-main-img" src="${esc(primary.url)}" alt="${esc(it.title)}">` : '<span style="font-size:5rem">🚲</span>'}
+              ${primary ? `<img id="rental-main-img" src="${esc(primary.url)}" alt="${esc(it.title)}">` : noImagePlaceholder()}
             </div>
             ${images.length > 1 ? `
             <div class="rental-item-thumbs">
@@ -80,14 +81,11 @@ export function createRentalItemPage({
 
           <div class="rental-item-info">
             <h1 class="rental-item-title">${esc(it.title)}</h1>
-            <div class="rental-item-meta">
-              ${it.type ? `<span class="rental-item-chip">${esc(it.type)}</span>` : ''}
-              ${it.city ? `<span class="rental-item-chip">📍 ${esc(it.city)}</span>` : ''}
-            </div>
+            ${[it.type, it.city].filter(Boolean).length ? `<p class="rental-item-meta">${[it.type, it.city].filter(Boolean).map(esc).join(' · ')}</p>` : ''}
 
             <div class="rental-item-pricebox">
               <div class="rental-item-price">${(it.daily_rate || 0).toLocaleString('da-DK')} kr. <span>/ dag</span></div>
-              ${it.weekly_rate ? `<div class="rental-item-weekly">${it.weekly_rate.toLocaleString('da-DK')} kr. / uge</div>` : ''}
+              ${rentalTermsHTML(it)}
 
               ${canBook ? `
               <div class="rental-book-form">
@@ -97,14 +95,14 @@ export function createRentalItemPage({
                 </div>
                 <div id="rental-price-summary" class="rental-price-summary"></div>
                 <button class="rental-book-btn-active" id="rental-book-btn" onclick="startRentalBooking()" disabled>Vælg datoer</button>
-                <p class="rental-book-note">💳 Sikker betaling via Stripe. ${it.deposit_amount ? `Depositum ${it.deposit_amount.toLocaleString('da-DK')} kr. tilbagebetales efter aflevering.` : ''}</p>
+                <p class="rental-book-note">Du betaler via Stripe.${it.deposit_amount ? ' Depositum betales tilbage, når cyklen er afleveret.' : ''}</p>
               </div>` : `
               <div class="rental-book-placeholder">
                 <button class="rental-book-btn" disabled>Booking ikke tilgængelig</button>
                 <p class="rental-book-note">Denne forhandler er ved at færdiggøre sin opsætning. Kontakt dem direkte.</p>
               </div>`}
 
-              <a class="rental-dealer-link" href="/dealer/${dealer.id}/" onclick="event.preventDefault();navigateToDealer('${dealer.id}')">${iconDealer()} ${esc(dealerName)}${dealer.verified ? ' ✓' : ''} →</a>
+              <p class="rental-dealer-line">Udlejes af <a class="rental-dealer-link" href="/dealer/${dealer.id}/" onclick="event.preventDefault();navigateToDealer('${dealer.id}')">${esc(dealerName)}</a>${dealer.verified ? ', verificeret forhandler' : ''}</p>
             </div>
 
             ${it.description ? `<div class="rental-item-desc">${esc(it.description).replace(/\n/g, '<br>')}</div>` : ''}
@@ -145,7 +143,7 @@ export function createRentalItemPage({
       <div class="rental-price-line"><span>Leje (${c.days} dage)</span><span>${c.rental.toLocaleString('da-DK')} kr.</span></div>
       ${c.deposit ? `<div class="rental-price-line"><span>Depositum</span><span>${c.deposit.toLocaleString('da-DK')} kr.</span></div>` : ''}
       <div class="rental-price-line rental-price-total"><span>I alt nu</span><span>${c.total.toLocaleString('da-DK')} kr.</span></div>`;
-    if (btn) { btn.disabled = false; btn.textContent = `Book – ${c.total.toLocaleString('da-DK')} kr.`; }
+    if (btn) { btn.disabled = false; btn.textContent = `Book og betal ${c.total.toLocaleString('da-DK')} kr.`; }
   }
 
   async function startRentalBooking() {
