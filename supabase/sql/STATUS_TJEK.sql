@@ -305,6 +305,17 @@ SELECT * FROM (
                 THEN 'FEJL: oprydningen er ikke koert'
               ELSE 'OK' END
 
+  -- ── fix_reconcile_dealer_feed_anon.sql (19. oktober) ───────────────
+  -- Den gamle vagt lod anonyme kald igennem og kunne tage alle en
+  -- forhandlers feed-cykler af siden.
+  UNION ALL SELECT 82, 'forhandler-feed', 'reconcile_dealer_feed lukket for anonyme',
+         CASE WHEN has_function_privilege('anon', 'public.reconcile_dealer_feed(uuid, text[])', 'EXECUTE')
+                THEN 'AABEN: anon kan kalde den'
+              WHEN (SELECT prosrc FROM pg_proc WHERE oid = 'public.reconcile_dealer_feed(uuid, text[])'::regprocedure)
+                   NOT LIKE '%service_role%'
+                THEN 'FEJL: gammel vagt uden service_role-tjek'
+              ELSE 'OK' END
+
   -- ── Gamle profil-kopier: slettedatoer ──────────────────────────────
   -- Hver kopi blev lavet som fortrydelses-mulighed af den migration der
   -- fjernede data, og hver har en slettedato i den fil. Datoen er
