@@ -351,6 +351,14 @@ SELECT * FROM (
                    AND grantee IN ('anon','authenticated') AND privilege_type = 'INSERT')
               THEN 'JA (triggeren lukker det)' ELSE 'nej' END
 
+  -- Uden den ugentlige nulstilling vokser pg_stat_statements, og Supabases
+  -- overvågning skriver midlertidige filer hvert minut, til disk-kvoten paa
+  -- Nano er brugt op (19. okt.). Over ca. 2.000 er tegn paa at jobbet ikke koerer.
+  UNION ALL SELECT 81, 'drift', 'ugentlig nulstilling af pg_stat_statements (reset_pg_stat_statements_weekly.sql)',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'nulstil-pg-stat-statements' AND active)
+              THEN 'MANGLER'
+              ELSE 'OK (' || (SELECT count(*) FROM pg_stat_statements) || ' forespoergsler i statistikken)' END
+
   -- ── Edge functions: kan IKKE tjekkes herfra ────────────────────────
   -- Rækkerne er en huskeliste. Hver skal være deployet SAMME DAG ELLER
   -- SENERE end datoen i status (seneste commit der rørte filen). Se
