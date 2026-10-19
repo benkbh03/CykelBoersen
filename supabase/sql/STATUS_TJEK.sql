@@ -305,6 +305,17 @@ SELECT * FROM (
                 THEN 'FEJL: oprydningen er ikke koert'
               ELSE 'OK' END
 
+  -- ── fix_reconcile_dealer_feed_anon.sql (19. oktober) ───────────────
+  -- Den gamle vagt lod anonyme kald igennem og kunne tage alle en
+  -- forhandlers feed-cykler af siden.
+  UNION ALL SELECT 82, 'forhandler-feed', 'reconcile_dealer_feed lukket for anonyme',
+         CASE WHEN has_function_privilege('anon', 'public.reconcile_dealer_feed(uuid, text[])', 'EXECUTE')
+                THEN 'AABEN: anon kan kalde den'
+              WHEN (SELECT prosrc FROM pg_proc WHERE oid = 'public.reconcile_dealer_feed(uuid, text[])'::regprocedure)
+                   NOT LIKE '%service_role%'
+                THEN 'FEJL: gammel vagt uden service_role-tjek'
+              ELSE 'OK' END
+
   -- ── Gamle profil-kopier: slettedatoer ──────────────────────────────
   -- Hver kopi blev lavet som fortrydelses-mulighed af den migration der
   -- fjernede data, og hver har en slettedato i den fil. Datoen er
@@ -325,6 +336,13 @@ SELECT * FROM (
               WHEN current_date > DATE '2027-01-12'
                 THEN 'SLET NU: DROP TABLE profiles_address_removed_20261012'
               ELSE 'OK (slettes efter 12. jan. 2027)' END
+
+  -- ── block_scam_listing_content.sql (19. oktober) ──────────────────
+  UNION ALL SELECT 81, 'svindel', 'trigger block_scam_listing_content paa bikes',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'block_scam_listing_content'
+                              AND tgrelid = 'public.bikes'::regclass)
+              THEN 'OK' ELSE 'MANGLER' END
 
   -- ── Sundhedstjek, ikke migrationer ─────────────────────────────────
   --
@@ -350,6 +368,14 @@ SELECT * FROM (
                  WHERE table_name = 'messages' AND column_name = 'created_at'
                    AND grantee IN ('anon','authenticated') AND privilege_type = 'INSERT')
               THEN 'JA (triggeren lukker det)' ELSE 'nej' END
+
+  -- Uden den ugentlige nulstilling vokser pg_stat_statements, og Supabases
+  -- overvågning skriver midlertidige filer hvert minut, til disk-kvoten paa
+  -- Nano er brugt op (19. okt.). Over ca. 2.000 er tegn paa at jobbet ikke koerer.
+  UNION ALL SELECT 81, 'drift', 'ugentlig nulstilling af pg_stat_statements (reset_pg_stat_statements_weekly.sql)',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'nulstil-pg-stat-statements' AND active)
+              THEN 'MANGLER'
+              ELSE 'OK (' || (SELECT count(*) FROM pg_stat_statements) || ' forespoergsler i statistikken)' END
 
   -- ── Edge functions: kan IKKE tjekkes herfra ────────────────────────
   -- Rækkerne er en huskeliste. Hver skal være deployet SAMME DAG ELLER

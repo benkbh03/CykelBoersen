@@ -519,7 +519,7 @@ export function createListingEdit({
       }
     } else {
       const { data: saved, error } = await supabase.from('bikes').update(updates).eq('id', id).select('*').maybeSingle();
-      if (error) { showToast('Kunne ikke gemme ændringer', 'fejl'); console.error(error); return; }
+      if (error) { showToast(error.hint === 'listing_blocked_content' ? error.message : 'Kunne ikke gemme ændringer', 'fejl'); console.error(error); return; }
       // Under 200 kr. holder databasen annoncen tilbage (add_low_price_review.sql).
       held = !!saved?.held_for_review;
     }
