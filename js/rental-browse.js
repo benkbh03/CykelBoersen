@@ -6,7 +6,7 @@
    ============================================================ */
 
 import { RENTAL_TYPES } from './rental-data.js';
-import { iconDealer } from './utils.js';
+import { noImagePlaceholder } from './ui-icons.js';
 
 export function createRentalBrowse({
   supabase,
@@ -36,13 +36,17 @@ export function createRentalBrowse({
 
     dv.innerHTML = `
       <div class="rental-browse">
-        <div class="rental-browse-hero">
-          <h1 class="rental-browse-title">Lej en cykel</h1>
-          <p class="rental-browse-sub">Book cykler direkte hos forhandlere. Betal sikkert online, hent og kør.</p>
-        </div>
-        <div class="rental-type-chips" id="rental-type-chips">
-          <button class="rental-type-chip active" onclick="filterRentalType(null, this)">Alle</button>
-          ${RENTAL_TYPES.map(t => `<button class="rental-type-chip" onclick="filterRentalType('${esc(t)}', this)">${esc(t)}</button>`).join('')}
+        <div class="rental-browse-head">
+          <div>
+            <h1 class="rental-browse-title">Lej en cykel</h1>
+            <p class="rental-browse-sub">Cykler til udlejning hos forhandlere. Du booker og betaler her på siden.</p>
+          </div>
+          <label class="rental-type-select">Type
+            <select onchange="filterRentalType(this.value || null)">
+              <option value="">Alle typer</option>
+              ${RENTAL_TYPES.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}
+            </select>
+          </label>
         </div>
         <div id="rental-grid" class="rental-grid">
           <p style="color:var(--muted);padding:24px;text-align:center;">Henter udlejningscykler…</p>
@@ -69,7 +73,7 @@ export function createRentalBrowse({
     const { data: items, error } = await q;
 
     if (error) {
-      grid.innerHTML = `<p style="color:var(--muted);padding:24px;text-align:center;">Kunne ikke hente udlejningscykler. <button onclick="renderRentalBrowse()" style="background:var(--rust);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">Prøv igen</button></p>`;
+      grid.innerHTML = `<p style="color:var(--muted);padding:24px;text-align:center;">Kunne ikke hente udlejningscykler. <button class="rental-retry" onclick="renderRentalBrowse()">Prøv igen</button></p>`;
       return;
     }
 
@@ -77,7 +81,7 @@ export function createRentalBrowse({
       grid.innerHTML = `
         <div class="rental-empty">
           <p>Der er ingen udlejningscykler${_typeFilter ? ` i kategorien "${esc(_typeFilter)}"` : ''} lige nu.</p>
-          <p style="margin-top:6px;font-size:0.9rem;color:var(--muted);">Er du forhandler? <a href="/bliv-udlejer/" onclick="event.preventDefault();navigateTo('/bliv-udlejer')" style="color:var(--rust);">Tilbyd dine cykler til udlejning →</a></p>
+          <p style="margin-top:6px;font-size:0.9rem;color:var(--muted);">Er du forhandler? <a href="/bliv-udlejer/" onclick="event.preventDefault();navigateTo('/bliv-udlejer')" style="color:var(--rust);">Tilbyd dine cykler til udlejning</a></p>
         </div>`;
       return;
     }
@@ -95,23 +99,19 @@ export function createRentalBrowse({
         <div class="rental-card-img">
           ${img
             ? `<img src="${esc(img)}" alt="${esc(it.title)}" loading="lazy" decoding="async" width="400" height="300">`
-            : '<span style="font-size:3.5rem">🚲</span>'}
+            : noImagePlaceholder()}
         </div>
         <div class="rental-card-body">
           <div class="rental-card-title">${esc(it.title)}</div>
-          <div class="rental-card-price">${(it.daily_rate || 0).toLocaleString('da-DK')} kr./dag</div>
-          <div class="rental-card-meta">
-            ${it.type ? `<span>${esc(it.type)}</span>` : ''}${it.city ? `<span>📍 ${esc(it.city)}</span>` : ''}
-          </div>
-          <div class="rental-card-dealer">${iconDealer()} ${esc(dealerName)}${dealer.verified ? ' ✓' : ''}</div>
+          <div class="rental-card-price">${(it.daily_rate || 0).toLocaleString('da-DK')} kr. <span>pr. dag</span></div>
+          <div class="rental-card-meta">${[it.type, it.city].filter(Boolean).map(esc).join(' · ')}</div>
+          <div class="rental-card-dealer">${esc(dealerName)}</div>
         </div>
       </div>`;
   }
 
   function filterRentalType(type, btn) {
     _typeFilter = type;
-    document.querySelectorAll('.rental-type-chip').forEach(c => c.classList.remove('active'));
-    if (btn) btn.classList.add('active');
     const grid = document.getElementById('rental-grid');
     if (grid) grid.innerHTML = '<p style="color:var(--muted);padding:24px;text-align:center;">Henter…</p>';
     loadRentalItems();

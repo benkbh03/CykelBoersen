@@ -51,12 +51,12 @@ export function createRentalManage({
   }
 
   function shell(inner) {
-    return `<div class="rental-manage"><button class="sell-back-btn" onclick="navigateTo('/udlejning/mine')">← Mine udlejningscykler</button><div class="rental-onb-card" style="text-align:center;">${inner}</div></div>`;
+    return `<div class="rental-manage"><button class="sell-back-btn" onclick="navigateTo('/udlejning/mine')">← Tilbage</button><div class="rental-onb-card" style="text-align:center;">${inner}</div></div>`;
   }
 
   function connectBanner(status) {
     if (status === 'enabled') return '';
-    return `<div class="rental-connect-warn">⚠️ Færdiggør din udlejnings-opsætning hos Stripe for at kunne modtage bookinger. <a href="/bliv-udlejer/" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Færdiggør nu →</a></div>`;
+    return `<div class="rental-connect-warn">Du kan først modtage bookinger, når din opsætning hos Stripe er færdig. <a href="/bliv-udlejer/" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Færdiggør opsætningen</a></div>`;
   }
 
   /* ---------- "Mine udlejningscykler" ---------- */
@@ -81,7 +81,7 @@ export function createRentalManage({
       const img = (it.rental_item_images || []).find(i => i.is_primary) || (it.rental_item_images || [])[0];
       return `
         <div class="rental-mine-row">
-          <div class="rental-mine-thumb">${img ? `<img src="${esc(img.url)}" alt="">` : '🚲'}</div>
+          <div class="rental-mine-thumb">${img ? `<img src="${esc(img.url)}" alt="">` : iconBike(24)}</div>
           <div class="rental-mine-info">
             <div class="rental-mine-title">${esc(it.title)}${it.is_active ? '' : ' <span class="rental-inactive-tag">skjult</span>'}</div>
             <div class="rental-mine-sub">${esc(it.type || '')} · ${(it.daily_rate || 0).toLocaleString('da-DK')} kr./dag · ${it.quantity} stk.</div>
@@ -95,7 +95,7 @@ export function createRentalManage({
 
     dv.innerHTML = `
       <div class="rental-manage">
-        <button class="sell-back-btn" onclick="navigateTo('/me')">← Min profil</button>
+        <button class="sell-back-btn" onclick="navigateTo('/me')">← Tilbage</button>
         ${connectBanner(auth.profile.stripe_account_status)}
         <div class="rental-mine-head">
           <h1>Mine udlejningscykler</h1>
@@ -146,7 +146,7 @@ export function createRentalManage({
 
     dv.innerHTML = `
       <div class="rental-manage">
-        <button class="sell-back-btn" onclick="navigateTo('/udlejning/mine')">← Mine udlejningscykler</button>
+        <button class="sell-back-btn" onclick="navigateTo('/udlejning/mine')">← Tilbage</button>
         ${connectBanner(auth.profile.stripe_account_status)}
         <h1 class="rental-form-title">${editId ? 'Rediger udlejningscykel' : 'Ny udlejningscykel'}</h1>
         <form class="rental-form" onsubmit="event.preventDefault();submitRentalItem();">
@@ -236,13 +236,13 @@ export function createRentalManage({
     const ex = _existing.filter(e => !e.toDelete).map((e, i) =>
       `<div class="img-preview ${e.is_primary ? 'is-primary' : ''}">
         <img src="${esc(e.url)}" alt="">
-        <button type="button" class="img-primary-btn" onclick="setRentalPrimary('ex',${i})">${e.is_primary ? '★ Primær' : 'Sæt primær'}</button>
+        <button type="button" class="img-primary-btn" onclick="setRentalPrimary('ex',${i})">${e.is_primary ? 'Primær' : 'Sæt primær'}</button>
         <button type="button" class="img-remove-btn" onclick="removeRentalImage('ex',${i})">✕</button>
       </div>`).join('');
     const nw = _files.map((f, i) =>
       `<div class="img-preview ${f.isPrimary ? 'is-primary' : ''}">
         <img src="${esc(f.url)}" alt="">
-        <button type="button" class="img-primary-btn" onclick="setRentalPrimary('new',${i})">${f.isPrimary ? '★ Primær' : 'Sæt primær'}</button>
+        <button type="button" class="img-primary-btn" onclick="setRentalPrimary('new',${i})">${f.isPrimary ? 'Primær' : 'Sæt primær'}</button>
         <button type="button" class="img-remove-btn" onclick="removeRentalImage('new',${i})">✕</button>
       </div>`).join('');
     grid.innerHTML = ex + nw;
