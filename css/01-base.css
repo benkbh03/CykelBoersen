@@ -626,7 +626,10 @@ body.nav-search-on .nav-search { display: flex; }
     radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
     image-set(url('/hero-v3.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
   background-size: auto, auto, cover;
-  background-position: center, center, center 40%;
+  /* center 88% (20. okt.): ved 40% stod overskriften på lys himmel og
+     cyklisternes hjul var skåret af. Lavere udsnit = cyklisterne helt med,
+     overskriften på træer og sø, som er mørkere og lettere at læse. */
+  background-position: center, center, center 88%;
   background-repeat: no-repeat;
   padding: 16px 48px 14px;
   height: clamp(240px, 17vw, 280px) !important;
@@ -642,13 +645,18 @@ body.nav-search-on .nav-search { display: flex; }
    1100 px i stedet for 1460 px: 106 KB mod 197 KB, og annoncerne kommer ca.
    et halvt sekund før på en langsom forbindelse. Søgekortet dækker det meste
    af fotoet, så forskellen i skarphed ses næsten ikke (godkendt efter
-   skærmbilleder). hero-v3-m.webp står tilbage til cachede udgaver af CSS'en. */
+   skærmbilleder). v5-m (20. okt.) er skåret ud omkring cyklisten til højre
+   i fotoet, så han står under søgekortet; v4-m viste næsten kun himmel og
+   asfalt. 760 px bred (fotoets egen opløsning, ingen opskalering), 121 KB.
+   hero-v3-m.webp og hero-v4-m.webp står tilbage til cachede
+   udgaver af CSS'en. */
 @media (max-width: 768px) {
   .search-section {
     background-image:
       linear-gradient(rgba(255,255,255,0.11), rgba(255,255,255,0.11)),
       radial-gradient(ellipse 78% 52% at 50% 36%, rgba(10,18,12,0.14) 0%, transparent 100%),
-      image-set(url('/hero-v4-m.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
+      image-set(url('/hero-v5-m.webp') type('image/webp'), url('/hero-v3.jpg') type('image/jpeg'));
+    background-position: center, center, center 85%;
   }
 }
 /* min-height'en var 220px og 200px, altså LAVERE end indholdet. Titel plus
