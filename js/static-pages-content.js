@@ -163,7 +163,7 @@ export const footerContent = {
   privacy: {
     title: 'Privatlivspolitik',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 16. oktober 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 19. oktober 2026</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Dataansvarlig</h3>
       <p style="margin-bottom:8px;">Dataansvarlig for behandlingen af dine personoplysninger er:</p>
@@ -272,6 +272,7 @@ export const footerContent = {
         <li><strong>Stripe (USA)</strong>: Betalingshåndtering for betalt fremhævning (boost), udlejnings-bookinger og fremtidige forhandlerabonnementer, samt Stripe Connect-konti til udlejer-forhandlere (identitets-, virksomheds- og bankverifikation). Stripe er selvstændig dataansvarlig for betalings- og verifikationsdata. <a href="https://stripe.com/dk/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">Stripes privatlivspolitik</a>.</li>
         <li><strong>Resend (USA)</strong>: Afsendelse af transaktionelle e-mails (notifikationer). Data overføres under EU-US Data Privacy Framework.</li>
         <li><strong>GitHub Pages (USA)</strong>: Hosting af hjemmesiden (statisk). Ingen persondata lagres her.</li>
+        <li><strong>Cloudflare R2 (EU) og GitHub Actions (USA)</strong>: Daglig sikkerhedskopi af databasen og ugentlig kopi af annonce- og profilbilleder. Kopien krypteres, før den forlader GitHubs maskine, med en nøgle som kun CykelBørsen har, og gemmes i Cloudflares datacentre i EU. Hverken GitHub eller Cloudflare kan læse indholdet. Login-sessioner og ID-dokumenter tages ikke med.</li>
         <li><strong>Anthropic (USA)</strong>: AI-chatassistent (support), smart filter på forsiden samt automatisk analyse af annoncebilleder ved oprettelse af en annonce. Chatbeskeder, søgebeskrivelser og annoncebilleder sendes til Anthropic's API for at generere svar, sætte filtre og foreslå annoncefelter. Hverken beskeder, søgebeskrivelser eller billeder logges permanent af os, og de behandles af Anthropic jf. deres <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">privatlivspolitik</a>. Del ikke følsomme personoplysninger i chatten, og undgå at uploade billeder hvor personer kan identificeres.</li>
         <li><strong>companydata.dk (Danmark)</strong>: Adresseopslag med data fra Danmarks Adresseregister (DAR), som afløser for den statslige DAWA, der lukkede 1. oktober 2026. Når du skriver en butiksadresse eller en by der ikke står på vores egen liste, sendes teksten fra din browser til companydata.dk for at finde adressen og dens koordinater. Se <a href="https://dawa.companydata.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">dawa.companydata.dk</a>.</li>
         <li><strong>cvrapi.dk (Danmark)</strong>: CVR-registeropslag. Når en forhandler tilmelder sig, sendes det oplyste CVR-nummer til cvrapi.dk for at verificere at virksomheden findes og er aktiv (og for at hente firmanavn og adresse fra registret). Se <a href="https://cvrapi.dk" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:underline;">cvrapi.dk</a>.</li>
@@ -288,6 +289,7 @@ export const footerContent = {
         <li><strong>Beskeder:</strong> Opbevares så længe kontoen eksisterer og slettes ved kontosletning.</li>
         <li><strong>ID-dokumenter:</strong> Slettes efter verificeringsprocessen er afsluttet.</li>
         <li><strong>Kontakthenvendelser:</strong> Opbevares i op til 12 måneder.</li>
+        <li><strong>Sikkerhedskopier:</strong> Krypterede kopier slettes automatisk efter 30 dage. Data du har slettet, kan derfor findes i en sikkerhedskopi i op til 30 dage, men bruges kun til at genoprette tjenesten efter et nedbrud.</li>
         <li><strong>Visningstæller-log:</strong> Bruges kun til at undgå dobbelttælling og slettes automatisk, når den tilhørende annonce slettes.</li>
         <li><strong>Udlejnings-bookinger:</strong> Bookingoplysninger opbevares så længe kontoen eksisterer. Betalings- og regnskabsrelaterede oplysninger om gennemførte udlejningsbetalinger opbevares dog i op til 5 år efter udgangen af regnskabsåret, jf. bogføringslovens krav.</li>
       </ul>
