@@ -12,6 +12,7 @@ import { enableDragReorder } from './drag-reorder.js';
 import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
 import { mountUpgradesEditor, normalizeUpgrades, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 import { bikePath } from './bike-url.js';
+import { readActingAs, readBikeForm, validateBikeForm, buildBikeRow } from './sell-submit.js';
 import { readDraftFields, writeDraftFields, clearDraft, readDraftImages, writeDraftImages } from './sell-draft-store.js';
 
 /**
@@ -186,7 +187,7 @@ export function createSellPage({
   // Admin på vegne af en forhandler går gennem admin-create-bike, der ikke
   // kender feltet. Sektionen vises derfor ikke i det flow.
   function _isActingAs() {
-    try { return !!JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch { return false; }
+    return !!readActingAs();
   }
 
   // Cykeltyper hvor "Avancerede detaljer"-sektion er mest relevant
@@ -239,11 +240,7 @@ export function createSellPage({
   // Tilbehørs-submit: samme wizard, men category='tilbehoer' og kun generiske
   // felter (ingen cykel-specs, stelnr-tjek, AI eller cykelagent-notifikation).
   async function _submitAccessoryListing(currentUser) {
-    const getVal = (id) => {
-      const dom = document.getElementById(id)?.value;
-      const t = dom != null ? String(dom).trim() : '';
-      return t || String(_sellFormCache[id] ?? '').trim();
-    };
+    const getVal = readSellField;
     // "null"/"undefined" som tekst er aldrig et mærke eller en titel.
     const title = cleanText(getVal('sell-model')) || '';
     const brand = cleanText(getVal('sell-brand')) || '';
@@ -292,6 +289,112 @@ export function createSellPage({
     }
   }
 
+  // Læs fra DOM først, ellers fra _sellFormCache (trin 2-felterne er væk på trin 3)
+  function readSellField(id) {
+    const dom = document.getElementById(id)?.value;
+    const trimmed = dom != null ? String(dom).trim() : '';
+    if (trimmed) return trimmed;
+    return String(_sellFormCache[id] ?? '').trim();
+  }
+
+  // Deaktivér de synlige CTA-knapper (mobil + desktop) mens oprettelsen
+  // kører. Returnerer funktionen der låser dem op igen.
+  function lockSellCtas() {
+    const ctas = document.querySelectorAll('.sell-wizard-cta, .sell-desktop-cta');
+    ctas.forEach(b => {
+      b.disabled = true;
+      b.dataset.origText = b.innerHTML;
+      b.innerHTML = '<span class="btn-spinner"></span>Opretter…';
+    });
+    return () => ctas.forEach(b => {
+      b.disabled = false;
+      if (b.dataset.origText) {
+        b.innerHTML = b.dataset.origText;
+        delete b.dataset.origText;
+      }
+    });
+  }
+
+  function showUploadProgress(current, total) {
+    const btn = document.getElementById('sell-submit-btn');
+    if (btn) btn.textContent = `Uploader ${current}/${total}…`;
+  }
+
+  /* Admin-flow: upload billeder først (returnerer URLs), send alt til
+     admin-create-bike, der atomisk opretter bike + bike_images med
+     service-role (omgår RLS der ellers ville blokere admin-insert).
+     Returnerer den nye annonce, eller null efter en fejl-toast. */
+  async function createBikeAsDealer(actingAs, bikeData, currentUser) {
+    let images = [];
+    if (getSelectedFiles().length > 0) {
+      images = await uploadImagesNoInsert(currentUser.id, showUploadProgress);
+    }
+    const { data, error } = await supabase.functions.invoke('admin-create-bike', {
+      body: { target_user_id: actingAs.id, bike: bikeData, images },
+    });
+    if (error || data?.error) {
+      // supabase-js skjuler edge function-fejlteksten bag en generisk
+      // "Edge Function returned a non-2xx status code" — udtræk den
+      // rigtige JSON-fejl fra error.context (Response-objektet) hvis muligt.
+      let serverMsg = data?.error;
+      if (!serverMsg && error?.context) {
+        try {
+          const body = await error.context.clone().json();
+          serverMsg = body?.error;
+        } catch {}
+      }
+      showToast((serverMsg || error?.message || 'Kunne ikke oprette på vegne af forhandler'), 'fejl');
+      console.error('admin-create-bike fejl:', serverMsg || error || data?.error);
+      return null;
+    }
+    // Bevar acting-as-tilstand efter oprettelse — admin opretter ofte
+    // flere annoncer i træk for samme forhandler og skal ikke vælge
+    // "Opret annonce" igen for hver. Stoppes manuelt via "✕ Stop"-knappen.
+    showToast(`Annonce oprettet på vegne af ${actingAs.name}`, 'ok');
+    return { id: data.bike_id, ...bikeData };
+  }
+
+  // Almindelig oprettelse: insert, derefter billeder. null efter en fejl-toast.
+  async function createOwnBike(bikeData) {
+    const res = await supabase.from('bikes').insert(bikeData).select().single();
+    if (res.error) { showToast(res.error.hint === 'listing_blocked_content' ? res.error.message : 'Noget gik galt – prøv igen', 'fejl'); console.error(res.error); return null; }
+    if (getSelectedFiles().length > 0) await uploadImages(res.data.id, showUploadProgress);
+    return res.data;
+  }
+
+  // Alt der sker når annoncen er gemt.
+  function afterBikeCreated(newBike, frameNumber) {
+    // Stelnummer (fire-and-forget — annoncen er allerede oprettet).
+    // Edge-functionen gemmer KUN de sidste 4 cifre og kasserer resten.
+    // Nummeret sendes ikke videre til noget eksternt register.
+    if (frameNumber && newBike?.id) {
+      supabase.functions.invoke('check-frame-number', {
+        body: { bike_id: newBike.id, frame_number: frameNumber },
+      }).catch(() => {});
+    }
+
+    loadBikes();
+    updateFilterCounts();
+
+    // Under 200 kr. holder databasen annoncen tilbage til admin har set den
+    // (add_low_price_review.sql). Så må ingen få besked om den endnu.
+    if (!newBike?.held_for_review) {
+      notifySavedSearches(newBike);
+      notifyDealerFollowers(newBike);
+    }
+
+    // Tragtens slutpunkt. Ligger efter at annoncen er gemt, så 'complete'
+    // kun tælles når der faktisk kom en annonce ud af det.
+    trackSellStep(supabase, 'complete', {
+      category: _sellCategory,
+      prefilled: _importApplied ? 'import' : (_aiApplied ? 'ai' : null),
+    });
+
+    clearSellDraft();
+    if (returnToBuyOffer(newBike)) return;
+    showListingSuccessModal(newBike);
+  }
+
   async function submitSellPage() {
     // Hård guard: kør ALDRIG to gange samtidigt
     if (_submittingSell) return;
@@ -306,222 +409,33 @@ export function createSellPage({
     }
     _submittingSell = true;
     const restore = btnLoading('sell-submit-btn', 'Opretter...');
-    // Deaktivér også de synlige CTA-knapper (mobil + desktop) så brugeren
-    // ikke kan klikke dem mens første request stadig kører
-    const visibleCtas = document.querySelectorAll('.sell-wizard-cta, .sell-desktop-cta');
-    visibleCtas.forEach(b => {
-      b.disabled = true;
-      b.dataset.origText = b.innerHTML;
-      b.innerHTML = '<span class="btn-spinner"></span>Opretter…';
-    });
+    const unlockCtas = lockSellCtas();
     try {
-      // Read from DOM first, fall back to _sellFormCache (step 2 fields are gone when on step 3)
-      const getVal = (id) => {
-        const dom = document.getElementById(id)?.value;
-        const trimmed = dom != null ? String(dom).trim() : '';
-        if (trimmed) return trimmed;
-        return String(_sellFormCache[id] ?? '').trim();
-      };
-      // "null"/"undefined" som tekst er aldrig et mærke eller en model.
-      const brand     = cleanText(getVal('sell-brand')) || '';
-      const model     = cleanText(getVal('sell-model')) || '';
-      let _giveActingAs = null;
-      try { _giveActingAs = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
-      const giveaway  = !(getCurrentProfile()?.seller_type === 'dealer' || _giveActingAs)
-                        && getVal('sell-giveaway') === '1';
-      const price     = giveaway ? 0 : parseInt(getVal('sell-price'));
-      const year      = parseInt(getVal('sell-year')) || null;
-      const city      = getVal('sell-city');
-      const desc      = getVal('sell-desc');
-      const type      = getVal('sell-type');
-      const size      = getVal('sell-size') || null;
-      const sizeCm    = parseInt(getVal('sell-size-cm')) || null;
-      const condition = getVal('sell-condition');
-      const wheelSize = getVal('sell-wheel-size') || null;
-      const warranty  = getVal('sell-warranty') || null;
-      // Admin acting-as: forhandler-felter (webshop-link, garanti) gælder også
-      // når en admin opretter på vegne af en forhandler
-      let _actingAsEarly = null;
-      try { _actingAsEarly = JSON.parse(sessionStorage.getItem('_adminActingAs') || 'null'); } catch {}
-      const isDealerListing = getCurrentProfile()?.seller_type === 'dealer' || !!_actingAsEarly;
-      const externalUrl = (isDealerListing ? (getVal('sell-external-url') || '').trim() : '') || null;
-      // Forhandler-valgfri før-pris (vejl. udsalgspris) → driver rabatbadge.
-      // Bruges kun hvis højere end prisen, ellers = pris (ingen falsk rabat).
-      const origPriceNum = isDealerListing ? (parseInt(getVal('sell-original-price')) || null) : null;
-      const frameNumber = getVal('sell-frame-number');  // valgfrit stelnr — vises som "oplyst", tjekkes IKKE (opslaget er fjernet)
-      const colors    = Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [];
+      const actingAs = readActingAs();
+      const form = readBikeForm(readSellField, {
+        colors: Array.isArray(_sellFormCache['sell-colors']) ? _sellFormCache['sell-colors'] : [],
+        // Admin på vegne af en forhandler går gennem admin-create-bike, der
+        // ikke kender opgraderinger.
+        upgrades: actingAs ? [] : _cachedUpgrades(),
+        isDealerListing: getCurrentProfile()?.seller_type === 'dealer' || !!actingAs,
+      });
 
-      // Cykel-specifikke felter
-      const groupset       = getVal('sell-groupset') || null;
-      const frameMaterial  = getVal('sell-frame-material') || null;
-      const brakeType      = getVal('sell-brake-type') || null;
-      const electronicRaw  = getVal('sell-electronic-shifting');
-      const electronicShift = electronicRaw === 'true' ? true : (electronicRaw === 'false' ? false : null);
-      const weightKgRaw    = getVal('sell-weight-kg');
-      const weightKg       = weightKgRaw ? parseFloat(weightKgRaw) : null;
-
-      // El-cykel-felter (kun relevante når type = El-cykel)
-      const isEbike        = type === 'El-cykel';
-      const motor          = isEbike ? (getVal('sell-motor') || null) : null;
-      const motorPosition  = isEbike ? (getVal('sell-motor-position') || null) : null;
-      const batteryWhRaw   = getVal('sell-battery-wh');
-      const batteryWh      = isEbike && batteryWhRaw ? (parseInt(batteryWhRaw) || null) : null;
-
-      // Affjedring (kun relevante typer: MTB/gravel/el-cykel)
-      const isSusp         = _SUSPENSION_TYPES.includes(type);
-      const suspension     = isSusp ? (getVal('sell-suspension') || null) : null;
-
-      // Geartype: indvendig (navgear) / udvendig (kædeskifter) — alle typer
-      const geartype       = getVal('sell-geartype') || null;
-
-      // Stel-type: lav/høj indstigning — alle typer
-      const stepType       = getVal('sell-step-type') || null;
-
-      const upgrades       = _isActingAs() ? [] : _cachedUpgrades();
-
-      // !price ville også afvise en gave, fordi 0 er falsy. Derfor tjekkes
-      // prisen kun når annoncen ikke er en gave.
-      if (!brand || !city || !type || !condition || (!giveaway && !price)) {
-        showToast('Udfyld alle påkrævede felter (*)', 'advarsel'); restore(); return;
-      }
-      if (!giveaway && (!Number.isFinite(price) || price < 1 || price > 9999999)) {
-        showToast('Angiv en gyldig pris mellem 1 og 9.999.999 kr.', 'advarsel'); restore(); return;
-      }
-      if (!model && !confirm('Du har ikke angivet cykel-modellen.\n\nMed model er annoncen lettere at finde for købere, der søger på den.\n\nVil du udgive uden model alligevel?')) {
-        visibleCtas.forEach(b => {
-          b.disabled = false;
-          if (b.dataset.origText) b.innerHTML = b.dataset.origText;
-        });
-        _submittingSell = false;
-        restore();
+      const problem = validateBikeForm(form);
+      if (problem) { showToast(problem, 'advarsel'); return; }
+      if (!form.model && !confirm('Du har ikke angivet cykel-modellen.\n\nMed model er annoncen lettere at finde for købere, der søger på den.\n\nVil du udgive uden model alligevel?')) {
         return;
       }
 
-      // Tjek om admin opretter på vegne af en forhandler (sessionStorage-flag)
-      let actingAs = null;
-      try {
-        const raw = sessionStorage.getItem('_adminActingAs');
-        if (raw) actingAs = JSON.parse(raw);
-      } catch {}
+      const bikeData = buildBikeRow(form, actingAs ? actingAs.id : currentUser.id);
+      const newBike = actingAs
+        ? await createBikeAsDealer(actingAs, bikeData, currentUser)
+        : await createOwnBike(bikeData);
+      if (!newBike) return;
 
-      const bikeData = {
-        user_id: actingAs ? actingAs.id : currentUser.id,
-        brand, model, price, year, city,
-        is_giveaway: giveaway,
-        // En gave har hverken pris eller førpris, ellers ville kortet vise et
-        // falsk prisfald ("Spar 5.999 kr.") på noget der er gratis.
-        original_price: giveaway ? 0 : ((origPriceNum && origPriceNum > price) ? origPriceNum : price),  // forhandler-før-pris hvis sat, ellers pris-snapshot — driver "Reduceret fra X → Y"-badge
-        description: desc || null,
-        type, size: size || null, size_cm: sizeCm, condition,
-        wheel_size: wheelSize || null,
-        warranty: warranty || null,
-        external_url: externalUrl,
-        color: colors.length ? colors.join(', ') : null,
-        colors: colors.length ? colors : null,
-        title: bikeTitle(brand, model),
-        is_active: true,
-        groupset,
-        frame_material:      frameMaterial,
-        brake_type:          brakeType,
-        electronic_shifting: electronicShift,
-        weight_kg:           !isNaN(weightKg) ? weightKg : null,
-        motor,
-        motor_position:      motorPosition,
-        battery_wh:          batteryWh,
-        suspension,
-        geartype,
-        step_type: stepType,
-      };
-      // Kun med når der er noget: så virker oprettelse uden opgraderinger
-      // også før add_bike_upgrades.sql er kørt.
-      if (upgrades.length) bikeData.upgrades = upgrades;
-
-      let newBike;
-      if (actingAs) {
-        // Admin-flow: upload billeder først (returnerer URLs), send alt til
-        // admin-create-bike edge function der atomisk opretter bike + bike_images
-        // med service-role (omgår RLS der ellers ville blokere admin-insert)
-        let images = [];
-        if (getSelectedFiles().length > 0) {
-          images = await uploadImagesNoInsert(currentUser.id, (current, total) => {
-            const btn = document.getElementById('sell-submit-btn');
-            if (btn) btn.textContent = `Uploader ${current}/${total}…`;
-          });
-        }
-        const { data, error } = await supabase.functions.invoke('admin-create-bike', {
-          body: { target_user_id: actingAs.id, bike: bikeData, images },
-        });
-        if (error || data?.error) {
-          // supabase-js skjuler edge function-fejlteksten bag en generisk
-          // "Edge Function returned a non-2xx status code" — udtræk den
-          // rigtige JSON-fejl fra error.context (Response-objektet) hvis muligt.
-          let serverMsg = data?.error;
-          if (!serverMsg && error?.context) {
-            try {
-              const body = await error.context.clone().json();
-              serverMsg = body?.error;
-            } catch {}
-          }
-          showToast((serverMsg || error?.message || 'Kunne ikke oprette på vegne af forhandler'), 'fejl');
-          console.error('admin-create-bike fejl:', serverMsg || error || data?.error);
-          restore();
-          return;
-        }
-        newBike = { id: data.bike_id, ...bikeData };
-        // Bevar acting-as-tilstand efter oprettelse — admin opretter ofte
-        // flere annoncer i træk for samme forhandler og skal ikke vælge
-        // "Opret annonce" igen for hver. Stoppes manuelt via "✕ Stop"-knappen.
-        showToast(`Annonce oprettet på vegne af ${actingAs.name}`, 'ok');
-      } else {
-        const res = await supabase.from('bikes').insert(bikeData).select().single();
-        if (res.error) { showToast(res.error.hint === 'listing_blocked_content' ? res.error.message : 'Noget gik galt – prøv igen', 'fejl'); console.error(res.error); restore(); return; }
-        newBike = res.data;
-        if (getSelectedFiles().length > 0) {
-          await uploadImages(newBike.id, (current, total) => {
-            const btn = document.getElementById('sell-submit-btn');
-            if (btn) btn.textContent = `Uploader ${current}/${total}…`;
-          });
-        }
-      }
-
-      // Stelnummer (fire-and-forget — annoncen er allerede oprettet).
-      // Edge-functionen gemmer KUN de sidste 4 cifre og kasserer resten.
-      // Nummeret sendes ikke videre til noget eksternt register.
-      if (frameNumber && newBike?.id) {
-        supabase.functions.invoke('check-frame-number', {
-          body: { bike_id: newBike.id, frame_number: frameNumber },
-        }).catch(() => {});
-      }
-
-      loadBikes();
-      updateFilterCounts();
-
-      // Under 200 kr. holder databasen annoncen tilbage til admin har set den
-      // (add_low_price_review.sql). Så må ingen få besked om den endnu.
-      if (!newBike?.held_for_review) {
-        notifySavedSearches(newBike);
-        notifyDealerFollowers(newBike);
-      }
-
-      // Tragtens slutpunkt. Ligger efter at annoncen er gemt, så 'complete'
-      // kun tælles når der faktisk kom en annonce ud af det.
-      trackSellStep(supabase, 'complete', {
-        category: _sellCategory,
-        prefilled: _importApplied ? 'import' : (_aiApplied ? 'ai' : null),
-      });
-
-      clearSellDraft();
-      if (returnToBuyOffer(newBike)) return;
-      showListingSuccessModal(newBike);
+      afterBikeCreated(newBike, form.frameNumber);
     } finally {
       restore();
-      visibleCtas.forEach(b => {
-        b.disabled = false;
-        if (b.dataset.origText) {
-          b.innerHTML = b.dataset.origText;
-          delete b.dataset.origText;
-        }
-      });
+      unlockCtas();
       _submittingSell = false;
     }
   }

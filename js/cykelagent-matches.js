@@ -12,6 +12,8 @@
    "Sidst set"-tidsstempel ligger i localStorage pr. browser.
    ============================================================ */
 
+import { bikeMatches } from './bike-match.js';
+
 const LAST_SEEN_KEY = 'cb_cykelagent_last_seen';
 const LOOKBACK_DAYS = 30;
 const FETCH_LIMIT   = 200;
@@ -37,137 +39,25 @@ export function markMatchesSeen() {
    - Sidebaren gemmer `electronicShifting` som boolean, matcheren
      sammenlignede med strengene 'true'/'false'. Filteret faldt bort.
 
-   Normalisér ét sted, så resten af funktionen kun kender én form. */
+   Normalisér ét sted til den form bikeMatches() kender.
+
+   category: hård akse, magen til edge-funktionens. En agent uden kategori
+   er en cykel-agent og må aldrig matche tilbehør. */
 function normalizeAgentFilters(f) {
   const es = f.electronicShifting;
+  const esStr = es === true ? 'true' : es === false ? 'false' : es;
   return {
     ...f,
+    category: f.category || 'cykel',
     maxWeightKg: f.maxWeightKg ?? f.maxWeight ?? null,
-    electronicShifting: es === true ? 'true' : es === false ? 'false' : es,
+    electronicShiftings: (esStr === 'true' || esStr === 'false') ? [esStr] : null,
   };
 }
 
+/* Reglen selv ligger i js/bike-match.js, delt med kortet. */
 function bikeMatchesAgent(bike, rawFilters) {
   if (!rawFilters) return false;
-  const f = normalizeAgentFilters(rawFilters);
-
-  /* Hård kategori-akse, magen til edge-funktionens: en cykel-agent må aldrig
-     matche tilbehør. Manglede her, så "Nye match" viste tilbehør mens mailen
-     ikke gjorde — samme agent, to forskellige svar. */
-  if ((bike.category || 'cykel') !== (f.category || 'cykel')) return false;
-
-  // Type (singular fra forside-flow eller liste fra cykelagent-form)
-  if (f.type && bike.type !== f.type) return false;
-  if (Array.isArray(f.types) && f.types.length && !f.types.includes(bike.type)) return false;
-
-  if (Array.isArray(f.conditions) && f.conditions.length && !f.conditions.includes(bike.condition)) return false;
-
-  if (Array.isArray(f.wheelSizes) && f.wheelSizes.length) {
-    if (!bike.wheel_size || !f.wheelSizes.includes(bike.wheel_size)) return false;
-  }
-
-  if (Array.isArray(f.sizes) && f.sizes.length) {
-    if (!bike.size || !f.sizes.includes(bike.size)) return false;
-  }
-
-  if (Array.isArray(f.colors) && f.colors.length) {
-    const bcolors = Array.isArray(bike.colors) && bike.colors.length
-      ? bike.colors
-      : (bike.color ? [bike.color] : []);
-    if (!bcolors.some(c => f.colors.includes(c))) return false;
-  }
-
-  if (Array.isArray(f.frameMaterials) && f.frameMaterials.length) {
-    if (!bike.frame_material || !f.frameMaterials.includes(bike.frame_material)) return false;
-  }
-
-  if (Array.isArray(f.brakeTypes) && f.brakeTypes.length) {
-    if (!bike.brake_type || !f.brakeTypes.includes(bike.brake_type)) return false;
-  }
-
-  if (Array.isArray(f.groupsets) && f.groupsets.length) {
-    const g = String(bike.groupset || '').toLowerCase();
-    if (!g || !f.groupsets.some(sel => g.startsWith(String(sel).toLowerCase()))) return false;
-  }
-
-  if (f.electronicShifting === 'true' || f.electronicShifting === 'false') {
-    const want = f.electronicShifting === 'true';
-    if (bike.electronic_shifting === null || bike.electronic_shifting === undefined) return false;
-    if (!!bike.electronic_shifting !== want) return false;
-  }
-
-  if (f.maxWeightKg != null && !isNaN(Number(f.maxWeightKg))) {
-    if (bike.weight_kg === null || bike.weight_kg === undefined) return false;
-    if (Number(bike.weight_kg) > Number(f.maxWeightKg)) return false;
-  }
-
-  if (Array.isArray(f.motors) && f.motors.length) {
-    const m = String(bike.motor || '').toLowerCase();
-    if (!m || !f.motors.some(sel => m.startsWith(String(sel).toLowerCase()))) return false;
-  }
-
-  if (Array.isArray(f.motorPositions) && f.motorPositions.length) {
-    if (!bike.motor_position || !f.motorPositions.includes(bike.motor_position)) return false;
-  }
-
-  if (f.batteryMin != null && !isNaN(Number(f.batteryMin))) {
-    if (bike.battery_wh == null || Number(bike.battery_wh) < Number(f.batteryMin)) return false;
-  }
-  if (f.batteryMax != null && !isNaN(Number(f.batteryMax))) {
-    if (bike.battery_wh == null || Number(bike.battery_wh) > Number(f.batteryMax)) return false;
-  }
-
-  if (Array.isArray(f.suspensions) && f.suspensions.length) {
-    if (!bike.suspension || !f.suspensions.includes(bike.suspension)) return false;
-  }
-
-  if (Array.isArray(f.geartypes) && f.geartypes.length) {
-    if (!bike.geartype || !f.geartypes.includes(bike.geartype)) return false;
-  }
-
-  if (Array.isArray(f.stepTypes) && f.stepTypes.length) {
-    if (!bike.step_type || !f.stepTypes.includes(bike.step_type)) return false;
-  }
-
-  if (f.minPrice != null && !isNaN(Number(f.minPrice)) && Number(bike.price) < Number(f.minPrice)) return false;
-  if (f.maxPrice != null && !isNaN(Number(f.maxPrice)) && Number(bike.price) > Number(f.maxPrice)) return false;
-
-  if (f.sellerType === 'dealer' || f.sellerType === 'private') {
-    const st = bike.profiles?.seller_type;
-    if (st && st !== f.sellerType) return false;
-  }
-
-  if (f.warranty === true && !bike.warranty) return false;
-
-  // By: bidirektionel substring (matcher edge function — "København" matcher "København NV" og omvendt)
-  if (f.city) {
-    const bikeCity = String(bike.city || '').toLowerCase();
-    const searchCity = String(f.city).toLowerCase();
-    if (!bikeCity.includes(searchCity) && !searchCity.includes(bikeCity)) return false;
-  }
-
-  // Fritekst: substring på brand + model
-  if (f.search) {
-    const hay = `${bike.brand || ''} ${bike.model || ''}`.toLowerCase();
-    const needle = String(f.search).toLowerCase();
-    if (!hay.includes(needle)) return false;
-  }
-
-  // brand-felt (cykelagent-form gemmer brand i både search + brand;
-  // tjek for at undgå at vise andre mærker selvom search-substring tilfældigvis matcher)
-  if (f.brand) {
-    const q = String(f.brand).toLowerCase().trim();
-    if (q && !String(bike.brand || '').toLowerCase().includes(q)) return false;
-  }
-
-  /* Sidebarens mærkefilter er en LISTE med eksakt match, modsat
-     cykelagent-formens enkelte `brand` med substring. Listen blev slet ikke
-     læst, så en søgning gemt med "Trek + Specialized" matchede alle mærker. */
-  if (Array.isArray(f.brands) && f.brands.length) {
-    if (!f.brands.includes(bike.brand)) return false;
-  }
-
-  return true;
+  return bikeMatches(bike, normalizeAgentFilters(rawFilters), { lenientSeller: true });
 }
 
 export async function fetchAgentMatches(supabase, agents) {
