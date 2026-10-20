@@ -43,9 +43,15 @@ DECLARE
   v_is_admin boolean;
   v_count    int;
 BEGIN
-  IF v_uid IS NOT NULL AND v_uid <> p_user_id THEN
+  -- Uden bruger SKAL det være service-role; en anonym besøgende har også
+  -- auth.uid() IS NULL (hul lukket 19. okt., fix_reconcile_dealer_feed_anon.sql).
+  IF v_uid IS NULL THEN
+    IF auth.role() IS DISTINCT FROM 'service_role' THEN
+      RAISE EXCEPTION 'Kræver login' USING ERRCODE = '42501';
+    END IF;
+  ELSIF v_uid <> p_user_id THEN
     SELECT COALESCE(p.is_admin, false) INTO v_is_admin FROM profiles p WHERE p.id = v_uid;
-    IF NOT v_is_admin THEN
+    IF NOT COALESCE(v_is_admin, false) THEN
       RAISE EXCEPTION 'Kun admin, ejeren selv eller service-role må synkronisere lager';
     END IF;
   END IF;
@@ -63,4 +69,5 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION reconcile_dealer_feed(uuid, text[]) TO authenticated;
+REVOKE EXECUTE ON FUNCTION reconcile_dealer_feed(uuid, text[]) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION reconcile_dealer_feed(uuid, text[]) TO authenticated, service_role;

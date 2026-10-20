@@ -5,6 +5,7 @@
 import { bikeTitle, iconDealer, iconPrivate, iconBike, priceLabel, iconHeart, iconPin } from './utils.js';
 import { cardImageUrl } from './image-size.js';
 import { BIKE_COLORS } from './config.js';
+import { bikeMatches } from './bike-match.js';
 
 // Kanoniske filter-lister — skal matche forsidens filtre + sælg-flowets værdier
 const MAP_FILTER_SIZES = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)'];
@@ -364,53 +365,47 @@ export function createMapPage({
 
   /* ── filterMapBikes ─────────────────────────────────────── */
 
+  /* Kortets dropdowns og Sets oversat til den filterform bikeMatches()
+     kender. Selve reglen deles med Cykelagent-skærmen (js/bike-match.js). */
+  function toMatchFilters(f) {
+    const adv = f.adv;
+    const list = set => (set && set.size ? [...set] : null);
+    return {
+      type:           f.type || null,
+      conditions:     f.condition ? [f.condition] : null,
+      minPrice:       f.priceMin,
+      maxPrice:       f.priceMax,
+      sellerType:     f.seller !== 'all' ? f.seller : null,
+      giveaway:       adv.giveaway,
+      brands:         list(adv.brand),
+      sizes:          list(adv.size),
+      wheelSizes:     list(adv.wheel_size),
+      colors:         list(adv.color),
+      frameMaterials: list(adv.frame_material),
+      brakeTypes:     list(adv.brake_type),
+      electronicShiftings: list(adv.electronic_shifting),
+      groupsets:      list(adv.groupset),
+      maxWeightKg:    adv.weight_max,
+      motors:         list(adv.motor),
+      motorPositions: list(adv.motor_position),
+      batteryMin:     adv.battery_min,
+      batteryMax:     adv.battery_max,
+      suspensions:    list(adv.suspension),
+      geartypes:      list(adv.geartype),
+      stepTypes:      list(adv.step_type),
+    };
+  }
+
   function filterMapBikes() {
     const f = getMapFilters();
+    const mf = toMatchFilters(f);
     return _mapPageBikes.filter(b => {
+      // Kortets egen fritekst søger også i type og by, modsat Cykelagentens
       if (f.q) {
         const hay = ((b.brand || '') + ' ' + (b.model || '') + ' ' + (b.type || '') + ' ' + (b.city || '')).toLowerCase();
         if (!hay.includes(f.q)) return false;
       }
-      if (f.seller !== 'all') {
-        const st = (b.profiles && b.profiles.seller_type) || 'private';
-        if (f.seller !== st) return false;
-      }
-      if (f.type && b.type !== f.type) return false;
-      if (f.condition && b.condition !== f.condition) return false;
-      if (f.priceMin != null && b.price < f.priceMin) return false;
-      if (f.priceMax != null && b.price > f.priceMax) return false;
-
-      // Avancerede multi-select filtre
-      const adv = f.adv;
-      if (adv.giveaway && !b.is_giveaway) return false;
-      if (adv.brand.size && !adv.brand.has(b.brand)) return false;
-      if (adv.size.size && !adv.size.has(b.size)) return false;
-      if (adv.wheel_size.size && !adv.wheel_size.has(b.wheel_size)) return false;
-      if (adv.color.size) {
-        const cols = Array.isArray(b.colors) ? b.colors : (b.color ? [b.color] : []);
-        if (!cols.some(c => adv.color.has(c))) return false;
-      }
-      if (adv.frame_material.size && !adv.frame_material.has(b.frame_material)) return false;
-      if (adv.brake_type.size && !adv.brake_type.has(b.brake_type)) return false;
-      if (adv.electronic_shifting.size) {
-        const v = b.electronic_shifting === true ? 'true' : (b.electronic_shifting === false ? 'false' : '');
-        if (!adv.electronic_shifting.has(v)) return false;
-      }
-      /* Prefix, ikke eksakt. Sidebaren, begge Cykelagent-matchere og
-         edge-funktionen matcher alle groupset som prefix, fordi en cykel
-         gemmes som fx "Shimano 105 R7000" mens filterværdien er "Shimano 105".
-         Kortet matchede eksakt og fandt derfor ingenting — samme filter, to
-         resultater alt efter hvilken side man stod på. */
-      if (adv.groupset.size && !(b.groupset && [...adv.groupset].some(g => b.groupset.toLowerCase().startsWith(g.toLowerCase())))) return false;
-      if (adv.weight_max != null && (b.weight_kg == null || b.weight_kg > adv.weight_max)) return false;
-      // El-cykel: motor-mærke som prefix (fx "Bosch" matcher "Bosch Performance Line CX")
-      if (adv.motor.size && !(b.motor && [...adv.motor].some(m => b.motor.toLowerCase().startsWith(m.toLowerCase())))) return false;
-      if (adv.motor_position.size && !adv.motor_position.has(b.motor_position)) return false;
-      if (adv.battery_min != null && (b.battery_wh == null || b.battery_wh < adv.battery_min)) return false;
-      if (adv.battery_max != null && (b.battery_wh == null || b.battery_wh > adv.battery_max)) return false;
-      if (adv.suspension.size && !adv.suspension.has(b.suspension)) return false;
-      if (adv.geartype.size && !adv.geartype.has(b.geartype)) return false;
-      if (adv.step_type.size && !adv.step_type.has(b.step_type)) return false;
+      if (!bikeMatches(b, mf)) return false;
       if (f.nearCoords && f.radius && _mapPageGeocoded) {
         const g = _mapPageGeocoded.get(b.id);
         if (!g) return false;

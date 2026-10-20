@@ -330,6 +330,19 @@ serve(async (req) => {
         return new Response("Manglende felter", { status: 400, headers: corsHeaders });
       }
 
+      /* Rapporter kan sendes uden login (anonyme besoegende maa ogsaa
+         melde svindel), saa samme IP-graense som kontaktformularen. Uden
+         den kunne et script braende Resend-kvoten af paa admin-mails, og
+         saa naar de rigtige notifikationer ikke frem. */
+      const ipReport = clientIp(req);
+      if (!(await anonRateLimit(supabase, ipReport, "report_listing"))) {
+        console.warn("Rapport rate-limited for IP:", ipReport);
+        return new Response(
+          JSON.stringify({ ok: false, error: "For mange rapporter. Prøv igen om en time." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "3600" } },
+        );
+      }
+
       const html = layout(
         heading("Annonce rapporteret") +
         facts([
