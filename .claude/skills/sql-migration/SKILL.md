@@ -88,10 +88,25 @@ CREATE POLICY "Service role can read all"
 
 `DROP POLICY IF EXISTS` foran hver `CREATE POLICY` gør at re-kørsel ikke fejler.
 
+### 6. GRANTs (KRITISK for nye tabeller fra 30. okt. 2026)
+Supabase giver ikke længere nye tabeller adgang til Data API'et automatisk. Uden
+GRANT får frontenden OG edge functions "permission denied". Skriv dem i samme fil
+som `CREATE TABLE`, mindst muligt:
+
+```sql
+REVOKE ALL ON public.<tabel> FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.<tabel> TO authenticated;  -- kun det der bruges
+GRANT ALL ON public.<tabel> TO service_role;
+-- GRANT SELECT ON public.<tabel> TO anon;  -- KUN hvis data vises uden login og ikke er persondata
+```
+
+`scripts/check-sql-grants.mjs` fejler PR'en hvis RLS eller service_role-GRANT mangler.
+
 ## Tjekliste før migration leveres til brugeren
 
 - [ ] Idempotent — kan køres flere gange uden fejl?
 - [ ] RLS aktiveret hvis tabellen indeholder bruger-data?
+- [ ] Ny tabel: GRANTs i samme fil (authenticated efter behov, service_role altid, anon kun bevidst)?
 - [ ] Backfill kører automatisk for eksisterende rækker?
 - [ ] Indekser på foreign keys og frequent WHERE-kolonner?
 - [ ] Header-kommentar forklarer FORMÅL, ikke bare hvad SQL'en gør?
@@ -116,6 +131,7 @@ Mine trin:
 - ❌ `DROP TABLE` uden eksplicit godkendelse
 - ❌ `ALTER COLUMN ... NOT NULL` uden backfill først
 - ❌ Composite primary keys uden god grund
-- ❌ Glemme RLS — defaulter til "ingen kan tilgå tabellen via anon key"
+- ❌ Glemme RLS — så styrer GRANTs alene adgangen, og alle med anon-nøglen kan læse/skrive
+- ❌ Ny tabel uden GRANT — "permission denied" fra 30. okt. 2026, også for edge functions
 - ❌ Forudsætte at policies fra én tabel automatisk gælder på en ny
 - ❌ Sende SQL der ikke kan re-køres (no IF EXISTS / DROP POLICY IF EXISTS)
