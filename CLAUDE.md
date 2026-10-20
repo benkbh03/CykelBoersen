@@ -144,6 +144,23 @@ escape al tekst fra brugere og annoncer med `esc()`. Ingen emoji eller pile i em
 **SQL-migrationer:** alle ligger i `supabase/sql/`. Filnavn = hvad de gør
 (fx `add_suspension.sql`, `add_ebike_fields.sql`, `add_search_logs.sql`).
 
+**Nye tabeller: GRANT i samme fil (fra 30. okt. 2026).** Supabase giver ikke
+længere nye tabeller i `public` adgang til Data API'et af sig selv. Uden GRANT
+svarer supabase-js "permission denied", også til edge functions med
+service-nøglen. De 30 tabeller der fandtes 20. okt. beholder deres grants. En
+migration der opretter en tabel, skal i samme fil:
+
+```sql
+ALTER TABLE public.x ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.x FROM anon, authenticated;        -- start fra nul
+GRANT SELECT, INSERT ON public.x TO authenticated;      -- kun det frontenden bruger
+GRANT ALL ON public.x TO service_role;                  -- edge functions
+```
+
+- **anon får kun noget hvis siden virkelig læses uden login** (fx annoncer). Aldrig `GRANT ALL ... TO anon`, og aldrig på en tabel med persondata. GRANT åbner døren, RLS vælger rækkerne; begge skal være på plads.
+- Skal en kolonne ikke kunne læses eller skrives fra browseren, så giv kolonne-GRANTs (`GRANT SELECT (a, b)`, `GRANT UPDATE (a)`), som på `profiles` og `buy_requests`. En tabel der kun bruges af edge functions, får kun `service_role`.
+- `node scripts/check-sql-grants.mjs` (kører i `check-content.yml` på hver PR) fejler hvis en ny tabel mangler RLS eller en GRANT til `service_role`, eller giver `GRANT ALL` til anon. Hvad anon og authenticated skal have, kan scriptet ikke afgøre: det er dit ansvar. Sæt aldrig en ny tabel på scriptets undtagelsesliste.
+
 ## Før-deploy-tjekliste (manuel — de spørgsmål kode ikke kan svare på)
 
 Der er bevidst **ingen agent** til denne liste. Backup, genoprettelse og
