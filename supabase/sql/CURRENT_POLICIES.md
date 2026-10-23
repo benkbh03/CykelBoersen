@@ -128,7 +128,7 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | boost_orders | – | *(ingen politikker)* | – | – | – |
 | buy_requests | DELETE | buy_requests_delete | public | `dealer_id = auth.uid() OR ER_ADMIN` | – |
 | buy_requests | INSERT | buy_requests_insert | public | – | `dealer_id = auth.uid() AND is_verified_dealer(auth.uid()) AND NOT is_suspended(auth.uid())` ¹⁰ |
-| buy_requests | SELECT | buy_requests_select | public | `(is_active AND is_verified_dealer(dealer_id)) OR dealer_id = auth.uid() OR ER_ADMIN` | – |
+| buy_requests | SELECT | buy_requests_select | public | `(is_active AND is_verified_dealer(dealer_id) AND NOT is_test_account(dealer_id)) OR dealer_id = auth.uid() OR ER_ADMIN` ¹¹ | – |
 | buy_requests | UPDATE | buy_requests_update | public | `dealer_id = auth.uid() OR ER_ADMIN` | `(dealer_id = auth.uid() AND is_verified_dealer(auth.uid())) OR ER_ADMIN` ¹⁰ |
 | client_errors | INSERT | client_errors_insert | public | – | `true` |
 | client_errors | SELECT | client_errors_select_admin | public | `ER_ADMIN` | – |
@@ -151,6 +151,7 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | price_drop_watches | UPDATE | Service role can update notification timestamp | **service_role** | `true` | – |
 | profiles | INSERT | Kun ejer kan indsætte profil | public | – | `auth.uid() = id` |
 | profiles | SELECT | Alle kan se profiler | public | `true` ² | – |
+| profiles | SELECT | profiles_hide_test (RESTRICTIVE) | public | `NOT is_test OR id = auth.uid() OR viewer_is_admin()` ¹¹ | – |
 | profiles | UPDATE | Ejer eller admin kan opdatere profil | public | `auth.uid() = id OR ER_ADMIN` | – ³ |
 | profiles_address_removed_20261012 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
 | profiles_phone_removed_20260901 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
@@ -242,3 +243,5 @@ er for et annoncebillede, så DELETE virkede for ingen. Rettet i
 `harden_bike_images_bucket.sql`, kørt og verificeret 4. september 2026.
 
 ¹⁰ `buy_requests` (`add_buy_requests.sql`, 17. okt.): klienten har kun kolonne-GRANT på INSERT/UPDATE (title, description, types, brands, min_year, max_price, is_active), så `dealer_id` sættes af standardværdien `auth.uid()` og kan ikke flyttes. Triggeren `buy_requests_guard` tillader højst 10 aktive pr. forhandler. STATUS_TJEK række 67.
+
+¹¹ Testkonti (`hide_test_accounts.sql`, 23. okt.): `profiles.is_test = true` skjuler profilen for alle andre end kontoen selv og admin, så den falder ud af alle forhandlerlister, sitemap og prerender. Opkøbsønsker fra en testkonto vises kun for ejeren og admin. `is_test` kan ikke læses fra browseren og kun ændres af admin (trigger `protect_is_test`). Annoncer fra en testkonto skjules IKKE. STATUS_TJEK række 84.
