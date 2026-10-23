@@ -94,6 +94,12 @@
   color: var(--charcoal);
   margin: 0 0 var(--space-4);
 }
+.br-card-link {
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-4);
+}
+.br-card-link a { color: var(--charcoal); text-decoration: underline; overflow-wrap: anywhere; }
+.br-card-link a:hover { color: var(--rust); }
 
 .br-offer-btn {
   display: inline-flex;

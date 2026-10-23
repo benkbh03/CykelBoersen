@@ -16,6 +16,10 @@ const BIKE_TYPES = ['El-cykel', 'Racercykel', 'Mountainbike', 'Gravel', 'Citybik
 // valgt. Nøglen læses af js/sell-page.js efter oprettelse.
 const RETURN_KEY = 'buy_offer_return';
 
+// link_url kommer fra add_buy_request_link.sql. Findes kolonnen ikke endnu,
+// hentes listen uden den (se selectRequests), så siden ikke står tom hvis
+// frontenden når ud før SQL'en er kørt.
+const LINK_FIELD = 'link_url, ';
 const SELECT_FIELDS = 'id, dealer_id, title, description, types, brands, min_year, max_price, is_active, created_at, ' +
   'dealer:profiles!buy_requests_dealer_id_fkey(id, shop_name, name, city)';
 
@@ -29,6 +33,36 @@ export function createBuyRequestsPage({
   let _formOpen = false;  // formularen til et nyt ønske er lukket, til forhandleren beder om den
   let _myBikes = null;    // sælgerens aktive annoncer, hentes ved første "Tilbyd"
   let _ratings = {};      // dealer_id -> { sum, n }, så sælgeren kan bedømme forhandleren
+
+  let _hasLink = true;    // false hvis databasen endnu ikke har link_url
+
+  // build(fields) laver forespørgslen. Svarer databasen "ukendt kolonne"
+  // (42703), prøves igen uden link_url.
+  async function selectRequests(build) {
+    if (_hasLink) {
+      const res = await build(LINK_FIELD + SELECT_FIELDS);
+      if (res.error?.code !== '42703') return res;
+      _hasLink = false;
+    }
+    return build(SELECT_FIELDS);
+  }
+
+  // Kun https, som CHECK-reglen i databasen. "upway.dk/opkoeb" får https:// på.
+  function normalizeLink(raw) {
+    const s = String(raw || '').trim();
+    if (!s) return null;
+    try {
+      const u = new URL(/^[a-z]+:\/\//i.test(s) ? s : `https://${s}`);
+      if (u.protocol !== 'https:' || /[\s<>"']/.test(u.href) || u.href.length > 300) return undefined;
+      return u.href;
+    } catch { return undefined; }
+  }
+
+  function linkHTML(url) {
+    let host = '';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; }
+    return `<p class="br-card-link"><a href="${esc(url)}" target="_blank" rel="noopener nofollow ugc">Læs mere på ${esc(host)}</a></p>`;
+  }
 
   const isVerifiedDealer = (p) => !!p && p.seller_type === 'dealer' && p.verified === true;
   const dealerName = (d) => d?.shop_name || d?.name || 'Forhandler';
@@ -60,6 +94,7 @@ export function createBuyRequestsPage({
         </p>` : ''}
         ${facts.length ? `<ul class="br-card-facts">${facts.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${r.description ? `<p class="br-card-desc">${esc(r.description).replace(/\n/g, '<br>')}</p>` : ''}
+        ${r.link_url ? linkHTML(r.link_url) : ''}
         ${own ? '' : `<button type="button" class="br-offer-btn" id="br-offer-open-${esc(r.id)}" onclick="openBuyOffer('${esc(r.id)}')">Tilbyd din cykel</button>
         <div class="br-offer" id="br-offer-${esc(r.id)}" hidden></div>`}
       </article>`;
@@ -84,10 +119,11 @@ export function createBuyRequestsPage({
   }
 
   async function fetchPublic(dealerId) {
-    let q = supabase.from('buy_requests').select(SELECT_FIELDS)
-      .eq('is_active', true).order('created_at', { ascending: false }).limit(100);
-    if (dealerId) q = q.eq('dealer_id', dealerId);
-    const { data, error } = await q;
+    const { data, error } = await selectRequests(fields => {
+      let q = supabase.from('buy_requests').select(fields)
+        .eq('is_active', true).order('created_at', { ascending: false }).limit(100);
+      return dealerId ? q.eq('dealer_id', dealerId) : q;
+    });
     if (error) throw error;
     return data || [];
   }
@@ -188,8 +224,8 @@ export function createBuyRequestsPage({
       wrap.innerHTML = `<p class="br-dealer-note">Du kan lægge opkøbsønsker op, når din forhandlerprofil er godkendt.</p>`;
       return;
     }
-    const { data, error } = await supabase.from('buy_requests').select(SELECT_FIELDS)
-      .eq('dealer_id', user.id).order('created_at', { ascending: false });
+    const { data, error } = await selectRequests(fields => supabase.from('buy_requests').select(fields)
+      .eq('dealer_id', user.id).order('created_at', { ascending: false }));
     if (error) { wrap.innerHTML = `<p class="br-muted">Kunne ikke hente dine opkøbsønsker.</p>`; return; }
     _own = data || [];
     const editing = _own.find(r => r.id === _editingId) || null;
@@ -239,6 +275,9 @@ export function createBuyRequestsPage({
         <label class="br-field">Beskrivelse
           <textarea id="br-f-desc" maxlength="1000" rows="4" placeholder="Hvad leder I efter, og hvordan foregår handlen (afhentning, betaling, stand)?">${esc(v.description || '')}</textarea>
         </label>
+        ${_hasLink ? `<label class="br-field">Link til jeres egen side <span class="br-muted">(valgfrit)</span>
+          <input type="url" id="br-f-link" maxlength="300" inputmode="url" placeholder="https://jeresbutik.dk/opkoeb" value="${esc(v.link_url || '')}">
+        </label>` : ''}
         <div class="br-form-actions">
           <button type="submit" class="br-offer-btn" id="br-f-save">${r ? 'Gem ændringer' : 'Læg op'}</button>
           <button type="button" class="br-link-btn" onclick="cancelBuyRequestEdit()">Annullér</button>
@@ -260,12 +299,14 @@ export function createBuyRequestsPage({
       brands:      [...new Set(brands)],
       min_year:    num('br-f-year'),
       max_price:   num('br-f-price'),
+      ...(_hasLink ? { link_url: normalizeLink(document.getElementById('br-f-link')?.value) } : {}),
     };
   }
 
   async function saveBuyRequest() {
     const payload = readForm();
     if (payload.title.length < 3) { showToast('Skriv en overskrift', 'advarsel'); return; }
+    if ('link_url' in payload && payload.link_url === undefined) { showToast('Linket skal være en https-adresse, fx https://jeresbutik.dk', 'advarsel'); return; }
     const btn = document.getElementById('br-f-save');
     if (btn) btn.disabled = true;
     const q = _editingId
