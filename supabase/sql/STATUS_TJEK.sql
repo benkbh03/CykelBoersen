@@ -292,6 +292,19 @@ SELECT * FROM (
                 THEN 'FEJL: trigger buy_requests_guard mangler'
               ELSE 'OK' END
 
+  -- ── add_buy_request_link.sql (23. oktober) ─────────────────────────
+  -- Koer FOER frontenden merges; /opkoeb klarer sig uden, men linket vises ikke.
+  UNION ALL SELECT 69, 'opkoeb', 'link til forhandlerens egen side (link_url, kun https)',
+         CASE WHEN to_regclass('public.buy_requests') IS NULL THEN 'MANGLER (buy_requests)'
+              WHEN NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                WHERE table_name = 'buy_requests' AND column_name = 'link_url')
+                THEN 'MANGLER'
+              WHEN NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'buy_requests_link_url_check')
+                THEN 'FEJL: https-reglen mangler'
+              WHEN NOT has_column_privilege('authenticated', 'public.buy_requests', 'link_url', 'UPDATE')
+                THEN 'FEJL: GRANT paa link_url mangler'
+              ELSE 'OK' END
+
   -- ── normalize_groupset.sql (18. oktober) ───────────────────────────
   -- "105" skal staa som "Shimano 105", ellers finder filtret den ikke.
   UNION ALL SELECT 68, 'annoncer', 'komponentgruppe skrives ens (trigger + ingen rester)',
