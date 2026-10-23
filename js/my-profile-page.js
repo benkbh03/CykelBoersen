@@ -175,6 +175,13 @@ export function createMyProfilePage({
             <span class="mp-summary-item">Ubesvarede tråde <b id="mp-dealer-respond">–</b></span>` : ''}
           </p>
 
+          <!-- Opkøb: verificerede forhandlere opretter og retter deres
+               opkøbsønsker på /opkoeb. Uden denne linje skulle de kende adressen. -->
+          ${isDealer && p.verified ? `<p class="mp-summary">
+            <span class="mp-summary-item">Opkøb</span>
+            <button class="mp-summary-item" onclick="navigateTo('/opkoeb')"><b>Mine opkøbsønsker</b></button>
+          </p>` : ''}
+
           <!-- Udlejning: forhandlerens vej til egne udlejningscykler. Skjules
                af body.rental-hidden så længe udlejning er admin-only. -->
           ${isDealer ? `<p class="mp-summary" data-feature="rental">
