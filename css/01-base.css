@@ -232,11 +232,15 @@ body.nav-search-on .nav-search { display: flex; }
 /* Browserens indbyggede kryds på type=search har sin egen farve og størrelse
    pr. platform, altså samme problem som emoji-ikoner. Slået fra. */
 .nav-search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+/* Neutral, ikke orange: "+ Sæt til salg" står i samme række og er den ene
+   orange knap i topbaren. To orange knapper side om side læses som to lige
+   vigtige handlinger (samme grund som mobil-reglen længere nede). Enter i
+   feltet søger stadig, så knappen behøver ikke råbe. */
 .nav-search-go {
   flex-shrink: 0;
   border: none;
-  background: var(--rust);
-  color: #fff;
+  background: color-mix(in srgb, var(--surface) 14%, transparent);
+  color: var(--sand);
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: var(--weight-semibold);
@@ -245,7 +249,7 @@ body.nav-search-on .nav-search { display: flex; }
   cursor: pointer;
   transition: background 0.15s;
 }
-.nav-search-go:hover { background: var(--rust-hover); }
+.nav-search-go:hover { background: color-mix(in srgb, var(--surface) 24%, transparent); }
 .nav-search-go-icon { width: 18px; height: 18px; display: none; }
 
 /* Mobil-knappen der folder feltet ud. Skjult på desktop, hvor feltet står
@@ -325,7 +329,7 @@ body.nav-search-on .nav-search { display: flex; }
 
 /* ── HAMBURGER + MOBIL-MENU (kun ≤768px) ──
    På mobil skjules tekst-nav-linksene; hamburgeren genskaber adgang til
-   Mærker/Forhandlere/Cykelagenter for udlogget førstegangs-besøgende.
+   Mærker/Forhandlere/Søgeagent/Hjælp for udlogget førstegangs-besøgende.
    Hamburger + logo grupperes til venstre (nav-left), så "site-menu" står
    adskilt fra de personlige handlinger (inbox/avatar) i højre side. */
 .nav-left { display: flex; align-items: center; gap: var(--space-2); }
