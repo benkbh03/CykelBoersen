@@ -852,8 +852,11 @@ export function createBikeDetail({
     const priceValidUntil = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
 
     document.title = bikePageTitle(bikeTitle(b.brand, b.model), priceText(b));
+    // Verificerede forhandlere nævnes ved navn, som i den prerendrede HTML (scripts/prerender.mjs bikePage).
+    const seoShop = (b.profiles?.shop_name || b.profiles?.name || '').trim();
+    const seoDealer = b.profiles?.seller_type === 'dealer' && b.profiles?.verified && seoShop ? ` hos ${seoShop}` : '';
     updateSEOMeta(
-      `${bikeTitle(b.brand, b.model)} – ${b.type} i ${b.city || 'Danmark'}. ${b.condition}. ${priceText(b)} Køb på Cykelbørsen.`,
+      `${bikeTitle(b.brand, b.model)} – ${b.type}${seoDealer} i ${b.city || 'Danmark'}. ${b.condition}. ${priceText(b)} Køb på Cykelbørsen.`,
       prettyPath,
       {
         title: `${bikeTitle(b.brand, b.model)} – ${priceText(b)} | Cykelbørsen`,

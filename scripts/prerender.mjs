@@ -98,6 +98,9 @@ const BIKES_BY_TYPE  = new Map();   // bikes.type -> [bike]
 /* user_id -> annoncer. Bruges af forhandlersiderne, saa hver forhandler faar
    rigtige links til sit eget lager i den raa HTML. */
 const BIKES_BY_DEALER = new Map();  // profiles.id -> [bike]
+/* Verificerede forhandlere, efter id. Kun de har en /dealer/-side, saa kun
+   deres annoncer linker dertil. Fyldes foer annoncesiderne skrives. */
+const DEALERS_BY_ID = new Map();
 
 const LINKED_BIKES_PER_PAGE = 40;
 
@@ -606,8 +609,16 @@ function bikePage(b) {
   const canonicalPath = bikePath(b);
 
   const title = bikePageTitle(name, `${priceStr} kr.`);
+  /* Annoncer fra en verificeret forhandler naevner butikken og linker til dens
+     side. Linket er det der faar Google til at finde og vaegte forhandlersiden;
+     uden det var den kun naaelig fra /forhandlere. Teksten skal svare til
+     updateSEOMeta() i js/bike-detail.js. */
+  const dealer = DEALERS_BY_ID.get(b.user_id);
+  const dealerNavn = dealer ? dealerName(dealer) : '';
   const description = [
-    `${name} – ${b.type || 'Cykel'} i ${city}.`,
+    dealer
+      ? `${name} – ${b.type || 'Cykel'} hos ${dealerNavn} i ${city}.`
+      : `${name} – ${b.type || 'Cykel'} i ${city}.`,
     b.condition ? `${b.condition}.` : '',
     `${priceStr} kr. Køb på Cykelbørsen.`,
   ].filter(Boolean).join(' ');
@@ -627,6 +638,7 @@ function bikePage(b) {
         <h1 class="bike-prerender-title">${escHtml(name)}</h1>
         <p class="bike-prerender-price">${priceStr} kr.</p>
         <div class="bike-prerender-meta">${metaBits}</div>
+        ${dealer ? `<p class="bike-prerender-seller">Sælges af <a href="/dealer/${escHtml(dealer.id)}/">${escHtml(dealerNavn)}</a>${dealer.city ? `, ${escHtml(dealer.city)}` : ''}</p>` : ''}
         ${descHtml}
       </div>`;
 
@@ -656,6 +668,7 @@ function bikePage(b) {
         seller: {
           '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
           name: b.profiles?.shop_name || b.profiles?.name || 'Sælger',
+          ...(dealer ? { url: canonicalUrl(`/dealer/${dealer.id}`) } : {}),
         },
       },
     },
@@ -765,8 +778,31 @@ function dealerName(d) {
   return (d.shop_name || d.name || 'Forhandler').trim();
 }
 
+/* Hjemmeside og Facebook staar som brugeren skrev dem, ofte uden https://.
+   Samme regel som profilsiden (js/profile-pages.js). Kun http(s) slipper
+   igennem, saa et "javascript:" aldrig ender i et href. */
+function dealerLink(url) {
+  const t = String(url || '').trim();
+  if (!t) return '';
+  const u = /^https?:\/\//i.test(t) ? t : 'https://' + t;
+  try {
+    const parsed = new URL(u);
+    return /^https?:$/.test(parsed.protocol) ? parsed.href : '';
+  } catch { return ''; }
+}
+
+function dealerPhone(phone) {
+  const digits = String(phone || '').replace(/[^\d+]/g, '').replace(/^(\+45|0045)/, '');
+  return /^\d{8}$/.test(digits) ? digits : '';
+}
+
 function dealerPage(d) {
   const navn  = dealerName(d);
+  /* Navn, adresse og telefon staar baade synligt og i BikeStore-JSON-LD, og
+     sameAs peger paa butikkens egen hjemmeside og Facebook. Det er det der
+     binder siden her sammen med butikkens Google-profil. */
+  const tlf   = dealerPhone(d.phone);
+  const sameAs = [dealerLink(d.website), dealerLink(d.facebook), dealerLink(d.instagram)].filter(Boolean);
   const bikes = BIKES_BY_DEALER.get(d.id) || [];
   const sted  = [d.address, d.city].filter(Boolean).join(', ');
   /* Titlen maa ikke love cykler naar der ingen er. Siden er ganske vist
@@ -790,10 +826,13 @@ function dealerPage(d) {
       address: {
         '@type': 'PostalAddress',
         ...(d.address ? { streetAddress: d.address } : {}),
+        ...(d.postcode ? { postalCode: String(d.postcode) } : {}),
         addressLocality: d.city,
         addressCountry: 'DK',
       },
     } : {}),
+    ...(tlf ? { telephone: `+45${tlf}` } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
   }, breadcrumb([
     ['Forhandlere', '/forhandlere'],
     [navn, `/dealer/${d.id}`],
@@ -805,6 +844,8 @@ function dealerPage(d) {
           <a href="/forhandlere/">Forhandlere</a></p>
         <h1 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:6px;">${escHtml(navn)}</h1>
         ${sted ? `<p style="color:var(--muted);margin-bottom:4px;">${escHtml(sted)}</p>` : ''}
+        ${tlf ? `<p style="margin-bottom:4px;"><a href="tel:+45${tlf}">${tlf.replace(/(\d{2})(?=\d)/g, '$1 ')}</a></p>` : ''}
+        ${sameAs.length ? `<p style="margin-bottom:4px;">${sameAs.map(u => `<a href="${escHtml(u)}" rel="noopener nofollow">${escHtml(new URL(u).hostname.replace(/^www\./, ''))}</a>`).join(' · ')}</p>` : ''}
         <p style="color:var(--muted);margin-bottom:18px;">Verificeret forhandler på Cykelbørsen</p>
         ${d.bio ? `<p style="margin-bottom:18px;">${escHtml(d.bio)}</p>` : ''}
         <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.1rem;margin-bottom:10px;">
@@ -1016,8 +1057,9 @@ async function main() {
   let dealers = null;
   try {
     dealers = await fetchSupabase(
-      'profiles?seller_type=eq.dealer&verified=eq.true&select=id,shop_name,name,city,address,bio,avatar_url'
+      'profiles?seller_type=eq.dealer&verified=eq.true&select=id,shop_name,name,city,address,postcode,phone,website,facebook,instagram,bio,avatar_url'
     );
+    for (const d of dealers || []) DEALERS_BY_ID.set(d.id, d);
   } catch (err) {
     console.warn('Kunne ikke hente forhandlere:', err.message);
   }
