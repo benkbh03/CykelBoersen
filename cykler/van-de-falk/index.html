@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="ae5188c837">
+<html lang="da" data-asset-v="cfcd5bacee">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,24 +128,24 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=ae5188c837">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=cfcd5bacee">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/01-base.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/02-listings.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/04-modals.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/05-pages.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/07-map.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/09-compare.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/12-rental.css?v=ae5188c837">
-  <link rel="stylesheet" href="/css/13-buy-requests.css?v=ae5188c837">
+  <link rel="stylesheet" href="/css/tokens.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/01-base.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/02-listings.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/04-modals.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/05-pages.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/07-map.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/09-compare.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/12-rental.css?v=cfcd5bacee">
+  <link rel="stylesheet" href="/css/13-buy-requests.css?v=cfcd5bacee">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1213,6 +1213,7 @@
       <div class="footer-col">
         <h3 class="footer-col-title">Forhandlere</h3>
         <a href="/forhandlere/" onclick="event.preventDefault();navigateTo('/forhandlere')">Find forhandler</a>
+        <a href="/opkoeb/" onclick="event.preventDefault();navigateTo('/opkoeb')">Forhandlere der køber cykler</a>
         <a href="/bliv-forhandler/" onclick="event.preventDefault();navigateTo('/bliv-forhandler')">Bliv forhandler</a>
         <a href="/bliv-udlejer/" data-feature="rental" onclick="event.preventDefault();navigateTo('/bliv-udlejer')">Bliv udlejer</a>
       </div>
