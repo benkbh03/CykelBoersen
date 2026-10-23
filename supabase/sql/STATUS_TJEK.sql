@@ -305,6 +305,20 @@ SELECT * FROM (
                 THEN 'FEJL: GRANT paa link_url mangler'
               ELSE 'OK' END
 
+  -- ── hide_test_accounts.sql (23. oktober) ───────────────────────────
+  UNION ALL SELECT 84, 'testkonti', 'profiles.is_test skjuler testkonti for besoegende',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                WHERE table_name = 'profiles' AND column_name = 'is_test')
+                THEN 'MANGLER'
+              WHEN NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles'
+                                AND policyname = 'profiles_hide_test' AND permissive = 'RESTRICTIVE')
+                THEN 'FEJL: politik profiles_hide_test mangler'
+              WHEN NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'protect_is_test')
+                THEN 'FEJL: trigger protect_is_test mangler (brugere kan skjule sig selv)'
+              WHEN has_column_privilege('anon', 'public.profiles', 'is_test', 'SELECT')
+                THEN 'FEJL: is_test kan laeses fra browseren'
+              ELSE 'OK' END
+
   -- ── normalize_groupset.sql (18. oktober) ───────────────────────────
   -- "105" skal staa som "Shimano 105", ellers finder filtret den ikke.
   UNION ALL SELECT 68, 'annoncer', 'komponentgruppe skrives ens (trigger + ingen rester)',
