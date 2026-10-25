@@ -313,6 +313,9 @@ SELECT * FROM (
               WHEN NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles'
                                 AND policyname = 'profiles_hide_test' AND permissive = 'RESTRICTIVE')
                 THEN 'FEJL: politik profiles_hide_test mangler'
+              WHEN EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles'
+                            AND policyname = 'profiles_hide_test' AND qual ILIKE '%viewer_is_admin%')
+                THEN 'FEJL: gammel udgave, admin ser testkonti paa offentlige sider'
               WHEN NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'protect_is_test')
                 THEN 'FEJL: trigger protect_is_test mangler (brugere kan skjule sig selv)'
               WHEN has_column_privilege('anon', 'public.profiles', 'is_test', 'SELECT')
