@@ -282,8 +282,8 @@ export function createAdminBulkImport({ supabase, showToast }) {
                 <td style="padding:6px 10px;">${esc(v.row.city || '—')}</td>
                 <td style="padding:6px 10px;">${v.images.length}</td>
                 <td style="padding:6px 10px;font-size:0.78rem;">
-                  ${v.errors.length ? `<span style="color:var(--error);">Mangler: ${v.errors.join(', ')}</span>` : ''}
-                  ${v.warnings.length ? `<span style="color:#a8761a;display:block;margin-top:2px;">⚠ ${v.warnings.join(' · ')}</span>` : ''}
+                  ${v.errors.length ? `<span style="color:var(--error);">Mangler: ${esc(v.errors.join(', '))}</span>` : ''}
+                  ${v.warnings.length ? `<span style="color:#a8761a;display:block;margin-top:2px;">⚠ ${esc(v.warnings.join(' · '))}</span>` : ''}
                 </td>
               </tr>
             `).join('')}
