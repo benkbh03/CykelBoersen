@@ -110,17 +110,17 @@ export function createSizeFinder({
           <h2 class="size-finder-info-title">Ofte stillede spørgsmål</h2>
           <details class="size-finder-faq-item">
             <summary>Hvor præcist er resultatet?</summary>
-            <p>Hvis du indtaster både højde og benlængde, er resultatet typisk inden for ±1 cm af optimal stelstørrelse. Bemærk: forskellige mærker har lidt forskellige geometrier, så en "M" Trek og en "M" Specialized er ikke 100% identiske. Brug altid en prøvetur som endelig test.</p>
+            <p>Hvis du indtaster både højde og benlængde, giver resultatet et godt udgangspunkt for stelstørrelsen. Bemærk: forskellige mærker har lidt forskellige geometrier, så en "M" Trek og en "M" Specialized er ikke helt ens. Brug altid en prøvetur som endelig test.</p>
           </details>
           <details class="size-finder-faq-item">
             <summary>Hvad gør jeg hvis jeg er imellem to størrelser?</summary>
-            <p>Hvis du er på grænsen (fx 178 cm, mellem M og L racere) afhænger valget af din krops-proportioner og kørestil:
+            <p>Hvis du er på grænsen (fx 178 cm, mellem M og L på en racer) afhænger valget af dine kropsproportioner og kørestil:
             <ul><li><strong>Vælg M</strong> hvis du har korte ben + lang overkrop, eller foretrækker oprejst position</li>
-            <li><strong>Vælg L</strong> hvis du har lange ben + kort overkrop, eller foretrækker race-position</li></ul></p>
+            <li><strong>Vælg L</strong> hvis du har lange ben + kort overkrop, eller foretrækker en lav og strakt position</li></ul></p>
           </details>
           <details class="size-finder-faq-item">
             <summary>Skal jeg altid lave en prøvetur?</summary>
-            <p>Ja. Vores værktøj er meget præcist baseret på de standard-formler producenter selv bruger. Men hver krop er unik. En 5-minutters prøvetur kan afsløre om en cykel der "passer på papiret" virkelig passer dig.</p>
+            <p>Ja. Værktøjet bygger på de standardformler, producenterne selv bruger, men kroppe er forskellige. En prøvetur på fem minutter viser, om en cykel der passer på papiret også passer dig.</p>
           </details>
         </section>
       </div>

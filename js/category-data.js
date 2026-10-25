@@ -18,7 +18,7 @@ export const CATEGORY_META = {
     intro: 'Racercykler er bygget til fart på asfalt, med lette rammer og smalle dæk. Filtrér på gruppesæt, rammemateriale, stelstørrelse og pris.',
     faq: [
       { q: 'Hvad koster en god brugt racercykel?', a: 'En velholdt brugt racercykel i aluminium med Shimano 105 starter typisk omkring 5.000–10.000 kr, mens carbon-racere med Ultegra eller Dura-Ace ligger fra 15.000 kr og opefter. Prisen afhænger af alder, gruppesæt og stand.' },
-      { q: 'Skal jeg vælge aluminium eller carbon?', a: 'Aluminium er billigere og robust, godt til begynder og pendling. Carbon er lettere og dæmper vibrationer bedre, men koster mere. Til de fleste motionister er en aluminiumsracer med et godt gruppesæt et bedre køb end en billig carbon.' },
+      { q: 'Skal jeg vælge aluminium eller carbon?', a: 'Aluminium er billigere og robust, godt til begyndere og pendling. Carbon er lettere og dæmper vibrationer bedre, men koster mere. Til de fleste motionister er en aluminiumsracer med et godt gruppesæt et bedre køb end en billig carbon.' },
     ],
     related: ['gravelbikes', 'mountainbikes', 'el-cykler'],
   },
@@ -32,7 +32,7 @@ export const CATEGORY_META = {
     intro: 'Mountainbikes er bygget til skov og spor, enten som hardtail med affjedret forgaffel eller som fully med fuld affjedring. Filtrér på affjedring, hjulstørrelse, gruppesæt og pris.',
     faq: [
       { q: 'Hardtail eller fully: hvad skal jeg vælge?', a: 'Hardtail (kun forgaffel) er lettere, billigere og kræver mindre vedligehold, godt til lettere spor og skovveje. Fully (fuld affjedring) giver mere kontrol og komfort i teknisk terræn, men koster mere. Se vores MTB-affjedringsguide i bloggen for hjælp.' },
-      { q: 'Hvad koster en god brugt mountainbike?', a: 'En brugbar brugt hardtail starter omkring 3.000–6.000 kr, mens en god fully med luftaffjedring og hydrauliske bremser typisk ligger fra 8.000 kr og op. Full-carbon race-MTB\'er kan koste betydeligt mere.' },
+      { q: 'Hvad koster en god brugt mountainbike?', a: 'En brugbar brugt hardtail starter omkring 3.000–6.000 kr, mens en god fully med luftaffjedring og hydrauliske bremser typisk ligger fra 8.000 kr og op. MTB\'er med carbonstel til løb kan koste betydeligt mere.' },
       { q: 'Hvilken hjulstørrelse er bedst?', a: '29" ruller hurtigere og glider bedre hen over forhindringer, mens 27,5" er mere adræt og legende. De fleste moderne trail- og cross-country-cykler bruger 29".' },
     ],
     related: ['gravelbikes', 'racercykler', 'el-cykler'],
@@ -61,7 +61,7 @@ export const CATEGORY_META = {
     metaDesc: 'Køb og sælg brugte og nye citybikes og pendlercykler i Danmark. Komfortable bycykler til hverdagen. Filtrér på gear, størrelse og pris på Cykelbørsen.',
     intro: 'Citybikes er til hverdagen i byen, med oprejst siddestilling og ofte nav-gear. Filtrér på geartype, indstigning, stelstørrelse og pris.',
     faq: [
-      { q: 'Nav-gear eller klassisk kædegear på en citybike?', a: 'Nav-gear (fx Shimano Nexus) er lukket, kræver næsten ingen vedligehold og kan skiftes stillestående, ideelt til bykørsel. Klassisk kædegear giver flere gear og er lettere, men kræver mere pleje. Til pendling foretrækker mange nav-gear.' },
+      { q: 'Nav-gear eller klassisk kædegear på en citybike?', a: 'Nav-gear (fx Shimano Nexus) er lukket, kræver næsten ingen vedligehold og kan skiftes stillestående, praktisk til bykørsel. Klassisk kædegear giver flere gear og er lettere, men kræver mere pleje. Til pendling foretrækker mange nav-gear.' },
       { q: 'Hvad koster en god brugt citybike?', a: 'En velholdt brugt citybike koster typisk 1.500–4.000 kr afhængigt af mærke, gear og stand. Kvalitetsmærker med nav-gear og hydrauliske bremser ligger i den høje ende.' },
     ],
     related: ['el-cykler', 'ladcykler', 'boernecykler'],
@@ -99,12 +99,12 @@ export const CATEGORY_META = {
     name: 'Gravelbikes',
     singular: 'Gravelbike',
     h1: 'Brugte og nye gravelbikes til salg',
-    title: 'Brugte gravelbikes til salg, grus & eventyr | Cykelbørsen',
+    title: 'Brugte gravelbikes til salg, grus & asfalt | Cykelbørsen',
     metaDesc: 'Find brugte og nye gravelbikes i Danmark. Én cykel til grus, asfalt og bikepacking. Filtrér på gruppesæt (GRX, Apex), dæk og pris på Cykelbørsen.',
     intro: 'Gravelbikes har bredere dæk og en mere afslappet geometri end en racer og kan køre både på asfalt og grus. Filtrér på gruppesæt, rammemateriale, stelstørrelse og pris.',
     faq: [
       { q: 'Hvad er forskellen på en gravelbike og en racercykel?', a: 'En gravelbike har plads til bredere dæk (typisk 38–45 mm mod racerens 25–32 mm), en mere afslappet og stabil geometri og ofte lavere gearing. Det gør den bedre til grus og lange dage i sadlen, mens en ren racer er hurtigere på asfalt.' },
-      { q: 'Kan man bruge en gravelbike til pendling?', a: 'Ja, gravelbiken er fremragende til pendling. De brede dæk giver komfort og greb i alt vejr, og der er ofte monteringshuller til skærme og pakageholder. Én cykel til både arbejde og weekend-eventyr.' },
+      { q: 'Kan man bruge en gravelbike til pendling?', a: 'Ja. De brede dæk giver mere greb og komfort end en racers på våde og ujævne veje. Mange gravelbikes har monteringshuller til skærme og bagagebærer, så den samme cykel kan bruges til arbejde og til ture i weekenden.' },
     ],
     related: ['racercykler', 'mountainbikes', 'citybikes'],
   },
