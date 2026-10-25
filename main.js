@@ -3704,7 +3704,7 @@ async function _callAdminAction(action, targetUserId, extra) {
   if (error || data?.error) {
     return { ok: false, error: data?.error || error?.message || 'Ukendt fejl' };
   }
-  return { ok: true };
+  return { ok: true, data };
 }
 
 async function approveDealer(userId) {
@@ -3730,10 +3730,11 @@ async function rejectDealer(userId) {
    mellem at overreagere og ikke at goere noget.
 
    Brugeren kan stadig logge ind og laese sine egne beskeder og annoncer.
-   De kan bare ikke skrive til nogen, oprette annoncer eller anmelde nogen.
-   Ingen data slettes, saa den kan fortrydes. */
+   De kan bare ikke skrive til nogen, oprette annoncer, rette profilen eller
+   anmelde nogen. Aktive annoncer skjules af admin-actions og saettes aktive
+   igen ved ophaevelse. Ingen data slettes, saa den kan fortrydes. */
 async function suspendUser(userId, navn) {
-  const dage = prompt('Suspendér ' + navn + ' i hvor mange dage?\n\nBrugeren kan stadig logge ind og se sine egne data, men kan ikke skrive beskeder, oprette annoncer eller anmelde nogen.\n\nIntet slettes, og du kan ophaeve den igen.', '30');
+  const dage = prompt('Suspendér ' + navn + ' i hvor mange dage?\n\nBrugeren kan stadig logge ind og se sine egne data, men kan ikke skrive beskeder, oprette annoncer, rette profilen eller anmelde nogen.\n\nAktive annoncer skjules og kommer frem igen, hvis du ophæver suspenderingen. Intet slettes, og du kan ophaeve den igen.', '30');
   if (dage === null) return;
   const d = parseInt(dage, 10);
   if (!Number.isFinite(d) || d < 1) { showToast('Angiv et antal dage', 'advarsel'); return; }
@@ -3741,15 +3742,19 @@ async function suspendUser(userId, navn) {
   if (grund === null) return;
   const res = await _callAdminAction('suspend_user', userId, { days: d, reason: grund });
   if (!res.ok) { showToast(res.error, 'fejl'); return; }
-  showToast(navn + ' er suspenderet i ' + d + ' dage', 'ok');
+  if (res.data?.warning) { showToast(res.data.warning, 'advarsel'); loadAllUsers(); return; }
+  const n = res.data?.skjulte_annoncer;
+  showToast(navn + ' er suspenderet i ' + d + ' dage'
+    + (n > 0 ? ', ' + n + (n === 1 ? ' annonce' : ' annoncer') + ' skjult' : ''), 'ok');
   loadAllUsers();
 }
 
 async function unsuspendUser(userId) {
-  if (!confirm('Ophaev suspenderingen?\n\nBrugeren kan skrive og oprette annoncer igen med det samme.')) return;
+  if (!confirm('Ophaev suspenderingen?\n\nBrugeren kan skrive og oprette annoncer igen med det samme, og de annoncer der blev skjult ved suspenderingen, kommer frem igen.')) return;
   const res = await _callAdminAction('unsuspend_user', userId, { reason: 'Ophaevet manuelt' });
   if (!res.ok) { showToast(res.error, 'fejl'); return; }
-  showToast('Suspenderingen er ophaevet', 'ok');
+  const n = res.data?.genaktiverede_annoncer;
+  showToast('Suspenderingen er ophævet' + (n > 0 ? ', ' + n + (n === 1 ? ' annonce' : ' annoncer') + ' vist igen' : ''), 'ok');
   loadAllUsers();
 }
 

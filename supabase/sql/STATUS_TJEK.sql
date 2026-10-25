@@ -416,6 +416,13 @@ SELECT * FROM (
                    AND pg_has_role(r.oid, 'pg_read_all_data', 'MEMBER'))
               THEN 'OK' ELSE 'MANGLER' END
 
+  -- Suspenderede brugere kan ikke rette navn, bio, billede m.m. (lock_suspended_profiles.sql)
+  UNION ALL SELECT 85, 'suspendering', 'profil låst for suspenderede (lock_suspended_profiles.sql)',
+         CASE WHEN EXISTS (SELECT 1 FROM pg_trigger
+                            WHERE tgname = 'lock_suspended_profile_trg'
+                              AND tgrelid = 'public.profiles'::regclass)
+              THEN 'OK' ELSE 'MANGLER' END
+
   -- ── Edge functions: kan IKKE tjekkes herfra ────────────────────────
   -- Rækkerne er en huskeliste. Hver skal være deployet SAMME DAG ELLER
   -- SENERE end datoen i status (seneste commit der rørte filen). Se
@@ -426,6 +433,7 @@ SELECT * FROM (
   UNION ALL SELECT 92, 'edge function', 'notify-message',        'TJEK: deployet efter 2026-10-13'
   UNION ALL SELECT 93, 'edge function', 'notify-followers',      'TJEK: deployet efter 2026-09-26'
   UNION ALL SELECT 94, 'edge function', 'notify-saved-searches', 'TJEK: deployet efter 2026-09-26'
+  UNION ALL SELECT 95, 'edge function', 'admin-actions',         'TJEK: deployet efter 2026-10-25 (skjuler annoncer ved suspendering)'
 
 ) AS t
 ORDER BY sort;
