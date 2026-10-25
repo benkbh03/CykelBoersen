@@ -333,9 +333,11 @@ export function createMyProfile({
   async function saveCurrentSearch() {
     const currentUser = getCurrentUser();
 
-    const search = document.getElementById('search-input').value.trim();
-    const type   = document.getElementById('search-type').value;
-    const city   = document.getElementById('search-city').value;
+    // #search-type (typevælgeren i søgefeltet) er fjernet fra forsiden. Uden
+    // ?. smed knappen "Opret Cykelagent" en null-fejl (Safari, 24. okt.).
+    const search = document.getElementById('search-input')?.value.trim() || '';
+    const type   = document.getElementById('search-type')?.value || '';
+    const city   = document.getElementById('search-city')?.value || '';
 
     const fa       = getCurrentFilterArgs() || {};
     const cf       = getCurrentFilters() || {};
