@@ -25,6 +25,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { XMLParser } from "https://esm.sh/fast-xml-parser@4";
 import { SITE, esc, heading, p as para, button, layout, sendEmail } from "../_shared/email.ts";
+import { cleanModel } from "../_shared/listing-title.ts";
 // Bruger Denos indbyggede Deno.serve (ingen ekstern std-afhængighed at bundle).
 
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
@@ -698,14 +699,18 @@ async function syncFeed(supa: any, feed: any, preview: boolean, draft = false) {
     const ws = parseInt(String(enriched.wheel_size || ""), 10);
     const adultHint = /\bherre\b|\bdame\b|\bmen'?s\b|\bwomen'?s\b|\bvoksen\b/i.test(it.title || "");
     if (ws && ws < 26 && !adultHint) type = "Børnecykel";
+    // Pæn modeltekst til kortet. Den rå titel bruges stadig ovenfor til at
+    // udlede felterne, så intet går tabt af at årgang og størrelse ryger ud.
+    const brand = it.brand || it.title || "Cykel";
+    const model = cleanModel(it.model || "", brand) || it.model || "";
     return {
       external_id: it.external_id,
       available:   !it.availability.includes("out"),
       bike: {
         external_id:  it.external_id,
-        brand:        it.brand || it.title || "Cykel",            // obligatorisk
-        model:        it.model || "",
-        title:        it.title || "",
+        brand,                                                     // obligatorisk
+        model,
+        title:        `${brand} ${model}`.trim(),
         type,                                                      // obligatorisk
         price:        it.price,                                    // obligatorisk
         original_price: it.original_price || it.price,
