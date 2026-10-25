@@ -135,7 +135,7 @@ export function createValuation({
           </details>
           <details class="valuation-faq-item">
             <summary>Hvad gør jeg hvis I ikke har data nok?</summary>
-            <p>Hvis vi ikke finder lignende cykler giver vi et bredere interval baseret på din cykels mærke og type. Du kan også kontakte en af vores forhandlere for personlig vurdering. De kender markedet bedst.</p>
+            <p>Hvis vi ikke finder lignende cykler, giver vi et bredere interval baseret på din cykels mærke og type. Du kan også kontakte en af vores forhandlere for personlig vurdering. De kender markedet bedst.</p>
           </details>
           <details class="valuation-faq-item">
             <summary>Skal jeg sætte prisen på medianværdien?</summary>
@@ -143,7 +143,7 @@ export function createValuation({
           </details>
           <details class="valuation-faq-item">
             <summary>Hvad påvirker prisen mest?</summary>
-            <p>I prioriteret rækkefølge: (1) Mærke + model + årgang, (2) stand, (3) komponentgruppe og specs, (4) hvor populær modellen er, (5) årstid (forår/sommer = højere priser).</p>
+            <p>I prioriteret rækkefølge: (1) Mærke + model + årgang, (2) stand, (3) gruppesæt og udstyr, (4) hvor populær modellen er, (5) årstid (forår/sommer = højere priser).</p>
           </details>
         </section>
       </div>
