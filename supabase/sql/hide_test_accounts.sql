@@ -1,5 +1,5 @@
 -- ══════════════════════════════════════════════════════════════════════
---  Testkonti: skjult for alle undtagen kontoen selv og admin
+--  Testkonti: skjult for alle undtagen kontoen selv
 --  Kør i Supabase Dashboard → SQL Editor → Run. Idempotent.
 -- ══════════════════════════════════════════════════════════════════════
 --
@@ -15,6 +15,12 @@
 --    for alle andre end kontoen selv og admin. Dermed falder den ud af alle
 --    lister, sitemap og prerender (de læser med den offentlige nøgle).
 --  · Opkøbsønsker fra en testkonto vises kun for ejeren og admin.
+--
+--  25. okt.: admin så stadig testforhandleren på /forhandlere, fordi
+--  politikken også lukkede admin ind. Nu er det kun kontoen selv. Admin
+--  finder den stadig i admin-panelet: admin_list_profiles() er SECURITY
+--  DEFINER og går uden om politikken. Kører man filen igen, skrives den
+--  gamle politik over (DROP + CREATE herunder).
 --
 --  Skjuler IKKE annoncer: en annonce oprettet af testkontoen vises på
 --  forsiden uden sælger. Opret ikke offentlige annoncer fra en testkonto.
@@ -65,10 +71,11 @@ CREATE TRIGGER protect_is_test
   FOR EACH ROW EXECUTE FUNCTION protect_is_test();
 
 -- RESTRICTIVE: lægges oven på "Alle kan se profiler" (USING true), så en
--- række kun ses hvis BEGGE politikker siger ja.
+-- række kun ses hvis BEGGE politikker siger ja. Ikke admin: så stod
+-- testkontoen på de offentlige sider, når admin var logget ind.
 DROP POLICY IF EXISTS profiles_hide_test ON profiles;
 CREATE POLICY profiles_hide_test ON profiles AS RESTRICTIVE FOR SELECT
-  USING (NOT is_test OR id = auth.uid() OR viewer_is_admin());
+  USING (NOT is_test OR id = auth.uid());
 
 -- Opkøbsønsker: is_verified_dealer() er SECURITY DEFINER og ser forbi
 -- politikken ovenfor, så testkontoens ønsker skjules her for sig.
@@ -83,7 +90,7 @@ ALTER POLICY buy_requests_select ON buy_requests
 -- Testforhandleren fra 23. okt. Gør ingenting hvis den ikke findes.
 UPDATE profiles SET is_test = true WHERE id = '7e570000-0000-4000-8000-0000000000a1';
 
--- ── Tjek bagefter: skal give tre rækker med OK ────────────────────────
+-- ── Tjek bagefter: skal give fire rækker med OK ────────────────────────
 SELECT 'kolonne + trigger' AS tjek,
        CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns
                           WHERE table_name = 'profiles' AND column_name = 'is_test')
@@ -95,6 +102,12 @@ SELECT 'skjult for besøgende (politik)',
                           WHERE tablename = 'profiles' AND policyname = 'profiles_hide_test'
                             AND permissive = 'RESTRICTIVE')
             THEN 'OK' ELSE 'MANGLER' END
+UNION ALL
+SELECT 'skjult for admin på offentlige sider',
+       CASE WHEN EXISTS (SELECT 1 FROM pg_policies
+                          WHERE tablename = 'profiles' AND policyname = 'profiles_hide_test'
+                            AND qual ILIKE '%viewer_is_admin%')
+            THEN 'FEJL: gammel politik, admin ser testkonti' ELSE 'OK' END
 UNION ALL
 SELECT 'is_test kan ikke læses fra browseren',
        CASE WHEN has_column_privilege('anon', 'public.profiles', 'is_test', 'SELECT')

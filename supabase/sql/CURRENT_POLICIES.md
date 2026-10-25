@@ -151,7 +151,7 @@ Står der flere kolonner, eller er resultatet tomt, er kolonne-GRANT'en fra `har
 | price_drop_watches | UPDATE | Service role can update notification timestamp | **service_role** | `true` | – |
 | profiles | INSERT | Kun ejer kan indsætte profil | public | – | `auth.uid() = id` |
 | profiles | SELECT | Alle kan se profiler | public | `true` ² | – |
-| profiles | SELECT | profiles_hide_test (RESTRICTIVE) | public | `NOT is_test OR id = auth.uid() OR viewer_is_admin()` ¹¹ | – |
+| profiles | SELECT | profiles_hide_test (RESTRICTIVE) | public | `NOT is_test OR id = auth.uid()` ¹¹ | – |
 | profiles | UPDATE | Ejer eller admin kan opdatere profil | public | `auth.uid() = id OR ER_ADMIN` | – ³ |
 | profiles_address_removed_20261012 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
 | profiles_phone_removed_20260901 | – | *(ingen politikker — bevidst)* ⁹ | – | – | – |
@@ -244,4 +244,4 @@ er for et annoncebillede, så DELETE virkede for ingen. Rettet i
 
 ¹⁰ `buy_requests` (`add_buy_requests.sql`, 17. okt.): klienten har kun kolonne-GRANT på INSERT/UPDATE (title, description, types, brands, min_year, max_price, is_active), så `dealer_id` sættes af standardværdien `auth.uid()` og kan ikke flyttes. Triggeren `buy_requests_guard` tillader højst 10 aktive pr. forhandler. STATUS_TJEK række 67.
 
-¹¹ Testkonti (`hide_test_accounts.sql`, 23. okt.): `profiles.is_test = true` skjuler profilen for alle andre end kontoen selv og admin, så den falder ud af alle forhandlerlister, sitemap og prerender. Opkøbsønsker fra en testkonto vises kun for ejeren og admin. `is_test` kan ikke læses fra browseren og kun ændres af admin (trigger `protect_is_test`). Annoncer fra en testkonto skjules IKKE. STATUS_TJEK række 84.
+¹¹ Testkonti (`hide_test_accounts.sql`, 23. okt.): `profiles.is_test = true` skjuler profilen for alle andre end kontoen selv, også admin (25. okt.; admin ser den i admin-panelet via `admin_list_profiles()`), så den falder ud af alle forhandlerlister, sitemap og prerender. Opkøbsønsker fra en testkonto vises kun for ejeren og admin. `is_test` kan ikke læses fra browseren og kun ændres af admin (trigger `protect_is_test`). Annoncer fra en testkonto skjules IKKE. STATUS_TJEK række 84.
