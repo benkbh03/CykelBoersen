@@ -288,7 +288,8 @@ export function createProfileEditPage({
     try {
       const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
       if (error) {
-        showToast(error.hint === 'reserved_name' ? 'Navnet Cykelbørsen er forbeholdt sitet selv' : 'Kunne ikke gemme profil', 'fejl');
+        showToast(error.hint === 'reserved_name' ? 'Navnet Cykelbørsen er forbeholdt sitet selv'
+          : error.hint === 'suspended' ? error.message : 'Kunne ikke gemme profil', 'fejl');
         return;
       }
 
@@ -389,7 +390,7 @@ export function createProfileEditPage({
     const { error: updateError } = await supabase
       .from('profiles').update({ avatar_url: avatarUrl, avatar_thumb_url: avatarThumbUrl }).eq('id', currentUser.id);
 
-    if (updateError) { showToast('Kunne ikke gemme profilbillede', 'fejl'); return; }
+    if (updateError) { showToast(updateError.hint === 'suspended' ? updateError.message : 'Kunne ikke gemme profilbillede', 'fejl'); return; }
 
     setCurrentProfile({ ...getCurrentProfile(), avatar_url: avatarUrl, avatar_thumb_url: avatarThumbUrl });
     showProfileData();

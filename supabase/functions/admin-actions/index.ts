@@ -199,8 +199,44 @@ serve(async (req) => {
           return jsonResponse({ error: "Kan ikke suspendere en admin. Fjern admin-rettigheden foerst." }, 400);
         }
 
+        /* Annoncerne skjules ved suspendering (25. okt.). Før skulle admin
+           huske at skjule dem i hånden, og en glemt svindelannonce blev
+           stående. Id'erne gemmes i loggens snapshot, så ophævelsen kan sætte
+           præcis de samme aktive igen og ikke dem brugeren selv havde skjult. */
+        let skjulteAnnoncer: string[] = [];
+        let genaktiveret: string[] = [];
+
         if (action === "unsuspend_user") {
           await supa.from("user_suspensions").delete().eq("user_id", target_user_id);
+
+          /* Alle suspenderinger siden sidste ophævelse, ikke kun den seneste:
+             forlænger admin en suspendering, skjuler anden runde ingenting,
+             fordi annoncerne allerede er skjult, og så ville listen være tom. */
+          const { data: poster } = await supa.from("moderation_log")
+            .select("action, snapshot")
+            .eq("target_user_id", target_user_id)
+            .in("action", ["suspend_user", "unsuspend_user"])
+            .order("created_at", { ascending: false })
+            .limit(50);
+          const ids: string[] = [];
+          for (const p of poster ?? []) {
+            if (p.action === "unsuspend_user") break;
+            if (Array.isArray(p.snapshot?.skjulte_annoncer)) ids.push(...p.snapshot.skjulte_annoncer);
+          }
+          if (ids.length > 0) {
+            /* Kun dem der stadig er skjulte og hverken solgt eller slettet
+               imens. user_id med som ekstra værn mod et forkert snapshot. */
+            const { data: igen, error: igenErr } = await supa.from("bikes")
+              .update({ is_active: true })
+              .in("id", ids)
+              .eq("user_id", target_user_id)
+              .eq("is_active", false)
+              .is("deleted_at", null)
+              .is("sold_via", null)
+              .select("id");
+            if (igenErr) console.error("Kunne ikke genaktivere annoncer:", igenErr);
+            genaktiveret = (igen ?? []).map((b: { id: string }) => b.id);
+          }
         } else {
           const d = Number.isFinite(Number(days)) && Number(days) > 0
             ? Math.min(Number(days), 3650)          // 10 år er i praksis permanent
@@ -219,10 +255,35 @@ serve(async (req) => {
             console.error("Suspendering fejlede:", suspErr);
             return jsonResponse({ error: "Kunne ikke suspendere brugeren" }, 500);
           }
+
+          /* Suspenderingen står fast, selv hvis dette fejler: så er brugeren
+             stoppet, og admin får besked om at skjule annoncerne i hånden. */
+          const { data: skjult, error: skjulErr } = await supa.from("bikes")
+            .update({ is_active: false })
+            .eq("user_id", target_user_id)
+            .eq("is_active", true)
+            .select("id");
+          if (skjulErr) {
+            console.error("Kunne ikke skjule annoncer ved suspendering:", skjulErr);
+            await logModeration(supa, { ...logBase, snapshot: { profil: targetProfile ?? null, dage: days ?? null, skjul_fejl: skjulErr.message } });
+            return jsonResponse({ ok: true, action, target_user_id, warning: "Brugeren er suspenderet, men annoncerne kunne ikke skjules. Skjul dem i hånden." });
+          }
+          skjulteAnnoncer = (skjult ?? []).map((b: { id: string }) => b.id);
         }
 
-        await logModeration(supa, { ...logBase, snapshot: { profil: targetProfile ?? null, dage: days ?? null } });
-        return jsonResponse({ ok: true, action, target_user_id });
+        await logModeration(supa, {
+          ...logBase,
+          snapshot: {
+            profil: targetProfile ?? null,
+            dage: days ?? null,
+            ...(action === "suspend_user" ? { skjulte_annoncer: skjulteAnnoncer } : { genaktiverede_annoncer: genaktiveret }),
+          },
+        });
+        return jsonResponse({
+          ok: true, action, target_user_id,
+          skjulte_annoncer: skjulteAnnoncer.length,
+          genaktiverede_annoncer: genaktiveret.length,
+        });
       }
 
       case "delete_user": {
