@@ -1061,8 +1061,12 @@ export function createSellPage({
     `;
   }
 
+  function sellStepLabels() {
+    return { 1: _isAcc() ? 'Fortsæt til om tilbehøret' : 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
+  }
+
   function renderSellFooterHTML(step, canContinue) {
-    const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
+    const labels = sellStepLabels();
     // Altid aktiv: mangler der noget, viser advanceSell() det ved feltet.
     const cls = 'enabled';
     const dis = '';
@@ -1137,7 +1141,7 @@ export function createSellPage({
   }
 
   function renderSellDesktopFooterHTML(step, canContinue) {
-    const labels = { 1: 'Fortsæt til om cyklen', 2: 'Fortsæt til publicer', 3: 'Opret annonce' };
+    const labels = sellStepLabels();
     // Altid aktiv: mangler der noget, viser advanceSell() det ved feltet.
     const cls = 'enabled';
     const dis = '';
@@ -1172,7 +1176,7 @@ export function createSellPage({
       if (!giveaway && !val('sell-price')) miss.push({ id: 'sell-price', msg: 'Skriv en pris.' });
     } else if (_sellStep === 3) {
       if (!_isAcc() && val('sell-desc').length < 10) miss.push({ id: 'sell-desc', msg: 'Skriv lidt om cyklen, mindst 10 tegn.' });
-      if (!val('sell-city')) miss.push({ id: 'sell-city', msg: 'Skriv hvilken by cyklen står i.' });
+      if (!val('sell-city')) miss.push({ id: 'sell-city', msg: _isAcc() ? 'Skriv hvilken by tilbehøret står i.' : 'Skriv hvilken by cyklen står i.' });
     }
     return miss;
   }
