@@ -834,11 +834,12 @@ export function createBikeDetail({
 
     /* Adressen kan være den gamle /bike/<uuid> eller en slug der ikke længere
        passer (mærke/model rettet). Skriv den kanoniske i adresselinjen uden
-       en ny historik-post, så delte og kopierede links er de pæne. */
+       en ny historik-post, så delte og kopierede links er de pæne. Med
+       afsluttende skråstreg, som canonical og sitemap. */
     bikeId = b.id;
     const prettyPath = bikePath(b);
-    if (window.location.pathname.replace(/\/+$/, '') !== prettyPath) {
-      history.replaceState(history.state, '', prettyPath + window.location.search + window.location.hash);
+    if (window.location.pathname !== prettyPath + '/') {
+      history.replaceState(history.state, '', prettyPath + '/' + window.location.search + window.location.hash);
     }
 
     const currentUser = getCurrentUser();

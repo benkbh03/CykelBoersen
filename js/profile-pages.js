@@ -165,7 +165,7 @@ export function createProfilePages({
           </div>
           <div class="bike-card-body">
             <div class="card-top">
-              <div class="bike-title"><a class="bike-card-link" href="${bikePath(b)}">${esc(b.brand)} ${esc(b.model)}</a></div>
+              <div class="bike-title"><a class="bike-card-link" href="${bikePath(b)}/">${esc(b.brand)} ${esc(b.model)}</a></div>
               <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
