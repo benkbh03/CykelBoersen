@@ -1578,7 +1578,8 @@ body:has(.map-page) > footer {
 
 
 /* ── 404: ukendt adresse (js/not-found.js) ──
-   Kort besked øverst og én knap. Ingen forside nedenunder. */
+   Kort besked, én hvid knap og en række kategorilinks. Ingen forside
+   nedenunder. Knappen er ikke orange: headerens "Sæt til salg" er det. */
 .not-found {
   max-width: 560px;
   margin: 0 auto;
@@ -1593,9 +1594,32 @@ body:has(.map-page) > footer {
   font-size: var(--text-base); line-height: 1.55; color: var(--muted);
   margin: 0 0 var(--space-6);
 }
+.not-found-btn {
+  background: #fff; color: var(--charcoal);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-6);
+  font: inherit; font-size: var(--text-base); font-weight: var(--weight-semibold);
+  cursor: pointer; transition: border-color 0.2s;
+}
+.not-found-btn:hover { border-color: var(--charcoal); }
+.not-found-sub {
+  font-size: var(--text-base); font-weight: var(--weight-semibold);
+  color: var(--charcoal);
+  margin: var(--space-8) 0 var(--space-3);
+}
+.not-found-links {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6);
+}
+.not-found-links a {
+  font-size: var(--text-base); color: var(--forest);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.not-found-links a:hover { color: var(--charcoal); }
 @media (max-width: 480px) {
   .not-found { padding: var(--space-8) var(--space-4) var(--space-12); }
   .not-found-btn { width: 100%; min-height: 44px; }
+  .not-found-links { gap: var(--space-4) var(--space-6); }
 }
 
 /* "Officiel" ved Cykelbørsens egen konto i indbakken (js/official-badge.js).
