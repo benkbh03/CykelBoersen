@@ -385,7 +385,7 @@ export function createBikesList({
           </div>
           <div class="bike-card-body">
             <div class="card-top">
-              <div class="bike-title">${isSold ? esc(bikeTitle(b.brand, b.model)) : `<a class="bike-card-link" href="${bikePath(b)}">${esc(bikeTitle(b.brand, b.model))}</a>`}</div>
+              <div class="bike-title">${isSold ? esc(bikeTitle(b.brand, b.model)) : `<a class="bike-card-link" href="${bikePath(b)}/">${esc(bikeTitle(b.brand, b.model))}</a>`}</div>
               <div class="bike-price">${priceLabel(b)}${!isSold && !isDemo && saving > 0
                 ? ` <span class="bike-price-before" aria-label="Førpris ${b.original_price.toLocaleString('da-DK')} kroner">${b.original_price.toLocaleString('da-DK')} kr.</span>`
                 : ''}</div>
