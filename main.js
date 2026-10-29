@@ -49,7 +49,7 @@ import { updateNavAvatarUI } from './js/nav-avatar.js';
 import { retryHTML, showToast } from './js/ui-feedback.js';
 import { openBecomeDealerPage, closeBecomeDealerModalCompat, selectDealerPlanButton } from './js/dealer-modal-actions.js';
 import { isPendingDealerProfile, blockIfPendingDealerProfile } from './js/dealer-guards.js';
-import { needsPassword, isPasswordRequired, openRequiredPasswordModal, clearPasswordRequired, MUST_SET_PASSWORD } from './js/required-password.js';
+import { needsPassword, isPasswordRequired, openRequiredPasswordModal, clearPasswordRequired, showExpiredLinkHelp, MUST_SET_PASSWORD } from './js/required-password.js';
 import { createAuthActions } from './js/auth.js';
 import { createFilters } from './js/filters.js';
 import { createBikesList } from './js/bikes-list.js';
@@ -72,6 +72,7 @@ import { skipToContent } from './js/a11y-keys.js';
 // Ellers er window.location.hash typisk tom når init() senere læser den, og
 // signup/invite-flowet (der ikke har et dedikeret auth-event som recovery) misses.
 const _initialAuthType = new URLSearchParams(window.location.hash.slice(1)).get('type');
+const _initialAuthError = new URLSearchParams(window.location.hash.slice(1)).get('error_code');
 
 /* ============================================================
    LAZY MODULE LOADER
@@ -1577,6 +1578,11 @@ async function init() {
     // åbner igen ved næste besøg, indtil adgangskoden er gemt (js/required-password.js).
     if (_initialAuthType === 'invite') history.replaceState(null, '', window.location.pathname);
     openRequiredPasswordModal();
+  } else if (_initialAuthError) {
+    // Brugt eller udløbet link fra en mail (fx invitationen klikket en gang til).
+    // Uden dette landede man på forsiden uden forklaring.
+    history.replaceState(null, '', window.location.pathname);
+    showExpiredLinkHelp({ currentUser, openLoginModal, showToast });
   } else if (_initialAuthType === 'recovery') {
     history.replaceState(null, '', window.location.pathname);
     const resetModal = document.getElementById('reset-modal');

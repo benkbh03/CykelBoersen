@@ -40,3 +40,14 @@ export function clearPasswordRequired() {
   const close = el.querySelector('.modal-close');
   if (close) close.style.display = '';
 }
+
+// Linket i en mail er brugt eller udløbet. Er man stadig logget ind, sker der
+// intet galt; ellers åbnes login, med vejen til "Glemt adgangskode" i teksten.
+export function showExpiredLinkHelp({ currentUser, openLoginModal, showToast }) {
+  if (currentUser) {
+    showToast('Linket er allerede brugt, men du er logget ind.', 'ok');
+    return;
+  }
+  showToast('Linket er allerede brugt eller udløbet. Log ind, eller vælg "Glemt adgangskode" for at få et nyt link.', 'advarsel');
+  openLoginModal();
+}
