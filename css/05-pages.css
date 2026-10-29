@@ -536,6 +536,7 @@
 
 /* Mobil-header inde i sidebar (skjult på desktop) */
 .sidebar-mobile-header { display: none; }
+.sidebar-mobile-tools { display: none; }
 .sidebar-mobile-close {
   background: var(--sand); border: 1px solid var(--border);
   width: 36px; height: 36px; border-radius: 50%;
@@ -607,7 +608,7 @@
      massivt mørkt bånd, så himlen lige under den læses som tomrum, mens
      vejen under kortet er travl og læses som indhold. Den optiske midte
      ligger derfor højere end den geometriske. */
-  .search-section { padding: 16px 16px 40px; }
+  .search-section { padding: 22px 16px 30px; }
   .search-hero-text { margin-bottom: 12px; }
   .search-hero-pill { display: none; }
   .search-bar-wrap { flex-direction: column; gap: 6px; }
@@ -631,6 +632,12 @@
   .search-bar-chev { right: 12px; }
   .search-bar-sep { display: none; }
   .search-pill-btn { width: 100%; border-radius: var(--radius-sm); padding: 11px; justify-content: center; }
+  /* By og Søg på samme række (29. okt.): tre rækker fyldte 145 px af den
+     første skærm. Søgefeltet får hele bredden, byfeltet resten ved knappen. */
+  .search-bar { flex-direction: row; flex-wrap: wrap; }
+  .search-bar-query { flex: 1 1 100%; }
+  .search-bar-city { flex: 1 1 0; min-width: 0; }
+  .search-pill-btn { width: auto; flex: 0 0 auto; padding: 11px var(--space-5); }
   /* Mobil: kompakt centreret pill under søgebaren (ikke full-width — bevarer
      visuelt hierarki hvor Søg-knappen i baren er primær handling). */
   .search-bar-wrap { flex-wrap: wrap; justify-content: center; }
@@ -745,6 +752,15 @@
     transform: rotate(0deg);
   }
 
+  .sidebar-mobile-tools { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0 4px; }
+  .sidebar-mobile-tools button {
+    flex: 1 1 auto; min-height: 44px; padding: 0 var(--space-3);
+    background: #fff; color: var(--charcoal);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font: var(--weight-semibold) var(--text-sm)/1.2 var(--font-sans);
+    cursor: pointer;
+  }
+  .sidebar-mobile-tools button:hover { background: var(--sand); }
   /* Mobil-header inde i sidebar (sticky øverst) */
   .sidebar-mobile-header {
     display: flex !important;
@@ -790,14 +806,12 @@
   .btn-mobile-filter { display: inline-flex; flex: 1 1 auto; order: 1; min-height: 44px; padding: 0 14px; }
   .listings-controls .sort-select { width: auto; flex: 1 1 auto; order: 2; height: 44px; min-width: 0; }
   #btn-list-view { display: none; }
-  #btn-map-page { order: 3; flex: 0 0 auto; width: 44px; height: 44px; }
-  #btn-compare-mode { display: flex; order: 4; flex: 0 0 auto; width: 44px; height: 44px; }
-  .listings-save-btn { order: 5; flex: 0 0 auto; width: 44px; height: 44px; padding: 0; justify-content: center; }
-  /* Fem kontroller i rækken: lidt mindre luft, så "Nyeste først" kan læses. */
-  .btn-mobile-filter { flex: 0 0 auto; padding: 0 10px; }
-  .listings-controls { gap: 6px; }
-  .listings-controls .sort-select { padding-left: 8px; padding-right: 4px; }
-  .listings-save-label { display: none; }
+  /* Kort, sammenlign og "Få besked" var tre ikonknapper uden tekst i samme
+     række (29. okt.). De ligger nu med tekst øverst i filterskuffen
+     (.sidebar-mobile-tools i index.html), og rækken er kun Filtre + sortering. */
+  #btn-map-page, #btn-compare-mode, .listings-save-btn { display: none !important; }
+  .btn-mobile-filter { flex: 0 0 auto; padding: 0 var(--space-4); }
+  .listings-controls { gap: var(--space-2); }
   .bike-card-body { padding: 10px 12px 12px; }
   /* Titel + pris stables lodret på mobil: på smalle 2-kolonne-kort klemte
      prisen (nowrap + flex-shrink:0) titlen, så lange mærkenavne som
