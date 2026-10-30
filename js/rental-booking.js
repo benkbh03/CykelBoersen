@@ -104,6 +104,8 @@ export function createRentalBooking({
       .from('rental_bookings')
       .select('id, start_date, end_date, days, total_amount, deposit_amount, status, rental_items!item_id(title, rental_item_images(url, is_primary)), profiles!dealer_id(shop_name, name)')
       .eq('renter_id', user.id)
+      // Ubetalte forsøg er ikke en aftale; de udløber efter 30 min. i create_rental_booking
+      .neq('status', 'pending_payment')
       .order('created_at', { ascending: false });
 
     const rows = (bookings || []).map(b => {
@@ -146,6 +148,7 @@ export function createRentalBooking({
       .from('rental_bookings')
       .select('id, start_date, end_date, days, rental_amount, platform_fee, total_amount, status, rental_items!item_id(title, rental_item_images(url, is_primary)), profiles!renter_id(name)')
       .eq('dealer_id', user.id)
+      .neq('status', 'pending_payment')
       .order('created_at', { ascending: false });
 
     const rows = (bookings || []).map(b => {
