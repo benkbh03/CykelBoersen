@@ -26,7 +26,7 @@ export const BLOG_ARTICLES = {
       <p>Den er også lettere, kræver mindre vedligehold og tråder mere effektivt i opstigninger og på fast underlag. Hvis du primært kører på grusveje, skovveje, lettere singletrack eller bruger cyklen som en hurtig allround-cykel, er en hardtail oftest det rigtige valg. Det er også den klogeste start for de fleste begyndere.</p>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;">
-        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Forgaffel (hardtail)'})" style="background:var(--rust);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Se hardtail-mountainbikes</a>
+        <a href="/" onclick="event.preventDefault();applyPopularSearch({type:'Mountainbike', suspension:'Forgaffel (hardtail)'})" style="background:var(--rust);color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:var(--weight-semibold);display:inline-block;">Se hardtail-mountainbikes</a>
       </div>
 
       <h2>Fully: kontrol og komfort på det tekniske</h2>

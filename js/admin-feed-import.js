@@ -397,7 +397,7 @@ export function createAdminFeedImport({ supabase, showToast }) {
       const specHtml = specs.length
         ? specs.map(s => `<span style="display:inline-block;background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin:2px 3px 0 0;font-size:0.72rem;">${s}</span>`).join('')
         : '<span style="color:var(--error);font-size:0.74rem;">⚠ ingen specs udfyldt — trænger til redigering</span>';
-      const newBadge = (!b.feed_locked && isNew(b)) ? ' <span title="Tilføjet inden for 7 dage" style="background:#fff3e0;color:#bf360c;border-radius:4px;padding:0 5px;font-size:0.66rem;font-weight:700;">🆕 NY</span>' : '';
+      const newBadge = (!b.feed_locked && isNew(b)) ? ' <span title="Tilføjet inden for 7 dage" style="background:#fff3e0;color:#bf360c;border-radius:4px;padding:0 5px;font-size:0.66rem;font-weight:var(--weight-semibold);">🆕 NY</span>' : '';
       return `
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);${!b.feed_locked ? 'background:rgba(191,54,12,0.03);' : ''}">
         <div style="min-width:0;flex:1;">

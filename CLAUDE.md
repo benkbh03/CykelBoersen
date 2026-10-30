@@ -259,7 +259,7 @@ med den version de andre links har; scriptet retter den ved merge. Kører
 **Al styling bruger kun tokens fra `css/tokens.css`. Ingen emojis i UI. Ingen hårdkodede px-værdier til tekst, radius eller farver.**
 
 - Tekst: `--text-xs` (12) · `--text-sm` (14) · `--text-base` (16) · `--text-lg` (20) · `--text-xl` (28) · `--text-2xl` (40). Intet under 12 px, bortset fra `--text-2xs` (11) på mærkater oven på billeder.
-- Vægt: `--weight-regular` · `--weight-semibold` · `--weight-heavy`. Radius: `--radius-sm` · `--radius-md` · `--radius-full`. Afstand: `--space-1` … `--space-16` (4-px-skala).
+- Vægt: `--weight-regular` · `--weight-semibold` · `--weight-heavy`. Kun de tre: Archivo er variabel, så 500 og 700 tegnes som egne vægte. De ca. 190 steder blev ryddet 30. okt., og `check-content.yml` afviser en PR med `font-weight` 500/700/bold. Knapper, faner og små labels er halvfede; links, felter og filtervalg (chips) er almindelige; fed kun til sideoverskrifter, priser og initialer. Radius: `--radius-sm` · `--radius-md` · `--radius-full`. Afstand: `--space-1` … `--space-16` (4-px-skala).
 - Farver: `--forest`, `--cream`, `--sand`, `--rust`, `--green`, `--charcoal`, `--muted` m.fl. i `tokens.css`; tilstandsfarver (`--success`, `--error`, `--gold` …) i `01-base.css`.
 - Ikoner: inline SVG via `iconX()` i `js/utils.js` og `js/ui-icons.js` (Lucide-stil, `currentColor`); i statisk HTML en `<svg class="ui-icon">`. Annoncekort uden billede bruger `noImagePlaceholder()` fra `js/ui-icons.js`.
 - Admin-panelets ⚙️ er den eneste tilladte emoji. Besked-konventionerne (💰/✅/✉️ i beskedindhold) er data, ikke UI, og er undtaget.

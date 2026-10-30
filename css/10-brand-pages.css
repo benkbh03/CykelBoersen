@@ -57,7 +57,7 @@
 }
 .brand-tile-name {
   font-family: var(--font-sans);
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   color: var(--charcoal);
   margin-bottom: 2px;
@@ -179,7 +179,7 @@
 .brand-meta-chip {
   background: var(--sand);
   color: var(--charcoal);
-  font-size: 0.85rem; font-weight: 500;
+  font-size: 0.85rem; font-weight: var(--weight-regular);
   padding: 5px 12px;
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
@@ -212,7 +212,7 @@
 }
 .brand-models-group-title {
   font-family: var(--font-sans);
-  font-size: 0.92rem; font-weight: 700;
+  font-size: 0.92rem; font-weight: var(--weight-semibold);
   color: var(--forest);
   margin: 0 0 8px;
 }
@@ -271,7 +271,7 @@
   padding: 8px 16px;
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
-  font-size: 0.9rem; font-weight: 500;
+  font-size: 0.9rem; font-weight: var(--weight-regular);
   text-decoration: none;
   transition: background 0.15s;
 }

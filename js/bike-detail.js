@@ -200,7 +200,7 @@ export function createBikeDetail({
         const thumbAlt = i === 0 ? `${altBase} – hovedbillede` : `${altBase} – billede ${i + 1}`;
         return `<button class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="galleryGoto(${i})" aria-label="${esc(thumbAlt)}" style="position:relative;">
           <img src="${cardImageUrl(img)}" alt="${esc(thumbAlt)}" loading="lazy">
-          ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:var(--font-sans);border-radius:5px;">+${extraCount}</span>` : ''}
+          ${isLast ? `<span style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:var(--weight-semibold);font-size:1rem;font-family:var(--font-sans);border-radius:5px;">+${extraCount}</span>` : ''}
         </button>`;
       }).join('');
       galleryHtml = `
@@ -315,7 +315,7 @@ export function createBikeDetail({
           </p>`}
           ${adminCanEdit ? `
           <div class="admin-edit-strip" style="margin-top:12px;padding:12px 14px;border:1px dashed var(--rust);border-radius:10px;background:rgba(200,48,42,0.04);">
-            <div style="font-size:0.82rem;font-weight:700;color:var(--rust);margin-bottom:6px;">${iconWrench(14)} Admin · forhandler-annonce</div>
+            <div style="font-size:0.82rem;font-weight:var(--weight-semibold);color:var(--rust);margin-bottom:6px;">${iconWrench(14)} Admin · forhandler-annonce</div>
             <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Importeret fra forhandlerens feed. Ret specifikationer manuelt. Så låses annoncen, og natlig sync opdaterer herefter kun pris.${b.feed_locked ? ' <strong style="color:var(--forest);">Låst ✓</strong>' : ''}</div>
             <button class="btn-save-listing" onclick="openEditModal('${b.id}')">${iconPencil(14)} Redigér som admin</button>
           </div>` : ''}

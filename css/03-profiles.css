@@ -9,7 +9,7 @@
   width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
   background: var(--rust); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; font-weight: 700; overflow: hidden;
+  font-size: 1.8rem; font-weight: var(--weight-heavy); overflow: hidden;
 }
 .up-name { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.5rem; color: var(--charcoal); margin: 0 0 4px; }
 .up-city { color: var(--muted); font-size: 0.88rem; margin-bottom: 4px; }
@@ -40,7 +40,7 @@
 .trade-title { font-weight: var(--weight-semibold); font-size: 0.9rem; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .trade-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
 .trade-date { font-size: var(--text-xs); color: var(--muted); }
-.trade-price { font-weight: 700; font-size: 0.9rem; color: var(--charcoal); white-space: nowrap; }
+.trade-price { font-weight: var(--weight-heavy); font-size: 0.9rem; color: var(--charcoal); white-space: nowrap; }
 .trade-status { font-size: var(--text-xs); color: #2e7d32; font-weight: var(--weight-semibold); white-space: nowrap; }
 /* Annulleret handel: annoncen blev sat til salg igen. Står på listen, men
    nedtonet, så den ikke læses som en gennemført handel. */
@@ -82,7 +82,7 @@
 }
 .up-bike-info { padding: 10px 12px 12px; }
 .up-bike-title { font-weight: var(--weight-semibold); font-size: 0.88rem; color: var(--charcoal); margin-bottom: 2px; }
-.up-bike-price { color: var(--charcoal); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.up-bike-price { color: var(--charcoal); font-weight: var(--weight-heavy); font-size: 0.9rem; margin-bottom: 4px; }
 .up-bike-meta { font-size: var(--text-xs); color: var(--muted); }
 
 /* Solgte cykler liste */
@@ -113,7 +113,7 @@
   width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
   background: var(--forest); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem; font-weight: 700;
+  font-size: 0.85rem; font-weight: var(--weight-semibold);
 }
 .up-review-name { font-size: 0.88rem; font-weight: var(--weight-semibold); color: var(--charcoal); }
 .up-review-date { font-size: var(--text-xs); color: var(--muted); margin-left: auto; white-space: nowrap; }
@@ -212,7 +212,7 @@
   width: 72px; height: 72px; border-radius: 50%;
   background: var(--rust); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; font-weight: 700; flex-shrink: 0; overflow: hidden;
+  font-size: 1.6rem; font-weight: var(--weight-heavy); flex-shrink: 0; overflow: hidden;
 }
 .dealer-profile-name {
   font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.5rem;
@@ -310,7 +310,7 @@
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: var(--weight-heavy);
   font-family: var(--font-sans);
   margin-top: 4px;
   overflow: hidden;
@@ -333,7 +333,7 @@
   border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   flex-shrink: 0;
 }
 .promoted-dealer-card-loc {
@@ -344,7 +344,7 @@
 .promoted-dealer-card-count {
   font-size: 0.88rem;
   color: var(--rust);
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   font-family: var(--font-sans);
   margin-top: 2px;
 }
@@ -354,7 +354,7 @@
   border-top: 1px dashed var(--gold-border);
   color: #6e4e00;
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   font-family: var(--font-sans);
   width: 100%;
 }
@@ -550,7 +550,7 @@
 .badge-dealer-verified {
   background: var(--surface-forest) !important;
   color: var(--forest) !important;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.01em;
   border: 1px solid rgba(42,61,46,0.35);
 }
@@ -579,7 +579,7 @@
 .mp-dealer-banner-label {
   font-size: 0.72rem;
   opacity: 0.82;
-  font-weight: 500;
+  font-weight: var(--weight-semibold);
   line-height: 1.3;
 }
 .mp-dealer-banner-divider {
@@ -639,7 +639,7 @@
   background: var(--forest);
   color: #fff;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   padding: 3px 9px;
   border-radius: 0 var(--radius-sm) 0 var(--radius-sm);
   letter-spacing: 0.03em;
@@ -655,7 +655,7 @@
 }
 .onboarding-service-title {
   font-family: var(--font-sans);
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   font-size: 0.95rem;
   color: var(--charcoal);
   margin-bottom: 6px;
@@ -672,7 +672,7 @@
   color: var(--rust);
   text-decoration: none;
   margin-bottom: 16px;
-  font-weight: 500;
+  font-weight: var(--weight-regular);
 }
 .onboarding-service-dpa-link:hover { text-decoration: underline; }
 .onboarding-service-consent {
@@ -720,7 +720,7 @@
   font-size: 0.95rem;
   flex-shrink: 0;
 }
-.onboarding-service-status-title { font-weight: 700; font-size: 0.88rem; color: #1a5722; }
+.onboarding-service-status-title { font-weight: var(--weight-semibold); font-size: 0.88rem; color: #1a5722; }
 .onboarding-service-status-sub   { font-size: 0.76rem; color: #2e7d32; margin-top: 2px; }
 .onboarding-service-audit {
   font-size: 0.82rem;
@@ -760,10 +760,10 @@
 }
 .subscription-title { font-weight: var(--weight-semibold); font-size: 0.92rem; margin-bottom: 3px; }
 .subscription-sub   { font-size: 0.78rem; color: var(--muted); }
-.sub-status-active   { background: #e8f5e9; color: #2e7d32; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
-.sub-status-trial    { background: #e3f2fd; color: #1565c0; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
-.sub-status-past-due { background: #fff3e0; color: #e65100; font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
-.sub-status-canceled { background: #fce4ec; color: var(--error); font-size: 0.76rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-active   { background: #e8f5e9; color: #2e7d32; font-size: 0.76rem; font-weight: var(--weight-semibold); padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-trial    { background: #e3f2fd; color: #1565c0; font-size: 0.76rem; font-weight: var(--weight-semibold); padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-past-due { background: #fff3e0; color: #e65100; font-size: 0.76rem; font-weight: var(--weight-semibold); padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
+.sub-status-canceled { background: #fce4ec; color: var(--error); font-size: 0.76rem; font-weight: var(--weight-semibold); padding: 3px 10px; border-radius: var(--radius-md); white-space: nowrap; }
 .btn-manage-subscription {
   width: 100%;
   padding: 10px 16px;

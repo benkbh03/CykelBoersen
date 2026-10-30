@@ -116,7 +116,7 @@ export function createDealerTraction({ supabase, esc, retryHTML }) {
                 <td style="padding:8px 8px 8px 0;">${esc(d.name)}${d.verified ? '' : ' <span style="color:var(--muted);font-size:0.76rem;">(afventer)</span>'}</td>
                 <td style="padding:8px;text-align:right;color:var(--muted);">${d.listings}</td>
                 <td style="padding:8px;text-align:right;color:var(--muted);">${d.views.toLocaleString('da-DK')}</td>
-                <td style="padding:8px;text-align:right;font-weight:700;color:${d.msgs > 0 ? 'var(--forest)' : 'var(--muted)'};">${d.msgs}</td>
+                <td style="padding:8px;text-align:right;font-weight:var(--weight-semibold);color:${d.msgs > 0 ? 'var(--forest)' : 'var(--muted)'};">${d.msgs}</td>
                 <td style="padding:8px 0 8px 8px;text-align:right;color:var(--muted);">${d.buyers}</td>
               </tr>`).join('')}
           </table>

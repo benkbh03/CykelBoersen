@@ -13,7 +13,7 @@
   border-radius: var(--radius-sm);
   padding: 3px 7px 3px 5px;
   align-items: center; gap: var(--space-1);
-  font-size: 0.62rem; font-weight: 700;
+  font-size: 0.62rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   user-select: none;
   box-shadow: var(--shadow-sm);
@@ -70,7 +70,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   background: transparent; color: rgba(255,255,255,0.78);
   border: 1px solid rgba(255,255,255,0.25);
   padding: 8px 14px; border-radius: var(--radius-sm);
-  font-size: 0.85rem; font-weight: 500;
+  font-size: 0.85rem; font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s;
 }
@@ -78,7 +78,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 .compare-bar-go {
   background: var(--rust); color: #fff;
   border: none; padding: 9px 18px; border-radius: var(--radius-sm);
-  font-size: 0.9rem; font-weight: 700;
+  font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
@@ -189,7 +189,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   background: rgba(0,0,0,0.55);
   color: #fff;
   border: none;
-  font-size: 0.85rem; font-weight: 700;
+  font-size: 0.85rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-sans);
@@ -270,7 +270,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-row--diff .cmp-row-label {
   color: var(--charcoal);
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
 }
 
 /* Special-formatering for værdier */
@@ -293,7 +293,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
 }
 .cmp-price-save {
   color: #2e7d32;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
 }
 .cmp-tag-mini {
   display: inline-block;
@@ -320,7 +320,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
 }
 .cmp-seller-type {
   font-size: 0.78rem;
