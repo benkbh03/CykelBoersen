@@ -892,16 +892,16 @@ body.nav-search-on .nav-search { display: flex; }
 .search-pill-btn {
   /* Kun "Søg". Var kun ikon fra 26. sep. (læst som pynt), ikon + tekst fra
      4. okt.; luppen røg 17. okt., fordi den står i feltet ved siden af. */
-  /* Hvid med kant (30. okt.): "Sæt til salg" i headeren er forsidens
-     orange knap. */
-  background: var(--bg); color: var(--charcoal);
-  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
+  /* Mørk, ikke orange (30. okt.): "Sæt til salg" i headeren er forsidens
+     orange knap. Hvid med kant forsvandt i den hvide søgebar. */
+  background: var(--charcoal); color: #fff;
+  border: none; border-radius: var(--radius-sm);
   height: 44px; padding: 0 var(--space-4); gap: var(--space-2);
   font: var(--weight-semibold) var(--text-base)/1 var(--font-sans);
   cursor: pointer; transition: background 0.15s;
   flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
 }
-.search-pill-btn:hover { background: var(--surface-2); }
+.search-pill-btn:hover { background: color-mix(in srgb, var(--charcoal) 85%, #fff); }
 .search-pill-btn:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
 /* Cykelagent-pill: synlig peer til Søg-knappen, ikke konkurrent.
    Cream-baggrund + charcoal-tekst gør den læselig over hero-billedet
