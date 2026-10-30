@@ -121,7 +121,7 @@ export function createRentalOnboarding({
     if (btn) { btn.disabled = true; btn.textContent = 'Sender dig videre…'; }
     try {
       const { data, error } = await supabase.functions.invoke('connect-onboarding', {
-        body: { return_url: `${BASE_URL}/bliv-udlejer` },
+        body: { return_url: `${location.origin}/bliv-udlejer` },
       });
       if (error) {
         let msg = 'Kunne ikke starte opsætningen. Prøv igen.';
