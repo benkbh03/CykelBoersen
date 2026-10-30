@@ -661,20 +661,21 @@ border-color: rgba(42,61,46,0.18);
 }
 .boost-active-text { font-size: 0.95rem; color: var(--charcoal); margin: 0 0 14px; line-height: 1.5; }
 
-/* Boost-CTA i "annonce oprettet"-modalen */
+/* Boost-CTA i "annonce oprettet"-modalen. Neutral med kant: "Se din
+   annonce" er modalens eneste fremhævede knap. */
 .success-boost-cta {
   display: flex; align-items: center; gap: var(--space-3); width: 100%;
-  margin: var(--space-4) 0 0; padding: 12px 14px;
-  background: var(--surface-sand);
-  border: 1px solid var(--gold-border); border-radius: var(--radius-md);
+  margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4);
+  background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
   cursor: pointer; text-align: left; font-family: var(--font-sans);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s;
 }
-.success-boost-cta:hover { border-color: var(--gold);}
+.success-boost-cta:hover { border-color: var(--charcoal); }
 .success-boost-cta-star { font-size: 1.5rem; flex-shrink: 0; }
 .success-boost-cta-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-.success-boost-cta-text strong { font-size: 0.92rem; color: #6e4e00; }
-.success-boost-cta-text span { font-size: 0.8rem; color: #8a6817; }
+.success-boost-cta-text strong { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--charcoal); }
+.success-boost-cta-text span { font-size: var(--text-xs); color: var(--muted); }
 .success-boost-cta-arrow { font-size: 1.1rem; color: #b8860b; flex-shrink: 0; }
 
 /* ── GIVES VÆK ──────────────────────────────────────────────

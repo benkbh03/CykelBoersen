@@ -1529,7 +1529,25 @@ color: var(--charcoal); margin-bottom: 2px;
   border: 1px solid var(--border); border-radius: var(--radius-sm);
   font-family: var(--font-sans); font-size: var(--text-sm); background: var(--bg);
 }
-.sell-import-row .btn-secondary { padding: 10px 18px; border-radius: var(--radius-sm); white-space: nowrap; }
+/* .btn-secondary findes ikke globalt, så knappen fik browserens grå
+   standardknap. Nu samme sekundære knap som Tilbage i bunden. */
+.sell-import-row .btn-secondary {
+  padding: 10px 18px; border-radius: var(--radius-sm); white-space: nowrap;
+  background: var(--bg); border: 1.5px solid var(--border); color: var(--charcoal);
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-sm);
+  cursor: pointer; transition: background 0.15s;
+}
+.sell-import-row .btn-secondary:hover:not(:disabled) { background: var(--sand); }
+.sell-import-row .btn-secondary:disabled { color: var(--muted); cursor: default; }
+
+/* "Ikke sikker på pris?": et almindeligt tekstlink, ikke orange, så det
+   ikke konkurrerer med Fortsæt. */
+.sell-valuation-link {
+  display: inline-block; margin-top: var(--space-2);
+  font-family: var(--font-sans); font-size: var(--text-sm); color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.sell-valuation-link:hover { color: var(--muted); }
 #sell-import-status:not(:empty) { margin-top: var(--space-2); }
 .sell-import-note { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-2); line-height: 1.4; }
 .sell-field input,
@@ -1639,6 +1657,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   .sell-desktop-back:hover:not(.disabled) { background: var(--sand); }
   .sell-desktop-back.disabled { color: var(--muted); border-color: var(--border); cursor: not-allowed; opacity: 0.6; }
   .sell-desktop-cta {
+    margin-left: auto; /* står til højre, også på trin 1 uden Tilbage */
     display: inline-flex; align-items: center; gap: var(--space-2);
     padding: 14px 28px; border-radius: var(--radius-sm);
     border: none; cursor: pointer;
@@ -1677,11 +1696,11 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .sell-desktop-preview-placeholder {
   color: var(--text-muted); font-family: var(--font-sans); font-size: var(--text-sm);
 }
+/* Samme standsmærke som på annoncekortet (.condition-tag giver farve, kant
+   og størrelse); her styres kun placeringen. */
 .sell-desktop-preview-badge {
-  position: absolute; top: 12px; left: 12px;
-  background: rgba(255,255,255,0.92); color: var(--charcoal);
-  border-radius: var(--radius-sm); padding: 3px 9px;
-  font-family: var(--font-sans); font-size: var(--text-2xs); font-weight: var(--weight-semibold);
+  position: absolute; top: var(--space-3); left: var(--space-3);
+  font-family: var(--font-sans);
 }
 .sell-desktop-preview-body { padding: 14px 16px 16px; }
 .sell-desktop-preview-topline {
