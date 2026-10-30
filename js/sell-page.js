@@ -12,6 +12,7 @@ import { enableDragReorder } from './drag-reorder.js';
 import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
 import { mountUpgradesEditor, normalizeUpgrades, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
 import { bikePath } from './bike-url.js';
+import { conditionTagClass } from './condition-tag.js';
 import { readActingAs, readBikeForm, validateBikeForm, buildBikeRow } from './sell-submit.js';
 import { readDraftFields, writeDraftFields, clearDraft, readDraftImages, writeDraftImages } from './sell-draft-store.js';
 
@@ -875,7 +876,7 @@ export function createSellPage({
           <span class="suffix">kr.</span>
         </div>
         ${giveawayToggleHtml(c, isDealer)}
-        <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" style="display:inline-block;margin-top:8px;font-size:0.82rem;color:var(--rust);text-decoration:none;font-family:var(--font-sans);">Ikke sikker på pris? Få gratis vurdering</a>
+        <a href="/vurder-min-cykel/" onclick="event.preventDefault();openValuationModal()" class="sell-valuation-link">Ikke sikker på pris? Få gratis vurdering</a>
         <p id="sell-upgrades-nudge" class="sell-upgrades-nudge"${UPGRADE_PROMINENT_TYPES.includes(c['sell-type']) && !_isActingAs() ? '' : ' hidden'}>Har du skiftet dele siden købet? I næste trin kan du skrive dem op med priser, så køberen kan se hvad prisen dækker over.</p>
       </div>
 
@@ -1098,7 +1099,7 @@ export function createSellPage({
       : `<div class="sell-desktop-preview-placeholder">Billede vises her</div>`;
 
     const condBadge = cond
-      ? `<div class="sell-desktop-preview-badge">${esc(cond)}</div>`
+      ? `<div class="sell-desktop-preview-badge condition-tag ${conditionTagClass(cond)}">${esc(cond)}</div>`
       : '';
 
     const title = [brand, model].filter(Boolean).join(' ') || (_isAcc() ? 'Dit tilbehør' : 'Din cykel');
@@ -1145,9 +1146,10 @@ export function createSellPage({
     // Altid aktiv: mangler der noget, viser advanceSell() det ved feltet.
     const cls = 'enabled';
     const dis = '';
-    const backDisabled = step === 1;
+    // Ingen Tilbage på trin 1: der er intet at gå tilbage til, og en grå,
+    // deaktiveret knap er bare støj ved siden af Fortsæt.
     return `
-      <button class="sell-desktop-back ${backDisabled ? 'disabled' : ''}" ${backDisabled ? 'disabled' : ''} onclick="backSell()">Tilbage</button>
+      ${step > 1 ? `<button class="sell-desktop-back" onclick="backSell()">Tilbage</button>` : ''}
       <button class="sell-desktop-cta ${cls}" data-step="${step}" onclick="advanceSell()" ${dis}>
         ${labels[step]}
         ${step < 3 ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}

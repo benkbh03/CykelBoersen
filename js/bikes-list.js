@@ -2,6 +2,7 @@ import { bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, 
 import { cardImageUrl } from './image-size.js';
 import { cardFacts } from './card-spec.js';
 import { bikePath } from './bike-url.js';
+import { conditionTagClass } from './condition-tag.js';
 import { iconSearch, noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
@@ -317,12 +318,7 @@ export function createBikesList({
 
   /* Kortenes HTML. Delt mellem listen og "nærmeste match" i tom-tilstanden. */
   function bikeCardsHTML(bikes) {
-    const conditionClass = c => {
-      if (c === 'Ny')        return 'condition-tag--ny';
-      if (c === 'Som ny')    return 'condition-tag--som-ny';
-      if (c === 'God stand') return 'condition-tag--god';
-      return 'condition-tag--brugt';
-    };
+    const conditionClass = conditionTagClass;
 
     const currentUser = getCurrentUser();
 

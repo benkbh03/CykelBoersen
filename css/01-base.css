@@ -1184,7 +1184,7 @@ body.nav-search-on .nav-search { display: flex; }
 .color-swatch .filter-count { font-size: 0.72rem; }
 
 /* Formularer (sælg + rediger): små runde prikker med navnet ved siden af,
-   som en række chips. De store farvede fliser (.color-tile) bruges ikke
+   som en række chips med samme radius som felterne (ingen pilleform). De store farvede fliser (.color-tile) bruges ikke
    længere her, men reglerne bliver stående for cachede moduler. */
 .form-group .color-swatch-grid,
 .sell-field .color-swatch-grid {
@@ -1197,7 +1197,7 @@ body.nav-search-on .nav-search { display: flex; }
   display: inline-flex; position: relative; margin: 0;
   font-weight: var(--weight-regular);
   padding: 6px 12px 6px 8px;
-  border: 1px solid var(--border); border-radius: var(--radius-full);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
   background: var(--bg); font-size: var(--text-sm);
 }
 .form-group .color-swatch:not(.color-tile):hover,
