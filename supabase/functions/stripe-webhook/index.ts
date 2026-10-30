@@ -117,6 +117,7 @@ serve(async (req) => {
                 .eq("id", pend.id);
               try {
                 await supabase.functions.invoke("notify-message", {
+                  headers: { "x-internal-key": SUPABASE_SERVICE },
                   body: { type: "rental_cancelled", booking_id: pend.id, by: "system" },
                 });
               } catch (e) { console.error("notify-message (optaget) fejlede:", e); }
@@ -136,6 +137,7 @@ serve(async (req) => {
             // Afvent mailen: en ikke-afventet invoke kan blive afbrudt, når svaret er sendt.
             try {
               await supabase.functions.invoke("notify-message", {
+                headers: { "x-internal-key": SUPABASE_SERVICE },
                 body: { type: "rental_booked", booking_id: confirmedId },
               });
             } catch (e) { console.error("notify-message (rental_booked) fejlede:", e); }

@@ -40,7 +40,7 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
     // Mails må aldrig få en handling til at fejle, når pengene allerede er flyttet.
     const notify = async (body: Record<string, unknown>) => {
-      try { await supabase.functions.invoke("notify-message", { body }); }
+      try { await supabase.functions.invoke("notify-message", { body, headers: { "x-internal-key": SUPABASE_SERVICE_KEY } }); }
       catch (e) { console.error("notify-message fejlede:", e); }
     };
 

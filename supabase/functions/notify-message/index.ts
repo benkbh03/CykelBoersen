@@ -159,8 +159,11 @@ serve(async (req) => {
        Frontenden kalder dem aldrig, så en browser-kalder afvises: ellers
        kunne enhver der gættede et booking-id sende mails i Cykelbørsens navn. */
     if (["rental_booked", "rental_cancelled", "rental_returned"].includes(payload.type)) {
-      const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
-      if (!bearer || bearer !== SUPABASE_SERVICE_KEY) {
+      /* Supabase' gateway kan bytte Authorization-headeren ud med et kortlivet
+         token (nye API-nøgler), så kalderen sender service-nøglen i en egen
+         header, som gatewayen ikke rører. */
+      const internal = req.headers.get("x-internal-key") ?? "";
+      if (!SUPABASE_SERVICE_KEY || internal !== SUPABASE_SERVICE_KEY) {
         return new Response("Forbidden", { status: 403, headers: corsHeaders });
       }
 
