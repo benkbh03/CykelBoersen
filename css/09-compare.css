@@ -75,14 +75,15 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   transition: background 0.15s;
 }
 .compare-bar-clear:hover { background: rgba(255,255,255,0.1); color: #fff; }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .compare-bar-go {
-  background: var(--rust); color: #fff;
-  border: none; padding: 9px 18px; border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); padding: 9px 18px; border-radius: var(--radius-sm);
   font-size: 0.9rem; font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
-.compare-bar-go:hover:not(:disabled) { background: var(--rust-hover);}
+.compare-bar-go:hover:not(:disabled) { background: var(--surface-2);}
 .compare-bar-go:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (max-width: 560px) {
@@ -207,10 +208,11 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   color: var(--muted);
   margin: -4px 0 0;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .cmp-bike-cta {
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-size: 0.82rem; font-weight: var(--weight-semibold);
@@ -218,7 +220,7 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   font-family: var(--font-sans);
   transition: background 0.15s, transform 0.1s;
 }
-.cmp-bike-cta:hover { background: var(--rust-hover);}
+.cmp-bike-cta:hover { background: var(--surface-2);}
 
 /* Section */
 .cmp-section { border-bottom: 1px solid var(--border); }
@@ -348,12 +350,13 @@ body.compare-mode .bike-card:has(.compare-checkbox:checked) { outline-color: var
   border: 1px solid var(--border);
 }
 .cmp-footer-secondary:hover { background: var(--sand); border-color: var(--charcoal);}
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .cmp-footer-primary {
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
 }
-.cmp-footer-primary:hover { background: var(--rust-hover);}
+.cmp-footer-primary:hover { background: var(--surface-2);}
 
 /* Responsivt: under 768px omdannes header til vandret-scrollbar layout */
 @media (max-width: 768px) {

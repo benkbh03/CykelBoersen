@@ -101,14 +101,15 @@
 .br-card-link a { color: var(--charcoal); text-decoration: underline; overflow-wrap: anywhere; }
 .br-card-link a:hover { color: var(--rust); }
 
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .br-offer-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   min-height: 44px;
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-5);
   font-family: var(--font-sans);
@@ -118,7 +119,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.br-offer-btn:hover { background: var(--rust-hover); }
+.br-offer-btn:hover { background: var(--surface-2); }
 .br-offer-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 /* display:inline-flex ovenfor slår browserens [hidden]-regel */
 .br-offer-btn[hidden] { display: none !important; }

@@ -35,17 +35,18 @@
   justify-content: flex-end;
   margin-bottom: 18px;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .cykelagent-new-btn {
   display: inline-flex; align-items: center; gap: var(--space-2);
-  background: var(--rust); color: #fff;
-  border: none; border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
   padding: 12px 22px;
   font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: background 0.15s;
 }
-.cykelagent-new-btn:hover { background: var(--rust-hover); }
+.cykelagent-new-btn:hover { background: var(--surface-2); }
 .cykelagent-new-icon {
   display: inline-flex; align-items: center; justify-content: center;
   font-size: var(--text-base); line-height: 1;
@@ -520,9 +521,10 @@
   border-top: 1px solid var(--border);
   margin-top: 8px;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .cykelagent-save-btn {
-  background: var(--rust); color: #fff;
-  border: none; border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); border-radius: var(--radius-sm);
   padding: 12px 24px;
   font-family: var(--font-sans);
   font-size: 0.95rem; font-weight: var(--weight-semibold);
@@ -531,7 +533,7 @@
   min-width: 200px;
   transition: background 0.15s;
 }
-.cykelagent-save-btn:hover { background: var(--rust-hover); }
+.cykelagent-save-btn:hover { background: var(--surface-2); }
 .cykelagent-cancel-btn {
   background: none;
   border: 1.5px solid var(--border);

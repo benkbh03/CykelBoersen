@@ -497,7 +497,7 @@ export const footerContent = {
           <label style="font-size:0.82rem;font-weight:600;">Besked</label>
           <textarea id="contact-message" placeholder="Beskriv dit spørgsmål eller problem..." style="padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:0.9rem;background:var(--cream);outline:none;resize:vertical;min-height:100px;"></textarea>
         </div>
-        <button onclick="submitContactForm()" style="background:var(--rust);color:#fff;border:none;padding:14px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);margin-top:4px;">Send besked</button>
+        <button onclick="submitContactForm()" style="background:var(--bg);color:var(--charcoal);border:1px solid var(--charcoal);padding:14px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);margin-top:4px;">Send besked</button>
       </div>
     `
   },

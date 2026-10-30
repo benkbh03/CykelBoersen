@@ -1102,13 +1102,14 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
 .pp-cta-section {
   margin-top: 16px;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .pp-cta-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   padding: 10px 22px;
   font-size: var(--text-sm);
@@ -1116,7 +1117,7 @@ body.is-mp-mobile .mp-dealer-banner-divider { height: 24px; }
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
-.pp-cta-btn:hover { background: var(--rust-hover);}
+.pp-cta-btn:hover { background: var(--surface-2);}
 
 /* Tabs (re-uses existing up-tab styling) */
 .pp-tabs {
@@ -2170,11 +2171,12 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   margin-top: 12px;
   margin-bottom: 0;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .size-finder-submit {
   width: 100%;
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   padding: 14px 20px;
   font-family: var(--font-sans);
@@ -2185,7 +2187,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   transition: background 0.15s, transform 0.1s;
 }
 .size-finder-submit:hover {
-  background: var(--rust-hover);
+  background: var(--surface-2);
 }
 .size-finder-result {
   margin-top: 32px;
@@ -2251,10 +2253,11 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .size-finder-result-cta {
   margin: 20px 0;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .size-finder-cta-primary {
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   padding: 13px 24px;
   font-family: var(--font-sans);
@@ -2263,7 +2266,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   cursor: pointer;
   width: 100%;
 }
-.size-finder-cta-primary:hover { background: var(--rust-hover); }
+.size-finder-cta-primary:hover { background: var(--surface-2); }
 .size-finder-result-tips {
   background: rgba(42,61,46,0.04);
   border-left: 3px solid var(--forest);
@@ -2569,16 +2572,17 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   font-weight: var(--weight-semibold);
   cursor: pointer;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .blog-article-cta-btns button.primary {
-  background: var(--rust);
-  border-color: var(--rust);
-  color: #fff;
+  background: var(--bg);
+  border-color: var(--charcoal);
+  color: var(--charcoal);
 }
 .blog-article-cta-btns button:hover {
   background: var(--bg);
 }
 .blog-article-cta-btns button.primary:hover {
-  background: var(--rust-hover);
+  background: var(--surface-2);
 }
 .blog-related {
   margin-top: 48px;
@@ -2697,11 +2701,12 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   border-color: var(--forest);
   box-shadow: 0 0 0 3px rgba(42,61,46,0.08);
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .valuation-submit {
   width: 100%;
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   padding: 14px 20px;
   font-family: var(--font-sans);
@@ -2711,7 +2716,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   transition: background 0.15s, transform 0.1s;
 }
 .valuation-submit:hover {
-  background: var(--rust-hover);
+  background: var(--surface-2);
 }
 .valuation-submit:disabled {
   opacity: 0.6;
@@ -2852,12 +2857,12 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   border: none;
   transition: background 0.15s, transform 0.1s;
 }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .valuation-cta-primary {
-  background: var(--rust);
-  color: #fff;
-}
+  background: var(--bg);
+  color: var(--charcoal); border: 1px solid var(--charcoal); }
 .valuation-cta-primary:hover {
-  background: var(--rust-hover);
+  background: var(--surface-2);
 }
 .valuation-cta-secondary {
   background: transparent;
@@ -3240,13 +3245,14 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   grid-template-columns: repeat(3, 1fr);
 }
 .dealers-page .dealer-cards > * { min-width: 0; }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .see-all-dealers-cta {
   display: block;
   margin: 28px auto 0;
   padding: 13px 32px;
-  background: var(--rust);
-  color: #fff;
-  border: none;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--charcoal);
   border-radius: var(--radius-sm);
   font-size: var(--text-base); font-weight: var(--weight-semibold);
   cursor: pointer;
@@ -3254,8 +3260,7 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 .see-all-dealers-cta:hover {
-  background: var(--rust-hover);
-  box-shadow: var(--shadow-float);
+  background: var(--surface-2);
 }
 .dealers-toolbar {
   display: flex;
@@ -3559,12 +3564,13 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
 .empty-state-icon { font-size: var(--text-2xl); margin-bottom: 12px; }
 .empty-state-title { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-base); color: var(--charcoal); margin: 0 0 8px; }
 .empty-state-sub { color: var(--muted); font-size: var(--text-sm); margin: 0 0 20px; line-height: 1.5; }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .empty-state-cta {
-  background: var(--rust); color: #fff; border: none;
+  background: var(--bg); color: var(--charcoal); border: 1px solid var(--charcoal);
   padding: 11px 24px; border-radius: var(--radius-sm); font-size: var(--text-sm); font-weight: var(--weight-semibold);
   cursor: pointer; font-family: var(--font-sans); transition: background 0.2s;
 }
-.empty-state-cta:hover { background: var(--rust-hover); }
+.empty-state-cta:hover { background: var(--surface-2); }
 
 /* ── MOBIL BOTTOM NAV ── */
 #mobile-bottom-nav {
