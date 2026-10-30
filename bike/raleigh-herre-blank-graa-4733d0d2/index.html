@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="75dc5aa640">
+<html lang="da" data-asset-v="bf272f378b">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -126,24 +126,24 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=75dc5aa640">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=bf272f378b">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/01-base.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/02-listings.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/04-modals.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/05-pages.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/07-map.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/09-compare.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/12-rental.css?v=75dc5aa640">
-  <link rel="stylesheet" href="/css/13-buy-requests.css?v=75dc5aa640">
+  <link rel="stylesheet" href="/css/tokens.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/01-base.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/02-listings.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/04-modals.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/05-pages.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/07-map.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/09-compare.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/12-rental.css?v=bf272f378b">
+  <link rel="stylesheet" href="/css/13-buy-requests.css?v=bf272f378b">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -369,9 +369,10 @@
       <div class="bike-quiz-box" id="bike-quiz-box">
         <div class="bike-quiz-intro" id="bike-quiz-intro">
           <div class="bike-quiz-icon"><svg class="ui-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/></svg></div>
-          <div class="bike-quiz-title">Hvad passer til dig?</div>
+          <!-- Et tekstlink, ikke en knap (30. okt.): sidebaren havde tre
+               knapper oven over hinanden, og quizzen er et sidespor. -->
+          <button type="button" class="bike-quiz-link" onclick="startBikeQuiz()">Hvad passer til dig?</button>
           <div class="bike-quiz-sub">Få en anbefaling på 2 spørgsmål</div>
-          <button class="bike-quiz-start-btn" onclick="startBikeQuiz()">Start</button>
         </div>
         <div class="bike-quiz-steps" id="bike-quiz-steps" style="display:none">
           <div class="bike-quiz-step" id="quiz-step-1">
@@ -436,15 +437,14 @@
         </div>
         <div class="price-range sidebar-section-body">
           <div class="price-inputs">
-            <input type="number" placeholder="Min kr." min="0">
+            <input type="number" placeholder="Min kr." min="0" oninput="applyFiltersSoon()" aria-label="Mindste pris i kr.">
             <span>–</span>
-            <input type="number" placeholder="Max kr." min="0">
+            <input type="number" placeholder="Max kr." min="0" oninput="applyFiltersSoon()" aria-label="Højeste pris i kr.">
           </div>
           <!-- Gives væk hører hjemme under Pris, ikke som eget afsnit: det ER
                et prisfilter, nemlig prisen 0. Et min-beløb udelukker dem
                automatisk, så de to kontroller kan ikke komme i konflikt. -->
           <label class="filter-option filter-option--full"><input type="checkbox" data-filter="giveaway" data-value="true" onchange="applyFilters()"> Kun ting der gives væk</label>
-          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
       <div class="sidebar-box collapsed" data-fsec="stelstoerrelse">
@@ -867,7 +867,7 @@
         </div>
         <div class="weight-range sidebar-section-body">
           <div class="price-inputs">
-            <input type="number" id="sidebar-max-weight" placeholder="Max kg" min="2" max="50" step="0.1">
+            <input type="number" id="sidebar-max-weight" placeholder="Max kg" min="2" max="50" step="0.1" oninput="applyFiltersSoon()" aria-label="Højeste vægt i kg">
             <span>kg</span>
           </div>
           <div class="weight-presets" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
@@ -876,7 +876,6 @@
             <button type="button" class="weight-preset" onclick="setMaxWeight(10)">Under 10 kg</button>
             <button type="button" class="weight-preset" onclick="setMaxWeight(12)">Under 12 kg</button>
           </div>
-          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
       <!-- Cykelagent-kortet er fjernet herfra: det duplikerede
