@@ -359,11 +359,11 @@ function setBrowseCategory(cat) {
   const _hTitle = document.querySelector('.search-hero-title');
   const _hSub = document.querySelector('.search-hero-sub');
   if (_hTitle && _heroCykel.title === null) _heroCykel.title = _hTitle.innerHTML;
-  if (_hSub && _heroCykel.sub === null) _heroCykel.sub = _hSub.textContent;
+  if (_hSub && _heroCykel.sub === null) _heroCykel.sub = _hSub.innerHTML;
   if (_hTitle) _hTitle.innerHTML = isAcc
     ? 'Find alt til din cykel på Cykelbørsen'
     : _heroCykel.title;
-  if (_hSub) _hSub.textContent = isAcc
+  if (_hSub) _hSub.innerHTML = isAcc
     ? 'Hjelme, lygter, dæk, gear og reservedele. Køb og sælg, nyt og brugt.'
     : _heroCykel.sub;
 
