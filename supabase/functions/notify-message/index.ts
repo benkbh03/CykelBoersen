@@ -153,45 +153,139 @@ serve(async (req) => {
       }
     }
 
-    // ── UDLEJNING: NY BOOKING (→ forhandler) ──────────────────
-    if (payload.type === "rental_booked") {
+    // ── UDLEJNING: booket / afbestilt / afleveret ─────────────
+    /* Kaldes KUN af andre edge functions med service-nøglen (stripe-webhook
+       ved betaling, rental-booking-action ved afbestilling og aflevering).
+       Frontenden kalder dem aldrig, så en browser-kalder afvises: ellers
+       kunne enhver der gættede et booking-id sende mails i Cykelbørsens navn. */
+    if (["rental_booked", "rental_cancelled", "rental_returned"].includes(payload.type)) {
+      const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+      if (!bearer || bearer !== SUPABASE_SERVICE_KEY) {
+        return new Response("Forbidden", { status: 403, headers: corsHeaders });
+      }
+
       const { data: b } = await supabase
         .from("rental_bookings")
-        .select("dealer_id, renter_id, start_date, end_date, days, rental_amount, platform_fee, rental_items!item_id(title), profiles!renter_id(name)")
+        .select("id, dealer_id, renter_id, start_date, end_date, days, rental_amount, deposit_amount, platform_fee, total_amount, deposit_status, rental_items!item_id(id, title, address, city), renter:profiles!renter_id(name), dealer:profiles!dealer_id(name, shop_name, address, city, phone)")
         .eq("id", payload.booking_id)
         .single();
       if (!b) return new Response("Booking not found", { status: 400, headers: corsHeaders });
 
-      /* Kalderen skal være part i bookingen. Uden dette kunne enhver anonym
-         kalder der gættede et booking-id udløse en "ny booking"-mail til
-         forhandleren. Ingen data lækkede, men mailen kunne sendes i det
-         uendelige på vores Resend-kvote og omdømme. */
-      const rbCaller = await getCaller(req, supabase);
-      if (!rbCaller || (rbCaller.id !== b.dealer_id && rbCaller.id !== (b as any).renter_id)) {
-        return new Response("Forbidden", { status: 403, headers: corsHeaders });
-      }
-
-      const { data: { user: dealer } } = await supabase.auth.admin.getUserById(b.dealer_id);
-      if (!dealer?.email) {
-        return new Response(JSON.stringify({ ok: true, skipped: "no dealer email" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
       const item   = (b as any).rental_items || {};
-      const renter = (b as any).profiles || {};
-      const payout = (b.rental_amount || 0) - (b.platform_fee || 0);
+      const renter = (b as any).renter || {};
+      const dealer = (b as any).dealer || {};
+      const [{ data: { user: dealerUser } }, { data: { user: renterUser } }] = await Promise.all([
+        supabase.auth.admin.getUserById(b.dealer_id),
+        supabase.auth.admin.getUserById(b.renter_id),
+      ]);
 
-      const title = esc(item.title ?? "Din udlejningscykel");
-      const html = layout(
-        heading(`${title} er booket`) +
-        facts([
-          ["Lejer", esc(renter.name ?? "")],
-          ["Periode", `${esc(b.start_date)} til ${esc(b.end_date)} (${b.days} dage)`],
-          ["Udbetaling", `${kr(payout)} efter kommission`],
-        ]) +
-        button(`${SITE}/udlejning/bookinger/`, "Se bookingen"),
-        "Du får denne mail fordi du udlejer cykler på Cykelbørsen.",
-      );
-      const result = await sendEmail(dealer.email, `Ny booking: ${item.title ?? "udlejningscykel"}`, html);
-      return new Response(JSON.stringify({ ok: true, id: result.id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      const date = (d: string) => new Date(d + "T00:00:00Z")
+        .toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+      const period    = `${date(b.start_date)} til ${date(b.end_date)} (${b.days} ${b.days === 1 ? "dag" : "dage"})`;
+      const title     = esc(item.title ?? "udlejningscykel");
+      const shop      = esc(dealer.shop_name || dealer.name || "Forhandleren");
+      const where     = [item.address || dealer.address, item.city || dealer.city].filter(Boolean).join(", ");
+      const mapsUrl   = where ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(where)}` : "";
+      const payout    = (b.rental_amount || 0) - (b.platform_fee || 0);
+      const deposit   = b.deposit_amount || 0;
+      // Lejeren kan afbestille til og med to dage før start (samme regel som rental-booking-action).
+      const cancelBy  = date(new Date(Date.parse(b.start_date + "T00:00:00Z") - 2 * 86400000).toISOString().slice(0, 10));
+      const sent: string[] = [];
+
+      if (payload.type === "rental_booked") {
+        if (renterUser?.email) {
+          const html = layout(
+            heading(`Din leje af ${title} er bekræftet`) +
+            p(`Hej ${esc(renter.name || "")}`.trim() + `. Betalingen er gået igennem, og cyklen er reserveret til dig.`) +
+            facts([
+              ["Cykel", title],
+              ["Periode", esc(period)],
+              ["Afhentning", where ? `${shop}, <a href="${esc(mapsUrl)}" style="color:inherit;">${esc(where)}</a>` : shop],
+              ["Telefon", esc(dealer.phone || "")],
+              ["Leje", kr(b.rental_amount)],
+              ["Depositum", deposit > 0 ? `${kr(deposit)}, tilbagebetales når cyklen er afleveret uden skader` : ""],
+              ["Betalt i alt", kr(b.total_amount)],
+            ]) +
+            p(`Tag billedlegitimation med, når du henter cyklen; forhandleren kan bede om at se den. Spørg ${shop} om åbningstider, hvis du er i tvivl.`) +
+            p(`Du kan afbestille og få hele beløbet tilbage til og med ${esc(cancelBy)}. Derefter skal du skrive til ${shop}.`) +
+            button(`${SITE}/udlejning/lejeaftaler/`, "Se din leje") +
+            small("Kvitteringen for selve betalingen kommer i en separat mail fra Stripe."),
+            "Du får denne mail fordi du har lejet en cykel via Cykelbørsen.",
+          );
+          await sendEmail(renterUser.email, `Bekræftet: ${item.title ?? "din leje"}, ${date(b.start_date)}`, html);
+          sent.push("renter");
+        }
+        if (dealerUser?.email) {
+          const html = layout(
+            heading(`${title} er booket`) +
+            facts([
+              ["Lejer", esc(renter.name || "")],
+              ["Periode", esc(period)],
+              ["Leje", kr(b.rental_amount)],
+              ["Depositum", deposit > 0 ? kr(deposit) : ""],
+              ["Udbetaling til dig", b.platform_fee > 0 ? `${kr(payout)} efter kommission` : kr(payout)],
+            ]) +
+            p("Tjek lejerens legitimation ved udlevering. Når cyklen er afleveret, så markér det under bookingen, så depositummet kan blive frigivet.") +
+            button(`${SITE}/udlejning/bookinger/`, "Se bookingen"),
+            "Du får denne mail fordi du udlejer cykler på Cykelbørsen.",
+          );
+          await sendEmail(dealerUser.email, `Ny booking: ${item.title ?? "udlejningscykel"}, ${date(b.start_date)}`, html);
+          sent.push("dealer");
+        }
+      }
+
+      if (payload.type === "rental_cancelled") {
+        const byDealer = payload.by === "dealer";
+        // "system": perioden blev booket af en anden, mens betalingssiden stod åben.
+        const bySystem = payload.by === "system";
+        const refundLine = p(`Hele beløbet, ${kr(b.total_amount)}, er refunderet til det kort, der blev betalt med. Det tager normalt 5 til 10 bankdage, før pengene står på kontoen.`);
+        if (renterUser?.email) {
+          const html = layout(
+            heading(`Din leje af ${title} er afbestilt`) +
+            p(bySystem
+              ? `Perioden ${esc(period)} blev booket af en anden, mens din betaling stod åben, så vi har ikke kunnet bekræfte din leje.`
+              : byDealer ? `${shop} har afbestilt din leje i perioden ${esc(period)}.` : `Du har afbestilt din leje i perioden ${esc(period)}.`) +
+            refundLine +
+            button(`${SITE}/udlejning/`, "Find en anden cykel"),
+            "Du får denne mail fordi du har lejet en cykel via Cykelbørsen.",
+          );
+          await sendEmail(renterUser.email, `Afbestilt: ${item.title ?? "din leje"}`, html);
+          sent.push("renter");
+        }
+        if (dealerUser?.email && !bySystem) {
+          const html = layout(
+            heading(`Booking af ${title} er afbestilt`) +
+            p(byDealer ? `Du har afbestilt ${esc(renter.name || "lejerens")} booking i perioden ${esc(period)}.` : `${esc(renter.name || "Lejeren")} har afbestilt sin booking i perioden ${esc(period)}.`) +
+            p("Lejeren har fået hele beløbet refunderet, og perioden er ledig igen.") +
+            button(`${SITE}/udlejning/bookinger/`, "Se bookinger"),
+            "Du får denne mail fordi du udlejer cykler på Cykelbørsen.",
+          );
+          await sendEmail(dealerUser.email, `Afbestilt: ${item.title ?? "booking"}, ${date(b.start_date)}`, html);
+          sent.push("dealer");
+        }
+      }
+
+      if (payload.type === "rental_returned" && renterUser?.email) {
+        const kept   = Math.min(deposit, Math.max(0, Number(payload.kept) || 0));
+        const damage = kept > 0;
+        const rest   = deposit - kept;
+        const body = deposit === 0
+          ? p(`${shop} har registreret, at cyklen er afleveret. Tak fordi du lejede via Cykelbørsen.`)
+          : damage
+            ? p(`${shop} har registreret en skade på cyklen og beholder ${kr(kept)} af dit depositum på ${kr(deposit)}.` +
+                (rest > 0 ? ` Resten, ${kr(rest)}, er refunderet til det kort, der blev betalt med.` : "")) +
+              p(`Er du uenig, så skriv til ${shop} direkte. Kommer I ikke videre, kan du skrive til os på hej@cykelbørsen.dk.`)
+            : p(`${shop} har registreret, at cyklen er afleveret uden skader. Dit depositum på ${kr(deposit)} er refunderet til det kort, der blev betalt med. Det tager normalt 5 til 10 bankdage.`);
+        const html = layout(
+          heading(damage ? `Skade registreret på ${title}` : `Tak for lejen af ${title}`) + body +
+          button(`${SITE}/udlejning/lejeaftaler/`, "Se din leje"),
+          "Du får denne mail fordi du har lejet en cykel via Cykelbørsen.",
+        );
+        await sendEmail(renterUser.email, damage ? `Depositum tilbageholdt: ${item.title ?? "din leje"}` : `Afleveret: ${item.title ?? "din leje"}`, html);
+        sent.push("renter");
+      }
+
+      return new Response(JSON.stringify({ ok: true, sent }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ── ID VERIFICERING GODKENDT ──────────────────────────────

@@ -132,6 +132,10 @@ serve(async (req) => {
       success_url: `${base}?rental_success=true`,
       cancel_url:  `${cancelBase}?rental_cancel=true`,
       locale: "da",
+      // Perioden holdes kun i 30 minutter (create_rental_booking), så betalingssiden
+      // skal lukke samtidig. Stripe kræver mindst 30 minutter; stripe-webhook
+      // refunderer, hvis perioden alligevel er blevet optaget.
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60 + 60,
     });
 
     // Knyt session til bookingen (idempotens-nøgle for webhook-bekræftelse)

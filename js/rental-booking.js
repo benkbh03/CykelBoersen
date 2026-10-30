@@ -44,21 +44,30 @@ export function createRentalBooking({
     if (!['confirmed', 'active'].includes(b.status)) return '';
     return `
       <button class="rental-act-btn rental-act-ok" onclick="rentalBookingAction('${b.id}','return_ok')">Afleveret uden skade</button>
-      <button class="rental-act-btn rental-act-warn" onclick="rentalBookingAction('${b.id}','return_damage')">Skade</button>
+      <button class="rental-act-btn rental-act-warn" onclick="rentalBookingAction('${b.id}','return_damage',${Number(b.deposit_amount) || 0})">Skade</button>
       <button class="rental-act-btn rental-act-cancel" onclick="rentalBookingAction('${b.id}','cancel')">Afbestil</button>`;
   }
 
-  async function rentalBookingAction(bookingId, action) {
+  async function rentalBookingAction(bookingId, action, deposit = 0) {
     const msgs = {
       cancel:        'Afbestil bookingen? Kunden får det fulde beløb refunderet.',
       return_ok:     'Markér som afleveret uden skade? Depositum tilbagebetales til kunden.',
-      return_damage: 'Registrér skade? Depositum tilbageholdes (tilbagebetales IKKE).',
+      return_damage: 'Registrér skade? Der er intet depositum at beholde.',
     };
-    if (!confirm(msgs[action] || 'Er du sikker?')) return;
+    const body = { booking_id: bookingId, action };
+    if (action === 'return_damage' && deposit > 0) {
+      // Forhandleren vælger hvor meget af depositummet der beholdes; resten refunderes.
+      const raw = prompt(`Hvor meget af depositummet på ${deposit.toLocaleString('da-DK')} kr. beholder du for skaden? Resten refunderes kunden.`, String(deposit));
+      if (raw === null) return;
+      const keep = parseInt(String(raw).replace(/\D/g, ''), 10);
+      if (!Number.isFinite(keep) || keep < 0 || keep > deposit) {
+        if (showToast) showToast(`Skriv et beløb mellem 0 og ${deposit.toLocaleString('da-DK')} kr.`);
+        return;
+      }
+      body.keep_amount = keep;
+    } else if (!confirm(msgs[action] || 'Er du sikker?')) return;
     try {
-      const { data, error } = await supabase.functions.invoke('rental-booking-action', {
-        body: { booking_id: bookingId, action },
-      });
+      const { data, error } = await supabase.functions.invoke('rental-booking-action', { body });
       if (error) {
         let m = 'Handlingen fejlede. Prøv igen.';
         try { m = (await error.context.json()).error || m; } catch {}
@@ -146,7 +155,7 @@ export function createRentalBooking({
 
     const { data: bookings } = await supabase
       .from('rental_bookings')
-      .select('id, start_date, end_date, days, rental_amount, platform_fee, total_amount, status, rental_items!item_id(title, rental_item_images(url, is_primary)), profiles!renter_id(name)')
+      .select('id, start_date, end_date, days, rental_amount, deposit_amount, platform_fee, total_amount, status, rental_items!item_id(title, rental_item_images(url, is_primary)), profiles!renter_id(name)')
       .eq('dealer_id', user.id)
       .neq('status', 'pending_payment')
       .order('created_at', { ascending: false });
