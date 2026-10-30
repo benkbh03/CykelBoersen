@@ -27,8 +27,15 @@ export function createRentalBooking({
   navigateTo,
 }) {
 
+  // Lejeren kan selv afbestille til og med dagen før første lejedag (dansk tid).
+  // Serveren (rental-booking-action) håndhæver samme regel.
+  function renterCanCancel(b) {
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Copenhagen' });
+    return b.start_date > today;
+  }
+
   function renterActions(b) {
-    if (b.status !== 'confirmed') return '';
+    if (b.status !== 'confirmed' || !renterCanCancel(b)) return '';
     return `<button class="rental-act-btn rental-act-cancel" onclick="rentalBookingAction('${b.id}','cancel')">Afbestil</button>`;
   }
 
@@ -161,7 +168,7 @@ export function createRentalBooking({
         <button class="sell-back-btn" onclick="navigateTo('/me')">← Tilbage</button>
         <div class="rental-mine-head">
           <h1>Bookinger</h1>
-          <button class="rental-onb-btn" onclick="navigateTo('/udlejning/mine')">Mine udlejningscykler</button>
+          <button class="rental-secondary-btn" onclick="navigateTo('/udlejning/mine')">Mine udlejningscykler</button>
         </div>
         <div class="rental-booking-list">
           ${rows || '<p style="color:var(--muted);padding:24px;text-align:center;">Du har ingen bookinger endnu.</p>'}

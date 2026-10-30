@@ -109,7 +109,7 @@ export function createRentalManage({
           <h1>Mine udlejningscykler</h1>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="rental-secondary-btn" onclick="navigateTo('/udlejning/bookinger')">Bookinger</button>
-            <button class="rental-onb-btn" onclick="navigateTo('/udlejning/opret')">Ny udlejningscykel</button>
+            <button class="rental-secondary-btn" onclick="navigateTo('/udlejning/opret')">Ny udlejningscykel</button>
           </div>
         </div>
         <div class="rental-mine-list">
