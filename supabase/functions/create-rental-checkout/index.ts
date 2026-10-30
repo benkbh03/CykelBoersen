@@ -16,6 +16,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14?target=deno";
+import { asciiEmail } from "../_shared/ascii-email.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
   apiVersion: "2023-10-16",
@@ -133,9 +134,8 @@ serve(async (req) => {
       cancel_url:  `${cancelBase}?rental_cancel=true`,
       locale: "da",
       // Lejerens mail fra login, så Stripe-kvitteringen går det rigtige sted hen,
-      // og lejeren slipper for at skrive den. Stripe afviser "ø" i domænet, så en
-      // sådan adresse sendes ikke med (ellers fejler hele betalingssiden).
-      ...(user.email && /^[\x21-\x7e]+$/.test(user.email) ? { customer_email: user.email } : {}),
+      // og lejeren slipper for at skrive den. "ø" i domænet omskrives til punycode.
+      ...(asciiEmail(user.email) ? { customer_email: asciiEmail(user.email)! } : {}),
       // Perioden holdes kun i 30 minutter (create_rental_booking), så betalingssiden
       // skal lukke samtidig. Stripe kræver mindst 30 minutter; stripe-webhook
       // refunderer, hvis perioden alligevel er blevet optaget.

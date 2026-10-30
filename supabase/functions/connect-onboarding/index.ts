@@ -18,6 +18,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14?target=deno";
+import { asciiEmail } from "../_shared/ascii-email.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
   apiVersion: "2023-10-16",
@@ -68,7 +69,7 @@ serve(async (req) => {
       const account = await stripe.accounts.create({
         type: "express",
         country: "DK",
-        email: user.email ?? undefined,
+        email: asciiEmail(user.email) ?? undefined, // Stripe afviser "ø" i domænet
         business_type: "company",
         capabilities: {
           transfers:     { requested: true },

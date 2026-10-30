@@ -13,6 +13,8 @@
 // siden af index.ts (Supabase-connectoren gør det; i Dashboard: tilføj filen
 // som _shared/email.ts).
 
+import { asciiEmail } from "./ascii-email.ts";
+
 const FOREST = "#2A3D2E";
 const RUST = "#C8502A";
 const CHARCOAL = "#1A1A18";
@@ -153,6 +155,8 @@ export function toText(html: string): string {
 }
 
 export async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
+  // Modtagere med "ø" i domænet sendes som punycode, så de ikke afvises.
+  to = asciiEmail(to) ?? to;
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
