@@ -1528,6 +1528,20 @@ body.browse-tilbehoer .smart-filter { display: none; }
   font-weight: 700;
   color: var(--charcoal);
 }
+/* Quizzen åbnes med et tekstlink, ikke en knap (30. okt.). */
+.bike-quiz-link {
+  background: none; border: none; padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  text-align: left;
+}
+.bike-quiz-link:hover { color: var(--charcoal); }
+.bike-quiz-link:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
 .bike-quiz-sub {
   font-size: 0.8rem;
   color: var(--muted);
