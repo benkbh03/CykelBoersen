@@ -49,6 +49,7 @@ import { updateNavAvatarUI } from './js/nav-avatar.js';
 import { retryHTML, showToast } from './js/ui-feedback.js';
 import { openBecomeDealerPage, closeBecomeDealerModalCompat, selectDealerPlanButton } from './js/dealer-modal-actions.js';
 import { isPendingDealerProfile, blockIfPendingDealerProfile } from './js/dealer-guards.js';
+import { needsPassword, isPasswordRequired, openRequiredPasswordModal, clearPasswordRequired, showExpiredLinkHelp, MUST_SET_PASSWORD } from './js/required-password.js';
 import { createAuthActions } from './js/auth.js';
 import { createFilters } from './js/filters.js';
 import { createBikesList } from './js/bikes-list.js';
@@ -71,6 +72,7 @@ import { skipToContent } from './js/a11y-keys.js';
 // Ellers er window.location.hash typisk tom når init() senere læser den, og
 // signup/invite-flowet (der ikke har et dedikeret auth-event som recovery) misses.
 const _initialAuthType = new URLSearchParams(window.location.hash.slice(1)).get('type');
+const _initialAuthError = new URLSearchParams(window.location.hash.slice(1)).get('error_code');
 
 /* ============================================================
    LAZY MODULE LOADER
@@ -1571,18 +1573,21 @@ async function init() {
         import(`./js/onboarding.js?v=${ASSET_VERSION}`).then(m => m.showOnboardingBanner()).catch(() => {});
       }
     }
-  } else if (_initialAuthType === 'recovery' || _initialAuthType === 'invite') {
+  } else if (_initialAuthType === 'invite' || needsPassword(currentUser)) {
+    // Inviteret bruger har INGEN adgangskode endnu. Modalen kan ikke lukkes og
+    // åbner igen ved næste besøg, indtil adgangskoden er gemt (js/required-password.js).
+    if (_initialAuthType === 'invite') history.replaceState(null, '', window.location.pathname);
+    openRequiredPasswordModal();
+  } else if (_initialAuthError) {
+    // Brugt eller udløbet link fra en mail (fx invitationen klikket en gang til).
+    // Uden dette landede man på forsiden uden forklaring.
+    history.replaceState(null, '', window.location.pathname);
+    showExpiredLinkHelp({ currentUser, openLoginModal, showToast });
+  } else if (_initialAuthType === 'recovery') {
     history.replaceState(null, '', window.location.pathname);
     const resetModal = document.getElementById('reset-modal');
     const resetClose = resetModal.querySelector('.modal-close');
-    if (_initialAuthType === 'invite') {
-      showToast('Velkommen! Vælg en adgangskode for at aktivere din konto.', 'ok');
-      // Inviteret bruger har INGEN adgangskode endnu — gør det obligatorisk:
-      // skjul luk-knappen (modalen kan i forvejen ikke lukkes via Escape/klik-udenfor).
-      if (resetClose) resetClose.style.display = 'none';
-    } else if (resetClose) {
-      resetClose.style.display = '';
-    }
+    if (resetClose) resetClose.style.display = '';
     resetModal.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -1934,10 +1939,11 @@ function closeAllModals() {
    'inbox-modal','share-modal','report-modal',
    'admin-modal','reset-modal','listing-success-modal',
    'rate-now-modal','delete-account-modal'].forEach(id => {
+    if (id === 'reset-modal' && isPasswordRequired()) return;
     const el = document.getElementById(id);
     if (el) el.classList.remove('open');
   });
-  document.body.style.overflow = '';
+  document.body.style.overflow = isPasswordRequired() ? 'hidden' : '';
 }
 
 
@@ -3103,7 +3109,11 @@ async function handleResetPassword() {
     document.body.style.overflow = '';
 
     // Opdater password med timeout (10 sec)
-    const updatePromise = supabase.auth.updateUser({ password: pw1 });
+    // Inviteret bruger: ryd flaget i samme kald, så adgangskode og flag ikke kan komme ud af trit.
+    const required = isPasswordRequired() || needsPassword(currentUser);
+    const updatePromise = supabase.auth.updateUser(required
+      ? { password: pw1, data: { [MUST_SET_PASSWORD]: null } }
+      : { password: pw1 });
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Timeout')), 10000)
     );
@@ -3114,7 +3124,12 @@ async function handleResetPassword() {
     if (updErr) throw updErr;
 
     history.replaceState(null, '', window.location.pathname);
-    showToast('Adgangskode opdateret! Du er nu logget ind.', 'ok');
+    if (required) {
+      clearPasswordRequired();
+      showToast('Din adgangskode er gemt. Næste gang logger du ind med din e-mail og den.', 'ok');
+    } else {
+      showToast('Adgangskode opdateret! Du er nu logget ind.', 'ok');
+    }
   } catch (error) {
     // Åben modal igen hvis der var fejl
     document.getElementById('reset-modal').classList.add('open');
@@ -3128,6 +3143,7 @@ async function handleResetPassword() {
 }
 
 function closeResetModal() {
+  if (isPasswordRequired()) return;
   document.getElementById('reset-modal').classList.remove('open');
   document.body.style.overflow = '';
   history.replaceState(null, '', window.location.pathname);

@@ -53,7 +53,12 @@ serve(async (req) => {
     }
 
     // ── Inviter brugeren: opretter konto UDEN password + sender invite-mail ──
-    const { data: inviteData, error: inviteErr } = await supa.auth.admin.inviteUserByEmail(cleanEmail);
+    // must_set_password: frontenden holder "Vælg adgangskode" åben ved hvert besøg,
+    // indtil adgangskoden er gemt (js/required-password.js). Invitationslinket
+    // virker kun én gang, så det må ikke kunne springes over.
+    const { data: inviteData, error: inviteErr } = await supa.auth.admin.inviteUserByEmail(cleanEmail, {
+      data: { must_set_password: true },
+    });
     if (inviteErr || !inviteData?.user) {
       const msg = (inviteErr?.message || "").toLowerCase();
       if (msg.includes("already") || msg.includes("registered") || msg.includes("exist")) {
