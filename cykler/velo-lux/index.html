@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="6ea83f6ea1">
+<html lang="da" data-asset-v="9c1a8dcce7">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,24 +128,24 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=6ea83f6ea1">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=9c1a8dcce7">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/01-base.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/02-listings.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/04-modals.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/05-pages.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/07-map.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/09-compare.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/12-rental.css?v=6ea83f6ea1">
-  <link rel="stylesheet" href="/css/13-buy-requests.css?v=6ea83f6ea1">
+  <link rel="stylesheet" href="/css/tokens.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/01-base.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/02-listings.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/04-modals.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/05-pages.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/07-map.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/09-compare.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/12-rental.css?v=9c1a8dcce7">
+  <link rel="stylesheet" href="/css/13-buy-requests.css?v=9c1a8dcce7">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -348,6 +348,13 @@
       <div class="sidebar-mobile-header">
         <h3>Filtre</h3>
         <button class="sidebar-mobile-close" onclick="closeMobileFilters()" aria-label="Luk filtre">✕</button>
+      </div>
+      <!-- Mobil: kort, sammenlign og Cykelagent lå som tre ikonknapper uden
+           tekst ved siden af Filtre (29. okt.). Her har de tekst. -->
+      <div class="sidebar-mobile-tools" role="group" aria-label="Flere måder at se annoncerne på">
+        <button type="button" onclick="closeMobileFilters();navigateTo('/kort')">Vis på kort</button>
+        <button type="button" onclick="closeMobileFilters();toggleCompareMode()">Sammenlign cykler</button>
+        <button type="button" onclick="closeMobileFilters();window.cykelagentSave ? cykelagentSave() : navigateTo('/cykelagenter')">Få besked om nye</button>
       </div>
       <!-- Smart filter (js/smart-filter.js): fritekst der sætter de almindelige
            filtre herunder. Øverst, fordi den er en måde at udfylde filtrene
@@ -1147,7 +1154,7 @@
         <div id="brand-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Cykler til salg</h2>
           <div id="brand-bikes-grid" class="brand-bikes-grid">
-            <ul class="prerender-bike-links"><li><a href="/bike/velo-lux-herre-3-gear-groen-366a8628/">Velo Lux Herre 3 gear, grøn – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-herre-3-gear-blaa-a348290f/">Velo Lux Herre 3 gear, blå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-blaa-ddd81f7d/">Velo Lux Dame, blå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-sort-24558035/">Velo Lux Dame, sort – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-herre-3-gear-sort-31913371/">Velo Lux Herre 3 gear, sort – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-3-gear-15897c56/">Velo Lux Dame 3 gear – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-herre-3-gear-moerkeblaa-1fc936b7/">Velo Lux Herre 3 gear, mørkeblå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-3-gear-beige-16baa6f7/">Velo Lux Dame 3 gear, beige – 2.499 kr. i Frederiksberg C</a></li></ul>
+            <ul class="prerender-bike-links"><li><a href="/bike/velo-lux-herre-3-gear-blaa-a348290f/">Velo Lux Herre 3 gear, blå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-herre-3-gear-groen-366a8628/">Velo Lux Herre 3 gear, grøn – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-blaa-ddd81f7d/">Velo Lux Dame, blå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-sort-24558035/">Velo Lux Dame, sort – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-herre-3-gear-sort-31913371/">Velo Lux Herre 3 gear, sort – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-3-gear-15897c56/">Velo Lux Dame 3 gear – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-herre-3-gear-moerkeblaa-1fc936b7/">Velo Lux Herre 3 gear, mørkeblå – 2.499 kr. i Frederiksberg C</a></li><li><a href="/bike/velo-lux-dame-3-gear-beige-16baa6f7/">Velo Lux Dame 3 gear, beige – 2.499 kr. i Frederiksberg C</a></li></ul>
           </div>
           <div id="brand-bikes-more" class="brand-show-more-wrap"></div>
         </div>
