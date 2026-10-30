@@ -161,7 +161,7 @@ export function createRentalBooking({
           <div class="rental-booking-info">
             <div class="rental-booking-title">${esc(item.title || 'Udlejningscykel')}</div>
             <div class="rental-booking-sub">${fmtDate(b.start_date)} – ${fmtDate(b.end_date)} · ${b.days} dage · ${esc(renter.name || 'Kunde')}</div>
-            <div class="rental-booking-sub">Din udbetaling: ${payout.toLocaleString('da-DK')} kr. (efter kommission)</div>
+            <div class="rental-booking-sub">Din udbetaling: ${payout.toLocaleString('da-DK')} kr.${b.platform_fee > 0 ? ' (efter kommission)' : ''}</div>
           </div>
           <div class="rental-booking-right">${statusBadge(b.status)}${dealerActions(b)}</div>
         </div>`;

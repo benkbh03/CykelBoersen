@@ -9,7 +9,7 @@ export const RENTAL_TYPES = [
 ];
 
 // Platform-kommission på udlejnings-bookinger (bruges i Fase 2 checkout + vist til forhandler).
-export const PLATFORM_FEE_PCT = 12;
+export const PLATFORM_FEE_PCT = 0; // 0 % ved lancering (30. okt.); indføres kommission, så varsl forhandlerne og angiv ekskl. moms
 
 // Grænser for lejeperiode (dage).
 export const RENTAL_MIN_DAYS = 1;
