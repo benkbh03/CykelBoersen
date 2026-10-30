@@ -112,7 +112,7 @@ export function buildProfileEditHTML() {
           </label>
         </div>
       </div>
-      <button id="save-profile-btn" class="form-submit" onclick="saveProfile()">Gem ændringer</button>
+      <button id="save-profile-btn" class="form-submit form-submit--quiet" onclick="saveProfile()">Gem ændringer</button>
     </section>
 
     <section class="pe-section">

@@ -474,7 +474,7 @@ export function createDealersPage({
             Du er logget ind som <strong>${name}</strong> (privat bruger).
             Forhandlerkonti oprettes som en separat konto. Log ud og opret en ny konto med din butiks e-mailadresse.
           </p>
-          <button class="form-submit" onclick="logout().then(()=>navigateTo('/bliv-forhandler'))" style="width:auto;padding:14px 32px;margin-bottom:12px;">
+          <button class="form-submit form-submit--quiet" onclick="logout().then(()=>navigateTo('/bliv-forhandler'))" style="width:auto;padding:14px 32px;margin-bottom:12px;">
             Log ud og opret forhandlerkonto
           </button>
           <div>
@@ -496,7 +496,7 @@ export function createDealersPage({
           <p class="bd-page-subtitle">Din butiksprofil er aktiv på Cykelbørsen</p>
         </div>
         <div style="text-align:center;padding:32px 0;">
-          <button class="form-submit" onclick="navigateTo('/min-profil')" style="width:auto;padding:14px 32px;">Se min profil</button>
+          <button class="form-submit form-submit--quiet" onclick="navigateTo('/min-profil')" style="width:auto;padding:14px 32px;">Se min profil</button>
         </div>
       </div>`;
       return;
@@ -580,7 +580,7 @@ export function createDealersPage({
         <input type="hidden" id="dealer-email" value="${esc(currentUser?.email || '')}">
         `}
 
-        <button class="form-submit" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil</button>
+        <button class="form-submit form-submit--quiet" id="dealer-submit-btn" onclick="submitDealerApplication()" style="margin-top:20px;">Opret forhandler-profil</button>
         <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">
           Gratis at oprette. Ingen binding.<br>
           Indfører vi senere betaling for forhandlere, får du besked mindst 90 dage før, og du betaler aldrig uden selv at have sagt ja.<br>

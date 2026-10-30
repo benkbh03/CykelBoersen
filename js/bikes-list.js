@@ -267,7 +267,7 @@ export function createBikesList({
           <div style="margin-bottom:16px;color:var(--muted);">${iconBike(56)}</div>
           <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.4rem;margin-bottom:10px;color:var(--charcoal);">${_isAcc ? 'Ingen tilbehør her endnu' : 'Ingen cykler her endnu'}</h3>
           <p style="color:var(--muted);font-size:0.9rem;max-width:340px;margin:0 auto 24px;line-height:1.6;">Vær den første til at sælge ${_isAcc ? 'dit cykeltilbehør' : 'din cykel'} på Cykelbørsen. Det er gratis og tager kun 2 minutter.</p>
-          <button onclick="openModal()" style="background:var(--rust);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">${_isAcc ? '+ Sæt tilbehør til salg' : '+ Sæt din cykel til salg'}</button>
+          <button onclick="openModal()" style="background:var(--bg);color:var(--charcoal);border:1px solid var(--charcoal);padding:13px 28px;border-radius:8px;font-size:0.92rem;font-weight:600;cursor:pointer;font-family:var(--font-sans);">${_isAcc ? '+ Sæt tilbehør til salg' : '+ Sæt din cykel til salg'}</button>
         </div>`;
     }
 

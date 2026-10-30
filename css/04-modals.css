@@ -351,6 +351,12 @@ footer p { color: color-mix(in srgb, var(--surface) 65%, transparent); /* 45 % g
 }
 .form-submit:hover { background: var(--rust-hover);}
 .form-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+/* Formularknap på en hel side (fx /bliv-forhandler, /me/rediger): hvid med
+   kant (30. okt.), fordi "Sæt til salg" i headeren er sidens orange knap.
+   I et vindue over siden (login, rapport) bliver .form-submit orange. */
+.form-submit--quiet { background: var(--bg); color: var(--charcoal); border: 1px solid var(--charcoal); }
+.form-submit--quiet:hover { background: var(--surface-2); }
+.form-submit--quiet .btn-spinner { border-color: color-mix(in srgb, var(--charcoal) 25%, transparent); border-top-color: var(--charcoal); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .btn-spinner {

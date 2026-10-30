@@ -172,12 +172,15 @@ footer .logo { font-size: 24px; }
   cursor: pointer;
 }
 .nav-links a:hover { opacity: 1; }
-/* Hvid omridset knap, ikke orange (29. okt.): Søg i hero'en og Send/Kontakt
-   på annoncesiden er sidens orange handling, og to orange knapper i samme
-   billede tager kraften fra begge. På den grønne header står omridset klart. */
+/* "Sæt til salg" er orange på alle sider (30. okt., brugeren): flere
+   annoncer er det der mangler mest, og en knap der skifter farve fra side
+   til side forvirrer. Sidernes egne knapper er derfor hvide med kant.
+   Undtagelser: annoncesiden, hvor køberens "Send" og "Giv et bud" er
+   handlingen, og /sell, hvor man allerede er i gang med at sælge. Dér er
+   knappen hvid omridset, som klart står på den grønne header. */
 .btn-sell {
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--surface) 70%, transparent);
+  background: var(--rust);
+  border: 1px solid var(--rust);
   color: #fff !important;
   opacity: 1 !important;
   padding: 9px 18px;
@@ -185,23 +188,19 @@ footer .logo { font-size: 24px; }
   font-weight: var(--weight-semibold) !important;
   font-size: 0.88rem !important;
   letter-spacing: 0.01em;
-  transition: background 0.2s, transform 0.18s, box-shadow 0.18s !important;
+  transition: background 0.2s !important;
 }
 .btn-sell:hover {
-  background: color-mix(in srgb, var(--surface) 14%, transparent) !important;
-}
-/* På forsiden er "Sæt til salg" den orange knap (30. okt., brugeren): flere
-   annoncer er det der mangler mest, og Søg forstår man uden farve. Søg i
-   hero'en og knappen i sælg-banneret nederst er derfor hvide med kant.
-   Andre sider beholder den omridsede udgave, fordi annoncesiden har sin
-   egen orange handling (Kontakt sælger). #landing-layout er kun synlig på
-   forsiden (view-switcher.js sætter display:none på alle andre ruter). */
-body:has(#landing-layout:not([style*="none"])) .btn-sell {
-  background: var(--rust);
-  border-color: var(--rust);
-}
-body:has(#landing-layout:not([style*="none"])) .btn-sell:hover {
   background: var(--rust-hover) !important;
+}
+body.viewing-bike-page .btn-sell,
+body.on-sell-page .btn-sell {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+body.viewing-bike-page .btn-sell:hover,
+body.on-sell-page .btn-sell:hover {
+  background: color-mix(in srgb, var(--surface) 14%, transparent) !important;
 }
 .btn-sell:focus-visible {
   outline: 2px solid rgba(232,105,74,0.7);

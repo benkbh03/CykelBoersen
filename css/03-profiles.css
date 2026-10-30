@@ -166,9 +166,10 @@
 
 /* ── Kontakt formular på profil ── */
 .up-contact-section { margin-top: 14px; }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .up-contact-btn {
-  background: var(--rust); border: none;
-  color: #fff; padding: 8px 18px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--charcoal);
+  color: var(--charcoal); padding: 8px 18px; border-radius: var(--radius-sm);
   font-size: 0.88rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); transition: opacity 0.15s;
 }

@@ -434,14 +434,15 @@
 }
 .dealer-strip h2 { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2rem; color: var(--sand);margin-bottom: 8px; }
 .dealer-strip p { color: var(--sand); opacity: 0.65; max-width: 540px; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .btn-become-dealer {
-  background: var(--rust); color: #fff;
-  border: none; padding: 13px 24px; border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--charcoal);
+  border: 1px solid var(--charcoal); padding: 13px 24px; border-radius: var(--radius-sm);
   font-size: 0.9rem; font-weight: var(--weight-semibold); cursor: pointer;
   font-family: var(--font-sans); white-space: nowrap;
   transition: background 0.2s; flex-shrink: 0;
 }
-.btn-become-dealer:hover { background: var(--rust-hover); }
+.btn-become-dealer:hover { background: var(--surface-2); }
 /* align-items:stretch (standard) + height:100% paa kortet giver ens hoejde i
    hver raekke, saa Google Maps-knapperne staar paa linje. */
 .dealer-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-4); }
@@ -739,8 +740,9 @@ border-color: rgba(42,61,46,0.18);
   transition: background 0.15s, border-color 0.15s;
 }
 .empty-filters-btn:hover { background: var(--surface); border-color: var(--forest); }
-.empty-filters-btn--primary { background: var(--rust); color: #fff; border-color: var(--rust); }
-.empty-filters-btn--primary:hover { background: var(--rust-hover); border-color: var(--rust-light); }
+/* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
+.empty-filters-btn--primary { background: var(--bg); color: var(--charcoal); border-color: var(--charcoal); }
+.empty-filters-btn--primary:hover { background: var(--surface-2); border-color: var(--charcoal); }
 
 /* Nærmeste match under tom-beskeden (js/near-matches.js). Kortene står i
    samme gitter som listen; overskriften fylder en hel række. */
