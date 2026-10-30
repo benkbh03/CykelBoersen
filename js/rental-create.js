@@ -173,16 +173,16 @@ export function createRentalManage({
           <label>Beskrivelse<textarea id="rf-desc" rows="4" maxlength="2000" placeholder="Stand, udstyr, størrelse, evt. hjelm inkluderet…">${esc(v('description'))}</textarea></label>
 
           <div class="rental-form-row">
-            <label>Pris pr. dag (kr.) *<input type="number" id="rf-daily" required min="1" value="${esc(v('daily_rate'))}"></label>
-            <label>Pris pr. uge (kr.)<input type="number" id="rf-weekly" min="0" value="${esc(v('weekly_rate'))}"></label>
+            <label>Pris pr. dag (kr.) *<input type="text" inputmode="numeric" pattern="[0-9]*" id="rf-daily" required min="1" value="${esc(v('daily_rate'))}"></label>
+            <label>Pris pr. uge (kr.)<input type="text" inputmode="numeric" pattern="[0-9]*" id="rf-weekly" min="0" value="${esc(v('weekly_rate'))}"></label>
           </div>
           <div class="rental-form-row">
-            <label>Depositum (kr.)<input type="number" id="rf-deposit" min="0" value="${v('deposit_amount', 0)}"></label>
-            <label>Antal enheder<input type="number" id="rf-qty" min="1" value="${v('quantity', 1)}"></label>
+            <label>Depositum (kr.)<input type="text" inputmode="numeric" pattern="[0-9]*" id="rf-deposit" min="0" value="${v('deposit_amount', 0)}"></label>
+            <label>Antal enheder<input type="text" inputmode="numeric" pattern="[0-9]*" id="rf-qty" min="1" value="${v('quantity', 1)}"></label>
           </div>
           <div class="rental-form-row">
-            <label>Min. dage<input type="number" id="rf-min" min="${RENTAL_MIN_DAYS}" value="${v('min_days', 1)}"></label>
-            <label>Maks. dage<input type="number" id="rf-max" min="1" max="${RENTAL_MAX_DAYS}" value="${v('max_days', 14)}"></label>
+            <label>Min. dage<input type="text" inputmode="numeric" pattern="[0-9]*" id="rf-min" min="${RENTAL_MIN_DAYS}" value="${v('min_days', 1)}"></label>
+            <label>Maks. dage<input type="text" inputmode="numeric" pattern="[0-9]*" id="rf-max" min="1" max="${RENTAL_MAX_DAYS}" value="${v('max_days', 14)}"></label>
           </div>
           <div class="rental-form-row">
             <label>Adresse (afhentning)<input type="text" id="rf-address" value="${esc(v('address'))}" placeholder="Begynd at skrive og vælg fra listen"></label>
