@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="bf082504b8">
+<html lang="da" data-asset-v="ffd021915d">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,24 +128,24 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=bf082504b8">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=ffd021915d">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/01-base.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/02-listings.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/04-modals.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/05-pages.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/07-map.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/09-compare.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/12-rental.css?v=bf082504b8">
-  <link rel="stylesheet" href="/css/13-buy-requests.css?v=bf082504b8">
+  <link rel="stylesheet" href="/css/tokens.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/01-base.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/02-listings.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/04-modals.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/05-pages.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/07-map.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/09-compare.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/12-rental.css?v=ffd021915d">
+  <link rel="stylesheet" href="/css/13-buy-requests.css?v=ffd021915d">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1159,7 +1159,7 @@
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Platformens rolle</h3>
       <p style="margin-bottom:8px;">Ved <strong>køb og salg</strong> af cykler er Cykelbørsen udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
-      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
+      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe). Lige nu opkræves ingen kommission; indføres en, varsles forhandlerne først. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
