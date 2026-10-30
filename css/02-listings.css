@@ -524,15 +524,17 @@ margin: 0 0 var(--space-2); line-height: 1.15; color: var(--charcoal);
   color: var(--charcoal); font-size: var(--text-sm); text-decoration: underline;
 }
 .sell-cta-link:hover { color: var(--forest); }
+/* Hvid med kant (30. okt.): headerens "Sæt til salg" er orange på forsiden
+   og står fast øverst, så en orange knap her ville være nummer to. */
 .sell-cta-btn {
-  background: var(--rust); color: #fff; border: none;
+  background: var(--bg); color: var(--charcoal); border: 1px solid var(--charcoal);
   padding: 14px 24px; border-radius: var(--radius-sm); font-size: 0.9rem;
   font-weight: var(--weight-semibold); font-family: var(--font-sans);
   display: inline-flex; align-items: center; gap: var(--space-2);
   cursor: pointer; transition: background 0.2s, transform 0.15s;
   white-space: nowrap; position: relative;
 }
-.sell-cta-btn:hover { background: var(--rust-hover);}
+.sell-cta-btn:hover { background: var(--surface-2); }
 @media (max-width: 768px) {
   .sell-cta-section { padding: 16px 16px 48px; }
   .sell-cta-inner { grid-template-columns: 1fr; padding: var(--space-6); gap: var(--space-4); }
