@@ -472,18 +472,19 @@ export function createSellPage({
       .sell-wizard--chooser{max-width:900px;}
       .sell-wizard--chooser .sell-step-heading,
       .sell-wizard--chooser .sell-step-subtitle{text-align:center;}
-      .acc-chooser{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px;}
-      .acc-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;min-height:300px;background:var(--cream);border:1.5px solid var(--border);border-radius:22px;padding:44px 28px;cursor:pointer;font-family:var(--font-sans);transition:border-color .15s,box-shadow .18s,transform .12s;}
-      .acc-choice:hover{border-color:var(--forest);background:var(--surface-sand);}
-      .acc-choice:active{transform:translateY(0);}
-      .acc-choice-ic{width:96px;height:96px;flex-shrink:0;border-radius:26px;display:flex;align-items:center;justify-content:center;background:var(--sand);color:var(--forest);}
-      .acc-choice-title{font-family:var(--font-sans);font-size:1.7rem;font-weight:var(--weight-heavy);letter-spacing:-0.02em;color:var(--charcoal);}
-      .acc-choice-sub{font-size:0.95rem;color:var(--muted);line-height:1.5;max-width:24ch;margin:0 auto;}
+      .acc-chooser{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-top:var(--space-8);}
+      .acc-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:var(--space-3);background:var(--cream);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-12) var(--space-6);cursor:pointer;font-family:var(--font-sans);color:var(--charcoal);transition:border-color .15s;}
+      .acc-choice:hover{border-color:var(--forest);}
+      .acc-choice:focus-visible{outline:2px solid var(--forest);outline-offset:2px;}
+      .acc-choice-ic{display:flex;color:var(--forest);}
+      .acc-choice-ic svg{width:40px;height:40px;}
+      .acc-choice-title{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--charcoal);}
+      .acc-choice-sub{font-size:var(--text-sm);color:var(--muted);line-height:1.5;max-width:28ch;margin:var(--space-1) auto 0;}
       @media(max-width:640px){
-        .acc-chooser{grid-template-columns:1fr;gap:14px;margin-top:18px;}
-        .acc-choice{min-height:0;padding:30px 24px;gap:12px;}
-        .acc-choice-ic{width:72px;height:72px;border-radius:20px;}
-        .acc-choice-title{font-size:1.4rem;}
+        .acc-chooser{grid-template-columns:1fr;gap:var(--space-3);margin-top:var(--space-6);}
+        .acc-choice{flex-direction:row;justify-content:flex-start;text-align:left;padding:var(--space-4);gap:var(--space-4);}
+        .acc-choice-ic svg{width:32px;height:32px;}
+        .acc-choice-sub{margin:var(--space-1) 0 0;}
       }
     `;
 
@@ -501,13 +502,13 @@ export function createSellPage({
           <div class="acc-chooser">
             <button class="acc-choice" onclick="renderSellPage()">
               <div class="acc-choice-ic">${BIKE}</div>
-              <div class="acc-choice-title">Cykel</div>
-              <div class="acc-choice-sub">Racer, mountainbike, el-cykel, citybike m.m.</div>
+              <div><div class="acc-choice-title">Cykel</div>
+              <div class="acc-choice-sub">Racer, mountainbike, el-cykel, citybike m.m.</div></div>
             </button>
             <button class="acc-choice" onclick="renderSellPage('tilbehoer')">
               <div class="acc-choice-ic">${ACC}</div>
-              <div class="acc-choice-title">Tilbehør &amp; udstyr</div>
-              <div class="acc-choice-sub">Hjelm, lygter, lås, computer, tasker m.m.</div>
+              <div><div class="acc-choice-title">Tilbehør &amp; udstyr</div>
+              <div class="acc-choice-sub">Hjelm, lygter, lås, computer, tasker m.m.</div></div>
             </button>
           </div>
         </div>
