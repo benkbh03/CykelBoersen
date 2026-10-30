@@ -467,7 +467,7 @@ export function createSellPage({
 
     const BACK = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const BIKE = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17" r="4"/><circle cx="19" cy="17" r="4"/><path d="M5 17l5-8h7l2 8M10 9l2.5 8L17 9M10 9l-.5-2.5M8.5 6.5h2.5M17 9l-.5-3h2a1.5 1.5 0 0 1 0 3"/></svg>`;
-    const ACC = `<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>`;
+    const ACC = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h14l-1 11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M8 9V7a4 4 0 0 1 8 0v2M5 13h14"/></svg>`;
     const CSS = `
       .sell-wizard--chooser{max-width:900px;}
       .sell-wizard--chooser .sell-step-heading,
