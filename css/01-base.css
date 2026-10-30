@@ -720,14 +720,18 @@ body.nav-search-on .nav-search { display: flex; }
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--green);
 }
+/* Halvfed, ikke heavy (30. okt., brugerens valg af fem varianter): titel og
+   undertekst var begge fede og råbte i kor. Undtagelse fra reglen om heavy
+   på sideoverskrifter. Ingen boks bag teksten: en firkant oven på fotoet
+   blev afvist som malplaceret. */
 .search-hero-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); letter-spacing: -0.01em; font-size: 2rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
 }
 .search-hero-sub {
-  color: #fff; font-size: 0.95rem; font-weight: var(--weight-semibold);
+  color: #fff; font-size: var(--text-base); font-weight: var(--weight-regular);
   /* 480 → 620: underteksten brækkede midt i en sætning og efterlod
      "tættest på dig." alene på linje to. Tre forskellige bredder oven på
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
@@ -739,12 +743,13 @@ body.nav-search-on .nav-search { display: flex; }
 @media (max-width: 768px) {
   .search-hero-title {
     font-size: 1.5rem;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.01em;
     line-height: 1.1;
     margin: 0 0 4px;
     padding: 0 8px;
   }
-  .search-hero-sub { display: none !important; }
+  /* Vises også på mobil (30. okt.): antallet stod før kun på desktop. */
+  .search-hero-sub { font-size: var(--text-sm); }
   /* Chipsene vises nu OGSÅ på mobil. De lå før ovenpå fotoet, hvor der ikke
      var plads. På den cremede flade kan rækken scrolle vandret, og efter at
      både søgebarens typevalg og Nye/Brugte er væk, er de mobilbrugerens
@@ -755,7 +760,6 @@ body.nav-search-on .nav-search { display: flex; }
 @media (max-width: 480px) {
   .search-hero-title {
     font-size: 1.55rem;
-    letter-spacing: -0.02em;
   }
 }
 /* ── HERO KATEGORI-CHIPS ──
