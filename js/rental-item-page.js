@@ -95,7 +95,7 @@ export function createRentalItemPage({
                 </div>
                 <div id="rental-price-summary" class="rental-price-summary"></div>
                 <button class="rental-book-btn-active" id="rental-book-btn" onclick="startRentalBooking()" disabled>Vælg datoer</button>
-                <p class="rental-book-note">Du betaler via Stripe.${it.deposit_amount ? ' Depositum betales tilbage, når cyklen er afleveret.' : ''}</p>
+                <p class="rental-book-note">Du betaler via Stripe.${it.deposit_amount ? ' Depositum betales tilbage, når cyklen er afleveret.' : ''} Du kan afbestille gratis indtil to dage før start.</p>
               </div>` : `
               <div class="rental-book-placeholder">
                 <button class="rental-book-btn" disabled>Booking ikke tilgængelig</button>
