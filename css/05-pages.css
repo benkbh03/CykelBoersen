@@ -625,8 +625,10 @@
     flex-direction: column; align-items: stretch;
     box-shadow: var(--shadow-sm);
   }
-  .search-bar-field { background: var(--sand); border-radius: var(--radius-sm); padding: 2px 10px; }
-  .search-bar-query { padding: 2px 10px; flex: none; }
+  /* Hvide felter som på desktop (30. okt., brugeren): de grå felter fik
+     baren til at ligne en formular. En tynd streg skiller søgning og by. */
+  .search-bar-field { background: transparent; border-radius: 0; padding: 2px 10px; }
+  .search-bar-query { padding: 2px 10px 6px; flex: none; border-bottom: 1px solid var(--border); }
   .search-bar input, .search-bar select { width: 100%; padding: 8px 4px; font-size: var(--text-base); min-width: 0; }
   .search-bar select { padding-right: 30px; }
   .search-bar-chev { right: 12px; }
