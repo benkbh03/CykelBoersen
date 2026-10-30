@@ -3,7 +3,7 @@
 //
 // Livscyklus-handlinger på en udlejnings-booking, med tilhørende Stripe-refusion:
 //   - cancel        : afbestil → fuld refusion (leje + depositum), transfer reverseres.
-//                     Lejeren kun til og med dagen før første lejedag; forhandleren altid.
+//                     Lejeren kun til og med to dage før første lejedag; forhandleren altid.
 //   - return_ok     : forhandler markerer afleveret uden skade → depositum refunderes
 //   - return_damage : forhandler registrerer skade → depositum beholdes (ingen refusion)
 //
@@ -60,12 +60,14 @@ serve(async (req) => {
     const pi = b.stripe_payment_intent_id;
 
     if (action === "cancel") {
-      // Forhandleren må altid afbestille. Lejeren kun før første lejedag,
-      // ellers kan man cykle hele perioden og bagefter få alt refunderet.
+      // Forhandleren må altid afbestille. Lejeren kun til og med to dage før
+      // første lejedag, så forhandleren kan nå at leje cyklen ud igen, og så
+      // man ikke kan cykle hele perioden og bagefter få alt refunderet.
       if (!isDealer) {
         const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Copenhagen" });
-        if (b.start_date <= today) {
-          throw new Error("Lejeperioden er begyndt. Skriv til forhandleren, hvis du vil afbestille.");
+        const cutoff = new Date(Date.parse(today) + 2 * 86400000).toISOString().slice(0, 10);
+        if (b.start_date < cutoff) {
+          throw new Error("Du kan kun afbestille indtil to dage før lejen starter. Skriv til forhandleren.");
         }
       }
       if (pi) {

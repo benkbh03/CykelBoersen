@@ -27,11 +27,12 @@ export function createRentalBooking({
   navigateTo,
 }) {
 
-  // Lejeren kan selv afbestille til og med dagen før første lejedag (dansk tid).
+  // Lejeren kan selv afbestille til og med to dage før første lejedag (dansk tid).
   // Serveren (rental-booking-action) håndhæver samme regel.
   function renterCanCancel(b) {
     const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Copenhagen' });
-    return b.start_date > today;
+    const cutoff = new Date(Date.parse(today) + 2 * 86400000).toISOString().slice(0, 10);
+    return b.start_date >= cutoff;
   }
 
   function renterActions(b) {
