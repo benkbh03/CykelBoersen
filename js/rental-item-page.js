@@ -156,9 +156,9 @@ export function createRentalItemPage({
     const e = document.getElementById('rental-end').value;
     if (btn) { btn.disabled = true; btn.textContent = 'Sender dig til betaling…'; }
     try {
-      const base = `${BASE_URL}/udlejning/lejeaftaler`;
+      const base = `${location.origin}/udlejning/lejeaftaler`;
       const { data, error } = await supabase.functions.invoke('create-rental-checkout', {
-        body: { item_id: _item.id, start_date: s, end_date: e, success_url: base, cancel_url: `${BASE_URL}/udlejning/${_item.id}` },
+        body: { item_id: _item.id, start_date: s, end_date: e, success_url: base, cancel_url: `${location.origin}/udlejning/${_item.id}` },
       });
       if (error) {
         let msg = 'Kunne ikke starte booking. Prøv igen.';
