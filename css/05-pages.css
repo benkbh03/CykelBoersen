@@ -1283,16 +1283,21 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 }
 
 /* ── KORTVISNING ── */
+/* Hvid med kant som "Få besked om nye" ved siden af. Den valgte visning er
+   neutral grå med mørk kant, ikke fyldt grøn (30. okt.): grøn hører til
+   header og footer, og en fyldt knap trak blikket væk fra annoncerne. */
 .view-toggle {
-  background: var(--sand);
-  border: 1.5px solid transparent;
+  background: var(--bg);
+  color: var(--charcoal);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   width: 38px; height: 38px;
   cursor: pointer; font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
-.view-toggle:hover      { background: var(--sand-2); }
+.view-toggle:hover      { border-color: var(--charcoal); }
+.view-toggle:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
 
 /* "Få besked om nye" (js/cykelagent-cta.js): sekundær knap, hvid med kant,
    samme højde som visningsknapperne. Ikon alene på mobil. */
@@ -1308,7 +1313,7 @@ padding: 8px 20px; border-radius: var(--radius-sm);
 .listings-save-btn:hover { border-color: var(--charcoal); }
 .listings-save-btn:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
 .listings-save-btn[hidden] { display: none !important; }
-.view-toggle.active     { background: var(--forest); border-color: var(--forest); color: white; }
+.view-toggle.active     { background: var(--surface-2); border-color: var(--charcoal); color: var(--charcoal); }
 
 /* Leaflet popup override */
 .leaflet-popup-content-wrapper {

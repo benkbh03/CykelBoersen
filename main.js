@@ -3318,6 +3318,10 @@ window.submitNavSearch   = submitNavSearch;
 window.toggleNavSearch   = toggleNavSearch;
 window.sortBikes         = sortBikes;
 window.applyFilters           = applyFilters;
+// Pris og vægt filtrerer mens man skriver, uden en "Anvend"-knap (30. okt.).
+// Længere pause end loadens egne 300 ms, så adressen ikke får en
+// historikpost for hvert ciffer i "15000".
+window.applyFiltersSoon       = debounce(applyFilters, 600);
 window.sellerToggle           = sellerToggle;
 window.setMaxWeight = function(kg) {
   const input = document.getElementById('sidebar-max-weight');

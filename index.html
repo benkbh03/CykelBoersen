@@ -371,9 +371,10 @@
       <div class="bike-quiz-box" id="bike-quiz-box">
         <div class="bike-quiz-intro" id="bike-quiz-intro">
           <div class="bike-quiz-icon"><svg class="ui-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/></svg></div>
-          <div class="bike-quiz-title">Hvad passer til dig?</div>
+          <!-- Et tekstlink, ikke en knap (30. okt.): sidebaren havde tre
+               knapper oven over hinanden, og quizzen er et sidespor. -->
+          <button type="button" class="bike-quiz-link" onclick="startBikeQuiz()">Hvad passer til dig?</button>
           <div class="bike-quiz-sub">Få en anbefaling på 2 spørgsmål</div>
-          <button class="bike-quiz-start-btn" onclick="startBikeQuiz()">Start</button>
         </div>
         <div class="bike-quiz-steps" id="bike-quiz-steps" style="display:none">
           <div class="bike-quiz-step" id="quiz-step-1">
@@ -438,15 +439,14 @@
         </div>
         <div class="price-range sidebar-section-body">
           <div class="price-inputs">
-            <input type="number" placeholder="Min kr." min="0">
+            <input type="number" placeholder="Min kr." min="0" oninput="applyFiltersSoon()" aria-label="Mindste pris i kr.">
             <span>–</span>
-            <input type="number" placeholder="Max kr." min="0">
+            <input type="number" placeholder="Max kr." min="0" oninput="applyFiltersSoon()" aria-label="Højeste pris i kr.">
           </div>
           <!-- Gives væk hører hjemme under Pris, ikke som eget afsnit: det ER
                et prisfilter, nemlig prisen 0. Et min-beløb udelukker dem
                automatisk, så de to kontroller kan ikke komme i konflikt. -->
           <label class="filter-option filter-option--full"><input type="checkbox" data-filter="giveaway" data-value="true" onchange="applyFilters()"> Kun ting der gives væk</label>
-          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
       <div class="sidebar-box collapsed" data-fsec="stelstoerrelse">
@@ -869,7 +869,7 @@
         </div>
         <div class="weight-range sidebar-section-body">
           <div class="price-inputs">
-            <input type="number" id="sidebar-max-weight" placeholder="Max kg" min="2" max="50" step="0.1">
+            <input type="number" id="sidebar-max-weight" placeholder="Max kg" min="2" max="50" step="0.1" oninput="applyFiltersSoon()" aria-label="Højeste vægt i kg">
             <span>kg</span>
           </div>
           <div class="weight-presets" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
@@ -878,7 +878,6 @@
             <button type="button" class="weight-preset" onclick="setMaxWeight(10)">Under 10 kg</button>
             <button type="button" class="weight-preset" onclick="setMaxWeight(12)">Under 12 kg</button>
           </div>
-          <button class="btn-apply" onclick="applyFilters()">Anvend</button>
         </div>
       </div>
       <!-- Cykelagent-kortet er fjernet herfra: det duplikerede
