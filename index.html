@@ -349,6 +349,13 @@
         <h3>Filtre</h3>
         <button class="sidebar-mobile-close" onclick="closeMobileFilters()" aria-label="Luk filtre">✕</button>
       </div>
+      <!-- Mobil: kort, sammenlign og Cykelagent lå som tre ikonknapper uden
+           tekst ved siden af Filtre (29. okt.). Her har de tekst. -->
+      <div class="sidebar-mobile-tools" role="group" aria-label="Flere måder at se annoncerne på">
+        <button type="button" onclick="closeMobileFilters();navigateTo('/kort')">Vis på kort</button>
+        <button type="button" onclick="closeMobileFilters();toggleCompareMode()">Sammenlign cykler</button>
+        <button type="button" onclick="closeMobileFilters();window.cykelagentSave ? cykelagentSave() : navigateTo('/cykelagenter')">Få besked om nye</button>
+      </div>
       <!-- Smart filter (js/smart-filter.js): fritekst der sætter de almindelige
            filtre herunder. Øverst, fordi den er en måde at udfylde filtrene
            på, ikke et tilbud ved siden af dem. -->
