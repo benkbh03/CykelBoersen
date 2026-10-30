@@ -132,6 +132,9 @@ serve(async (req) => {
       success_url: `${base}?rental_success=true`,
       cancel_url:  `${cancelBase}?rental_cancel=true`,
       locale: "da",
+      // Lejerens mail fra login, så Stripe-kvitteringen går det rigtige sted hen,
+      // og lejeren slipper for at skrive den (Stripe afviser "ø" i domænet).
+      ...(user.email ? { customer_email: user.email } : {}),
       // Perioden holdes kun i 30 minutter (create_rental_booking), så betalingssiden
       // skal lukke samtidig. Stripe kræver mindst 30 minutter; stripe-webhook
       // refunderer, hvis perioden alligevel er blevet optaget.
