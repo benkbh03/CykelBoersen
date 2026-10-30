@@ -159,7 +159,7 @@ export function createErrorLog({ supabase, esc, retryHTML }) {
     return `
       <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;">
         <div style="display:flex;align-items:flex-start;gap:10px;">
-          <span style="flex-shrink:0;background:var(--rust);color:#fff;font-size:0.74rem;font-weight:700;padding:2px 9px;border-radius:999px;">${g.antal}×</span>
+          <span style="flex-shrink:0;background:var(--rust);color:#fff;font-size:0.74rem;font-weight:var(--weight-semibold);padding:2px 9px;border-radius:999px;">${g.antal}×</span>
           <code style="font-size:0.82rem;line-height:1.45;word-break:break-word;color:var(--charcoal);">${esc(g.message)}</code>
         </div>
         <div style="font-size:0.74rem;color:var(--muted);margin-top:8px;line-height:1.6;">

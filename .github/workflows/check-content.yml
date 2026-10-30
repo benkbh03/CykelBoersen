@@ -60,3 +60,20 @@ jobs:
             exit 1
           fi
           echo "Cache-versionen er ikke rørt."
+
+  # Tre skriftvægte: --weight-regular (400), --weight-semibold (600) og
+  # --weight-heavy (800). Archivo er en variabel font, så 500 og 700 tegnes
+  # som egne vægte, og ca. 190 af dem gjorde siden uensartet (ryddet 30. okt.).
+  font-weights:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Kun de tre skriftvægte
+        run: |
+          bad=$(grep -rnE "font-weight:\s*(100|200|300|500|700|900|bold|bolder|lighter)\b" css js main.js index.html partials || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Brug var(--weight-regular), var(--weight-semibold) eller var(--weight-heavy), ikke 500/700/bold."
+            echo "$bad"
+            exit 1
+          fi

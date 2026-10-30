@@ -226,7 +226,7 @@ export function createInbox({
 
     const openProfileFn = otherProf?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`;
     document.getElementById('thread-header').innerHTML =
-      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>${otherProf?.is_official ? officialBadgeHTML() : ''} · <span style="color:var(--muted)">${esc(bikeName)}</span>`;
+      `<button onclick="${openProfileFn}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:var(--weight-semibold);font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>${otherProf?.is_official ? officialBadgeHTML() : ''} · <span style="color:var(--muted)">${esc(bikeName)}</span>`;
 
     const threadEl = document.getElementById('thread-messages');
     if (error || !data) {
@@ -603,7 +603,7 @@ export function createInbox({
       headerEl.innerHTML = `
       <div class="inbox-chat-header-info">
         <button class="inbox-chat-back" onclick="closeInboxThread()" aria-label="Tilbage">←</button>
-        <button onclick="${otherProfile?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:700;font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>${otherProfile?.is_official ? officialBadgeHTML() : ''}
+        <button onclick="${otherProfile?.seller_type === 'dealer' ? `openDealerProfile('${otherId}')` : `openUserProfile('${otherId}')`}" style="background:none;border:none;padding:0;cursor:pointer;font-weight:var(--weight-semibold);font-size:inherit;font-family:inherit;color:inherit;text-decoration:underline;text-underline-offset:2px;">${esc(otherName)}</button>${otherProfile?.is_official ? officialBadgeHTML() : ''}
       </div>
       <div class="inbox-chat-bike-preview" onclick="navigateTo('/bike/${bikeId}')" role="button" tabindex="0">
         ${bikeThumb ? `<img src="${bikeThumb}" alt="" class="inbox-chat-bike-thumb">` : '<span class="inbox-chat-bike-icon">🚲</span>'}

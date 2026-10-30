@@ -2402,7 +2402,7 @@ export function createSellPage({
       <div style="background:var(--cream);width:100%;max-width:680px;max-height:88vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 32px rgba(0,0,0,0.18)">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
           <div>
-            <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Juridisk</div>
+            <div style="font-size:0.7rem;font-weight:var(--weight-semibold);letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Juridisk</div>
             <h2 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.3rem;color:var(--charcoal);margin:0">Vilkår og betingelser</h2>
           </div>
           <button onclick="document.getElementById('sell-terms-overlay').remove()" style="width:36px;height:36px;border-radius:50%;background:var(--sand);border:none;color:var(--charcoal);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">×</button>

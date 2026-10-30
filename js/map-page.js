@@ -1360,7 +1360,7 @@ export function createMapPage({
 
       var color = isDealer ? '#2A3D2E' : '#C8502A';
       var icon = L.divIcon({
-        html: '<div style="background:' + color + ';color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">'
+        html: '<div style="background:' + color + ';color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:var(--weight-semibold);border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">'
             + (isDealer ? iconDealer(16) : iconBike(16)) + '</div>',
         className: '',
         iconSize: [32, 32],
@@ -1439,7 +1439,7 @@ export function createMapPage({
               var lat = coords[0] + stableOffset(d.id, 0) * 0.0002;
               var lng = coords[1] + stableOffset(d.id, 1) * 0.0002;
               var icon = L.divIcon({
-                html: '<div style="background:#2A3D2E;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">' + iconDealer(16) + '</div>',
+                html: '<div style="background:#2A3D2E;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:var(--weight-semibold);border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">' + iconDealer(16) + '</div>',
                 className: '',
                 iconSize: [32, 32],
                 iconAnchor: [16, 16],
