@@ -45,7 +45,7 @@ serve(async (req) => {
 
     const { data: b } = await supabase
       .from("rental_bookings")
-      .select("id, renter_id, dealer_id, start_date, status, deposit_amount, stripe_payment_intent_id")
+      .select("id, renter_id, dealer_id, start_date, status, deposit_amount, platform_fee, stripe_payment_intent_id")
       .eq("id", booking_id)
       .single();
     if (!b) throw new Error("Booking findes ikke");
@@ -74,7 +74,8 @@ serve(async (req) => {
         await stripe.refunds.create({
           payment_intent: pi,
           reverse_transfer: true,       // træk forhandlerens andel tilbage
-          refund_application_fee: true, // og platformens kommission
+          // og platformens kommission + depositum, hvis der blev opkrævet et gebyr
+          ...((b.platform_fee || 0) + (b.deposit_amount || 0) > 0 ? { refund_application_fee: true } : {}),
         });
       }
       await supabase.from("rental_bookings")
