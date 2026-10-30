@@ -81,7 +81,7 @@ export const footerContent = {
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Platformens rolle</h3>
       <p style="margin-bottom:8px;">Ved <strong>køb og salg</strong> af cykler er Cykelbørsen udelukkende en formidlingsplatform. Vi er <strong>ikke part</strong> i handler mellem køber og sælger og påtager os intet ansvar for selve transaktionen, herunder betaling, levering, stand eller ægtheden af de annoncerede varer. Enhver aftale indgås direkte mellem køber og sælger.</p>
-      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe) og opkræver en kommission. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
+      <p style="margin-bottom:16px;">Ved <strong>cykeludlejning</strong> gælder en undtagelse: her fungerer Cykelbørsen som betalingsformidler mellem kunde og forhandler (via Stripe). Lige nu opkræves ingen kommission; indføres en, varsles forhandlerne først. Selve lejeaftalen indgås dog fortsat mellem kunde og forhandler, og forhandleren er ansvarlig for cyklen og lejeforholdet. Særskilte <a href="/udlejningsvilkaar/" onclick="event.preventDefault();navigateTo('/udlejningsvilkaar')" style="color:var(--rust);text-decoration:underline;">udlejningsvilkår</a> gælder for udlejning.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4. Oprettelse af annoncer</h3>
       <p style="margin-bottom:8px;">Som sælger er det gratis at oprette annoncer (for private). Du indestår for at:</p>
@@ -260,7 +260,7 @@ export const footerContent = {
           <td style="padding:8px 0;">Art. 6(1)(b): kontraktopfyldelse</td>
         </tr>
         <tr>
-          <td style="padding:8px 8px 8px 0;">Bogføring af udlejningsbetalinger og kommission</td>
+          <td style="padding:8px 8px 8px 0;">Bogføring af udlejningsbetalinger og eventuel kommission</td>
           <td style="padding:8px 0;">Art. 6(1)(c): retlig forpligtelse (bogføringsloven)</td>
         </tr>
       </table>
@@ -560,7 +560,7 @@ export const footerContent = {
       <p style="margin-bottom:16px;">Cykelbørsen formidler udlejning af cykler mellem private kunder og registrerede forhandlere ("udlejere"). Selve lejeaftalen indgås mellem kunden og forhandleren; Cykelbørsen håndterer booking og betaling som betalingsformidler via Stripe. Forhandleren er ansvarlig for cyklens stand, udlevering og for at leve op til lejeaftalen.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">2. Booking og betaling</h3>
-      <p style="margin-bottom:8px;">Når du booker, betaler du leje og et eventuelt depositum via Stripe. Bookingen bekræftes automatisk ved gennemført betaling. Cykelbørsen opkræver en kommission af forhandleren og udbetaler resten til forhandleren.</p>
+      <p style="margin-bottom:8px;">Når du booker, betaler du leje og et eventuelt depositum via Stripe. Bookingen bekræftes automatisk ved gennemført betaling. Cykelbørsen udbetaler lejen til forhandleren. Lige nu tager Cykelbørsen ingen kommission.</p>
       <p style="margin-bottom:16px;">Betalinger behandles sikkert af Stripe. Cykelbørsen opbevarer ikke dine kortoplysninger.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">3. Depositum</h3>

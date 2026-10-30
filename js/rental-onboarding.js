@@ -94,7 +94,7 @@ export function createRentalOnboarding({
     const started = status === 'pending';
     return `
       <h1 class="rental-onb-title">Udlej dine cykler gennem Cykelbørsen</h1>
-      <p class="rental-onb-lead">Du sætter pris, depositum og antal. Kunder booker og betaler her, og pengene udbetales til din konto. Cykelbørsen tager ${PLATFORM_FEE_PCT} % af lejen.</p>
+      <p class="rental-onb-lead">Du sætter pris, depositum og antal. Kunder booker og betaler her, og pengene udbetales til din konto. ${PLATFORM_FEE_PCT > 0 ? `Cykelbørsen tager ${PLATFORM_FEE_PCT} % af lejen.` : 'Cykelbørsen tager ingen kommission af lejen.'}</p>
       <ol class="num-steps">
         <li>Opsæt en konto hos Stripe med virksomhedens oplysninger og bankkonto.</li>
         <li>Opret dine udlejningscykler med billeder og priser.</li>

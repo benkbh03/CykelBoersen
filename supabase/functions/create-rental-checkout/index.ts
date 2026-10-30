@@ -25,7 +25,7 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-const PLATFORM_FEE_PCT = 12; // hold i sync med js/rental-data.js
+const PLATFORM_FEE_PCT = 0; // hold i sync med js/rental-data.js (0 % ved lancering)
 const BASE_URL = "https://xn--cykelbrsen-5cb.dk";
 
 const corsHeaders = {
@@ -124,7 +124,8 @@ serve(async (req) => {
       line_items,
       payment_intent_data: {
         // Platformen beholder kommission + depositum; resten til forhandleren.
-        application_fee_amount: (fee + deposit) * 100,
+        // Uden kommission og depositum sendes intet gebyr; alt går til forhandleren.
+        ...(fee + deposit > 0 ? { application_fee_amount: (fee + deposit) * 100 } : {}),
         transfer_data: { destination: dealer.stripe_account_id },
       },
       metadata: { type: "rental", booking_id: bookingId, item_id, renter_id: user.id },
