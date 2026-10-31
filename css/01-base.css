@@ -732,13 +732,13 @@ body.nav-search-on .nav-search { display: flex; }
    så de stadig ikke råber i kor. Ingen boks bag teksten: en firkant oven
    på fotoet blev afvist som malplaceret. */
 .search-hero-title {
-  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2.75rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); letter-spacing: -0.01em; font-size: 2.25rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
 }
 .search-hero-sub {
-  color: #fff; font-size: var(--text-base); font-weight: var(--weight-semibold);
+  color: #fff; font-size: var(--text-base); font-weight: var(--weight-regular);
   /* 480 → 620: underteksten brækkede midt i en sætning og efterlod
      "tættest på dig." alene på linje to. Tre forskellige bredder oven på
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
@@ -749,8 +749,8 @@ body.nav-search-on .nav-search { display: flex; }
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
 @media (max-width: 768px) {
   .search-hero-title {
-    font-size: 1.85rem;
-    letter-spacing: -0.02em;
+    font-size: 1.6rem;
+    letter-spacing: -0.01em;
     line-height: 1.1;
     margin: 0 0 4px;
     padding: 0 8px;
@@ -766,7 +766,7 @@ body.nav-search-on .nav-search { display: flex; }
 }
 @media (max-width: 480px) {
   .search-hero-title {
-    font-size: 1.85rem;
+    font-size: 1.6rem;
   }
 }
 /* ── HERO KATEGORI-CHIPS ──
