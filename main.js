@@ -1162,6 +1162,15 @@ async function init() {
       }
     };
     searchCityInput.addEventListener('input', updateClearBtn);
+    // Tastaturets søgeknap i byfeltet søger (31. okt.): på mobil er Søg-knappen
+    // skjult, så Enter er eneste vej. Har brugeren markeret et forslag med
+    // pilene, har autocomplete'en allerede taget Enter (preventDefault).
+    searchCityInput.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || e.defaultPrevented || e.isComposing) return;
+      e.preventDefault();
+      searchCityInput.blur();
+      searchBikes();
+    });
     if (searchCityClear) {
       searchCityClear.addEventListener('click', () => {
         searchCityInput.value = '';
