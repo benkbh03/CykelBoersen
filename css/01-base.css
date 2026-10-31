@@ -651,7 +651,9 @@ body.nav-search-on .nav-search { display: flex; }
   /* center 6%: himlen øverst. Før (20. okt.) stod udsnittet på 88% for at
      få cyklisterne med; nu ses de kun foroven ved hjulene, til gengæld er
      himlen og tårnene med, og den blå himmel bærer den hvide tekst. */
-  background-position: center, center 18%;
+  /* 0% (31. okt.): rækker 0-150 af fotoet er ren blå himmel; skyerne
+     begynder lige under. Rykkes udsnittet ned, står undertitlen på skyer. */
+  background-position: center, center 0%;
   background-repeat: no-repeat;
   /* 210 px (31. okt., før 250): annoncerne skal længere op. */
   padding: 24px 48px 14px;
@@ -683,7 +685,7 @@ body.nav-search-on .nav-search { display: flex; }
       image-set(url('/hero-v8-m.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
     /* 400 px høj: himlen og toppen af cyklisterne, ikke asfalten. */
     background-size: auto, auto 400px;
-    background-position: center, center 10%;
+    background-position: center, center 0%;
   }
 }
 /* min-height'en var 220px og 200px, altså LAVERE end indholdet. Titel plus
