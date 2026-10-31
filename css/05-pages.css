@@ -889,7 +889,7 @@
      udsnittet helt fra toppen af fotoet. 3,1 rem gjorde titlen bredere end
      himlen og fik den ned i træerne. */
   .search-section { padding: 22px 32px 44px; background-position: center, center 0%; }
-  .search-hero-title { font-size: 2.125rem; }
+  .search-hero-title { font-size: var(--text-xl); }
   .search-bar-wrap { max-width: 720px; }
 }
 
