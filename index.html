@@ -288,14 +288,14 @@
         <div class="search-bar-field search-bar-query">
           <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
           <label for="search-input" class="sr-only">Søg efter mærke, model eller type</label>
-          <input type="text" id="search-input" placeholder="Søg efter mærke, model…" oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
+          <input type="text" id="search-input" placeholder="Søg efter mærke, model…" oninput="searchAutocomplete(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off" enterkeyhint="search" aria-label="Søg efter cykler" aria-autocomplete="list" aria-controls="autocomplete-list">
           <div id="autocomplete-list" class="autocomplete-list" style="display:none;" role="listbox" aria-label="Søgeforslag"></div>
         </div>
         <div class="search-bar-sep"></div>
         <div class="search-bar-field search-bar-city">
           <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <label for="search-city" class="sr-only">By eller postnummer</label>
-          <input id="search-city" type="text" placeholder="By eller postnummer" aria-label="Filtrer efter by eller postnummer" autocomplete="off">
+          <input id="search-city" type="text" enterkeyhint="search" placeholder="By eller postnummer" aria-label="Filtrer efter by eller postnummer" autocomplete="off">
           <select id="search-city-radius" class="search-city-radius" aria-label="Søgeradius om byen" hidden>
             <option value="">Kun denne by</option>
             <option value="5">+5 km</option>
