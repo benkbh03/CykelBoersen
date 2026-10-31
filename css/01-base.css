@@ -630,22 +630,22 @@ body.nav-search-on .nav-search { display: flex; }
      udsnittet viser HIMLEN og tårnene øverst, og overskriften står på den
      blå himmel. Himlen er rolig og mørk nok til hvid, fed tekst; før stod
      teksten på huse og træer og var svær at læse.
-     Ellipsen bag teksten er blå, ikke sort: på himlen ses en sort plet som
-     et slør (afvist 5. okt. som "alt for mørkt"), en blå som lidt mørkere
-     himmel. Ingen tekstskygge ("AI slop", 25. okt.) og ingen boks over
+     Ingen ellipse eller skygge bag teksten: den blå ellipse blev fjernet
+     31. okt. ("lad vær med at lave en skygge"). Det tomme lag står kun, så
+     background-size/-position stadig har to værdier. Ingen tekstskygge ("AI slop", 25. okt.) og ingen boks over
      fotoet ("malplaceret", 30. okt.).
      v6 frem for v7: v7 var lysnet så meget (gamma 0.52), at det så blegt
      ud ved siden af de hvide annoncekort. Rør det ikke uden at sammenligne
      med et skærmbillede af den live side. */
   background-image:
-    radial-gradient(ellipse 40% 34% at 50% 26%, rgba(10,30,60,0.28) 0%, transparent 100%),
+    linear-gradient(transparent, transparent),
     url('/hero-v6.jpg');
   /* Samme foto som WebP. Browsere der forstår image-set (alle nyere) tager
      denne; resten bruger linjen ovenfor. Kommer der en skarpere original,
      så giv den et nyt navn (v9), ellers leverer caches den gamle. hero-v7
      står tilbage et par uger til cachede udgaver af denne CSS. */
   background-image:
-    radial-gradient(ellipse 40% 34% at 50% 26%, rgba(10,30,60,0.28) 0%, transparent 100%),
+    linear-gradient(transparent, transparent),
     image-set(url('/hero-v6.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
   background-size: auto, cover;
   /* center 6%: himlen øverst. Før (20. okt.) stod udsnittet på 88% for at
@@ -678,7 +678,7 @@ body.nav-search-on .nav-search { display: flex; }
 @media (max-width: 768px) {
   .search-section {
     background-image:
-      radial-gradient(ellipse 85% 26% at 50% 22%, rgba(10,30,60,0.30) 0%, transparent 100%),
+      linear-gradient(transparent, transparent),
       image-set(url('/hero-v8-m.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
     /* 400 px høj: himlen og toppen af cyklisterne, ikke asfalten. */
     background-size: auto, auto 400px;
@@ -732,13 +732,13 @@ body.nav-search-on .nav-search { display: flex; }
    så de stadig ikke råber i kor. Ingen boks bag teksten: en firkant oven
    på fotoet blev afvist som malplaceret. */
 .search-hero-title {
-  font-family: var(--font-sans); font-weight: var(--weight-semibold); letter-spacing: -0.01em; font-size: 2.25rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2.25rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
 }
 .search-hero-sub {
-  color: #fff; font-size: var(--text-base); font-weight: var(--weight-regular);
+  color: #fff; font-size: var(--text-base); font-weight: var(--weight-semibold);
   /* 480 → 620: underteksten brækkede midt i en sætning og efterlod
      "tættest på dig." alene på linje to. Tre forskellige bredder oven på
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
@@ -750,7 +750,7 @@ body.nav-search-on .nav-search { display: flex; }
 @media (max-width: 768px) {
   .search-hero-title {
     font-size: 1.6rem;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     line-height: 1.1;
     margin: 0 0 4px;
     padding: 0 8px;
