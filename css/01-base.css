@@ -671,7 +671,7 @@ body.nav-search-on .nav-search { display: flex; }
 /* Søgefeltet lidt længere nede end teksten (31. okt., brugeren), så
    blokken står nogenlunde midt i billedet. */
 @media (min-width: 1025px) {
-  .search-section .search-hero-text { margin-bottom: 32px; }
+  .search-section .search-hero-text { margin-bottom: 22px; }
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
