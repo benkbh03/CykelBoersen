@@ -626,38 +626,39 @@ body.nav-search-on .nav-search { display: flex; }
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
-  /* 31. okt.: tilbage til v6 (brugerens valg, variant C). v7 er v3 med
-     kraftigt løftede mellemtoner (gamma 0.52), og ved siden af de hvide
-     annoncekort så det blegt og gråt ud: forsiden virkede ikke indbydende.
-     v6 har farverne med; ellipsen er tilsvarende lidt lettere (0.30/0.40).
-     Historik: 25. okt. bad brugeren to gange om et lysere billede (v7). Et mørkt slør
-     over hele fotoet (0.42, også 0.16) blev afvist 5. okt. som "alt for
-     mørkt", og tekstskygge er afvist som "AI slop" (25. okt.). Læsbarheden
-     bæres derfor KUN af den mørke ellipse lige bag teksten. Rør det ikke
-     uden at sammenligne med et skærmbillede af den live side. */
+  /* 31. okt. (brugerens valg af syv varianter, nr. 7 med hvid tekst):
+     udsnittet viser HIMLEN og tårnene øverst, og overskriften står på den
+     blå himmel. Himlen er rolig og mørk nok til hvid, fed tekst; før stod
+     teksten på huse og træer og var svær at læse.
+     Ellipsen bag teksten er blå, ikke sort: på himlen ses en sort plet som
+     et slør (afvist 5. okt. som "alt for mørkt"), en blå som lidt mørkere
+     himmel. Ingen tekstskygge ("AI slop", 25. okt.) og ingen boks over
+     fotoet ("malplaceret", 30. okt.).
+     v6 frem for v7: v7 var lysnet så meget (gamma 0.52), at det så blegt
+     ud ved siden af de hvide annoncekort. Rør det ikke uden at sammenligne
+     med et skærmbillede af den live side. */
   background-image:
-    radial-gradient(ellipse 52% 40% at 50% 36%, rgba(10,18,12,0.30) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 34% at 50% 26%, rgba(10,30,60,0.28) 0%, transparent 100%),
     url('/hero-v6.jpg');
   /* Samme foto som WebP. Browsere der forstår image-set (alle nyere) tager
-     denne; resten bruger linjen ovenfor. v3 (13. okt.) er skærpet med en
-     unsharp mask, fordi originalen kun er 2168 px bred og så blød ud på
-     desktop. Kommer der en skarpere original, så erstat filen med et nyt
-     navn (v8), ellers leverer caches den gamle. hero-v7 står tilbage et
-     par uger til cachede udgaver af denne CSS. */
+     denne; resten bruger linjen ovenfor. Kommer der en skarpere original,
+     så giv den et nyt navn (v9), ellers leverer caches den gamle. hero-v7
+     står tilbage et par uger til cachede udgaver af denne CSS. */
   background-image:
-    radial-gradient(ellipse 52% 40% at 50% 36%, rgba(10,18,12,0.30) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 34% at 50% 26%, rgba(10,30,60,0.28) 0%, transparent 100%),
     image-set(url('/hero-v6.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
   background-size: auto, cover;
-  /* center 88% (20. okt.): ved 40% stod overskriften på lys himmel og
-     cyklisternes hjul var skåret af. Lavere udsnit = cyklisterne helt med,
-     overskriften på træer og sø, som er mørkere og lettere at læse. */
-  background-position: center, center 88%;
+  /* center 6%: himlen øverst. Før (20. okt.) stod udsnittet på 88% for at
+     få cyklisterne med; nu ses de kun foroven ved hjulene, til gengæld er
+     himlen og tårnene med, og den blå himmel bærer den hvide tekst. */
+  background-position: center, center 6%;
   background-repeat: no-repeat;
-  padding: 16px 48px 14px;
-  height: clamp(240px, 17vw, 280px) !important;
+  padding: 30px 48px 14px;
+  height: 250px !important;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Teksten øverst, på himlen; søgefeltet lige under. */
+  justify-content: flex-start;
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
@@ -671,14 +672,17 @@ body.nav-search-on .nav-search { display: flex; }
    i fotoet, så han står under søgekortet; v4-m viste næsten kun himmel og
    asfalt. 760 px bred (fotoets egen opløsning, ingen opskalering), 121 KB.
    v7-m (25. okt.) er v5-m gjort lysere på samme måde som v7.
-   31. okt.: tilbage til v6-m (farverne med, se ovenfor). hero-v7-m.webp
-   står tilbage til cachede udgaver af CSS'en. */
+   v8-m (31. okt.) er skåret ud af v6 omkring tårnene, i fuld højde, så
+   himlen står bag overskriften (se ovenfor). 760 px bred som v5-m.
+   hero-v7-m.webp og ældre står tilbage til cachede udgaver af CSS'en. */
 @media (max-width: 768px) {
   .search-section {
     background-image:
-      radial-gradient(ellipse 90% 30% at 50% 22%, rgba(10,18,12,0.40) 0%, transparent 100%),
-      image-set(url('/hero-v6-m.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
-    background-position: center, center 85%;
+      radial-gradient(ellipse 85% 26% at 50% 22%, rgba(10,30,60,0.30) 0%, transparent 100%),
+      image-set(url('/hero-v8-m.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
+    /* 400 px høj: himlen og toppen af cyklisterne, ikke asfalten. */
+    background-size: auto, auto 400px;
+    background-position: center, center 10%;
   }
 }
 /* min-height'en var 220px og 200px, altså LAVERE end indholdet. Titel plus
@@ -722,18 +726,19 @@ body.nav-search-on .nav-search { display: flex; }
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--green);
 }
-/* Halvfed, ikke heavy (30. okt., brugerens valg af fem varianter): titel og
-   undertekst var begge fede og råbte i kor. Undtagelse fra reglen om heavy
-   på sideoverskrifter. Ingen boks bag teksten: en firkant oven på fotoet
-   blev afvist som malplaceret. */
+/* Heavy og større (31. okt., brugerens valg): hvid tekst på himlen skal
+   have vægt for at stå. 30. okt. var den halvfed, fordi titel og
+   undertekst begge var fede; nu er underteksten halvfed og titlen tung,
+   så de stadig ikke råber i kor. Ingen boks bag teksten: en firkant oven
+   på fotoet blev afvist som malplaceret. */
 .search-hero-title {
-  font-family: var(--font-sans); font-weight: var(--weight-semibold); letter-spacing: -0.01em; font-size: 2rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
+  font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 2.75rem;  color: #fff; line-height: 1.05;  margin: 0 0 6px; text-wrap: balance;
 }
 .search-hero-title em {
   font-style: italic; color: var(--rust-light); font-weight: var(--weight-semibold);
 }
 .search-hero-sub {
-  color: #fff; font-size: var(--text-base); font-weight: var(--weight-regular);
+  color: #fff; font-size: var(--text-base); font-weight: var(--weight-semibold);
   /* 480 → 620: underteksten brækkede midt i en sætning og efterlod
      "tættest på dig." alene på linje to. Tre forskellige bredder oven på
      hinanden (titel, orphan-linje, søgebar) læses som skævt, ikke som
@@ -744,8 +749,8 @@ body.nav-search-on .nav-search { display: flex; }
 /* Mobil-tilpasninger til hero — kompakt: skjul sub/chips/bell, mindre titel */
 @media (max-width: 768px) {
   .search-hero-title {
-    font-size: 1.5rem;
-    letter-spacing: -0.01em;
+    font-size: 1.85rem;
+    letter-spacing: -0.02em;
     line-height: 1.1;
     margin: 0 0 4px;
     padding: 0 8px;
@@ -761,7 +766,7 @@ body.nav-search-on .nav-search { display: flex; }
 }
 @media (max-width: 480px) {
   .search-hero-title {
-    font-size: 1.55rem;
+    font-size: 1.85rem;
   }
 }
 /* ── HERO KATEGORI-CHIPS ──
