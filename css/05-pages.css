@@ -631,7 +631,9 @@
   /* Hvide felter som på desktop (30. okt., brugeren): de grå felter fik
      baren til at ligne en formular. En tynd streg skiller søgning og by. */
   .search-bar-field { background: transparent; border-radius: 0; padding: 2px 10px; }
-  .search-bar-query { padding: 0 10px; flex: none; border-bottom: 1px solid var(--border); }
+  /* 44 px som byrækken (31. okt., brugeren): søgefeltet var 30 px og byen
+     44 px, fordi Søg-knappen står i byrækken. To lige høje rækker. */
+  .search-bar-query { padding: 0 10px; flex: none; min-height: 44px; border-bottom: 1px solid var(--border); }
   .search-bar input, .search-bar select { width: 100%; padding: 6px 4px; font-size: var(--text-base); min-width: 0; }
   .search-bar select { padding-right: 30px; }
   .search-bar-chev { right: 12px; }
