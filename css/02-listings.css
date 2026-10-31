@@ -15,13 +15,7 @@
 
 /* ── LISTINGS HEADER ── */
 .listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-/* Halvfed, ikke heavy (31. okt.): "Seneste annoncer" var det tungeste på
-   siden, tungere end hero-overskriften. Det er en sektionsoverskrift. */
-.listings-header h2 { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-lg); }
-/* Antallet står allerede i hero-linjen ("95 annoncer fra ..."). To gange
-   samme tal lige under hinanden er støj. Elementet bliver, fordi
-   js/filters.js skriver i det. */
-#listings-count { display: none; }
+.listings-header h2 { font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em; font-size: 1.4rem;}
 .listings-header span { color: var(--muted); font-size: 0.88rem; }
 .sort-select {
   padding: 7px 12px; border: 1.5px solid var(--border);

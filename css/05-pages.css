@@ -806,22 +806,19 @@
   .sidebar-mobile-apply:hover { background: var(--rust-hover); }
 
   .listings-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  /* Overskrift, Filtre og sortering på ÉN linje (31. okt.). Før var det
-     to rækker plus fanerne: tre lag kontroller før første cykel. Sorteringen
-     er en tekst med pil, ikke en stor boks med kant. */
-  .listings-header { flex-direction: row; flex-wrap: nowrap; gap: var(--space-2); align-items: center; margin-bottom: var(--space-1); }
-  .listings-header > div:first-child { flex: 1 1 auto; min-width: 0; }
-  .listings-header h2 { font-size: var(--text-base); white-space: nowrap; }
-  .listings-controls { flex: 0 0 auto; gap: var(--space-1); }
-  .btn-mobile-filter { display: inline-flex; order: 1; min-height: 36px; padding: 0 var(--space-3); font-size: var(--text-sm); }
-  .listings-controls .sort-select { order: 2; width: auto; max-width: 136px; height: 36px; min-width: 0;
-    border-color: transparent; background-color: transparent; font-size: var(--text-sm); padding-left: var(--space-1); }
+  .listings-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  /* Én samlet kontrol-bar på mobil: [Filtre] [Sorter] [Kort].
+     Liste-toggle + sammenlign skjules (liste er default; sammenlign er en desktop-power-feature). */
+  .listings-controls { width: 100%; gap: var(--space-2); }
+  .btn-mobile-filter { display: inline-flex; flex: 1 1 auto; order: 1; min-height: 44px; padding: 0 14px; }
+  .listings-controls .sort-select { width: auto; flex: 1 1 auto; order: 2; height: 44px; min-width: 0; }
   #btn-list-view { display: none; }
   /* Kort, sammenlign og "Få besked" var tre ikonknapper uden tekst i samme
      række (29. okt.). De ligger nu med tekst øverst i filterskuffen
      (.sidebar-mobile-tools i index.html), og rækken er kun Filtre + sortering. */
   #btn-map-page, #btn-compare-mode, .listings-save-btn { display: none !important; }
-  .btn-mobile-filter { flex: 0 0 auto; }
+  .btn-mobile-filter { flex: 0 0 auto; padding: 0 var(--space-4); }
+  .listings-controls { gap: var(--space-2); }
   .bike-card-body { padding: 10px 12px 12px; }
   /* Titel + pris stables lodret på mobil: på smalle 2-kolonne-kort klemte
      prisen (nowrap + flex-shrink:0) titlen, så lange mærkenavne som
