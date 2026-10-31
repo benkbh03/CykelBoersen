@@ -651,10 +651,11 @@ body.nav-search-on .nav-search { display: flex; }
   /* center 6%: himlen øverst. Før (20. okt.) stod udsnittet på 88% for at
      få cyklisterne med; nu ses de kun foroven ved hjulene, til gengæld er
      himlen og tårnene med, og den blå himmel bærer den hvide tekst. */
-  background-position: center, center 6%;
+  background-position: center, center 18%;
   background-repeat: no-repeat;
-  padding: 30px 48px 14px;
-  height: 250px !important;
+  /* 210 px (31. okt., før 250): annoncerne skal længere op. */
+  padding: 24px 48px 14px;
+  height: 210px !important;
   display: flex;
   flex-direction: column;
   /* Teksten øverst, på himlen; søgefeltet lige under. */
