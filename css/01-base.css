@@ -626,25 +626,27 @@ body.nav-search-on .nav-search { display: flex; }
 /* ── HERO + SØGEBAR ── */
 .search-section {
   background: var(--forest);
-  /* Lysheden ligger i selve fotoet, ikke i et slør. v7 (25. okt.) er v3
-     med kraftigt løftede mellemtoner (gamma 0.52) og lidt mere farve;
-     brugeren bad to gange samme dag om et lysere billede. Et mørkt slør
+  /* 31. okt.: tilbage til v6 (brugerens valg, variant C). v7 er v3 med
+     kraftigt løftede mellemtoner (gamma 0.52), og ved siden af de hvide
+     annoncekort så det blegt og gråt ud: forsiden virkede ikke indbydende.
+     v6 har farverne med; ellipsen er tilsvarende lidt lettere (0.30/0.40).
+     Historik: 25. okt. bad brugeren to gange om et lysere billede (v7). Et mørkt slør
      over hele fotoet (0.42, også 0.16) blev afvist 5. okt. som "alt for
      mørkt", og tekstskygge er afvist som "AI slop" (25. okt.). Læsbarheden
      bæres derfor KUN af den mørke ellipse lige bag teksten. Rør det ikke
      uden at sammenligne med et skærmbillede af den live side. */
   background-image:
-    radial-gradient(ellipse 52% 40% at 50% 36%, rgba(10,18,12,0.34) 0%, transparent 100%),
-    url('/hero-v7.jpg');
+    radial-gradient(ellipse 52% 40% at 50% 36%, rgba(10,18,12,0.30) 0%, transparent 100%),
+    url('/hero-v6.jpg');
   /* Samme foto som WebP. Browsere der forstår image-set (alle nyere) tager
      denne; resten bruger linjen ovenfor. v3 (13. okt.) er skærpet med en
      unsharp mask, fordi originalen kun er 2168 px bred og så blød ud på
      desktop. Kommer der en skarpere original, så erstat filen med et nyt
-     navn (v8), ellers leverer caches den gamle. hero-v6 og ældre står
-     tilbage et par uger til cachede udgaver af denne CSS. */
+     navn (v8), ellers leverer caches den gamle. hero-v7 står tilbage et
+     par uger til cachede udgaver af denne CSS. */
   background-image:
-    radial-gradient(ellipse 52% 40% at 50% 36%, rgba(10,18,12,0.34) 0%, transparent 100%),
-    image-set(url('/hero-v7.webp') type('image/webp'), url('/hero-v7.jpg') type('image/jpeg'));
+    radial-gradient(ellipse 52% 40% at 50% 36%, rgba(10,18,12,0.30) 0%, transparent 100%),
+    image-set(url('/hero-v6.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
   background-size: auto, cover;
   /* center 88% (20. okt.): ved 40% stod overskriften på lys himmel og
      cyklisternes hjul var skåret af. Lavere udsnit = cyklisterne helt med,
@@ -669,12 +671,13 @@ body.nav-search-on .nav-search { display: flex; }
    i fotoet, så han står under søgekortet; v4-m viste næsten kun himmel og
    asfalt. 760 px bred (fotoets egen opløsning, ingen opskalering), 121 KB.
    v7-m (25. okt.) er v5-m gjort lysere på samme måde som v7.
-   hero-v6-m.webp og ældre står tilbage til cachede udgaver af CSS'en. */
+   31. okt.: tilbage til v6-m (farverne med, se ovenfor). hero-v7-m.webp
+   står tilbage til cachede udgaver af CSS'en. */
 @media (max-width: 768px) {
   .search-section {
     background-image:
-      radial-gradient(ellipse 90% 34% at 50% 20%, rgba(10,18,12,0.46) 0%, transparent 100%),
-      image-set(url('/hero-v7-m.webp') type('image/webp'), url('/hero-v7.jpg') type('image/jpeg'));
+      radial-gradient(ellipse 90% 30% at 50% 22%, rgba(10,18,12,0.40) 0%, transparent 100%),
+      image-set(url('/hero-v6-m.webp') type('image/webp'), url('/hero-v6.jpg') type('image/jpeg'));
     background-position: center, center 85%;
   }
 }
@@ -815,10 +818,9 @@ body.nav-search-on .nav-search { display: flex; }
      knappens hjørner følger barens. Med 4 px så kanten smallere ud ved
      hjørnerne end på siderne, og knappen virkede klemt ind mod højre. */
   padding: 6px;
-  /* Skyggen var 50 % sort med 48 px blur, altså en stor mørk sky under baren.
-     Halveret og trukket tættere på, så baren stadig løfter sig fra fotoet
-     uden at male det mørkt. */
-  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(26,26,24,0.08);
+  /* Ingen skygge (31. okt.): "ingen skygger" gælder også her, og baren
+     lignede et svævende kort oven på fotoet. Kun en tynd kant. */
+  box-shadow: 0 0 0 1px rgba(26,26,24,0.08);
   /* Var overflow:hidden, som klippede autoforslags-listen væk: den ligger
      absolut under feltet, altså uden for barens kant. Ingen af børnene har
      en baggrund der kan stikke ud over de runde hjørner. */
@@ -826,7 +828,7 @@ body.nav-search-on .nav-search { display: flex; }
   transition: box-shadow 0.2s;
 }
 .search-bar:focus-within {
-  box-shadow: var(--shadow-sm), 0 0 0 2px var(--forest);
+  box-shadow: 0 0 0 2px var(--forest);
 }
 .search-bar-field {
   position: relative; display: flex; align-items: center;

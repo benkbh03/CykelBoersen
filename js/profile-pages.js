@@ -8,7 +8,7 @@ import {
   buildOpeningHoursDisplay, SERVICES,
 } from './dealer-extras.js';
 import { iconDealer, iconPrivate, priceLabel, priceText, iconHeart, escAttr, iconPin, iconMail, iconBike } from './utils.js';
-import { cardFacts } from './card-spec.js';
+import { cardFactsWithCondition } from './card-facts.js';
 import { bikePath } from './bike-url.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import {
@@ -142,12 +142,6 @@ export function createProfilePages({
   }
 
   function buildProfileBikeCards(bikes) {
-    const conditionClass = c => {
-      if (c === 'Ny')        return 'condition-tag--ny';
-      if (c === 'Som ny')    return 'condition-tag--som-ny';
-      if (c === 'God stand') return 'condition-tag--god';
-      return 'condition-tag--brugt';
-    };
     return bikes.map((b, i) => {
       const primaryRec = b.bike_images?.find(img => img.is_primary) || b.bike_images?.[0];
       const primaryImg = cardImageUrl(primaryRec);
@@ -159,7 +153,6 @@ export function createProfilePages({
           <div class="bike-card-img">
             ${imgContent}
             <div class="bike-card-badges">
-              <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
             </div>
             <button class="save-btn${getUserSavedSet().has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${getUserSavedSet().has(b.id)}">${iconHeart(16)}</button>
           </div>
@@ -169,7 +162,7 @@ export function createProfilePages({
               <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
-              const facts = cardFacts(b);
+              const facts = cardFactsWithCondition(b);
               return facts.length
                 ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
                 : '';

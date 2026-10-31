@@ -1,8 +1,7 @@
 import { bikeTitle, iconDealer, iconPrivate, iconShield, priceLabel, iconHeart, iconPin, iconBike } from './utils.js';
 import { cardImageUrl } from './image-size.js';
-import { cardFacts } from './card-spec.js';
+import { cardFactsWithCondition } from './card-facts.js';
 import { bikePath } from './bike-url.js';
-import { conditionTagClass } from './condition-tag.js';
 import { iconSearch, noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
 import { CITY_GROUPS, applyFilterArgs } from './bike-filter-query.js';
@@ -318,8 +317,6 @@ export function createBikesList({
 
   /* Kortenes HTML. Delt mellem listen og "nærmeste match" i tom-tilstanden. */
   function bikeCardsHTML(bikes) {
-    const conditionClass = conditionTagClass;
-
     const currentUser = getCurrentUser();
 
     return bikes.map((b, i) => {
@@ -373,7 +370,6 @@ export function createBikesList({
             <div class="bike-card-badges">
               ${isFeatured ? '<span class="featured-card-badge">Betalt promovering</span>' : ''}
               ${isDemo ? '<span class="demo-badge">EKSEMPEL</span>' : ''}
-              <span class="condition-tag ${conditionClass(b.condition)}">${esc(b.condition)}</span>
               ${b.warranty && !isSold && !isDemo ? `<span class="warranty-card-badge">${iconShield()}Garanti</span>` : ''}
             </div>
             ${!isSold && !isDemo ? `<button class="save-btn${isSaved ? ' is-saved' : ''}" data-bike-id="${b.id}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${isSaved}">${iconHeart(16)}</button>` : ''}
@@ -387,7 +383,7 @@ export function createBikesList({
                 : ''}</div>
             </div>
             ${(() => {
-              const facts = cardFacts(b);
+              const facts = cardFactsWithCondition(b);
               return facts.length
                 ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
                 : '';
