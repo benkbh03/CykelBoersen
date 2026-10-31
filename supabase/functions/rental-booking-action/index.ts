@@ -5,7 +5,11 @@
 //   - cancel        : afbestil → fuld refusion (leje + depositum), transfer reverseres.
 //                     Lejeren kun til og med to dage før første lejedag; forhandleren altid.
 //   - return_ok     : forhandler markerer afleveret uden skade → depositum refunderes
-//   - return_damage : forhandler registrerer skade → depositum beholdes (ingen refusion)
+//   - return_damage : forhandler registrerer skade og beholder keep_amount kr. af
+//                     depositummet (standard: hele). Beløbet overføres til forhandleren,
+//                     resten refunderes lejeren.
+//
+// Efter hver handling sendes mails via notify-message (med service-nøglen).
 //
 // "Verify JWT" SKAL være SLÅET TIL. Kun bookingens lejer eller forhandler må handle.
 //
@@ -34,13 +38,18 @@ serve(async (req) => {
 
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    // Mails må aldrig få en handling til at fejle, når pengene allerede er flyttet.
+    const notify = async (body: Record<string, unknown>) => {
+      try { await supabase.functions.invoke("notify-message", { body, headers: { "x-internal-key": SUPABASE_SERVICE_KEY } }); }
+      catch (e) { console.error("notify-message fejlede:", e); }
+    };
 
     const authHeader = req.headers.get("Authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "");
     const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
     if (authErr || !user) throw new Error("Log ind igen");
 
-    const { booking_id, action } = await req.json();
+    const { booking_id, action, keep_amount } = await req.json();
     if (!booking_id || !action) throw new Error("Mangler booking_id eller action");
 
     const { data: b } = await supabase
@@ -81,6 +90,7 @@ serve(async (req) => {
       await supabase.from("rental_bookings")
         .update({ status: "refunded", deposit_status: "refunded" })
         .eq("id", booking_id);
+      await notify({ type: "rental_cancelled", booking_id, by: isDealer ? "dealer" : "renter" });
 
     } else if (action === "return_ok") {
       if (!isDealer) throw new Error("Kun forhandleren kan markere aflevering");
@@ -91,13 +101,36 @@ serve(async (req) => {
       await supabase.from("rental_bookings")
         .update({ status: "completed", deposit_status: b.deposit_amount > 0 ? "refunded" : "none" })
         .eq("id", booking_id);
+      await notify({ type: "rental_returned", booking_id, kept: 0 });
 
     } else if (action === "return_damage") {
       if (!isDealer) throw new Error("Kun forhandleren kan registrere skade");
-      // Behold depositum (ingen refusion) — platform + forhandler afregner separat
+      const deposit = b.deposit_amount || 0;
+      const keep = deposit > 0
+        ? Math.min(deposit, Math.max(0, Math.round(Number(keep_amount ?? deposit) || 0)))
+        : 0;
+      if (pi && keep > 0) {
+        // Depositum ligger hos platformen (application fee). Den beholdte del
+        // overføres til forhandleren, knyttet til samme betaling.
+        const { data: dealer } = await supabase
+          .from("profiles").select("stripe_account_id").eq("id", b.dealer_id).single();
+        if (!dealer?.stripe_account_id) throw new Error("Forhandleren har ingen udbetalingskonto");
+        const intent = await stripe.paymentIntents.retrieve(pi);
+        await stripe.transfers.create({
+          amount: keep * 100,
+          currency: "dkk",
+          destination: dealer.stripe_account_id,
+          source_transaction: intent.latest_charge as string,
+          metadata: { booking_id, reason: "depositum_skade" },
+        });
+      }
+      if (pi && deposit - keep > 0) {
+        await stripe.refunds.create({ payment_intent: pi, amount: (deposit - keep) * 100 });
+      }
       await supabase.from("rental_bookings")
-        .update({ status: "completed", deposit_status: b.deposit_amount > 0 ? "captured" : "none" })
+        .update({ status: "completed", deposit_status: keep > 0 ? "captured" : deposit > 0 ? "refunded" : "none" })
         .eq("id", booking_id);
+      await notify({ type: "rental_returned", booking_id, kept: keep });
 
     } else {
       throw new Error("Ukendt handling");

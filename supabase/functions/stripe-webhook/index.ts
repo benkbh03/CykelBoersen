@@ -88,6 +88,43 @@ serve(async (req) => {
 
         // Udlejnings-booking: bekræft efter gennemført betaling (idempotent)
         if (session.mode === "payment" && session.metadata?.type === "rental") {
+          /* Perioden holdes kun i 30 minutter. Betalte lejeren lige efter, kan en
+             anden have nået at booke de samme dage. Så refunderes betalingen i
+             stedet for at give to lejere samme cykel. */
+          const { data: pend } = await supabase
+            .from("rental_bookings")
+            .select("id, item_id, start_date, end_date, status, deposit_amount, platform_fee, rental_items!item_id(quantity)")
+            .eq("stripe_session_id", session.id)
+            .maybeSingle();
+          if (pend?.status === "pending_payment") {
+            const { count } = await supabase
+              .from("rental_bookings")
+              .select("id", { count: "exact", head: true })
+              .eq("item_id", pend.item_id)
+              .neq("id", pend.id)
+              .in("status", ["confirmed", "active"])
+              .lte("start_date", pend.end_date)
+              .gte("end_date", pend.start_date);
+            if ((count ?? 0) >= ((pend as any).rental_items?.quantity ?? 1)) {
+              console.warn(`Udlejning: perioden er optaget, refunderer session ${session.id}`);
+              await stripe.refunds.create({
+                payment_intent: session.payment_intent as string,
+                reverse_transfer: true,
+                ...((pend.deposit_amount || 0) + (pend.platform_fee || 0) > 0 ? { refund_application_fee: true } : {}),
+              });
+              await supabase.from("rental_bookings")
+                .update({ status: "refunded", deposit_status: "refunded", stripe_payment_intent_id: session.payment_intent as string })
+                .eq("id", pend.id);
+              try {
+                await supabase.functions.invoke("notify-message", {
+                  headers: { "x-internal-key": SUPABASE_SERVICE },
+                  body: { type: "rental_cancelled", booking_id: pend.id, by: "system" },
+                });
+              } catch (e) { console.error("notify-message (optaget) fejlede:", e); }
+              break;
+            }
+          }
+
           const { data: confirmedId, error } = await supabase.rpc("confirm_rental_booking", {
             p_session_id:        session.id,
             p_payment_intent_id: (session.payment_intent as string) ?? null,
@@ -97,9 +134,13 @@ serve(async (req) => {
           } else if (confirmedId) {
             // Kun ved FRISK bekræftelse (gensendt webhook returnerer null → ingen dobbelt-mail)
             console.log(`Udlejnings-booking bekræftet (session ${session.id})`);
-            supabase.functions.invoke("notify-message", {
-              body: { type: "rental_booked", booking_id: confirmedId },
-            }).catch(() => {});
+            // Afvent mailen: en ikke-afventet invoke kan blive afbrudt, når svaret er sendt.
+            try {
+              await supabase.functions.invoke("notify-message", {
+                headers: { "x-internal-key": SUPABASE_SERVICE },
+                body: { type: "rental_booked", booking_id: confirmedId },
+              });
+            } catch (e) { console.error("notify-message (rental_booked) fejlede:", e); }
           }
           break;
         }
