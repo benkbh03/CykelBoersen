@@ -653,7 +653,7 @@ body.nav-search-on .nav-search { display: flex; }
      himlen og tårnene med, og den blå himmel bærer den hvide tekst. */
   /* 0% (31. okt.): rækker 0-150 af fotoet er ren blå himmel; skyerne
      begynder lige under. Rykkes udsnittet ned, står undertitlen på skyer. */
-  background-position: center, center 8%;
+  background-position: center, center 7%;
   background-repeat: no-repeat;
   /* Lige meget luft over overskriften og under søgefeltet (31. okt.,
      brugeren). Højden følger indholdet; før stod den fast på 210 px, og
