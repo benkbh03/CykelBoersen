@@ -1,6 +1,6 @@
 import { iconDealer, iconPrivate, priceLabel, priceText, iconHeart, beskedFejl, iconPin, iconMail, iconBike } from './utils.js';
 import { cardImageUrl } from './image-size.js';
-import { cardFacts } from './card-spec.js';
+import { cardFactsWithCondition } from './card-facts.js';
 import { findCompletedTradeWith } from './trades.js';
 import { noImagePlaceholder } from './ui-icons.js';
 import { cardSellerLine } from './card-seller.js';
@@ -129,7 +129,6 @@ export function createProfileModals({
           <div class="bike-card-img">
             ${imgContent}
             <div class="bike-card-badges">
-              <span class="condition-tag">${esc(b.condition)}</span>
             </div>
             <button class="save-btn${userSavedSet.has(b.id) ? ' is-saved' : ''}" onclick="event.stopPropagation();toggleSave(this,'${b.id}')" aria-label="Gem annonce" aria-pressed="${userSavedSet.has(b.id)}">${iconHeart(16)}</button>
           </div>
@@ -139,7 +138,7 @@ export function createProfileModals({
               <div class="bike-price">${priceLabel(b)}</div>
             </div>
             ${(() => {
-              const facts = cardFacts(b);
+              const facts = cardFactsWithCondition(b);
               return facts.length
                 ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
                 : '';

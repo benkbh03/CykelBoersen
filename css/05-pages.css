@@ -608,7 +608,9 @@
      massivt mørkt bånd, så himlen lige under den læses som tomrum, mens
      vejen under kortet er travl og læses som indhold. Den optiske midte
      ligger derfor højere end den geometriske. */
-  .search-section { padding: 22px 16px 30px; }
+  /* 31. okt.: lidt foto under søgefeltet (52 px), så toppen af
+     cyklisterne ses. Overskriften står på himlen øverst. */
+  .search-section { padding: 20px 16px 52px; }
   .search-hero-text { margin-bottom: 12px; }
   .search-hero-pill { display: none; }
   .search-bar-wrap { flex-direction: column; gap: 6px; }
@@ -621,15 +623,18 @@
        align-items, fordi #save-search-btn under baren MED vilje er en
        kompakt centreret pille og ikke skal strækkes med. */
     width: 100%;
-    border-radius: var(--radius-md); padding: 8px; gap: 6px;
+    /* 31. okt.: smallere ramme og ingen skygge. Kortet fyldte det meste af
+       fotoet og lignede en kasse oven på billedet. */
+    border-radius: var(--radius-sm); padding: 4px; gap: 4px;
     flex-direction: column; align-items: stretch;
-    box-shadow: var(--shadow-sm);
   }
   /* Hvide felter som på desktop (30. okt., brugeren): de grå felter fik
      baren til at ligne en formular. En tynd streg skiller søgning og by. */
   .search-bar-field { background: transparent; border-radius: 0; padding: 2px 10px; }
-  .search-bar-query { padding: 2px 10px 6px; flex: none; border-bottom: 1px solid var(--border); }
-  .search-bar input, .search-bar select { width: 100%; padding: 8px 4px; font-size: var(--text-base); min-width: 0; }
+  /* 44 px som byrækken (31. okt., brugeren): søgefeltet var 30 px og byen
+     44 px, fordi Søg-knappen står i byrækken. To lige høje rækker. */
+  .search-bar-query { padding: 0 10px; flex: none; min-height: 44px; border-bottom: 1px solid var(--border); }
+  .search-bar input, .search-bar select { width: 100%; padding: 6px 4px; font-size: var(--text-base); min-width: 0; }
   .search-bar select { padding-right: 30px; }
   .search-bar-chev { right: 12px; }
   .search-bar-sep { display: none; }
@@ -639,7 +644,7 @@
   .search-bar { flex-direction: row; flex-wrap: wrap; }
   .search-bar-query { flex: 1 1 100%; }
   .search-bar-city { flex: 1 1 0; min-width: 0; }
-  .search-pill-btn { width: auto; flex: 0 0 auto; padding: 11px var(--space-5); }
+  .search-pill-btn { width: auto; flex: 0 0 auto; padding: 8px var(--space-5); }
   /* Mobil: kompakt centreret pill under søgebaren (ikke full-width — bevarer
      visuelt hierarki hvor Søg-knappen i baren er primær handling). */
   .search-bar-wrap { flex-wrap: wrap; justify-content: center; }
@@ -880,8 +885,11 @@
   .listings-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
   .dealer-cards { grid-template-columns: repeat(2, 1fr); }
   .modal { max-width: 600px; }
-  .search-section { padding: 52px 32px 44px; }
-  .search-hero-title { font-size: 3.1rem; }
+  /* Overskriften skal stå på himlen (31. okt.), så lav top-polstring og
+     udsnittet helt fra toppen af fotoet. 3,1 rem gjorde titlen bredere end
+     himlen og fik den ned i træerne. */
+  .search-section { padding: 22px 32px 44px; background-position: center, center 0%; }
+  .search-hero-title { font-size: 2.5rem; }
   .search-bar-wrap { max-width: 720px; }
 }
 

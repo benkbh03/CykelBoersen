@@ -10,7 +10,7 @@
 import { CATEGORY_META } from './category-data.js';
 import { cardImageUrl } from './image-size.js';
 import { iconDealer, iconPrivate, priceLabel } from './utils.js';
-import { cardFacts } from './card-spec.js';
+import { cardFactsWithCondition } from './card-facts.js';
 import { bikePath } from './bike-url.js';
 import { marketFactsHtml } from './market-facts.js';
 import { noImagePlaceholder } from './ui-icons.js';
@@ -30,13 +30,6 @@ export function createCategoryPage({
   BASE_URL,
 }) {
 
-  function conditionClass(c) {
-    if (c === 'Ny')        return 'cond-ny';
-    if (c === 'Som ny')    return 'cond-somny';
-    if (c === 'God stand') return 'cond-god';
-    if (c === 'Brugt')     return 'cond-brugt';
-    return '';
-  }
 
   async function renderCategoryPage(slug) {
     const meta = CATEGORY_META[slug];
@@ -174,7 +167,6 @@ export function createCategoryPage({
             ? `<img src="${primaryImg}" alt="${esc(b.brand)} ${esc(b.model)}" loading="lazy" decoding="async" width="400" height="300">`
             : noImagePlaceholder()}
           <div class="bike-card-badges">
-            <span class="condition-tag ${conditionClass(b.condition) || ''}">${esc(b.condition || '')}</span>
           </div>
         </div>
         <div class="bike-card-body">
@@ -183,7 +175,7 @@ export function createCategoryPage({
             <div class="bike-price">${priceLabel(b)}</div>
           </div>
           ${(() => {
-            const facts = cardFacts(b);
+            const facts = cardFactsWithCondition(b);
             return facts.length
               ? `<div class="bike-meta">${facts.map(f => `<span>${esc(f)}</span>`).join('')}</div>`
               : '';
