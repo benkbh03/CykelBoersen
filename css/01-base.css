@@ -662,7 +662,7 @@ body.nav-search-on .nav-search { display: flex; }
      under søgefeltet ses vandet og cyklisterne. Højden følger bredden
      (21.1vw = 270 px ved 1280), så udsnittet er det samme på store skærme. */
   padding: 34px 48px;
-  height: clamp(250px, 21.1vw, 340px) !important;
+  height: clamp(250px, 21.1vw, 420px) !important;
   display: flex;
   flex-direction: column;
   /* Teksten øverst, på himlen; søgefeltet lige under. */
