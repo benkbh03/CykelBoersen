@@ -653,7 +653,7 @@ body.nav-search-on .nav-search { display: flex; }
      himlen og tårnene med, og den blå himmel bærer den hvide tekst. */
   /* 0% (31. okt.): rækker 0-150 af fotoet er ren blå himmel; skyerne
      begynder lige under. Rykkes udsnittet ned, står undertitlen på skyer. */
-  background-position: center, center 0%;
+  background-position: center, center 8%;
   background-repeat: no-repeat;
   /* Lige meget luft over overskriften og under søgefeltet (31. okt.,
      brugeren). Højden følger indholdet; før stod den fast på 210 px, og
@@ -671,7 +671,7 @@ body.nav-search-on .nav-search { display: flex; }
 /* Søgefeltet lidt længere nede end teksten (31. okt., brugeren), så
    blokken står nogenlunde midt i billedet. */
 @media (min-width: 1025px) {
-  .search-section .search-hero-text { margin-bottom: 32px; }
+  .search-section .search-hero-text { margin-bottom: 14px; }
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
