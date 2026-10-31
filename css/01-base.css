@@ -668,10 +668,14 @@ body.nav-search-on .nav-search { display: flex; }
   /* Teksten øverst, på himlen; søgefeltet lige under. */
   justify-content: flex-start;
 }
-/* Søgefeltet lidt længere nede end teksten (31. okt., brugeren), så
-   blokken står nogenlunde midt i billedet. */
+/* Teksten bliver øverst på den blå himmel; søgefeltet står midt i
+   rummet mellem underteksten og billedets bund (31. okt., brugeren:
+   "centrer søgebaren"). Hele blokken i midten satte underteksten på
+   skyerne. */
 @media (min-width: 1025px) {
   .search-section .search-hero-text { margin-bottom: 14px; }
+  .search-section { padding-bottom: 14px; }
+  .search-section .search-bar-wrap { margin-top: auto; margin-bottom: auto; }
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
