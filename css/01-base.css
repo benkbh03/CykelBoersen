@@ -658,12 +658,20 @@ body.nav-search-on .nav-search { display: flex; }
   /* Lige meget luft over overskriften og under søgefeltet (31. okt.,
      brugeren). Højden følger indholdet; før stod den fast på 210 px, og
      luften under søgefeltet var tre gange luften over overskriften. */
-  padding: 28px 48px;
-  height: auto !important;
+  /* Lidt højere (31. okt., A): teksten øverst på den skyfri himmel, og
+     under søgefeltet ses vandet og cyklisterne. Højden følger bredden
+     (21.1vw = 270 px ved 1280), så udsnittet er det samme på store skærme. */
+  padding: 34px 48px;
+  height: clamp(250px, 21.1vw, 420px) !important;
   display: flex;
   flex-direction: column;
   /* Teksten øverst, på himlen; søgefeltet lige under. */
   justify-content: flex-start;
+}
+/* Søgefeltet lidt længere nede end teksten (31. okt., brugeren), så
+   blokken står nogenlunde midt i billedet. */
+@media (min-width: 1025px) {
+  .search-section .search-hero-text { margin-bottom: 32px; }
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
