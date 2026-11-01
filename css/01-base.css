@@ -653,7 +653,9 @@ body.nav-search-on .nav-search { display: flex; }
      himlen og tårnene med, og den blå himmel bærer den hvide tekst. */
   /* 0% (31. okt.): rækker 0-150 af fotoet er ren blå himmel; skyerne
      begynder lige under. Rykkes udsnittet ned, står undertitlen på skyer. */
-  background-position: center, center 7%;
+  /* 0 % på desktop (1. nov.): blokken står midt i billedet, og kun
+     øverste del af fotoet er skyfri. Tablet har sit eget udsnit. */
+  background-position: center, center 0%;
   background-repeat: no-repeat;
   /* Lige meget luft over overskriften og under søgefeltet (31. okt.,
      brugeren). Højden følger indholdet; før stod den fast på 210 px, og
@@ -668,17 +670,13 @@ body.nav-search-on .nav-search { display: flex; }
   /* Teksten øverst, på himlen; søgefeltet lige under. */
   justify-content: flex-start;
 }
-/* Teksten bliver øverst på den blå himmel; søgefeltet står midt i
-   rummet mellem underteksten og billedets bund, dog lidt højere
-   (31. okt., brugeren: "ryk den lidt opad"). Hele blokken i midten
-   satte underteksten på skyerne. */
-/* Tre lige store mellemrum (1. nov., brugeren): topbar til overskrift,
-   undertekst til søgefelt og søgefelt til billedets bund. Højden følger
-   indholdet, så billedet skæres af nedefra. */
+/* Overskrift, undertekst og søgefelt samlet midt i billedet (1. nov.,
+   brugeren valgte forslag 2). Den gamle højde (250 px ved 1280), og
+   billedet skubbet helt op, så begge tekstlinjer står på blå himmel. */
 @media (min-width: 1025px) {
+  .search-section { padding: 20px 48px; justify-content: center; }
   .search-section .search-hero-text { margin-bottom: 14px; }
   .search-section .search-bar-wrap { margin-top: 18px; }
-  .search-section { height: auto !important; padding-bottom: 37px; }
 }
 @media (max-width: 1024px) {
   .search-section { height: auto !important; min-height: 240px; }
