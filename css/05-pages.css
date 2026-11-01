@@ -822,7 +822,9 @@
      række (29. okt.). De ligger nu med tekst øverst i filterskuffen
      (.sidebar-mobile-tools i index.html), og rækken er kun Filtre + sortering. */
   #btn-map-page, #btn-compare-mode, .listings-save-btn { display: none !important; }
-  .btn-mobile-filter { flex: 0 0 auto; padding: 0 var(--space-4); }
+  /* Filtre og sortering deler rækken 50/50 (31. okt., brugeren). */
+  .btn-mobile-filter { flex: 0 0 calc(50% - var(--space-1)); box-sizing: border-box; min-width: 0; justify-content: center; padding: 0 var(--space-4); }
+  .listings-controls .sort-select { flex: 0 0 calc(50% - var(--space-1)); box-sizing: border-box; }
   .listings-controls { gap: var(--space-2); }
   .bike-card-body { padding: 10px 12px 12px; }
   /* Titel + pris stables lodret på mobil: på smalle 2-kolonne-kort klemte
