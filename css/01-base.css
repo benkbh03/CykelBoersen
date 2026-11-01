@@ -670,11 +670,12 @@ body.nav-search-on .nav-search { display: flex; }
   /* Teksten øverst, på himlen; søgefeltet lige under. */
   justify-content: flex-start;
 }
-/* Overskrift, undertekst og søgefelt samlet midt i billedet (1. nov.,
-   brugeren valgte forslag 2). Den gamle højde (250 px ved 1280), og
-   billedet skubbet helt op, så begge tekstlinjer står på blå himmel. */
+/* Lige meget luft fra topbaren til overskriften og fra søgefeltet til
+   billedets bund, 47 px målt på selve bogstaverne (1. nov., brugeren).
+   Overskriften får 4 px færre, fordi linjehøjden giver luft over
+   bogstaverne. Billedet står helt oppe (0 %), så teksten er på blå himmel. */
 @media (min-width: 1025px) {
-  .search-section { padding: 20px 48px; justify-content: center; }
+  .search-section { height: auto !important; padding: 43px 48px 47px; justify-content: flex-start; }
   .search-section .search-hero-text { margin-bottom: 14px; }
   .search-section .search-bar-wrap { margin-top: 18px; }
 }
