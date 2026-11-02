@@ -8,6 +8,7 @@ import { bikeTitle, iconShield, iconWrench, iconBike } from './utils.js';
 import { renderColorSwatches, getSelectedColors, setSelectedColors } from './color-swatches.js';
 import { parseImportedListing } from './import-parse.js';
 import { startSellFlow, trackSellStep } from './sell-funnel.js';
+import { prepareSellImage } from './sell-image-prep.js';
 import { enableDragReorder } from './drag-reorder.js';
 import { cleanAiSuggestion, cleanText, NOT_BIKE_MESSAGE } from './ai-suggestion-clean.js';
 import { mountUpgradesEditor, normalizeUpgrades, UPGRADE_PROMINENT_TYPES } from './bike-upgrades.js';
@@ -94,6 +95,35 @@ export function createSellPage({
   // så hurtige klik (hvor knappen ikke når at blive deaktiveret) ikke kan
   // oprette annoncen to gange.
   let _submittingSell = false;
+
+  /* Tragten (sell-funnel.js). Et nyt forsøg startes kun når det forrige
+     blev gennemført eller er over 30 min. gammelt; ellers talte "Fortsæt"
+     på en kladde og "Start forfra" som nye personer (17 starter var ca. 11
+     besøg i okt.). Admin og "på vegne af forhandler" logges slet ikke.
+     Intet gemmes om hvem man er; der logges bare ingenting. */
+  const FUNNEL_RESTART_MS = 30 * 60 * 1000;
+  let _funnelStartedAt = 0;
+  let _funnelDone = true;
+  function _funnelOff() {
+    return !!getCurrentProfile()?.is_admin || _isActingAs();
+  }
+  function _track(step, meta = {}) {
+    if (_funnelOff()) return;
+    trackSellStep(supabase, step, { category: _sellCategory, ...meta });
+  }
+  // Kører analysen stadig, når brugeren går videre, er felterne alligevel
+  // udfyldt af AI'en. Før talte de som manuelle.
+  function _prefilledNow() {
+    if (_importApplied) return 'import';
+    if (_aiApplied || _aiRunning || _aiState === 'analyzing') return 'ai';
+    return null;
+  }
+
+  // Tælles op hver gang sælg-siden eller kategorivalget tegnes. Billeder
+  // der stadig er ved at blive gjort klar, når brugeren forlader siden,
+  // må ikke lande i det næste forsøgs liste.
+  let _sellRenderToken = 0;
+  let _prepQueue = Promise.resolve();
 
   // Top-level kategori for det aktive salg. 'cykel' = uændret cykel-wizard.
   // 'tilbehoer' = SAMME wizard-design/-flow, men med tilbehørs-felter (ingen
@@ -386,10 +416,8 @@ export function createSellPage({
 
     // Tragtens slutpunkt. Ligger efter at annoncen er gemt, så 'complete'
     // kun tælles når der faktisk kom en annonce ud af det.
-    trackSellStep(supabase, 'complete', {
-      category: _sellCategory,
-      prefilled: _importApplied ? 'import' : (_aiApplied ? 'ai' : null),
-    });
+    _track('complete', { prefilled: _prefilledNow() });
+    _funnelDone = true;
 
     clearSellDraft();
     if (returnToBuyOffer(newBike)) return;
@@ -464,6 +492,7 @@ export function createSellPage({
     document.title = 'Opret annonce – Cykelbørsen';
     updateSEOMeta('Sælg din cykel eller cykeltilbehør gratis på Cykelbørsen. Opret en annonce på under 2 minutter.', '/sell');
     getSelectedFiles().splice(0);
+    _sellRenderToken++;
 
     const BACK = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const BIKE = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17" r="4"/><circle cx="19" cy="17" r="4"/><path d="M5 17l5-8h7l2 8M10 9l2.5 8L17 9M10 9l-.5-2.5M8.5 6.5h2.5M17 9l-.5-3h2a1.5 1.5 0 0 1 0 3"/></svg>`;
@@ -549,6 +578,7 @@ export function createSellPage({
         : 'Sælg din brugte cykel gratis på Cykelbørsen.',
       '/sell');
     getSelectedFiles().splice(0);
+    _sellRenderToken++;
     _sellStep = 1;
     _aiApplied = false;
     _aiAutoFired = false;
@@ -563,8 +593,14 @@ export function createSellPage({
     /* Nyt tragt-forsøg. Placeret her, hvor al anden flow-state nulstilles, så
        en bruger der opretter to annoncer i træk tæller som to forsøg og ikke
        som ét langt. */
-    startSellFlow();
-    trackSellStep(supabase, 'start', { category: _sellCategory });
+    if (!_funnelOff()) {
+      if (_funnelDone || Date.now() - _funnelStartedAt > FUNNEL_RESTART_MS) {
+        startSellFlow();
+        _funnelStartedAt = Date.now();
+        _funnelDone = false;
+      }
+      _track('start');
+    }
 
     // Banner når admin opretter på vegne af forhandler (acting-as-mode)
     let actingAs = null;
@@ -661,6 +697,9 @@ export function createSellPage({
   }
 
   function renderSellStep1HTML() {
+    // På en telefon kan man ikke trække billeder; man trykker og får valget
+    // mellem kamera og bibliotek.
+    const touch = !!window.matchMedia?.('(hover: none) and (pointer: coarse)').matches;
     return `
       <h1 class="sell-step-heading">Start med billeder</h1>
       <p class="sell-step-subtitle">${_isAcc()
@@ -674,10 +713,11 @@ export function createSellPage({
         <div class="sell-drop-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="sell-drop-title">Træk billeder hertil</div>
-        <div class="sell-drop-sub">eller tryk for at vælge fra bibliotek</div>
-        <div class="sell-drop-badge">JPG, PNG, WEBP · op til 10 MB</div>
+        <div class="sell-drop-title">${touch ? 'Tryk for at tage eller vælge billeder' : 'Træk billeder hertil'}</div>
+        ${touch ? '' : '<div class="sell-drop-sub">eller klik for at vælge billeder</div>'}
+        <div class="sell-drop-badge">Op til 8 billeder</div>
       </div>
+      <p id="sell-img-busy" class="sell-img-busy" role="status" aria-live="polite" hidden>Gør billederne klar…</p>
       <input type="file" id="sell-file-input" accept="image/*" multiple style="display:none" onchange="previewSellImages(this)">
 
       ${_isAcc() || _importApplied ? '' : `
@@ -1288,10 +1328,7 @@ export function createSellPage({
        link-import, så frafald kan sammenlignes mellem dem der fik hjælp og
        dem der tastede alt selv. */
     if (n === 2 || n === 3) {
-      trackSellStep(supabase, `step_${n}`, {
-        category: _sellCategory,
-        prefilled: _importApplied ? 'import' : (_aiApplied ? 'ai' : null),
-      });
+      _track(`step_${n}`, { prefilled: _prefilledNow() });
     }
 
     _sellStep = n;
@@ -1560,7 +1597,18 @@ export function createSellPage({
     const draft = readDraftFields(userId);
     if (!draft) { _draftReady = true; return; }
 
-    const files = draft._images ? await readDraftImages(userId) : [];
+    const stored = draft._images ? await readDraftImages(userId) : [];
+    /* En kladde gemt før nov. 2026 kan indeholde originalfiler med EXIF.
+       De renses igen her, så intet billede kommer i listen uden om
+       sell-image-prep.js. Er de allerede rensede, koster det en lille
+       afkodning af et billede på 1200 px. */
+    const files = [];
+    for (const f of stored) {
+      try {
+        const res = await prepareSellImage(f, { forAI: false });
+        if (res.ok) files.push(res.file);
+      } catch (_) { /* springes over hellere end at blive uploadet urenset */ }
+    }
     // Brugeren kan have forladt siden eller lagt egne billeder ind imens.
     if (token !== _draftToken || !document.getElementById('sell-step-body')) return;
     if (getSelectedFiles().length) { _draftReady = true; return; }
@@ -1577,7 +1625,8 @@ export function createSellPage({
 
     const sf = getSelectedFiles();
     files.forEach((file, i) => sf.push({ file, url: URL.createObjectURL(file), isPrimary: i === 0 }));
-    _draftSavedFiles = files;
+    // Tom, så de rensede filer skrives tilbage og erstatter kladdens gamle.
+    _draftSavedFiles = [];
     // Billederne er allerede analyseret (eller udfyldt fra et link) første
     // gang. En ny analyse ville koste et kald og kunne overskrive rettelser.
     if (files.length) _aiAutoFired = true;
@@ -1635,25 +1684,90 @@ export function createSellPage({
 
   /* ------ Image handling -------------------------------------- */
 
+  /* Billederne renses og komprimeres i det øjeblik de lægges ind
+     (sell-image-prep.js). Listen indeholder derfor kun rensede filer, og det
+     er dem uploadImages() og uploadImagesNoInsert() sender, også hvis
+     image-upload.js ligger i en gammel udgave i en cache.
+     Én fil ad gangen: en 48 MP-afkodning bruger meget hukommelse på en
+     telefon, og otte på én gang kan få fanen til at genstarte. */
   function previewSellImages(input) {
     clearSellFieldError(document.getElementById('sell-drop-zone'));
-    const files = Array.from(input.files);
-    if (!files.length) return;
-
-    const sf = getSelectedFiles();
-    const remaining = 8 - sf.length;
-    const toAdd = files.filter(validateImageFile).slice(0, remaining);
-
-    toAdd.forEach((file, i) => {
-      const url = URL.createObjectURL(file);
-      sf.push({ file, url, isPrimary: sf.length === 0 && i === 0 });
+    clearSellImageErrors();
+    const files = Array.from(input?.files || []);
+    // Samme fil skal kunne vælges igen efter en afvisning.
+    if (input && input.tagName === 'INPUT') { try { input.value = ''; } catch (_) {} }
+    if (!files.length) return _prepQueue;
+    const token = _sellRenderToken;
+    _prepQueue = _prepQueue.then(() => addSellFiles(files, token)).catch((e) => {
+      console.error('Billeder kunne ikke gøres klar:', e);
     });
+    return _prepQueue;
+  }
 
-    renderSellImagePreviews();
-    updateAiSuggestVisibility();
-    maybeAutoSuggest();
+  async function addSellFiles(files, token) {
+    const sf = getSelectedFiles();
+    const errors = [];
+    let overflow = 0;
+    let added = 0;
+    setSellImagesBusy(true);
+    try {
+      for (const file of files) {
+        if (token !== _sellRenderToken) return;           // siden er forladt
+        if (sf.length >= 8) { overflow++; continue; }
+        const forAI = sf.filter(x => x.aiFile).length < 4;
+        let res;
+        try { res = await prepareSellImage(file, { forAI }); }
+        catch (_) { res = { ok: false, reason: 'decode', message: `"${file?.name || 'Billedet'}" kunne ikke åbnes. Prøv et andet billede.` }; }
+        if (token !== _sellRenderToken) return;
+        if (!res.ok) {
+          errors.push(res.message);
+          _track(`img_rejected_${res.reason}`);
+          continue;
+        }
+        if (sf.length >= 8) { overflow++; continue; }
+        sf.push({ file: res.file, aiFile: res.aiFile, url: URL.createObjectURL(res.file), isPrimary: sf.length === 0 });
+        added++;
+        _track('img_added');
+        renderSellImagePreviews();
+        updateAiSuggestVisibility();
+      }
+    } finally {
+      if (token === _sellRenderToken) setSellImagesBusy(false);
+    }
+    if (overflow) errors.push(`Der er plads til 8 billeder. ${overflow} ${overflow === 1 ? 'billede' : 'billeder'} blev ikke tilføjet.`);
+    showSellImageErrors(errors);
+    if (added) maybeAutoSuggest();
     const label = document.getElementById('sell-upload-label');
     if (label) label.textContent = `${sf.length} billede${sf.length !== 1 ? 'r' : ''} valgt`;
+  }
+
+  function setSellImagesBusy(on) {
+    const el = document.getElementById('sell-img-busy');
+    if (el) el.hidden = !on;
+    document.getElementById('sell-drop-zone')?.classList.toggle('is-busy', on);
+  }
+
+  function clearSellImageErrors() {
+    document.querySelectorAll('#sell-step-body .sell-img-error').forEach(e => e.remove());
+  }
+
+  /* Afvisninger står under feltet og bliver stående, til brugeren lægger
+     nye billeder ind. En toast forsvinder efter 3,5 sekunder, og bagefter
+     så feltet ud som om intet var sket. */
+  function showSellImageErrors(messages) {
+    clearSellImageErrors();
+    if (!messages.length) return;
+    const zone = document.getElementById('sell-drop-zone');
+    if (!zone) { messages.forEach(m => showToast(m, 'advarsel')); return; }
+    let anchor = document.getElementById('sell-img-busy') || zone;
+    messages.forEach(m => {
+      const p = document.createElement('p');
+      p.className = 'sell-field-error sell-img-error';
+      p.setAttribute('role', 'alert');
+      p.textContent = m;
+      anchor.insertAdjacentElement('afterend', p);
+      anchor = p;
+    });
   }
 
   function renderSellImagePreviews() {
@@ -1898,18 +2012,15 @@ export function createSellPage({
       const ordered = sf.slice().sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
       const picks = ordered.slice(0, limit);
 
-      // Brug originalfilen (eller en højere-kvalitet AI-komprimering) i stedet
-      // for den display-komprimerede version — så CUBE-logo og lignende detaljer
-      // ikke smudses ud før AI'en analyserer dem.
+      // aiFile er en renset version i 2000 px, lavet da billedet blev lagt
+      // ind (sell-image-prep.js), så CUBE-logo og lignende detaljer ikke
+      // smudses ud. Originalen findes ikke længere i listen. Mangler aiFile
+      // (billede nr. 5+ eller en gendannet kladde), bruges display-versionen,
+      // som også er renset.
       const images = await Promise.all(picks.map(async (item) => {
-        const source = item.originalFile || item.file;
-        // originalFile er filen som brugeren valgte den, altså med EXIF og
-        // dermed GPS intakt. Den må kun forlade enheden efter et
-        // canvas-gennemløb. compressForAI kaster hvis det ikke lykkes, og
-        // så bruger vi item.file, som allerede ER strippet.
-        let forAI = item.file;
-        if (compressForAI) {
-          try { forAI = await compressForAI(source); }
+        let forAI = item.aiFile || item.file;
+        if (!item.aiFile && compressForAI) {
+          try { forAI = await compressForAI(item.file); }
           catch (e) { console.warn('AI-komprimering fejlede, bruger display-versionen:', e); }
         }
         const { mediaType, base64 } = await fileToBase64(forAI);
@@ -2071,9 +2182,11 @@ export function createSellPage({
       if (data.image_base64 && data.image_media_type) {
         try {
           const file = base64ToFile(data.image_base64, data.image_media_type, 'annonce');
-          if (validateImageFile(file) && getSelectedFiles().length < 8) {
-            previewSellImages({ files: [file] });
-            addedImage = true;
+          // Samme vej som valgte billeder: renses i sell-image-prep.js.
+          if (getSelectedFiles().length < 8) {
+            const before = getSelectedFiles().length;
+            await previewSellImages({ files: [file] });
+            addedImage = getSelectedFiles().length > before;
           }
         } catch (_) { /* billede-fejl må ikke stoppe tekst-import */ }
       }

@@ -4019,9 +4019,23 @@ async function loadAdminStats() {
       if (r.prefilled) f.prefilled = r.prefilled;
     });
     const reached = step => [...flows.values()].filter(f => f.steps.has(step)).length;
-    const fStart = reached('start'), fStep2 = reached('step_2'),
+    const fStart = reached('start'), fImg = reached('img_added'), fStep2 = reached('step_2'),
           fStep3 = reached('step_3'), fDone = reached('complete');
     const pct = (n, of) => of > 0 ? Math.round((n / of) * 100) : 0;
+
+    // Afviste billeder pr. årsag (img_rejected_<årsag>), talt pr. forsøg.
+    const REJECT_LABELS = { heic: 'HEIC kunne ikke åbnes', decode: 'kunne ikke åbnes', size: 'for stort', type: 'ikke et billede', empty: 'tom fil' };
+    const rejectCounts = {};
+    flows.forEach(f => f.steps.forEach(st => {
+      if (!st.startsWith('img_rejected_')) return;
+      const k = st.slice('img_rejected_'.length);
+      rejectCounts[k] = (rejectCounts[k] || 0) + 1;
+    }));
+    const rejectParts = Object.entries(rejectCounts).sort((a, b) => b[1] - a[1])
+      .map(([k, n]) => `${esc(REJECT_LABELS[k] || k)}: <strong style="color:var(--charcoal);">${n}</strong>`);
+    const rejectLine = rejectParts.length
+      ? `<div style="margin-top:var(--space-2);font-size:var(--text-xs);color:var(--muted);">Forsøg med afviste billeder: ${rejectParts.join(' &nbsp;·&nbsp; ')}</div>`
+      : '';
 
     // Hjalp den automatiske udfyldning? Sammenlign gennemførsel med og uden.
     const withHelp = [...flows.values()].filter(f => f.prefilled);
@@ -4137,13 +4151,15 @@ async function loadAdminStats() {
       <p style="font-size:0.76rem;color:var(--muted);margin:0 0 8px;">Hvor langt folk når, når de begynder at oprette en annonce.</p>
       ${fStart === 0 ? '<p style="color:var(--muted);font-size:0.86rem;">Ingen forsøg logget endnu.</p>' : `
         ${funnelRow('1. Åbnede sælg-flowet', fStart, null, '')}
+        ${funnelRow('Fik et billede ind', fImg, fStart, 'Logges fra 3. nov. 2026. Afviste billeder tælles pr. årsag nedenfor.')}
         ${funnelRow('2. Nåede "Om cyklen"',  fStep2, fStart, 'Falder de her, er billed-uploaden barrieren.')}
         ${funnelRow('3. Nåede "Publicer"',   fStep3, fStart, 'Falder de her, er der for mange felter.')}
         ${funnelRow('4. Oprettede annoncen', fDone,  fStart, 'Falder de her, mangler de hjælp til pris og beskrivelse.')}
         <div style="margin-top:10px;font-size:0.8rem;color:var(--muted);">
           Automatisk udfyldt (AI eller import): <strong style="color:var(--charcoal);">${withHelp.length ? pct(helpDone, withHelp.length) : 0}%</strong> gennemført
           &nbsp;·&nbsp; udfyldt manuelt: <strong style="color:var(--charcoal);">${noHelp.length ? pct(plainDone, noHelp.length) : 0}%</strong>
-        </div>`}
+        </div>
+        ${rejectLine}`}
 
       <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger og sælg-trin logges anonymt (uden bruger-id).</p>
     `;
