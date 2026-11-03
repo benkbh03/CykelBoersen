@@ -1675,3 +1675,26 @@ body:has(.map-page) > footer {
   white-space: nowrap;
 }
 .official-badge .ui-icon { flex-shrink: 0; }
+
+/* ── Admin → Statistik → Smart søgning (js/admin-smart-searches.js) ── */
+.ass-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: var(--space-6) 0 var(--space-1); }
+.ass-title { font-size: var(--text-lg); font-weight: var(--weight-heavy); letter-spacing: -0.02em; margin: 0; color: var(--charcoal); }
+.ass-toggle { font-size: var(--text-sm); color: var(--charcoal); display: flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+.ass-help { font-size: var(--text-xs); color: var(--muted); margin: 0 0 var(--space-2); line-height: 1.5; }
+.ass-note { font-size: var(--text-sm); color: var(--charcoal); margin: var(--space-6) 0 0; }
+.ass-scroll { overflow-x: auto; }
+.ass-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.ass-table th { text-align: left; font-weight: var(--weight-semibold); color: var(--muted); font-size: var(--text-xs); padding: var(--space-2); border-bottom: 1px solid var(--border); }
+.ass-table td { padding: var(--space-2); border-bottom: 1px solid var(--border); vertical-align: top; }
+.ass-table tr.is-zero td { background: var(--sand); }
+.ass-when { white-space: nowrap; color: var(--muted); font-size: var(--text-xs); }
+.ass-query { color: var(--charcoal); }
+.ass-words { font-size: var(--text-xs); color: var(--muted); margin-top: var(--space-1); }
+.ass-filter { display: inline-block; font-size: var(--text-xs); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 var(--space-1); margin: 0 var(--space-1) var(--space-1) 0; white-space: nowrap; }
+.ass-count { text-align: right; white-space: nowrap; }
+.ass-zero { color: var(--rust); font-weight: var(--weight-semibold); }
+.ass-muted { color: var(--muted); }
+@media (max-width: 600px) {
+  .ass-table th:first-child, .ass-table td.ass-when { display: none; }
+  .ass-filter { white-space: normal; }
+}

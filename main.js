@@ -4147,6 +4147,7 @@ async function loadAdminStats() {
           ${topZero.length ? topZero.map(r => searchRow(r, 'var(--rust)')).join('') : '<p style="color:var(--muted);font-size:0.86rem;">Ingen tomme søgninger endnu.</p>'}
         </div>
       </div>
+      <div id="admin-smart-searches"></div>
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;font-size:1.05rem;margin:22px 0 4px;color:var(--charcoal);">Sælg-tragt (${DAYS} dage)</h3>
       <p style="font-size:0.76rem;color:var(--muted);margin:0 0 8px;">Hvor langt folk når, når de begynder at oprette en annonce.</p>
       ${fStart === 0 ? '<p style="color:var(--muted);font-size:0.86rem;">Ingen forsøg logget endnu.</p>' : `
@@ -4163,6 +4164,10 @@ async function loadAdminStats() {
 
       <p style="font-size:0.74rem;color:var(--muted);margin-top:16px;">Beregnet live fra databasen. Søgninger og sælg-trin logges anonymt (uden bruger-id).</p>
     `;
+    // Smart søgnings log (js/admin-smart-searches.js). Fejler den, står resten.
+    import(`./js/admin-smart-searches.js?v=${ASSET_VERSION}`)
+      .then(m => m.createAdminSmartSearches({ supabase, esc, retryHTML }).renderSmartSearches())
+      .catch(() => {});
   } catch (e) {
     console.error('loadAdminStats fejl:', e);
     el.innerHTML = retryHTML('Kunne ikke hente statistik.', 'loadAdminStats');
