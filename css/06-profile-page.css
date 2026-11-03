@@ -1517,6 +1517,14 @@ color: var(--charcoal); margin-bottom: 2px;
 .sell-field.has-error textarea,
 .sell-drop-zone.has-error { border-color: var(--error); }
 
+/* Mens billederne gøres klar (renses og komprimeres) i sell-image-prep.js. */
+.sell-img-busy {
+  margin: var(--space-2) 0 0; font-family: var(--font-sans);
+  font-size: var(--text-sm); color: var(--muted);
+}
+.sell-img-busy[hidden] { display: none !important; }
+.sell-drop-zone.is-busy { opacity: 0.6; pointer-events: none; }
+
 /* DBA-import: en almindelig sektion med en streg over, ingen grå boks. */
 .sell-import-link {
   margin-top: var(--space-6); padding-top: var(--space-4);
