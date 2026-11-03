@@ -13,6 +13,7 @@
 
 import { supabase } from './supabase-client.js';
 import { setRankWords, clearRankWords } from './smart-rank.js';
+import { reportSmartSearchResult } from './smart-search-log.js';
 
 const MAX_CHARS = 300;
 
@@ -82,6 +83,7 @@ export function initSmartFilter({ onApply }) {
         return;
       }
       setRankWords(words);
+      reportSmartSearchResult(data?.logId);
       onApply(args);
       const filtersMsg = !n ? 'Satte ingen filtre.'
         : n === 1 ? 'Satte 1 filter. Du kan fjerne det over annoncerne.'

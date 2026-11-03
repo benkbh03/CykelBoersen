@@ -564,6 +564,8 @@ export function createBikesList({
     // Send result-count til CTA — skifter copy til "Kun X matcher" når resultater er få
     if (!append) updateCykelagentCta((data || []).length);
     if (!append) setFilterApplyCount(typeof count === 'number' ? count : null, category);
+    // Smart søgnings log (js/smart-search-log.js) venter på antallet.
+    if (!append && typeof count === 'number') window.dispatchEvent(new CustomEvent('cb:filtered-count', { detail: { count } }));
     else updateCykelagentCta();
     setFilterOffset(getFilterOffset() + (data || []).length);
 

@@ -1,0 +1,42 @@
+name: Test smart søgning
+
+# Kører testsættet for smart søgning (scripts/smart-filter-test.mjs) mod den
+# instruktion der ligger i repoet. Startes i hånden: GitHub → Actions →
+# "Test smart søgning" → Run workflow. Kræver repo-secret ANTHROPIC_API_KEY
+# (Settings → Secrets and variables → Actions). Ca. 6 øre pr. kørsel.
+#
+# Kører også på en PR der ændrer instruktionen, hvis nøglen findes.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Kun søgninger der indeholder dette ord (tomt = alle)'
+        required: false
+        default: ''
+  pull_request:
+    paths:
+      - 'supabase/functions/_shared/smart-filter-core.ts'
+      - 'scripts/smart-filter-cases.json'
+      - 'scripts/smart-filter-test.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testsæt
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::notice::ANTHROPIC_API_KEY er ikke sat som repo-secret, så testsættet springes over."
+            exit 0
+          fi
+          node --experimental-strip-types scripts/smart-filter-test.mjs
