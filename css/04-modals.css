@@ -1661,6 +1661,9 @@ footer p { color: color-mix(in srgb, var(--surface) 65%, transparent); /* 45 % g
   /* Skjul de store handlingsknapper — sticky bar erstatter dem på mobil */
   .btn-bid,
   .btn-contact { display: none; }
+  /* Også "Se hos {butik}": baren har Webshop-knappen, og ellers stod der to
+     orange knapper på skærmen på én gang (brugeren, 3. nov.). */
+  .btn-external-cta { display: none; }
 }
 .message-box { display: none; margin-top: 12px; }
 .msg-presets {
