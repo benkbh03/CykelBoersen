@@ -450,11 +450,11 @@
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  /* Top-padding 38px (ikke 22) reserverer en vertikal "lane" øverst hvor
-     fremhævet-badgen (absolut placeret) bor uden at skubbe logo/navn/adresse
-     nedad. Konsekvensen: logo + navn + adresse starter på samme y-position
-     på fremhævede og almindelige kort i samme grid. */
-  padding: 38px 20px 20px;
+  /* Top-padding er 20 px. Plads til fremhævet-badgen (absolut placeret)
+     gives kun når rækken af kort faktisk har et fremhævet kort; se reglen med
+     :has() lige nedenfor. Før stod 38 px på alle kort, og uden badge var det
+     et tomt felt øverst (3. nov.). */
+  padding: 20px;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -469,6 +469,9 @@
    bunden saa Google Maps-knapperne staar paa linje paa tvaers af kort med
    forskelligt indhold. Ingen omrokering, kun justering. */
 .dealer-card-foot { margin-top: auto; }
+/* Har gitteret et fremhævet kort, får alle kort badgens lane, så navn og
+   adresse stadig starter i samme højde på tværs af kortene. */
+.dealer-cards:has(.dealer-card--promoted) .dealer-card { padding-top: 38px; }
 .dealer-card:hover {
   box-shadow: var(--shadow-float);
   border-color: var(--forest);
