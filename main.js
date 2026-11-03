@@ -52,7 +52,7 @@ import { isPendingDealerProfile, blockIfPendingDealerProfile } from './js/dealer
 import { needsPassword, isPasswordRequired, openRequiredPasswordModal, clearPasswordRequired, showExpiredLinkHelp, MUST_SET_PASSWORD } from './js/required-password.js';
 import { createAuthActions } from './js/auth.js';
 import { createFilters } from './js/filters.js';
-import { createBikesList } from './js/bikes-list.js';
+import { createBikesList } from './js/bikes-list-v2.js';
 import { createMyProfile } from './js/my-profile.js';
 import { createReviews } from './js/reviews.js';
 import { createProfileEditPage } from './js/profile-edit-page.js';
@@ -61,7 +61,7 @@ import { createListingEdit } from './js/listing-edit.js';
 import { createCykelagentCta } from './js/cykelagent-cta.js';
 import { createFollowDealer } from './js/dealer-extras.js';
 import { applyAccessoryVisibility } from './js/accessory-visibility.js';
-import { initSmartFilter } from './js/smart-filter.js';
+import { initSmartFilter } from './js/smart-filter-v2.js';
 import { resetSmartRank } from './js/smart-rank.js';
 import { HOME_TITLE, HOME_DESC } from './js/seo-text.js';
 import { saveOwnProfileFields } from './js/own-profile.js';

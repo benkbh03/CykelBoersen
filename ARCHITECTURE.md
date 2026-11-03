@@ -44,7 +44,7 @@ This document maps responsibilities after the `main.js` split so humans and AI a
 - `js/dealer-guards.js`: pending dealer guards.
 - `js/auth.js`: login/register/forgot-password/Google OAuth handlers + login modal open/close.
 - `js/filters.js`: pill toggle, near-me GPS filter, sidebar filter pills, filter counts, sort, active-filter chip bar (cross-cuts state via getter/setter injection).
-- `js/bikes-list.js`: loadBikes, renderBikes, renderListingsEmptyState, searchBikes, loadBikesWithFilters — main listing grid loader and card renderer.
+- `js/bikes-list-v2.js` (omdøbt fra `bikes-list.js` 3. nov. 2026, den gamle re-eksporterer): loadBikes, renderBikes, renderListingsEmptyState, searchBikes, loadBikesWithFilters — main listing grid loader and card renderer.
 - `js/my-profile.js`: brugerens egne annoncer, gemte annoncer, gemte søgninger, handelshistorik, slet/fjern-actions + notifySavedSearches.
 - `js/reviews.js`: stjerne-picker, submitReview, rate-now-modal flow (open/close/submit).
 - `js/profile-modals.js`: user/dealer profile views (open/close/tabs), contact form, message send, achievements, filterByDealerCard.

@@ -3,13 +3,13 @@
 
    Edge-funktionen smart-filter gemmer søgningen anonymt og svarer med et
    logId. Siden kender først antallet af cykler når listen er hentet, så
-   her ventes på den næste filtrerede liste (bikes-list.js sender
+   her ventes på den næste filtrerede liste (bikes-list-v2.js sender
    'cb:filtered-count'), og antallet skrives på rækken via
    set_smart_search_result(). Søgninger med 0 cykler er dem vi læser, når
    instruktionen skal rettes.
 
    Fejler noget, sker der ingenting: rækken står bare uden antal. En cachet
-   bikes-list.js uden hændelsen giver det samme.
+   bikes-list.js (før omdøbningen) giver det samme.
 
    Ny fil med vilje: se cache-reglen i CLAUDE.md.
 ──────────────────────────────────────────────────────────────── */
