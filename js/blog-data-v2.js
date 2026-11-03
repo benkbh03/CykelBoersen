@@ -5,6 +5,195 @@
    ============================================================ */
 
 export const BLOG_ARTICLES = {
+  'hvilken-cykel-skal-jeg-vaelge': {
+    slug: 'hvilken-cykel-skal-jeg-vaelge',
+    title: 'Hvilken cykel skal jeg vælge? Guide til nybegyndere',
+    excerpt: 'Ny til cykler? Sådan finder du ud af om du skal have en racercykel, en gravelbike, en mountainbike, en citybike eller en el-cykel.',
+    metaDesc: 'Hvilken cykel skal jeg købe? Forskellen på racercykel, gravelbike, mountainbike, citybike og el-cykel forklaret for nybegyndere. Guide fra Cykelbørsen.',
+    category: 'Guides',
+    readTime: 7,
+    publishedAt: '2026-11-03',
+    body: `
+      <p>Det første spørgsmål er ikke mærke eller pris. Det er hvor du skal køre. En cykel der er bygget til asfalt, er hård og langsom i skoven, og en mountainbike føles tung på landevejen. Vælger du den rigtige type fra starten, kan næsten enhver model i den type gøre dig glad.</p>
+      <p>Svar på tre spørgsmål, før du kigger på annoncer:</p>
+      <ol>
+        <li><strong>Underlaget:</strong> asfalt, grusveje eller skovstier?</li>
+        <li><strong>Formålet:</strong> transport til arbejde, motion og træning, eller sjov i terrænet?</li>
+        <li><strong>Afstanden:</strong> under 5 km, 5-15 km eller længere ture?</li>
+      </ol>
+
+      <h2>Typerne side om side</h2>
+      <table>
+        <thead><tr><th>Type</th><th>Bedst til</th></tr></thead>
+        <tbody>
+          <tr><td>Racercykel</td><td>Fart på asfalt, motion og lange ture</td></tr>
+          <tr><td>Gravelbike</td><td>Asfalt og grus, pendling og ture på landet</td></tr>
+          <tr><td>Mountainbike</td><td>Skovstier, rødder og bakker</td></tr>
+          <tr><td>Citybike</td><td>Korte ture i byen, indkøb og opretsiddende komfort</td></tr>
+          <tr><td>El-cykel</td><td>Lange pendlerture, modvind og bakker uden at svede</td></tr>
+          <tr><td>Ladcykel</td><td>Børn og varer, i stedet for bil nummer to</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Racercykel: til asfalt og fart</h2>
+      <p>En racercykel har smalle dæk (typisk 25-32 mm), bøjlestyr og en fremoverbøjet siddestilling. Den er let og hurtig, og den er bygget til at køre langt på asfalt. Til gengæld er den ubehagelig på grus og brosten, og der er sjældent plads til skærme og bagagebærer.</p>
+      <p>Vælg en racer hvis du vil træne, køre med en klub eller tage lange ture i weekenden. Skal cyklen også bruges til pendling i al slags vejr, så kig på gravel i stedet.</p>
+      <p><a href="/racercykler/" onclick="event.preventDefault();navigateTo('/racercykler')">Se racercykler til salg</a></p>
+
+      <h2>Gravelbike: den alsidige</h2>
+      <p>En gravelbike ligner en racer med bøjlestyr, men har bredere dæk (typisk 35-45 mm), en mere afslappet geometri og som regel skivebremser. Den kører næsten lige så let på asfalt og kan klare grusveje, markveje og lette skovstier. Mange har huller til skærme og bagagebærer.</p>
+      <p>Er du i tvivl mellem racer og gravel, er gravel det sikre valg for de fleste nybegyndere. Den kan det meste, og du kan skifte til smallere dæk hvis du mest kører på vej.</p>
+      <p><a href="/gravelbikes/" onclick="event.preventDefault();navigateTo('/gravelbikes')">Se gravelbikes til salg</a></p>
+
+      <h2>Mountainbike: til skov og terræn</h2>
+      <p>En mountainbike (MTB) har brede knobbede dæk, lige styr, kraftige skivebremser og affjedring. Den er lavet til stier med rødder, sten og stejle bakker. På asfalt er den tung og langsom, så den er et dårligt valg som pendlercykel.</p>
+      <p>Det vigtigste valg på en MTB er affjedringen: kun foran (hardtail) eller både foran og bagpå (fully). Det har vi skrevet en særskilt guide om: <a href="/blog/mtb-affjedring-guide/" onclick="event.preventDefault();navigateTo('/blog/mtb-affjedring-guide')">hardtail eller fully</a>.</p>
+      <p><a href="/mountainbikes/" onclick="event.preventDefault();navigateTo('/mountainbikes')">Se mountainbikes til salg</a></p>
+
+      <h2>Citybike: til hverdagen i byen</h2>
+      <p>En citybike har opretsiddende stilling, skærme, kædeskærm, lygter og ofte navgear med 3-8 gear, som næsten ikke kræver vedligehold. Den er tung, men den er bygget til at stå ude og blive brugt hver dag. Til ture under 5 km i byen er den svær at slå.</p>
+      <p>Mellemvejen er en hybridcykel (også kaldet trekking- eller fitnesscykel): lige styr, lettere stel og flere gear. Den passer til længere pendlerture, hvor en citybike bliver for tung.</p>
+      <p><a href="/citybikes/" onclick="event.preventDefault();navigateTo('/citybikes')">Se citybikes til salg</a></p>
+
+      <h2>El-cykel: når afstanden er lang</h2>
+      <p>En el-cykel hjælper dig op til 25 km/t, når du træder. Det gør 15-20 km til arbejde realistisk hver dag, også i modvind. Prisen er vægt (typisk 22-28 kg), en højere pris og et batteri, der slides og en dag skal skiftes.</p>
+      <p>El-cykler findes som citybike, MTB, gravel og ladcykel. Vælg typen først efter underlaget, og vælg så om den skal have motor. Køber du brugt, så læs vores <a href="/blog/koeb-brugt-el-cykel/" onclick="event.preventDefault();navigateTo('/blog/koeb-brugt-el-cykel')">7 ting at tjekke ved en brugt el-cykel</a>.</p>
+      <p><a href="/el-cykler/" onclick="event.preventDefault();navigateTo('/el-cykler')">Se el-cykler til salg</a></p>
+
+      <h2>Ladcykel: to eller tre hjul</h2>
+      <p>En ladcykel på to hjul (som Bullitt eller Omnium) er smallere, hurtigere og kører som en almindelig cykel, når man har vænnet sig til den. En trehjulet ladcykel (som Christiania eller Babboe Curve) står selv, når du holder stille, og føles tryg med børn i kassen, men den er bredere og kræver mere plads at parkere. Mange ladcykler i dag har el-motor.</p>
+      <p><a href="/ladcykler/" onclick="event.preventDefault();navigateTo('/ladcykler')">Se ladcykler til salg</a></p>
+
+      <h2>Når du har valgt type</h2>
+      <p>Næste skridt er størrelsen. En god cykel i forkert størrelse bliver ubehagelig at køre på, så brug vores <a href="/stelstoerrelse-guide/" onclick="event.preventDefault();navigateTo('/stelstoerrelse-guide')">stelstørrelse-finder</a>. Køber du brugt, så gå cyklen igennem med vores <a href="/guide/tjek-brugt-cykel/" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')">tjekliste til brugte cykler</a>, før du betaler.</p>
+      <p>Brugt er en god vej ind for en nybegynder. Du får mere cykel for pengene, og finder du ud af at typen ikke passer, kan du sælge den igen uden at tabe ret meget. Kommer den rigtige cykel ikke op med det samme, så <a href="/cykelagenter/" onclick="event.preventDefault();navigateTo('/cykelagenter')">opret en Cykelagent</a>, så får du en mail, når den bliver sat til salg.</p>
+    `,
+  },
+
+  'shimano-sram-gear-forklaret': {
+    slug: 'shimano-sram-gear-forklaret',
+    title: 'Shimano og SRAM gear forklaret: hvad er pengene værd?',
+    excerpt: 'Hvad betyder "Shimano 105" eller "SRAM GX" i en annonce, og er prisforskellen pengene værd? Gearniveauerne forklaret for nybegyndere.',
+    metaDesc: 'Shimano og SRAM gearniveauer forklaret: Claris, Tiagra, 105, Ultegra, Dura-Ace, GRX, Deore, XT og SRAM Apex, Rival, Force, Red, GX. Hvad er pengene værd?',
+    category: 'Guides',
+    readTime: 8,
+    publishedAt: '2026-11-03',
+    body: `
+      <p>I næsten hver annonce på en racercykel, gravelbike eller mountainbike står der et navn som "Shimano 105", "SRAM Rival" eller "Deore". Det er gruppesættet: gearskifter, bagskifter, kranksæt, kassette, kæde og ofte bremserne. Gruppesættet er den hurtigste måde at bedømme hvilket niveau en cykel ligger på, også når du ikke kender mærket.</p>
+      <p>Kort sagt: jo højere niveau, jo lettere og mere præcist. Men forskellen er størst i bunden. Springet fra det billigste niveau til mellemklassen mærker alle. Springet fra mellemklassen til toppen handler mest om vægt.</p>
+
+      <h2>Shimano til racer og gravel</h2>
+      <p>Fra billigst til dyrest:</p>
+      <table>
+        <thead><tr><th>Gruppe</th><th>Hvad det betyder for dig</th></tr></thead>
+        <tbody>
+          <tr><td>Claris</td><td>8 gear bagpå. Begyndercykler og pendling</td></tr>
+          <tr><td>Sora</td><td>9 gear. Lidt bedre, stadig begynderniveau</td></tr>
+          <tr><td>Tiagra</td><td>10 gear. God til motion og pendling</td></tr>
+          <tr><td>105</td><td>11 eller 12 gear. Det niveau de fleste motionister vælger</td></tr>
+          <tr><td>Ultegra</td><td>Som 105, men lettere og mere forfinet</td></tr>
+          <tr><td>Dura-Ace</td><td>Shimanos topgruppe til konkurrence</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Shimano 105 er det sikre valg.</strong> Det skifter næsten lige så godt som Ultegra, og reservedele er billige og lette at skaffe. Ultegra og Dura-Ace er bedre, men du betaler mest for færre gram. Til gravel har Shimano en særlig gruppe, <strong>GRX</strong>, med lavere gearing til grus og bakker.</p>
+      <p>Står der <strong>Di2</strong>, er gearskiftet elektronisk: knapperne sender et signal, og en motor flytter kæden. Det skifter præcist hver gang, men batteriet skal lades, og reparationer er dyrere.</p>
+
+      <h2>SRAM til racer og gravel</h2>
+      <table>
+        <thead><tr><th>Gruppe</th><th>Svarer omtrent til</th></tr></thead>
+        <tbody>
+          <tr><td>Apex</td><td>Tiagra til 105. Ofte på gravel</td></tr>
+          <tr><td>Rival</td><td>105</td></tr>
+          <tr><td>Force</td><td>Ultegra</td></tr>
+          <tr><td>Red</td><td>Dura-Ace</td></tr>
+        </tbody>
+      </table>
+      <p><strong>AXS</strong> betyder trådløst elektronisk gearskifte, SRAMs svar på Di2. <strong>XPLR</strong> er SRAMs gravel-udgave: én klinge foran og en bred kassette bagpå. Ældre mekaniske SRAM-grupper hedder fx "Rival 22" eller "Force 22", hvor 22 betyder 2 klinger foran og 11 bagpå.</p>
+      <p>Campagnolo er det tredje store mærke. Til gravel er <strong>Ekar</strong> med 13 gear det mest udbredte.</p>
+
+      <h2>Shimano til mountainbike</h2>
+      <table>
+        <thead><tr><th>Gruppe</th><th>Hvad det betyder for dig</th></tr></thead>
+        <tbody>
+          <tr><td>Tourney, Altus, Acera</td><td>Billige cykler og hybridcykler. Ikke til rigtig terrænkørsel</td></tr>
+          <tr><td>Alivio, Cues</td><td>Robust begynderniveau</td></tr>
+          <tr><td>Deore</td><td>Første niveau der holder til stier. Godt sted at starte</td></tr>
+          <tr><td>SLX</td><td>Lettere og skarpere end Deore</td></tr>
+          <tr><td>XT</td><td>Det foretrukne valg til seriøs kørsel</td></tr>
+          <tr><td>XTR</td><td>Topgruppe til konkurrence</td></tr>
+        </tbody>
+      </table>
+      <p>Skal mountainbiken bruges på stier i skoven, så gå efter <strong>Deore eller bedre</strong>. Under Deore er delene bygget til cykelsti og grusvej.</p>
+
+      <h2>SRAM til mountainbike</h2>
+      <p>SRAMs MTB-grupper hedder Eagle og har 12 gear. Fra billigst til dyrest: <strong>SX, NX, GX, X01 og XX1</strong>. NX svarer omtrent til Deore, GX til SLX og XT, og X01 og XX1 til XTR. Nyere cykler har <strong>Transmission</strong> (T-Type), hvor bagskifteren sidder direkte på rammen uden et skifteøje. Den er meget robust, men kræver en ramme der er lavet til den.</p>
+
+      <h2>Sådan bruger du det, når du køber brugt</h2>
+      <ul>
+        <li><strong>Tjek hele gruppen, ikke kun bagskifteren.</strong> En cykel kan have en Ultegra-bagskifter og resten i 105 eller billigere. Annoncen nævner ofte den dyreste del. Kig på gearhåndtagene og kranksættet.</li>
+        <li><strong>Antal gear siger noget om alder.</strong> 11 gear på 105 var standard fra 2014 til 2022, 12 gear er nyere. Reservedele til ældre grupper findes stadig, men de bliver sværere at finde med tiden.</li>
+        <li><strong>Slid koster mest på de dyre niveauer.</strong> En ny kassette og kæde til Dura-Ace koster mange gange mere end til Tiagra. Tjek slid på kæden, før du betaler.</li>
+        <li><strong>En brugt cykel med 105 slår ofte en ny med Claris</strong> til samme pris. Det er den største fordel ved at købe brugt.</li>
+      </ul>
+      <p>På forsiden af Cykelbørsen kan du filtrere på gruppesæt, fx Shimano 105, Ultegra, GRX, Deore og XT eller SRAM Rival, Force og Apex. Se <a href="/racercykler/" onclick="event.preventDefault();navigateTo('/racercykler')">racercykler</a>, <a href="/gravelbikes/" onclick="event.preventDefault();navigateTo('/gravelbikes')">gravelbikes</a> eller <a href="/mountainbikes/" onclick="event.preventDefault();navigateTo('/mountainbikes')">mountainbikes</a> til salg, eller gå igennem en brugt cykel med vores <a href="/guide/tjek-brugt-cykel/" onclick="event.preventDefault();navigateTo('/guide/tjek-brugt-cykel')">tjekliste</a>.</p>
+    `,
+  },
+
+  'find-den-rigtige-sadel': {
+    slug: 'find-den-rigtige-sadel',
+    title: 'Find den rigtige sadel: mål siddeknogler og sadelhøjde',
+    excerpt: 'Ondt bagi efter en tur skyldes oftest en sadel i forkert bredde eller højde. Sådan måler du begge dele derhjemme med et stykke pap og et målebånd.',
+    metaDesc: 'Hvilken sadelbredde passer mig? Mål dine siddeknogler med et stykke pap og find den rigtige sadelhøjde. Til racer, gravel, MTB og citybike.',
+    category: 'Guides',
+    readTime: 6,
+    publishedAt: '2026-11-03',
+    body: `
+      <p>En sadel skal ikke være blød. Den skal være bred nok til at dine to siddeknogler hviler på den. Er den for smal, sidder du på det bløde væv imellem knoglerne, og det gør ondt efter en halv time. Er den for bred, gnaver den på indersiden af lårene. Bredden kan du måle derhjemme på fem minutter.</p>
+
+      <h2>Mål dine siddeknogler med et stykke pap</h2>
+      <p>Du skal bruge et stykke bølgepap (en papkasse), en blyant og en lineal.</p>
+      <ol>
+        <li>Læg pappet på en lav stol eller et trappetrin uden hynde. Et blødt underlag som en tæppebelagt trappe giver det tydeligste aftryk.</li>
+        <li>Sæt dig på pappet med bukser på, løft fødderne fra gulvet og læn dig lidt frem, som du sidder på cyklen. Bliv siddende et halvt minut.</li>
+        <li>Rejs dig. Der er nu to fordybninger i pappet. Er de svære at se, så skrab let hen over med blyanten.</li>
+        <li>Sæt et kryds midt i hver fordybning, og mål afstanden mellem de to kryds i millimeter.</li>
+      </ol>
+      <p>De fleste voksne ligger mellem 100 og 160 mm. Mål et par gange og brug gennemsnittet. Kropsstørrelse og køn siger mindre om tallet, end man skulle tro, så mål hellere end at gætte.</p>
+
+      <h2>Sådan finder du sadelbredden</h2>
+      <p>Sadlen skal være bredere end afstanden mellem siddeknoglerne. Hvor meget bredere afhænger af, hvordan du sidder. Jo mere du læner dig frem, jo mere ruller bækkenet fremad, og jo smallere en sadel kan du bruge.</p>
+      <table>
+        <thead><tr><th>Cykel og siddestilling</th><th>Læg til dit mål</th></tr></thead>
+        <tbody>
+          <tr><td>Racer, lav og fremoverbøjet</td><td>ca. 20 mm</td></tr>
+          <tr><td>Racer og gravel, mere oprejst</td><td>ca. 25-30 mm</td></tr>
+          <tr><td>Mountainbike</td><td>ca. 30 mm</td></tr>
+          <tr><td>Citybike og hybrid, oprejst</td><td>ca. 40 mm eller mere</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Eksempel:</strong> du måler 125 mm og kører gravel. 125 + 25-30 giver en sadel på ca. 150-155 mm. Mange mærker laver sadler i faste bredder, fx 130, 143, 155 og 168 mm, så du vælger den nærmeste.</p>
+      <p>Tabellen er et udgangspunkt, ikke en lov. Mange cykelforhandlere har en måleplade, og nogle har testsadler, du kan låne.</p>
+
+      <h2>Sadelhøjden: hælmetoden</h2>
+      <p>En sadel i den rigtige bredde hjælper ikke, hvis den sidder for lavt. Så belaster du knæene, og du bruger mere kraft end nødvendigt. Den nemmeste måde at finde højden:</p>
+      <ol>
+        <li>Sæt dig på cyklen i de sko, du plejer at køre i. Støt dig til en væg.</li>
+        <li>Sæt hælen på pedalen og træd den helt ned i bunden.</li>
+        <li>Benet skal nu være helt strakt, uden at hoften vipper til siden.</li>
+        <li>Når du kører med fodballen på pedalen, får du automatisk en lille bøjning i knæet. Det er den, du vil have.</li>
+      </ol>
+      <p>Vil du regne den ud, så mål din skridtlængde: stå op ad en væg uden sko med en bog klemt op mellem benene, og mål fra gulvet til bogens overkant. Gang med 0,883. Det giver afstanden fra midten af krankakslen til toppen af sadlen. Skridtlængde 82 cm giver fx ca. 72,5 cm.</p>
+      <p>På en citybike, hvor du ofte stopper og vil kunne nå jorden, kan sadlen godt sidde et par centimeter lavere. Justér højst en halv centimeter ad gangen, og kør et par ture imellem.</p>
+
+      <h2>Vinkel og placering</h2>
+      <p>Sadlen skal som udgangspunkt sidde vandret. Læg et vaterpas eller en lige bog oven på den. Glider du frem mod styret, sidder spidsen for lavt. Trykker det foran, så vip spidsen en anelse ned, højst et par grader.</p>
+
+      <h2>Køber du brugt</h2>
+      <p>En sadel er en af de billigste dele at skifte. Lad ikke en forkert sadel afgøre, om du køber en ellers god brugt cykel. Det vigtige er, at stellet passer, og det tjekker du med vores <a href="/stelstoerrelse-guide/" onclick="event.preventDefault();navigateTo('/stelstoerrelse-guide')">stelstørrelse-finder</a>. Tjek til gengæld at sadelpinden kan komme op i den højde, du skal bruge, og at den ikke sidder fast. En sadelpind der er rustet fast i stellet, kan være svær at få løs.</p>
+      <p>Er du ny til cykler og ikke sikker på, hvilken type du skal have, så start med guiden <a href="/blog/hvilken-cykel-skal-jeg-vaelge/" onclick="event.preventDefault();navigateTo('/blog/hvilken-cykel-skal-jeg-vaelge')">hvilken cykel skal jeg vælge</a>.</p>
+    `,
+  },
+
   'mtb-affjedring-guide': {
     slug: 'mtb-affjedring-guide',
     title: 'Hardtail eller fully? Vælg den rigtige affjedring til din mountainbike',
