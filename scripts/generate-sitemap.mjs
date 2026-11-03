@@ -54,6 +54,9 @@ const CATEGORY_SLUGS = [
 ];
 
 const BLOG_SLUGS = [
+  'hvilken-cykel-skal-jeg-vaelge',
+  'shimano-sram-gear-forklaret',
+  'find-den-rigtige-sadel',
   'mtb-affjedring-guide',
   'undgaa-stjaalet-cykel',
   'cykelstoerrelse-guide',
