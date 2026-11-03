@@ -6,6 +6,7 @@ import { SERVICES, openStatus, buildServicesDisplay } from './dealer-extras.js';
 import { validatePassword, iconDealer, iconStar, iconMail } from './utils.js';
 import { iconSearch } from './ui-icons.js';
 import { DEALERS_DESC, BECOME_DEALER_TITLE, BECOME_DEALER_DESC } from './seo-text.js';
+import { dealerRestListHtml, dealerNameWithTick } from './dealer-rest-list.js';
 
 export function createDealersPage({
   supabase,
@@ -34,11 +35,10 @@ export function createDealersPage({
 }) {
   let _dealersPageData = [];
   let _dealerGPSActive = false;
-  // "Se alle forhandlere"-toggle. Vises kun de første DEALERS_INITIAL_LIMIT
-  // forhandlere indtil brugeren klikker knappen. Forhindrer at siden bliver
-  // for lang og overvældende når der er mange forhandlere.
+  // Brugtes af den gamle "Se alle forhandlere"-knap (fjernet 3. nov.: med
+  // fem forhandlere gemte den to). expandAllDealers står tilbage, fordi en
+  // cachet main.js stadig kan eksportere den til window.
   let _dealersShowAll = false;
-  const DEALERS_INITIAL_LIMIT = 3;
   // Servicefiltrene vises først fra dette antal forhandlere.
   const DEALER_FILTER_MIN = 10;
   let _dealerGPSCoords = null;
@@ -138,6 +138,7 @@ export function createDealersPage({
       <div id="dealers-page-grid" class="dealer-cards">
         <p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Henter forhandlere...</p>
       </div>
+      <div id="dealers-page-rest" class="dealer-rest" hidden></div>
     </div>`;
 
     const [dealerRes, bikeRes, reviewRes, buyRes] = await Promise.all([
@@ -307,29 +308,27 @@ export function createDealersPage({
         );
 
     grid.className = 'dealer-cards';
+    const restEl = document.getElementById('dealers-page-rest');
+    // Den gamle "Se alle forhandlere"-knap kan stå tilbage fra en cachet udgave
+    const oldBtn = document.getElementById('see-all-dealers-btn');
+    if (oldBtn) oldBtn.remove();
     if (filtered.length === 0) {
       grid.innerHTML = '<p style="color:var(--muted);padding:40px 0;text-align:center;grid-column:1/-1;">Ingen forhandlere matcher de valgte services.</p>';
-      // Fjern evt. "Se alle"-knap fra forrige render
-      const oldBtn = document.getElementById('see-all-dealers-btn');
-      if (oldBtn) oldBtn.remove();
+      if (restEl) { restEl.innerHTML = ''; restEl.hidden = true; }
       return;
     }
 
-    // Begræns til de første DEALERS_INITIAL_LIMIT indtil brugeren har klikket "Se alle"
-    const visible = _dealersShowAll ? filtered : filtered.slice(0, DEALERS_INITIAL_LIMIT);
-    grid.innerHTML = visible.map(({ dealer, bikeCount, avgRating, ratingCount, distKm, buying }) =>
+    // Fulde kort til forhandlere med cykler; resten som én linje hver under
+    // kortene. Har ingen cykler, får alle kort, så siden ikke kun er en liste.
+    const stocked = filtered.filter(d => d.bikeCount > 0);
+    const asCards = stocked.length ? stocked : filtered;
+    const asRows  = stocked.length ? filtered.filter(d => d.bikeCount === 0) : [];
+    grid.innerHTML = asCards.map(({ dealer, bikeCount, avgRating, ratingCount, distKm, buying }) =>
       buildDealerCardFull(dealer, bikeCount, avgRating, ratingCount, distKm, buying)
     ).join('');
-
-    // Tilføj/opdater "Se alle forhandlere (X)"-knap hvis der er flere end limit
-    const oldBtn = document.getElementById('see-all-dealers-btn');
-    if (oldBtn) oldBtn.remove();
-    if (!_dealersShowAll && filtered.length > DEALERS_INITIAL_LIMIT) {
-      const remaining = filtered.length - DEALERS_INITIAL_LIMIT;
-      const btn = document.createElement('div');
-      btn.id = 'see-all-dealers-btn';
-      btn.innerHTML = `<button onclick="expandAllDealers()" class="see-all-dealers-cta">Se alle forhandlere (${remaining} flere)</button>`;
-      grid.after(btn);
+    if (restEl) {
+      restEl.innerHTML = dealerRestListHtml(asRows, esc);
+      restEl.hidden = asRows.length === 0;
     }
   }
 
@@ -412,7 +411,7 @@ export function createDealersPage({
         ${logoHtml}
         ${distHtml}
       </div>` : ''}
-      <div class="dealer-name">${esc(displayName)} <span class="dealer-verified-tick" title="Verificeret forhandler">✓</span></div>
+      <div class="dealer-name">${dealerNameWithTick(displayName, esc)}</div>
       ${locationText ? `<div class="dealer-city"><svg class="pin-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg><span>${esc(locationText)}</span></div>` : ''}
       ${openHtml}
       ${starsHtml}

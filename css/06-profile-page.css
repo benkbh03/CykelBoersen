@@ -3253,6 +3253,29 @@ margin: 0; color: var(--charcoal); line-height: 1.15;
   grid-template-columns: repeat(3, 1fr);
 }
 .dealers-page .dealer-cards > * { min-width: 0; }
+/* Sidste ord i navnet og fluebenet brydes ikke fra hinanden (3. nov.:
+   fluebenet stod alene på egen linje under "Lindebjerg A/S"). */
+.dealer-name-end { white-space: nowrap; }
+
+/* Forhandlere uden cykler: én linje hver under kortene (3. nov.). */
+.dealer-rest { margin-top: var(--space-8); max-width: 640px; }
+.dealer-rest[hidden] { display: none !important; }
+.dealer-rest-title {
+  font-size: var(--text-base); font-weight: var(--weight-semibold);
+  color: var(--charcoal); margin: 0;
+}
+.dealer-rest-sub { font-size: var(--text-sm); color: var(--text-muted); margin: var(--space-1) 0 var(--space-3); }
+.dealer-rest-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.dealer-rest-list li { border-bottom: 1px solid var(--border); }
+.dealer-rest-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-3) var(--space-1);
+  color: var(--charcoal); text-decoration: none;
+  transition: background 0.15s;
+}
+.dealer-rest-row:hover { background: var(--surface-2); }
+.dealer-rest-name { font-size: var(--text-sm); font-weight: var(--weight-semibold); min-width: 0; }
+.dealer-rest-city { font-size: var(--text-sm); color: var(--text-muted); flex-shrink: 0; }
 /* Hvid med kant (30. okt.): "Sæt til salg" i headeren er sidens orange knap. */
 .see-all-dealers-cta {
   display: block;
