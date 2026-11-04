@@ -67,7 +67,18 @@ async function fetchSupabase(path) {
   return res.json();
 }
 
+// Erstat præcis det mønster der skal ændres, eller stop buildet. En
+// skabelonændring i index.html må ikke kunne gøre prerenderen virkningsløs
+// uden at nogen opdager det.
+function mustReplace(html, pattern, replacement, label) {
+  if (!pattern.test(html)) {
+    throw new Error(`prerender: fandt ikke ${label} i index.html. Er markup ændret?`);
+  }
+  return html.replace(pattern, replacement);
+}
+
 /* ---------- Escape-hjælpere ---------- */
+
 function escHtml(s) {
   return String(s ?? '')
     .replace(/&/g, '&amp;')
@@ -249,7 +260,7 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
   html = html.replace('</head>', `  ${ldScripts}\n</head>`);
 
   // Vis detalje-layout, skjul forside — matcher showDetailView()
-  html = html.replace('<main id="landing-layout">', '<main id="landing-layout" style="display:none;">');
+  html = mustReplace(html, /<main id="landing-layout"([^>]*)>/, '<main id="landing-layout"$1 style="display:none;">', 'landing-layout');
   // Hero'en ligger i #landing-layout, som er skjult her. Uden denne linje
   // henter hver mærke-, blog- og annonceside et hero-foto den ikke viser.
   html = html.replace(/\s*<link rel="preload" href="\/hero[^"]*" as="image"[^>]*>/, '');
@@ -257,13 +268,21 @@ function buildPage({ title, description, canonicalPath, jsonldBlocks, contentHtm
   // og den generiske kom først i den rå HTML, før sidens egen overskrift.
   // Klassen bevares: CSS'en og main.js finder elementet via den, ikke via tagget.
   html = html.replace(/<h1 class="search-hero-title">([\s\S]*?)<\/h1>/, '<p class="search-hero-title">$1</p>');
-  html = html.replace(
-    '<div id="page-layout" style="display:none;">',
-    '<div id="page-layout" style="display:block;">'
+  // Tidligere en ren strengerstatning. Da #page-layout fik role="main"
+  // (PR #939, 30. okt.), holdt den tavst op med at matche, og alt prerendret
+  // indhold stod skjult med display:none på alle sider i fem dage.
+  // mustReplace kaster en fejl i stedet, så buildet stopper.
+  html = mustReplace(
+    html,
+    /<div id="page-layout"([^>]*?) style="display:none;">/,
+    '<div id="page-layout"$1 style="display:block;">',
+    'page-layout',
   );
-  html = html.replace(
-    '<section id="detail-view"></section>',
-    `<section id="detail-view">${contentHtml}</section>`
+  html = mustReplace(
+    html,
+    /<section id="detail-view"><\/section>/,
+    () => `<section id="detail-view">${contentHtml}</section>`,
+    'detail-view',
   );
 
   return html;
