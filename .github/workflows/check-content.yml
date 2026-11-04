@@ -61,6 +61,24 @@ jobs:
           fi
           echo "Cache-versionen er ikke rørt."
 
+  # Safari før iOS 16.4 (fx iPhone 6s/7, højst iOS 15) kan ikke læse regulære
+  # udtryk med lookbehind. Ét af dem i et statisk importeret modul stopper
+  # HELE siden, uden at fejlloggen opdager det (4. nov.: error-log.js).
+  safari15-syntax:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ingen lookbehind i frontend-JS
+        run: |
+          bad=$(grep -rnE '\(\?<[=!]' js main.js index.html partials || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Lookbehind (?<= / (?<! virker ikke i Safari før iOS 16.4, og hele siden stopper. Skriv udtrykket om."
+            echo "$bad"
+            exit 1
+          fi
+          echo "Ingen lookbehind."
+
   # Tre skriftvægte: --weight-regular (400), --weight-semibold (600) og
   # --weight-heavy (800). Archivo er en variabel font, så 500 og 700 tegnes
   # som egne vægte, og ca. 190 af dem gjorde siden uensartet (ryddet 30. okt.).

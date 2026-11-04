@@ -32,7 +32,7 @@ import { hideUnavailableFilterValues, AVAILABILITY_COLS } from './js/filter-avai
 import { recordActiveFilters, lastActiveFilter } from './js/filter-history.js';
 import { writeFilterUrl, hasFilterParams, applyUrlToControls, filterArgsToQuery, currentUrlFilterQuery, readUrlFilterArgs } from './js/filter-url.js';
 import { rentalAllowed, applyFeatureFlags } from './js/feature-flags.js';
-import { initErrorLog } from './js/error-log.js';
+import { initErrorLog } from './js/error-log-v2.js';
 import { initNavSearch, toggleNavSearch, submitNavSearch as _submitNavSearch } from './js/nav-search.js';
 import { openFooterModal as _openFooterModal, closeFooterModal as _closeFooterModal, submitContactForm as _submitContactForm } from './js/footer-actions.js';
 import { attachAddressAutocomplete, attachCityAutocomplete, readDawaData } from './js/adresse-autocomplete.js';
@@ -3553,7 +3553,7 @@ const _ensureListingOutcomes = lazyCtrl(
 const loadListingOutcomes = lazyMethod(_ensureListingOutcomes, 'loadListingOutcomes');
 
 const _ensureErrorLog = lazyCtrl(
-  () => import(`./js/error-log.js?v=${ASSET_VERSION}`),
+  () => import(`./js/error-log-v2.js?v=${ASSET_VERSION}`),
   'createErrorLog',
   () => ({ supabase, esc, retryHTML }),
 );
