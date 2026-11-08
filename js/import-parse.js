@@ -97,16 +97,18 @@ const GROUPSETS = [
 const MOTOR_BRANDS = ['Bosch', 'Shimano', 'Promovec', 'Yamaha', 'Bafang', 'Mahle', 'Brose', 'Fazua'];
 
 /* Stelstørrelse i cm → den bucket sælg-formularen bruger. Ikke et gæt:
-   grænserne står i selve option-labelen ("M (53–56 cm)"), så 56 cm ER M
+   grænserne står i selve option-labelen ("M (52–55 cm)"), så 55 cm ER M
    efter appens egen definition. Opslaget sikrer bare at tallet og
    bogstavet ikke kommer til at modsige hinanden på annoncen. */
+const NO_LETTER_FROM_CM = ['Mountainbike', 'Børnecykel', 'Ladcykel'];
+
 function sizeBucketFromCm(cm) {
   if (!Number.isFinite(cm)) return null;
-  if (cm <= 48) return 'XS (44–48 cm)';
-  if (cm <= 52) return 'S (49–52 cm)';
-  if (cm <= 56) return 'M (53–56 cm)';
-  if (cm <= 60) return 'L (57–60 cm)';
-  return 'XL (61+ cm)';
+  if (cm <= 47) return 'XS (44–47 cm)';
+  if (cm <= 51) return 'S (48–51 cm)';
+  if (cm <= 55) return 'M (52–55 cm)';
+  if (cm <= 58) return 'L (56–58 cm)';
+  return 'XL (59+ cm)';
 }
 
 function matchFirst(rules, text) {
@@ -229,7 +231,9 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
     const n = Number(sm[1]);
     if (n >= 38 && n <= 70) {
       out.size_cm = n;
-      const bucket = sizeBucketFromCm(n);
+      // Mountainbike-, børne- og ladcykelstel måles anderledes: der ville
+      // bogstavet være et gæt, så kun cm gemmes.
+      const bucket = NO_LETTER_FROM_CM.includes(out.type) ? null : sizeBucketFromCm(n);
       if (bucket) out.size = bucket;
     }
   } else {
@@ -238,7 +242,7 @@ export function parseImportedListing({ title = '', description = '' } = {}) {
     const lm = spec.match(/\b(?:st(?:ø|o)?r(?:relse)?\.?)\s*[:\s]\s*(XS|S|M|L|XL)\b/i);
     if (lm) {
       const letter = lm[1].toUpperCase();
-      const bucket = ['XS (44–48 cm)', 'S (49–52 cm)', 'M (53–56 cm)', 'L (57–60 cm)', 'XL (61+ cm)']
+      const bucket = ['XS (44–47 cm)', 'S (48–51 cm)', 'M (52–55 cm)', 'L (56–58 cm)', 'XL (59+ cm)']
         .find(o => o.split(' ')[0] === letter);
       if (bucket) out.size = bucket;
     }

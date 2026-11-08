@@ -421,11 +421,11 @@ export function createBikeDetail({
       })()}
       ${(b.size || b.size_cm || b.wheel_size) ? (() => {
         const heightMap = {
-          'XS (44–48 cm)': '148–162 cm',
-          'S (49–52 cm)':  '163–170 cm',
-          'M (53–56 cm)':  '171–178 cm',
-          'L (57–60 cm)':  '179–188 cm',
-          'XL (61+ cm)':   '189+ cm',
+          'XS (44–47 cm)': '150–159 cm',
+          'S (48–51 cm)':  '160–167 cm',
+          'M (52–55 cm)':  '168–175 cm',
+          'L (56–58 cm)':  '176–184 cm',
+          'XL (59+ cm)':   '185+ cm',
         };
         /* Kun cm oplyst (fx fra forhandler-feedet): slå højden op ud fra de
            samme intervaller som størrelsesvalget i salgsflowet. Gælder ikke
@@ -434,11 +434,11 @@ export function createBikeDetail({
         const cmHeight = (cm) => {
           if (!cm || ['Mountainbike', 'Børnecykel', 'Ladcykel'].includes(b.type)) return null;
           if (cm < 44 || cm > 66) return null;
-          if (cm <= 48) return heightMap['XS (44–48 cm)'];
-          if (cm <= 52) return heightMap['S (49–52 cm)'];
-          if (cm <= 56) return heightMap['M (53–56 cm)'];
-          if (cm <= 60) return heightMap['L (57–60 cm)'];
-          return heightMap['XL (61+ cm)'];
+          if (cm <= 47) return heightMap['XS (44–47 cm)'];
+          if (cm <= 51) return heightMap['S (48–51 cm)'];
+          if (cm <= 55) return heightMap['M (52–55 cm)'];
+          if (cm <= 58) return heightMap['L (56–58 cm)'];
+          return heightMap['XL (59+ cm)'];
         };
         const heightRange = (b.size && heightMap[b.size]) || cmHeight(Number(b.size_cm)) || null;
         return `

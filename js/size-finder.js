@@ -6,11 +6,11 @@
 
 // Højde → stelstørrelse-range (fallback hvis benlængde ikke kendes)
 const HEIGHT_RANGES = [
-  { min: 148, max: 162, size: 'XS', label: 'XS (44–48 cm)', cmRange: [44, 48] },
-  { min: 163, max: 170, size: 'S',  label: 'S (49–52 cm)',  cmRange: [49, 52] },
-  { min: 171, max: 178, size: 'M',  label: 'M (53–56 cm)',  cmRange: [53, 56] },
-  { min: 179, max: 188, size: 'L',  label: 'L (57–60 cm)',  cmRange: [57, 60] },
-  { min: 189, max: 220, size: 'XL', label: 'XL (61+ cm)',   cmRange: [61, 65] },
+  { min: 140, max: 159, size: 'XS', label: 'XS (44–47 cm)', cmRange: [44, 47] },
+  { min: 160, max: 167, size: 'S',  label: 'S (48–51 cm)',  cmRange: [48, 51] },
+  { min: 168, max: 175, size: 'M',  label: 'M (52–55 cm)',  cmRange: [52, 55] },
+  { min: 176, max: 184, size: 'L',  label: 'L (56–58 cm)',  cmRange: [56, 58] },
+  { min: 185, max: 220, size: 'XL', label: 'XL (59+ cm)',   cmRange: [59, 63] },
 ];
 
 // Inseam-multiplier pr. cykeltype (industristandard ratios)
