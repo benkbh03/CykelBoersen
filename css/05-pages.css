@@ -511,6 +511,9 @@
 }
 /* Kontrol-række i listings-header (Filtre + view-toggles + sortering). */
 .listings-controls { display: flex; gap: var(--space-2); align-items: center; }
+/* Sortering i samme højde som knapperne ved siden af (38 px, 8. nov.).
+   Mobil sætter selv 44 px længere nede, sammen med Filtre-knappen. */
+.listings-controls .sort-select { height: 38px; box-sizing: border-box; padding-top: 0; padding-bottom: 0; }
 /* "Filtre"-knappen vises kun på mobil (sidebar er synlig inline på desktop). */
 .btn-mobile-filter {
   display: none; background: var(--cream); border: 1.5px solid var(--border);
