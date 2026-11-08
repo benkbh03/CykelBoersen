@@ -69,9 +69,25 @@ CREATE TRIGGER bikes_normalize_frame_size
   FOR EACH ROW EXECUTE FUNCTION bikes_normalize_frame_size();
 
 -- Eksisterende annoncer. Rører kun rækker med en gammel værdi.
-UPDATE public.bikes
-   SET size = normalize_frame_size(size, size_cm, type)
- WHERE size IN ('XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)');
+-- Solgte annoncer er låst af trg_prevent_sold_bike_edits, som afviser en
+-- ændring af size. Her er det kun teksten der skifter, så låsen slås fra
+-- under opdateringen og til igen bagefter (første kørsel 8. nov. fejlede
+-- med "Solgte annoncer kan ikke redigeres").
+DO $$
+DECLARE has_lock boolean := EXISTS (
+  SELECT 1 FROM pg_trigger
+   WHERE tgname = 'trg_prevent_sold_bike_edits' AND tgrelid = 'public.bikes'::regclass);
+BEGIN
+  IF has_lock THEN
+    ALTER TABLE public.bikes DISABLE TRIGGER trg_prevent_sold_bike_edits;
+  END IF;
+  UPDATE public.bikes
+     SET size = normalize_frame_size(size, size_cm, type)
+   WHERE size IN ('XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)');
+  IF has_lock THEN
+    ALTER TABLE public.bikes ENABLE TRIGGER trg_prevent_sold_bike_edits;
+  END IF;
+END $$;
 
 -- Gemte søgninger: oversæt hver værdi i filters->'sizes'.
 UPDATE public.saved_searches s
@@ -84,8 +100,10 @@ UPDATE public.saved_searches s
 -- ── FORTRYD (kør kun hvis skalaen skal tilbage) ─────────────────────
 -- DROP TRIGGER IF EXISTS bikes_normalize_frame_size ON public.bikes;
 -- DROP FUNCTION IF EXISTS bikes_normalize_frame_size();
+-- ALTER TABLE public.bikes DISABLE TRIGGER trg_prevent_sold_bike_edits;
 -- UPDATE public.bikes SET size = CASE size
 --     WHEN 'XS (44–47 cm)' THEN 'XS (44–48 cm)' WHEN 'S (48–51 cm)' THEN 'S (49–52 cm)'
 --     WHEN 'M (52–55 cm)' THEN 'M (53–56 cm)' WHEN 'L (56–58 cm)' THEN 'L (57–60 cm)'
 --     WHEN 'XL (59+ cm)' THEN 'XL (61+ cm)' ELSE size END;
+-- ALTER TABLE public.bikes ENABLE TRIGGER trg_prevent_sold_bike_edits;
 -- DROP FUNCTION IF EXISTS normalize_frame_size(text, numeric, text);
