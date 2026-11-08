@@ -3069,11 +3069,11 @@ function suggestFrameSize() {
   if (!result) return;
   if (!h || h < 140 || h > 220) { result.textContent = ''; return; }
   let size, val;
-  if      (h <= 162) { size = 'XS'; val = 'XS (44–48 cm)'; }
-  else if (h <= 170) { size = 'S';  val = 'S (49–52 cm)'; }
-  else if (h <= 178) { size = 'M';  val = 'M (53–56 cm)'; }
-  else if (h <= 188) { size = 'L';  val = 'L (57–60 cm)'; }
-  else               { size = 'XL'; val = 'XL (61+ cm)'; }
+  if      (h <= 159) { size = 'XS'; val = 'XS (44–47 cm)'; }
+  else if (h <= 167) { size = 'S';  val = 'S (48–51 cm)'; }
+  else if (h <= 175) { size = 'M';  val = 'M (52–55 cm)'; }
+  else if (h <= 184) { size = 'L';  val = 'L (56–58 cm)'; }
+  else               { size = 'XL'; val = 'XL (59+ cm)'; }
   result.textContent = '→ ' + size;
   const cb = document.querySelector(`[data-filter="size"][data-value="${val}"]`);
   document.querySelectorAll('[data-filter="size"]').forEach(c => { c.checked = false; });

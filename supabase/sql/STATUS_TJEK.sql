@@ -435,5 +435,17 @@ SELECT * FROM (
   UNION ALL SELECT 94, 'edge function', 'notify-saved-searches', 'TJEK: deployet efter 2026-09-26'
   UNION ALL SELECT 95, 'edge function', 'admin-actions',         'TJEK: deployet efter 2026-10-25 (skjuler annoncer ved suspendering)'
 
+  -- ── fix_frame_size_scale.sql (8. november) ─────────────────────────
+  UNION ALL SELECT 96, 'stelstoerrelse', 'ny skala: trigger + ingen gamle vaerdier tilbage',
+         CASE WHEN NOT EXISTS (SELECT 1 FROM pg_trigger
+                                WHERE tgname = 'bikes_normalize_frame_size'
+                                  AND tgrelid = 'public.bikes'::regclass)
+                THEN 'MANGLER'
+              WHEN EXISTS (SELECT 1 FROM bikes
+                            WHERE size IN ('XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)'))
+                THEN 'FEJL: annoncer med gammel skala'
+              ELSE 'OK' END
+  UNION ALL SELECT 97, 'edge function', 'smart-filter + suggest-listing', 'TJEK: deployet efter 2026-11-08 (ny stelskala)'
+
 ) AS t
 ORDER BY sort;

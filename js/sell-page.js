@@ -851,7 +851,7 @@ export function createSellPage({
           <label>Stelstørrelse</label>
           <select id="sell-size">
             <option value="">Vælg</option>
-            ${opt(c['sell-size'] || '', ['XS (44–48 cm)','S (49–52 cm)','M (53–56 cm)','L (57–60 cm)','XL (61+ cm)'])}
+            ${opt(c['sell-size'] || '', ['XS (44–47 cm)','S (48–51 cm)','M (52–55 cm)','L (56–58 cm)','XL (59+ cm)'])}
           </select>
           <div class="size-cm-row">
             <input type="number" id="sell-size-cm" placeholder="f.eks. 54" min="30" max="85" value="${c['sell-size-cm'] || ''}" onwheel="this.blur()">

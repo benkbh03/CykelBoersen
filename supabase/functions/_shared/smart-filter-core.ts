@@ -10,7 +10,7 @@ export const MODEL = "claude-haiku-5-5";
 // ── Kanoniske værdier: SKAL svare til data-value i index.html ─────────────
 const TYPES = ["Racercykel", "Mountainbike", "El-cykel", "Citybike", "Ladcykel", "Børnecykel", "Gravel", "Senior cykel"];
 const CONDITIONS = ["Ny", "Som ny", "God stand", "Brugt"];
-const SIZES = ["XS (44–48 cm)", "S (49–52 cm)", "M (53–56 cm)", "L (57–60 cm)", "XL (61+ cm)"];
+const SIZES = ["XS (44–47 cm)", "S (48–51 cm)", "M (52–55 cm)", "L (56–58 cm)", "XL (59+ cm)"];
 const WHEELS = ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"'];
 const FRAMES = ["Carbon", "Aluminium", "Stål", "Titanium"];
 const BRAKES = ["Skivebremser hydrauliske", "Skivebremser mekaniske", "Fælgbremser", "Rullebremser"];
@@ -63,7 +63,7 @@ Felter (lister kan have flere værdier, som betyder "en af dem"):
 - "keywords": op til fem korte ord i grundform og ental, som annoncens tekst sandsynligvis indeholder, fx ["kurv"] for "med kurv foran" og ["bagagebærer", "lygte"] for "med bagagebærer og lys". Ikke ord der allerede er blevet til et filter, og ikke fyldord (god, pæn, billig, foran, med).
 
 Hjælp til tolkning:
-- Højde til stelstørrelse (voksen): under 160 cm XS, 160-170 S, 170-180 M, 180-190 L, over 190 XL. Giv højst to nabostørrelser.
+- Højde til stelstørrelse (voksen): under 160 cm XS, 160-167 S, 168-175 M, 176-184 L, 185 og derover XL. Stelmål i cm (racer, gravel, bycykel, el-cykel): til 47 XS, 48-51 S, 52-55 M, 56-58 L, 59 og derover XL; sæt kun den ene størrelse. Mountainbikes måles kortere, så giv ingen størrelse ud fra cm når typen er Mountainbike. Giv højst to nabostørrelser.
 - Barn: types Børnecykel. Alder til hjul: 2-4 år 12", 3-5 år 14", 4-6 år 16", 5-7 år 18", 6-9 år 20", 8-12 år 24".
 - "racer", "landevej" = Racercykel. "MTB" = Mountainbike. "elcykel", "e-bike" = El-cykel. "ladcykel", "cargo", "christianiacykel" = Ladcykel. "bycykel", "pendlercykel" = Citybike, medmindre der står el.
 - "fully" = Fuld affjedring (fully). "hardtail" = Forgaffel (hardtail).

@@ -121,7 +121,7 @@ export function esc(str) {
 }
 
 /* Bogstav-størrelse (XS/S/M/L/XL) er mærke-afhængig og kun vejledende — cm-målet
-   er det pålidelige. Træk KUN bogstavet ud af det gemte "M (53–56 cm)"-format,
+   er det pålidelige. Træk KUN bogstavet ud af det gemte "M (52–55 cm)"-format,
    så den strenge cm-range ikke modsiger sælgerens mærke-størrelse (fx en Scott
    der markedsføres som L ved 56 cm, hvor vores skala kalder 56 for M).
    Returnerer fx "M", eller null hvis værdien ikke starter med et kendt bogstav. */

@@ -21,8 +21,8 @@ const TYPE_SLUGS = {
 };
 const CONDITION_SLUGS = { 'Ny': 'ny', 'Som ny': 'som-ny', 'God stand': 'god-stand', 'Brugt': 'brugt' };
 const SIZE_SLUGS = {
-  'XS (44–48 cm)': 'xs', 'S (49–52 cm)': 's', 'M (53–56 cm)': 'm',
-  'L (57–60 cm)': 'l', 'XL (61+ cm)': 'xl',
+  'XS (44–47 cm)': 'xs', 'S (48–51 cm)': 's', 'M (52–55 cm)': 'm',
+  'L (56–58 cm)': 'l', 'XL (59+ cm)': 'xl',
 };
 
 // [URL-nøgle, felt i filter-args, data-filter i sidebaren, slug-tabel]

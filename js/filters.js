@@ -519,11 +519,11 @@ export function createFilters({
     setCount('condition', 'Som ny',     data.filter(b => b.condition === 'Som ny').length);
     setCount('condition', 'God stand',  data.filter(b => b.condition === 'God stand').length);
     setCount('condition', 'Brugt',      data.filter(b => b.condition === 'Brugt').length);
-    setCount('size', 'XS (44–48 cm)', data.filter(b => b.size === 'XS (44–48 cm)').length);
-    setCount('size', 'S (49–52 cm)',  data.filter(b => b.size === 'S (49–52 cm)').length);
-    setCount('size', 'M (53–56 cm)',  data.filter(b => b.size === 'M (53–56 cm)').length);
-    setCount('size', 'L (57–60 cm)',  data.filter(b => b.size === 'L (57–60 cm)').length);
-    setCount('size', 'XL (61+ cm)',   data.filter(b => b.size === 'XL (61+ cm)').length);
+    setCount('size', 'XS (44–47 cm)', data.filter(b => b.size === 'XS (44–47 cm)').length);
+    setCount('size', 'S (48–51 cm)',  data.filter(b => b.size === 'S (48–51 cm)').length);
+    setCount('size', 'M (52–55 cm)',  data.filter(b => b.size === 'M (52–55 cm)').length);
+    setCount('size', 'L (56–58 cm)',  data.filter(b => b.size === 'L (56–58 cm)').length);
+    setCount('size', 'XL (59+ cm)',   data.filter(b => b.size === 'XL (59+ cm)').length);
     for (const w of ['12"', '14"', '16"', '18"', '20"', '24"', '26"', '27.5" / 650b', '28"', '29"']) {
       setCount('wheel', w, data.filter(b => b.wheel_size === w).length);
     }

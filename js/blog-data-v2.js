@@ -285,7 +285,7 @@ export const BLOG_ARTICLES = {
       <p>Tag skoene af og stil dig med ryggen mod en væg. Sæt en bog mellem benene, så den støder op til skridtet omtrent som en sadel ville gøre. Mål så fra toppen af bogen og ned til gulvet. Tallet du får er din benlængde eller "inseam", og det er det vigtigste mål når du skal vælge cykelstørrelse.</p>
 
       <h2>Stelstørrelse efter højde for racercykler</h2>
-      <p>Som vejledende udgangspunkt passer 148-162 cm til en XS-ramme på 44-48 cm, mens 163-170 cm hører til en S på 49-52 cm. Er du 171-178 cm skal du typisk have en M på 53-56 cm, 179-188 cm passer til en L på 57-60 cm, og er du over 189 cm har du brug for en XL på 61 cm eller derover.</p>
+      <p>Som vejledende udgangspunkt passer 150-159 cm til en XS-ramme på 44-47 cm, mens 160-167 cm hører til en S på 48-51 cm. Er du 168-175 cm skal du typisk have en M på 52-55 cm, 176-184 cm passer til en L på 56-58 cm, og er du 185 cm eller derover har du brug for en XL på 59 cm eller derover.</p>
       <p>Mountainbikes er en lille smule mindre per højdetrin, fordi du sidder mere oprejst og har brug for mere plads over rammen ved offroad-kørsel. Citybikes er endnu mere komfortable og oprejste, og her er det vigtigste at du kan sætte begge fødder fast på jorden ved stop.</p>
 
       <h2>Prøveturen er afgørende</h2>
