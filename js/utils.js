@@ -174,7 +174,7 @@ export const iconPin     = (s) => _svgIcon('<path d="M12 21s7-6.3 7-11a7 7 0 1 0
 export const iconMail    = (s) => _svgIcon('<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/>', s);
 export const iconCart    = (s) => _svgIcon('<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.2L21 7H6"/>', s);
 export const iconTag     = (s) => _svgIcon('<path d="M20.6 12.6 12 21.2l-8.5-8.5V3.5H12z"/><circle cx="7.8" cy="7.8" r="1.3"/>', s);
-export const iconWrench  = (s) => _svgIcon('<path d="M14.7 6.3a4 4 0 1 0 5 5L21 21H3l9.7-15.7z"/>', s);
+export const iconWrench  = (s) => _svgIcon('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>', s);
 export const iconPencil  = (s) => _svgIcon('<path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>', s);
 export const iconBike    = (s) => _svgIcon('<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M5.5 17.5l4-9h5l3 9M9.5 8.5h-2M14.5 8.5l-5 9"/>', s);
 /* Fire ikoner der afloeser emoji i saelgerens overblik (visninger, gemt,
