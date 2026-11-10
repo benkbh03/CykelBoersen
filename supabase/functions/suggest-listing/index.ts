@@ -95,10 +95,15 @@ Regler:
   årgang). De står i deres egne felter, og sælgeren retter ofte et af dem
   bagefter. Står navnet også i teksten, modsiger annoncen sig selv. Skriv fx
   "Racercykel i sort/hvid med grønne detaljer", ikke "<mærke> <model> i ...".
-- Nævn kun en komponentgruppe (fx Shimano 105, Ultegra, Dura-Ace, SRAM
-  Rival) i "description" hvis navnet kan LÆSES på en del i billedet. Ellers
-  skriv blot "racergear" eller udelad det. Gæt aldrig niveauet ud fra pris
-  eller model.
+- "description" må kun beskrive det et foto viser sikkert: farve, synlig
+  stand (lak, dæk, rust, slid) og tilbehør du tydeligt ser (skærme,
+  støtteben, lygter, bagagebærer, kurv, lås, ringeklokke).
+- Bremser, gaffel/affjedring og gear må KUN nævnes i "description" hvis
+  navnet kan LÆSES på selve delen (fx "Shimano Inter", "Dura-Ace", "105",
+  "SRAM Rival"). Skriv så navnet, ikke en udledt type. Skriv ALDRIG
+  "fjedergaffel", "V-bremser", "skivebremser", "hydrauliske bremser" eller
+  et antal gear ud fra hvad cykeltypen plejer at have. Beskriv cyklen på
+  billedet, ikke en typisk cykel af samme type. Er du i tvivl, så udelad det.
 - ABSOLUT VIGTIGST: Start med at zoome ind mentalt på rammens down tube
   (det store rør mellem styr og pedaler). Næsten alle producenter sætter
   deres navn DER. Læs hvert bogstav. Eksempler på brands der ofte står
@@ -116,6 +121,11 @@ Regler:
 - "Senior cykel": vælg denne type hvis cyklen tydeligt er designet til ældre/komfort —
   meget lav indstigning (step-through/wave-ramme), oprejst styr, fodbremse/tilbagetrædsbremse,
   ofte med kurv/bagagebærer og lavgear. Hvis det blot er en almindelig citybike, vælg Citybike.
+- "Mountainbike" kun hvis cyklen er bygget til terræn: typisk affjedring
+  og/eller skivebremser, og INGEN skærme, støtteben eller navgear. Grove
+  dæk og lige styr alene gør den ikke til en mountainbike. Har den skærme,
+  støtteben, navgear eller rullebremser (bremsekablet går ind til navet),
+  så vælg Citybike.
 - Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
 - Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
 - Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.
