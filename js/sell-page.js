@@ -1157,7 +1157,13 @@ export function createSellPage({
          </div>`
       : '';
 
-    const ownerName = _actingAs?.name || currentProfile?.shop_name || currentProfile?.name || 'Sælger';
+    // Samme regel som det rigtige annoncekort (cardSellerLine): butiksnavnet
+    // kun for forhandlere. En privat profil med et gammelt shop_name viste
+    // ellers butiksnavnet her, mens annoncen bagefter viser personens navn.
+    const isDealerOwner = (currentProfile?.seller_type || 'private') === 'dealer';
+    const ownerName = _actingAs?.name
+      || (isDealerOwner ? (currentProfile?.shop_name || currentProfile?.name) : currentProfile?.name)
+      || 'Sælger';
 
     return `
       <div class="sell-desktop-preview-label">Sådan ser annoncen ud</div>
