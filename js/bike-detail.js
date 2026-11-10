@@ -419,7 +419,21 @@ export function createBikeDetail({
       </div>`;
         return '';
       })()}
-      ${(b.size || b.size_cm || b.wheel_size) ? (() => {
+      ${/* Mangler stelstørrelsen (fx ca. 9/10 af Forum cyklers feed-annoncer),
+            viser vi "Ikke oplyst" og et link der åbner beskedfeltet med et færdigt
+            spørgsmål, frem for at hele boksen forsvinder. Kun på cykler hvor
+            stelmålet betyder noget, og kun for købere af en aktiv annonce.
+            Linket er et tekstlink: annoncens orange knap er stadig den eneste. */''}
+      ${(() => {
+        const _hasSize = !!(b.size || b.size_cm);
+        const _askSize = !_hasSize && !isOwner && !isSold
+          && (b.category || 'cykel') === 'cykel'
+          && !['Børnecykel', 'Ladcykel'].includes(b.type);
+        if (!_hasSize && !b.wheel_size && !_askSize) return '';
+        const _askWho  = sellerType === 'dealer' ? 'butikken' : 'sælger';
+        const _askText = sellerType === 'dealer'
+          ? 'Hej. Hvilke stelstørrelser har I den i, og hvilken højde passer de til?'
+          : 'Hej. Hvilken stelstørrelse er cyklen, og hvor høj er du selv?';
         const heightMap = {
           'XS (44–47 cm)': '150–159 cm',
           'S (48–51 cm)':  '160–167 cm',
@@ -450,6 +464,11 @@ export function createBikeDetail({
               <div class="fit-card-label">Anbefalet højde</div>
               <div class="fit-card-value">${heightRange}</div>
             </div>` : ''}
+            ${_askSize ? `
+            <div class="fit-card">
+              <div class="fit-card-label">Rammestørrelse</div>
+              <div class="fit-card-value fit-card-value--missing">Ikke oplyst</div>
+            </div>` : ''}
             ${(b.size || b.size_cm) ? `
             <div class="fit-card">
               <div class="fit-card-label">Rammestørrelse</div>
@@ -461,7 +480,8 @@ export function createBikeDetail({
               <div class="fit-card-value">${esc(b.wheel_size)}</div>
             </div>` : ''}
           </div>
-          <p class="fit-disclaimer">Vejledende. Den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>
+          ${_askSize ? `<p class="fit-ask">Størrelsen står ikke i annoncen. <button type="button" class="fit-ask-link" onclick="insertPresetMsg('${_askText}')">Spørg ${_askWho} om størrelse</button></p>` : ''}
+          ${(_hasSize || b.wheel_size) ? `<p class="fit-disclaimer">Vejledende. Den faktiske pasform afhænger også af benlængde, kropsbygning og cykeltype. Tag altid en prøvetur inden køb.</p>` : ''}
           <div class="fit-info-popup" id="fit-info-popup" style="display:none;">
             <p><strong>Hvorfor er det kun vejledende?</strong></p>
             <p>Højde er det første, men ikke det eneste, der bestemmer pasform:</p>
@@ -474,7 +494,7 @@ export function createBikeDetail({
             <p><strong>Vores anbefaling:</strong> Tag altid en prøvetur. Justér sadelhøjden så benet er næsten strakt i nederste pedalposition. Tjek at du kan stå over rammen med begge fødder fladt på jorden.</p>
           </div>
         </div>`;
-      })() : ''}
+      })()}
       ${(() => {
         // Teknisk specifikation — vis kun hvis mindst ét struktureret felt er udfyldt
         const techRows = [];

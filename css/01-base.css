@@ -1832,3 +1832,31 @@ body.browse-tilbehoer .smart-filter { display: none; }
     color: var(--charcoal) !important; font-weight: var(--weight-semibold);
   }
 }
+
+/* Manglende stelstørrelse: "Ikke oplyst" + tekstlink der åbner beskedfeltet
+   med et færdigt spørgsmål (js/bike-detail.js). Link, ikke knap: annoncens
+   orange knap skal stadig være den eneste. */
+.fit-card-value--missing {
+  font-weight: var(--weight-regular);
+  color: var(--text-muted);
+}
+.fit-ask {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--charcoal);
+}
+.fit-ask-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.fit-ask-link:hover { color: var(--rust); }
+@media (max-width: 480px) {
+  .fit-ask-link { display: inline-block; padding: var(--space-2) 0; }
+}
