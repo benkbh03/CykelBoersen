@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="2ba3c5ab70">
+<html lang="da" data-asset-v="cedd0c5529">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,24 +128,24 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=2ba3c5ab70">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=cedd0c5529">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/01-base.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/02-listings.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/04-modals.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/05-pages.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/07-map.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/09-compare.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/12-rental.css?v=2ba3c5ab70">
-  <link rel="stylesheet" href="/css/13-buy-requests.css?v=2ba3c5ab70">
+  <link rel="stylesheet" href="/css/tokens.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/01-base.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/02-listings.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/04-modals.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/05-pages.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/07-map.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/09-compare.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/12-rental.css?v=cedd0c5529">
+  <link rel="stylesheet" href="/css/13-buy-requests.css?v=cedd0c5529">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1152,18 +1152,22 @@
         <div id="category-bikes-section" class="brand-page-section">
           <h2 class="brand-page-section-title">Racercykler til salg</h2>
           <div id="category-bikes-grid" class="brand-bikes-grid">
-            <ul class="prerender-bike-links"><li><a href="/bike/scott-foil-rc-20-0ba2929c/">Scott Foil RC 20 – 30.499 kr. i København N</a></li><li><a href="/bike/motobecane-herre-blaa-79161c91/">Motobecane Herre, blå – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/motobecane-herre-orange-73808080/">Motobecane Herre, orange – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/motobecane-herre-sort-7217b4c4/">Motobecane Herre, sort – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/motobecane-herre-groen-ff2e16e2/">Motobecane Herre, grøn – 5.999 kr. i Frederiksberg C</a></li></ul>
+            <ul class="prerender-bike-links"><li><a href="/bike/scott-foil-rc-20-0ba2929c/">Scott Foil RC 20 – 30.499 kr. i København N</a></li><li><a href="/bike/scott-foil-6654185a/">Scott Foil – 7.000 kr. i Odense C</a></li><li><a href="/bike/motobecane-herre-blaa-79161c91/">Motobecane Herre, blå – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/motobecane-herre-orange-73808080/">Motobecane Herre, orange – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/motobecane-herre-sort-7217b4c4/">Motobecane Herre, sort – 5.999 kr. i Frederiksberg C</a></li><li><a href="/bike/motobecane-herre-groen-ff2e16e2/">Motobecane Herre, grøn – 5.999 kr. i Frederiksberg C</a></li></ul>
           </div>
           <div id="category-bikes-more" class="brand-show-more-wrap"></div>
         </div>
         <div id="category-market-facts" class="brand-page-section market-facts">
     <h2 class="brand-page-section-title">Hvad koster en racercykel?</h2>
-    <p class="market-facts-summary">Lige nu er der 5 racercykler til salg med en pris.
+    <p class="market-facts-summary">Lige nu er der 6 racercykler til salg med en pris.
     Halvdelen koster under <strong>6.000 kr.</strong>
     Den billigste koster 6.000 kr., den dyreste 30.500 kr.
     4 af dem sælges af en forhandler.</p>
     
-    <p class="market-facts-note">Tallene er fra de aktive annoncer, og gratis cykler er ikke talt med.
+        <table class="market-facts-table">
+          <thead><tr><th scope="col">Mærke</th><th scope="col">Til salg</th><th scope="col">Typisk pris</th></tr></thead>
+          <tbody><tr><td><a href="/cykler/motobecane/" onclick="event.preventDefault();navigateTo('/cykler/motobecane')">Motobecane</a></td><td>4</td><td>6.000 kr.</td></tr><tr><td><a href="/cykler/scott/" onclick="event.preventDefault();navigateTo('/cykler/scott')">Scott</a></td><td>2</td><td>18.700 kr.</td></tr></tbody>
+        </table>
+    <p class="market-facts-note">Tallene er fra de aktive annoncer, og gratis cykler er ikke talt med. Typisk pris er midten: halvdelen koster mindre.
       Skal du selv sælge? <a href="/vurder-min-cykel/" onclick="event.preventDefault();navigateTo('/vurder-min-cykel')">Se hvad din cykel er værd</a>.</p></div>
         
         <div class="brand-page-section category-faq">
