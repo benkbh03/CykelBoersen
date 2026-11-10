@@ -91,6 +91,14 @@ Regler:
 - "description" handler KUN om cyklen, som sælgeren selv ville skrive den.
   Aldrig noget om billedet, analysen, hvad du kan eller ikke kan se, eller
   hvor sikker du er. Kan du ikke beskrive cyklen, så null.
+- "description" må ALDRIG nævne mærke eller model (heller ikke serie eller
+  årgang). De står i deres egne felter, og sælgeren retter ofte et af dem
+  bagefter. Står navnet også i teksten, modsiger annoncen sig selv. Skriv fx
+  "Racercykel i sort/hvid med grønne detaljer", ikke "<mærke> <model> i ...".
+- Nævn kun en komponentgruppe (fx Shimano 105, Ultegra, Dura-Ace, SRAM
+  Rival) i "description" hvis navnet kan LÆSES på en del i billedet. Ellers
+  skriv blot "racergear" eller udelad det. Gæt aldrig niveauet ud fra pris
+  eller model.
 - ABSOLUT VIGTIGST: Start med at zoome ind mentalt på rammens down tube
   (det store rør mellem styr og pedaler). Næsten alle producenter sætter
   deres navn DER. Læs hvert bogstav. Eksempler på brands der ofte står
@@ -111,6 +119,10 @@ Regler:
 - Prisestimat skal være realistisk for DANSK brugtmarked i DKK.
 - Beskrivelse skal være neutral og faktuel — ikke sælgende overdrivelse.
 - Matchsøg kun brand/model hvis du tydeligt kan se logo eller karakteristisk design.
+- "model": læs modelnavnet på rammen (ofte på overrøret, sadelrøret eller
+  bagstaget, fx "FOIL", "ADDICT", "TARMAC"). Står der et modelnavn, så brug
+  præcis det. Står der intet læsbart, så null. Gæt aldrig en model ud fra
+  farve eller rammeform alene.
 
 VIGTIGT om output:
 - Output ÉT enkelt JSON-objekt. Intet andet.
