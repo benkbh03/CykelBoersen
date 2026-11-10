@@ -10,7 +10,7 @@ import { brandToSlug } from './brand-data-v2.js';
 import { breadcrumbsHtml, bikeCrumbs } from './breadcrumbs.js';
 import { maybeShowScamWarning } from './scam-warning.js';
 import { fetchTrustData, calculateTrustScore, buildTrustPillHTML } from './trust-score.js';
-import { createBikeDetailLightbox } from './bike-detail-lightbox.js';
+import { createBikeDetailLightbox } from './bike-detail-lightbox-v2.js';
 import { HOME_TITLE, HOME_DESC } from './seo-text.js';
 import { bikePath, parseBikeParam, prefixRange } from './bike-url.js';
 
