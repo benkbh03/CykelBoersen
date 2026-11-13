@@ -686,7 +686,7 @@ function bikePage(b) {
         url: canonicalUrl(canonicalPath),
         seller: {
           '@type': b.profiles?.seller_type === 'dealer' ? 'Organization' : 'Person',
-          name: b.profiles?.shop_name || b.profiles?.name || 'Sælger',
+          name: (b.profiles?.seller_type === 'dealer' ? (b.profiles?.shop_name || b.profiles?.name) : b.profiles?.name) || 'Sælger',
           ...(dealer ? { url: canonicalUrl(`/dealer/${dealer.id}`) } : {}),
         },
       },
