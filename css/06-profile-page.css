@@ -1623,10 +1623,10 @@ color: var(--charcoal); margin-bottom: 2px;
   .sell-wizard-main > .sell-wizard-progress { display: none; }
 
   /* Show desktop chrome */
-  .sell-wizard-desktop-header { display: block; margin-bottom: 24px; }
+  .sell-wizard-desktop-header { display: block; margin-bottom: var(--space-2); }
+  /* Sidens navn + trin som én lille linje; trinnets h1 er eneste overskrift. */
   .sell-wizard-step-label {
-    font-family: var(--font-sans); font-size: var(--text-xs); color: var(--muted);
-    letter-spacing: 0.3px; margin-bottom: 6px;
+    font-family: var(--font-sans); font-size: var(--text-sm); color: var(--muted);
   }
   .sell-wizard-page-title {
     font-family: var(--font-sans); font-weight: var(--weight-heavy); letter-spacing: -0.02em;font-size: var(--text-2xl);

@@ -652,8 +652,9 @@ export function createSellPage({
         </div>
 
         <div class="sell-wizard-desktop-header">
-          <div id="sell-desktop-step-label" class="sell-wizard-step-label">Trin 1 af 3</div>
-          <h1 class="sell-wizard-page-title">${_isAcc() ? 'Sæt dit tilbehør til salg' : 'Sæt din cykel til salg'}</h1>
+          <!-- Kun én stor overskrift pr. trin (16. nov.): sidens navn står som
+               lille linje sammen med trinnet, og trinnets egen h1 er overskriften. -->
+          <div id="sell-desktop-step-label" class="sell-wizard-step-label">${_sellPageName()} · Trin 1 af 3</div>
         </div>
 
         <div class="sell-wizard-layout">
@@ -672,6 +673,10 @@ export function createSellPage({
 
     setSellStep(1);
     restoreSellDraft();
+  }
+
+  function _sellPageName() {
+    return _isAcc() ? 'Sæt dit tilbehør til salg' : 'Sæt din cykel til salg';
   }
 
   function renderSellProgressHTML(step) {
@@ -1340,7 +1345,7 @@ export function createSellPage({
     _sellStep = n;
 
     const stepLabel = document.getElementById('sell-desktop-step-label');
-    if (stepLabel) stepLabel.textContent = `Trin ${n} af 3`;
+    if (stepLabel) stepLabel.textContent = `${_sellPageName()} · Trin ${n} af 3`;
 
     const progress = document.getElementById('sell-wizard-progress');
     if (progress) progress.innerHTML = renderSellProgressHTML(n);
