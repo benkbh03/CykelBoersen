@@ -268,7 +268,7 @@ export function createBikeDetail({
                  offentligt FØR mødet, så køber kan holde det op mod stellet ved
                  overdragelse. Det gør en løgn kontrollerbar — og det er dét
                  tooltip'en fortæller køberen at gøre. */
-              return `<span class="detail-tag detail-tag--frame" title="Sælger har oplyst stelnummeret på forhånd. Slå det op i politiets register, og sammenlign det med stellet når I mødes.">`
+              return `<span class="detail-tag detail-tag--frame" title="Sælger har oplyst stelnummeret på forhånd. Når I mødes, kan du læse hele nummeret på stellet, slå det op i politiets register og se, at de sidste 4 cifre passer.">`
                 + `${iconShield()} Stelnummer oplyst</span>`;
             })()}
           </div>
@@ -542,7 +542,7 @@ export function createBikeDetail({
           <span style="font-size:1.2rem;line-height:1.2;">${iconShield(18)}</span>
           <div style="min-width:0;">
             <div style="font-weight:600;color:var(--muted);font-size:0.92rem;">Stelnummer oplyst af sælger${l4 ? ` · ••${l4}` : ''}</div>
-            <div style="font-size:0.8rem;color:var(--muted);margin-top:3px;line-height:1.5;">Slå nummeret op i politiets register nedenfor, og sammenlign det med stellet når I mødes.</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:3px;line-height:1.5;">Når I mødes, kan du læse hele nummeret på stellet og slå det op i politiets register nedenfor. Tjek, at de sidste 4 cifre passer.</div>
           </div>
         </div>`;
       })()}

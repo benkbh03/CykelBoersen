@@ -941,8 +941,9 @@ export function createSellPage({
       <div class="sell-field sell-field--frame">
         <label>Stelnummer <span class="hint">anbefalet</span></label>
         <p class="sell-frame-why">
-          Køberen kan slå nummeret op i politiets register og holde det op mod
-          stellet, når I mødes. Annoncen får et synligt mærke.
+          Når I mødes, kan køberen læse nummeret på stellet og slå det op i
+          politiets register. Annoncen får et mærke og viser de sidste 4 cifre,
+          så køberen kan se, at det er samme cykel.
         </p>
         <input type="text" id="sell-frame-number" placeholder="f.eks. WBK1234567" value="${esc(c['sell-frame-number'] || '')}" maxlength="50" autocomplete="off" oninput="checkFrameNumberFormat(this)">
         <div id="sell-frame-warn" class="sell-frame-warn" hidden></div>
@@ -950,7 +951,7 @@ export function createSellPage({
              så løse tekstnoder og <strong> ville hver blive sin egen flex-item
              og brække sætningen op i smalle kolonner. -->
         <div class="sell-frame-privacy">
-          ${iconShield()}<span>Kun de <strong>sidste 4 cifre</strong> vises offentligt. Vi gemmer ikke hele nummeret.</span>
+          ${iconShield()}<span>Vi gemmer kun de sidste 4 cifre, aldrig hele nummeret.</span>
         </div>
       </div>
 
