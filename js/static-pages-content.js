@@ -92,7 +92,7 @@ export const footerContent = {
         <li>Annoncen overholder gældende dansk lovgivning, herunder markedsføringsloven og købeloven.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
-      <p style="margin-bottom:16px;">Vi kan rette åbenlyse fejl i en annonce, fx stavefejl, et mærkenavn der står to gange, forkert kategori eller tekst som vores annoncehjælper har lagt ind ved en fejl. Vi ændrer aldrig pris, stand eller din beskrivelse af cyklens tilstand. Når vi har rettet noget, giver vi dig besked, og du kan altid ændre det tilbage.</p>
+      <p style="margin-bottom:16px;">Vi kan rette åbenlyse fejl i en annonce, fx stavefejl, et mærkenavn der står to gange, forkert kategori eller tekst som AI-udfyldningen fra dine billeder har lagt ind ved en fejl. Vi ændrer aldrig pris, stand eller din beskrivelse af cyklens tilstand. Når vi har rettet noget, giver vi dig besked, og du kan altid ændre det tilbage.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4a. Tilladt sortiment</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>
