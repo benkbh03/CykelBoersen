@@ -8,7 +8,7 @@
      Nu læser de andre tre den her attribut. Bump ét sted.
      (CSS-linkene nedenfor er statiske href'er og kan ikke læse DOM'en. De
      har samme streng, så én søg-og-erstat rammer stadig det hele.) -->
-<html lang="da" data-asset-v="252958ec65">
+<html lang="da" data-asset-v="e161017eef">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,24 +128,24 @@
        sitet for at vise tekst, og de to fremmede domæner er ude af den
        kritiske sti. Preload på den ene fil der rammer først: Archivo, latin. -->
   <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/00-fonts.css?v=252958ec65">
+  <link rel="stylesheet" href="/css/00-fonts.css?v=e161017eef">
   <!-- Alle CSS-filer loader render-blocking. Tidligere lazy-loading af 03-07
        skabte FOUC og brudt styling på /forhandlere, /kort, /sell og andre
        ruter når JS render skete før CSS-swap fuldførtes. -->
-  <link rel="stylesheet" href="/css/tokens.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/01-base.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/02-listings.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/03-profiles.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/04-modals.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/05-pages.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/06-profile-page.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/07-map.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/09-compare.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/10-brand-pages.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/11-cykelagent.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/12-rental.css?v=252958ec65">
-  <link rel="stylesheet" href="/css/13-buy-requests.css?v=252958ec65">
+  <link rel="stylesheet" href="/css/tokens.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/01-base.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/02-listings.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/03-profiles.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/04-modals.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/05-pages.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/06-profile-page.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/07-map.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/08-dealer-extras.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/09-compare.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/10-brand-pages.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/11-cykelagent.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/12-rental.css?v=e161017eef">
+  <link rel="stylesheet" href="/css/13-buy-requests.css?v=e161017eef">
   <!-- Leaflet + Cropper loades først ved /kort, bike-modal, eller image-crop (lazy via JS) -->
   <noscript>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1142,7 +1142,7 @@
     <div class="static-page">
       <h1 class="static-page-title">Vilkår og betingelser</h1>
       <div class="static-page-body">
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 24. november 2026</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -1170,6 +1170,7 @@
         <li>Annoncen overholder gældende dansk lovgivning, herunder markedsføringsloven og købeloven.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
+      <p style="margin-bottom:16px;">Vi kan rette åbenlyse fejl i en annonce, fx stavefejl, et mærkenavn der står to gange, forkert kategori eller tekst som AI-udfyldningen fra dine billeder har lagt ind ved en fejl. Vi ændrer aldrig pris, stand eller din beskrivelse af cyklens tilstand. Når vi har rettet noget, giver vi dig besked, og du kan altid ændre det tilbage.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4a. Tilladt sortiment</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>

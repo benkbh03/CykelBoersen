@@ -49,7 +49,6 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/falcon/</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/cykler/brabus/</loc><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/raleigh-yate-cargo-med-lad-herre-7-gear-groen-f67c12ca/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/bike-by-gubi-lady-letvaegts-sort-4798dc86/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/raleigh-herre-blank-graa-4733d0d2/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/scott-foil-rc-20-0ba2929c/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/centurion-basic-outback-dreng-7-gear-e5eb1326/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -57,8 +56,8 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/centurion-helium-isblaa-b52bd144/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/velo-lux-herre-3-gear-sort-a5638e6b/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/velo-lux-herre-3-gear-groen-366a8628/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/raleigh-tourist-de-luxe-herre-groen-74e3f0a3/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/winther-g-style-pige-10d41022/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/raleigh-tourist-de-luxe-herre-groen-74e3f0a3/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/winther-g-style-sort-7f4ebe20/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/remington-detour-lady-blaa-2d2ed79c/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/remington-bixby-blaa-d6fc9461/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -66,11 +65,11 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/winther-g-style-mokka-1cf9fe3c/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/winther-g-style-8f212d3e/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/brabus-dame-3-gear-5480cbe0/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/velo-lux-dame-sort-24558035/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/brabus-dame-3-gear-moerkeblaa-9260f467/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/centurion-aura-groen-ada33e5b/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/centurion-violator-21-gear-mat-kobber-ad894225/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/velo-lux-dame-blaa-ddd81f7d/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/velo-lux-dame-sort-24558035/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/centurion-helium-isblaa-ea7abe2d/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/velo-lux-herre-3-gear-sort-31913371/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/mbk-mud-dna-dreng-e52f28a0/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
@@ -91,10 +90,11 @@
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/van-de-falk-cappuccino-869a6b25/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/van-de-falk-bordeaux-e4b2017f/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/norden-sportive-dame-sort-97a3a27f/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/bike-by-gubi-lady-letvaegts-sort-4798dc86/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/remington-paulette-lady-3a51c52f/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/bike-by-gubi-moerk-blaa-2d353a83/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/yt-yt-jeffsy-29-cf-comp-c18dc0b4/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/darlington-lys-groen-19fb3ab5/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://xn--cykelbrsen-5cb.dk/bike/yt-yt-jeffsy-29-cf-comp-c18dc0b4/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/norden-sportive-dame-aqua-3429fb66/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/raleigh-tourist-de-luxe-dame-moerkegroen-af82cbb2/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xn--cykelbrsen-5cb.dk/bike/brabus-dame-3-gear-27421048/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
