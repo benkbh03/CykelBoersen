@@ -34,8 +34,37 @@ export function createBrandPage({
 }) {
 
 
+  /* Mærker uden for KNOWN_BRANDS (fx YT, Darlington, EBS) har ingen kendt
+     stavemåde at slå sluggen op i. Prerender bygger alligevel en side til
+     dem, og annoncesiden linker "Se alle YT-cykler" til /cykler/yt, men
+     routeren faldt tilbage til forsiden. Find derfor navnet i de aktive
+     annoncer: samme brandToSlug-regel som prerender, så det er de samme
+     mærker der får en side begge steder. Intet match = forsiden som før. */
+  async function resolveBrandFromListings(slug) {
+    if (!slug || !/^[\p{L}\p{N}_-]+$/u.test(slug)) return null;
+    const pattern = slug.split('-').filter(Boolean)
+      .map(part => part.replace(/[\\%_]/g, c => '\\' + c))
+      .join('%');
+    if (!pattern) return null;
+    const { data, error } = await supabase
+      .from('bikes')
+      .select('brand')
+      .eq('is_active', true)
+      .eq('category', 'cykel')
+      .ilike('brand', pattern)
+      .limit(50);
+    if (error || !data) return null;
+    const hit = data.find(r => brandToSlug((r.brand || '').trim()) === slug);
+    return hit ? hit.brand.trim() : null;
+  }
+
   async function renderBrandPage(brandSlug) {
-    const brandName = slugToBrand(brandSlug);
+    let brandName = slugToBrand(brandSlug);
+    if (!brandName) {
+      const startPath = location.pathname;
+      brandName = await resolveBrandFromListings(brandSlug);
+      if (location.pathname !== startPath) return;  // brugeren er gået videre
+    }
     if (!brandName) {
       showListingView();
       return;
