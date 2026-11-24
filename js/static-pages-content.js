@@ -64,7 +64,7 @@ export const footerContent = {
   terms: {
     title: 'Vilkår og betingelser',
     body: `
-      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 11. juli 2026</p>
+      <p style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">Senest opdateret: 24. november 2026</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">1. Introduktion og tjenesteyder</h3>
       <p style="margin-bottom:8px;">Cykelbørsen (i det følgende "vi", "os" eller "platformen") er en online markedsplads der formidler kontakt mellem private sælgere, forhandlere og købere af brugte cykler i Danmark. Platformen er tilgængelig via <strong>cykelbørsen.dk</strong>. Ved at oprette en konto eller benytte platformen accepterer du disse vilkår i deres helhed.</p>
@@ -92,6 +92,7 @@ export const footerContent = {
         <li>Annoncen overholder gældende dansk lovgivning, herunder markedsføringsloven og købeloven.</li>
       </ul>
       <p style="margin-bottom:16px;">Vi forbeholder os ret til uden varsel at fjerne annoncer der overtræder disse vilkår, er ulovlige, vildledende eller på anden vis upassende.</p>
+      <p style="margin-bottom:16px;">Vi kan rette åbenlyse fejl i en annonce, fx stavefejl, et mærkenavn der står to gange, forkert kategori eller tekst som AI-udfyldningen fra dine billeder har lagt ind ved en fejl. Vi ændrer aldrig pris, stand eller din beskrivelse af cyklens tilstand. Når vi har rettet noget, giver vi dig besked, og du kan altid ændre det tilbage.</p>
 
       <h3 style="font-family:var(--font-sans);font-weight:var(--weight-heavy);letter-spacing:-0.02em;margin-bottom:8px;">4a. Tilladt sortiment</h3>
       <p style="margin-bottom:8px;">Cykelbørsen er en markedsplads for cykler og cykeltilbehør. Følgende må sælges på platformen:</p>

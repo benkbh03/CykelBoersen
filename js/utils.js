@@ -228,6 +228,11 @@ export function bikeTitle(brand, model) {
   const b = (brand == null ? '' : String(brand)).trim();
   const m = (model == null ? '' : String(model)).trim();
   if (!m || /^[-.?_/\\]+$/.test(m)) return b;
+  // Sælgere skriver ofte mærket i modelfeltet også ("YT" + "YT Jeffsy"), så
+  // titlen blev "YT YT Jeffsy". Står mærket allerede forrest i modellen,
+  // bruges modellen alene.
+  if (b && m.toLowerCase() === b.toLowerCase()) return b;
+  if (b && m.toLowerCase().startsWith(b.toLowerCase() + ' ')) return m;
   return `${b} ${m}`.trim();
 }
 
